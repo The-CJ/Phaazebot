@@ -1,0 +1,13 @@
+__pycache__
+ACCESS_DATA
+DATABASE
+LEVELS
+SERVERFILES
+STUFF
+VARS/cmdlist/cj.txt
+CMD/_CJ.py
+UTILS/twitch_streams
+UTILS/server_channel_id_for_new.json
+UTILS/*.txt
+VARS/Schregstrich.txt
+_PhaazeV3.py
