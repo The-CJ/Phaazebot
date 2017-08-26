@@ -12,4 +12,5 @@ UTILS/*.txt
 VARS/Schregstrich.txt
 _PhaazeV3.py
 _TWITCH_/Channel*
+_TWITCH_/_achtive_channels.json
 /utils.py

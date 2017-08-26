@@ -17,4 +17,5 @@ After long thinking i finally publiced the code.
 But don't try to repo this, you don't have the Databases, Access Tokens or the main __init__  
 
 But your welcome to scream at me because i did things wrong and correct me how you whould do it.
-Also feel free to report bugs, here on GitHub or even better on the [PhaateDiscord](https://discord.me/phaaze)
+Also feel free to report bugs, here on GitHub or even better on the:  
+# [PhaazeDiscord](https://discord.me/phaaze)
