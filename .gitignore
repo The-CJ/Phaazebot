@@ -11,3 +11,5 @@ UTILS/server_channel_id_for_new.json
 UTILS/*.txt
 VARS/Schregstrich.txt
 _PhaazeV3.py
+_TWITCH_/Channel*
+utils.py

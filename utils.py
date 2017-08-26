@@ -547,8 +547,9 @@ async def reload_(BASE):
 		await asyncio.sleep(3)
 		setattr(BASE.vars, "app", await BASE.phaaze.application_info() )
 		setattr(BASE.vars, "discord_is_NOT_ready", False )
-		BASE.RELOAD = False
+		await asyncio.sleep(5)
 		await BASE.phaaze.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online)
+		BASE.RELOAD = False
 
 	except Exception as e:
 		print(str(e.__class__))
