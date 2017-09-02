@@ -246,7 +246,7 @@ async def osu_base(BASE, message):
 async def define(BASE, message):
 	LINK = "https://mashape-community-urban-dictionary.p.mashape.com/define"
 	TERM = "?term="
-	Header = {'X-Mashape-Key': 'QJTGDG2sq1mshRboJDmAcVsa6GEKp1ccIyNjsnhK1IDnMq1KMR'}
+	Header = {'X-Mashape-Key': BASE.access.Mashape}
 
 	m = message.content.split(" ")
 	mm = message.content.lower().split(" ")
@@ -260,8 +260,12 @@ async def define(BASE, message):
 		if "phaaze" in mm or "phaazebot" in mm:
 			return await BASE.phaaze.send_message(message.channel, "Thats me :D")
 
+		#request or end
+		try:
+			res = requests.get(LINK+TERM+thing, headers= Header).json()
+		except:
+			return await BASE.phaaze.send_message(message.channel, ":warning: A Error occurred during your requestyour request, try agoin later")
 
-		res = requests.get(LINK+TERM+thing, headers= Header).json()
 	#0 result
 		if len(res["list"]) == 0:
 			return await BASE.phaaze.send_message(message.channel, ":x: Sorry, but Urban dictionary don't know what: `{0}` is".format(thing))
