@@ -160,10 +160,8 @@ async def osu_base(BASE, message):
 				if not beatmap.tags == []:
 					osu_aw.add_field(name="Tags:",value=", ".join(tag for tag in beatmap.tags), inline=True)
 
-				await BASE.phaaze.send_message(message.channel, embed=osu_aw)
-				try: await BASE.phaaze.delete_message(message)
-				except: pass
-				return
+				return await BASE.phaaze.send_message(message.channel, embed=osu_aw)
+
 
 			#set
 			elif mode == "s":
@@ -194,10 +192,8 @@ async def osu_base(BASE, message):
 
 				if len(fff) > 1997: fff = ":no_entry_sign: Seems like this Mapset has to many diffs, its to much for the Discord message limit, sorry."
 
-				await BASE.phaaze.send_message(message.channel, content=fff, embed=ggt)
-				try: await BASE.phaaze.delete_message(message)
-				except: pass
-				return
+				return await BASE.phaaze.send_message(message.channel, content=fff, embed=ggt)
+
 
 			#creator
 			elif mode == "u":
