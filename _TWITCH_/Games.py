@@ -170,7 +170,7 @@ class mission_game(object):
 		#all
 		elif len(self.winner) == len(self.fighter):
 			annc = ", ".join(f["name"] + " [" + str(int(f["amount"] * 1.5)) + "]" for f in self.winner)
-			await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "Mission success ! | The fights where rough, but everyone came back in one piece | They also brought some loot with them: {0}".format(annc))
+			await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "Mission success ! | The fights were rough, but everyone came back in one piece | They also brought some loot with them: {0}".format(annc))
 
 		#announce
 		else:

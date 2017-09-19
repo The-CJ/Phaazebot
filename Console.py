@@ -22,7 +22,7 @@ async def Debug_and_status_console(BASE):
 				now = datetime.datetime.now()
 				time_ = "["+now.strftime("%H:%M:%S")+"]"
 				print(time_ + req)
-			except: print("[" + Fore.RED + "CRITICAL ERROR" + Style.RESET_ALL + "] " + "Printing in Debug+ Console Failed")
+			except: print("[" + Fore.RED + "CRITICAL ERROR" + Style.RESET_ALL + "] " + "Printing in Debug Console+ Failed")
 
 		await asyncio.sleep(0.01)
 
