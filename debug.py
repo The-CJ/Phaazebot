@@ -26,7 +26,6 @@ class Deb():
 
 		self.root.bind("<Return>", func=self.Return_)
 		self.root.bind("<Up>", func=self.load_last)
-		self.root.mainloop()
 
 	def load_last(self, event):
 		event.widget.delete(0, 'end')
@@ -36,8 +35,15 @@ class Deb():
 		command = event.widget.get()
 		event.widget.width = 50
 		self.output.set(self.output.get() + "\n>> " + command)
-		self.output.set(self.output.get()[-200:])
+		self.output.set(self.output.get()[-300:])
 		event.widget.delete(0, 'end')
+
+		self.last_operation = command
+
+		loop = asyncio.new_event_loop()
+		loop.run_until_complete(self.process(command))
+
+	async def process(self, command):
 
 		if command == "clear":
 			self.output.set("")
@@ -45,21 +51,18 @@ class Deb():
 			return
 
 		elif command == "shutdown":
-			loop = asyncio.new_event_loop()
-			loop.run_until_complete(self.BASE.shutdown(self.BASE))
+			await self.BASE.shutdown(self.BASE)
 			return exit()
 
 		elif command == "reload":
-			loop = asyncio.new_event_loop()
-			loop.run_until_complete(self.BASE.utils.reload_(self.BASE))
+			self.root.destroy()
+			await self.BASE.moduls.Utils.reload_(self.BASE)
+			exit()
 
 		try:
-			self.last_operation = command
-
 			if self.async_operation.get() == 1:
-				loop = asyncio.new_event_loop()
-				f = asyncio.ensure_future(eval(command))
-				self.result = tk.Label(self.root, textvariable=self.return_value, justify='left', fg="lime", wraplength=500).grid(row=3, column=1, sticky="W")
+				f = await eval(command)
+				self.result = tk.Label(self.root, textvariable=self.return_value, justify='left', fg="green", wraplength=500).grid(row=3, column=1, sticky="W")
 			else:
 				f = eval(command)
 				self.result = tk.Label(self.root, textvariable=self.return_value, justify='left', fg="blue", wraplength=500).grid(row=3, column=1, sticky="W")
@@ -71,4 +74,6 @@ class Deb():
 
 
 async def main(BASE):
-	Deb(BASE)
+	D = Deb(BASE)
+	D.root.mainloop()
+	print("g")
