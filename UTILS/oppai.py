@@ -11,7 +11,7 @@ class oppai_result(object):
         self.speed_pp = 0.0
         self.aim_pp = 0.0
 
-# Der rest des codes O_O
+# Der rest des codes O_O <-- thx an Byte @HeapUnderfl0w
 
 # Diese methode mussu aufrufen, dan kriste das result object zurück
 def calc(file, c100=0, c50=0, misses=0, sv=1, acc=0.0, combo=0, mod_s=""):
