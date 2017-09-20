@@ -792,54 +792,84 @@ class doujin(object):
 
 	class errors:
 		async def no_options(BASE,message):
-			I = await BASE.phaaze.send_message(message.channel, ":warning: You need to define at least one option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT))
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
+			try:
+				I = await BASE.phaaze.send_message(message.channel, ":warning: You need to define at least one option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT))
+				await asyncio.sleep(15)
+				await BASE.phaaze.delete_message(I)
+			except:
+				pass
 
 		async def unkown_option(BASE, message, var):
-			I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` is not a option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT, var))
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
+			try:
+				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` is not a option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT, var))
+				await asyncio.sleep(15)
+				await BASE.phaaze.delete_message(I)
+			except:
+				pass
 
 		async def missing_value(BASE, message, var):
-			I = await BASE.phaaze.send_message(message.channel, ":warning: The option: `<{1}` needs at least one value".format(BASE.vars.PT,var))
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
+			try:
+				I = await BASE.phaaze.send_message(message.channel, ":warning: The option: `<{1}` needs at least one value".format(BASE.vars.PT,var))
+				await asyncio.sleep(15)
+				await BASE.phaaze.delete_message(I)
+			except:
+				pass
 
 		async def page_error_to_much(BASE, message, var):
-			I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` only takes one number e.g.: 420".format(BASE.vars.PT,var))
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
+			try:
+				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` only takes one number e.g.: 420".format(BASE.vars.PT,var))
+				await asyncio.sleep(15)
+				await BASE.phaaze.delete_message(I)
+			except:
+				pass
 
 		async def page_error_no_digit(BASE, message, var):
-			I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` can only be a digital number e.g.: 60".format(BASE.vars.PT,var))
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
+			try:
+				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` can only be a digital number e.g.: 60".format(BASE.vars.PT,var))
+				await asyncio.sleep(15)
+				await BASE.phaaze.delete_message(I)
+			except:
+				pass
 
 		async def star_error_to_much(BASE, message, var):
-			I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` only takes one number between 1 and 5".format(BASE.vars.PT,var))
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
+			try:
+				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` only takes one number between 1 and 5".format(BASE.vars.PT,var))
+				await asyncio.sleep(15)
+				await BASE.phaaze.delete_message(I)
+			except:
+				pass
 
 		async def star_error_no_digit(BASE, message, var):
-			I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` can only be a digital number between 1 and 5".format(BASE.vars.PT,var))
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
+			try:
+				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` can only be a digital number between 1 and 5".format(BASE.vars.PT,var))
+				await asyncio.sleep(15)
+				await BASE.phaaze.delete_message(I)
+			except:
+				pass
 
 		async def no_anime_found(BASE, message, var):
-			I = await BASE.phaaze.send_message(message.channel, ":warning: The Anime search: `{0}`, could not be autocomplete. Please be more precise".format(var))
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
+			try:
+				I = await BASE.phaaze.send_message(message.channel, ":warning: The Anime search: `{0}`, could not be autocomplete. Please be more precise".format(var))
+				await asyncio.sleep(15)
+				await BASE.phaaze.delete_message(I)
+			except:
+				pass
 
 		async def no_char_found(BASE, message, var):
-			I = await BASE.phaaze.send_message(message.channel, ":warning: The Character search: `{0}`, could not be autocomplete. Please be more precise".format(var))
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
+			try:
+				I = await BASE.phaaze.send_message(message.channel, ":warning: The Character search: `{0}`, could not be autocomplete. Please be more precise".format(var))
+				await asyncio.sleep(15)
+				await BASE.phaaze.delete_message(I)
+			except:
+				pass
 
 		async def no_define(BASE,message):
-			I = await BASE.phaaze.send_message(message.channel, ":warning: You need to define at least one option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT))
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
+			try:
+				I = await BASE.phaaze.send_message(message.channel, ":warning: You need to define at least one option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT))
+				await asyncio.sleep(15)
+				await BASE.phaaze.delete_message(I)
+			except:
+				pass
 
 class wiki(object):
 	async def wiki(BASE, message):
