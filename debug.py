@@ -55,6 +55,7 @@ class Deb():
 			return exit()
 
 		elif command == "reload":
+			#FIXME: unable to reload winbdow
 			self.root.destroy()
 			await self.BASE.moduls.Utils.reload_(self.BASE)
 			exit()
