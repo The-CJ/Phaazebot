@@ -55,7 +55,7 @@ class Deb():
 			return exit()
 
 		elif command == "reload":
-			#FIXME: unable to reload winbdow
+			#FIXME: unable to reload winbdow, dont reload 4 now
 			self.root.destroy()
 			await self.BASE.moduls.Utils.reload_(self.BASE)
 			exit()
@@ -77,4 +77,3 @@ class Deb():
 async def main(BASE):
 	D = Deb(BASE)
 	D.root.mainloop()
-	print("g")
