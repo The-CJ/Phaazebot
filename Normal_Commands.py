@@ -560,6 +560,9 @@ class doujin(object):
 				if not term[0].isdigit():
 					return await self.errors.wrong_type(self, option, "Star Rating", "Number")
 
+				if re.search(r"^[0-5]$", term[0]):
+					return await self.errors.too_high(self, option, "Star")
+
 				else:
 					self.parameter["RateMinimum"] = [term[0]]
 
@@ -672,7 +675,7 @@ class doujin(object):
 		emb.set_image(url=Book["Meta"]["Thumb"])
 		emb.set_footer(text="Provided by Tsumino", icon_url="http://www.tsumino.com/content/res/logo.png")
 
-		return await self.BASE.phaaze.send_message(message.channel, embed=emb)
+		return await self.BASE.phaaze.send_message(self.message.channel, embed=emb)
 
 	class errors:
 		async def no_options(self):
@@ -702,6 +705,23 @@ class doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** - *\"{2}\"* needs at least one value!\n"\
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
+					)
+				await asyncio.sleep(15)
+				await self.BASE.phaaze.delete_message(I)
+			except:
+				pass
+
+		async def too_high(self, short_, long_):
+			try:
+				I = await self.BASE.phaaze.send_message(
+					self.message.channel,
+					content=None,
+					embed=discord.Embed(
+						title=":warning: Error: Missing value",
+						color=int(0xFF0000),
+						description=
+							"**{1}** - *\"{2}\"* only takes a value from 0-5\n"\
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
 					)
 				await asyncio.sleep(15)
