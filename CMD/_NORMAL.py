@@ -14,13 +14,7 @@ async def base(BASE, message):
 
 	if check.startswith("doujin"):
 		if await BASE.moduls.Utils.settings_check(BASE, message, "enable_nsfw"):
-			await BASE.moduls.Commands.doujin.request(BASE, message)
-		else:
-			await BASE.cmds.NORMAL.forbitten.nsfw(BASE, message)
-
-	if check.startswith("!doujin"):
-		if await BASE.moduls.Utils.settings_check(BASE, message, "enable_nsfw"):
-			await BASE.moduls.Commands.doujin_v2(BASE, message).request()
+			await BASE.moduls.Commands.doujin(BASE, message).request()
 		else:
 			await BASE.cmds.NORMAL.forbitten.nsfw(BASE, message)
 
