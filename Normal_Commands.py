@@ -496,7 +496,7 @@ class doujin(object):
 				if len(term) == 0:
 					return await self.errors.missing_value(self, option, "Included")
 				else:
-					self.parameter["TagInclude"] = [t for t in term.split(" ")]
+					self.parameter["TagInclude"] = [t for t in term]
 
 			#exclude tag
 			elif re.search(r"^e(_t(ags?)?|t(ags?)?)?$", term[0]):
@@ -507,7 +507,7 @@ class doujin(object):
 				if len(term) == 0:
 					return await self.errors.missing_value(self, option, "Excluded")
 				else:
-					self.parameter["TagExclude"] = [t for t in term.split(" ")]
+					self.parameter["TagExclude"] = [t for t in term]
 
 			#page min
 			elif re.search(r"^(p|page)_?min(imum)?$", term[0]):
@@ -560,7 +560,7 @@ class doujin(object):
 				if not term[0].isdigit():
 					return await self.errors.wrong_type(self, option, "Star Rating", "Number")
 
-				if re.search(r"^[0-5]$", term[0]):
+				if re.search(r"^[0-5]$", term[0]): #TODO: find misstake
 					return await self.errors.too_high(self, option, "Star")
 
 				else:
@@ -579,13 +579,14 @@ class doujin(object):
 				anime_hits = 0
 				for value in term:
 					animes = requests.get("http://tsumino.com/api/tag?term={0}".format(value.replace("_", "+")))
-					for anime in animes:
+					for anime in animes.json()["Data"]:
 						if anime["Type"] == 6:
 							 anime_hits += 1
 							 formated.append(anime["Name"])
+							 break
 
-						if anime_hits == 0:
-							return await self.errors.non_found(self, option, "Anime", value)
+					if anime_hits == 0:
+						return await self.errors.non_found(self, option, "Anime", value)
 
 				self.parameter["Parodies"] = formated
 
@@ -602,13 +603,14 @@ class doujin(object):
 				anime_hits = 0
 				for value in term:
 					chars = requests.get("http://tsumino.com/api/tag?term={0}".format(value.replace("_", "+")))
-					for char_ in chars:
+					for char_ in chars.json()["Data"]:
 						if char_["Type"] == 7:
 							 anime_hits += 1
 							 formated.append(char_["Name"])
+							 break
 
-						if anime_hits == 0:
-							return await self.errors.non_found(self, option, "Character", value)
+					if anime_hits == 0:
+						return await self.errors.non_found(self, option, "Character", value)
 
 				self.parameter["Characters"] = formated
 
@@ -635,14 +637,14 @@ class doujin(object):
 		SEARCH = ""
 
 		for term in self.parameter:
-			SEARCH = SEARCH + "".join("&" + term + "=" + x for x in self.parameter[term])
+			SEARCH = SEARCH + "".join("&" + term + "=" + x.replace("_", "+") for x in self.parameter[term])
 
 		site = requests.get(MAIN+SEARCH)
 		search_return = site.json()
 		return await self.format_and_send_message(search_return)
 
 	async def format_and_send_message(self, result):
-		Book = result["Data"][0]
+		Book = result["Data"][0] #TODO: add 0 variante
 
 		pages = Book["Object"]["Pages"]
 		tags = " | ".join("`"+f+"`" for f in Book["Object"]["Tags"])
