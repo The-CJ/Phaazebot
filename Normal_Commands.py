@@ -873,22 +873,25 @@ class doujin(object):
 
 class doujin_v2(object):
 
-	async def request(BASE, message):
-		m = message.content.lower()
-		m = m.replace("\n", " ")
+	def __init__(self, BASE, message):
+		self.BASE = BASE
+		self.message = message
 
-		if 	m == "{0}doujin".format(BASE.vars.PT) or m == "{0}doujin <".format(BASE.vars.PT):
-			return await doujin.errors.no_define(BASE,message)
+		self.parameter = {}
+		pass
 
-		if 	m == "{0}doujin help".format(BASE.vars.PT) or\
-			m == "{0}doujin <help".format(BASE.vars.PT):
-			return await doujin.help(BASE,message)
+	async def request(self):
+		M = self.message.content.replace("\n", " ")
+		m = M.lower()
 
-		if 	m == "{0}doujin <r".format(BASE.vars.PT) or\
-			m == "{0}doujin <random".format(BASE.vars.PT) or\
-			m == "{0}doujin r".format(BASE.vars.PT) or\
-			m == "{0}doujin random".format(BASE.vars.PT):
-			return await doujin.random(BASE,message)
+		if 	re.search(r"^.doujin ?<?$", m):
+			return await self.errors.no_options()
+
+		if 	re.search(r"^.doujin <?help$", m):
+			return await self._help()
+
+		if 	re.search(r"^.doujin <?r(andom)?$", m):
+			return await self.random()
 
 		#parse all
 		parameter = await doujin.parse(BASE,message)
@@ -1168,7 +1171,12 @@ class doujin_v2(object):
 		site = requests.get(MAIN+SEARCH)
 		return site.json()
 
-	async def format_and_send_message(BASE, message, result):
+	async def random(self):
+		request_link = "https://www.tsumino.com/api/book?SortOptions=Random"
+		site = requests.get(request_link)
+		return await self.format_and_send_message(site.json())
+
+	async def format_and_send_message(self, result):
 		Book = result["Data"][0]
 
 		pages = Book["Object"]["Pages"]
@@ -1204,20 +1212,18 @@ class doujin_v2(object):
 
 		return await BASE.phaaze.send_message(message.channel, embed=emb)
 
-	async def random(BASE,message):
-		MAIN = "https://www.tsumino.com/api/book?SortOptions=Random"
-		site = requests.get(MAIN)
-		return await doujin.format_and_send_message(BASE, message, site.json())
-
-	async def help(BASE,message):
-		try: await BASE.phaaze.send_message(message.channel, ":incoming_envelope: --> PM")
-		except: pass
-		return await BASE.phaaze.send_message(message.author, BASE.vars.doujin_help)
-
 	class errors:
-		async def no_options(BASE,message):
+		async def no_options(self):
 			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: You need to define at least one option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT))
+				I = await self.BASE.phaaze.send_message(
+					self.message.channel,
+					content=None,
+					embed=discord.Embed(
+						title=":warning: Error",
+						color=int(0xFF0000),
+						description="You need to define at least one option!\n"\
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT))
+					)
 				await asyncio.sleep(15)
 				await BASE.phaaze.delete_message(I)
 			except:
@@ -1287,13 +1293,15 @@ class doujin_v2(object):
 			except:
 				pass
 
-		async def no_define(BASE,message):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: You need to define at least one option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
+	async def _help(self):
+		try:
+			await self.BASE.phaaze.send_message(self.message.channel, ":incoming_envelope: --> PM")
+		except:
+			pass
+		try:
+			return await self.BASE.phaaze.send_message(self.message.author, self.BASE.vars.doujin_help)
+		except:
+			pass
 
 class wiki(object):
 	async def wiki(BASE, message):
