@@ -894,35 +894,7 @@ class doujin_v2(object):
 			return await self.random()
 
 		#parse all
-		parameter = await doujin.parse(BASE,message)
-
-		#if errors
-		if parameter.error == "no_options":
-			return await doujin.errors.no_options(BASE,message)
-
-		if parameter.error == "unkown_option":
-			return await doujin.errors.unkown_option(BASE, message, parameter.error_text)
-
-		if parameter.error == "missing_value":
-			return await doujin.errors.missing_value(BASE, message, parameter.error_text)
-
-		if parameter.error == "page_error_to_much":
-			return await doujin.errors.page_error_to_much(BASE, message, parameter.error_text)
-
-		if parameter.error == "page_error_no_digit":
-			return await doujin.errors.page_error_no_digit(BASE, message, parameter.error_text)
-
-		if parameter.error == "star_error_to_much":
-			return await doujin.errors.star_error_to_much(BASE, message, parameter.error_text)
-
-		if parameter.error == "star_error_no_digit":
-			return await doujin.errors.star_error_no_digit(BASE, message, parameter.error_text)
-
-		if parameter.error == "no_anime_found":
-			return await doujin.errors.no_anime_found(BASE, message, parameter.error_text)
-
-		if parameter.error == "no_char_found":
-			return await doujin.errors.no_char_found(BASE, message, parameter.error_text)
+		await self.parse()
 
 		#make API call
 		result = await doujin.Tsumino_call(BASE, message, parameter)
@@ -935,17 +907,13 @@ class doujin_v2(object):
 		else:
 			await doujin.format_and_send_message(BASE, message, result)
 
-	async def parse(BASE,message):
-		class perms:
-			error = False
-			error_text = None
-
-		m = message.content.lower().split("<")
+	async def parse(self):
+		m = self.message.content.split("<")
+		#remove command tirgger
 		m.remove(m[0])
 
 		if len(m) == 0:
-			setattr(perms, "error", "no_options")
-			return perms
+			return await self.errors.no_options()
 
 		for term in m:
 			term = term.split(" ")
@@ -954,141 +922,107 @@ class doujin_v2(object):
 			except:
 				pass
 
-		#tag add
-			if term[0] == "i" or term[0] == "it" or term[0] == "itag" or\
-				term[0] == "itags" or term[0] == "i_t" or\
-				term[0] == "i_tag" or term[0] == "i_tags":
+			#include add
+			if re.search(r"^i(_t(ags?)?|t(ags?)?)?$", term[0]):
 
 				option = term[0]
 				term.remove(term[0])
 
 				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
+					return await self.errors.missing_value(option, "Included")
 				else:
-					setattr(perms, "i_tags", term)
-		#tag ex
-			elif term[0] == "e" or term[0] == "et" or term[0] == "etag" or\
-				term[0] == "etags" or term[0] == "e_t" or\
-				term[0] == "e_tag" or term[0] == "e_tags":
+					self.parameter["TagInclude"] = [t for t in term.split(" ")]
+
+			#exclude tag
+			elif re.search(r"^e(_t(ags?)?|t(ags?)?)?$", term[0]):
 
 				option = term[0]
 				term.remove(term[0])
 
 				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
+					return await self.errors.missing_value(option, "Excluded")
 				else:
-					setattr(perms, "e_tags", term)
-		#page min
-			elif term[0] == "pmin" or term[0] == "p_min" or\
-				term[0] == "page_minimum" or term[0] == "page_min":
+					self.parameter["TagExclude"] = [t for t in term.split(" ")]
+
+			#page min
+			elif re.search(r"^(p|page)_?min(imum)?$", term[0]):
 
 				option = term[0]
 				term.remove(term[0])
 
 				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
+					return await self.errors.missing_value(option, "Page Minimum")
 
-				if len(term) > 1:
-					setattr(perms, "error", "page_error_to_much")
-					setattr(perms, "error_text", option)
-					return perms
+				elif len(term) > 1:
+					return await self.errors.too_many_inputs(option, "Page Minimum")
 
 				if not term[0].isdigit():
-					setattr(perms, "error", "page_error_no_digit")
-					setattr(perms, "error_text", option)
-					return perms
+					return await self.errors.wrong_type(option, "Page Minimum", "Number")
+
 				else:
-					setattr(perms, "pmin", term[0])
-		#page max
-			elif term[0] == "pmax" or term[0] == "p_max" or\
-				term[0] == "page_maximum" or term[0] == "page_max":
+					self.parameter["PageMinimum"] = [term[0]]
+
+			#page max
+			elif re.search(r"^(p|page)_?max(imum)?$", term[0]):
 
 				option = term[0]
 				term.remove(term[0])
 
 				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
+					return await self.errors.missing_value(option, "Page Maximum")
 
-				if len(term) > 1:
-					setattr(perms, "error", "page_error_to_much")
-					setattr(perms, "error_text", option)
-					return perms
+				elif len(term) > 1:
+					return await self.errors.too_many_inputs(option, "Page Maximum")
 
 				if not term[0].isdigit():
-					setattr(perms, "error", "page_error_no_digit")
-					setattr(perms, "error_text", option)
-					return perms
+					return await self.errors.wrong_type(option, "Page Maximum", "Number")
 
 				else:
-					setattr(perms, "pmax", term[0])
-		#stars
-			elif term[0] == "star" or term[0] == "s" or term[0] == "stars":
+					self.parameter["PageMaximum"] = [term[0]]
+
+			#stars
+			elif re.search(r"^s(tars?)?$", term[0]):
 
 				option = term[0]
 				term.remove(term[0])
 
 				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
+					return await self.errors.missing_value(option, "Star Rating")
 
-				if len(term) > 1:
-					setattr(perms, "error", "star_error_to_much")
-					setattr(perms, "error_text", option)
-					return perms
+				elif len(term) > 1:
+					return await self.errors.too_many_inputs(option, "Star Rating")
 
 				if not term[0].isdigit():
-					setattr(perms, "error", "star_error_no_digit")
-					setattr(perms, "error_text", option)
-					return perms
+					return await self.errors.wrong_type(option, "Star Rating", "Number")
 
 				else:
-					if int(term[0]) > 5 or int(term[0]) < 0:
-						setattr(perms, "error", "star_error_no_digit")
-						setattr(perms, "error_text", option)
-						return perms
+					self.parameter["RateMinimum"] = [term[0]]
 
-					setattr(perms, "stars", term[0])
-		#anime
-			elif term[0] == "a" or term[0] == "anime" or term[0] == "animes":
+			#anime
+			elif re.search(r"^a(nimes?)?$", term[0]):
 
 				option = term[0]
 				term.remove(term[0])
 
 				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
+					return await self.errors.missing_value(option, "Anime")
 
-				animes = []
+				formated = []
+				anime_hits = 0
+				for value in term:
+					animes = requests.get("http://tsumino.com/api/tag?term={0}".format(value.replace("_", "+")))
+					for anime in animes:
+						 if anime["Type"] == 6:
+							 anime_hits += 1
+							 formated.append(anime["Name"])
 
-				for search in term:
-					option = search
-					anime = requests.get("http://tsumino.com/api/tag?term={0}".format(search.replace("_", "+")))
-					anime = anime.json()
+						if anime_hits == 0:
+							return await self.errors.non_found(option, "Anime", value)
 
-					hits = 0
-					for res in anime["Data"]:
-						if res["Type"] == 6:
-							hits = hits + 1
-							animes.append(res["Name"])
-							break
+				else:
+					self.parameter["Parodies"] = formated
 
-					if hits == 0:
-						setattr(perms, "error", "no_anime_found")
-						setattr(perms, "error_text", option)
-						return perms
-
-				setattr(perms, "animes", animes)
-		#chars
+			#chars
 			elif term[0] == "c" or term[0] == "char" or term[0] == "chars" or\
 				term[0] == "characters" or term[0] == "character":
 
@@ -1119,7 +1053,7 @@ class doujin_v2(object):
 						return perms
 
 				setattr(perms, "chars", chars)
-		#=
+			#=
 			elif term[0] == "=":
 
 				option = term[0]
@@ -1131,7 +1065,7 @@ class doujin_v2(object):
 					return perms
 
 				setattr(perms, "raw", " ".join(f for f in term))
-		#nothing
+			#nothing
 			else:
 				setattr(perms, "error", "unkown_option")
 				setattr(perms, "error_text", term[0])
@@ -1219,77 +1153,65 @@ class doujin_v2(object):
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
-						title=":warning: Error",
+						title=":warning: Error: No Options",
 						color=int(0xFF0000),
-						description="You need to define at least one option!\n"\
+						description=
+							"You need to define at least one option!\n"\
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT))
 					)
 				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
+				await self.BASE.phaaze.delete_message(I)
 			except:
 				pass
 
-		async def unkown_option(BASE, message, var):
+		async def missing_value(self, short_, long_):
 			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` is not a option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT, var))
+				I = await self.BASE.phaaze.send_message(
+					self.message.channel,
+					content=None,
+					embed=discord.Embed(
+						title=":warning: Error: Missing value",
+						color=int(0xFF0000),
+						description=
+							"**{1}** *\"{2}\"* needs at least one value!\n"\
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
+					)
 				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
+				await self.BASE.phaaze.delete_message(I)
 			except:
 				pass
 
-		async def missing_value(BASE, message, var):
+		async def too_many_inputs(self, short_, long_):
 			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: The option: `<{1}` needs at least one value".format(BASE.vars.PT,var))
+				I = await self.BASE.phaaze.send_message(
+					self.message.channel,
+					content=None,
+					embed=discord.Embed(
+						title=":warning: Error: Too many values",
+						color=int(0xFF0000),
+						description=
+							"**{1}** *\"{2}\"* only uses one value!\n"\
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
+					)
 				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
+				await self.BASE.phaaze.delete_message(I)
 			except:
 				pass
 
-		async def page_error_to_much(BASE, message, var):
+		async def wrong_type(self, short_, long_, type_):
 			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` only takes one number e.g.: 420".format(BASE.vars.PT,var))
+				I = await self.BASE.phaaze.send_message(
+					self.message.channel,
+					content=None,
+					embed=discord.Embed(
+						title=":warning: Error: Wrong Type",
+						color=int(0xFF0000),
+						description=
+							"**{1}** *\"{2}\"* awaits a `{3}` value\n"\
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_, type_))
+					)
 				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def page_error_no_digit(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` can only be a digital number e.g.: 60".format(BASE.vars.PT,var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def star_error_to_much(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` only takes one number between 1 and 5".format(BASE.vars.PT,var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def star_error_no_digit(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` can only be a digital number between 1 and 5".format(BASE.vars.PT,var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def no_anime_found(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: The Anime search: `{0}`, could not be autocomplete. Please be more precise".format(var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def no_char_found(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: The Character search: `{0}`, could not be autocomplete. Please be more precise".format(var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
+				await self.BASE.phaaze.delete_message(I)
 			except:
 				pass
 
