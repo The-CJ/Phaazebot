@@ -449,430 +449,6 @@ async def choice(BASE, message):
 
 class doujin(object):
 
-	async def request(BASE, message):
-		m = message.content.lower()
-		m = m.replace("\n", " ")
-
-		if 	m == "{0}doujin".format(BASE.vars.PT) or m == "{0}doujin <".format(BASE.vars.PT):
-			return await doujin.errors.no_define(BASE,message)
-
-		if 	m == "{0}doujin help".format(BASE.vars.PT) or\
-			m == "{0}doujin <help".format(BASE.vars.PT):
-			return await doujin.help(BASE,message)
-
-		if 	m == "{0}doujin <r".format(BASE.vars.PT) or\
-			m == "{0}doujin <random".format(BASE.vars.PT) or\
-			m == "{0}doujin r".format(BASE.vars.PT) or\
-			m == "{0}doujin random".format(BASE.vars.PT):
-			return await doujin.random(BASE,message)
-
-		#parse all
-		parameter = await doujin.parse(BASE,message)
-
-		#if errors
-		if parameter.error == "no_options":
-			return await doujin.errors.no_options(BASE,message)
-
-		if parameter.error == "unkown_option":
-			return await doujin.errors.unkown_option(BASE, message, parameter.error_text)
-
-		if parameter.error == "missing_value":
-			return await doujin.errors.missing_value(BASE, message, parameter.error_text)
-
-		if parameter.error == "page_error_to_much":
-			return await doujin.errors.page_error_to_much(BASE, message, parameter.error_text)
-
-		if parameter.error == "page_error_no_digit":
-			return await doujin.errors.page_error_no_digit(BASE, message, parameter.error_text)
-
-		if parameter.error == "star_error_to_much":
-			return await doujin.errors.star_error_to_much(BASE, message, parameter.error_text)
-
-		if parameter.error == "star_error_no_digit":
-			return await doujin.errors.star_error_no_digit(BASE, message, parameter.error_text)
-
-		if parameter.error == "no_anime_found":
-			return await doujin.errors.no_anime_found(BASE, message, parameter.error_text)
-
-		if parameter.error == "no_char_found":
-			return await doujin.errors.no_char_found(BASE, message, parameter.error_text)
-
-		#make API call
-		result = await doujin.Tsumino_call(BASE, message, parameter)
-
-		if result["Data"] == []:
-			I =  await BASE.phaaze.send_message(message.channel, ":x: No Books found")
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
-
-		else:
-			await doujin.format_and_send_message(BASE, message, result)
-
-	async def parse(BASE,message):
-		class perms:
-			error = False
-			error_text = None
-
-		m = message.content.lower().split("<")
-		m.remove(m[0])
-
-		if len(m) == 0:
-			setattr(perms, "error", "no_options")
-			return perms
-
-		for term in m:
-			term = term.split(" ")
-			try:
-				term.remove("")
-			except:
-				pass
-
-		#tag add
-			if term[0] == "i" or term[0] == "it" or term[0] == "itag" or\
-				term[0] == "itags" or term[0] == "i_t" or\
-				term[0] == "i_tag" or term[0] == "i_tags":
-
-				option = term[0]
-				term.remove(term[0])
-
-				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
-				else:
-					setattr(perms, "i_tags", term)
-		#tag ex
-			elif term[0] == "e" or term[0] == "et" or term[0] == "etag" or\
-				term[0] == "etags" or term[0] == "e_t" or\
-				term[0] == "e_tag" or term[0] == "e_tags":
-
-				option = term[0]
-				term.remove(term[0])
-
-				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
-				else:
-					setattr(perms, "e_tags", term)
-		#page min
-			elif term[0] == "pmin" or term[0] == "p_min" or\
-				term[0] == "page_minimum" or term[0] == "page_min":
-
-				option = term[0]
-				term.remove(term[0])
-
-				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
-
-				if len(term) > 1:
-					setattr(perms, "error", "page_error_to_much")
-					setattr(perms, "error_text", option)
-					return perms
-
-				if not term[0].isdigit():
-					setattr(perms, "error", "page_error_no_digit")
-					setattr(perms, "error_text", option)
-					return perms
-				else:
-					setattr(perms, "pmin", term[0])
-		#page max
-			elif term[0] == "pmax" or term[0] == "p_max" or\
-				term[0] == "page_maximum" or term[0] == "page_max":
-
-				option = term[0]
-				term.remove(term[0])
-
-				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
-
-				if len(term) > 1:
-					setattr(perms, "error", "page_error_to_much")
-					setattr(perms, "error_text", option)
-					return perms
-
-				if not term[0].isdigit():
-					setattr(perms, "error", "page_error_no_digit")
-					setattr(perms, "error_text", option)
-					return perms
-
-				else:
-					setattr(perms, "pmax", term[0])
-		#stars
-			elif term[0] == "star" or term[0] == "s" or term[0] == "stars":
-
-				option = term[0]
-				term.remove(term[0])
-
-				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
-
-				if len(term) > 1:
-					setattr(perms, "error", "star_error_to_much")
-					setattr(perms, "error_text", option)
-					return perms
-
-				if not term[0].isdigit():
-					setattr(perms, "error", "star_error_no_digit")
-					setattr(perms, "error_text", option)
-					return perms
-
-				else:
-					if int(term[0]) > 5 or int(term[0]) < 0:
-						setattr(perms, "error", "star_error_no_digit")
-						setattr(perms, "error_text", option)
-						return perms
-
-					setattr(perms, "stars", term[0])
-		#anime
-			elif term[0] == "a" or term[0] == "anime" or term[0] == "animes":
-
-				option = term[0]
-				term.remove(term[0])
-
-				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
-
-				animes = []
-
-				for search in term:
-					option = search
-					anime = requests.get("http://tsumino.com/api/tag?term={0}".format(search.replace("_", "+")))
-					anime = anime.json()
-
-					hits = 0
-					for res in anime["Data"]:
-						if res["Type"] == 6:
-							hits = hits + 1
-							animes.append(res["Name"])
-							break
-
-					if hits == 0:
-						setattr(perms, "error", "no_anime_found")
-						setattr(perms, "error_text", option)
-						return perms
-
-				setattr(perms, "animes", animes)
-		#chars
-			elif term[0] == "c" or term[0] == "char" or term[0] == "chars" or\
-				term[0] == "characters" or term[0] == "character":
-
-				option = term[0]
-				term.remove(term[0])
-
-				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-
-				chars = []
-
-				for search in term:
-					option = search
-					chars__ = requests.get("http://tsumino.com/api/tag?term={0}".format(search.replace("_", "+")))
-					chars__ = chars__.json()
-
-					hits = 0
-					for res in chars__["Data"]:
-						if res["Type"] == 7:
-							hits = hits + 1
-							chars.append(res["Name"])
-							break
-
-					if hits == 0:
-						setattr(perms, "error", "no_char_found")
-						setattr(perms, "error_text", option)
-						return perms
-
-				setattr(perms, "chars", chars)
-		#=
-			elif term[0] == "=":
-
-				option = term[0]
-				term.remove(term[0])
-
-				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
-
-				setattr(perms, "raw", " ".join(f for f in term))
-		#nothing
-			else:
-				setattr(perms, "error", "unkown_option")
-				setattr(perms, "error_text", term[0])
-				return perms
-
-		##nextup
-		return perms
-
-	async def Tsumino_call(BASE, message, parameter):
-		MAIN = "https://www.tsumino.com/api/book?SortOptions=Random"
-		SEARCH = ""
-
-		if hasattr(parameter, "i_tags"):
-			SEARCH = SEARCH + "".join("&TagInclude=" +f	for f in parameter.i_tags)
-
-		if hasattr(parameter, "e_tags"):
-			SEARCH = SEARCH + "".join("&TagExclude=" +f	for f in parameter.e_tags)
-
-		if hasattr(parameter, "pmin"):
-			SEARCH = SEARCH + "&PageMinimum="+parameter.pmin
-
-		if hasattr(parameter, "pmax"):
-			SEARCH = SEARCH + "&PageMaximum="+parameter.pmax
-
-		if hasattr(parameter, "stars"):
-			SEARCH = SEARCH + "&RateMinimum=" + parameter.stars
-
-		if hasattr(parameter, "animes"):
-			SEARCH = SEARCH + "".join("&Parodies=" + f for f in parameter.animes)
-
-		if hasattr(parameter, "chars"):
-			SEARCH = SEARCH + "".join("&Characters=" + f for f in parameter.chars)
-
-		if hasattr(parameter, "raw"):
-			SEARCH = SEARCH + "&Search=" + parameter.raw
-
-		site = requests.get(MAIN+SEARCH)
-		return site.json()
-
-	async def format_and_send_message(BASE, message, result):
-		Book = result["Data"][0]
-
-		pages = Book["Object"]["Pages"]
-		tags = " | ".join("`"+f+"`" for f in Book["Object"]["Tags"])
-		artist = " | ".join("`"+f+"`" for f in Book["Object"]["Artists"])
-
-		if not Book["Object"]["Characters"] == []:
-			chars = "\n:restroom: : "+" | ".join("`"+h+"`" for h in Book["Object"]["Characters"])
-		else:
-			chars = ""
-		if not Book["Object"]["Parodies"] == []:
-			animes = "\n:book: : "+" | ".join("`"+h+"`" for h in Book["Object"]["Parodies"])
-		else:
-			animes = ""
-		stars = str(round(Book["Object"]["Rating"], 1))
-		if stars == "0.0":
-			stars = "N/A"
-
-
-		dece = 	":page_facing_up: : {1}     :star: : {0}    :paintbrush: : {5}"\
-				"{3}{2}"\
-				"\n:label: : {4}".format(stars, pages, chars, animes, tags, artist)
-
-
-		emb = discord.Embed(
-						title=":diamond_shape_with_a_dot_inside:" +Book["Object"]["Title"],
-						url=Book["Meta"]["Info"],
-						colour=int(0x22a7f0),
-						description=dece
-						)
-		emb.set_image(url=Book["Meta"]["Thumb"])
-		emb.set_footer(text="Provided by Tsumino", icon_url="http://www.tsumino.com/content/res/logo.png")
-
-		return await BASE.phaaze.send_message(message.channel, embed=emb)
-
-	async def random(BASE,message):
-		MAIN = "https://www.tsumino.com/api/book?SortOptions=Random"
-		site = requests.get(MAIN)
-		return await doujin.format_and_send_message(BASE, message, site.json())
-
-	async def help(BASE,message):
-		try: await BASE.phaaze.send_message(message.channel, ":incoming_envelope: --> PM")
-		except: pass
-		return await BASE.phaaze.send_message(message.author, BASE.vars.doujin_help)
-
-	class errors:
-		async def no_options(BASE,message):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: You need to define at least one option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def unkown_option(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` is not a option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT, var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def missing_value(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: The option: `<{1}` needs at least one value".format(BASE.vars.PT,var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def page_error_to_much(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` only takes one number e.g.: 420".format(BASE.vars.PT,var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def page_error_no_digit(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` can only be a digital number e.g.: 60".format(BASE.vars.PT,var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def star_error_to_much(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` only takes one number between 1 and 5".format(BASE.vars.PT,var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def star_error_no_digit(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: `<{1}` can only be a digital number between 1 and 5".format(BASE.vars.PT,var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def no_anime_found(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: The Anime search: `{0}`, could not be autocomplete. Please be more precise".format(var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def no_char_found(BASE, message, var):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: The Character search: `{0}`, could not be autocomplete. Please be more precise".format(var))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-		async def no_define(BASE,message):
-			try:
-				I = await BASE.phaaze.send_message(message.channel, ":warning: You need to define at least one option!\nUse `{0}doujin help` for a list of all options.".format(BASE.vars.PT))
-				await asyncio.sleep(15)
-				await BASE.phaaze.delete_message(I)
-			except:
-				pass
-
-class doujin_v2(object):
-
 	def __init__(self, BASE, message):
 		self.BASE = BASE
 		self.message = message
@@ -885,27 +461,16 @@ class doujin_v2(object):
 		m = M.lower()
 
 		if 	re.search(r"^.doujin ?<?$", m):
-			return await self.errors.no_options()
+			return await self.errors.no_options(self)
 
 		if 	re.search(r"^.doujin <?help$", m):
 			return await self._help()
 
 		if 	re.search(r"^.doujin <?r(andom)?$", m):
-			return await self.random()
+			return await self.Tsumino_call()
 
 		#parse all
-		await self.parse()
-
-		#make API call
-		result = await doujin.Tsumino_call(BASE, message, parameter)
-
-		if result["Data"] == []:
-			I =  await BASE.phaaze.send_message(message.channel, ":x: No Books found")
-			await asyncio.sleep(15)
-			await BASE.phaaze.delete_message(I)
-
-		else:
-			await doujin.format_and_send_message(BASE, message, result)
+		return await self.parse()
 
 	async def parse(self):
 		m = self.message.content.split("<")
@@ -913,7 +478,7 @@ class doujin_v2(object):
 		m.remove(m[0])
 
 		if len(m) == 0:
-			return await self.errors.no_options()
+			return await self.errors.no_options(self)
 
 		for term in m:
 			term = term.split(" ")
@@ -929,7 +494,7 @@ class doujin_v2(object):
 				term.remove(term[0])
 
 				if len(term) == 0:
-					return await self.errors.missing_value(option, "Included")
+					return await self.errors.missing_value(self, option, "Included")
 				else:
 					self.parameter["TagInclude"] = [t for t in term.split(" ")]
 
@@ -940,7 +505,7 @@ class doujin_v2(object):
 				term.remove(term[0])
 
 				if len(term) == 0:
-					return await self.errors.missing_value(option, "Excluded")
+					return await self.errors.missing_value(self, option, "Excluded")
 				else:
 					self.parameter["TagExclude"] = [t for t in term.split(" ")]
 
@@ -951,13 +516,13 @@ class doujin_v2(object):
 				term.remove(term[0])
 
 				if len(term) == 0:
-					return await self.errors.missing_value(option, "Page Minimum")
+					return await self.errors.missing_value(self, option, "Page Minimum")
 
 				elif len(term) > 1:
-					return await self.errors.too_many_inputs(option, "Page Minimum")
+					return await self.errors.too_many_inputs(self, option, "Page Minimum")
 
 				if not term[0].isdigit():
-					return await self.errors.wrong_type(option, "Page Minimum", "Number")
+					return await self.errors.wrong_type(self, option, "Page Minimum", "Number")
 
 				else:
 					self.parameter["PageMinimum"] = [term[0]]
@@ -969,13 +534,13 @@ class doujin_v2(object):
 				term.remove(term[0])
 
 				if len(term) == 0:
-					return await self.errors.missing_value(option, "Page Maximum")
+					return await self.errors.missing_value(self, option, "Page Maximum")
 
 				elif len(term) > 1:
-					return await self.errors.too_many_inputs(option, "Page Maximum")
+					return await self.errors.too_many_inputs(self, option, "Page Maximum")
 
 				if not term[0].isdigit():
-					return await self.errors.wrong_type(option, "Page Maximum", "Number")
+					return await self.errors.wrong_type(self, option, "Page Maximum", "Number")
 
 				else:
 					self.parameter["PageMaximum"] = [term[0]]
@@ -987,13 +552,13 @@ class doujin_v2(object):
 				term.remove(term[0])
 
 				if len(term) == 0:
-					return await self.errors.missing_value(option, "Star Rating")
+					return await self.errors.missing_value(self, option, "Star Rating")
 
 				elif len(term) > 1:
-					return await self.errors.too_many_inputs(option, "Star Rating")
+					return await self.errors.too_many_inputs(self, option, "Star Rating")
 
 				if not term[0].isdigit():
-					return await self.errors.wrong_type(option, "Star Rating", "Number")
+					return await self.errors.wrong_type(self, option, "Star Rating", "Number")
 
 				else:
 					self.parameter["RateMinimum"] = [term[0]]
@@ -1005,110 +570,73 @@ class doujin_v2(object):
 				term.remove(term[0])
 
 				if len(term) == 0:
-					return await self.errors.missing_value(option, "Anime")
+					return await self.errors.missing_value(self, option, "Anime")
 
 				formated = []
 				anime_hits = 0
 				for value in term:
 					animes = requests.get("http://tsumino.com/api/tag?term={0}".format(value.replace("_", "+")))
 					for anime in animes:
-						 if anime["Type"] == 6:
+						if anime["Type"] == 6:
 							 anime_hits += 1
 							 formated.append(anime["Name"])
 
 						if anime_hits == 0:
-							return await self.errors.non_found(option, "Anime", value)
+							return await self.errors.non_found(self, option, "Anime", value)
 
-				else:
-					self.parameter["Parodies"] = formated
+				self.parameter["Parodies"] = formated
 
 			#chars
-			elif term[0] == "c" or term[0] == "char" or term[0] == "chars" or\
-				term[0] == "characters" or term[0] == "character":
+			elif re.search(r"^c(hars?)?(acters?)?$", term[0]):
 
 				option = term[0]
 				term.remove(term[0])
 
 				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
+					return await self.errors.missing_value(self, option, "Character")
 
-				chars = []
+				formated = []
+				anime_hits = 0
+				for value in term:
+					chars = requests.get("http://tsumino.com/api/tag?term={0}".format(value.replace("_", "+")))
+					for char_ in chars:
+						if char_["Type"] == 7:
+							 anime_hits += 1
+							 formated.append(char_["Name"])
 
-				for search in term:
-					option = search
-					chars__ = requests.get("http://tsumino.com/api/tag?term={0}".format(search.replace("_", "+")))
-					chars__ = chars__.json()
+						if anime_hits == 0:
+							return await self.errors.non_found(self, option, "Character", value)
 
-					hits = 0
-					for res in chars__["Data"]:
-						if res["Type"] == 7:
-							hits = hits + 1
-							chars.append(res["Name"])
-							break
+				self.parameter["Characters"] = formated
 
-					if hits == 0:
-						setattr(perms, "error", "no_char_found")
-						setattr(perms, "error_text", option)
-						return perms
-
-				setattr(perms, "chars", chars)
 			#=
-			elif term[0] == "=":
+			elif re.search(r"^=.+", term[0]):
 
 				option = term[0]
 				term.remove(term[0])
 
 				if len(term) == 0:
-					setattr(perms, "error", "missing_value")
-					setattr(perms, "error_text", option)
-					return perms
+					return await self.errors.missing_value(self, option, "Raw Search")
 
-				setattr(perms, "raw", " ".join(f for f in term))
+				self.parameter["Search"] = [term[0]]
+
 			#nothing
 			else:
-				setattr(perms, "error", "unkown_option")
-				setattr(perms, "error_text", term[0])
-				return perms
+				return await self.unknown(term[0])
 
 		##nextup
-		return perms
+		return await self.Tsumino_call()
 
-	async def Tsumino_call(BASE, message, parameter):
+	async def Tsumino_call(self):
 		MAIN = "https://www.tsumino.com/api/book?SortOptions=Random"
 		SEARCH = ""
 
-		if hasattr(parameter, "i_tags"):
-			SEARCH = SEARCH + "".join("&TagInclude=" +f	for f in parameter.i_tags)
-
-		if hasattr(parameter, "e_tags"):
-			SEARCH = SEARCH + "".join("&TagExclude=" +f	for f in parameter.e_tags)
-
-		if hasattr(parameter, "pmin"):
-			SEARCH = SEARCH + "&PageMinimum="+parameter.pmin
-
-		if hasattr(parameter, "pmax"):
-			SEARCH = SEARCH + "&PageMaximum="+parameter.pmax
-
-		if hasattr(parameter, "stars"):
-			SEARCH = SEARCH + "&RateMinimum=" + parameter.stars
-
-		if hasattr(parameter, "animes"):
-			SEARCH = SEARCH + "".join("&Parodies=" + f for f in parameter.animes)
-
-		if hasattr(parameter, "chars"):
-			SEARCH = SEARCH + "".join("&Characters=" + f for f in parameter.chars)
-
-		if hasattr(parameter, "raw"):
-			SEARCH = SEARCH + "&Search=" + parameter.raw
+		for term in self.parameter:
+			SEARCH = SEARCH + "".join("&" + term + "=" + x for x in self.parameter[term])
 
 		site = requests.get(MAIN+SEARCH)
-		return site.json()
-
-	async def random(self):
-		request_link = "https://www.tsumino.com/api/book?SortOptions=Random"
-		site = requests.get(request_link)
-		return await self.format_and_send_message(site.json())
+		search_return = site.json()
+		return await self.format_and_send_message(search_return)
 
 	async def format_and_send_message(self, result):
 		Book = result["Data"][0]
@@ -1144,7 +672,7 @@ class doujin_v2(object):
 		emb.set_image(url=Book["Meta"]["Thumb"])
 		emb.set_footer(text="Provided by Tsumino", icon_url="http://www.tsumino.com/content/res/logo.png")
 
-		return await BASE.phaaze.send_message(message.channel, embed=emb)
+		return await self.BASE.phaaze.send_message(message.channel, embed=emb)
 
 	class errors:
 		async def no_options(self):
@@ -1173,7 +701,7 @@ class doujin_v2(object):
 						title=":warning: Error: Missing value",
 						color=int(0xFF0000),
 						description=
-							"**{1}** *\"{2}\"* needs at least one value!\n"\
+							"**{1}** - *\"{2}\"* needs at least one value!\n"\
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
 					)
 				await asyncio.sleep(15)
@@ -1190,7 +718,7 @@ class doujin_v2(object):
 						title=":warning: Error: Too many values",
 						color=int(0xFF0000),
 						description=
-							"**{1}** *\"{2}\"* only uses one value!\n"\
+							"**{1}** - *\"{2}\"* only uses one value!\n"\
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
 					)
 				await asyncio.sleep(15)
@@ -1207,8 +735,42 @@ class doujin_v2(object):
 						title=":warning: Error: Wrong Type",
 						color=int(0xFF0000),
 						description=
-							"**{1}** *\"{2}\"* awaits a `{3}` value\n"\
+							"**{1}** - *\"{2}\"* awaits a `{3}` value\n"\
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_, type_))
+					)
+				await asyncio.sleep(15)
+				await self.BASE.phaaze.delete_message(I)
+			except:
+				pass
+
+		async def non_found(self, short_, long_, values):
+			try:
+				I = await self.BASE.phaaze.send_message(
+					self.message.channel,
+					content=None,
+					embed=discord.Embed(
+						title=":warning: Error: Autocomplete failed",
+						color=int(0xFF0000),
+						description=
+							"**{0}** - *\"{1}\" autocomplete* failed\n"\
+							"`{2}` yield no ressults\n".format(short_, long_, values))
+					)
+				await asyncio.sleep(15)
+				await self.BASE.phaaze.delete_message(I)
+			except:
+				pass
+
+		async def unknown(self, value):
+			try:
+				I = await self.BASE.phaaze.send_message(
+					self.message.channel,
+					content=None,
+					embed=discord.Embed(
+						title=":warning: Error: Unknown option",
+						color=int(0xFF0000),
+						description=
+							"**{1}** is a unknown option.\n"\
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, value))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.phaaze.delete_message(I)
@@ -1221,7 +783,7 @@ class doujin_v2(object):
 		except:
 			pass
 		try:
-			return await self.BASE.phaaze.send_message(self.message.author, self.BASE.vars.doujin_help)
+			return await self.BASE.phaaze.send_message(self.message.author, "http://phaaze.wikia.com/wiki/Discord-Commands-Normal-doujin\n" + self.BASE.vars.doujin_help)
 		except:
 			pass
 
