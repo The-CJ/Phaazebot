@@ -560,7 +560,7 @@ class doujin(object):
 				if not term[0].isdigit():
 					return await self.errors.wrong_type(self, option, "Star Rating", "Number")
 
-				if re.search(r"^[0-5]$", term[0]): #TODO: find misstake
+				if not re.search(r"^[0-5]$", term[0]):
 					return await self.errors.too_high(self, option, "Star")
 
 				else:
@@ -615,7 +615,7 @@ class doujin(object):
 				self.parameter["Characters"] = formated
 
 			#=
-			elif re.search(r"^=.+", term[0]):
+			elif re.search(r"^=", term[0]):
 
 				option = term[0]
 				term.remove(term[0])
@@ -627,7 +627,7 @@ class doujin(object):
 
 			#nothing
 			else:
-				return await self.unknown(term[0])
+				return await self.errors.unknown(self, term[0])
 
 		##nextup
 		return await self.Tsumino_call()
@@ -644,7 +644,10 @@ class doujin(object):
 		return await self.format_and_send_message(search_return)
 
 	async def format_and_send_message(self, result):
-		Book = result["Data"][0] #TODO: add 0 variante
+		if len(result["Data"]) == 0:
+			return await self.errors.noting_found(self)
+
+		Book = result["Data"][0]
 
 		pages = Book["Object"]["Pages"]
 		tags = " | ".join("`"+f+"`" for f in Book["Object"]["Tags"])
@@ -662,11 +665,9 @@ class doujin(object):
 		if stars == "0.0":
 			stars = "N/A"
 
-
-		dece = 	":page_facing_up: : {1}     :star: : {0}    :paintbrush: : {5}"\
-				"{3}{2}"\
-				"\n:label: : {4}".format(stars, pages, chars, animes, tags, artist)
-
+		dece = 	":page_facing_up: : {pages}     :star: : {stars}    :paintbrush: : {artist}"\
+				"{animes}{chars}"\
+				"\n:label: : {tags}".format(stars=stars, pages=pages, chars=chars, animes=animes, tags=tags, artist=artist)
 
 		emb = discord.Embed(
 						title=":diamond_shape_with_a_dot_inside:" +Book["Object"]["Title"],
@@ -796,6 +797,20 @@ class doujin(object):
 					)
 				await asyncio.sleep(15)
 				await self.BASE.phaaze.delete_message(I)
+			except:
+				pass
+
+		async def noting_found(self):
+			try:
+				I = await self.BASE.phaaze.send_message(
+					self.message.channel,
+					content=None,
+					embed=discord.Embed(
+						title=":no_entry_sign: No Results",
+						color=int(0xFF0000),
+						description=
+							"Your Search yield no results, try again")
+					)
 			except:
 				pass
 
