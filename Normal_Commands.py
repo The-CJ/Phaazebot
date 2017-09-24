@@ -614,6 +614,31 @@ class doujin(object):
 
 				self.parameter["Characters"] = formated
 
+			#painter / artist
+			elif re.search(r"^p(ainters?)?$", term[0]):
+
+				option = term[0]
+				term.remove(term[0])
+
+				if len(term) == 0:
+					return await self.errors.missing_value(self, option, "Artist")
+
+				formated = []
+				artist_hits = 0
+				for value in term:
+					artists = requests.get("http://tsumino.com/api/tag?term={0}".format(value.replace("_", "+")))
+					for artist in artists.json()["Data"]:
+						if artist["Type"] == 5:
+							 artist_hits += 1
+							 formated.append(artist["Name"])
+							 break
+
+					if artist_hits == 0:
+						return await self.errors.non_found(self, option, "Artist", value)
+
+								#Missing URL Prefix...
+				self.parameter["Artist"] = formated
+
 			#=
 			elif re.search(r"^=", term[0]):
 
