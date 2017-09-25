@@ -117,7 +117,7 @@ class welcome(object):
 		else:
 			return await BASE.phaaze.send_message(message.channel, 	":warning: `{0}` is not available, try `{1}help welcome`".format(m[1], BASE.vars.PT))
 
-	async def set_welcome(BASE, message):
+	async def set_welcome(BASE, message): #TODO: Set used Channel to new default
 		m = message.content.split(" ")
 		if len(m) == 2:
 			return await BASE.phaaze.send_message(message.channel, 	":warning: Syntax Error!\nUsage: `{0}{0}{0}welcome set [Stuff]`\n\n"\
@@ -133,6 +133,8 @@ class welcome(object):
 		entry = " ".join(g for g in m[2:])
 
 		file["welcome"] = entry
+		if file.get("wel_chan", "") == "":
+			await welcome.set_welcome_chan(BASE, message, preset=message.channel) 
 
 		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
 			json.dump(file, save)
@@ -145,7 +147,7 @@ class welcome(object):
 		entry = entry.replace("[count]", str(message.server.member_count))
 		entry = entry.replace("[mention]", phaaze_exc.mention)
 
-		chan = "<#{0}>".format(file["wel_chan"]) if file["wel_chan"] != "" else message.server.default_channel.mention
+		chan = "<#{0}>".format(file["wel_chan"])
 
 		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: New welcome message set! [{chan}]\nExample with Phaaze:\n\n{entry}".format(entry=entry, chan=chan))
 
@@ -198,36 +200,28 @@ class welcome(object):
 
 		return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: Current RAW welcome message [{chan}]\n\n```{entry}```".format(entry=entry, chan=chan))
 
-	async def set_welcome_chan(BASE, message):
+	async def set_welcome_chan(BASE, message, preset=None):
 		m = message.content.split(" ")
 		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
 
-		if len(m) <= 2:
-			chan = message.channel.id
-
-		elif len(message.channel_mentions) >= 1:
-			chan = message.channel_mentions[0].id
-
-		else:
-			return await BASE.phaaze.send_message(message.channel, ":warning: You can mention a channel or leave it empty to use the current.")
-
-
-
-		if file["wel_chan"] == chan == message.server.default_channel.id:
-			return await BASE.phaaze.send_message(message.channel, ":warning: No other custom channel set and this is your server default channel.\nTry this command in another channel or add a channel mention.".format(chan))
-
-		elif file["wel_chan"] == chan:
-			file["wel_chan"] = ""
-
-			chan = message.server.default_channel.mention
-
+		if preset != None:
+			file["wel_chan"] = preset.id
 			with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
 				json.dump(file, save)
 				setattr(BASE.serverfiles, "server_"+message.server.id, file)
 
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Welcome announce channel has been reset [{0}]".format(chan))
-
 		else:
+
+			if len(m) <= 2:
+				chan = message.channel.id
+
+			elif len(message.channel_mentions) >= 1:
+				chan = message.channel_mentions[0].id
+
+			else:
+				return await BASE.phaaze.send_message(message.channel, ":warning: You can mention a channel or leave it empty to use the current.")
+
+
 			file["wel_chan"] = chan
 
 			with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
