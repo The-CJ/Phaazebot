@@ -180,5 +180,5 @@ class mission_game(object):
 		while not self.timeout == 0:
 			self.timeout -= 1
 			await asyncio.sleep(1)
-		await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "New Mission are available, are you ready for new awesome loot? | !mission [Credits]")
+		await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "New Missions are available, are you ready for more awesome loot? | !mission [Credits]")
 		active_missions.remove(self)
