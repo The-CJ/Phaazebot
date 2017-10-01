@@ -175,7 +175,7 @@ class mission_game(object):
 		#announce
 		else:
 			annc = ", ".join(f["name"] + " [" + str(int(f["amount"] * 1.5)) + "]" for f in self.winner)
-			await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "Mission success ! | The fights where rough and some where lost | The rest brought some loot with them: {0}".format(annc))
+			await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "Mission success ! | The fights were rough and some were lost | The rest brought some loot with them: {0}".format(annc))
 
 		while not self.timeout == 0:
 			self.timeout -= 1
