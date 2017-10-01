@@ -2,6 +2,13 @@
 
 import asyncio, json, requests
 
+"""Global status storage"""
+asked_stats = []
+async def timeout_stats(room_id):
+	asked_stats.append(room_id)
+	await asyncio.sleep(2)
+	asked_stats.remove(room_id)
+
 async def Base(BASE, message):
 	level_file = await BASE.moduls._Twitch_.Utils.get_twitch_level_file(BASE, message.room_id)
 	room_obj = await BASE.moduls._Twitch_.Utils.get_channel_object(BASE, name=message.channel)
@@ -85,6 +92,9 @@ async def edit_gold(BASE, room_id, user_id, sub_or_rem, change):
 		return True
 
 async def stats(BASE, message):
+	if message.room_id in asked_stats: return
+	asyncio.ensure_future(timeout_stats(message.room_id))
+
 	settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 	stats_active = settings.get("stats", False)
 	if not stats_active: return
