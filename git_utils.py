@@ -2,23 +2,18 @@
 
 import asyncio, os, time, requests, json
 
-async def post_gist(BASE=None, data=None):
-	data = dict()
-	data['description'] = 'Example Gist for Phaaze Level logs'
-	data['public'] = True
-	data['files'] = dict()
-	data['files']['example.txt'] = dict(content = 'SOMTHING DUMP')
-
-	data = json.dumps(data)
-	print(data)
-
-	resp = requests.post('https://api.github.com/gists', data = data)
+async def post_gist(BASE, data=None):
+	"""Used to post huge information cluster, by giving back a gist link"""
 	try:
-		print(resp.text)
+		data = json.dumps(data)
+		resp = requests.post('https://api.github.com/gists', data = data)
 	except:
-		pass
+		return None
+
 	try:
-		print(resp.text())
+		response = resp.json()
+		return response['html_url']
+
 	except:
-		pass
+		return None
 
