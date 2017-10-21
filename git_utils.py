@@ -7,9 +7,10 @@ async def post_gist(BASE, data=None, description=None, name=None, content=None):
 	if data == None:
 		data = dict(
 			description = description,
-			public = True
+			public = True,
+			files = dict()
 		)
-		data[name] = dict(content=content)
+		data['files'][name] = dict(content=content)
 
 	try:
 		data = json.dumps(data)
@@ -23,4 +24,3 @@ async def post_gist(BASE, data=None, description=None, name=None, content=None):
 
 	except:
 		return None
-
