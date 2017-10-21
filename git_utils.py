@@ -2,8 +2,15 @@
 
 import asyncio, os, time, requests, json
 
-async def post_gist(BASE, data=None):
+async def post_gist(BASE, data=None, description=None, name=None, content=None):
 	"""Used to post huge information cluster, by giving back a gist link"""
+	if data == None:
+		data = dict(
+			description = description,
+			public = True
+		)
+		data[name] = dict(content=content)
+
 	try:
 		data = json.dumps(data)
 		resp = requests.post('https://api.github.com/gists', data = data)
