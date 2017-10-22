@@ -363,7 +363,7 @@ class Discord(object):
 			now = datetime.datetime.now()
 			gist_respone = await BASE.moduls.git_utils.post_gist(
 				description="Server level file for Discord Server: {}".format(message.server.name),
-				name="level_file_{0}_{1}".format(message.server.name, now.strftime("%Y-%m-%d")),
+				name="level_file_{0}_{1}".format(message.server.id, now.strftime("%Y-%m-%d")),
 				content=return_message
 				)
 			return_message = "Your member leaderboard is way too long, it's been dumped to a GitHub Gist\n\n{}".format(gist_respone)
