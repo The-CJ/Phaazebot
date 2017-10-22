@@ -1,6 +1,6 @@
 #BASE.moduls.levels
 
-import asyncio, discord, json, math, tabulate
+import asyncio, discord, json, math, tabulate, datetime
 
 Medalls = {}
 
@@ -360,9 +360,10 @@ class Discord(object):
 		return_message = "**Top {0} leaderboard** ```{1}```".format(str(many), tabulate.tabulate(l, tablefmt="plain"))
 
 		if len(return_message) >= 1999:
+			now = datetime.datetime.now()
 			gist_respone = await BASE.moduls.git_utils.post_gist(
 				description="Server level file for Discord Server: {}".format(message.server.name),
-				name="level_file_{0}_{1}".format(),
+				name="level_file_{0}_{1}".format(message.server.name, now.strftime("%Y-%m-%d")),
 				content=return_message
 				)
 			return_message = "Your member leaderboard is way too long, it's been dumped to a GitHub Gist\n\n{}".format(gist_respone)
