@@ -2,7 +2,7 @@
 
 import asyncio, os, time, requests, json
 
-async def post_gist(BASE, data=None, description=None, name=None, content=None):
+async def post_gist(data=None, description=None, name=None, content=None):
 	"""Used to post huge information cluster, by giving back a gist link"""
 	if data == None:
 		data = dict(
