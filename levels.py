@@ -307,15 +307,23 @@ class Discord(object):
 
 		if len(m) > 1:
 			if m[1].isdigit():
-				if 0 < int(m[1]) < 16: many = int(m[1])
-				else: return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The leaderboard's length must be: Min: 1 - Max: 15 ")
-			else: return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is unsupported, leaderboard's length must be: Min: 1 - Max: 15 ".format(m[1]))
+				if 1 <= int(m[1]) <= 15:
+					many = int(m[1])
+				else:
+					return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The leaderboard's length must be: Min: 1 - Max: 15 or `all`")
+
+			elif m[1].lower() == "all":
+				many = int(message.server.member_count)
+
+			else:
+				return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is unsupported, leaderboard's length must be: Min: 1 - Max: 15 or `all`".format(m[1]))
 
 		members_on_server = [mm.id for mm in message.server.members if not mm.bot]
 		members_to_list = []
 
 		for user in file["members"]:
-			if user["id"] in members_on_server: members_to_list.append(user)
+			if user["id"] in members_on_server:
+				members_to_list.append(user)
 
 		if len(members_to_list) == 0:
 			return await BASE.phaaze.send_message(message.channel, ":question: Seems like there are no member with level for a leaderboard :(")
@@ -323,7 +331,8 @@ class Discord(object):
 		members_to_list = sorted(members_to_list, key=lambda exp: exp["exp"], reverse=True)
 
 		#check if not to long
-		if len(members_to_list) < many: many = len(members_to_list)
+		if len(members_to_list) < many:
+			many = len(members_to_list)
 
 		finshed_list = members_to_list[:many]
 
@@ -348,4 +357,18 @@ class Discord(object):
 					)
 			rank = rank + 1
 
-		return await BASE.phaaze.send_message(message.channel, "**Top {0} leaderboard** ```{1}```".format(str(many), tabulate.tabulate(l, tablefmt="plain")))
+		return_message = "**Top {0} leaderboard** ```{1}```".format(str(many), tabulate.tabulate(l, tablefmt="plain"))
+
+		if len(return_message) >= 1999:
+			gist_respone = await BASE.moduls.git_utils.post_gist(
+				description="Server level file for Discord Server: {}".format(message.server.name),
+				name="level_file_{0}_{1}".format(),
+				content=return_message
+				)
+			return_message = "Your member leaderboard is way too long, it's been dumped to a GitHub Gist\n\n{}".format(gist_respone)
+
+		return await BASE.phaaze.send_message(message.channel, return_message)
+
+
+
+
