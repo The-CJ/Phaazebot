@@ -134,6 +134,9 @@ async def stats(BASE, message):
 
 		found_user = await get_user(BASE, all_user, search_term.lower(), method="name")
 
+		# already existing Twitch bots ignore
+		if found_user["name"] in BASE.vars.twitch_bots: return
+
 		if found_user == None:
 			return await BASE.Twitch_IRC_connection.send_message(message.channel, "@{0}, no stats found for: {1}.".format(message.save_name, search_term))
 
@@ -188,9 +191,9 @@ async def leaderboard(BASE, message, package, art="time"):
 			break
 
 		try:
-			if user["call_name"].lower() == message.channel:
+			if user["name"].lower() == message.channel:
 				continue
-			if user["call_name"].lower() in BASE.vars.twitch_bots:
+			if user["name"].lower() in BASE.vars.twitch_bots:
 				continue
 
 			N = user["call_name"]

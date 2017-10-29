@@ -1,1 +1,1 @@
-nightbot;mikuia;xanbot;moobot;phaazebot;anhkbot;chillerhasensbot
+nightbot;mikuia;xanbot;moobot;phaazebot;anhkbot;chillerhasensbot;aragodobot;
