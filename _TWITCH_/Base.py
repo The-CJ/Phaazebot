@@ -2,6 +2,8 @@
 
 import asyncio, json
 
+custom_commands_in_last_15s = []
+
 async def on_message(BASE, message):
 	if message.name == "phaazebot": return
 	m = message.content.split(" ")
@@ -10,7 +12,9 @@ async def on_message(BASE, message):
 
 	for command in settings.get("commands", []):
 		if command["trigger"] == m[0].lower():
-			await BASE.Twitch_IRC_connection.send_message(message.channel, command["content"])
+			if not (message.channel + command["trigger"]) in custom_commands_in_last_15s:
+				asyncio.ensure_future(timeout_command((message.channel + command["trigger"])))
+				await BASE.Twitch_IRC_connection.send_message(message.channel, command["content"])
 
 	if message.content.startswith("!"):
 		await Commands.check_commands(BASE, message)
@@ -314,3 +318,8 @@ class Calc(object):
 		while await Calc.get_exp(lvl) < exp:
 			lvl += 1
 		return lvl
+
+async def timeout_command(name):
+	custom_commands_in_last_15s.append(name)
+	await asyncio.sleep(15)
+	custom_commands_in_last_15s.remove(name)
