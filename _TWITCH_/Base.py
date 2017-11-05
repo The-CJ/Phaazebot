@@ -111,7 +111,7 @@ class Settings(object):
 				message.channel,
 				"Quotes are currently: {0}".format("Enabled" if settings['games'] else "Disabled"))
 
-		if settings["quote_active"]:
+		if m[2].lower() in ['no', 'disable', 'off']:
 			settings["quote_active"] = False
 			with open("_TWITCH_/Channel_files/{0}.json".format(message.room_id), "w") as new:
 				json.dump(settings, new)
@@ -119,7 +119,8 @@ class Settings(object):
 				await BASE.Twitch_IRC_connection.send_message(
 					message.channel,
 					"Quotes disabled")
-		else:
+
+		elif m[2].lower() in ['yes', 'enable', 'on']:
 			settings["quote_active"] = True
 			with open("_TWITCH_/Channel_files/{0}.json".format(message.room_id), "w") as new:
 				json.dump(settings, new)
@@ -127,6 +128,10 @@ class Settings(object):
 				await BASE.Twitch_IRC_connection.send_message(
 					message.channel,
 					"Quotes enabled")
+		else:
+			return await BASE.Twitch_IRC_connection.send_message(
+				message.channel,
+				Settings.error_message)
 
 	async def Game(BASE, message):
 		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
