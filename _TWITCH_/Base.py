@@ -172,7 +172,12 @@ class Settings(object):
 		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["osu"] = settings.get("osu", False)
 
-		if settings["osu"]:
+		if len(m) == 2:
+			return await BASE.Twitch_IRC_connection.send_message(
+				message.channel,
+				"Games are currently: {0}".format("Enabled" if settings['games'] else "Disabled"))
+
+		if m[2].lower() in ['no', 'disable', 'off']:
 			settings["osu"] = False
 			with open("_TWITCH_/Channel_files/{0}.json".format(message.room_id), "w") as new:
 				json.dump(settings, new)
@@ -180,7 +185,8 @@ class Settings(object):
 				await BASE.Twitch_IRC_connection.send_message(
 					message.channel,
 					"Osu! interation disabled")
-		else:
+
+		elif m[2].lower() in ['yes', 'enable', 'on']:
 			settings["osu"] = True
 			with open("_TWITCH_/Channel_files/{0}.json".format(message.room_id), "w") as new:
 				json.dump(settings, new)
@@ -188,6 +194,10 @@ class Settings(object):
 				await BASE.Twitch_IRC_connection.send_message(
 					message.channel,
 					"Osu! interation enabled")
+		else:
+			return await BASE.Twitch_IRC_connection.send_message(
+				message.channel,
+				Settings.error_message)
 
 class Commands(object):
 
