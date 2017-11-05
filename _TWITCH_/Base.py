@@ -56,6 +56,7 @@ async def on_sub(BASE, sub):
 class Settings(object):
 
 	available = ["stats", "quotes", "game", "osu"]
+	error_message = "Unknown option, to turn off/on options use \"!settings [option] [on|off]\""
 
 	async def Base(BASE, message):
 		if not (message.channel == message.name or message.mod): return
@@ -105,6 +106,11 @@ class Settings(object):
 		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["quote_active"] = settings.get("quote_active", False)
 
+		if len(m) == 2:
+			return await BASE.Twitch_IRC_connection.send_message(
+				message.channel,
+				"Quotes are currently: {0}".format("Enabled" if settings['games'] else "Disabled"))
+
 		if settings["quote_active"]:
 			settings["quote_active"] = False
 			with open("_TWITCH_/Channel_files/{0}.json".format(message.room_id), "w") as new:
@@ -125,23 +131,37 @@ class Settings(object):
 	async def Game(BASE, message):
 		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["games"] = settings.get("games", False)
+		m = message.content.split(" ")
 
-		if settings["games"]:
+		if len(m) == 2:
+			return await BASE.Twitch_IRC_connection.send_message(
+				message.channel,
+				"Games are currently: {0}".format("Enabled" if settings['games'] else "Disabled"))
+
+		if m[2].lower() in ['no', 'disable', 'off']:
+
 			settings["games"] = False
 			with open("_TWITCH_/Channel_files/{0}.json".format(message.room_id), "w") as new:
 				json.dump(settings, new)
 				setattr(BASE.twitchfiles, "channel_"+message.room_id, settings)
 				await BASE.Twitch_IRC_connection.send_message(
 					message.channel,
-					"Games disabled")
-		else:
+					"Chat Games disabled")
+
+		elif m[2].lower() in ['yes', 'enable', 'on']:
+
 			settings["games"] = True
 			with open("_TWITCH_/Channel_files/{0}.json".format(message.room_id), "w") as new:
 				json.dump(settings, new)
 				setattr(BASE.twitchfiles, "channel_"+message.room_id, settings)
 				await BASE.Twitch_IRC_connection.send_message(
 					message.channel,
-					"Games enabled")
+					"Chat Games enabled")
+
+		else:
+			return await BASE.Twitch_IRC_connection.send_message(
+				message.channel,
+				Settings.error_message)
 
 	async def Osu(BASE, message):
 		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
