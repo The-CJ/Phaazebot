@@ -85,7 +85,12 @@ class Settings(object):
 		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["stats"] = settings.get("stats", False)
 
-		if settings["stats"]:
+		if len(m) == 2:
+			return await BASE.Twitch_IRC_connection.send_message(
+				message.channel,
+				"Quotes are currently: {0}".format("Enabled" if settings['games'] else "Disabled"))
+
+		if m[2].lower() in ['no', 'disable', 'off']:
 			settings["stats"] = False
 			with open("_TWITCH_/Channel_files/{0}.json".format(message.room_id), "w") as new:
 				json.dump(settings, new)
@@ -93,7 +98,8 @@ class Settings(object):
 				await BASE.Twitch_IRC_connection.send_message(
 					message.channel,
 					"Watch and Credit stats disabled")
-		else:
+
+		elif m[2].lower() in ['yes', 'enable', 'on']:
 			settings["stats"] = True
 			with open("_TWITCH_/Channel_files/{0}.json".format(message.room_id), "w") as new:
 				json.dump(settings, new)
@@ -101,6 +107,10 @@ class Settings(object):
 				await BASE.Twitch_IRC_connection.send_message(
 					message.channel,
 					"Watch and Credit stats enabled")
+		else:
+			return await BASE.Twitch_IRC_connection.send_message(
+				message.channel,
+				Settings.error_message)
 
 	async def Quotes(BASE, message):
 		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
