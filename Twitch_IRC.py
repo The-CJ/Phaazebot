@@ -1,6 +1,6 @@
 #BASE.moduls.Twitch_IRC
 
-import time, discord, requests, socket, asyncio, json
+import time, discord, requests, socket, asyncio, json, re
 
 #BASE.Twitch_IRC_connection
 class _IRC_():
@@ -112,6 +112,7 @@ class _IRC_():
 
 				#join main channel
 				await self.join_channel(self.nickname)
+				await self.join_channel('admiralbahroo')
 				asyncio.ensure_future( self.join_all_channel() )
 
 				self.BASE.vars.twitch_IRC_is_NOT_ready = False
@@ -159,14 +160,6 @@ class _IRC_():
 								continue
 							asyncio.ensure_future( self.BASE.moduls._Twitch_.Base.on_message(self.BASE, message) )
 
-						#on sub
-						if ".tmi.twitch.tv PRIVMSG #" in data and data.startswith("@") and "" == ":":
-							try: message = Get_classes_from_data.Twitch_message(data)
-							except:
-								self.BASE.moduls.Console.RED("ERROR", "Failed to process Twitch Sub")
-								continue
-							asyncio.ensure_future( self.BASE.moduls._Twitch_.Base.on_message(self.BASE, message) )
-
 						#on_member_join
 						if "tmi.twitch.tv JOIN #" in data and data.startswith(":"):
 							name = data.split("!")[1]
@@ -184,6 +177,37 @@ class _IRC_():
 							channel = data.split("#")[1]
 
 							asyncio.ensure_future( self.BASE.moduls._Twitch_.Base.on_member_leave(self.BASE, channel, name) )
+
+						#on other event
+						if ":tmi.twitch.tv USERNOTICE #" in data and data.startswith("@"):
+							print('other event')
+							event = re.search(r"msg-id=(.*?);", data)
+							print(event)
+							if event != None:
+								event = event.group(1)
+							print(event)
+
+							#Sub event
+							if event in ["resub","sub"]:
+								print('sub event')
+
+								try:
+									sub_message = Get_classes_from_data.Twitch_sub(data)
+									asyncio.ensure_future( self.BASE.moduls._Twitch_.Base.on_sub(self.BASE, sub_message) )
+								except:
+									self.BASE.moduls.Console.RED("ERROR", "Failed to process Twitch Sub")
+									continue
+
+							#Raid event
+							if event in ["raid"]:
+								return #TODO: Make something with this
+								try:
+									raid__message = Get_classes_from_data.Twitch_sub(data)
+									asyncio.ensure_future( self.BASE.moduls._Twitch_.Base.on_raid(self.BASE, raid__message) )
+								except:
+									self.BASE.moduls.Console.RED("ERROR", "Failed to process Twitch Sub")
+									continue
+
 
 				except socket.timeout:
 					await asyncio.sleep(0.025)
@@ -409,7 +433,7 @@ class Get_classes_from_data(object):
 
 			self.save_name = self.display_name if self.display_name != None else self.name
 
-	class Twitch_Sub(object):
+	class Twitch_sub(object):
 		eg_mg = "@badges=staff/1,broadcaster/1,turbo/1;"\
 				"color=#008000;"\
 				"display-name=ronni;"\
@@ -427,8 +451,42 @@ class Get_classes_from_data(object):
 				"user-id=1337;"\
 				"user-type=staff "\
 				":tmi.twitch.tv USERNOTICE #dallas :Great stream -- keep it up!"
-		def __init__(self):
-			pass
+		def __init__(self, data):
+			self.raw = data
+
+			self.display_name = None
+			self.name = None
+			self.months = None
+			self.room_id = None
+			self.user_id = None
+
+			self.process()
+
+		def process():
+			#display-name=RoNnI;
+			search_object = re.search(r"display-name=(.*?);", self.raw)
+			if search_object != None:
+				self.display_name = name_object.group(1)
+
+			#login=ronni;
+			search_object = re.search(r"login(.*?);", self.raw)
+			if search_object != None:
+				self.login = name_object.group(1)
+
+			#msg-param-months=6;
+			search_object = re.search(r"msg-param-months=(.*?);", self.raw)
+			if search_object != None:
+				self.months = name_object.group(1)
+
+			#room-id=1337;
+			search_object = re.search(r"room-id=(.*?);", self.raw)
+			if search_object != None:
+				self.room_id = name_object.group(1)
+
+			#user-id=69;
+			search_object = re.search(r"user-id=(.*?);", self.raw)
+			if search_object != None:
+				self.user_id = name_object.group(1)
 
 class channel_class(object):
 	def __init__(self, BASE, name):

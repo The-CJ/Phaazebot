@@ -51,7 +51,17 @@ async def on_member_leave(BASE, channel, name):
 		_chan_.user.remove(name.lower())
 
 async def on_sub(BASE, sub):
-	pass
+	default_sub_message = "PogChamp [name] just subscribed! Thanks [name]"
+	default_resub_message = "PogChamp [name] just subscribed for [months] months in a row! Thanks for the continued support [name] <3"
+	settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, sub.room_id)
+
+	print(str(vars(sub)))
+
+	if settings.get('sub_alert', False) == True:
+
+		sub_message = settings.get('sub_message', None)
+		if sub_message == None:
+			sub_message = default_sub_message
 
 class Settings(object):
 
