@@ -180,16 +180,12 @@ class _IRC_():
 
 						#on other event
 						if ":tmi.twitch.tv USERNOTICE #" in data and data.startswith("@"):
-							print('other event')
 							event = re.search(r"msg-id=(.*?);", data)
-							print(event)
 							if event != None:
 								event = event.group(1)
-							print(event)
 
 							#Sub event
 							if event in ["resub","sub"]:
-								print('sub event')
 
 								try:
 									sub_message = Get_classes_from_data.Twitch_sub(data)
@@ -459,34 +455,39 @@ class Get_classes_from_data(object):
 			self.months = None
 			self.room_id = None
 			self.user_id = None
+			self.channel = None
 
 			self.process()
 
-		def process():
-			#display-name=RoNnI;
-			search_object = re.search(r"display-name=(.*?);", self.raw)
+		def process(self):
+			search_object = re.search(r"USERNOTICE #(\w+) :", self.raw)
 			if search_object != None:
-				self.display_name = name_object.group(1)
+				self.channel = search_object.group(1)
+
+			#display-name=RoNnI;
+			search_object = re.search(r"display-name=(.+?);", self.raw)
+			if search_object != None:
+				self.display_name = search_object.group(1)
 
 			#login=ronni;
-			search_object = re.search(r"login(.*?);", self.raw)
+			search_object = re.search(r"login=(.+?);", self.raw)
 			if search_object != None:
-				self.login = name_object.group(1)
+				self.login = search_object.group(1)
 
 			#msg-param-months=6;
-			search_object = re.search(r"msg-param-months=(.*?);", self.raw)
+			search_object = re.search(r"msg-param-months=(.+?);", self.raw)
 			if search_object != None:
-				self.months = name_object.group(1)
+				self.months = search_object.group(1)
 
 			#room-id=1337;
-			search_object = re.search(r"room-id=(.*?);", self.raw)
+			search_object = re.search(r"room-id=(.+?);", self.raw)
 			if search_object != None:
-				self.room_id = name_object.group(1)
+				self.room_id = search_object.group(1)
 
 			#user-id=69;
-			search_object = re.search(r"user-id=(.*?);", self.raw)
+			search_object = re.search(r"user-id=(.+?);", self.raw)
 			if search_object != None:
-				self.user_id = name_object.group(1)
+				self.user_id = search_object.group(1)
 
 class channel_class(object):
 	def __init__(self, BASE, name):

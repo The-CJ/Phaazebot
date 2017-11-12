@@ -55,13 +55,15 @@ async def on_sub(BASE, sub):
 	default_resub_message = "PogChamp [name] just subscribed for [months] months in a row! Thanks for the continued support [name] <3"
 	settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, sub.room_id)
 
-	print(str(vars(sub)))
-
-	if settings.get('sub_alert', False) == True:
+	if settings.get('sub_alert', False) == True or sub.channel == "the__cj":
 
 		sub_message = settings.get('sub_message', None)
 		if sub_message == None:
 			sub_message = default_sub_message
+
+			sub_message = sub_message.replace('[name]', sub.display_name)
+
+		await BASE.Twitch_IRC_connection.send_message(sub.channel, sub_message)
 
 class Settings(object):
 
@@ -94,6 +96,7 @@ class Settings(object):
 	async def Stats(BASE, message):
 		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["stats"] = settings.get("stats", False)
+		m = message.content.split(" ")
 
 		if len(m) == 2:
 			return await BASE.Twitch_IRC_connection.send_message(
@@ -125,6 +128,7 @@ class Settings(object):
 	async def Quotes(BASE, message):
 		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["quote_active"] = settings.get("quote_active", False)
+		m = message.content.split(" ")
 
 		if len(m) == 2:
 			return await BASE.Twitch_IRC_connection.send_message(
@@ -191,6 +195,7 @@ class Settings(object):
 	async def Osu(BASE, message):
 		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["osu"] = settings.get("osu", False)
+		m = message.content.split(" ")
 
 		if len(m) == 2:
 			return await BASE.Twitch_IRC_connection.send_message(
