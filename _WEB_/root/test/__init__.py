@@ -11,15 +11,6 @@ def main(BASE, info):
 		class r(object):
 			response = 404
 			header = ("Content-Type", "text/html")
-			content = open('root.html', "rb").read()
+			content = open('test.html', "rb").read()
 
 		return r
-
-
-def page_not_found():
-	class r(object):
-		response = 404
-		header = ("Content-Type", "text/html")
-		content = open('not_found.html', "rb").read()
-
-	return r

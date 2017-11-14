@@ -3,6 +3,8 @@
 import time, asyncio, re, json
 import http.server
 
+import root
+
 class Utils(object):
 
 	def parse_url(url):
@@ -38,10 +40,12 @@ class Utils(object):
 def process(BASE, info):
 	print(info)
 
-	class r(object):
-		response = 200
-		header = ("Content-Type", "application/json")
-		content = str(vars(BASE)).encode("UTF-8")
+	r = root.main(BASE, info)
+
+	#class r(object):
+	#	response = 200
+	#	header = ("Content-Type", "application/json")
+	#	content = str(vars(BASE)).encode("UTF-8")
 	return r
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
