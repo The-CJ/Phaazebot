@@ -73,7 +73,6 @@ class Deb():
 			self.result = tk.Label(self.root, textvariable=self.return_value, justify='left', fg="red", wraplength=500).grid(row=3, column=1, sticky="W")
 			self.return_value.set(str(Fail))
 
-
 async def main(BASE):
 	D = Deb(BASE)
 	D.root.mainloop()

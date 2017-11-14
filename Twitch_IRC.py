@@ -112,7 +112,6 @@ class _IRC_():
 
 				#join main channel
 				await self.join_channel(self.nickname)
-				await self.join_channel('admiralbahroo')
 				asyncio.ensure_future( self.join_all_channel() )
 
 				self.BASE.vars.twitch_IRC_is_NOT_ready = False
