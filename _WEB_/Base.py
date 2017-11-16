@@ -1,9 +1,17 @@
-#Base.moduls._Web_.Base
+#BASE.moduls._Web_.Base
 
 import time, asyncio, re, json
 import http.server
 
-import root
+class root(object):
+
+	import _WEB_.js.js as js
+
+	import _WEB_.processing.main as main
+	import _WEB_.processing.page_not_found as page_not_found
+	class login(object):
+		import _WEB_.processing.login.login as login
+
 
 class Utils(object):
 
@@ -40,12 +48,8 @@ class Utils(object):
 def process(BASE, info):
 	print(info)
 
-	r = root.main(BASE, info)
+	r = root.main.main(BASE, info, root)
 
-	#class r(object):
-	#	response = 200
-	#	header = ("Content-Type", "application/json")
-	#	content = str(vars(BASE)).encode("UTF-8")
 	return r
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
@@ -57,10 +61,21 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
 		return_value = process(RequestHandler.BASE, information)
 
+		#200, 404, etc
 		self.send_response(return_value.response)
-		self.send_header(return_value.header[0] ,return_value.header[1])
+
+		#send all head vars
+		for head_value in return_value.header:
+			self.send_header(head_value[0] ,head_value[1])
+
+		#end headers
 		self.end_headers()
+
+		#send content
 		self.wfile.write(return_value.content)
+		return
+
+	def log_message(self, format, *args):
 		return
 
 async def webserver(BASE):
