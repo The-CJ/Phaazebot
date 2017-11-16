@@ -6,6 +6,7 @@ import http.server
 class root(object):
 
 	import _WEB_.js.main as js
+	import _WEB_.css.main as css
 
 	import _WEB_.processing.main as main
 	import _WEB_.processing.page_not_found as page_not_found

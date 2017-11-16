@@ -9,14 +9,14 @@ def main(BASE, info, dirs):
 			header = [('Content-Type', 'application/json')]
 		return r
 
-	path_str = "_WEB_/js/{0}".format(info['path'][0])
+	path_str = "_WEB_/css/{0}".format(info['path'][0])
 	path_str = path_str.replace('..','')
 	try:
 		js_file = open(path_str, 'rb').read()
 		class r(object):
 			content = js_file
 			response = 200
-			header = [('Content-Type', 'application/javascript')]
+			header = [('Content-Type', 'text/css')]
 		return r
 
 	#no file like this

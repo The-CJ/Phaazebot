@@ -16,6 +16,11 @@ def main(BASE, info, dirs):
 		info['path'].pop(0)
 		return dirs.js.main(BASE, info, dirs)
 
+	#something with js
+	elif info['path'][0] == 'css':
+		info['path'].pop(0)
+		return dirs.css.main(BASE, info, dirs)
+
 	#leads to another site
 	else:
 		try:
