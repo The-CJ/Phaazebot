@@ -1,3 +1,7 @@
+#BASE.moduls._Web_.Base.root.main
+
+from importlib import reload
+
 def main(BASE, info, dirs):
 	#main site
 	if len(info['path']) == 0:
@@ -18,6 +22,7 @@ def main(BASE, info, dirs):
 			next_path = "_WEB_.processing.{0}".format(info['path'][0])
 			info['path'].pop(0)
 			eval('import ' + next_path + ' as next_file')
+			reload(next_file)
 			return next_file.main(BASE, info, dirs)
 
 		except:
