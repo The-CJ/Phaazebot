@@ -5,13 +5,10 @@ import http.server
 
 class root(object):
 
-	import _WEB_.js.js as js
+	import _WEB_.js.main as js
 
 	import _WEB_.processing.main as main
 	import _WEB_.processing.page_not_found as page_not_found
-	class login(object):
-		import _WEB_.processing.login.login as login
-
 
 class Utils(object):
 
@@ -26,7 +23,7 @@ class Utils(object):
 		#No more vars? -> return
 		if len(raw_list) == 1:
 			values = dict()
-			return dict(path=path_parts, values=values)
+			return dict(raw_path= url, path=path_parts, values=values)
 
 		#more vars
 		other_arguments = raw_list[1]
@@ -43,12 +40,20 @@ class Utils(object):
 			else:
 				values[hit.group(1)] = hit.group(3)
 
-		return dict(path=path_parts, values=values)
+		return dict(raw_path= url, path=path_parts, values=values)
 
 def process(BASE, info):
+
 	print(info)
 
-	r = root.main.main(BASE, info, root)
+	if ""=="":#try:
+		r = root.main.main(BASE, info, root)
+
+	#except:
+	#	class r(object):
+	#		content = json.dumps(dict(error="no one knows what, but something was wrong")).encode(encoding='utf_8')
+	#		response = 500
+	#		header = [('Content-Type','application/json')]
 
 	return r
 
