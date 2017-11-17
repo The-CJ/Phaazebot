@@ -1,0 +1,39 @@
+.dark_bg {
+	background-color: #494D64;
+}
+
+.white-text {
+	color: white;
+}
+
+.h1 {
+	font-size: 250%;
+}
+
+.z-1 {
+	z-index: -1;
+}
+
+.pos-absolute {
+	position: absolute;
+}
+
+.pos-sticky {
+	position: sticky;
+}
+
+.pos-relative  {
+	position: relative;
+}
+
+.pos-static  {
+	position: static;
+}
+
+.animation-spin {
+	animation-name: spin;
+	animation-duration: 10s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	animation-direction: reverse;
+}

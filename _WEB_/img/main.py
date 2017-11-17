@@ -1,4 +1,4 @@
-import json
+import json, mimetypes
 
 def main(BASE, info, dirs):
 	if len(info['path']) == 0:
@@ -8,14 +8,16 @@ def main(BASE, info, dirs):
 			header = [('Content-Type', 'application/json')]
 		return r
 
-	path_str = "_WEB_/css/{0}".format(info['path'][0])
+	path_str = "_WEB_/img/{0}".format(info['path'][0])
 	path_str = path_str.replace('..','')
 	try:
 		js_file = open(path_str, 'rb').read()
+		cont_type = mimetypes.guess_type(path_str, strict=True)
+		print(cont_type)
 		class r(object):
 			content = js_file
 			response = 200
-			header = [('Content-Type', 'text/css')]
+			header = [('Content-Type', cont_type[0])]
 		return r
 
 	#no file like this

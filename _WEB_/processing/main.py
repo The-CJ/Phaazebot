@@ -21,6 +21,11 @@ def main(BASE, info, dirs):
 		info['path'].pop(0)
 		return dirs.css.main(BASE, info, dirs)
 
+	#some image
+	elif info['path'][0] == 'img':
+		info['path'].pop(0)
+		return dirs.img.main(BASE, info, dirs)
+
 	#leads to another site
 	else:
 		try:
