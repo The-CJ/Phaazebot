@@ -39,8 +39,14 @@ def main(BASE, info, dirs):
 			return dirs.page_not_found.page_not_found(BASE, info, dirs)
 
 def main_site(BASE, info):
+	site = open('_WEB_/content/main.html', 'r').read()
+	nav = open('_WEB_/content/navbar_content.html', 'r').read()
+
+	site = site.replace("<!-- Navbar -->", nav)
+
+
 	class r (object):
-		content = open('_WEB_/content/main.html', 'rb').read()
+		content = site.encode("UTF-8")
 		response = 200
 		header = [('Content-Type','text/html')]
 	return r

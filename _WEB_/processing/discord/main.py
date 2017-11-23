@@ -29,12 +29,27 @@ def discord(BASE, info):
 		return discord_login()
 
 def discord_main():
-	pass
+	return_header = [('Content-Type','text/html')]
+	site = open('_WEB_/content/discord/discord_main.html', 'r').read()
+	nav = open('_WEB_/content/navbar_content.html', 'r').read()
+
+	site = site.replace("<!-- Navbar -->", nav)
+
+	class r (object):
+		content = site.encode("UTF-8")
+		response = 200
+		header = return_header
+	return r
 
 def discord_login():
 	return_header = [('Content-Type','text/html')]
+	site = open('_WEB_/content/discord/discord_login.html', 'r').read()
+	nav = open('_WEB_/content/navbar_content.html', 'r').read()
+
+	site = site.replace("<!-- Navbar -->", nav)
+
 	class r (object):
-		content = open('_WEB_/content/discord/discord_login.html', 'rb').read()
+		content = site.encode("UTF-8")
 		response = 200
 		header = return_header
 	return r
