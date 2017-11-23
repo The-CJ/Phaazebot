@@ -1,6 +1,7 @@
 #BASE.moduls._Web_.Base.root.main
 
 from importlib import reload
+import traceback
 
 def main(BASE, info, dirs):
 	#main site
@@ -29,13 +30,12 @@ def main(BASE, info, dirs):
 	#leads to another site
 	else:
 		try:
-			next_path = "_WEB_.processing.{0}".format(info['path'][0])
+			next_file = "dirs.{0}.main.main".format(info['path'][0].lower())
 			info['path'].pop(0)
-			eval('import ' + next_path + ' as next_file')
-			reload(next_file)
-			return next_file.main(BASE, info, dirs)
+			return eval(next_file+"(BASE, info, dirs)")
 
 		except:
+			print(traceback.format_exc())
 			return dirs.page_not_found.page_not_found(BASE, info, dirs)
 
 def main_site(BASE, info):

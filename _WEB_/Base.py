@@ -2,6 +2,7 @@
 
 import time, asyncio, re, json
 import http.server
+import urllib.parse as url_parse
 
 class root(object):
 
@@ -12,9 +13,16 @@ class root(object):
 	import _WEB_.processing.main as main
 	import _WEB_.processing.page_not_found as page_not_found
 
+	class discord(object):
+		import _WEB_.processing.discord.main as main
+
+	class fileserver(object):
+		import _WEB_.processing.fileserver.main as main
+
 class Utils(object):
 
 	def parse_url(url):
+		url = url_parse.unquote_plus(url)
 		raw_list = url.split('?')
 
 		#get path parts
@@ -44,9 +52,20 @@ class Utils(object):
 
 		return dict(raw_path= url, path=path_parts, values=values)
 
-def process(BASE, info):
+	def parse_cookies(head):
+		kekse = head.get('Cookie', None)
+		if kekse == None: return {}
 
-	print(info)
+		cookiejar = {}
+		for keks in kekse.split(";"):
+			try:
+				key, value = keks.split("=")
+				cookiejar[key.replace(" ", "")] = value.replace(" ", "")
+			except:
+				pass
+		return cookiejar
+
+def process(BASE, info):
 
 	if ""=="":#try:
 		r = root.main.main(BASE, info, root)
@@ -64,7 +83,8 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 	def do_GET(self):
 
 		information = Utils.parse_url(self.path)
-		print(information)
+		information['header'] = self.headers
+		information['cookies'] = Utils.parse_cookies(self.headers)
 
 		return_value = process(RequestHandler.BASE, information)
 
@@ -80,7 +100,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
 		#send content
 		self.wfile.write(return_value.content)
-		return
+		self.wfile.flush()
 
 	def log_message(self, format, *args):
 		return

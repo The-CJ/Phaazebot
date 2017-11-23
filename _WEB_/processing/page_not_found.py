@@ -1,7 +1,10 @@
+import html
+
 def page_not_found(BASE, info, dirs):
 	page = open('_WEB_/content/page_not_found.html', 'r').read()
 
-	page = page.replace("[[TEST]]", "MultiTestes")
+	save_str = html.escape("Not Found: "+info['raw_path'])
+	page = page.replace("<!-- path -->", save_str)
 
 	class r (object):
 		content = page.encode('utf-8')

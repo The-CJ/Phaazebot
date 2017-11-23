@@ -13,7 +13,6 @@ def main(BASE, info, dirs):
 	try:
 		js_file = open(path_str, 'rb').read()
 		cont_type = mimetypes.guess_type(path_str, strict=True)
-		print(cont_type)
 		class r(object):
 			content = js_file
 			response = 200
