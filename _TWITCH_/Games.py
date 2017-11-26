@@ -24,7 +24,7 @@ async def battle(BASE, message):
 
 		asyncio.ensure_future(new_game.start())
 		active_battle_games.append(new_game)
-		await BASE.Twitch_IRC_connection.send_message(message.channel, "Battle has been opend, type: \"!battle\" to join. (you need 200 Credits)")
+		await BASE.Twitch_IRC_connection.send_message(message.channel, "Battle has been opened, type: \"!battle\" to join. (you need 200 Credits)")
 
 	else:
 		for game in active_battle_games:
