@@ -65,6 +65,14 @@ class Utils(object):
 				pass
 		return cookiejar
 
+	def get_content(rfile, headers):
+		try: length = int(headers["Content-Length"])
+		except: length = 0
+
+		content = rfile.read(length)
+		return content
+
+
 def process(BASE, info):
 
 	if ""=="":#try:
@@ -82,9 +90,11 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
 	def do_GET(self):
 
+		#path, raw_path, values
 		information = Utils.parse_url(self.path)
 		information['header'] = self.headers
 		information['cookies'] = Utils.parse_cookies(self.headers)
+		information['content'] = Utils.get_content(self.rfile, self.headers)
 
 		return_value = process(RequestHandler.BASE, information)
 
