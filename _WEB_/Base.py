@@ -78,12 +78,6 @@ def process(BASE, info):
 	if ""=="":#try:
 		r = root.main.main(BASE, info, root)
 
-	#except:
-	#	class r(object):
-	#		content = json.dumps(dict(error="no one knows what, but something was wrong")).encode(encoding='utf_8')
-	#		response = 500
-	#		header = [('Content-Type','application/json')]
-
 	return r
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
@@ -117,6 +111,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
 async def webserver(BASE):
 	RequestHandler.BASE = BASE
-	server = http.server.HTTPServer(('0.0.0.0', 8080), RequestHandler)
+	server = http.server.HTTPServer(('0.0.0.0', 80), RequestHandler)
 	server.serve_forever()
 
