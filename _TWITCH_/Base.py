@@ -1,6 +1,5 @@
 #BASE.moduls._Twitch_.Base
-
-import asyncio, json
+import asyncio, json, requests
 
 custom_commands_in_last_15s = []
 

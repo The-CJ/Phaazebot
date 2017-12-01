@@ -1,0 +1,73 @@
+.dark_bg {
+	background-color: #494D64;
+}
+
+.login_input_field {
+	margin-top: 20px;
+	border-radius: 5px;
+	text-align: center;
+	width: 100%;
+}
+
+.simple-black-border {
+	border: 2px solid black;
+}
+
+.element-center {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.white-text {
+	color: white;
+}
+
+.h1 {
+	font-size: 250%;
+}
+
+.pos-absolute {
+	position: absolute;
+}
+
+.pos-sticky {
+	position: sticky;
+}
+
+.inner_item_center {
+	vertical-align: middle;
+	padding: auto;
+	margin: auto;
+}
+
+.inline {
+	display: inline;
+}
+
+.vertical-middle {
+	vertical-align: middle;
+}
+
+.pos-relative  {
+	position: relative;
+}
+
+.pos-static  {
+	position: static;
+}
+
+.no-margin {
+	margin: 0;
+}
+
+.no-padding {
+	padding: 0;
+}
+
+.animation-spin {
+	animation-name: spin;
+	animation-duration: 10s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	animation-direction: reverse;
+}

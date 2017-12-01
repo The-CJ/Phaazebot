@@ -1,11 +1,28 @@
-#Base.moduls._Web_.Base
+#BASE.moduls._Web_.Base
 
 import time, asyncio, re, json
 import http.server
+import urllib.parse as url_parse
+
+class root(object):
+
+	import _WEB_.js.main as js
+	import _WEB_.css.main as css
+	import _WEB_.img.main as img
+
+	import _WEB_.processing.main as main
+	import _WEB_.processing.page_not_found as page_not_found
+
+	class discord(object):
+		import _WEB_.processing.discord.main as main
+
+	class fileserver(object):
+		import _WEB_.processing.fileserver.main as main
 
 class Utils(object):
 
 	def parse_url(url):
+		url = url_parse.unquote_plus(url)
 		raw_list = url.split('?')
 
 		#get path parts
@@ -16,7 +33,7 @@ class Utils(object):
 		#No more vars? -> return
 		if len(raw_list) == 1:
 			values = dict()
-			return dict(path=path_parts, values=values)
+			return dict(raw_path= url, path=path_parts, values=values)
 
 		#more vars
 		other_arguments = raw_list[1]
@@ -33,34 +50,67 @@ class Utils(object):
 			else:
 				values[hit.group(1)] = hit.group(3)
 
-		return dict(path=path_parts, values=values)
+		return dict(raw_path= url, path=path_parts, values=values)
+
+	def parse_cookies(head):
+		kekse = head.get('Cookie', None)
+		if kekse == None: return {}
+
+		cookiejar = {}
+		for keks in kekse.split(";"):
+			try:
+				key, value = keks.split("=")
+				cookiejar[key.replace(" ", "")] = value.replace(" ", "")
+			except:
+				pass
+		return cookiejar
+
+	def get_content(rfile, headers):
+		try: length = int(headers["Content-Length"])
+		except: length = 0
+
+		content = rfile.read(length)
+		return content
+
 
 def process(BASE, info):
-	print(info)
 
-	class r(object):
-		response = 200
-		header = ("Content-Type", "application/json")
-		content = str(vars(BASE)).encode("UTF-8")
+	if ""=="":#try:
+		r = root.main.main(BASE, info, root)
+
 	return r
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
 
 	def do_GET(self):
 
+		#path, raw_path, values
 		information = Utils.parse_url(self.path)
-		print(information)
+		information['header'] = self.headers
+		information['cookies'] = Utils.parse_cookies(self.headers)
+		information['content'] = Utils.get_content(self.rfile, self.headers)
 
 		return_value = process(RequestHandler.BASE, information)
 
+		#200, 404, etc
 		self.send_response(return_value.response)
-		self.send_header(return_value.header[0] ,return_value.header[1])
+
+		#send all head vars
+		for head_value in return_value.header:
+			self.send_header(head_value[0] ,head_value[1])
+
+		#end headers
 		self.end_headers()
+
+		#send content
 		self.wfile.write(return_value.content)
+		self.wfile.flush()
+
+	def log_message(self, format, *args):
 		return
 
 async def webserver(BASE):
 	RequestHandler.BASE = BASE
-	server = http.server.HTTPServer(('0.0.0.0', 8080), RequestHandler)
+	server = http.server.HTTPServer(('0.0.0.0', 80), RequestHandler)
 	server.serve_forever()
 
