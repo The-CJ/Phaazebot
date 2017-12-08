@@ -82,6 +82,9 @@ def process(BASE, info):
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
 
+	def do_POST(self):
+		self.do_GET()
+
 	def do_GET(self):
 
 		#path, raw_path, values
@@ -91,6 +94,13 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 		information['content'] = Utils.get_content(self.rfile, self.headers)
 
 		return_value = process(RequestHandler.BASE, information)
+		if return_value == None:
+			class r(object):
+				response=500
+				header=[('Content-Type','text/html')]
+				content=b""
+
+			return_value = r
 
 		#200, 404, etc
 		self.send_response(return_value.response)
