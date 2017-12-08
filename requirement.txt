@@ -1,0 +1,7 @@
+discord.py
+requests
+colorama
+twitter
+tabulate
+cleverbot
+bs4
