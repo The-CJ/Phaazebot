@@ -5,25 +5,32 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 		<link rel="stylesheet" href="/css/basic.css">
 		<link rel="stylesheet" href="/css/animations.css">
+		<link rel="stylesheet" href="/css/discord.css">
 	</head>
 	<body class="dark_bg">
 
 		<!-- Navbar -->
 
 		<div class="container-fluid">
-			<div class="row">
+			<div class="row" >
 
 				<div class="col-md-2 text-center"></div>
 
 			</div>
 
-			<div class="row" style="margin-top: 50px;">
-				<div class="col-md-4 element-center text-center white-text" style="font-size:20px;">
+			<div class="row" style="margin-top: 50px">
+				<div class="col-md-4 element-center text-center white-text login_box">
+					<div class="login_box_top login_box_text">
+						Please continue by logging in with:
+					</div>
 
-					<div class="">Please continue by logging in with</div>
-					<a href="https://discordapp.com/api/oauth2/authorize?guilds&identify&redirect_uri=">
-						<img src="img/Discord-Logo-White.png" class="" style="display: inline-block; width: 13em;"/>
+					<a href="https://discordapp.com/api/oauth2/authorize?response_type=code&client_id=__Discord_Client_ID__&scope=identify%20guilds.join&state=15773059ghq9183habn&redirect_uri=https%3A%2F%2Fnicememe.website
+">
+						<div class="login_box_buttom">
+							<img src="img/Discord-Logo-White.png" class="login_picture"/>
+						</div>
 					</a>
+
 
 				</div>
 			</div>
