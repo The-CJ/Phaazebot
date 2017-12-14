@@ -2,6 +2,7 @@
 
 import http.cookies as cookie
 from importlib import reload
+import asyncio
 
 def main(BASE, info, dirs):
 	#/discord
@@ -22,13 +23,11 @@ def discord(BASE, info):
 	return_header = [('Content-Type','text/html')]
 
 	if info['cookies'].get('discord_session', None) != None:
-		print('Have session')
-		#return_header.append(("Set-Cookie", "discord_session=yeah.its-there"))
-		return discord_main()
+		return discord_main(BASE, info)
 	else:
-		return discord_login()
+		return discord_login(BASE, info)
 
-def discord_main():
+def discord_main(BASE, info):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/discord/discord_main.html', 'r').read()
 	nav = open('_WEB_/content/navbar_content.html', 'r').read()
@@ -41,15 +40,24 @@ def discord_main():
 		header = return_header
 	return r
 
-def discord_login():
+def discord_login(BASE, info):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/discord/discord_login.html', 'r').read()
 	nav = open('_WEB_/content/navbar_content.html', 'r').read()
 
 	site = site.replace("<!-- Navbar -->", nav)
+	future = asyncio.run_coroutine_threadsafe(BASE.phaaze.application_info(), BASE.Discord_loop)
+	result = future.result()
+
+	site = site.replace("__Discord_Client_ID__", result.id)
 
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200
 		header = return_header
+
 	return r
+
+async def get_discord_bot_infos(BASE, f):
+	x = await BASE.phaaze.application_info()
+	f.set_result('werwr')

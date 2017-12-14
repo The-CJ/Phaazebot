@@ -1,7 +1,6 @@
 import json
 
 def main(BASE, info, dirs):
-	print(info)
 	if len(info['path']) == 0:
 		class r(object):
 			content = json.dumps(dict(error="no file define")).encode(encoding='utf_8')

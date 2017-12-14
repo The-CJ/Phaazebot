@@ -15,7 +15,7 @@ class Connection():
 		self.password = password
 
 	def create(self, name=None):
-		if name == None: raise
+		if name == None: raise AttributeError("'name' can't be None")
 
 		call = dict(
 			action="create",
@@ -24,13 +24,13 @@ class Connection():
 			name=name)
 
 		try: r = self.session.post(self.adress+self.port, json=call)
-		except: raise ConnectionError
+		except: raise ConnectionError("Failed to connect")
 
 		res = json.loads(r.text)
 		return res
 
 	def drop(self, name=None):
-		if name == None: raise
+		if name == None: raise AttributeError("'name' can't be None")
 
 		call = dict(
 			action="drop",
@@ -39,15 +39,15 @@ class Connection():
 			name=name)
 
 		try: r = self.session.post(self.adress+self.port, json=call)
-		except: raise ConnectionError
+		except: raise ConnectionError("Failed to connect")
 
 		res = json.loads(r.text)
 		return res
 
 	def insert(self, into=None, content=None):
-		if into == None or content == None: raise AttributeError
+		if into == None or content == None: raise AttributeError("'into' or 'content' can't be None")
 
-		if type(content) is not dict(): raise AttributeError
+		if type(content) is not dict: raise AttributeError("'content' must be dict")
 
 		call = dict(
 			action="insert",
@@ -57,13 +57,13 @@ class Connection():
 			content=content)
 
 		try: r = self.session.post(self.adress+self.port, json=call)
-		except: raise ConnectionError
+		except: raise ConnectionError("Failed to connect")
 
 		res = json.loads(r.text)
 		return res
 
 	def delete(self, of=None, where=""):
-		if of == None: raise
+		if of == None: raise AttributeError("'of' can't be None")
 
 		call = dict(
 			action="delete",
@@ -73,15 +73,15 @@ class Connection():
 			where=where)
 
 		try: r = self.session.post(self.adress+self.port, json=call)
-		except: raise ConnectionError
+		except: raise ConnectionError("Failed to connect")
 
 		res = json.loads(r.text)
 		return res
 
 	def update(self, of=None, where="", content=None):
-		if of == None or content == None: raise AttributeError
+		if of == None or content == None: raise AttributeError("'of' can't be None")
 
-		if type(content) is not dict(): raise AttributeError
+		if type(content) is not dict: raise AttributeError("'content' must be dict")
 
 		call = dict(
 			action="update",
@@ -93,14 +93,14 @@ class Connection():
 			)
 
 		try: r = self.session.post(self.adress+self.port, json=call)
-		except: raise ConnectionError
+		except: raise ConnectionError("Failed to connect")
 
 		res = json.loads(r.text)
 		return res
 
 	def select(self, of=None, where="", fields=[]):
-		if of == None: raise AttributeError
-		if type(fields) is not list(): AttributeError
+		if of == None: raise AttributeError("'or' can't be None")
+		if type(fields) is not list: AttributeError("'fields' must be list")
 
 		call = dict(
 			action="select",
@@ -111,8 +111,7 @@ class Connection():
 			fields=fields)
 
 		try: r = self.session.post(self.adress+self.port, json=call)
-		except: raise ConnectionError
+		except: raise ConnectionError("Failed to connect")
 
 		res = json.loads(r.text)
 		return res
-
