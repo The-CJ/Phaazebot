@@ -86,7 +86,7 @@ def login_user(BASE, info):
 			header = []
 		return r
 
-	new_session = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
+	new_session = BASE.moduls._Web_.Base.Utils.get_session_key()
 
 	entry = dict(session_id = new_session, username=file_server_user['loginname'])
 	BASE.PhaazeDB.insert(into="session/file_server", content=entry)

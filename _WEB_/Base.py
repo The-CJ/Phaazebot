@@ -1,8 +1,9 @@
 #BASE.moduls._Web_.Base
 
-import time, asyncio, re, json
+import time, datetime, asyncio, re, json
 import http.server
 import urllib.parse as url_parse
+import hashlib, random, string
 
 class root(object):
 
@@ -15,6 +16,7 @@ class root(object):
 
 	class discord(object):
 		import _WEB_.processing.discord.main as main
+		import _WEB_.processing.discord.login.main as login
 
 	class fileserver(object):
 		import _WEB_.processing.fileserver.main as main
@@ -72,6 +74,12 @@ class Utils(object):
 		content = rfile.read(length)
 		return content
 
+	def get_session_key():
+		stime = hashlib.sha1( str(datetime.datetime.now()).encode("UTF-8") ).hexdigest()
+		snonce = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(8))
+
+		key = str(stime) + str(snonce)
+		return key
 
 def process(BASE, info):
 
@@ -113,6 +121,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 		self.end_headers()
 
 		#send content
+		if type(return_value.content) is not bytes: return_value.content = return_value.content.encode("UTF-8")
 		self.wfile.write(return_value.content)
 		self.wfile.flush()
 

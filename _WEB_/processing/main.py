@@ -4,8 +4,6 @@ from importlib import reload
 import traceback
 
 def main(BASE, info, dirs):
-	print(info)
-
 	#main site
 	if len(info['path']) == 0:
 		return main_site(BASE, info)

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<title>Phaaze - Discord | Login</title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 		<link rel="stylesheet" href="/css/basic.css">
@@ -19,15 +20,16 @@
 			</div>
 
 			<div class="row" style="margin-top: 50px">
-				<div class="col-md-4 element-center text-center white-text login_box">
+				<div class="col-md-4 element-center text-center white-text">
+
 					<div class="login_box_top login_box_text">
 						Please continue by logging in with:
 					</div>
 
-					<a href="https://discordapp.com/api/oauth2/authorize?response_type=code&client_id=__Discord_Client_ID__&scope=identify%20guilds.join&state=15773059ghq9183habn&redirect_uri=https%3A%2F%2Fnicememe.website
-">
+					<a href="https://discordapp.com/oauth2/authorize?response_type=code&client_id=__Discord_Client_ID__&redirect_uri=http%3A%2F%2Fphaaze.net%2Fdiscord%2Flogin&scope=identify+guilds&state=__Nonce_of_stuff__&access_type=offline">
 						<div class="login_box_buttom">
 							<img src="img/Discord-Logo-White.png" class="login_picture"/>
+							<p class="error_msg"><!-- Error --></p>
 						</div>
 					</a>
 

@@ -30,6 +30,10 @@
 	position: absolute;
 }
 
+.pos-relative {
+	position: relative;
+}
+
 .pos-sticky {
 	position: sticky;
 }
@@ -70,4 +74,10 @@
 	animation-iteration-count: infinite;
 	animation-timing-function: linear;
 	animation-direction: reverse;
+}
+
+.profil_picture {
+	border-radius: 50%;
+	height: 4em;
+	width: 4em;
 }
