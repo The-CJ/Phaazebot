@@ -27,16 +27,15 @@ def fileserver(BASE, info):
 
 	if info['cookies'].get('fileserver_session', None) != None:
 
-		return fileserver_main()
+		return fileserver_main(BASE)
 	else:
-		return fileserver_login()
+		return fileserver_login(BASE)
 
-def fileserver_main():
+def fileserver_main(BASE):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/fileserver/fileserver_main.html', 'r').read()
-	nav = open('_WEB_/content/navbar_content.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", nav)
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='db'))
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -44,12 +43,12 @@ def fileserver_main():
 		header = return_header
 	return r
 
-def fileserver_login():
+def fileserver_login(BASE):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/fileserver/fileserver_login.html', 'r').read()
 	nav = open('_WEB_/content/navbar_content.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", nav)
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='db'))
 
 	class r (object):
 		content = site.encode("UTF-8")

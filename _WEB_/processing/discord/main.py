@@ -30,29 +30,28 @@ def discord(BASE, info):
 def discord_main(BASE, info):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/discord/discord_main.html', 'r').read()
-	nav = open('_WEB_/content/navbar_content.html', 'r').read()
-	dis_nav = open('_WEB_/content/navbar_discord_content.html', 'r').read()
 
-
+	#get session
 	search_str = 'data["session"] == "{}"'.format(info['cookies'].get('discord_session', None))
 	res = BASE.PhaazeDB.select(of="session/discord", where=search_str)
 	if len(res['data']) == 0:
 		return discord_login(BASE, info, msg="Please login again. (Session expired)")
 
+	#get discord user object
 	user_db_data = res["data"][0]
 	discord_user_data = BASE.api.Discord.get_user(user_db_data.get("access_token", ""))
 	if discord_user_data.get('id', None) == None:
 		return discord_login(BASE, info, msg="Please login again.<br>(401 Discord Unauthorized)")
 
 	print(discord_user_data)
+	#load avatar
 	if discord_user_data.get('avatar', "") != "":
 		image_path = "avatars/{}/{}.png".format(discord_user_data['id'], discord_user_data['avatar'])
 	else:
 		image_path = "embed/avatars/{}.png".format(str( int(discord_user_data['discriminator']) % 5 ))
 
 	#Replace Parts
-	site = site.replace("<!-- Navbar -->", nav)
-	site = site.replace("<!-- DiscordNavbar -->", dis_nav)
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
 	site = site.replace("{path_to_img}", image_path)
 
 
@@ -69,7 +68,7 @@ def discord_login(BASE, info, msg=""):
 	site = open('_WEB_/content/discord/discord_login.html', 'r').read()
 	nav = open('_WEB_/content/navbar_content.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", nav)
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
 
 	future = asyncio.run_coroutine_threadsafe(BASE.phaaze.application_info(), BASE.Discord_loop)
 	result = future.result()
