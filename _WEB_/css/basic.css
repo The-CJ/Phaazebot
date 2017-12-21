@@ -81,3 +81,7 @@
 	height: 4em;
 	width: 4em;
 }
+
+.selected_option {
+	color: Grey;
+}

@@ -66,7 +66,6 @@ def discord_main(BASE, info):
 def discord_login(BASE, info, msg=""):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/discord/discord_login.html', 'r').read()
-	nav = open('_WEB_/content/navbar_content.html', 'r').read()
 
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
 
