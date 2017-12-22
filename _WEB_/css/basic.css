@@ -80,10 +80,29 @@ a.dark_link:hover {
 	animation-direction: reverse;
 }
 
+.open_collapsed_button {
+	background-color: red;
+	display: inline!important;
+	width:50px;
+}
+
+.expandable_content {
+	width:0px;
+	display:inline;
+}
+
 .profil_picture {
 	border-radius: 50%;
-	height: 4em;
-	width: 4em;
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.fit_to_object {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+
 }
 
 .selected_option {
@@ -94,4 +113,11 @@ li.dropdown:hover > .dropdown-menu {
 }
 .dropdown-menu:hover {
     display: block;
+}
+
+.stick_to_left {
+	margin-right: auto!important;
+}
+.stick_to_right {
+	margin-left: auto!important;
 }

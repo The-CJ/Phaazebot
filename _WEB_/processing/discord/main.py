@@ -52,7 +52,7 @@ def discord_main(BASE, info):
 
 	#Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
-	site = site.replace("{path_to_img}", image_path)
+	site = site.replace("<!-- logged_in_user-->", format_loggedin_field(image_path))
 
 
 	#add profile Picture
@@ -86,3 +86,7 @@ def discord_login(BASE, info, msg=""):
 		header = return_header
 
 	return r
+
+def format_loggedin_field(image_path):
+	
+	pass
