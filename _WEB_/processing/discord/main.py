@@ -43,7 +43,6 @@ def discord_main(BASE, info):
 	if discord_user_data.get('id', None) == None:
 		return discord_login(BASE, info, msg="Please login again.<br>(401 Discord Unauthorized)")
 
-	print(discord_user_data)
 	#load avatar
 	if discord_user_data.get('avatar', "") != "":
 		image_path = "avatars/{}/{}.png".format(discord_user_data['id'], discord_user_data['avatar'])
