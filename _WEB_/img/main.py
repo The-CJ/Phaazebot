@@ -12,6 +12,12 @@ def main(BASE, info, dirs):
 	path_str = path_str.replace('..','')
 	try:
 		js_file = open(path_str, 'rb').read()
+		if path_str.endswith(".py"):
+			class r(object):
+				content = json.dumps(dict(error="not_allowed"))
+				response = 403
+				header = [('Content-Type', 'text/json')]
+			return r
 		cont_type = mimetypes.guess_type(path_str, strict=True)
 		class r(object):
 			content = js_file
