@@ -7,7 +7,7 @@ function submit_login() {
   r["login"] = login;
   r["password"] = password;
 
-  $.post("?login", JSON.stringify(r), function (data) {
+  $.post("/api/db/login", JSON.stringify(r), function (data) {
     data = JSON.parse(data);
     if (data.error == "missing_data") {
       $('#loginname').css("border","2px solid red");
@@ -25,7 +25,7 @@ function submit_login() {
       $('#sys_msg').text("Password or Login Name not found.");
       return ;
     }
-    document.cookie = "fileserver_session="+data.fileserver_session+";";
+    document.cookie = "fileserver_session="+data.fileserver_session+"; Path=\"/\"";
     location.reload();
   })
 
