@@ -52,7 +52,7 @@ def discord_main(BASE, info):
 
 	#Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
-	site = site.replace("<!-- logged_in_user-->", format_loggedin_field(image_path))
+	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(image_path, discord_user_data.get('username', "-Username-")))
 
 
 	#add profile Picture
@@ -87,6 +87,20 @@ def discord_login(BASE, info, msg=""):
 
 	return r
 
-def format_loggedin_field(image_path):
-	
-	pass
+def format_loggedin_field(image_path, name):
+	r = """	<li>
+			<div class="" style="border-radius:25px;background-color:white;">
+				<img style="height:2em;margin-left:1em;" class="profil_picture fit_to_object" src="https://cdn.discordapp.com/[path]" alt="Avatar">
+				<span class="inner_item_center">[name]</span>
+				<button type="button" class="btn-danger btn expandable-btn inner_item_center" style="border-radius:25px;">
+					<span class="material-icons inner_item_center" style="padding:auto;">exit_to_app</span>
+					<div class="expandable_content vertical-middle">
+						<span class="btn" style="border-radius:20px;" onclick="javascript:discord_logout();">Logout</span>
+					</div>
+				</button>
+			</div>
+		</li>
+	"""
+	r = r.replace("[name]", name)
+	r = r.replace("[path]", image_path)
+	return r
