@@ -2,6 +2,10 @@
 	background-color: #494D64;
 }
 
+a.dark_link:hover {
+	color: LightGrey;
+}
+
 .login_input_field {
 	margin-top: 20px;
 	border-radius: 5px;
