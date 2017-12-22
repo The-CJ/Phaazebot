@@ -16,7 +16,6 @@ class root(object):
 
 	class discord(object):
 		import _WEB_.processing.discord.main as main
-		import _WEB_.processing.discord.login.main as login
 
 	class fileserver(object):
 		import _WEB_.processing.fileserver.main as main

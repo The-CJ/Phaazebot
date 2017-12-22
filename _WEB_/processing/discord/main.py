@@ -39,7 +39,7 @@ def discord_main(BASE, info):
 
 	#get discord user object
 	user_db_data = res["data"][0]
-	discord_user_data = BASE.api.Discord.get_user(user_db_data.get("access_token", ""))
+	discord_user_data = BASE.api.discord.get_user(BASE, oauth_key=user_db_data.get("access_token", ""))
 	if discord_user_data.get('id', None) == None:
 		return discord_login(BASE, info, msg="Please login again.<br>(401 Discord Unauthorized)")
 

@@ -8,6 +8,10 @@ def main(BASE, info, dirs):
 	if len(info['path']) == 0:
 		return main_site(BASE, info)
 
+	#api stuff
+	elif info['path'][0].lower() == 'api':
+		return BASE.api.call(BASE, info)
+
 	#icon
 	elif info['path'][0] == 'favicon.ico':
 		return get_favicon()
