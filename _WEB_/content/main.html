@@ -16,17 +16,29 @@
 		<!-- Inserted via get_navbar() -->
 		<!-- Navbar -->
 
-		<div class="container dark_bg text-center">
+		<div class="container text-center">
 			<div class="row" style="margin-top:50px;" >
 
 				<span class="col-md-3"></span>
 
 				<div class="col-md-6 text-center" style="width: 100%;">
-					<button type="button" class="btn btn-primary animated bounceInDown">Click</button>
+					<div class="row">
+						<div class="col">
+							<a href="/"><img src="/img/favicon.ico" class="animated rotateIn" style="width: 100%;" id="main_image"></a>
+						</div>
+					</div>
 				</div>
 
 				<span class="col-md-3"></span>
 
+			</div>
+
+			<div class="row">
+				<div class="col text-center white-text" style="width: 100%;">
+					<h1>Welcome to Phaazebot's new home</h1>
+					<p>Feel free to look around, but remember,</p>
+					<p>this is the beginning of PhaazeWeb, so don't expect stuff to look nice or even work. kthx</p>
+				</div>
 			</div>
 		</div>
 
@@ -34,5 +46,11 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
 		<script src="/js/basic.js"></script>
+		<script type="text/javascript">
+			$('#main_image').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+				$('#main_image').removeClass('rotateIn');
+				$('#main_image').addClass('animation-spin');
+			});
+		</script>
 	</body>
 </html>
