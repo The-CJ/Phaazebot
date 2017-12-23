@@ -7,38 +7,37 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.css">
 		<link rel="stylesheet" href="/css/basic.css">
 		<link rel="stylesheet" href="/css/animations.css">
-		<link rel="stylesheet" href="/css/discord.css">
 		<link rel="stylesheet" href="/css/expandable.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/css/mdb.css">
 	</head>
-	<body class="dark_bg">
+	<body class="stylish-color">
 
+		<!-- Inserted via get_navbar() -->
 		<!-- Navbar -->
 
-		<div class="container-fluid">
-			<div class="row" style="margin-top: 50px">
-				<div class="animated col-md-4 element-center text-center white-text bounceInDown">
-
-					<div class="login_box_top login_box_text">
-						Please continue by logging in with:
-					</div>
-
-					<a href="https://discordapp.com/oauth2/authorize?response_type=code&client_id=__Discord_Client_ID__&redirect_uri=http%3A%2F%2Fphaaze.net%2Fapi%2Fdiscord%2Flogin&scope=identify+guilds&state=__Nonce_of_stuff__&access_type=offline">
-						<div class="login_box_buttom">
-							<img src="img/Discord-Logo-White.png" class="login_picture"/>
-							<p class="error_msg"><!-- Error --></p>
-						</div>
-					</a>
-
-
-				</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-6 primary-color-dark animated bounceInDown z-depth-2" style="margin:auto;margin-top:10%;">
+					<p class="white-text text-center" style="font-size:1.4em;margin:1em">Please continue by logging in with:</p>
+			  </div>
 			</div>
+
+			<div class="row">
+
+				<a class="col-6 animated flipInX waves-effect z-depth-2" style="margin:auto;margin-top:1em;background-color:#7289DA;" href="https://discordapp.com/oauth2/authorize?response_type=code&client_id=__Discord_Client_ID__&redirect_uri=http%3A%2F%2Fphaaze.net%2Fapi%2Fdiscord%2Flogin&scope=identify+guilds&state=__Nonce_of_stuff__&access_type=offline">
+					<img src="https://discordapp.com/assets/e7a3b51fdac2aa5ec71975d257d5c405.png" alt="Discord_Logo" class="img-fluid" style="margin-top:1em;">
+					<b>
+						<p class="text-center" style="font-size:1.4em;color:#CC0000 ;"><!-- Error --></p>
+					</b>
+				</a>
+
+			</div>
+
 		</div>
 
-		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
 		<script src="/js/basic.js"></script>
-		<script src="/js/mdb.js"></script>
 	</body>
 </html>
