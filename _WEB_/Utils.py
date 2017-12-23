@@ -9,7 +9,7 @@ def get_navbar(active=''):
 
 	if active != "":
 		rep = "{selected_"+active+"}"
-		navbar = navbar.replace(rep, "selected_option")
+		navbar = navbar.replace(rep, "active")
 		try:
 			addition = open('_WEB_/content/_navbar/navbar_content_{}.html'.format(active), 'r').read()
 			navbar = navbar + addition
