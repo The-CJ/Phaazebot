@@ -87,18 +87,17 @@ def discord_login(BASE, info, msg=""):
 	return r
 
 def format_loggedin_field(image_path, name):
-	r = """	<li>
-			<div class="" style="border-radius:25px;background-color:white;">
-				<img style="height:2em;margin-left:1em;" class="profil_picture fit_to_object" src="https://cdn.discordapp.com/[path]" alt="Avatar">
-				<span class="inner_item_center">[name]</span>
-				<button type="button" class="btn-danger btn expandable-btn inner_item_center" style="border-radius:25px;">
-					<span class="material-icons inner_item_center" style="padding:auto;">exit_to_app</span>
-					<div class="expandable_content vertical-middle">
-						<span class="btn" style="border-radius:20px;" onclick="javascript:discord_logout();">Logout</span>
-					</div>
-				</button>
-			</div>
-		</li>
+	r = """
+          <div class="white" style="border-radius:25px;">
+            <img style="height:2em;margin:0.5em;" class="profil_picture inline align-middle" src="https://cdn.discordapp.com/[path]" alt="Avatar">
+            <span class="black-text align-middle inline" style="margin-right:0.5em">[name]</span>
+            <button type="button" class="btn-danger align-middle inline expandable-btn" style="border-radius:25px;padding:.7em;">
+              <div class="material-icons align-middle inline">&nbsp;exit_to_app</div>
+              <div class="align-middle inline expandable_content">
+                <span onclick="javascript:discord_logout();">Logout</span>
+              </div>
+            </button>
+          </div>
 	"""
 	r = r.replace("[name]", name)
 	r = r.replace("[path]", image_path)
