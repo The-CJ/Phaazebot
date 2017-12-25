@@ -4,6 +4,8 @@ import http.cookies as cookie
 from importlib import reload
 import asyncio, datetime, requests
 
+DISCORD_BOT_ID = "180679855422177280"
+
 def main(BASE, info, dirs):
 	#/discord
 	if len(info['path']) == 0:
@@ -68,9 +70,7 @@ def discord_login(BASE, info, msg=""):
 
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
 
-	future = asyncio.run_coroutine_threadsafe(BASE.phaaze.application_info(), BASE.Discord_loop)
-	result = future.result()
-	site = site.replace("__Discord_Client_ID__", result.id)
+	site = site.replace("__Discord_Client_ID__", DISCORD_BOT_ID)
 	site = site.replace("__Nonce_of_stuff__", str(datetime.datetime.timestamp(datetime.datetime.now())))
 
 	if info['values'].get('error', False) and msg=="":
@@ -91,7 +91,7 @@ def format_loggedin_field(image_path, name):
           <div class="white" style="border-radius:25px;">
             <img style="height:2em;margin:0.5em;" class="profil_picture inline align-middle" src="https://cdn.discordapp.com/[path]" alt="Avatar">
             <span class="black-text align-middle inline" style="margin-right:0.5em">[name]</span>
-            <button type="button" class="btn-danger align-middle inline expandable-btn" style="border-radius:25px;padding:.7em;">
+            <button type="button" class="btn-danger align-middle inline expandable-btn waves-effect" style="border-radius:25px;padding:.7em;">
               <div class="material-icons align-middle inline">&nbsp;exit_to_app</div>
               <div class="align-middle inline expandable_content">
                 <span onclick="javascript:discord_logout();">Logout</span>

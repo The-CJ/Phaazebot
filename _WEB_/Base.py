@@ -120,7 +120,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 		self.end_headers()
 
 		#send content
-		if type(return_value.content) is not bytes: return_value.content = return_value.content.encode("UTF-8")
+		if type(return_value.content) is not bytes: return_value.content = str(return_value.content).encode("UTF-8")
 		self.wfile.write(return_value.content)
 		self.wfile.flush()
 
