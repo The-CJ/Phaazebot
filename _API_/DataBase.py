@@ -14,7 +14,7 @@ def login(BASE, info={}, from_web=False, **kwargs):
 		class r (object):
 			content = json.dumps(dict(error="missing_data")).encode("UTF-8")
 			response = 400
-			header = []
+			header = [('Content-Type', 'application/json')]
 		return r
 
 	#get user
@@ -25,8 +25,8 @@ def login(BASE, info={}, from_web=False, **kwargs):
 	if file_server_user == None:
 		class r (object):
 			content = json.dumps(dict(error="wrong_data")).encode("UTF-8")
-			response = 400
-			header = []
+			response = 401
+			header = [('Content-Type', 'application/json')]
 		return r
 
 	new_session = BASE.moduls._Web_.Base.Utils.get_session_key()
@@ -37,5 +37,5 @@ def login(BASE, info={}, from_web=False, **kwargs):
 	class r (object):
 		content = json.dumps(dict(fileserver_session=new_session)).encode("UTF-8")
 		response = 200
-		header = []
+		header = [('Content-Type', 'application/json')]
 	return r
