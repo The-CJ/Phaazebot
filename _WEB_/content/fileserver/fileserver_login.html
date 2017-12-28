@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Phaaze - DB | Login</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.css">
+		<link rel="stylesheet" href="/css/basic.css">
+		<link rel="stylesheet" href="/css/animations.css">
+		<link rel="stylesheet" href="/css/expandable.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/css/mdb.css">
+	</head>
+	<body class="dark_bg">
+
+		<!-- Navbar -->
+
+		<div class="container">
+
+			<div class="row">
+
+				<div class="col text-center vertical-middle" style="font-size:100px;">
+					<p class="inline vertical-middle">PhaazeDB</p>
+					<img src="/img/PhaazeDB.png" class="vertical-middle" style="width: 1em;">
+				</div>
+
+			</div>
+
+			<div class="row text-center" style="margin-top: 50px;">
+				<div class="col">
+					<h2 class="white-text">Login required</h2>
+				</div>
+			</div>
+
+			<div class="row ">
+				<div class="col-6 text-center" style="margin:auto;margin-top:2em;">
+					<form class="" action="javascript:submit_login();" style="font-size:2em;">
+						<input type="text" id="loginname" placeholder="Loginname" class="black-text text-center white" style="margin-top:1em;">
+						<input type="password" id="password" placeholder="Password" class="black-text text-center white" style="margin-top:1em;">
+						<button type="submit" id="sub_button" class="btn btn-blue-grey" style="margin-top:1em;width:auto;">Submit</button>
+					</form>
+					<h2 id="sys_msg" class="red-text"></h2>
+				</div>
+			</div>
+
+		</div>
+
+				<!--
+					<form class="" action="javascript:submit_login();">
+						<input type="text" id="loginname" placeholder="Loginname" class="login_input_field">
+						<input type="password" id="password" placeholder="Password" class="login_input_field">
+						<button type="submit" id="sub_button" class="btn login_input_field">Submit</button>
+					</form>
+					<label id="sys_msg"></label>
+					<br />
+				-->
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
+		<script src="/js/basic.js"></script>
+		<script src="/js/file_login.js"></script>
+	</body>
+</html>

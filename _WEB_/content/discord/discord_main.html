@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Phaaze - Discord</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.css">
+		<link rel="stylesheet" href="/css/basic.css">
+		<link rel="stylesheet" href="/css/animations.css">
+		<link rel="stylesheet" href="/css/expandable.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/css/mdb.css">
+	</head>
+	<body class="stylish-color">
+
+		<!-- Navbar -->
+
+		<h1 class="white-text text-center" style="margin-top:5%;margin-bottom:5%;">Please select a server</h1>
+
+		<div class="container">
+			<h2 class="grey-text text-center" style="margin-top:5%;">Your Servers</h2>
+			<div class="row" id="your_servers">
+
+			</div>
+			<h2 class="grey-text text-center" style="margin-top:5%;">Server you can manage</h2>
+			<div class="row" id="manageble_servers">
+
+			</div>
+			<h2 class="grey-text text-center" style="margin-top:5%;">Viewable servers</h2>
+			<div class="row" id="viewable_servers">
+
+			</div>
+		</div>
+
+		<div hidden id="server_preset">
+			<div class="col" style="margin-bottom:2em;">
+				<div class="view overlay hm-black-strong special-color-dark text-center waves-effect hm-zoom animated flipInY" style="border-radius:50%;height:160px;width:160px;padding:1em;margin:auto;">
+					<a href="/discord/dashboard/[serverid]">
+						<img src="https://cdn.discordapp.com/icons/[serverid]/[icon].png" height="128" alt="Server_avatar" style="border-radius:50%;" class="align-middle">
+						<span class="white-text mask flex-center">[server_name]</span>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
+		<script src="/js/discord.js"></script>
+		<script src="/js/basic.js"></script>
+
+	</body>
+</html>
