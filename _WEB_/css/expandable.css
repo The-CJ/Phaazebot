@@ -1,0 +1,18 @@
+.expandable-btn .expandable_content{
+	max-width: 0;
+	-webkit-transition: .5s;
+	transition: .5s;
+	display: inline-block;
+	overflow: hidden;
+}
+
+.expandable-btn:focus > .expandable_content {
+  max-width: 30rem;
+}
+
+li.dropdown:hover > .dropdown-menu {
+    display: block;
+}
+.dropdown-menu:hover {
+    display: block;
+}

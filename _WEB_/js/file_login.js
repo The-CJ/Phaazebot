@@ -7,26 +7,40 @@ function submit_login() {
   r["login"] = login;
   r["password"] = password;
 
-  $.post("?login", JSON.stringify(r), function (data) {
-    data = JSON.parse(data);
-    if (data.error == "missing_data") {
-      $('#loginname').css("border","2px solid red");
-      $('#loginname').css("background-color","#ffbdbd");
-      $('#password').css("border","2px solid red");
-      $('#password').css("background-color","#ffbdbd");
-      return ;
+  $.post("/api/db/login", JSON.stringify(r))
+  .done(
+    function (data) {
+      $('#loginname').addClass("animated bounceOutLeft");
+      $('#password').addClass("animated bounceOutRight");
+      $('#sub_button').addClass("animated flipOutX");
+      setTimeout(function () {
+        document.cookie = "fileserver_session="+data.fileserver_session+"; Path=\"/\"";
+        location.reload();
+      },1000);
     }
-    if (data.error == "wrong_data") {
-      $('#loginname').css("border","2px solid red");
-      $('#loginname').css("background-color","#ffbdbd");
-      $('#password').css("border","2px solid red");
-      $('#password').css("background-color","#ffbdbd");
-      $('#password').val("");
-      $('#sys_msg').text("Password or Login Name not found.");
-      return ;
+  )
+  .fail(
+    function (data) {
+      if (data.responseJSON.error == 'missing_data') {
+        $('#loginname').addClass("animated pulse");
+        $('#password').addClass("animated pulse");
+        setTimeout(function () {
+          $('#loginname').removeClass("animated pulse");
+          $('#password').removeClass("animated pulse");
+        },1000);
+        return ;
+      }
+      if (data.responseJSON.error == "wrong_data") {
+        $('#loginname').addClass("animated shake");
+        $('#password').addClass("animated shake");
+        $('#sys_msg').text("Password or Login Name not found.");
+        $('#password').val("");
+        setTimeout(function () {
+          $('#loginname').removeClass("animated shake");
+          $('#password').removeClass("animated shake");
+        },1000);
+        return ;
+      }
     }
-    document.cookie = "fileserver_session="+data.fileserver_session+";";
-    location.reload();
-  })
-
+  );
 }

@@ -4,11 +4,13 @@ from importlib import reload
 import traceback
 
 def main(BASE, info, dirs):
-	print(info)
-
 	#main site
 	if len(info['path']) == 0:
 		return main_site(BASE, info)
+
+	#api stuff
+	elif info['path'][0].lower() == 'api':
+		return BASE.api.call(BASE, info)
 
 	#icon
 	elif info['path'][0] == 'favicon.ico':
@@ -42,9 +44,8 @@ def main(BASE, info, dirs):
 
 def main_site(BASE, info):
 	site = open('_WEB_/content/main.html', 'r').read()
-	nav = open('_WEB_/content/navbar_content.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", nav)
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active=''))
 
 
 	class r (object):

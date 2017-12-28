@@ -27,16 +27,15 @@ def fileserver(BASE, info):
 
 	if info['cookies'].get('fileserver_session', None) != None:
 
-		return fileserver_main()
+		return fileserver_main(BASE)
 	else:
-		return fileserver_login()
+		return fileserver_login(BASE)
 
-def fileserver_main():
+def fileserver_main(BASE):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/fileserver/fileserver_main.html', 'r').read()
-	nav = open('_WEB_/content/navbar_content.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", nav)
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='db'))
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -44,55 +43,14 @@ def fileserver_main():
 		header = return_header
 	return r
 
-def fileserver_login():
+def fileserver_login(BASE):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/fileserver/fileserver_login.html', 'r').read()
-	nav = open('_WEB_/content/navbar_content.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", nav)
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='db'))
 
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200
 		header = return_header
-	return r
-
-def login_user(BASE, info):
-	content = info["content"]
-	try:
-		f = json.loads(content)
-	except:
-		f = {}
-
-	password = f.get("password", "")
-	login = f.get("login", "")
-
-	if password == "" or login == "":
-		class r (object):
-			content = json.dumps(dict(error="missing_data")).encode("UTF-8")
-			response = 200
-			header = []
-		return r
-
-	#get user
-	search_str = "data['loginname'] == '{0}' and data['password'] == '{1}'".format(login, hashlib.sha256(password.encode("UTF-8")).hexdigest())
-	res=BASE.PhaazeDB.select(of="file_server/user", where=search_str)
-	file_server_user = res['data'][0] if len(res['data']) > 0 else None
-
-	if file_server_user == None:
-		class r (object):
-			content = json.dumps(dict(error="wrong_data")).encode("UTF-8")
-			response = 200
-			header = []
-		return r
-
-	new_session = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
-
-	entry = dict(session_id = new_session, username=file_server_user['loginname'])
-	BASE.PhaazeDB.insert(into="session/file_server", content=entry)
-
-	class r (object):
-		content = json.dumps(dict(fileserver_session=new_session)).encode("UTF-8")
-		response = 200
-		header = []
 	return r
