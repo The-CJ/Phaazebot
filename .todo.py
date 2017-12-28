@@ -6,6 +6,8 @@
 # TODO: Sub alert Message
 # TODO: Twitch raid message
 # TODO: Add method to reset level on leave
-# TODO: Add Gist response to all quote/commands/etc...
+
+# TODO: make a /admin
+# TODO: make a /discord/dashboard
 
 # # # # # # # # #
