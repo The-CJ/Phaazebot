@@ -10,4 +10,10 @@
     from {transform:rotate(0deg);}
     to {transform:rotate(360deg);}
 }
-
+.animation-spin {
+	animation-name: spin;
+	animation-duration: 10s!important;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	animation-direction: reverse;
+}

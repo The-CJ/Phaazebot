@@ -72,13 +72,6 @@ a.dark_link:hover {
 	padding: 0;
 }
 
-.animation-spin {
-	animation-name: spin;
-	animation-duration: 10s;
-	animation-iteration-count: infinite;
-	animation-timing-function: linear;
-	animation-direction: reverse;
-}
 
 .profil_picture {
 	border-radius: 50%;

@@ -1,41 +1,77 @@
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+<!--Navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark indigo sticky-top ">
 
-	<!-- Logo -->
-	<a class="navbar-brand" href="/">Phaaze&nbsp;&nbsp;&nbsp;<img src="/img/favicon.ico" style="width:2.5em;"></a>
+    <!-- Navbar brand -->
+    <a class="navbar-brand" href="/">Phaaze&nbsp;&nbsp;&nbsp;<img src="/favicon.ico" height="50" alt="Logo"></a>
+    <!-- Collapse button -->
+    <button class="navbar-toggler" type="button" onclick="javascript:$('#navbarSupportedContent_main').toggleClass('show');">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-	<!-- Links -->
-	<ul class="navbar-nav">
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent_main">
 
-		<li class="dropdown btn" style="padding:1em;">
-			<a class="dark_link dropdown-toggle white-text {selected_discord}" style="cursor: pointer;" href="/discord">Discord</a>
-			<ul class="dropdown-menu pos-relative" style="top:2.6em;">
-				<li>&nbsp;<a href="/discord#Custom">Discord</a></li>
-			</ul>
-		</li>
-		<li class="dropdown btn" style="padding:1em;">
-			<a class="dark_link dropdown-toggle white-text {selected_twitter}" style="cursor: pointer;" href="/twitch">Twitch</a>
-			<ul class="dropdown-menu pos-relative" style="top:2.6em;">
-				<li>&nbsp;<a href="/twitch#Custom">Twitch</a></li>
-			</ul>
-		</li>
-		<li class="dropdown btn" style="padding:1em;">
-			<a class="dark_link dropdown-toggle white-text {selected_osu}" style="cursor: pointer;" href="/osu">Osu</a>
-			<ul class="dropdown-menu pos-relative" style="top:2.6em;">
-				<li>&nbsp;<a href="/osu#Custom">Osu</a></li>
-			</ul>
-		</li>
-		<li class="dropdown btn" style="padding:1em;">
-			<a class="dark_link dropdown-toggle white-text {selected_twitter}" style="cursor: pointer;" href="/twitter">Twitter</a>
-			<ul class="dropdown-menu pos-relative" style="top:2.6em;">
-				<li>&nbsp;<a href="/twitter#Custom">Twitter</a></li>
-			</ul>
-		</li>
-		<li class="dropdown btn" style="padding:1em;">
-			<a class="dark_link dropdown-toggle white-text {selected_db}" style="cursor: pointer;" href="/fileserver">PhaazeDB</a>
-			<ul class="dropdown-menu pos-relative" style="top:2.6em;">
-				<li>&nbsp;<a href="/fileserver#Custom">PhaazeDB</a></li>
-			</ul>
-		</li>
-	</ul>
+        <!-- Links -->
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item {selected_discord}">
+                <a class="nav-link" href="/discord">Discord</a>
+            </li>
+            <li class="nav-item {selected_twitch}">
+                <a class="nav-link" href="/twitch">Twitch</a>
+            </li>
+            <li class="nav-item {selected_osu}">
+                <a class="nav-link" href="/osu">Osu</a>
+            </li>
+            <li class="nav-item {selected_twitter}">
+                <a class="nav-link" href="/twitter">Twitter</a>
+            </li>
+            <li class="nav-item {selected_wiki}">
+              <a class="nav-link" href="/wiki">Wiki</a>
+            </li>
+            <li class="nav-item {selected_db}">
+                <a class="nav-link" href="/fileserver">PhaazeDB</a>
+            </li>
+
+            <!-- Dropdown
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle waves-effect waves-light" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
+          -->
+
+        </ul>
+
+        <ul class="navbar-nav navbar-right stick_to_right">
+          <li class="nav-item">
+            <a class="nav-link" href="https://discord.gg/ZymrebS"><img style="padding:auto;" height="25" src="https://discordapp.com/assets/28174a34e77bb5e5310ced9f95cb480b.png" alt="Discord_Logo_small"></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="mailto:admin@phaaze.net"><span class="material-icons" style="padding:auto;">mail_outline</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/The-CJ/Phaazebot"><span class="material-icons" style="padding:auto;">code</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.patreon.com/the_cj"><img style="padding:auto;" height="20" src="https://reformermag.com/assets/patreon-logo-white-01607e0ba2c55be044409dc3bd9eff4d42a882f2b29593ca99a9e7687da0e481.png" alt="Patreon_Logo_small"></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/bug"><span class="material-icons" style="padding:auto;">bug_report</span></a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/about">About</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/api">API</a>
+          </li>
+        </ul>
+
+    </div>
+    <!-- Collapsible content -->
 
 </nav>
+<!--/.Navbar-->
+
