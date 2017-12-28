@@ -17,3 +17,9 @@ _TWITCH_/_achtive_channels.json
 /utils.py
 server_channel_id_for_news*
 .ropeproject
+_WEB_/css/bootstrap.css
+_WEB_/css/materialize.css
+_WEB_/css/mdb.css
+_WEB_/js/bootstrap.js
+_WEB_/js/materialize.js
+_WEB_/js/mdb.js
