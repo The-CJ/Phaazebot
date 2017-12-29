@@ -1,3 +1,5 @@
+#api/discord/
+
 import json, requests, discord
 
 VERSION = "v6"

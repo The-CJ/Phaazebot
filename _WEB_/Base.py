@@ -7,18 +7,20 @@ import hashlib, random, string
 
 class root(object):
 
-	import _WEB_.js.main as js
-	import _WEB_.css.main as css
-	import _WEB_.img.main as img
-
-	import _WEB_.processing.main as main
-	import _WEB_.processing.page_not_found as page_not_found
-
 	class discord(object):
 		import _WEB_.processing.discord.main as main
 
 	class fileserver(object):
 		import _WEB_.processing.fileserver.main as main
+
+	import _WEB_.js.main as js
+	import _WEB_.css.main as css
+	import _WEB_.img.main as img
+
+	import _WEB_.processing.admin as admin
+	import _WEB_.processing.main as main
+	import _WEB_.processing.page_not_found as page_not_found
+
 
 class Utils(object):
 
@@ -82,7 +84,7 @@ class Utils(object):
 
 def process(BASE, info):
 
-	if ""=="":#try:
+	if ""=="":
 		r = root.main.main(BASE, info, root)
 
 	return r

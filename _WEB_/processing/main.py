@@ -3,7 +3,7 @@
 from importlib import reload
 import traceback
 
-def main(BASE, info, dirs):
+def main(BASE, info, root):
 	#main site
 	if len(info['path']) == 0:
 		return main_site(BASE, info)
@@ -13,34 +13,39 @@ def main(BASE, info, dirs):
 		return BASE.api.call(BASE, info)
 
 	#icon
-	elif info['path'][0] == 'favicon.ico':
+	elif info['path'][0].lower() == 'favicon.ico':
 		return get_favicon()
 
 	#something with js
-	elif info['path'][0] == 'js':
+	elif info['path'][0].lower() == 'js':
 		info['path'].pop(0)
-		return dirs.js.main(BASE, info, dirs)
+		return root.js.main(BASE, info, root)
 
-	#something with js
-	elif info['path'][0] == 'css':
+	#something with css
+	elif info['path'][0].lower() == 'css':
 		info['path'].pop(0)
-		return dirs.css.main(BASE, info, dirs)
+		return root.css.main(BASE, info, root)
 
 	#some image
-	elif info['path'][0] == 'img':
+	elif info['path'][0].lower() == 'img':
 		info['path'].pop(0)
-		return dirs.img.main(BASE, info, dirs)
+		return root.img.main(BASE, info, root)
+
+	#admin Page
+	elif info['path'][0].lower() == 'admin':
+		info['path'].pop(0)
+		return root.admin.main(BASE, info, root)
 
 	#leads to another site
 	else:
 		try:
-			next_file = "dirs.{0}.main.main".format(info['path'][0].lower())
+			next_file = "root.{0}.main.main".format(info['path'][0].lower())
 			info['path'].pop(0)
-			return eval(next_file+"(BASE, info, dirs)")
+			return eval(next_file+"(BASE, info, root)")
 
 		except:
 			print(traceback.format_exc())
-			return dirs.page_not_found.page_not_found(BASE, info, dirs)
+			return root.page_not_found.page_not_found(BASE, info, root)
 
 def main_site(BASE, info):
 	site = open('_WEB_/content/main.html', 'r').read()

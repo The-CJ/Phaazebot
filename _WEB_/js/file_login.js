@@ -33,7 +33,7 @@ function submit_login() {
       if (data.responseJSON.error == "wrong_data") {
         $('#loginname').addClass("animated shake");
         $('#password').addClass("animated shake");
-        $('#sys_msg').text("Password or Login Name not found.");
+        $('#sys_msg').text("Password or Login Name wrong.");
         $('#password').val("");
         setTimeout(function () {
           $('#loginname').removeClass("animated shake");
