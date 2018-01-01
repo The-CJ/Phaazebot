@@ -45,12 +45,18 @@ def admin_main(BASE, info):
 
 	#get admin user object
 	admin_user = res_user["data"][0]
-	print(admin_user)
 
 	#Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
-	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(admin_user.get('username', "-Username-")))
+	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(admin_user))
 
+	#replace informations
+	site = site.replace("{discord_active}", "checked" if BASE.active.discord else "")
+	site = site.replace("{discord_bot_name}", BASE.phaaze.user.name)
+	site = site.replace("{discord_bot_id}", BASE.phaaze.user.id)
+	site = site.replace("{discord_bot_discriminator}", "#"+BASE.phaaze.user.discriminator)
+	site = site.replace("{discord_bot_servers}", str(len(BASE.phaaze.servers)))
+	site = site.replace("{discord_bot_avatar}", BASE.phaaze.user.avatar_url)
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -71,11 +77,11 @@ def admin_login(BASE, info, msg=""):
 
 	return r
 
-def format_loggedin_field(name):
+def format_loggedin_field(user):
 	r = """
           <div class="white">
-            <span class="black-text align-middle inline" style="margin:0.5em;">[name]</span>
-            <button type="button" class="btn-danger align-middle inline expandable-btn waves-effect" style="padding:.7em;">
+            <span class="black-text align-middle inline" style="margin:0.5em;">([type]) - [name]</span>
+            <button type="button" class="btn-danger align-middle inline expandable-btn waves-effect" style="padding:.3em;">
               <div class="material-icons align-middle inline">&nbsp;exit_to_app</div>
               <div class="align-middle inline expandable_content">
                 <span onclick="javascript:admin_logout();">Logout</span>
@@ -83,5 +89,6 @@ def format_loggedin_field(name):
             </button>
           </div>
 	"""
-	r = r.replace("[name]", name)
+	r = r.replace("[name]", user.get("username", "--Name--"))
+	r = r.replace("[type]", user.get("type", "N/A"))
 	return r
