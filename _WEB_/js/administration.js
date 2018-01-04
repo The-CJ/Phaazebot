@@ -1,10 +1,10 @@
-function discord_logout() {
-  var x = getCookie("discord_session");
+function admin_logout() {
+  var x = getCookie("admin_session");
   var r = {};
-  r['discord_session'] = x;
-  $.post("/api/discord/logout", JSON.stringify(r), function (data) {
-    document.cookie = "discord_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"
-    window.location = "/discord";
+  r['admin_session'] = x;
+  $.post("/api/admin/logout", JSON.stringify(r), function (data) {
+    document.cookie = "admin_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"
+    window.location = "/admin";
   })
 }
 
@@ -24,37 +24,24 @@ function getCookie(cname) {
     return "";
 }
 
-function load_discord_servers() {
-  var x = getCookie("discord_session");
+function change_name() {
   var r = {};
-  r['discord_session'] = x;
-  $.post("/api/discord/get_servers", JSON.stringify(r), function (data) {
-    for (var server in data) {
-      if (data[server].owner == true) {
-        var preset = $("#server_preset").html();
-        preset = preset.replace(/\[serverid\]/g, data[server].id);
-        preset = preset.replace(/\[icon\]/g, data[server].icon);
-        preset = preset.replace(/\[server_name\]/g, escapeHtml(data[server].name));
-        $('#your_servers').append(preset);
-      } else if (data[server].manage == true) {
-        var preset = $("#server_preset").html();
-        preset = preset.replace(/\[serverid\]/g, data[server].id);
-        preset = preset.replace(/\[icon\]/g, data[server].icon);
-        preset = preset.replace(/\[server_name\]/g, escapeHtml(data[server].name));
-        $('#manageble_servers').append(preset);
-      } else {
-        var preset = $("#server_preset").html();
-        preset = preset.replace(/\[serverid\]/g, data[server].id);
-        preset = preset.replace(/\[icon\]/g, data[server].icon);
-        preset = preset.replace(/\[server_name\]/g, escapeHtml(data[server].name));
-        $('#viewable_servers').append(preset);
-      }
-    }
-    }
-  )
+  r['name'] = $('#discord_bot_name').val();
+  $.post("/api/discord/change_bot_name", JSON.stringify(r), function (data) {})
 }
 
-$('document').ready(function(){
-  load_discord_servers();
-});
-
+function change_picture() {
+  var r = document.getElementById('picture_upload').files[0];
+  var reader = new FileReader();
+  reader.onload = function (evt) {
+    $.ajax({
+       type: "POST",
+       url: "/api/discord/change_bot_picture",
+       data: evt.target.result,
+       success: function (data) { console.debug(data); },
+	   processData: false,
+	   contentType: "application/octet-stream",
+   });
+ }
+  reader.readAsArrayBuffer(r);
+}

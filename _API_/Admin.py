@@ -42,3 +42,31 @@ def login(BASE, info={}, from_web=False, **kwargs):
 		response = 200
 		header = [('Content-Type', 'application/json')]
 	return r
+
+def logout(BASE, info={}, from_web=False, **kwargs):
+	"""In Only"""
+	content = info.get("content", "")
+	try:
+		f = json.loads(content)
+	except:
+		f = {}
+
+	for key in kwargs:
+		f[key] = kwargs[key]
+
+	session_key = f.get("admin_session", None)
+	if session_key == None:
+		class r (object):
+			content = json.dumps(dict(error='missing_session_key')).encode("UTF-8")
+			response = 400
+			header = [('Content-Type', 'application/json')]
+		return r
+
+	res = BASE.PhaazeDB.delete(of="session/admin", where="data['session'] == '{}'".format(session_key))
+
+	if res['hits'] == 1:
+		class r (object):
+			content = json.dumps(dict(msg='success')).encode("UTF-8")
+			response = 200
+			header = [('Content-Type', 'application/json')]
+		return r
