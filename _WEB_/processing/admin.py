@@ -59,6 +59,9 @@ def admin_main(BASE, info):
 	site = site.replace("{discord_bot_avatar}", BASE.phaaze.user.avatar_url)
 
 	site = site.replace("{twitch_active}", "checked" if BASE.active.twitch_irc else "")
+	site = site.replace("{twitch_alert_active}", "checked" if BASE.active.twitch_alert else "")
+	site = site.replace("{osu_active}", "checked" if BASE.active.osu_irc else "")
+	site = site.replace("{web_active}", "checked" if BASE.active.web else "")
 
 	class r (object):
 		content = site.encode("UTF-8")
