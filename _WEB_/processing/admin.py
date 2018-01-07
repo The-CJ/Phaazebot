@@ -58,6 +58,8 @@ def admin_main(BASE, info):
 	site = site.replace("{discord_bot_servers}", str(len(BASE.phaaze.servers)))
 	site = site.replace("{discord_bot_avatar}", BASE.phaaze.user.avatar_url)
 
+	site = site.replace("{twitch_active}", "checked" if BASE.active.twitch_irc else "")
+
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200

@@ -70,3 +70,17 @@ def logout(BASE, info={}, from_web=False, **kwargs):
 			response = 200
 			header = [('Content-Type', 'application/json')]
 		return r
+
+def toggle_moduls(BASE, info={}, from_web=False, **kwargs):
+	"""toggle main Moduls status"""
+	session = info.get("cookies",{}).get("admin_session", None)
+	admin = BASE.api.utils.get_admin_by_session(BASE, session)
+	if admin.get('type', None) == 'superadmin':
+		module = info['values'].get('modul',None)
+		if module == None: return
+
+		if eval("BASE.active.{} == True".format(module)):
+			setattr(BASE.active, module, False)
+
+		else:
+			setattr(BASE.active, module, True)

@@ -8,6 +8,11 @@ function admin_logout() {
   })
 }
 
+function toggle_module(mo) {
+  $.post("/api/admin/toggle_moduls?modul="+mo, function (data) {
+  })
+}
+
 function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);

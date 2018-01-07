@@ -45,73 +45,55 @@ def change_bot_picture(BASE, info={}, from_web=False, **kwargs):
 		session = info.get("cookies",{}).get("admin_session", None)
 		if session != None:
 			#there give me a session -> check it
-			admin_session =  BASE.PhaazeDB.select(of="session/admin", where='data["session"] == "{}"'.format(session))
-			if admin_session['hits'] == 1:
-				admin_user_id = admin_session['data'][0].get("user_id", "")
-				admin_user = BASE.PhaazeDB.select(of="admin/user", where='data["id"] == {}'.format(admin_user_id))
+			admin = BASE.api.utils.get_admin_by_session(BASE, session)
 
-				if admin_user['hits'] == 1:
-					admin = admin_user['data'][0]
+			if admin == None:
+				class r (object):
+					content = json.dumps(dict(error="unauthorized", msg="session or user not found")).encode("UTF-8")
+					response = 400
+					header = [('Content-Type', 'application/json')]
+				return r
 
-					if admin.get("type", None) == "superadmin" or admin.get("type", None) == "admin":
-						func = BASE.phaaze.edit_profile(avatar=info['content'])
-						f = asyncio.ensure_future(func, loop=BASE.Discord_loop)
-						class r (object):
-							content = json.dumps(dict(msg="ok")).encode("UTF-8")
-							response = 200
-							header = [('Content-Type', 'application/json')]
-						return r
-
-					else:
-						class r (object):
-							content = json.dumps(dict(error='unauthorized', msg="user must have 'admin' or higher")).encode("UTF-8")
-							response = 401
-							header = [('Content-Type', 'application/json')]
-						return r
-
-				else:
-					class r (object):
-						content = json.dumps(dict(error='not_found', msg="admin user not found, pls report this")).encode("UTF-8")
-						response = 404
-						header = [('Content-Type', 'application/json')]
-					return r
+			if admin.get("type", None) == "superadmin" or admin.get("type", None) == "admin":
+				func = BASE.phaaze.edit_profile(avatar=info['content'])
+				f = asyncio.ensure_future(func, loop=BASE.Discord_loop)
+				class r (object):
+					content = json.dumps(dict(msg="ok")).encode("UTF-8")
+					response = 200
+					header = [('Content-Type', 'application/json')]
+				return r
 
 			else:
 				class r (object):
-					content = json.dumps(dict(error='not_found', msg="session could not be found")).encode("UTF-8")
-					response = 404
+					content = json.dumps(dict(error='unauthorized', msg="user must have 'admin' or higher")).encode("UTF-8")
+					response = 401
 					header = [('Content-Type', 'application/json')]
 				return r
 
 		#via url calls wiht values
 		cred = info.get("values",{})
 		if cred.get("user", None) != None and cred.get("password", None) != None:
-			username = cred.get("user", "")
-			password = hashlib.sha256(cred.get("password", "").encode("UTF-8")).hexdigest()
+			admin = BASE.api.utils.get_admin_by_url_values(BASE, info.get("values",{}))
 
-			admin_user = BASE.PhaazeDB.select(of="admin/user", where='data["username"] == "{0}" and data["password"] == "{1}"'.format(username, password))
-			if admin_user['hits'] == 1:
-				admin = admin_user['data'][0]
+			if admin == None:
+				class r (object):
+					content = json.dumps(dict(error="unauthorized", msg="'user' or 'password' wrong")).encode("UTF-8")
+					response = 401
+					header = [('Content-Type', 'application/json')]
+				return r
 
-				if admin.get("type", None) == "superadmin" or admin.get("type", None) == "admin":
-					func = BASE.phaaze.edit_profile(avatar=info['content'])
-					f = asyncio.ensure_future(func, loop=BASE.Discord_loop)
-					class r (object):
-						content = json.dumps(dict(msg="ok")).encode("UTF-8")
-						response = 200
-						header = [('Content-Type', 'application/json')]
-					return r
-				else:
-					class r (object):
-						content = json.dumps(dict(error='unauthorized', msg="user must have 'admin' or higher")).encode("UTF-8")
-						response = 401
-						header = [('Content-Type', 'application/json')]
-					return r
-
+			if admin.get("type", None) == "superadmin" or admin.get("type", None) == "admin":
+				func = BASE.phaaze.edit_profile(avatar=info['content'])
+				f = asyncio.ensure_future(func, loop=BASE.Discord_loop)
+				class r (object):
+					content = json.dumps(dict(msg="ok")).encode("UTF-8")
+					response = 200
+					header = [('Content-Type', 'application/json')]
+				return r
 			else:
 				class r (object):
-					content = json.dumps(dict(error='not_found', msg="admin user not found, user or password wrong")).encode("UTF-8")
-					response = 404
+					content = json.dumps(dict(error='unauthorized', msg="user must have 'admin' or higher")).encode("UTF-8")
+					response = 401
 					header = [('Content-Type', 'application/json')]
 				return r
 
