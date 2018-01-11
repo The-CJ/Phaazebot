@@ -13,6 +13,12 @@ class root(object):
 	class fileserver(object):
 		import _WEB_.processing.fileserver.main as main
 
+	class about(object):
+		import _WEB_.processing.about.main as main
+
+	class wiki(object):
+		import _WEB_.processing.wiki.main as main
+
 	import _WEB_.js.main as js
 	import _WEB_.css.main as css
 	import _WEB_.img.main as img
