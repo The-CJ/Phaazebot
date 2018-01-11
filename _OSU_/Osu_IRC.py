@@ -14,8 +14,13 @@ class _IRC_():
 		self.oauth = self.BASE.access.Osu_IRC_Token
 		self.nickname = "Phaazebot"
 
-		self.hold_connetion_open = True
+		self.running = True
 		self.connection = None
+
+	async def shutdown(self):
+		self.running = False
+		await asyncio.sleep(0.5)
+		self.connection.close()
 
 	#utils
 	async def send_pong(self):
@@ -37,21 +42,21 @@ class _IRC_():
 
 	#comms
 	async def send_message(self, channel, message):
-		if self.hold_connetion_open: self.connection.send(bytes("PRIVMSG {0} :{1}\r\n".format(channel.lower(), message), 'UTF-8'))
+		if self.running: self.connection.send(bytes("PRIVMSG {0} :{1}\r\n".format(channel.lower(), message), 'UTF-8'))
 
 	async def join_channel(self, channel):
-		if self.hold_connetion_open: self.connection.send(bytes("JOIN #{0}\r\n".format(channel.lower()), 'UTF-8'))
+		if self.running: self.connection.send(bytes("JOIN #{0}\r\n".format(channel.lower()), 'UTF-8'))
 
 	async def part_channel(self, channel):
-		if self.hold_connetion_open: self.connection.send(bytes("PART #{0}\r\n".format(channel.lower()), 'UTF-8'))
+		if self.running: self.connection.send(bytes("PART #{0}\r\n".format(channel.lower()), 'UTF-8'))
 
 	#main connection
 	async def run(self):
-		while self.BASE.active.osu_irc:
+		while self.running:
 			self.last_ping = time.time()
 
 			#init connection
-			if self.hold_connetion_open:
+			if self.running:
 				#connect to server
 				setattr(self, "connection", socket.socket())
 				try:
@@ -71,7 +76,7 @@ class _IRC_():
 
 				self.BASE.vars.osu_IRC_is_NOT_ready = False
 
-			while self.hold_connetion_open == True and self.BASE.active.osu_irc:
+			while self.running:
 				data_cluster = ""
 
 				disconnected = int(time.time()) - int(self.last_ping)
@@ -116,17 +121,6 @@ class _IRC_():
 				except socket.timeout:
 					await asyncio.sleep(0.025)
 
-			else:
-				#connection is ordert to close and wait for restart
-				self.connection.close()
-				self.BASE.moduls.Console.CYAN("REMOTE", "Osu IRC connection has been disabled")
-				while not self.hold_connetion_open:
-					#holding connection "trapped" in a endless loop
-					await asyncio.sleep(1)
-				else:
-					#connection is ordert to reconnect
-					self.BASE.moduls.Console.CYAN("REMOTE", "Osu IRC connection has been enabled")
-					continue
 
 class Get_classes_from_data(object):
 	"""Class contains all init-classes for Osu IRC data"""

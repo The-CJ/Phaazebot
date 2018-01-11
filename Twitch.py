@@ -30,6 +30,8 @@ class u_streams(object):
 #BASE.twitch_alert_obj
 class alerts(object):
 	def __init__(self, BASE):
+		self.running = True
+
 		#add to BASE
 		self.BASE = BASE
 		BASE.twitch_alert_obj = self
@@ -41,6 +43,9 @@ class alerts(object):
 
 		self.header = {"Client-ID": self.key, "Accept": "application/vnd.twitchtv.v5+json"}
 
+	def stop(self):
+		self.running = False
+
 	async def custom_call(self, _url):
 		try:
 			resp = requests.get(_url, headers = self.header)
@@ -48,8 +53,9 @@ class alerts(object):
 		except:
 			return {'status': 500}
 
+	#loop func
 	async def track(self):
-		while self.BASE.active.twitch_alert:
+		while self.running:
 
 			if self.BASE.vars.discord_is_NOT_ready or self.BASE.vars.block_TW_alerts: continue
 
@@ -120,7 +126,11 @@ class alerts(object):
 			for C in final_formated_list:
 				await self.BASE.twitch_alert_obj.check_if_live__format_and_send(C)
 
-			await asyncio.sleep(20)
+			if self.running: await asyncio.sleep(4)
+			if self.running: await asyncio.sleep(4)
+			if self.running: await asyncio.sleep(4)
+			if self.running: await asyncio.sleep(4)
+			if self.running: await asyncio.sleep(4)
 
 	async def check_if_live__format_and_send(self, stream):
 		#is live ?

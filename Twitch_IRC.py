@@ -26,6 +26,8 @@ class _IRC_():
 		self.connection = None
 
 	async def shutdown(self):
+		self.running = False
+		await asyncio.sleep(0.5)
 		self.connection.close()
 
 	#utils
