@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Phaaze - Wiki</title>
+		<title>Phaaze - Wiki | Edit <!-- page_index --></title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.css">
@@ -15,12 +15,16 @@
 		<!-- Inserted via get_navbar() -->
 		<!-- Navbar -->
 
-		<a class="btn float-right blue" href="/wiki?page=<!-- page -->&edit" style="border-radius:50%;padding: 1em 1em 1em 1em;margin:1em;">
-			<i class="material-icons">mode_edit</i>
-		</a>
+		<div class="container">
+			<div class="col">
+				<hr>
+				<h1 class="white-text text-center">Edit of Page: <!-- page_index --></h1>
+				<hr>
+			</div>
 
-		<!-- Inserted via give_about_content() -->
-		<!-- about_content -->
+			<textarea class="white-text" style="height:297mm;"><!-- page_content --></textarea>
+
+		</div>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>

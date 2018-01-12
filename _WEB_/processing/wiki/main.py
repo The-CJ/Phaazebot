@@ -1,7 +1,7 @@
 #BASE.moduls._Web_.Base.root.wiki.main
 
 from importlib import reload
-import json, hashlib, random, string
+import json, hashlib, random, string, html
 
 def main(BASE, info, dirs):
 	#/wiki
@@ -19,6 +19,10 @@ def main(BASE, info, dirs):
 			return dirs.page_not_found.page_not_found(BASE, info, dirs)
 
 def wiki(BASE, info):
+	edit = info.get('values', {}).get("edit", False)
+	if edit:
+		return edit_page(BASE, info)
+
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/wiki/root.html', 'r').read()
@@ -31,6 +35,28 @@ def wiki(BASE, info):
 		content = open('_WEB_/content/wiki/page_main.html', 'r').read()
 
 	site = site.replace("<!-- about_content -->", content)
+	site = site.replace("<!-- page -->", page_index)
+
+	class r (object):
+		content = site.encode("UTF-8")
+		response = 200
+		header = return_header
+	return r
+
+def edit_page(BASE, info):
+	return_header = [('Content-Type','text/html')]
+
+	site = open('_WEB_/content/wiki/edit.html', 'r').read()
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='wiki'))
+
+	page_index = info.get('values', {}).get("page", "main")
+	try:
+		content = open('_WEB_/content/wiki/page_{}.html'.format(page_index), 'r').read()
+	except:
+		content = open('_WEB_/content/wiki/page_main.html', 'r').read()
+
+	site = site.replace("<!-- page_content -->", html.escape(content))
+	site = site.replace("<!-- page_index -->", html.escape(page_index))
 
 	class r (object):
 		content = site.encode("UTF-8")
