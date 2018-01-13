@@ -1,8 +1,8 @@
-#BASE.moduls._Web_.Base.root.discord.main
+#BASE.moduls._Web_.Base.root.discord.dashboard
 
 import http.cookies as cookie
 from importlib import reload
-import asyncio, datetime, requests, html
+import asyncio, datetime, requests, html, time
 
 DISCORD_BOT_ID = "180679855422177280"
 
@@ -43,21 +43,20 @@ def dashboard(BASE, info, server_id):
 	if discord_server_data.get("code", None) == 50001:
 		# TODO: Message to User that Phaaze is not on this server and invite
 		print("Can't show")
+		return
 
-	#get saved settings
-	#file_call = BASE.moduls.Utils.get_server_file(BASE, server_id)
-	#loop = asyncio.new_event_loop()
-	#file = loop.run_until_complete(file_call)
-	#print(file)
-	#FIXME: #Get Files Somehow..... pls send help
-
-
+	f = asyncio.Future()
+	asyncio.ensure_future(BASE.call_from_async(f, BASE.moduls.Utils.get_server_file(BASE, server_id) ), loop=BASE.Discord_loop)
+	while not f.done():
+		time.sleep(0.01)
+	saved_settings = f.result()
 
 	#Finish up -- Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
 	site = site.replace("<!-- logged_in_user -->", BASE.moduls._Web_.Utils.discord_loggedin_field(image_path, discord_user_data.get('username', "-Username-")))
 	site = site.replace("<!-- Server_name -->", discord_server_data.get('name', "[Server N/A]"))
 	site = site.replace("<!-- json_return__data -->", html.escape(str(discord_server_data)))
+	site = site.replace("<!-- json_return__data_info -->", html.escape(str(saved_settings)))
 
 	#add profile Picture
 
