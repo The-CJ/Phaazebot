@@ -3,7 +3,7 @@
 from importlib import reload
 import json, hashlib, random, string, html
 
-def main(BASE, info, dirs):
+def main(BASE, info, root):
 	#/wiki
 	if len(info['path']) == 0:
 		return wiki(BASE, info)
@@ -11,12 +11,12 @@ def main(BASE, info, dirs):
 	#leads to another site - /wiki/[something]
 	else:
 		try:
-			next_file = "dirs.wiki.{0}.main.main".format(info['path'][0].lower())
+			next_file = "root.wiki.{0}.main.main".format(info['path'][0].lower())
 			info['path'].pop(0)
-			return eval(next_file+"(BASE, info, dirs)")
+			return eval(next_file+"(BASE, info, root)")
 
 		except:
-			return dirs.page_not_found.page_not_found(BASE, info, dirs)
+			return root.page_not_found.page_not_found(BASE, info, root)
 
 def wiki(BASE, info):
 	edit = info.get('values', {}).get("edit", False)

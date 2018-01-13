@@ -3,7 +3,7 @@
 from importlib import reload
 import traceback
 
-def main(BASE, info, dirs):
+def main(BASE, info, root):
 	#/admin
 	if len(info['path']) == 0:
 		return admin(BASE, info)
@@ -11,12 +11,12 @@ def main(BASE, info, dirs):
 	#leads to another site - /admin/[something]
 	else:
 		try:
-			next_path = "dirs.admin.{0}.main".format(info['path'][0].lower())
+			next_path = "root.admin.{0}.main".format(info['path'][0].lower())
 			info['path'].pop(0)
-			return eval(next_path+"(BASE, info, dirs)")
+			return eval(next_path+"(BASE, info, root)")
 
 		except:
-			return dirs.page_not_found.page_not_found(BASE, info, dirs)
+			return root.page_not_found.page_not_found(BASE, info, root)
 
 def admin(BASE, info):
 	return_header = [('Content-Type','text/html')]

@@ -2,24 +2,20 @@
 
 import http.cookies as cookie
 from importlib import reload
-import asyncio, datetime, requests
+import asyncio, datetime, requests, html
 
 DISCORD_BOT_ID = "180679855422177280"
 
-def main(BASE, info, dirs):
+def main(BASE, info, root):
 	#/discord
 	if len(info['path']) == 0:
 		return discord(BASE, info)
 
-	#leads to another site - /discord/[something]
-	else:
-		try:
-			next_path = "dirs.discord.{0}.main".format(info['path'][0].lower())
-			info['path'].pop(0)
-			return eval(next_path+"(BASE, info, dirs)")
+	elif info['path'][0].lower() == "dashboard":
+		return root.discord.dashboard.main(BASE, info)
 
-		except:
-			return dirs.page_not_found.page_not_found(BASE, info, dirs)
+	else:
+		return root.page_not_found.page_not_found(BASE, info, root)
 
 def discord(BASE, info):
 	return_header = [('Content-Type','text/html')]
@@ -99,6 +95,6 @@ def format_loggedin_field(image_path, name):
             </button>
           </div>
 	"""
-	r = r.replace("[name]", name)
+	r = r.replace("[name]", html.escape(name))
 	r = r.replace("[path]", image_path)
 	return r

@@ -1,6 +1,6 @@
 import html
 
-def page_not_found(BASE, info, dirs):
+def page_not_found(BASE, info, root):
 	page = open('_WEB_/content/page_not_found.html', 'r').read()
 
 	page = page.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active=''))

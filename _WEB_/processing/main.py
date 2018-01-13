@@ -36,16 +36,29 @@ def main(BASE, info, root):
 		info['path'].pop(0)
 		return root.admin.main(BASE, info, root)
 
+	#discord
+	elif info['path'][0].lower() == 'discord':
+		info['path'].pop(0)
+		return root.discord.main.main(BASE, info, root)
+
+	#fileserver
+	elif info['path'][0].lower() == 'fileserver':
+		info['path'].pop(0)
+		return root.fileserver.main.main(BASE, info, root)
+
+	#wiki
+	elif info['path'][0].lower() == 'wiki':
+		info['path'].pop(0)
+		return root.wiki.main.main(BASE, info, root)
+
+	#about
+	elif info['path'][0].lower() == 'about':
+		info['path'].pop(0)
+		return root.about.main.main(BASE, info, root)
+
 	#leads to another site
 	else:
-		try:
-			next_file = "root.{0}.main.main".format(info['path'][0].lower())
-			info['path'].pop(0)
-			return eval(next_file+"(BASE, info, root)")
-
-		except:
-			print(traceback.format_exc())
-			return root.page_not_found.page_not_found(BASE, info, root)
+		return root.page_not_found.page_not_found(BASE, info, root)
 
 def main_site(BASE, info):
 	site = open('_WEB_/content/main.html', 'r').read()
