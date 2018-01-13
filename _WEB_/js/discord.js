@@ -53,8 +53,3 @@ function load_discord_servers() {
     }
   )
 }
-
-$('document').ready(function(){
-  load_discord_servers();
-});
-
