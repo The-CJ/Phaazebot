@@ -58,6 +58,7 @@ def main(BASE, info, root):
 
 	#leads to another site
 	else:
+		print(info['path'][0])
 		return root.page_not_found.page_not_found(BASE, info, root)
 
 def main_site(BASE, info):
