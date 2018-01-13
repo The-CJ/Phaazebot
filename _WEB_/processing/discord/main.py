@@ -11,6 +11,7 @@ def main(BASE, info, root):
 	if len(info['path']) == 0:
 		return discord(BASE, info)
 
+
 	elif info['path'][0].lower() == "dashboard":
 		info['path'].pop(0)
 		return root.discord.dashboard.main(BASE, info, root)

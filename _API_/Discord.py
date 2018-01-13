@@ -120,6 +120,25 @@ def get_user(BASE, oauth_key=None, info={},from_web=False):
 	except Exception as e:
 		raise e
 
+def get_server(BASE, info={}, from_web=False, **kwargs):
+	"""Out only"""
+	if from_web:
+		class r (object):
+			content = json.dumps(dict(error='forbidden', msg="system only")).encode("UTF-8")
+			response = 403
+			header = [('Content-Type', 'application/json')]
+		return r
+
+	server_id = kwargs.get("server_id", None)
+
+	if server_id == None: raise Exception
+
+	try:
+		t = requests.get(ROOT+"guilds/{}".format(server_id), headers={'Authorization': 'Bot {}'.format(BASE.access.Discord_Phaaze)})
+		return t.json()
+	except Exception as e:
+		raise e
+
 def get_servers(BASE, info={}, from_web=False, **kwargs):
 	"""In and Out"""
 	content = info.get("content", "")
