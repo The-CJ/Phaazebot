@@ -18,13 +18,28 @@
 		<!-- Navbar -->
 
 		<div class="container">
-			<div class="row" style="margin-top:2em;">
+			<div class="row text-center">
+				<div class="col">
+					<a href="/admin/view-files">
+						<button type="button" class="btn btn-info" href="/discord" style="padding:2em;margin:2em;text-transform: none;">View / Edit<br>Files</button>
+					</a>
+				</div>
+				<div class="col">
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="container">
+			<div class="row" style="margin-top:1em;">
 				<h2 class="white-text">Main Modules</h2>
 			</div>
 
 			<!--  Discord Stuff -->
 			<div class="row">
-				<button class="text-center btn btn-block " type="button" onclick="javascript:$('#discord_field').toggleClass('show');" style="margin:0;background-color:#7289DA;" id="discord_jump_section">Discord</button>
+				<button class="text-center btn btn-block " type="button" onclick="javascript:$('#discord_field').collapse('toggle');" style="margin:0;background-color:#7289DA;" id="discord_jump_section">Discord</button>
 			</div>
 
 			<div class="collapse text-center" id="discord_field">
@@ -167,12 +182,11 @@
 
 		</div>
 
-
 		</div>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 		<script src="/js/basic.js"></script>
 		<script src="/js/administration.js"></script>
 	</body>

@@ -26,6 +26,30 @@ def admin(BASE, info):
 	else:
 		return admin_login(BASE, info)
 
+def edit_page(BASE, info):
+	#TODO: much to do
+	#https://highlightjs.org/download/
+	return_header = [('Content-Type','text/html')]
+
+	site = open('_WEB_/content/admin/edit.html', 'r').read()
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='wiki'))
+
+	page_index = info.get('values', {}).get("page", "main")
+	try:
+		content = open('_WEB_/content/wiki/page_{}.html'.format(page_index), 'r').read()
+	except:
+		content = open('_WEB_/content/wiki/page_main.html', 'r').read()
+
+	site = site.replace("<!-- page_content -->", html.escape(content))
+	site = site.replace("<!-- page_index -->", html.escape(page_index))
+
+	class r (object):
+		content = site.encode("UTF-8")
+		response = 200
+		header = return_header
+	return r
+
+
 def admin_main(BASE, info):
 	return_header = [('Content-Type','text/html')]
 
