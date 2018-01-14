@@ -45,16 +45,12 @@ def dashboard(BASE, info, server_id):
 		print("Can't show")
 		return
 
-	f = asyncio.Future()
-	asyncio.ensure_future(BASE.call_from_async(f, BASE.moduls.Utils.get_server_file(BASE, server_id) ), loop=BASE.Discord_loop)
-	while not f.done():
-		time.sleep(0.01)
-	saved_settings = f.result()
+	saved_settings = BASE.call_from_async( BASE.moduls.Utils.get_server_file(BASE, server_id), BASE.Discord_loop )
 
 	#Finish up -- Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
 	site = site.replace("<!-- logged_in_user -->", BASE.moduls._Web_.Utils.discord_loggedin_field(image_path, discord_user_data.get('username', "-Username-")))
-	site = site.replace("<!-- Server_name -->", discord_server_data.get('name', "[Server N/A]"))
+	site = site.replace("<!-- Server_name -->", html.escape(discord_server_data.get('name', "[Server N/A]")))
 	site = site.replace("<!-- json_return__data -->", html.escape(str(discord_server_data)))
 	site = site.replace("<!-- json_return__data_info -->", html.escape(str(saved_settings)))
 
