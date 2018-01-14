@@ -1,78 +1,57 @@
 #BASE.moduls._Web_.Base.root.admin
 
 from importlib import reload
-import traceback
+import traceback, html
 
 def main(BASE, info, root):
-	#/admin
-	if len(info['path']) == 0:
-		return admin(BASE, info)
 
-	#leads to another site - /admin/[something]
-	else:
-		try:
-			next_path = "root.admin.{0}.main".format(info['path'][0].lower())
-			info['path'].pop(0)
-			return eval(next_path+"(BASE, info, root)")
+	session = info['cookies'].get('admin_session', None)
 
-		except:
-			return root.page_not_found.page_not_found(BASE, info, root)
-
-def admin(BASE, info):
-	return_header = [('Content-Type','text/html')]
-
-	if info['cookies'].get('admin_session', None) != None:
-		return admin_main(BASE, info)
-	else:
+	#no session -> login
+	if session == None:
 		return admin_login(BASE, info)
 
-def edit_page(BASE, info):
-	#TODO: much to do
-	#https://highlightjs.org/download/
-	return_header = [('Content-Type','text/html')]
-
-	site = open('_WEB_/content/admin/edit.html', 'r').read()
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='wiki'))
-
-	page_index = info.get('values', {}).get("page", "main")
-	try:
-		content = open('_WEB_/content/wiki/page_{}.html'.format(page_index), 'r').read()
-	except:
-		content = open('_WEB_/content/wiki/page_main.html', 'r').read()
-
-	site = site.replace("<!-- page_content -->", html.escape(content))
-	site = site.replace("<!-- page_index -->", html.escape(page_index))
-
-	class r (object):
-		content = site.encode("UTF-8")
-		response = 200
-		header = return_header
-	return r
-
-
-def admin_main(BASE, info):
-	return_header = [('Content-Type','text/html')]
-
 	#get session
-	search_str = 'data["session"] == "{}"'.format(info['cookies'].get('admin_session', None))
+	search_str = 'data["session"] == "{}"'.format(session)
 	res = BASE.PhaazeDB.select(of="session/admin", where=search_str)
 	if len(res['data']) == 0:
+		#session not found -> login
 		return admin_login(BASE, info, msg="Please login again. (Session expired)")
+
+	#get session object
+	admin_session = res["data"][0]
+
+	#get admin user from session "user_id"
+	search_str = 'data["id"] == {}'.format(admin_session['user_id'])
+	res = BASE.PhaazeDB.select(of="admin/user", where=search_str)
+	if len(res['data']) == 0:
+		return admin_login(BASE, info, msg="Please login again. (User not found)")
 
 	#get admin user object
 	admin_user = res["data"][0]
 
-	site = open('_WEB_/content/admin/admin_main.html', 'r').read()
-	res_user = BASE.PhaazeDB.select(of="admin/user", where='data["id"] == {}'.format(admin_user['user_id']))
-	if len(res_user['data']) == 0:
-		return admin_login(BASE, info, msg="Please login again. (User not found)")
+	#store calculated data
+	dump = dict()
+	dump["session"] = admin_session
+	dump["user"] = admin_user
 
-	#get admin user object
-	admin_user = res_user["data"][0]
+	if len(info['path']) == 0:
+		return admin_main(BASE, info, dump)
+
+	elif info['path'][0] == "view-files":
+		return view_page(BASE, info, dump)
+
+	else:
+		return root.page_not_found.page_not_found(BASE, info, root)
+
+def admin_main(BASE, info, dump):
+	return_header = [('Content-Type','text/html')]
+
+	site = open('_WEB_/content/admin/admin_main.html', 'r').read()
 
 	#Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
-	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(admin_user))
+	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(dump['user']))
 
 	#replace informations
 	site = site.replace("{discord_active}", "checked" if BASE.active.discord else "")
@@ -118,6 +97,46 @@ def format_loggedin_field(user):
             </button>
           </div>
 	"""
-	r = r.replace("[name]", user.get("username", "--Name--"))
+	r = r.replace("[name]", html.escape(user.get("username", "--Name--")))
 	r = r.replace("[type]", user.get("type", "N/A"))
+	return r
+
+def view_page(BASE, info, dump):
+	return_header = [('Content-Type','text/html')]
+
+	site = open('_WEB_/content/admin/view.html', 'r').read()
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
+
+
+
+
+
+	class r (object):
+		content = site.encode("UTF-8")
+		response = 200
+		header = return_header
+
+	return r
+
+def edit_page(BASE, info):
+	#TODO: much to do
+	#https://highlightjs.org/download/
+	return_header = [('Content-Type','text/html')]
+
+	site = open('_WEB_/content/admin/edit.html', 'r').read()
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='wiki'))
+
+	page_index = info.get('values', {}).get("page", "main")
+	try:
+		content = open('_WEB_/content/wiki/page_{}.html'.format(page_index), 'r').read()
+	except:
+		content = open('_WEB_/content/wiki/page_main.html', 'r').read()
+
+	site = site.replace("<!-- page_content -->", html.escape(content))
+	site = site.replace("<!-- page_index -->", html.escape(page_index))
+
+	class r (object):
+		content = site.encode("UTF-8")
+		response = 200
+		header = return_header
 	return r
