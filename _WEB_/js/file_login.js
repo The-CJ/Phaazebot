@@ -14,7 +14,7 @@ function submit_login() {
       $('#password').addClass("animated bounceOutRight");
       $('#sub_button').addClass("animated flipOutX");
       setTimeout(function () {
-        document.cookie = "fileserver_session="+data.fileserver_session+"; Path=\"/\"";
+        setCookie("fileserver_session", data.fileserver_session);
         location.reload();
       },1000);
     }

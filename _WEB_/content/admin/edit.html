@@ -9,20 +9,37 @@
 		<link rel="stylesheet" href="/css/animations.css">
 		<link rel="stylesheet" href="/css/expandable.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/css/mdb.css">
+		<style media="screen">
+			.no-wrapping {
+				white-space: nowrap;
+			}
+		</style>
 	</head>
 	<body class="stylish-color">
 
 		<!-- Inserted via get_navbar() -->
 		<!-- Navbar -->
 
-		<div class="container">
-			<div class="col">
-				<hr>
-				<h1 class="white-text text-center">Edit of Page: <!-- page_index --></h1>
-				<hr>
+		<div class="" style="position:fixed;right:0;margin:3em;margin-top:10em;">
+			<div class="col text-center">
+				<a href="/admin/view-files"><button type="button" class="text-center btn blue">Back</button></a>
+				<br>
+				<button type="button" class="text-center btn blue" onclick="$('#textarea_field').toggleClass('no-wrapping')">Toggle nowrap</button>
+				<br>
+				<button type="button" class="text-center btn red" onclick="alert('Saving isn\'t API supportet for now')">Save</button>
 			</div>
+		</div>
 
-			<textarea class="white-text" style="height:297mm;"><!-- page_content --></textarea>
+		<div class="container">
+			<hr>
+			<div class="row">
+				<div class="col">
+					<h1 class="white-text text-center">Edit of Page: <!-- page_index --></h1>
+				</div>
+			</div>
+			<hr>
+
+			<textarea id="textarea_field" class="white-text" style="height:297mm;"><!-- page_content --></textarea>
 
 		</div>
 
@@ -30,5 +47,6 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
 		<script src="/js/basic.js"></script>
+		<script src="/js/administration.js"></script>
 	</body>
 </html>

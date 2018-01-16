@@ -24,7 +24,7 @@
 				<div class="col-md-6 text-center" style="width: 100%;">
 					<div class="row">
 						<div class="col">
-							<a href="/"><img src="/img/favicon.ico" class="animated rotateIn" style="width: 100%;" id="main_image"></a>
+							<img src="/img/favicon.ico" class="animated rotateIn" style="width: 100%;" id="main_image">
 						</div>
 					</div>
 				</div>
@@ -51,6 +51,11 @@
 				$('#main_image').removeClass('rotateIn');
 				$('#main_image').addClass('animation-spin');
 			});
+			$('#main_image').dblclick(function () {
+				window.location = "/admin";
+				return false;
+			});
+
 		</script>
 	</body>
 </html>

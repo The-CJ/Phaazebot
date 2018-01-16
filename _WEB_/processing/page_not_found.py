@@ -1,3 +1,5 @@
+#BASE.moduls._Web_.Base.root.page_not_found
+
 import html
 
 def page_not_found(BASE, info, root):

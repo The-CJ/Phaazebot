@@ -114,11 +114,14 @@ def view_page(BASE, info, dump):
 	path = info['values'].get('path', "")
 	js_var_path = ""
 
-	if path == "":
-		folder = os.listdir()
-	else:
-		js_var_path += path + "/"
-		folder = os.listdir(path)
+	try:
+		if path == "":
+			folder = os.listdir()
+		else:
+			js_var_path += path + "/"
+			folder = os.listdir(path)
+	except:
+		return BASE.moduls._Web_.Base.root.page_not_found.page_not_found(BASE, info, None)
 
 	folder_spec = dict()
 
@@ -149,12 +152,13 @@ def edit_page(BASE, info, dump):
 
 	site = open('_WEB_/content/admin/edit.html', 'r').read()
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
+	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(dump['user']))
 
 	page_index = info.get('values', {}).get("page", "main")
 	try:
 		content = open(page_index, 'r').read()
 	except:
-		content = open('_WEB_/content/wiki/page_main.html', 'r').read()
+		content = "Can't open file: " + page_index
 
 	site = site.replace("<!-- page_content -->", html.escape(content))
 	site = site.replace("<!-- page_index -->", html.escape(page_index))
