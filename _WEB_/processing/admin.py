@@ -1,7 +1,7 @@
 #BASE.moduls._Web_.Base.root.admin
 
 from importlib import reload
-import traceback, html
+import traceback, html, os
 
 def main(BASE, info, root):
 
@@ -40,6 +40,9 @@ def main(BASE, info, root):
 
 	elif info['path'][0] == "view-files":
 		return view_page(BASE, info, dump)
+
+	elif info['path'][0] == "edit-files":
+		return edit_page(BASE, info, dump)
 
 	else:
 		return root.page_not_found.page_not_found(BASE, info, root)
@@ -106,10 +109,30 @@ def view_page(BASE, info, dump):
 
 	site = open('_WEB_/content/admin/view.html', 'r').read()
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
+	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(dump['user']))
+
+	path = info['values'].get('path', "")
+	js_var_path = ""
+
+	if path == "":
+		folder = os.listdir()
+	else:
+		js_var_path += path + "/"
+		folder = os.listdir(path)
+
+	folder_spec = dict()
 
 
+	path_str = path + "/" if path != "" else ""
+	for file_or_folder in folder:
+		if os.path.isfile(path_str+file_or_folder):
+			folder_spec[file_or_folder] = 'file'
 
+		else:
+			folder_spec[file_or_folder] = 'folder'
 
+	site = site.replace("{'name':'type'}", str(folder_spec))
+	site = site.replace("[js_var_path]", str("'"+js_var_path+"'"))
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -118,17 +141,18 @@ def view_page(BASE, info, dump):
 
 	return r
 
-def edit_page(BASE, info):
+def edit_page(BASE, info, dump):
 	#TODO: much to do
 	#https://highlightjs.org/download/
+
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/admin/edit.html', 'r').read()
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='wiki'))
+	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
 
 	page_index = info.get('values', {}).get("page", "main")
 	try:
-		content = open('_WEB_/content/wiki/page_{}.html'.format(page_index), 'r').read()
+		content = open(page_index, 'r').read()
 	except:
 		content = open('_WEB_/content/wiki/page_main.html', 'r').read()
 
