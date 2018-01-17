@@ -2,24 +2,22 @@
 
 import http.cookies as cookie
 from importlib import reload
-import asyncio, datetime, requests
+import asyncio, datetime, requests, html
 
 DISCORD_BOT_ID = "180679855422177280"
 
-def main(BASE, info, dirs):
+def main(BASE, info, root):
 	#/discord
 	if len(info['path']) == 0:
 		return discord(BASE, info)
 
-	#leads to another site - /discord/[something]
-	else:
-		try:
-			next_path = "dirs.discord.{0}.main".format(info['path'][0].lower())
-			info['path'].pop(0)
-			return eval(next_path+"(BASE, info, dirs)")
 
-		except:
-			return dirs.page_not_found.page_not_found(BASE, info, dirs)
+	elif info['path'][0].lower() == "dashboard":
+		info['path'].pop(0)
+		return root.discord.dashboard.main(BASE, info, root)
+
+	else:
+		return root.page_not_found.page_not_found(BASE, info, root)
 
 def discord(BASE, info):
 	return_header = [('Content-Type','text/html')]
@@ -53,7 +51,7 @@ def discord_main(BASE, info):
 
 	#Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
-	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(image_path, discord_user_data.get('username', "-Username-")))
+	site = site.replace("<!-- logged_in_user -->", BASE.moduls._Web_.Utils.discord_loggedin_field(image_path, discord_user_data.get('username', "-Username-")))
 
 
 	#add profile Picture
@@ -84,21 +82,4 @@ def discord_login(BASE, info, msg=""):
 		response = 200
 		header = return_header
 
-	return r
-
-def format_loggedin_field(image_path, name):
-	r = """
-          <div class="white" style="border-radius:25px;">
-            <img style="height:2em;margin:0.5em;" class="profil_picture inline align-middle" src="https://cdn.discordapp.com/[path]" alt="Avatar">
-            <span class="black-text align-middle inline" style="margin-right:0.5em">[name]</span>
-            <button type="button" class="btn-danger align-middle inline expandable-btn waves-effect" style="border-radius:25px;padding:.7em;">
-              <div class="material-icons align-middle inline">&nbsp;exit_to_app</div>
-              <div class="align-middle inline expandable_content">
-                <span onclick="javascript:discord_logout();">Logout</span>
-              </div>
-            </button>
-          </div>
-	"""
-	r = r.replace("[name]", name)
-	r = r.replace("[path]", image_path)
 	return r

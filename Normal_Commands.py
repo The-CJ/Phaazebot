@@ -456,9 +456,23 @@ class doujin(object):
 		self.parameter = {}
 		pass
 
+	async def api_error_message(self):
+		I = await self.BASE.phaaze.send_message(
+			self.message.channel,
+			content=None,
+			embed=discord.Embed(
+				title=":octagonal_sign: Tsumino API is currently down, during website restructore",
+				color=int(0xFF0000),
+				description="'>doujin' and all subcommands won't work for now.\nTry later again..."
+			))
+		await asyncio.sleep(15)
+		await self.BASE.phaaze.delete_message(I)
+
 	async def request(self):
 		M = self.message.content.replace("\n", " ")
 		m = M.lower()
+
+		return await self.api_error_message()
 
 		if 	re.search(r"^.doujin ?<?$", m):
 			return await self.errors.no_options(self)

@@ -1,3 +1,5 @@
+#api/db/
+
 import json, requests, hashlib
 
 def login(BASE, info={}, from_web=False, **kwargs):

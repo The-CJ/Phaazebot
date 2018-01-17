@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Phaaze</title>
+		<title>Phaaze - Admin | Edit <!-- page_index --></title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.css">
@@ -9,53 +9,47 @@
 		<link rel="stylesheet" href="/css/animations.css">
 		<link rel="stylesheet" href="/css/expandable.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/css/mdb.css">
-	</head>
 
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+		<style media="screen">
+			.no-wrapping {
+				white-space: nowrap;
+			}
+		</style>
+	</head>
 	<body class="stylish-color">
 
 		<!-- Inserted via get_navbar() -->
 		<!-- Navbar -->
 
-		<div class="container text-center">
-			<div class="row" style="margin-top:50px;" >
-
-				<span class="col-md-3"></span>
-
-				<div class="col-md-6 text-center" style="width: 100%;">
-					<div class="row">
-						<div class="col">
-							<img src="/img/favicon.ico" class="animated rotateIn" style="width: 100%;" id="main_image">
-						</div>
-					</div>
-				</div>
-
-				<span class="col-md-3"></span>
-
+		<div class="" style="position:fixed;right:0;margin:3em;margin-top:10em;">
+			<div class="col text-center">
+				<a href="/admin/view-files"><button type="button" class="text-center btn blue">Back</button></a>
+				<br>
+				<button type="button" class="text-center btn blue" onclick="$('#textarea_field').toggleClass('no-wrapping')">Toggle nowrap</button>
+				<br>
+				<button type="button" class="text-center btn red" onclick="alert('Saving isn\'t API supportet for now')">Save</button>
 			</div>
+		</div>
 
+		<div class="container">
+			<hr>
 			<div class="row">
-				<div class="col text-center white-text" style="width: 100%;">
-					<h1>Welcome to Phaazebot's new home</h1>
-					<p>Feel free to look around, but remember,</p>
-					<p>this is the beginning of PhaazeWeb, so don't expect stuff to look nice or even work. kthx</p>
+				<div class="col">
+					<h1 class="white-text text-center">Edit of Page: <!-- page_index --></h1>
 				</div>
 			</div>
+			<hr>
+
+			<textarea id="textarea_field" class="white-text" style="height:297mm;"><!-- page_content --></textarea>
+
 		</div>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
 		<script src="/js/basic.js"></script>
-		<script type="text/javascript">
-			$('#main_image').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
-				$('#main_image').removeClass('rotateIn');
-				$('#main_image').addClass('animation-spin');
-			});
-			$('#main_image').dblclick(function () {
-				window.location = "/admin";
-				return false;
-			});
-
-		</script>
+		<script src="/js/administration.js"></script>
 	</body>
 </html>

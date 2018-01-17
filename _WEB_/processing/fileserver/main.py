@@ -4,7 +4,7 @@ import http.cookies as cookie
 from importlib import reload
 import json, hashlib, random, string
 
-def main(BASE, info, dirs):
+def main(BASE, info, root):
 	#/fileserver
 	if len(info['path']) == 0:
 		return fileserver(BASE, info)
@@ -12,12 +12,12 @@ def main(BASE, info, dirs):
 	#leads to another site - /fileserver/[something]
 	else:
 		try:
-			next_file = "dirs.fileserver.{0}.main.main".format(info['path'][0].lower())
+			next_file = "root.fileserver.{0}.main.main".format(info['path'][0].lower())
 			info['path'].pop(0)
-			return eval(next_file+"(BASE, info, dirs)")
+			return eval(next_file+"(BASE, info, root)")
 
 		except:
-			return dirs.page_not_found.page_not_found(BASE, info, dirs)
+			return root.page_not_found.page_not_found(BASE, info, root)
 
 def fileserver(BASE, info):
 	if info["values"].get("login", False):

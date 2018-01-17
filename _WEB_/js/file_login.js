@@ -14,7 +14,7 @@ function submit_login() {
       $('#password').addClass("animated bounceOutRight");
       $('#sub_button').addClass("animated flipOutX");
       setTimeout(function () {
-        document.cookie = "fileserver_session="+data.fileserver_session+"; Path=\"/\"";
+        setCookie("fileserver_session", data.fileserver_session);
         location.reload();
       },1000);
     }
@@ -33,7 +33,7 @@ function submit_login() {
       if (data.responseJSON.error == "wrong_data") {
         $('#loginname').addClass("animated shake");
         $('#password').addClass("animated shake");
-        $('#sys_msg').text("Password or Login Name not found.");
+        $('#sys_msg').text("Password or Login Name wrong.");
         $('#password').val("");
         setTimeout(function () {
           $('#loginname').removeClass("animated shake");

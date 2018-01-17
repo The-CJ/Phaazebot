@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Phaaze - Administration | View</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.css">
+		<link rel="stylesheet" href="/css/basic.css">
+		<link rel="stylesheet" href="/css/animations.css">
+		<link rel="stylesheet" href="/css/expandable.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/css/mdb.css">
+	</head>
+	<body class="stylish-color">
+
+		<!-- Navbar -->
+
+		<div class="container white-text">
+			<hr>
+			<h1 id="header_path"></h1>
+			<hr>
+		</div>
+
+		<div class="container" id="folder_content_folders"></div>
+		<hr>
+		<div class="container" id="folder_content_files"></div>
+
+		<div id="folder_phantom" hidden>
+			<a href="/admin/view-files?path=[prv][name]" class="row animated flipInX" style="border:2px solid black;margin:2px;color:black;">
+				<div class="col-1 grey text-center">
+					<i class="material-icons" style="margin:5px;font-size:36px">folder</i>
+				</div>
+				<div class="col white-text" style="margin:auto;">
+					<span style="margin:5px;font-size:24px;"><b class="field_entry">[name]</b></span>
+				</div>
+			</a>
+		</div>
+
+		<div id="file_phantom" hidden>
+			<a href="/admin/edit-files?page=[prv][name]" class="row animated flipInX" style="border:2px solid black;margin:2px;color:black;">
+				<div class="col-1 grey text-center">
+					<i class="material-icons" style="margin:5px;font-size:36px">insert_drive_file</i>
+				</div>
+				<div class="col white-text" style="margin:auto;">
+					<span style="margin:5px;font-size:24px;"><b class="field_entry">[name]</b></span>
+				</div>
+			</a>
+		</div>
+
+		<script type="text/javascript">
+			var selected_dir = [js_var_path];
+			var view_dirs = {'name':'type'};
+		</script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
+		<script src="/js/administration.js"></script>
+		<script src="/js/basic.js"></script>
+		<script type="text/javascript">
+
+			function sleep(ms) {
+				return new Promise(resolve => setTimeout(resolve, ms));
+			}
+
+			$( document ).ready(function () {
+
+				$('#header_path').text("BASE/"+selected_dir);
+				load_files();
+				}
+			)
+
+
+			async function load_files() {
+
+				for (var file in view_dirs) {
+					if (view_dirs[file] == "folder") {
+						var copy = $("#folder_phantom").html();
+						copy = copy.replace(/\[prv\]/g, selected_dir);
+						copy = copy.replace(/\[name\]/g, file);
+						$("#folder_content_folders").append(copy);
+					}
+					if (view_dirs[file] == "file") {
+						var copy = $("#file_phantom").html();
+						copy = copy.replace(/\[prv\]/g, selected_dir);
+						copy = copy.replace(/\[name\]/g, file);
+						$("#folder_content_files").append(copy);
+					}
+				}
+			}
+
+		</script>
+	</body>
+</html>

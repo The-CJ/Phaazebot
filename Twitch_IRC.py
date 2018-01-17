@@ -8,6 +8,8 @@ class _IRC_():
 		self.BASE = BASE
 		BASE.Twitch_IRC_connection = self
 
+		self.running = True
+
 		self.server = "irc.twitch.tv"
 		self.port = 6667
 		self.last_ping = time.time()
@@ -22,6 +24,11 @@ class _IRC_():
 		self.channels = []
 		self.hold_connetion_open = True
 		self.connection = None
+
+	async def shutdown(self):
+		self.running = False
+		await asyncio.sleep(0.5)
+		self.connection.close()
 
 	#utils
 	async def send_pong(self):
@@ -83,7 +90,7 @@ class _IRC_():
 
 	#main connection
 	async def run(self):
-		while self.BASE.active.twitch_irc:
+		while self.running:
 			self.last_ping = time.time()
 
 			#init connection
@@ -116,7 +123,7 @@ class _IRC_():
 
 				self.BASE.vars.twitch_IRC_is_NOT_ready = False
 
-			while self.hold_connetion_open == True and self.BASE.active.twitch_irc:
+			while self.hold_connetion_open == True and self.running:
 				data_cluster = ""
 
 				disconnected = int(time.time()) - int(self.last_ping)
@@ -207,17 +214,6 @@ class _IRC_():
 				except socket.timeout:
 					await asyncio.sleep(0.025)
 
-			else:
-				#connection is ordert to close and wait for restart
-				self.connection.close()
-				self.BASE.moduls.Console.CYAN("REMOTE", "Twitch IRC connection has been disabled")
-				while not self.hold_connetion_open:
-					#holding connection "trapped" in a endless loop
-					await asyncio.sleep(1)
-				else:
-					#connection is ordert to reconnect
-					self.BASE.moduls.Console.CYAN("REMOTE", "Twitch IRC connection has been enabled")
-					continue
 
 class Get_classes_from_data(object):
 	"""Class contains all init-classes for Twitch IRC data"""

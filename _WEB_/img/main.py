@@ -1,6 +1,6 @@
 import json, mimetypes
 
-def main(BASE, info, dirs):
+def main(BASE, info, root):
 	if len(info['path']) == 0:
 		class r(object):
 			content = json.dumps(dict(error="no file define")).encode(encoding='utf_8')
