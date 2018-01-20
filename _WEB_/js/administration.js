@@ -41,3 +41,25 @@ function update_source_file() {
   $.post("/api/admin/edit_file_content?file="+name, text, function (data) {})
 
 }
+
+function disableAPI() {
+  var f = confirm('Please confirm, without API, 3rd Party programs, and major intern task cannot run properly');
+  if (!f) {
+    return
+  }
+
+
+  var time = $('#api_timeout').val();
+  $.post("/api/admin/shutdown_api?time="+time, function (data) {})
+}
+
+function disableWEB() {
+  var f = confirm('Please confirm, disableling PhaaazeWeb closes all API endpoints end removed all removed remote interfaces');
+  if (!f) {
+    return
+  }
+
+
+  var time = $('#web_timeout').val();
+  $.post("/api/admin/shutdown_web?time="+time, function (data) {})
+}
