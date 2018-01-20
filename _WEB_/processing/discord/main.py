@@ -14,6 +14,9 @@ def main(BASE, info, root):
 			info['path'].pop(0)
 			return root.discord.invite.invite(BASE, info, root, dump)
 
+	if info['cookies'].get('discord_session', None) == None:
+		return discord_login(BASE, info)
+
 	#get session
 	search_str = 'data["session"] == "{}"'.format(info['cookies'].get('discord_session', None))
 	res = BASE.PhaazeDB.select(of="session/discord", where=search_str)
