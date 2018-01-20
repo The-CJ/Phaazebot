@@ -102,6 +102,9 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 		self.do_GET()
 
 	def do_GET(self):
+
+		if not RequestHandler.BASE.active.web: return
+
 		#path, raw_path, values
 		information = Utils.parse_url(self.path)
 		information['header'] = self.headers

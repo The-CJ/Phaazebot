@@ -77,9 +77,17 @@ def toggle_moduls(BASE, info={}, from_web=False, **kwargs):
 
 		if eval("BASE.active.{} == True".format(module)):
 			setattr(BASE.active, module, False)
+			sta = 'False'
 
 		else:
 			setattr(BASE.active, module, True)
+			sta = 'True'
+
+		class r (object):
+			content = json.dumps(dict(status='success', msg='module `{}` now `{}`'.format(module, sta))).encode("UTF-8")
+			response = 200
+			header = [('Content-Type', 'application/json')]
+		return r
 
 def edit_file_content(BASE, info={}, from_web=False, **kwargs):
 	if not from_web: return
