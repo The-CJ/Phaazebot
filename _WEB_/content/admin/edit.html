@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Phaaze - Admin | Edit <!-- page_index --></title>
+		<title>Phaaze - Admin | Edit: <!-- page_index --></title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.css">
@@ -29,7 +29,7 @@
 				<br>
 				<button type="button" class="text-center btn blue" onclick="$('#textarea_field').toggleClass('no-wrapping')">Toggle nowrap</button>
 				<br>
-				<button type="button" class="text-center btn red" onclick="alert('Saving isn\'t API supportet for now')">Save</button>
+				<button type="button" class="text-center btn red" onclick="update_source_file()">Save</button>
 			</div>
 		</div>
 
@@ -38,6 +38,7 @@
 			<div class="row">
 				<div class="col">
 					<h1 class="white-text text-center">Edit of Page: <!-- page_index --></h1>
+					<div hidden id="hidden_page_index"><!-- page_index --></div>
 				</div>
 			</div>
 			<hr>

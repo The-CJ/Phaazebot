@@ -34,3 +34,10 @@ function change_picture() {
  }
   reader.readAsArrayBuffer(r);
 }
+
+function update_source_file() {
+  var text = $('#textarea_field').val();
+  var name = $('#hidden_page_index').text();
+  $.post("/api/admin/edit_file_content?file="+name, text, function (data) {})
+
+}

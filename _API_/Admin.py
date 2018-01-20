@@ -19,11 +19,7 @@ def login(BASE, info={}, from_web=False, **kwargs):
 			header = [('Content-Type', 'application/json')]
 		return r
 
-	#get user
-	search_str = "data['username'] == '{0}' and data['password'] == '{1}'".format(login, hashlib.sha256(password.encode("UTF-8")).hexdigest())
-	res=BASE.PhaazeDB.select(of="admin/user", where=search_str)
-	res_=BASE.PhaazeDB.select(of="admin/user")
-	admin_user = res['data'][0] if len(res['data']) > 0 else None
+	admin_user = BASE.api.utils.authorise_admin(BASE, username=login, password=password)
 
 	if admin_user == None:
 		class r (object):
@@ -74,7 +70,7 @@ def logout(BASE, info={}, from_web=False, **kwargs):
 def toggle_moduls(BASE, info={}, from_web=False, **kwargs):
 	"""toggle main Moduls status"""
 	session = info.get("cookies",{}).get("admin_session", None)
-	admin = BASE.api.utils.get_admin_by_session(BASE, session)
+	admin = BASE.api.utils.authorise_admin(BASE, session=session)
 	if admin.get('type', None) == 'superadmin':
 		module = info['values'].get('modul',None)
 		if module == None: return
@@ -84,3 +80,43 @@ def toggle_moduls(BASE, info={}, from_web=False, **kwargs):
 
 		else:
 			setattr(BASE.active, module, True)
+
+def edit_file_content(BASE, info={}, from_web=False, **kwargs):
+	if not from_web: return
+
+	#start auth
+	session = info.get("cookies",{}).get("admin_session", None)
+	auth_key = info.get("values",{}).get("auth_key", None)
+	username = info.get("values",{}).get("username", None)
+	passwd = info.get("values",{}).get("passwords", None)
+
+	admin = BASE.api.utils.authorise_admin(BASE, session=session, auth_key=auth_key, username=username, password=passwd)
+	if admin == None: admin = {}
+
+	#end auth
+
+	if admin.get('type', None) != 'superadmin':
+		class r (object):
+			content = json.dumps(dict(status='error', msg='unauthorised')).encode("UTF-8")
+			response = 400
+			header = [('Content-Type', 'application/json')]
+		return r
+
+	content = info['content']
+	file = info['values'].get('file', None)
+	if file == None:
+		class r (object):
+			content = json.dumps(dict(status='error', msg='no_file_path')).encode("UTF-8")
+			response = 400
+			header = [('Content-Type', 'application/json')]
+		return r
+
+	overwrite = open(file ,'wb')
+	overwrite.write(content)
+	overwrite.close()
+
+	class r (object):
+		content = json.dumps(dict(status='success', msg='edited')).encode("UTF-8")
+		response = 200
+		header = [('Content-Type', 'application/json')]
+	return r

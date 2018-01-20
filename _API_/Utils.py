@@ -1,5 +1,22 @@
 import json, requests, hashlib
 
+def authorise_admin(BASE, session=None, auth_key=None, username=None, password=None):
+	if session != None:
+		admin = get_admin_by_session(BASE, session)
+		if admin != None: return admin
+
+	if auth_key != None:
+		pass
+		#TODO: admin api keys
+
+	if username != None and password != None:
+		search_str = "data['username'] == '{0}' and data['password'] == '{1}'".format(username, hashlib.sha256(password.encode("UTF-8")).hexdigest())
+		res=BASE.PhaazeDB.select(of="admin/user", where=search_str)
+		admin = res['data'][0] if len(res['data']) > 0 else None
+		if admin != None: return admin
+
+	return None
+
 def get_admin_by_session(BASE, session):
 	r_value = None
 

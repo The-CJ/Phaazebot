@@ -12,6 +12,14 @@ def call(BASE, web_info):
 
 	all function are also accessable via BASE.api.[module].[function]()
 	"""
+
+	if not BASE.active.api:
+		class r (object):
+			content = json.dumps(dict(error="api_endpoint_closed")).encode("UTF-8")
+			response = 403
+			header = [('Content-Type', 'application/json')]
+		return r
+
 	web_info['path'].pop(0)
 
 	if len(web_info['path']) == 0:
@@ -26,15 +34,16 @@ def call(BASE, web_info):
 
 	try:
 		return eval(function_call)
-	except TypeError:
-		class r (object):
-			content = json.dumps(dict(error="not_callable")).encode("UTF-8")
-			response = 400
-			header = [('Content-Type', 'application/json')]
-		return r
 	except AttributeError:
 		class r (object):
 			content = json.dumps(dict(error="not_found")).encode("UTF-8")
 			response = 400
 			header = [('Content-Type', 'application/json')]
 		return r
+	#except TypeError:
+	#	class r (object):
+	#		content = json.dumps(dict(error="not_callable")).encode("UTF-8")
+	#		response = 400
+	#		header = [('Content-Type', 'application/json')]
+	#	return r
+
