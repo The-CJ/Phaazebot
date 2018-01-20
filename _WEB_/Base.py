@@ -10,6 +10,7 @@ class root(object):
 	class discord(object):
 		import _WEB_.processing.discord.main as main
 		import _WEB_.processing.discord.dashboard as dashboard
+		import _WEB_.processing.discord.invite as invite
 
 	class fileserver(object):
 		import _WEB_.processing.fileserver.main as main
