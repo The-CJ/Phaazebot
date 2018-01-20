@@ -238,7 +238,7 @@ def login(BASE, info={}, from_web=False, **kwargs):
 
 	if res['status'] == "inserted":
 		class r (object):
-			return_header = [('Set-Cookie','discord_session='+save_object['session'] + "; Path=\"/\""), ("Location", "/discord")]
+			return_header = [('Set-Cookie','discord_session='+save_object['session'] + "; Path=/;"), ("Location", "/discord")]
 
 			content = b""
 			response = 302
