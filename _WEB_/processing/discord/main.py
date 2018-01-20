@@ -7,8 +7,12 @@ import asyncio, datetime, requests, html
 DISCORD_BOT_ID = "180679855422177280"
 
 def main(BASE, info, root):
-
 	dump = dict()
+	#/invite
+	if len(info['path']) > 0:
+		if info['path'][0].lower() == "invite":
+			info['path'].pop(0)
+			return root.discord.invite.invite(BASE, info, root, dump)
 
 	#get session
 	search_str = 'data["session"] == "{}"'.format(info['cookies'].get('discord_session', None))
@@ -32,6 +36,11 @@ def main(BASE, info, root):
 	elif info['path'][0].lower() == "dashboard":
 		info['path'].pop(0)
 		return root.discord.dashboard.main(BASE, info, root, dump)
+
+	#/invite
+	elif info['path'][0].lower() == "invite":
+		info['path'].pop(0)
+		return root.discord.invite.invite(BASE, info, root, dump)
 
 	else:
 		return root.page_not_found.page_not_found(BASE, info, root)

@@ -13,10 +13,10 @@ def main(BASE, info, root, dump):
 	else:
 		server_id = info['path'][0]
 
-	return dashboard(BASE, info, dump, server_id)
+	return dashboard(BASE, info, root, dump, server_id)
 
 
-def dashboard(BASE, info, dump, server_id):
+def dashboard(BASE, info, root, dump, server_id):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/discord/discord_dashboard.html', 'r').read()
 
@@ -29,7 +29,7 @@ def dashboard(BASE, info, dump, server_id):
 	#get server object
 	discord_server_data = BASE.api.discord.get_server(BASE, server_id=server_id)
 	if discord_server_data.get("code", None) == 50001:
-		return BASE.moduls._Web_.Base.root.discord.invite(BASE)
+		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
 	saved_settings = BASE.call_from_async( BASE.moduls.Utils.get_server_file(BASE, server_id), BASE.Discord_loop )
 
