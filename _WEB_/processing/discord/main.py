@@ -31,6 +31,8 @@ def main(BASE, info, root):
 
 	dump['discord_user_data'] = discord_user_data
 
+	####################################################
+
 	#/discord
 	if len(info['path']) == 0:
 		return discord_main(BASE, info, dump)

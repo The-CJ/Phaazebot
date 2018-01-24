@@ -28,6 +28,7 @@ class root(object):
 	import _WEB_.processing.admin as admin
 	import _WEB_.processing.main as main
 	import _WEB_.processing.page_not_found as page_not_found
+	import _WEB_.processing.action_not_allowed as action_not_allowed
 
 
 class Utils(object):
