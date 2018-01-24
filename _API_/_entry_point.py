@@ -1,5 +1,5 @@
 import json, requests
-
+import traceback
 import _API_.Utils as utils
 
 import _API_.Discord as discord
@@ -34,16 +34,11 @@ def call(BASE, web_info):
 
 	try:
 		return eval(function_call)
-	except AttributeError:
+	except:
+		traceback.print_exc()
+
 		class r (object):
 			content = json.dumps(dict(error="not_found")).encode("UTF-8")
 			response = 400
 			header = [('Content-Type', 'application/json')]
 		return r
-	#except TypeError:
-	#	class r (object):
-	#		content = json.dumps(dict(error="not_callable")).encode("UTF-8")
-	#		response = 400
-	#		header = [('Content-Type', 'application/json')]
-	#	return r
-
