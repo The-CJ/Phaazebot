@@ -14,31 +14,99 @@
 
 		<!-- Navbar -->
 
-		<h1 class="white-text text-center" style="margin-top:5%;margin-bottom:5%;">Dashboard - <!-- Server_name --></h1>
+		<div id="dump">
+		</div>
 
-		<div class="container white-text">
-			<div class="row">
-				<div class="col text-center">
-					<h2>Good job, here is data:</h2>
+		<div id="template">
+			<!-- custom -->
+			<div hidden id="custom_command_phantom">
+
+				<div class="row">
+					<div trigger class="col-3 text-left stylish-color" style="margin:0.1em;word-break: break-all;" id="custom_trigger_{custom_list_id}">{trigger}</div>
+					<div content class="col text-left stylish-color" style="word-break: break-all;margin:0.1em;">{content}</div>
+					<div uses class="col-1 stylish-color" style="margin:0.1em;">{uses}</div>
+					<div class="col-1 row stylish-color" style="padding:0;margin:0.1em;">
+						<button type="button" class="btn blue d-inline col" style="padding:0;height:32px;"><i class="material-icons">mode_edit</i></button>
+						<button type="button" class="btn red d-inline col" style="padding:0;height:32px;" onclick="javascript:ask_delete_custom_command($('#selected_server_id').val(),$('#custom_trigger_{custom_list_id}').text())"><i class="material-icons">delete</i></button>
+					</div>
 				</div>
-			</div>
-
-			<div class="row">
-				<div class="col text-center">
-					<!-- json_return__data -->
-					<hr>
-					<!-- json_return__data_info -->
-				</div>
 
 			</div>
+			<!-- /custom -->
 
 		</div>
 
+		<h1 class="white-text text-center" style="margin-top:5%;">Dashboard - <!-- Server_name --></h1>
+		<div class="container white-text">
+			<div class="row">
+				<!-- upper information storage -->
+				<input hidden type="text" value="<!-- saved_settings.id -->" id="selected_server_id">
+
+			</div>
+			<style media="screen">
+				.pannel_range {
+					margin-left: 2em;
+					margin-right: 2em;
+				}
+			</style>
+			<hr>
+
+			<!-- Custom Commands -->
+			<div class="row">
+				<div class="col text-center">
+					<button type="button" class="btn btn-block" style="background:#7289DA;text-transform:none;" onclick="$('#pannel_custom').collapse('toggle')">Custom Commands - <!-- len(saved_settings['commands']) --></button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col collapse stylish-color-dark pannel_range" id="pannel_custom">
+					<div class="container text-center">
+
+						<!-- head -->
+						<style media="screen">
+							.border_thing {
+								background: grey;
+								margin: 0.1em;
+							}
+						</style>
+						<div class="row text-center">
+							<button type="button" class="btn btn-block btn-success" style="margin:0.5em;">Create New Command</button>
+						</div>
+						<div class="row">
+							<div class="col-3 border_thing">
+								Trigger
+							</div>
+							<div class="col border_thing">
+								Response
+							</div>
+							<div class="col-1 border_thing">
+								Uses
+							</div>
+							<div class="col-1 border_thing">
+								Aktion
+							</div>
+						</div>
+						<!-- /head -->
+
+						<div class="" id="custom_command_content"></div>
+						<hr>
+					</div>
+				</div>
+			</div>
+		</div>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
 		<script src="/js/discord.js"></script>
+		<script src="/js/discord_dashboard.js"></script>
 		<script src="/js/basic.js"></script>
+
+		<script type="text/javascript">
+			$('document').ready(function(){
+				get_server_custom_commands($('#selected_server_id').val());
+			});
+
+		</script>
 
 	</body>
 </html>

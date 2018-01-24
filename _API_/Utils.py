@@ -1,5 +1,7 @@
 import json, requests, hashlib
 
+#admin
+
 def authorise_admin(BASE, session=None, auth_key=None, username=None, password=None):
 	if session != None:
 		admin = get_admin_by_session(BASE, session)
@@ -42,3 +44,14 @@ def get_admin_by_url_values(BASE, info):
 		r_value = admin_user['data'][0]
 
 	return r_value
+
+#discord
+
+def get_discord_user_by_session(BASE, session):
+
+	search_str = 'data["session"] == "{}"'.format(session)
+	res = BASE.PhaazeDB.select(of="session/discord", where=search_str)
+	if len(res['data']) == 0:
+		return None
+
+	return res['data'][0]

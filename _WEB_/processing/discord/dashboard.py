@@ -15,7 +15,6 @@ def main(BASE, info, root, dump):
 
 	return dashboard(BASE, info, root, dump, server_id)
 
-
 def dashboard(BASE, info, root, dump, server_id):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/discord/discord_dashboard.html', 'r').read()
@@ -32,13 +31,15 @@ def dashboard(BASE, info, root, dump, server_id):
 		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
 	saved_settings = BASE.call_from_async( BASE.moduls.Utils.get_server_file(BASE, server_id), BASE.Discord_loop )
+	server_object = BASE.phaaze.get_server(server_id)
 
 	#Finish up -- Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
 	site = site.replace("<!-- logged_in_user -->", BASE.moduls._Web_.Utils.discord_loggedin_field(image_path, dump['discord_user_data'].get('username', "-Username-")))
 	site = site.replace("<!-- Server_name -->", html.escape(discord_server_data.get('name', "[Server N/A]")))
-	site = site.replace("<!-- json_return__data -->", html.escape(str(discord_server_data)))
-	site = site.replace("<!-- json_return__data_info -->", html.escape(str(saved_settings)))
+	site = site.replace("<!-- saved_settings.id -->", server_object.id)
+
+	site = site.replace("<!-- len(saved_settings['commands']) -->", str(len(saved_settings.get('commands', []))))
 
 	#add profile Picture
 
