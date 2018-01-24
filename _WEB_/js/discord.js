@@ -49,7 +49,6 @@ function get_server_custom_commands(server_id) {
       clone = clone.replace('{uses}', escapeHtml(cmd.uses));
 
       $('#custom_command_content').append(clone);
-      // data.data[command]
 
     }
   })
@@ -60,7 +59,6 @@ function delete_custom_command(server_id, trigger) {
   r['server_id'] = server_id;
   r['trigger'] = trigger;
   $.post("/api/discord/delete_custom_command", JSON.stringify(r), function (data) {})
-  get_server_custom_commands(server_id);
 }
 
 function update_custom_command(server_id, trigger, content) {
