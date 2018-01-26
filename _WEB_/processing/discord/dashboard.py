@@ -2,9 +2,7 @@
 
 import http.cookies as cookie
 from importlib import reload
-import asyncio, datetime, requests, html, time
-
-DISCORD_BOT_ID = "180679855422177280"
+import asyncio, datetime, requests, html, time, discord
 
 def main(BASE, info, root, dump):
 	#/discord/dashboard
@@ -16,6 +14,19 @@ def main(BASE, info, root, dump):
 	return dashboard(BASE, info, root, dump, server_id)
 
 def dashboard(BASE, info, root, dump, server_id):
+
+	discord_server = BASE.phaaze.get_server(server_id)
+	if discord_server == None:
+		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
+
+	discord_member = discord_server.get_member(dump['discord_user_data'].get('id', None))
+	if discord_member == None:
+		return root.action_not_allowed.action_not_allowed(BASE, info, root)
+
+	perm = discord_member.server_permissions
+	if not (perm.manage_server or perm.administrator):
+		return root.action_not_allowed.action_not_allowed(BASE, info, root)
+
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/discord/discord_dashboard.html', 'r').read()
 

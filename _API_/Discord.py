@@ -325,7 +325,6 @@ def delete_custom_command(BASE, info={}, from_web=False, **kwargs):
 			server_id = con.get('server_id', None)
 			trigger = con.get('trigger', None)
 		except Exception as e:
-			print('invalid json')
 			pass
 
 	if server_id == None or trigger == None:
