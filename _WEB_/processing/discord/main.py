@@ -8,11 +8,17 @@ DISCORD_BOT_ID = "180679855422177280"
 
 def main(BASE, info, root):
 	dump = dict()
-	#/invite
+	#accessable without login
 	if len(info['path']) > 0:
+		#/invite
 		if info['path'][0].lower() == "invite":
 			info['path'].pop(0)
 			return root.discord.invite.invite(BASE, info, root, dump)
+
+		#/custom
+		if info['path'][0].lower() == "custom":
+			info['path'].pop(0)
+			return root.discord.custom.custom(BASE, info, root, dump)
 
 	if info['cookies'].get('discord_session', None) == None:
 		return discord_login(BASE, info)
@@ -49,7 +55,6 @@ def main(BASE, info, root):
 
 	else:
 		return root.page_not_found.page_not_found(BASE, info, root)
-
 
 def discord_main(BASE, info, dump):
 	return_header = [('Content-Type','text/html')]
