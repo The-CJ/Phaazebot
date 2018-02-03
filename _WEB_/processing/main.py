@@ -51,11 +51,6 @@ def main(BASE, info, root):
 		info['path'].pop(0)
 		return root.wiki.main.main(BASE, info, root)
 
-	#about
-	elif info['path'][0].lower() == 'about':
-		info['path'].pop(0)
-		return root.about.main.main(BASE, info, root)
-
 	#leads to another site
 	else:
 		print("Tryed access: "+info['path'][0])
