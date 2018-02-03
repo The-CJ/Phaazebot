@@ -38,3 +38,14 @@ function setCookie(name, value) {
 function remCookie(name) {
   document.cookie = name+"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=\"/\""
 }
+
+function copy_clipboad(field) {
+  var copyText = document.getElementById(field);
+  copyText.select();
+  document.execCommand("Copy");
+}
+
+function copy_data_fields(from, to) {
+  var from_val = $('#'+from).val();
+  $('#'+to).val(from_val);
+}
