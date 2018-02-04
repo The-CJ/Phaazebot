@@ -15,7 +15,7 @@ def call(BASE, web_info):
 
 	if not BASE.active.api:
 		class r (object):
-			content = json.dumps(dict(error="api_endpoint_closed")).encode("UTF-8")
+			content = json.dumps(dict(status="error", msg="api_endpoint_closed")).encode("UTF-8")
 			response = 403
 			header = [('Content-Type', 'application/json')]
 		return r
@@ -24,8 +24,8 @@ def call(BASE, web_info):
 
 	if len(web_info['path']) == 0:
 		class r (object):
-			content = json.dumps(dict(msg="Doc comming soon")).encode("UTF-8")
-			response = 200
+			content = json.dumps(dict(status="error", msg="no_path", _m="Trying to find out the PhaazeAPI?. Try looking at phaaze.net/wiki?page=api")).encode("UTF-8")
+			response = 400
 			header = [('Content-Type', 'application/json')]
 		return r
 
@@ -38,7 +38,7 @@ def call(BASE, web_info):
 		traceback.print_exc()
 
 		class r (object):
-			content = json.dumps(dict(error="not_found")).encode("UTF-8")
+			content = json.dumps(dict(status="error", msg="not_found")).encode("UTF-8")
 			response = 400
 			header = [('Content-Type', 'application/json')]
 		return r
