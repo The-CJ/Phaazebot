@@ -53,7 +53,7 @@ function get_server_custom_commands(server_id) {
       clone = clone.replace(/{custom_list_id}/g, command);
 
       clone = clone.replace('{trigger}', escapeHtml(cmd.trigger));
-      clone = clone.replace('{content}', escapeHtml(cmd.text));
+      clone = clone.replace('{content}', escapeHtml(cmd.text).replace(/\n/g, "<br>"));
       clone = clone.replace('{uses}', escapeHtml(cmd.uses));
 
       $('#custom_command_content').append(clone);
