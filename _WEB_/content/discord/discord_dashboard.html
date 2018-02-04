@@ -9,10 +9,22 @@
 		<link rel="stylesheet" href="/css/animations.css">
 		<link rel="stylesheet" href="/css/expandable.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/css/mdb.css">
+		<style media="screen">
+			.pannel_range {
+				margin-left: 2em;
+				margin-right: 2em;
+			}
+			.border_thing {
+				background: grey;
+				margin: 0.1em;
+			}
+		</style>
 	</head>
 	<body class="stylish-color">
 
 		<!-- Navbar -->
+
+		<data value="<!-- saved_settings.id -->" id="selected_server_id"></data>
 
 		<div id="dump">
 		</div>
@@ -38,18 +50,6 @@
 
 		<h1 class="white-text text-center" style="margin-top:5%;">Dashboard - <!-- Server_name --></h1>
 		<div class="container white-text">
-			<div class="row">
-				<!-- upper information storage -->
-				<data value="<!-- saved_settings.id -->" id="selected_server_id"></data>
-
-			</div>
-			<style media="screen">
-				.pannel_range {
-					margin-left: 2em;
-					margin-right: 2em;
-				}
-			</style>
-			<hr>
 
 			<!-- Custom Commands -->
 			<div class="row">
@@ -62,12 +62,6 @@
 					<div class="container text-center">
 
 						<!-- head -->
-						<style media="screen">
-							.border_thing {
-								background: grey;
-								margin: 0.1em;
-							}
-						</style>
 						<div class="row text-center">
 							<div class="col row" style="margin:0.5em;border:2px solid black;border-radius:10px;">
 
@@ -111,11 +105,13 @@
 						<!-- /head -->
 
 						<div class="" id="custom_command_content"></div>
+						
 						<hr>
 					</div>
 				</div>
 			</div>
 		</div>
+
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
