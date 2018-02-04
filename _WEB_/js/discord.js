@@ -45,6 +45,7 @@ function load_discord_servers() {
 function get_server_custom_commands(server_id) {
   $.get("/api/discord/get_server_custom_commands?id="+server_id, function (data) {
     $('#custom_command_content').text('');
+    var amount = 0;
     for (var command in data.data) {
       var clone = $('#custom_command_phantom').clone().html();
       var cmd = data.data[command];
@@ -56,8 +57,9 @@ function get_server_custom_commands(server_id) {
       clone = clone.replace('{uses}', escapeHtml(cmd.uses));
 
       $('#custom_command_content').append(clone);
-
+      amount = amount + 1;
     }
+    $('#number_of_custom_cmd').text(amount);
   })
 }
 

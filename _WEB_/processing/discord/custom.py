@@ -1,5 +1,7 @@
 #BASE.moduls._Web_.Base.root.discord.custom
 
+import html
+
 def custom(BASE, info, root, dump, msg=""):
 	return_header = [('Content-Type','text/html')]
 
@@ -11,12 +13,13 @@ def custom(BASE, info, root, dump, msg=""):
 	if server_id == None:
 		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
-	server_file = BASE.call_from_async( BASE.moduls.Utils.get_server_file(BASE, server_id, prevent_new=True), BASE.Discord_loop )
+	server = BASE.phaaze.get_server(server_id)
 
-	if server_file == None:
+	if server == None:
 		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
 	site = site.replace("<!-- server_id -->", server_id)
+	site = site.replace("<!-- server.name -->", html.escape(server.name))
 
 	class r (object):
 		content = site.encode("UTF-8")

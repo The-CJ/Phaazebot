@@ -14,6 +14,9 @@
 				background: grey;
 				margin: 0.1em;
 			}
+			.data_entry {
+				background: #616161;
+			}
 		</style>
 	</head>
 	<body class="stylish-color">
@@ -25,17 +28,21 @@
 		<div hidden id="custom_command_phantom">
 
 			<div class="row">
-				<div class="col-2 text-left grey lighten-3" style="margin:0.1em;word-break: break-all;">{trigger}</div>
-				<div class="col text-left grey lighten-3" style="word-break: break-all;margin:0.1em;">{content}</div>
-				<div class="col-1 grey lighten-3" style="margin:0.1em;">{uses}</div>
+				<div class="col-2 text-left data_entry" style="margin:0.1em;word-break: break-all;">{trigger}</div>
+				<div class="col text-left data_entry" style="word-break: break-all;margin:0.1em;">{content}</div>
+				<div class="col-1 data_entry" style="margin:0.1em;">{uses}</div>
 			</div>
 
 		</div>
 
-		<br><br><br>
+		<br>
+		<h1 class="white-text text-center"><!-- server.name --></h1>
+		<br>
+		<h4 class="white-text text-center">Custom Commands: <span id="number_of_custom_cmd"></span></h4>
+		<br>
 		<div class="container text-center">
 
-			<div class="row">
+			<div class="row white-text">
 				<div class="col-2 border_thing">
 					<b>Trigger</b>
 				</div>
@@ -47,7 +54,7 @@
 				</div>
 			</div>
 
-			<div id="custom_command_content"></div>
+			<div id="custom_command_content" class="white-text"></div>
 
 		</div>
 
