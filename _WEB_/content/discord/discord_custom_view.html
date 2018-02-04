@@ -9,14 +9,46 @@
 		<link rel="stylesheet" href="/css/animations.css">
 		<link rel="stylesheet" href="/css/expandable.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/css/mdb.css">
+		<style media="screen">
+			.border_thing {
+				background: grey;
+				margin: 0.1em;
+			}
+		</style>
 	</head>
 	<body class="stylish-color">
 
 		<!-- Inserted via get_navbar() -->
 		<!-- Navbar -->
 
-		<div class="container">
-			
+		<data value="<!-- server_id -->" id="selected_server_id"></data>
+		<div hidden id="custom_command_phantom">
+
+			<div class="row">
+				<div class="col-2 text-left grey lighten-3" style="margin:0.1em;word-break: break-all;">{trigger}</div>
+				<div class="col text-left grey lighten-3" style="word-break: break-all;margin:0.1em;">{content}</div>
+				<div class="col-1 grey lighten-3" style="margin:0.1em;">{uses}</div>
+			</div>
+
+		</div>
+
+		<br><br><br>
+		<div class="container text-center">
+
+			<div class="row">
+				<div class="col-2 border_thing">
+					<b>Trigger</b>
+				</div>
+				<div class="col border_thing">
+					<b>Content</b>
+				</div>
+				<div class="col-1 border_thing">
+					<b>Uses</b>
+				</div>
+			</div>
+
+			<div id="custom_command_content"></div>
+
 		</div>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
@@ -25,5 +57,10 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
 		<script src="/js/basic.js"></script>
 		<script src="/js/discord.js"></script>
+		<script type="text/javascript">
+			$('document').ready(function(){
+				get_server_custom_commands($('#selected_server_id').val());
+			});
+		</script>
 	</body>
 </html>

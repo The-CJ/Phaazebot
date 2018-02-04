@@ -16,6 +16,8 @@ def custom(BASE, info, root, dump, msg=""):
 	if server_file == None:
 		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
+	site = site.replace("<!-- server_id -->", server_id)
+
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200
