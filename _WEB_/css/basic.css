@@ -1,3 +1,12 @@
+pre {
+	border-radius: 5px;
+	border: 1px solid lightgrey;
+	background: rgba(50,50,50,0.5);
+	padding: 0.5em;
+	padding-left: 0.9em;
+	color: white;
+}
+
 .dark_bg {
 	background-color: #494D64;
 }
@@ -91,6 +100,13 @@ a.dark_link:hover {
 
 .stick_to_right {
 	margin-left: auto!important;
+}
+
+.note_pannel {
+	border-left: 5px solid red;
+	border-radius: 5px;
+	padding-left: 1em;
+	background: rgba(0, 0, 0, 0.1);
 }
 
 .tool_tip {

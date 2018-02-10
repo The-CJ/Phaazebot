@@ -15,7 +15,7 @@ def main(BASE, info, root):
 def wiki(BASE, info):
 	return_header = [('Content-Type','text/html')]
 
-	site = open('_WEB_/content/wiki/root.html', 'r').read()
+	site = open('_WEB_/content/wiki/root.html', 'r', encoding='utf-8').read()
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='wiki'))
 
 	page_index = info.get('values', {}).get("page", "main")
@@ -24,9 +24,9 @@ def wiki(BASE, info):
 		page_index = " N/A"
 
 	try:
-		content = open('_WEB_/content/wiki/pages/{}.html'.format(page_index), 'r').read()
+		content = open('_WEB_/content/wiki/pages/{}.html'.format(page_index), 'r', encoding='utf-8').read()
 	except:
-		content = open('_WEB_/content/wiki/not_found.html', 'r').read()
+		content = open('_WEB_/content/wiki/not_found.html', 'r', encoding='utf-8').read()
 		content = content.replace("<!-- tryed_path -->", page_index)
 
 	site = site.replace("<!-- about_content -->", content)
