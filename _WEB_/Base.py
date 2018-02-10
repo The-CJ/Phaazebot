@@ -6,7 +6,7 @@ import urllib.parse as url_parse
 import hashlib, random, string
 
 the_list_of_endpoint_that_gets_always_triggered_by_annoying_bots_on_search_of_something__That_i_will_anwnser_with_a_toaster = [
-	'/phpMyAdmin', '/php', '/pma', '/ccvv', '/index.php', '/robots.txt'
+	'/phpMyAdmin', '/php', '/pma', '/ccvv', '/index.php', '/robots.txt', '/cfide', '/webman'
 ]
 
 class root(object):
@@ -109,7 +109,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
 		if not RequestHandler.BASE.active.web: return
 
-		if self.path in the_list_of_endpoint_that_gets_always_triggered_by_annoying_bots_on_search_of_something__That_i_will_anwnser_with_a_toaster:
+		if self.path.lower() in the_list_of_endpoint_that_gets_always_triggered_by_annoying_bots_on_search_of_something__That_i_will_anwnser_with_a_toaster:
 			return
 
 		#path, raw_path, values
