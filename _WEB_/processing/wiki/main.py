@@ -19,6 +19,9 @@ def wiki(BASE, info):
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='wiki'))
 
 	page_index = info.get('values', {}).get("page", "main")
+	page_index = page_index.replace('..', '')
+	if page_index.startswith('/'):
+		page_index = " N/A"
 
 	try:
 		content = open('_WEB_/content/wiki/pages/{}.html'.format(page_index), 'r').read()
