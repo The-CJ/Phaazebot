@@ -199,7 +199,7 @@ class Settings(object):
 		if len(m) == 2:
 			return await BASE.Twitch_IRC_connection.send_message(
 				message.channel,
-				"Games are currently: {0}".format("Enabled" if settings['games'] else "Disabled"))
+				"Games are currently: {0}".format("Enabled" if settings.get('games', False) else "Disabled"))
 
 		if m[2].lower() in ['no', 'disable', 'off']:
 			settings["osu"] = False

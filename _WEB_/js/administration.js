@@ -13,6 +13,15 @@ function toggle_module(mo) {
   })
 }
 
+function evalCommand() {
+  var command = $('#eval_command').val();
+  var r = {};
+  r['command'] = command;
+  $.post("/api/admin/eval_command", JSON.stringify(r), function (data) {
+    $('#result_data').html(data.result);
+  })
+}
+
 function change_name() {
   var r = {};
   r['name'] = $('#discord_bot_name').val();

@@ -8,7 +8,6 @@ def main(BASE, info, root):
 	if len(info['path']) == 0:
 		return wiki(BASE, info)
 
-	#leads to another site - /wiki/[something]
 	else:
 		return root.page_not_found.page_not_found(BASE, info, root)
 
