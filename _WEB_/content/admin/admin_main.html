@@ -17,11 +17,29 @@
 		<!-- Inserted via get_navbar() -->
 		<!-- Navbar -->
 
-		<div class="container">
+		<div class="container white-text">
+			<div class="row">
+				<div class="col">
+					<h2>System Override</h2>
+				</div>
+			</div>
+			<div class="row">
+				<span style="margin:auto 0;">root@phaazeos:&nbsp;</span>
+				<div class="col" style="padding-left:0;">
+					<input id="eval_command" type="text" class="input-alternate white" value="" placeholder="Execute eval() Command" style="margin-top:0.7em;">
+				</div>
+				<div class="col-1">
+					<button type="button" class="btn btn-primary" style="padding:1em;" onclick="javascript:evalCommand()">Submit</button>
+				</div>
+			</div>
+			<div class="row">
+				<pre class="col" id="result_data">> command output</pre>
+			</div>
+
 			<div class="row text-center">
 				<div class="col">
 					<a href="/admin/view-files">
-						<button type="button" class="btn btn-info" href="/discord" style="padding:2em;margin:2em;text-transform: none;">View / Edit<br>Files</button>
+						<button type="button" class="btn btn-info" style="padding:2em;margin:2em;text-transform: none;">View / Edit<br>Files</button>
 					</a>
 				</div>
 				<div class="col">
@@ -34,7 +52,10 @@
 
 		<div class="container">
 			<div class="row" style="margin-top:1em;">
-				<h2 class="white-text">Main Modules</h2>
+				<div class="col">
+					<h1 class="white-text"><!-- msg --></h1>
+					<h2 class="white-text">Main Modules</h2>
+				</div>
 			</div>
 
 			<!-- web Stuff -->

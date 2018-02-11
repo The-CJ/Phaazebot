@@ -38,6 +38,9 @@ def main(BASE, info, root):
 	if len(info['path']) == 0:
 		return admin_main(BASE, info, dump)
 
+	elif info['path'][0] == "db":
+		return admin_main(BASE, info, dump, msg="DB IN WORK")
+
 	elif info['path'][0] == "view-files":
 		return view_page(BASE, info, dump)
 
@@ -47,7 +50,7 @@ def main(BASE, info, root):
 	else:
 		return root.page_not_found.page_not_found(BASE, info, root)
 
-def admin_main(BASE, info, dump):
+def admin_main(BASE, info, dump, msg=""):
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/admin/admin_main.html', 'r').read()
@@ -55,6 +58,7 @@ def admin_main(BASE, info, dump):
 	#Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
 	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(dump['user']))
+	site = site.replace("<!-- msg -->", msg)
 
 	#replace informations
 	site = site.replace("{discord_active}", "checked" if BASE.active.discord else "")
@@ -145,9 +149,6 @@ def view_page(BASE, info, dump):
 	return r
 
 def edit_page(BASE, info, dump):
-	#TODO: much to do
-	#https://highlightjs.org/download/
-
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/admin/edit.html', 'r').read()
