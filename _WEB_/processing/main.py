@@ -34,7 +34,7 @@ def main(BASE, info, root):
 	#admin Page
 	elif info['path'][0].lower() == 'admin':
 		info['path'].pop(0)
-		return root.admin.main(BASE, info, root)
+		return root.admin.admin.main(BASE, info, root)
 
 	#discord
 	elif info['path'][0].lower() == 'discord':

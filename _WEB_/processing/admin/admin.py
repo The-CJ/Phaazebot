@@ -1,4 +1,4 @@
-#BASE.moduls._Web_.Base.root.admin
+#BASE.moduls._Web_.Base.root.admin.admin
 
 from importlib import reload
 import traceback, html, os
@@ -34,12 +34,13 @@ def main(BASE, info, root):
 	dump = dict()
 	dump["session"] = admin_session
 	dump["user"] = admin_user
+	dump["root"] = root
 
 	if len(info['path']) == 0:
 		return admin_main(BASE, info, dump)
 
 	elif info['path'][0] == "db":
-		return admin_main(BASE, info, dump, msg="DB IN WORK")
+		return root.admin.db.main(BASE, info, dump)
 
 	elif info['path'][0] == "view-files":
 		return view_page(BASE, info, dump)

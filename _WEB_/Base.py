@@ -24,11 +24,14 @@ class root(object):
 	class wiki(object):
 		import _WEB_.processing.wiki.main as main
 
+	class admin(object):
+		import _WEB_.processing.admin.admin as admin
+		import _WEB_.processing.admin.db as db
+
 	import _WEB_.js.main as js
 	import _WEB_.css.main as css
 	import _WEB_.img.main as img
 
-	import _WEB_.processing.admin as admin
 	import _WEB_.processing.main as main
 	import _WEB_.processing.page_not_found as page_not_found
 	import _WEB_.processing.action_not_allowed as action_not_allowed
