@@ -47,7 +47,7 @@ function change_picture() {
 function update_source_file() {
   var text = $('#textarea_field').val();
   var name = $('#hidden_page_index').text();
-  $.post("/api/admin/edit_file_content?file="+name, text, function (data) {})
+  $.post("/api/admin/files/edit?file="+name, text, function (data) {})
 
 }
 
@@ -59,16 +59,16 @@ function disableAPI() {
 
 
   var time = $('#api_timeout').val();
-  $.post("/api/admin/shutdown_api?time="+time, function (data) {})
+  $.post("/api/admin/shutdown/api?time="+time, function (data) {})
 }
 
 function disableWEB() {
-  var f = confirm('Please confirm, disableling PhaaazeWeb closes all API endpoints end removed all removed remote interfaces');
+  var f = confirm('Please confirm, disableling PhaaazeWeb closes all API endpoints end removedes all remote interfaces');
   if (!f) {
     return
   }
 
 
   var time = $('#web_timeout').val();
-  $.post("/api/admin/shutdown_web?time="+time, function (data) {})
+  $.post("/api/admin/shutdown/web?time="+time, function (data) {})
 }

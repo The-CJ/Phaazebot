@@ -43,7 +43,7 @@ function load_discord_servers() {
 }
 
 function get_server_custom_commands(server_id) {
-  $.get("/api/discord/get_server_custom_commands?id="+server_id, function (data) {
+  $.get("/api/discord/customs/get?id="+server_id, function (data) {
     $('#custom_command_content').text('');
     var amount = 0;
     for (var command in data.data) {
@@ -67,7 +67,7 @@ function delete_custom_command(server_id, trigger) {
   var r = {};
   r['server_id'] = server_id;
   r['trigger'] = trigger;
-  $.post("/api/discord/delete_custom_command", JSON.stringify(r), function (data) {})
+  $.post("/api/discord/custom/delete", JSON.stringify(r), function (data) {})
 }
 
 function update_custom_command(server_id, trigger, content) {
