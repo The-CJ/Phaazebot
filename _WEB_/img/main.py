@@ -3,12 +3,12 @@ import json, mimetypes
 def main(BASE, info, root):
 	if len(info['path']) == 0:
 		class r(object):
-			content = json.dumps(dict(error="no file define")).encode(encoding='utf_8')
+			content = json.dumps(dict(error="no_file_define")).encode(encoding='utf_8')
 			response = 400
 			header = [('Content-Type', 'application/json')]
 		return r
 
-	path_str = "_WEB_/img/{0}".format(info['path'][0])
+	path_str = "_WEB_/img/{0}".format("/".join(w for w in info['path']))
 	path_str = path_str.replace('..','')
 	try:
 		js_file = open(path_str, 'rb').read()
@@ -28,7 +28,7 @@ def main(BASE, info, root):
 	#no file like this
 	except:
 		class r(object):
-			content = json.dumps(dict(error="file not found", path=info['raw_path'])).encode(encoding='utf_8')
+			content = json.dumps(dict(error="file_not_found", path=info['raw_path'])).encode(encoding='utf_8')
 			response = 404
 			header = [('Content-Type', 'application/json')]
 		return r

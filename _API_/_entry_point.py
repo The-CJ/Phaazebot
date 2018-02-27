@@ -1,5 +1,5 @@
 import json, requests
-
+import traceback
 import _API_.Utils as utils
 
 import _API_.Discord as discord
@@ -12,12 +12,20 @@ def call(BASE, web_info):
 
 	all function are also accessable via BASE.api.[module].[function]()
 	"""
+
+	if not BASE.active.api:
+		class r (object):
+			content = json.dumps(dict(status="error", msg="api_endpoint_closed")).encode("UTF-8")
+			response = 403
+			header = [('Content-Type', 'application/json')]
+		return r
+
 	web_info['path'].pop(0)
 
 	if len(web_info['path']) == 0:
 		class r (object):
-			content = json.dumps(dict(msg="Doc comming soon")).encode("UTF-8")
-			response = 200
+			content = json.dumps(dict(status="error", msg="no_path", _m="Trying to find out the PhaazeAPI?. Try looking at phaaze.net/wiki?page=api")).encode("UTF-8")
+			response = 400
 			header = [('Content-Type', 'application/json')]
 		return r
 
@@ -26,15 +34,11 @@ def call(BASE, web_info):
 
 	try:
 		return eval(function_call)
-	except TypeError:
+	except:
+		traceback.print_exc()
+
 		class r (object):
-			content = json.dumps(dict(error="not_callable")).encode("UTF-8")
-			response = 400
-			header = [('Content-Type', 'application/json')]
-		return r
-	except AttributeError:
-		class r (object):
-			content = json.dumps(dict(error="not_found")).encode("UTF-8")
+			content = json.dumps(dict(status="error", msg="not_found")).encode("UTF-8")
 			response = 400
 			header = [('Content-Type', 'application/json')]
 		return r

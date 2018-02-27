@@ -8,27 +8,25 @@ def main(BASE, info, root):
 	if len(info['path']) == 0:
 		return wiki(BASE, info)
 
-	#leads to another site - /wiki/[something]
 	else:
-		try:
-			next_file = "root.wiki.{0}.main.main".format(info['path'][0].lower())
-			info['path'].pop(0)
-			return eval(next_file+"(BASE, info, root)")
-
-		except:
-			return root.page_not_found.page_not_found(BASE, info, root)
+		return root.page_not_found.page_not_found(BASE, info, root)
 
 def wiki(BASE, info):
 	return_header = [('Content-Type','text/html')]
 
-	site = open('_WEB_/content/wiki/root.html', 'r').read()
+	site = open('_WEB_/content/wiki/root.html', 'r', encoding='utf-8').read()
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='wiki'))
 
 	page_index = info.get('values', {}).get("page", "main")
+	page_index = page_index.replace('..', '')
+	if page_index.startswith('/'):
+		page_index = " N/A"
+
 	try:
-		content = open('_WEB_/content/wiki/page_{}.html'.format(page_index), 'r').read()
+		content = open('_WEB_/content/wiki/pages/{}.html'.format(page_index), 'r', encoding='utf-8').read()
 	except:
-		content = open('_WEB_/content/wiki/page_main.html', 'r').read()
+		content = open('_WEB_/content/wiki/not_found.html', 'r', encoding='utf-8').read()
+		content = content.replace("<!-- tryed_path -->", page_index)
 
 	site = site.replace("<!-- about_content -->", content)
 

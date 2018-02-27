@@ -1,3 +1,12 @@
+pre {
+	border-radius: 5px;
+	border: 1px solid lightgrey;
+	background: rgba(50,50,50,0.5);
+	padding: 0.5em;
+	padding-left: 0.9em;
+	color: white;
+}
+
 .dark_bg {
 	background-color: #494D64;
 }
@@ -72,7 +81,6 @@ a.dark_link:hover {
 	padding: 0;
 }
 
-
 .profil_picture {
 	border-radius: 50%;
 }
@@ -85,10 +93,40 @@ a.dark_link:hover {
 .selected_option {
 	color: Grey;
 }
+
 .stick_to_left {
 	margin-right: auto!important;
 }
+
 .stick_to_right {
 	margin-left: auto!important;
 }
 
+.note_pannel {
+	border-left: 5px solid red;
+	border-radius: 5px;
+	padding-left: 1em;
+	background: rgba(0, 0, 0, 0.1);
+}
+
+.tool_tip {
+    position: relative;
+}
+
+.tool_tip .tool_tip_text {
+    visibility: hidden;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+		word-break: normal;
+		white-space: nowrap;
+
+    position: absolute;
+    z-index: 1;
+}
+
+.tool_tip:hover .tool_tip_text {
+    visibility: visible;
+}

@@ -34,7 +34,7 @@ def main(BASE, info, root):
 	#admin Page
 	elif info['path'][0].lower() == 'admin':
 		info['path'].pop(0)
-		return root.admin.main(BASE, info, root)
+		return root.admin.admin.main(BASE, info, root)
 
 	#discord
 	elif info['path'][0].lower() == 'discord':
@@ -50,11 +50,6 @@ def main(BASE, info, root):
 	elif info['path'][0].lower() == 'wiki':
 		info['path'].pop(0)
 		return root.wiki.main.main(BASE, info, root)
-
-	#about
-	elif info['path'][0].lower() == 'about':
-		info['path'].pop(0)
-		return root.about.main.main(BASE, info, root)
 
 	#leads to another site
 	else:

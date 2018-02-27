@@ -1,9 +1,83 @@
-#api/discord/
+#/api/discord/
 
 import json, requests, discord, asyncio, hashlib
 
 VERSION = "v6"
 ROOT = "https://discordapp.com/api/{}/".format(VERSION)
+
+# api/custom/<x>
+from _API_._Discord import Custom as custom
+
+def login(BASE, info={}, from_web=False, **kwargs):
+	"""In Only"""
+	code = info.get("values",{}).get("code", None)
+
+	if code == None:
+		return_header = [("Location", "/discord?error")]
+		class r (object):
+			content = "".encode("UTF-8")
+			response = 302
+			header = return_header
+		return r
+
+	data = {'client_id': BASE.access.Discord_Phaaze_id,
+			'client_secret': BASE.access.Discord_Phaaze_secret,
+			'grant_type': 'authorization_code',
+			'code': code,
+			'redirect_uri': "http://phaaze.net/api/discord/login"}
+
+	headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+	r = requests.post('https://discordapp.com/api/v6/oauth2/token', data, headers)
+	r.raise_for_status()
+	r=r.json()
+
+	auth_discord_user= BASE.api.discord.get_user(BASE, oauth_key=r.get('access_token', None))
+
+	save_object = dict(
+		session = BASE.moduls._Web_.Base.Utils.get_session_key(),
+		access_token = r.get('access_token', None),
+		token_type = r.get('token_type', None),
+		refresh_token = r.get('refresh_token', None),
+		scope = r.get('scope', None),
+		user_info = auth_discord_user
+	)
+
+	res = BASE.PhaazeDB.insert(into="session/discord", content=save_object)
+
+	if res['status'] == "inserted":
+		class r (object):
+			return_header = [('Set-Cookie','discord_session='+save_object['session'] + "; Path=/;"), ("Location", "/discord")]
+
+			content = b""
+			response = 302
+			header = return_header
+		return r
+
+def logout(BASE, info={}, from_web=False, **kwargs):
+	"""In Only"""
+	content = info.get("content", "")
+	try:
+		f = json.loads(content)
+	except:
+		f = {}
+
+	session_key = f.get("discord_session", None)
+	if session_key == None:
+		class r (object):
+			content = json.dumps(dict(error='missing_session_key')).encode("UTF-8")
+			response = 400
+			header = [('Content-Type', 'application/json')]
+		return r
+
+	res = BASE.PhaazeDB.delete(of="session/discord", where="data['session'] == '{}'".format(session_key))
+
+	if res['hits'] == 1:
+		class r (object):
+			content = json.dumps(dict(msg='success')).encode("UTF-8")
+			response = 200
+			header = [('Content-Type', 'application/json')]
+		return r
 
 def change_bot_name(BASE, info={}, from_web=False, **kwargs):
 	"""require admin"""
@@ -141,16 +215,9 @@ def get_server(BASE, info={}, from_web=False, **kwargs):
 
 def get_servers(BASE, info={}, from_web=False, **kwargs):
 	"""In and Out"""
-	content = info.get("content", "")
-	try:
-		f = json.loads(content)
-	except:
-		f = {}
 
-	for key in kwargs:
-		f[key] = kwargs[key]
 
-	session_key = f.get("discord_session", None)
+	session_key = info.get('cookies', {}).get("discord_session", None)
 	if session_key == None:
 		class r (object):
 			content = json.dumps(dict(error='missing_session_key')).encode("UTF-8")
@@ -202,73 +269,12 @@ def get_servers(BASE, info={}, from_web=False, **kwargs):
 	except Exception as e:
 		raise e
 
-def login(BASE, info={}, from_web=False, **kwargs):
-	"""In Only"""
-	code = info.get("values",{}).get("code", None)
 
-	if code == None:
-		return_header = [("Location", "/discord?error")]
-		class r (object):
-			content = "".encode("UTF-8")
-			response = 302
-			header = return_header
-		return r
 
-	data = {'client_id': BASE.access.Discord_Phaaze_id,
-			'client_secret': BASE.access.Discord_Phaaze_secret,
-			'grant_type': 'authorization_code',
-			'code': code,
-			'redirect_uri': "http://phaaze.net/api/discord/login"}
 
-	headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-	r = requests.post('https://discordapp.com/api/v6/oauth2/token', data, headers)
-	r.raise_for_status()
-	r=r.json()
 
-	save_object = dict(
-		session = BASE.moduls._Web_.Base.Utils.get_session_key(),
-		access_token = r.get('access_token', None),
-		token_type = r.get('token_type', None),
-		refresh_token = r.get('refresh_token', None),
-		scope = r.get('scope', None)
-	)
 
-	res = BASE.PhaazeDB.insert(into="session/discord", content=save_object)
 
-	if res['status'] == "inserted":
-		class r (object):
-			return_header = [('Set-Cookie','discord_session='+save_object['session'] + "; Path=\"/\""), ("Location", "/discord")]
 
-			content = b""
-			response = 302
-			header = return_header
-		return r
 
-def logout(BASE, info={}, from_web=False, **kwargs):
-	"""In Only"""
-	content = info.get("content", "")
-	try:
-		f = json.loads(content)
-	except:
-		f = {}
-
-	for key in kwargs:
-		f[key] = kwargs[key]
-
-	session_key = f.get("discord_session", None)
-	if session_key == None:
-		class r (object):
-			content = json.dumps(dict(error='missing_session_key')).encode("UTF-8")
-			response = 400
-			header = [('Content-Type', 'application/json')]
-		return r
-
-	res = BASE.PhaazeDB.delete(of="session/discord", where="data['session'] == '{}'".format(session_key))
-
-	if res['hits'] == 1:
-		class r (object):
-			content = json.dumps(dict(msg='success')).encode("UTF-8")
-			response = 200
-			header = [('Content-Type', 'application/json')]
-		return r

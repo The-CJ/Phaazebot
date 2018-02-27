@@ -13,6 +13,15 @@ function toggle_module(mo) {
   })
 }
 
+function evalCommand() {
+  var command = $('#eval_command').val();
+  var r = {};
+  r['command'] = command;
+  $.post("/api/admin/eval_command", JSON.stringify(r), function (data) {
+    $('#result_data').html(data.result);
+  })
+}
+
 function change_name() {
   var r = {};
   r['name'] = $('#discord_bot_name').val();
@@ -33,4 +42,33 @@ function change_picture() {
    });
  }
   reader.readAsArrayBuffer(r);
+}
+
+function update_source_file() {
+  var text = $('#textarea_field').val();
+  var name = $('#hidden_page_index').text();
+  $.post("/api/admin/files/edit?file="+name, text, function (data) {})
+
+}
+
+function disableAPI() {
+  var f = confirm('Please confirm, without API, 3rd Party programs, and major intern task cannot run properly');
+  if (!f) {
+    return
+  }
+
+
+  var time = $('#api_timeout').val();
+  $.post("/api/admin/shutdown/api?time="+time, function (data) {})
+}
+
+function disableWEB() {
+  var f = confirm('Please confirm, disableling PhaaazeWeb closes all API endpoints end removedes all remote interfaces');
+  if (!f) {
+    return
+  }
+
+
+  var time = $('#web_timeout').val();
+  $.post("/api/admin/shutdown/web?time="+time, function (data) {})
 }

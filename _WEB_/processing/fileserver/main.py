@@ -5,33 +5,22 @@ from importlib import reload
 import json, hashlib, random, string
 
 def main(BASE, info, root):
-	#/fileserver
-	if len(info['path']) == 0:
-		return fileserver(BASE, info)
 
-	#leads to another site - /fileserver/[something]
+	dump = dict()
+
+	session = info.get('cookies', {}).get('fileserver_session', None)
+
+	if session == None:
+		return fileserver_login(BASE, info, dump)
+
+	elif len(info['path']) == 0:
+		return fileserver_main(BASE, info, dump)
+
+
 	else:
-		try:
-			next_file = "root.fileserver.{0}.main.main".format(info['path'][0].lower())
-			info['path'].pop(0)
-			return eval(next_file+"(BASE, info, root)")
+		return root.page_not_found.page_not_found(BASE, info, root)
 
-		except:
-			return root.page_not_found.page_not_found(BASE, info, root)
-
-def fileserver(BASE, info):
-	if info["values"].get("login", False):
-		return login_user(BASE, info)
-
-	return_header = [('Content-Type','text/html')]
-
-	if info['cookies'].get('fileserver_session', None) != None:
-
-		return fileserver_main(BASE)
-	else:
-		return fileserver_login(BASE)
-
-def fileserver_main(BASE):
+def fileserver_main(BASE, info, dump):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/fileserver/fileserver_main.html', 'r').read()
 
@@ -43,7 +32,7 @@ def fileserver_main(BASE):
 		header = return_header
 	return r
 
-def fileserver_login(BASE):
+def fileserver_login(BASE, info, dump):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/fileserver/fileserver_login.html', 'r').read()
 

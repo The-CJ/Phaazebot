@@ -17,15 +17,35 @@
 		<!-- Inserted via get_navbar() -->
 		<!-- Navbar -->
 
-		<div class="container">
+		<div class="container white-text">
+			<div class="row" style="margin-top:1em;">
+				<div class="col">
+					<h2>System Override</h2>
+				</div>
+			</div>
+			<div class="row">
+				<span style="margin:auto 0;">root@phaazeos:&nbsp;</span>
+				<div class="col" style="padding-left:0;">
+					<input id="eval_command" type="text" class="input-alternate white" value="" placeholder="Execute eval() Command" style="margin-top:0.7em;">
+				</div>
+				<div class="col-1">
+					<button type="button" class="btn btn-primary" style="padding:1em;" onclick="javascript:evalCommand()">Submit</button>
+				</div>
+			</div>
+			<div class="row">
+				<pre class="col" id="result_data">> command output</pre>
+			</div>
+
 			<div class="row text-center">
 				<div class="col">
 					<a href="/admin/view-files">
-						<button type="button" class="btn btn-info" href="/discord" style="padding:2em;margin:2em;text-transform: none;">View / Edit<br>Files</button>
+						<button type="button" class="btn" style="padding:2em;margin:2em;text-transform: none;background:#444444;">View / Edit<br>Files</button>
 					</a>
 				</div>
 				<div class="col">
-
+					<a href="#" onclick="window.location.port=2000">
+						<button type="button" class="btn" style="padding:2em;margin:2em;text-transform: none;background:#444444;">PhaazeDB Manager</button>
+					</a>
 				</div>
 
 			</div>
@@ -34,7 +54,88 @@
 
 		<div class="container">
 			<div class="row" style="margin-top:1em;">
-				<h2 class="white-text">Main Modules</h2>
+				<div class="col">
+					<h1 class="white-text"><!-- msg --></h1>
+					<h2 class="white-text">Main Modules</h2>
+				</div>
+			</div>
+
+			<!-- web Stuff -->
+			<div class="row">
+				<button class="text-center btn btn-block indigo" type="button" onclick="javascript:$('#web_field').collapse('toggle');" style="margin:0" id="web_jump_section">PhaazeWeb</button>
+			</div>
+
+			<div class="collapse text-center" id="web_field">
+				<div class="row">
+					<div class="col">
+						<div class="stylish-color-dark" style="padding:0.5em;">
+							<h3 class="text-center white-text align-middle">Main PhaazeWeb</h3>
+							<div class="container text-white">
+								<div class="row">
+									<div class="col">
+										<h3>Overwrite</h3>
+										<h5>Disable WEB</h5>
+										<div class="row">
+											<div class="col">
+												<button type="button" class="btn btn-warning" onclick="javascript:disableWEB()">Submit</button>
+											</div>
+											<div class="col">
+												<input type="text" value="5" class="white-text text-right" id="web_timeout">
+											</div>
+											<div class="col text-left">
+												<span class="text-left">min</span>
+											</div>
+										</div>
+
+									</div>
+									<div class="col">
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- api Stuff -->
+			<div class="row">
+				<button class="text-center btn btn-block red" type="button" onclick="javascript:$('#api_field').collapse('toggle');" style="margin:0" id="web_jump_section">PhaazeWeb API</button>
+			</div>
+
+			<div class="collapse text-center" id="api_field">
+				<div class="row">
+					<div class="col">
+						<div class="stylish-color-dark" style="padding:0.5em;">
+							<h3 class="text-center white-text align-middle">Main PhaazeWeb API Endpoint</h3>
+							<hr>
+							<div class="container text-white">
+								<div class="row">
+									<div class="col">
+										<h3>Overwrite</h3>
+										<h5>Disable API</h5>
+										<div class="row">
+											<div class="col">
+												<button type="button" class="btn btn-warning" onclick="javascript:disableAPI()">Submit</button>
+											</div>
+											<div class="col">
+												<input type="text" value="5" class="white-text text-right" id="api_timeout">
+											</div>
+											<div class="col text-left">
+												<span class="text-left">min</span>
+											</div>
+										</div>
+
+									</div>
+									<div class="col">
+
+									</div>
+								</div>
+							</div>
+							<hr>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<!--  Discord Stuff -->
@@ -155,32 +256,6 @@
 					</div>
 				</div>
 			</div>
-
-			<!--  web Stuff -->
-			<div class="row">
-				<button class="text-center btn btn-block indigo" type="button" onclick="javascript:$('#web_field').collapse('toggle');" style="margin:0" id="web_jump_section">PhaazeWeb</button>
-			</div>
-
-			<div class="collapse text-center" id="web_field">
-				<div class="row">
-					<div class="col">
-						<div class="stylish-color-dark" style="padding:0.5em;">
-							<hr>
-							<hr>
-							<hr>
-							<hr>
-							<hr>
-							<hr>
-						</div>
-					</div>
-				</div>
-			</div>
-
-
-
-
-
-		</div>
 
 		</div>
 

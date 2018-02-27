@@ -7,29 +7,21 @@ import asyncio, datetime, requests, html
 DISCORD_BOT_ID = "180679855422177280"
 
 def main(BASE, info, root):
-	#/discord
-	if len(info['path']) == 0:
-		return discord(BASE, info)
+	dump = dict()
+	#accessable without login
+	if len(info['path']) > 0:
+		#/invite
+		if info['path'][0].lower() == "invite":
+			info['path'].pop(0)
+			return root.discord.invite.invite(BASE, info, root, dump)
 
+		#/custom
+		if info['path'][0].lower() == "custom":
+			info['path'].pop(0)
+			return root.discord.custom.custom(BASE, info, root, dump)
 
-	elif info['path'][0].lower() == "dashboard":
-		info['path'].pop(0)
-		return root.discord.dashboard.main(BASE, info, root)
-
-	else:
-		return root.page_not_found.page_not_found(BASE, info, root)
-
-def discord(BASE, info):
-	return_header = [('Content-Type','text/html')]
-
-	if info['cookies'].get('discord_session', None) != None:
-		return discord_main(BASE, info)
-	else:
+	if info['cookies'].get('discord_session', None) == None:
 		return discord_login(BASE, info)
-
-def discord_main(BASE, info):
-	return_header = [('Content-Type','text/html')]
-	site = open('_WEB_/content/discord/discord_main.html', 'r').read()
 
 	#get session
 	search_str = 'data["session"] == "{}"'.format(info['cookies'].get('discord_session', None))
@@ -43,15 +35,40 @@ def discord_main(BASE, info):
 	if discord_user_data.get('id', None) == None:
 		return discord_login(BASE, info, msg="Please login again.<br>(401 Discord Unauthorized)")
 
-	#load avatar
-	if discord_user_data.get('avatar', "") != "":
-		image_path = "avatars/{}/{}.png".format(discord_user_data['id'], discord_user_data['avatar'])
+	dump['discord_user_data'] = discord_user_data
+
+	####################################################
+
+	#/discord
+	if len(info['path']) == 0:
+		return discord_main(BASE, info, dump)
+
+	#/dashboard
+	elif info['path'][0].lower() == "dashboard":
+		info['path'].pop(0)
+		return root.discord.dashboard.main(BASE, info, root, dump)
+
+	#/invite
+	elif info['path'][0].lower() == "invite":
+		info['path'].pop(0)
+		return root.discord.invite.invite(BASE, info, root, dump)
+
 	else:
-		image_path = "embed/avatars/{}.png".format(str( int(discord_user_data['discriminator']) % 5 ))
+		return root.page_not_found.page_not_found(BASE, info, root)
+
+def discord_main(BASE, info, dump):
+	return_header = [('Content-Type','text/html')]
+	site = open('_WEB_/content/discord/discord_main.html', 'r').read()
+
+	#load avatar
+	if dump['discord_user_data'].get('avatar', "") != "":
+		image_path = "avatars/{}/{}.png".format(dump['discord_user_data']['id'], dump['discord_user_data']['avatar'])
+	else:
+		image_path = "embed/avatars/{}.png".format(str( int(dump['discord_user_data']['discriminator']) % 5 ))
 
 	#Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
-	site = site.replace("<!-- logged_in_user -->", BASE.moduls._Web_.Utils.discord_loggedin_field(image_path, discord_user_data.get('username', "-Username-")))
+	site = site.replace("<!-- logged_in_user -->", BASE.moduls._Web_.Utils.discord_loggedin_field(image_path, dump['discord_user_data'].get('username', "-Username-")))
 
 
 	#add profile Picture

@@ -7,7 +7,6 @@
 # TODO: Twitch raid message
 # TODO: Add method to reset level on leave
 
-# TODO: make a /admin
 # TODO: make a /discord/dashboard
 
 # # # # # # # # #
