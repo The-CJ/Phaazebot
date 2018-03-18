@@ -68,7 +68,8 @@ async def get_all_maps(BASE, ID=None, mode="b"):
 	if ID == None: return None
 
 	#request stuff
-	r = requests.get(MAIN + MAP + "?k="+BASE.access.Osu_API_Token + "&{0}={1}".format(mode, ID))
+	r_str = MAIN + MAP + "?k="+BASE.access.Osu_API_Token + "&{0}={1}".format(mode, ID)
+	r = requests.get(r_str)
 	r = r.json()
 
 	#No result
@@ -253,13 +254,28 @@ async def pp_calc_for_maps(BASE, message):
 
 async def twitch_osu(BASE, message):
 	def get_link_out_of_content(content):
-		m = content.lower().split()
-		for word in m:
-			if "osu.ppy.sh/b/" in word:
-				return word.split("/b/")[1], "b"
-			if "osu.ppy.sh/s/" in word:
-				return word.split("/s/")[1], "s"
-		return "835314&m=0", "b"
+		m = content.lower()
+		match = re.match(r'.+osu\.ppy\.sh\/(b|s|beatmapsets)\/(\d+)(/?#(\w+)?\/?(\d+)|)', m)
+
+		r = {}
+		r['set_'] = match.group(1)
+		r['set_id_'] = match.group(2)
+		r['mode_'] = match.group(4)
+		r['map_id_'] = match.group(5)
+
+		if r['map_id_'] == None:
+			R_mode='s'
+			r['map_id_'] = r['set_id_']
+		else:
+			R_mode='b'
+
+		if r['mode_'] == "#osu": R_play = "0"
+		elif r['mode_'] == "#taiko": R_play = "1"
+		elif r['mode_'] == "#fruits": R_play = "2"
+		elif r['mode_'] == "#mania": R_play = "3"
+		else: R_play = "0"
+
+		return r['map_id_']+"&m="+R_play, R_mode
 
 	search_id, mode = get_link_out_of_content(message.content)
 
