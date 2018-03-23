@@ -14,8 +14,8 @@
 
 
 	<body class="stylish-color">
-		<!-- Inserted via get_navbar() -->
 		<!-- Navbar -->
+		|>>>BASE.moduls._Web_.Utils.format_html_functions( BASE, BASE.moduls._Web_.Utils.get_navbar(active='admin'), infos=infos )<<<|
 
 		<div class="container white-text">
 			<div class="row" style="margin-top:1em;">
@@ -60,202 +60,17 @@
 				</div>
 			</div>
 
-			<!-- web Stuff -->
-			<div class="row">
-				<button class="text-center btn btn-block indigo" type="button" onclick="javascript:$('#web_field').collapse('toggle');" style="margin:0" id="web_jump_section">PhaazeWeb</button>
-			</div>
-
-			<div class="collapse text-center" id="web_field">
-				<div class="row">
-					<div class="col">
-						<div class="stylish-color-dark" style="padding:0.5em;">
-							<h3 class="text-center white-text align-middle">Main PhaazeWeb</h3>
-							<div class="container text-white">
-								<div class="row">
-									<div class="col">
-										<h3>Overwrite</h3>
-										<h5>Disable WEB</h5>
-										<div class="row">
-											<div class="col">
-												<button type="button" class="btn btn-warning" onclick="javascript:disableWEB()">Submit</button>
-											</div>
-											<div class="col">
-												<input type="text" value="5" class="white-text text-right" id="web_timeout">
-											</div>
-											<div class="col text-left">
-												<span class="text-left">min</span>
-											</div>
-										</div>
-
-									</div>
-									<div class="col">
-
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- api Stuff -->
-			<div class="row">
-				<button class="text-center btn btn-block red" type="button" onclick="javascript:$('#api_field').collapse('toggle');" style="margin:0" id="web_jump_section">PhaazeWeb API</button>
-			</div>
-
-			<div class="collapse text-center" id="api_field">
-				<div class="row">
-					<div class="col">
-						<div class="stylish-color-dark" style="padding:0.5em;">
-							<h3 class="text-center white-text align-middle">Main PhaazeWeb API Endpoint</h3>
-							<hr>
-							<div class="container text-white">
-								<div class="row">
-									<div class="col">
-										<h3>Overwrite</h3>
-										<h5>Disable API</h5>
-										<div class="row">
-											<div class="col">
-												<button type="button" class="btn btn-warning" onclick="javascript:disableAPI()">Submit</button>
-											</div>
-											<div class="col">
-												<input type="text" value="5" class="white-text text-right" id="api_timeout">
-											</div>
-											<div class="col text-left">
-												<span class="text-left">min</span>
-											</div>
-										</div>
-
-									</div>
-									<div class="col">
-
-									</div>
-								</div>
-							</div>
-							<hr>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!--  Discord Stuff -->
-			<div class="row">
-				<button class="text-center btn btn-block " type="button" onclick="javascript:$('#discord_field').collapse('toggle');" style="margin:0;background-color:#7289DA;" id="discord_jump_section">Discord</button>
-			</div>
-
-			<div class="collapse text-center" id="discord_field">
-				<div class="row">
-					<div class="col">
-						<div class="stylish-color-dark" style="padding:0.5em;">
-							<h3 class="text-center white-text align-middle">Discord -
-								<label class="switch  align-middle">
-									<input {discord_active} type="checkbox" onchange="javascript:toggle_module('discord');">
-									<span class="slider"></span>
-								</label>
-							</h3>
-
-							<hr>
-
-							<div class="md-form input-group">
-								<span class="input-group-addon" id="basic-addon1">Bot Name</span>
-								<input type="text" class="text-center white-text form-control pt-0" aria-describedby="basic-addon1" value="{discord_bot_name}" id="discord_bot_name">
-								<button type="button" class="btn btn-primary" style="margin:0;" onclick="javascript:change_name()">Change</button>
-							</div>
-
-							<div class="md-form input-group">
-								<span class="input-group-addon" id="basic-addon2">Bot ID</span>
-								<input disabled type="text" class="text-center white-text form-control pt-0" aria-describedby="basic-addon2" value="{discord_bot_id}">
-							</div>
-
-							<div class="md-form input-group">
-								<span class="input-group-addon" id="basic-addon3">Bot Discriminator</span>
-								<input disabled type="text" class="text-center white-text form-control pt-0" aria-describedby="basic-addon3" value="{discord_bot_discriminator}">
-							</div>
-
-							<div class="md-form input-group">
-								<span class="input-group-addon" id="basic-addon4">Active Servers</span>
-								<input disabled type="text" class="text-center white-text form-control pt-0" aria-describedby="basic-addon4" value="{discord_bot_servers}">
-							</div>
-
-							<div class="row">
-								<div class="col-3">
-									<img src="{discord_bot_avatar}" alt="BotAvatar" class="img-fluid" style="border-radius:50%;">
-								</div>
-
-								<div class="col white-text">
-									Change:
-									<input type="file" class="btn" id="picture_upload">
-									<br>
-									<button type="button" class="btn btn-primary"  onclick="javascript:change_picture()">Upload</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!--  Twitch Stuff -->
-			<div class="row">
-				<button class="text-center btn btn-block " type="button" onclick="javascript:$('#twitch_field').collapse('toggle');" style="margin:0;background-color:#6441A4;" id="twitch_jump_section">Twitch</button>
-			</div>
-
-			<div class="collapse text-center" id="twitch_field">
-				<div class="row">
-					<div class="col">
-						<div class="stylish-color-dark" style="padding:0.5em;">
-							<h3 class="text-center white-text align-middle">Twitch -
-								<label class="switch  align-middle">
-									<input {twitch_active} type="checkbox" onchange="javascript:toggle_module('twitch_irc');">
-									<span class="slider"></span>
-								</label>
-							</h3>
-							<hr>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!--  Twitch alerts Stuff -->
-			<div class="row">
-				<button class="text-center btn btn-block " type="button" onclick="javascript:$('#twitch_alerts_field').collapse('toggle');" style="margin:0;background-color:#442184;" id="twitch_alerts_jump_section">Twitch Alerts</button>
-			</div>
-
-			<div class="collapse text-center" id="twitch_alerts_field">
-				<div class="row">
-					<div class="col">
-						<div class="stylish-color-dark" style="padding:0.5em;">
-							<h3 class="text-center white-text align-middle">Twitch Alerts -
-								<label class="switch  align-middle">
-									<input {twitch_alert_active} type="checkbox" onchange="javascript:toggle_module('twitch_alert');">
-									<span class="slider"></span>
-								</label>
-							</h3>
-							<hr>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!--  Osu Stuff -->
-			<div class="row">
-				<button class="text-center btn btn-block " type="button" onclick="javascript:$('#osu_field').collapse('toggle');" style="margin:0;background-color:#ff66ff;" id="osu_jump_section">osu!</button>
-			</div>
-
-			<div class="collapse text-center" id="osu_field">
-				<div class="row">
-					<div class="col">
-						<div class="stylish-color-dark" style="padding:0.5em;">
-							<h3 class="text-center white-text align-middle">osu! -
-								<label class="switch  align-middle">
-									<input {osu_active} type="checkbox" onchange="javascript:toggle_module('osu_irc');">
-									<span class="slider"></span>
-								</label>
-							</h3>
-							<hr>
-						</div>
-					</div>
-				</div>
-			</div>
+			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/web.html', 'r').read())<<<|
+			<hr>
+			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/api.html', 'r').read())<<<|
+			<hr>
+			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/discord.html', 'r').read())<<<|
+			<hr>
+			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/twitch.html', 'r').read())<<<|
+			<hr>
+			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/twitch_alerts.html', 'r').read())<<<|
+			<hr>
+			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/osu.html', 'r').read())<<<|
 
 		</div>
 

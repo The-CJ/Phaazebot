@@ -52,27 +52,15 @@ def main(BASE, info, root):
 		return root.page_not_found.page_not_found(BASE, info, root)
 
 def admin_main(BASE, info, dump, msg=""):
+	info['dump'] = dump
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/admin/admin_main.html', 'r').read()
 
 	#Replace Parts
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
-	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(dump['user']))
 	site = site.replace("<!-- msg -->", msg)
 
-	#replace informations
-	site = site.replace("{discord_active}", "checked" if BASE.active.discord else "")
-	site = site.replace("{discord_bot_name}", BASE.phaaze.user.name)
-	site = site.replace("{discord_bot_id}", BASE.phaaze.user.id)
-	site = site.replace("{discord_bot_discriminator}", "#"+BASE.phaaze.user.discriminator)
-	site = site.replace("{discord_bot_servers}", str(len(BASE.phaaze.servers)))
-	site = site.replace("{discord_bot_avatar}", BASE.phaaze.user.avatar_url)
-
-	site = site.replace("{twitch_active}", "checked" if BASE.active.twitch_irc else "")
-	site = site.replace("{twitch_alert_active}", "checked" if BASE.active.twitch_alert else "")
-	site = site.replace("{osu_active}", "checked" if BASE.active.osu_irc else "")
-	site = site.replace("{web_active}", "checked" if BASE.active.web else "")
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -84,7 +72,7 @@ def admin_login(BASE, info, msg=""):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/admin/admin_login.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site)
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -93,28 +81,11 @@ def admin_login(BASE, info, msg=""):
 
 	return r
 
-def format_loggedin_field(user):
-	r = """
-          <div class="white">
-            <span class="black-text align-middle inline" style="margin:0.5em;">([type]) - [name]</span>
-            <button type="button" class="btn-danger align-middle inline expandable-btn waves-effect" style="padding:.3em;">
-              <div class="material-icons align-middle inline">&nbsp;exit_to_app</div>
-              <div class="align-middle inline expandable_content">
-                <span onclick="javascript:admin_logout();">Logout</span>
-              </div>
-            </button>
-          </div>
-	"""
-	r = r.replace("[name]", html.escape(user.get("username", "--Name--")))
-	r = r.replace("[type]", user.get("type", "N/A"))
-	return r
-
 def view_page(BASE, info, dump):
+	info['dump'] = dump
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/admin/view.html', 'r').read()
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
-	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(dump['user']))
 
 	path = info['values'].get('path', "")
 	js_var_path = ""
@@ -130,7 +101,6 @@ def view_page(BASE, info, dump):
 
 	folder_spec = dict()
 
-
 	path_str = path + "/" if path != "" else ""
 	for file_or_folder in folder:
 		if os.path.isfile(path_str+file_or_folder):
@@ -142,6 +112,7 @@ def view_page(BASE, info, dump):
 	site = site.replace("{'name':'type'}", str(folder_spec))
 	site = site.replace("[js_var_path]", str("'"+js_var_path+"'"))
 
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200
@@ -150,11 +121,10 @@ def view_page(BASE, info, dump):
 	return r
 
 def edit_page(BASE, info, dump):
+	info['dump'] = dump
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/admin/edit.html', 'r').read()
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='admin'))
-	site = site.replace("<!-- logged_in_user -->", format_loggedin_field(dump['user']))
 
 	page_index = info.get('values', {}).get("page", "main")
 	try:
@@ -165,6 +135,7 @@ def edit_page(BASE, info, dump):
 	site = site.replace("<!-- page_content -->", html.escape(content))
 	site = site.replace("<!-- page_index -->", html.escape(page_index))
 
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200
