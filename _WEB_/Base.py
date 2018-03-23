@@ -7,7 +7,7 @@ import hashlib, random, string
 
 the_list_of_endpoint_that_gets_always_triggered_by_annoying_bots_on_search_of_something__That_i_will_anwnser_with_a_toaster = [
 	'/phpMyAdmin', '/php', '/pma', '/ccvv', '/index.php', '/robots.txt', '/cfide', '/webman',
-	'/hnap1', '/webman', '/vendor', '/http:', '/zabbit'
+	'/hnap1', '/webman', '/vendor', '/http:', '/zabbit', '/myadmin', '/wp-admin'
 ]
 
 class root(object):
