@@ -3,7 +3,7 @@
 import time, datetime, asyncio, re, json
 import http.server
 import urllib.parse as url_parse
-import hashlib, random, string
+import hashlib, random, string, ssl
 
 the_list_of_endpoint_that_gets_always_triggered_by_annoying_bots_on_search_of_something__That_i_will_anwnser_with_a_toaster = [
 	'/phpMyAdmin', '/php', '/pma', '/ccvv', '/index.php', '/robots.txt', '/cfide', '/webman',
@@ -152,5 +152,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 async def webserver(BASE):
 	RequestHandler.BASE = BASE
 	server = http.server.HTTPServer(('0.0.0.0', 80), RequestHandler)
+	# server = ssl.wrap_socket(server.socket, certfile=None, server_side=True)
 	server.serve_forever()
 
