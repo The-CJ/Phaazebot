@@ -35,7 +35,7 @@ def format_html_functions(BASE, html_string, infos = {}):
 			calc_ = eval(hit.group(1))
 			html_string = html_string.replace(hit.group(0), calc_)
 		except:
-			continue
+			html_string = html_string.replace(hit.group(0), "")
 
 	return html_string
 
