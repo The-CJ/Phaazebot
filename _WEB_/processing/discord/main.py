@@ -62,14 +62,15 @@ def discord_main(BASE, info, dump):
 
 	#load avatar
 	if dump['discord_user_data'].get('avatar', "") != "":
-		image_path = "avatars/{}/{}.png".format(dump['discord_user_data']['id'], dump['discord_user_data']['avatar'])
+		dump['image_path'] = "avatars/{}/{}.png".format(dump['discord_user_data']['id'], dump['discord_user_data']['avatar'])
 	else:
-		image_path = "embed/avatars/{}.png".format(str( int(dump['discord_user_data']['discriminator']) % 5 ))
+		dump['image_path'] = "embed/avatars/{}.png".format(str( int(dump['discord_user_data']['discriminator']) % 5 ))
 
 	#Replace Parts
 	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
-	site = site.replace("<!-- logged_in_user -->", BASE.moduls._Web_.Utils.discord_loggedin_field(image_path, dump['discord_user_data'].get('username', "-Username-")))
 
+	info['dump'] = dump
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	#add profile Picture
 
@@ -83,8 +84,6 @@ def discord_login(BASE, info, msg=""):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/discord/discord_login.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
-
 	site = site.replace("__Discord_Client_ID__", DISCORD_BOT_ID)
 	site = site.replace("__Nonce_of_stuff__", str(datetime.datetime.timestamp(datetime.datetime.now())))
 
@@ -93,6 +92,8 @@ def discord_login(BASE, info, msg=""):
 
 	elif msg != "":
 		site = site.replace("<!-- Error -->", msg)
+
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")
