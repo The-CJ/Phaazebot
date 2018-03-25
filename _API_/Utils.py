@@ -1,49 +1,105 @@
+#BASE._API_.Utils
+
 import json, requests, hashlib
 
-#admin
+# log in/out
+def login(BASE, info={}, from_web=False, **kwargs):
+	content = info.get("content", "")
+	try:
+		f = json.loads(content)
+	except:
+		f = {}
 
-def authorise_admin(BASE, session=None, auth_key=None, username=None, password=None):
+	password = f.get("password", "")
+	phaaze_username = f.get("phaaze_username", "")
+
+	if password == "" or phaaze_username == "":
+		class r (object):
+			content = json.dumps(dict(error="missing_data")).encode("UTF-8")
+			response = 400
+			header = [('Content-Type', 'application/json')]
+		return r
+
+	user = get_phaaze_user(BASE, phaaze_username=phaaze_username, password=password)
+
+	if user == None:
+		class r (object):
+			content = json.dumps(dict(error="wrong_data")).encode("UTF-8")
+			response = 401
+			header = [('Content-Type', 'application/json')]
+		return r
+
+	new_session = BASE.moduls._Web_.Base.Utils.get_session_key()
+
+	entry = dict(session = new_session, user_id=user['id'])
+	BASE.PhaazeDB.insert(into="session/phaaze", content=entry)
+
+	class r (object):
+		content = json.dumps(dict(phaaze_session=new_session)).encode("UTF-8")
+		response = 200
+		header = [('Content-Type', 'application/json')]
+	return r
+
+def logout(BASE, info={}, from_web=False, **kwargs):
+	content = info.get("content", "")
+	try:
+		f = json.loads(content)
+	except:
+		f = {}
+
+	session_key = info.get('cookies', {}).get("phaaze_session", None)
+	if session_key == None:
+		session_key = f.get('session', None)
+
+	if session_key == None:
+		class r (object):
+			content = json.dumps(dict(error='missing_session_key')).encode("UTF-8")
+			response = 400
+			header = [('Content-Type', 'application/json')]
+		return r
+
+	res = BASE.PhaazeDB.delete(of="session/phaaze", where="data['session'] == '{}'".format(session_key))
+	print(res)
+
+	if res['hits'] == 1:
+		class r (object):
+			content = json.dumps(dict(msg='success')).encode("UTF-8")
+			response = 200
+			header = [('Content-Type', 'application/json')]
+		return r
+
+#get user infos
+
+def get_phaaze_user(BASE, phaaze_username=None, password=None, session=None, api_token=None, **kwarg):
+
+	#via username and password
+	if phaaze_username != None and password != None:
+		search_str = 'data["phaaze_username"] == "{}" '.format(phaaze_username)
+		password = hashlib.sha256(password.encode("UTF-8")).hexdigest()
+		search_str = search_str + "and data['password'] == '{}'".format(password)
+		res = BASE.PhaazeDB.select(of="user", where=search_str)
+		if len(res['data']) != 1:
+			return None
+
+		else:
+			return res['data'][0]
+
 	if session != None:
-		admin = get_admin_by_session(BASE, session)
-		if admin != None: return admin
+		search_str = 'data["session"] == "{}" '.format(session)
+		res = BASE.PhaazeDB.select(of="session/phaaze", where=search_str)
+		if len(res['data']) != 1:
+			return None
 
-	if auth_key != None:
-		pass
-		#TODO: admin api keys
+		else:
+			user_session = res['data'][0]
 
-	if username != None and password != None:
-		search_str = "data['username'] == '{0}' and data['password'] == '{1}'".format(username, hashlib.sha256(password.encode("UTF-8")).hexdigest())
-		res=BASE.PhaazeDB.select(of="admin/user", where=search_str)
-		admin = res['data'][0] if len(res['data']) > 0 else None
-		if admin != None: return admin
+		search_str = 'int(data["id"]) == {} '.format(user_session.get('user_id',"0"))
+		res = BASE.PhaazeDB.select(of="user", where=search_str)
+		if len(res['data']) != 1:
+			return None
 
-	return None
-
-def get_admin_by_session(BASE, session):
-	r_value = None
-
-	admin_session =  BASE.PhaazeDB.select(of="session/admin", where='data["session"] == "{}"'.format(session))
-
-	if admin_session['hits'] == 1:
-		admin_user_id = admin_session['data'][0].get("user_id", "")
-		admin_user = BASE.PhaazeDB.select(of="admin/user", where='data["id"] == {}'.format(admin_user_id))
-
-		if admin_user['hits'] == 1:
-			r_value = admin_user['data'][0]
-
-	return r_value
-
-def get_admin_by_url_values(BASE, info):
-	r_value = None
-
-	username = info.get("user", "")
-	password = hashlib.sha256(info.get("password", "").encode("UTF-8")).hexdigest()
-
-	admin_user = BASE.PhaazeDB.select(of="admin/user", where='data["username"] == "{0}" and data["password"] == "{1}"'.format(username, password))
-	if admin_user['hits'] == 1:
-		r_value = admin_user['data'][0]
-
-	return r_value
+		else:
+			return res['data'][0]
 
 #discord
 

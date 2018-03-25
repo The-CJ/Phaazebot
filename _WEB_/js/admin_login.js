@@ -4,17 +4,17 @@ function submit_login() {
 
   var r = {};
 
-  r["login"] = login;
+  r["phaaze_username"] = login;
   r["password"] = password;
 
-  $.post("/api/admin/login", JSON.stringify(r))
+  $.post("/api/login", JSON.stringify(r))
   .done(
     function (data) {
       $('#admin_loginname').addClass("animated bounceOutLeft");
       $('#admin_password').addClass("animated bounceOutRight");
       $('#sub_button').addClass("animated flipOutX");
       setTimeout(function () {
-        setCookie("admin_session", data.admin_user);
+        setCookie("phaaze_session", data.phaaze_session);
         location.reload();
       },1000);
     }

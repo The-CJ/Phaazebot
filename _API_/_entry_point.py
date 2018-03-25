@@ -1,6 +1,8 @@
 import json, requests
 import traceback
 import _API_.Utils as utils
+from _API_.Utils import login as login
+from _API_.Utils import logout as logout
 
 import _API_.Discord as discord
 import _API_.DataBase as db

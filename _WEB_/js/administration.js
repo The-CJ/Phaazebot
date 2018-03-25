@@ -1,15 +1,16 @@
 function admin_logout() {
-  var x = getCookie("admin_session");
+  var x = getCookie("phaaze_session");
   var r = {};
-  r['admin_session'] = x;
-  $.post("/api/admin/logout", JSON.stringify(r), function (data) {
-    remCookie("admin_session");
+  r['phaaze_session'] = x;
+  $.post("/api/logout", JSON.stringify(r), function (data) {
+    remCookie("phaaze_session");
     window.location = "/admin";
   })
 }
 
 function toggle_module(mo) {
   $.post("/api/admin/toggle_moduls?modul="+mo, function (data) {
+    _show_message('Successfull toggled', 'background:#44FF44;')
   })
   .fail(function (data) {
     _show_message('Unauthorized', 'background:white;');
@@ -60,7 +61,9 @@ function change_picture() {
 function update_source_file() {
   var text = $('#textarea_field').val();
   var name = $('#hidden_page_index').text();
-  $.post("/api/admin/files/edit?file="+name, text, function (data) {})
+  $.post("/api/admin/files/edit?file="+name, text, function (data) {
+    _show_message('Successfull saved', 'background:#44FF44;')
+  })
   .fail(function (data) {
     _show_message('Unauthorized', 'background:white;');
   })
@@ -74,7 +77,9 @@ function disableAPI() {
 
 
   var time = $('#api_timeout').val();
-  $.post("/api/admin/shutdown/api?time="+time, function (data) {})
+  $.post("/api/admin/shutdown/api?time="+time, function (data) {
+    _show_message('API Disabled', 'background:#44FF44;')
+  })
   .fail(function (data) {
     _show_message('Unauthorized', 'background:white;');
   })
@@ -88,7 +93,10 @@ function disableWEB() {
 
 
   var time = $('#web_timeout').val();
-  $.post("/api/admin/shutdown/web?time="+time, function (data) {})
+  $.post("/api/admin/shutdown/web?time="+time, function (data) {
+    _show_message('WEB Disabled', 'background:#44FF44;')
+
+  })
   .fail(function (data) {
     _show_message('Unauthorized', 'background:white;');
   })

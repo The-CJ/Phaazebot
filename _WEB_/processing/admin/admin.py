@@ -4,7 +4,7 @@ import  html, os
 
 def main(BASE, info, root):
 
-	session = info['cookies'].get('admin_session', None)
+	session = info['cookies'].get('phaaze_session', None)
 
 	#no session -> login
 	if session == None:
@@ -12,7 +12,7 @@ def main(BASE, info, root):
 
 	#get session
 	search_str = 'data["session"] == "{}"'.format(session)
-	res = BASE.PhaazeDB.select(of="session/admin", where=search_str)
+	res = BASE.PhaazeDB.select(of="session/phaaze", where=search_str)
 	if len(res['data']) == 0:
 		#session not found -> login
 		return admin_login(BASE, info, msg="Please login again. (Session expired)")
@@ -22,12 +22,15 @@ def main(BASE, info, root):
 
 	#get admin user from session "user_id"
 	search_str = 'data["id"] == {}'.format(admin_session['user_id'])
-	res = BASE.PhaazeDB.select(of="admin/user", where=search_str)
+	res = BASE.PhaazeDB.select(of="user", where=search_str)
 	if len(res['data']) == 0:
 		return admin_login(BASE, info, msg="Please login again. (User not found)")
 
 	#get admin user object
 	admin_user = res["data"][0]
+
+	if "admin" not in admin_user.get("type", ""):
+		return admin_login(BASE, info, msg="Your Account is unauthoriesed to access.")
 
 	#store calculated data
 	dump = dict()
@@ -70,6 +73,7 @@ def admin_main(BASE, info, dump, msg=""):
 def admin_login(BASE, info, msg=""):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/admin/admin_login.html', 'r').read()
+	site = site.replace("<!-- msg -->", msg)
 
 	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site)
 
