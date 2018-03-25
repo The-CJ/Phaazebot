@@ -43,7 +43,7 @@ function load_discord_servers() {
 }
 
 function get_server_custom_commands(server_id) {
-  $.get("/api/discord/customs/get?id="+server_id, function (data) {
+  $.get("/api/discord/custom/get?id="+server_id, function (data) {
     $('#custom_command_content').text('');
     var amount = 0;
     for (var command in data.data) {
