@@ -49,3 +49,24 @@ function copy_data_fields(from, to) {
   var from_val = $('#'+from).val();
   $('#'+to).val(from_val);
 }
+
+function _show_message(content, style) {
+  // The display field is located in the main navbar, so its everywere.
+  var message_field = $('#_message_field');
+
+  var id_ = "msg_field_" + Math.floor((Math.random() * 10000) + 1);
+  var outer_field = $('<div class="message_box"></div>');
+  var inner_field = $('<div style="margin:1em;"></div>');
+  inner_field.text(content);
+
+  outer_field.attr('style', style);
+  outer_field.attr('id', id_);
+  outer_field.html(inner_field);
+
+  message_field.append(outer_field);
+
+  setTimeout(function () {
+    $('#'+id_).remove();
+  }, 5000);
+
+}
