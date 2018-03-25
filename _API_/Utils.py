@@ -59,7 +59,6 @@ def logout(BASE, info={}, from_web=False, **kwargs):
 		return r
 
 	res = BASE.PhaazeDB.delete(of="session/phaaze", where="data['session'] == '{}'".format(session_key))
-	print(res)
 
 	if res['hits'] == 1:
 		class r (object):
