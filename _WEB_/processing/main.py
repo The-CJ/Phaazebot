@@ -59,8 +59,7 @@ def main(BASE, info, root):
 def main_site(BASE, info):
 	site = open('_WEB_/content/main.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active=''))
-
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")

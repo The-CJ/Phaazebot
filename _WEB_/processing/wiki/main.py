@@ -15,7 +15,6 @@ def wiki(BASE, info):
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/wiki/root.html', 'r', encoding='utf-8').read()
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='wiki'))
 
 	page_index = info.get('values', {}).get("page", "main")
 	page_index = page_index.replace('..', '')
@@ -29,7 +28,7 @@ def wiki(BASE, info):
 		content = content.replace("<!-- tryed_path -->", page_index)
 
 	site = site.replace("<!-- about_content -->", content)
-
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200
