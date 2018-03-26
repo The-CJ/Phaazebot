@@ -26,7 +26,6 @@ class root(object):
 
 	class admin(object):
 		import _WEB_.processing.admin.admin as admin
-		import _WEB_.processing.admin.db as db
 
 	import _WEB_.js.main as js
 	import _WEB_.css.main as css
