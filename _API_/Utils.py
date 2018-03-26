@@ -1,8 +1,9 @@
-#BASE._API_.Utils
+#BASE.api.Utils
 
 import json, requests, hashlib
 
 # log in/out
+# /api/login
 def login(BASE, info={}, from_web=False, **kwargs):
 	content = info.get("content", "")
 	try:
@@ -40,6 +41,7 @@ def login(BASE, info={}, from_web=False, **kwargs):
 		header = [('Content-Type', 'application/json')]
 	return r
 
+# /api/logout
 def logout(BASE, info={}, from_web=False, **kwargs):
 	content = info.get("content", "")
 	try:

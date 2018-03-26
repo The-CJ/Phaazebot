@@ -1,12 +1,35 @@
-import json, requests
+import json
 import traceback
 import _API_.Utils as utils
-from _API_.Utils import login as login
-from _API_.Utils import logout as logout
 
-import _API_.Discord as discord
-import _API_.DataBase as db
-import _API_.Admin as admin
+												################################
+												#          API Paths           #
+												################################
+from _API_.Utils import login as login			# /api/login
+from _API_.Utils import logout as logout		# /api/logout
+												#
+import _API_.Admin as admin						#------------------------------#
+												# /api/admin/toggle_moduls
+												# /api/admin/eval_command
+												# /api/admin/fiels/edit
+												# /api/admin/shutdown/api
+												# /api/admin/shutdown/web
+												#
+import _API_.Discord as discord					#------------------------------#
+												# /api/discord/login
+												# /api/discord/logout
+												# /api/discord/get_servers
+												# /api/discord/custom/get
+												# /api/discord/custom/delete
+												#
+import _API_.DataBase as db						#------------------------------#
+												#
+												#
+												#
+												#
+												#
+												#
+
 
 def call(BASE, web_info):
 	"""

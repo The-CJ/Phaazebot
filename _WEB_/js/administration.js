@@ -1,13 +1,3 @@
-function admin_logout() {
-  var x = getCookie("phaaze_session");
-  var r = {};
-  r['phaaze_session'] = x;
-  $.post("/api/logout", JSON.stringify(r), function (data) {
-    remCookie("phaaze_session");
-    window.location = "/admin";
-  })
-}
-
 function toggle_module(mo) {
   $.post("/api/admin/toggle_moduls?modul="+mo, function (data) {
     _show_message('Successfull toggled', 'background:#44FF44;')

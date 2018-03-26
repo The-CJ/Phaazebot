@@ -4,6 +4,14 @@ from importlib import reload
 import traceback
 
 def main(BASE, info, root):
+	session=info.get('cookies', {}).get('phaaze_session', None)
+	phaaze_username = info.get('values', {}).get('phaaze_username', None)
+	password = info.get('values', {}).get('password', None)
+	api_token = info.get('values', {}).get('api_token', None)
+
+	info['user'] = BASE.api.utils.get_phaaze_user(BASE, phaaze_username=phaaze_username, password=password, session=session, api_token=api_token )
+	info['root'] = root
+
 	#main site
 	if len(info['path']) == 0:
 		return main_site(BASE, info)

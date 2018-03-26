@@ -1,3 +1,60 @@
+function phaaze_logout() {
+  var x = getCookie("phaaze_session");
+  var r = {};
+  r['phaaze_session'] = x;
+  $.post("/api/logout", JSON.stringify(r), function (data) {
+    remCookie("phaaze_session");
+    window.location = "/admin";
+  })
+}
+
+function submit_login() {
+  var login = $("#phaaze_loginname").val();
+  var password = $("#phaaze_password").val();
+
+  var r = {};
+
+  r["phaaze_username"] = login;
+  r["password"] = password;
+
+  $.post("/api/login", JSON.stringify(r))
+  .done(
+    function (data) {
+      $('#phaaze_loginname').addClass("animated bounceOutLeft");
+      $('#phaaze_password').addClass("animated bounceOutRight");
+      $('#sub_button').addClass("animated flipOutX");
+      setTimeout(function () {
+        setCookie("phaaze_session", data.phaaze_session);
+        location.reload();
+      },1000);
+    }
+  )
+  .fail(
+    function (data) {
+      if (data.responseJSON.error == 'missing_data') {
+        $('#phaaze_loginname').addClass("animated pulse");
+        $('#phaaze_password').addClass("animated pulse");
+        setTimeout(function () {
+          $('#phaaze_loginname').removeClass("animated pulse");
+          $('#phaaze_password').removeClass("animated pulse");
+        },1000);
+        return ;
+      }
+      if (data.responseJSON.error == "wrong_data") {
+        $('#phaaze_loginname').addClass("animated shake");
+        $('#phaaze_password').addClass("animated shake");
+        $('#sys_msg').text("Password or Login Name wrong.");
+        $('#phaaze_password').val("");
+        setTimeout(function () {
+          $('#phaaze_loginname').removeClass("animated shake");
+          $('#phaaze_password').removeClass("animated shake");
+        },1000);
+        return ;
+      }
+    }
+  );
+}
+
 var entityMap = {
   '&': '&amp;',
   '<': '&lt;',
