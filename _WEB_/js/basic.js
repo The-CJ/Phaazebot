@@ -4,11 +4,11 @@ function phaaze_logout() {
   r['phaaze_session'] = x;
   $.post("/api/logout", JSON.stringify(r), function (data) {
     remCookie("phaaze_session");
-    window.location = "/admin";
+    location.reload();
   })
 }
 
-function submit_login() {
+function phaaze_login() {
   var login = $("#phaaze_loginname").val();
   var password = $("#phaaze_password").val();
 
@@ -89,7 +89,7 @@ function getCookie(cname) {
 }
 
 function setCookie(name, value) {
-  document.cookie = name+"="+value+"; Path=\"/\"";
+  document.cookie = name+"="+value+'; Path=/';
 }
 
 function remCookie(name) {

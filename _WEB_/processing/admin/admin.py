@@ -11,8 +11,6 @@ def main(BASE, info, root):
 	if "admin" not in info.get('user', {}).get("type", "").lower():
 		return admin_login(BASE, info, msg="Your Account is unauthoriesed to access.")
 
-	#store calculated data
-
 	if len(info['path']) == 0:
 		return admin_main(BASE, info)
 
