@@ -13,27 +13,30 @@ the_list_of_endpoint_that_gets_always_triggered_by_annoying_bots_on_search_of_so
 class root(object):
 
 	class discord(object):
-		import _WEB_.processing.discord.main as main
-		import _WEB_.processing.discord.dashboard as dashboard
-		import _WEB_.processing.discord.invite as invite
-		import _WEB_.processing.discord.custom as custom
-
-	class fileserver(object):
-		import _WEB_.processing.fileserver.main as main
-
-	class wiki(object):
-		import _WEB_.processing.wiki.main as main
-
-	class admin(object):
-		import _WEB_.processing.admin.admin as admin
-
-	import _WEB_.js.main as js
-	import _WEB_.css.main as css
-	import _WEB_.img.main as img
-
-	import _WEB_.processing.main as main
-	import _WEB_.processing.page_not_found as page_not_found
-	import _WEB_.processing.action_not_allowed as action_not_allowed
+		import _WEB_.processing.discord.main as main							#/discord
+		import _WEB_.processing.discord.dashboard as dashboard					#/discord/dashboard
+		import _WEB_.processing.discord.invite as invite						#/discord/invite
+		import _WEB_.processing.discord.custom as custom						#/discord/custom
+																				#
+	class fileserver(object):													#
+		import _WEB_.processing.fileserver.main as main							#/fileserver
+																				#
+	class wiki(object):															#
+		import _WEB_.processing.wiki.main as main								#/wiki
+																				#
+	class admin(object):														#
+		import _WEB_.processing.admin.admin as admin							#/admin
+																				#
+	class account(object):														#
+		import _WEB_.processing.account.main as account							#/account
+																				#
+	import _WEB_.js.main as js													#/js
+	import _WEB_.css.main as css												#/css
+	import _WEB_.img.main as img												#/img
+																				#
+	import _WEB_.processing.main as main										#/
+	import _WEB_.processing.page_not_found as page_not_found					#<404>
+	import _WEB_.processing.action_not_allowed as action_not_allowed			#<400/401/402>
 
 
 class Utils(object):

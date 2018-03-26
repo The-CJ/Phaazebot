@@ -4,57 +4,28 @@ import  html, os
 
 def main(BASE, info, root):
 
-	session = info['cookies'].get('phaaze_session', None)
-
 	#no session -> login
-	if session == None:
+	if info.get('user', None) == None:
 		return admin_login(BASE, info)
 
-	#get session
-	search_str = 'data["session"] == "{}"'.format(session)
-	res = BASE.PhaazeDB.select(of="session/phaaze", where=search_str)
-	if len(res['data']) == 0:
-		#session not found -> login
-		return admin_login(BASE, info, msg="Please login again. (Session expired)")
-
-	#get session object
-	admin_session = res["data"][0]
-
-	#get admin user from session "user_id"
-	search_str = 'data["id"] == {}'.format(admin_session['user_id'])
-	res = BASE.PhaazeDB.select(of="user", where=search_str)
-	if len(res['data']) == 0:
-		return admin_login(BASE, info, msg="Please login again. (User not found)")
-
-	#get admin user object
-	admin_user = res["data"][0]
-
-	if "admin" not in admin_user.get("type", ""):
+	if "admin" not in info.get('user', {}).get("type", "").lower():
 		return admin_login(BASE, info, msg="Your Account is unauthoriesed to access.")
 
 	#store calculated data
-	dump = dict()
-	dump["session"] = admin_session
-	dump["user"] = admin_user
-	dump["root"] = root
 
 	if len(info['path']) == 0:
-		return admin_main(BASE, info, dump)
-
-	elif info['path'][0] == "db":
-		return root.admin.db.main(BASE, info, dump)
+		return admin_main(BASE, info)
 
 	elif info['path'][0] == "view-files":
-		return view_page(BASE, info, dump)
+		return view_page(BASE, info)
 
 	elif info['path'][0] == "edit-files":
-		return edit_page(BASE, info, dump)
+		return edit_page(BASE, info)
 
 	else:
 		return root.page_not_found.page_not_found(BASE, info, root)
 
-def admin_main(BASE, info, dump, msg=""):
-	info['dump'] = dump
+def admin_main(BASE, info, msg=""):
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/admin/admin_main.html', 'r').read()
@@ -75,7 +46,7 @@ def admin_login(BASE, info, msg=""):
 	site = open('_WEB_/content/admin/admin_login.html', 'r').read()
 	site = site.replace("<!-- msg -->", msg)
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site)
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -84,8 +55,7 @@ def admin_login(BASE, info, msg=""):
 
 	return r
 
-def view_page(BASE, info, dump):
-	info['dump'] = dump
+def view_page(BASE, info):
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/admin/view.html', 'r').read()
@@ -123,8 +93,7 @@ def view_page(BASE, info, dump):
 
 	return r
 
-def edit_page(BASE, info, dump):
-	info['dump'] = dump
+def edit_page(BASE, info):
 	return_header = [('Content-Type','text/html')]
 
 	site = open('_WEB_/content/admin/edit.html', 'r').read()
