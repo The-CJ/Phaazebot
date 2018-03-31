@@ -26,12 +26,6 @@ async def is_Owner(BASE, message):
 
 	return v
 
-async def no_mod(BASE, message):
-	BASE.phaaze.send_message(message.channel, BASE.vars.NA_Mod)
-
-async def no_owner(BASE, message):
-	BASE.phaaze.send_message(message.channel, BASE.vars.NA_OWNER)
-
 #serverfiles
 async def get_server_file(BASE, id, prevent_new=False):
 	#get
