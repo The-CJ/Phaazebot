@@ -1,3 +1,5 @@
+#BASE.moduls.Utils
+
 import asyncio, discord
 
 def list_XOR(list_1, list_2):
@@ -32,17 +34,15 @@ def get_osu_status_symbol(state):
 	else: return ":question:"
 
 #OS controll
-async def reload_(BASE):
+async def reload_base(BASE):
 	try:
 		BASE.moduls.Console.BLUE("SYSTEM INFO","Reloading Base...")
 		BASE.RELOAD = True
 		BASE.load_BASE(BASE)
-		BASE.moduls.Twitch.alerts(BASE)
 		BASE.moduls._Web_.Base.RequestHandler.BASE = BASE
 		await asyncio.sleep(3)
 		setattr(BASE.vars, "app", await BASE.phaaze.application_info() )
 		setattr(BASE.vars, "discord_is_NOT_ready", False )
-		await asyncio.sleep(5)
 		await BASE.phaaze.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online)
 		BASE.RELOAD = False
 

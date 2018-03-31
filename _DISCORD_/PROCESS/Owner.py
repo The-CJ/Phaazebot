@@ -1,76 +1,122 @@
 #BASE.moduls._Discord_.PROCESS.Owner
 
-Available = ["mod_levels", "disable_levels"]
-Anti_PM_Spam_Commands = []
-import asyncio, json, requests, discord, random, re
-from tabulate import tabulate
+import asyncio, json, discord
 
-async def master(BASE, message):
+async def master(BASE, message, kwargs):
+	available = ['normal', 'mod', 'level', 'custom']
 	m = message.content.lower().split()
 
 	if len(m) == 1:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Syntax Error!\n\nMissing option! Available are: {0}".format(", ".join("`"+l+"`" for l in BASE.moduls.Owner_Commands.Available)))
-	if m[1] not in Available:
-		return await BASE.phaaze.send_message(message.channel, ":warning: `{1}` is not a option! Available are: {0}".format(", ".join("`"+l+"`" for l in BASE.moduls.Owner_Commands.Available), m[1]))
+		return await BASE.phaaze.send_message(message.channel, ":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
 
-	if m[1] == "mod_levels":
-		await master_settings.mod_levels(BASE, message)
+	if m[1] == "normal":
+		await master_options.normal(BASE, message, kwargs)
 
-	if m[1] == "disable_levels":
-		await master_settings.mute_levels(BASE, message)
+	elif m[1] == "mod":
+		await master_options.mod(BASE, message, kwargs)
 
-class master_settings(object):
-	async def mod_levels(BASE, message):
-		file = await BASE.moduls.Utils.get_server_level_file(BASE, message.server.id)
+	elif m[1] == "level":
+		await master_options.level(BASE, message, kwargs)
 
-		try:
-			file["disabled_by_owner"] = file["disabled_by_owner"]
-		except:
-			file["disabled_by_owner"] = 0
+	elif m[1] == "custom":
+		await master_options.custom(BASE, message, kwargs)
 
-		if file["disabled_by_owner"] == 1:
-			file["disabled_by_owner"] = 0
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: **Enabled** :large_blue_circle: Your Mods now can edit level, exp and more")
-			except:
-				pass
+	else:
+		av = ", ".join("`"+l+"`" for l in available)
+		return await BASE.phaaze.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
 
-		else:
-			file["disabled_by_owner"] = 1
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: **Disabled** :red_circle: Your Mods no longer can edit level, exp and more")
-			except:
-				pass
+class master_options(object):
+	async def normal(BASE, message, kwargs):
+		m = message.content.lower().split()
 
-		with open("LEVELS/DISCORD/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.levelfiles, "level_"+message.server.id, file)
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
-	async def mute_levels(BASE, message):
-		file = await BASE.moduls.Utils.get_server_level_file(BASE, message.server.id)
+		if m[2] in ['on', 'enable', 'yes']:
+			state = False
 
-		try:
-			file["muted"] = file["muted"]
-		except:
-			file["muted"] = 0
-
-		if file["muted"] == 1:
-			file["muted"] = 0
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: Level System has been Serverwide **Enabled** :large_blue_circle:")
-			except:
-				pass
+		elif m[2] in ['off', 'dienable', 'no']:
+			state = True
 
 		else:
-			file["muted"] = 1
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: Level System has been Serverwide **Disabled** :red_circle:")
-			except:
-				pass
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
-		with open("LEVELS/DISCORD/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.levelfiles, "level_"+message.server.id, file)
+		BASE.PhaazeDB.update(
+			of = "discord/server_setting",
+			where = f"data['server_id'] == '{message.server.id}'",
+			content = dict(owner_disable_normal=state)
+		)
+		state = "**disabled** :red_circle:" if state else "**enabled** :large_blue_circle:"
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All Normal Commands are now Serverwide {state}`")
+
+	async def mod(BASE, message, kwargs):
+		m = message.content.lower().split()
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+
+		if m[2] in ['on', 'enable', 'yes']:
+			state = False
+
+		elif m[2] in ['off', 'dienable', 'no']:
+			state = True
+
+		else:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+
+		BASE.PhaazeDB.update(
+			of = "discord/server_setting",
+			where = f"data['server_id'] == '{message.server.id}'",
+			content = dict(owner_disable_mod=state)
+		)
+		state = "**disabled** :red_circle:" if state else "**enabled** :large_blue_circle:"
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All Mod Commands are now Serverwide **{state}**`")
+
+	async def level(BASE, message, kwargs):
+		m = message.content.lower().split()
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+
+		if m[2] in ['on', 'enable', 'yes']:
+			state = False
+
+		elif m[2] in ['off', 'dienable', 'no']:
+			state = True
+
+		else:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+
+		BASE.PhaazeDB.update(
+			of = "discord/server_setting",
+			where = f"data['server_id'] == '{message.server.id}'",
+			content = dict(owner_disable_level=state)
+		)
+		state = "**disabled** :red_circle:" if state else "**enabled** :large_blue_circle:"
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Levels are now Serverwide **{state}**`")
+
+	async def custom(BASE, message, kwargs):
+		m = message.content.lower().split()
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+
+		if m[2] in ['on', 'enable', 'yes']:
+			state = False
+
+		elif m[2] in ['off', 'dienable', 'no']:
+			state = True
+
+		else:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+
+		BASE.PhaazeDB.update(
+			of = "discord/server_setting",
+			where = f"data['server_id'] == '{message.server.id}'",
+			content = dict(owner_disable_level=state)
+		)
+		state = "**disabled** :red_circle:" if state else "**enabled** :large_blue_circle:"
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All custom commands are now Serverwide **{state}**`")
 
 class welcome(object):
 

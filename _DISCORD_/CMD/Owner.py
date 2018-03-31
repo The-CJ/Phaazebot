@@ -3,15 +3,22 @@
 import asyncio, json
 
 async def Base(BASE, message, **kwargs):
+	if not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message):
+		async def no_owner(BASE, message, kwargs):
+			m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: You can not use Owner Commands")
+			await asyncio.sleep(2.5)
+			await BASE.phaaze.delete_message(m)
+
+		asyncio.ensure_future(no_owner(BASE, message, kwargs))
+		return
 
 	m = message.content.lower().split(" ")
 	check = m[0][3:]
 
 	if check.startswith("master"):
-		if await BASE.moduls.Utils.is_Owner(BASE, message):
-			await BASE.moduls.Owner_Commands.master(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_owner(BASE, message)
+		await BASE.moduls._Discord_.PROCESS.Owner.master(BASE, message, kwargs)
+
+	return
 
 	if check.startswith("welcome"):
 		if await BASE.moduls.Utils.is_Owner(BASE, message):
