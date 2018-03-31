@@ -1,4 +1,4 @@
-##BASE.moduls.Owner_Commands
+##BASE.moduls._Discord_.CMD.Owner
 
 Available = ["mod_levels", "disable_levels"]
 Anti_PM_Spam_Commands = []
@@ -134,7 +134,7 @@ class welcome(object):
 
 		file["welcome"] = entry
 		if file.get("wel_chan", "") == "":
-			await welcome.set_welcome_chan(BASE, message, preset=message.channel) 
+			await welcome.set_welcome_chan(BASE, message, preset=message.channel)
 
 		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
 			json.dump(file, save)

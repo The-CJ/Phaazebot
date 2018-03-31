@@ -1,4 +1,4 @@
-#BASE.moduls.Twitch
+#BASE.moduls._Discord_.Twitch
 
 import time, asyncio, json, requests, random, os, discord, socket
 

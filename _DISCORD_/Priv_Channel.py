@@ -1,3 +1,5 @@
+##BASE.moduls._Discord_.Priv
+
 import asyncio, discord
 
 async def base(BASE, message):

@@ -1,4 +1,4 @@
-##BASE.cmds.Open
+##BASE.moduls._Discord_.Open
 
 import asyncio, requests, socket, json, discord
 

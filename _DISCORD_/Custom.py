@@ -1,4 +1,4 @@
-##BASE.moduls.Custom
+##BASE.moduls._Discord_.Custom
 
 import asyncio, os, json, Console
 

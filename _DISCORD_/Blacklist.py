@@ -1,4 +1,4 @@
-##BASE.moduls.Blacklist
+##BASE.moduls._Discord_.Blacklist
 
 import asyncio, json, re
 link_contents = ["http", ".de", "://", ".com", ".net", ".tv", "www."]
