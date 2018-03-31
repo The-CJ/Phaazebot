@@ -11,20 +11,21 @@ async def base(BASE, message):
 	#get server files
 	server_setting = await BASE.moduls._Discord_.Utils.get_server_file(BASE, message.server.id)
 	server_commands = await BASE.moduls._Discord_.Utils.get_server_commands(BASE, message.server.id)
+	server_levels = await BASE.moduls._Discord_.Utils.get_server_level_file(BASE, message.server.id)
 
 	#blacklist (Only, when links are banned or at least one word is in the blacklist)
 	if server_setting.get('ban_links', False) or server_setting.get('blacklist', []) != []:
 		await BASE.moduls._Discord_.Blacklist.check(BASE, message, server_setting)
 
-	return
-
 	#only execute when message is not edited
 	if message.edited_timestamp == None:
 		#custom commands
-		await BASE.moduls.Custom.get(BASE, message, server_setting, server_commands)
+		await BASE.moduls._Discord_.Custom.get(BASE, message, server_setting, server_commands)
 
 		#levels
-		await BASE.moduls.levels.Discord.Base(BASE, message)
+		await BASE.moduls._Discord_.Levels.Base(BASE, message, server_setting, server_levels)
+
+	return
 
 	"""Phaaze Commands"""
 	#dev
