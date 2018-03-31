@@ -157,10 +157,10 @@ class welcome(object):
 		elif m[1].lower() == "set-priv":
 			await welcome.priv_welcome(BASE, message, kwargs)
 		#clear
-		elif m[1].lower() == "clear": # todo
+		elif m[1].lower() == "clear":
 			await welcome.clear_welcome(BASE, message, kwargs)
 		#clear-priv
-		elif m[1].lower() == "clear-priv": # todo
+		elif m[1].lower() == "clear-priv":
 			await welcome.clearpriv(BASE, message, kwargs)
 
 		else:
@@ -273,17 +273,17 @@ class welcome(object):
 			message.channel,
 			f":grey_exclamation: Current private welcome message [{chan}]\n{entry}")
 
-	async def clear_welcome(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+	async def clear_welcome(BASE, message, kwargs):
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(welcome_msg=None, welcome_chan=None)
+		)
 
-		file["wel_chan"] = ""
-		file["welcome"] = ""
-
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Welcome announce channel and message has been removed")
+		return await BASE.phaaze.send_message(
+			message.channel,
+			":white_check_mark: Welcome announce channel and message has been removed"
+			)
 
 	async def priv_welcome(BASE, message, kwargs):
 		m = message.content.split(" ")
@@ -317,16 +317,17 @@ class welcome(object):
 
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: New welcome private message set!\nExample with Phaaze:\n\n{entry}")
 
-	async def clearpriv(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+	async def clearpriv(BASE, message, kwargs):
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(welcome_msg_priv=None)
+		)
 
-		file["private_welcome_message"] = ""
-
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Private welcome message has been removed")
+		return await BASE.phaaze.send_message(
+			message.channel,
+			":white_check_mark: Private welcome message has been removed"
+		)
 
 class leave(object):
 
