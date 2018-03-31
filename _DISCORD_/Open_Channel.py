@@ -34,8 +34,8 @@ async def base(BASE, message):
 	#owner
 	elif message.content.startswith(BASE.vars.PT * 3):
 		if message.author.id not in BASE.cooldown.Owner_CD:
-			await BASE.moduls._Discord_.CMD.Owner.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
 			asyncio.ensure_future(BASE.cooldown.CD_Owner(message))
+			await BASE.moduls._Discord_.CMD.Owner.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
 
 	#mod
 	elif message.content.startswith(BASE.vars.PT * 2) and "" == "-":

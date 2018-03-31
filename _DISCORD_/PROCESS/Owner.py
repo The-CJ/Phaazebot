@@ -137,13 +137,13 @@ class welcome(object):
 
 		#get
 		elif m[1].lower() == "get":
-			await welcome.get_welcome(BASE, message, kwargs)
+			await welcome.get_welcome(BASE, message, kwargs, raw=False)
 		#get-priv
 		elif m[1].lower() == "get-priv": # todo
 			await welcome.get_welcome_priv(BASE, message, kwargs)
 		#get-raw
-		elif m[1].lower() == "get-raw":  # todo
-			await welcome.getraw_welcome(BASE, message, kwargs)
+		elif m[1].lower() == "get-raw":
+			await welcome.get_welcome(BASE, message, kwargs, raw=True)
 		#set
 		elif m[1].lower() == "set":
 			await welcome.set_welcome(BASE, message, kwargs)
@@ -199,7 +199,7 @@ class welcome(object):
 
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: New welcome message set! [In {chan}]\nExample with Phaaze:\n\n{entry}")
 
-	async def get_welcome(BASE, message, kwargs):
+	async def get_welcome(BASE, message, kwargs, raw=False):
 		entry = kwargs['server_setting'].get('welcome_msg', None)
 		if entry == None:
 			return await BASE.phaaze.send_message(
@@ -208,17 +208,22 @@ class welcome(object):
 
 		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
 
-		entry = entry.replace("[name]", phaaze_exc.name)
-		entry = entry.replace("[server]", message.server.name)
-		entry = entry.replace("[count]", str(message.server.member_count))
-		entry = entry.replace("[mention]", phaaze_exc.mention)
+		if not raw:
+			entry = entry.replace("[name]", phaaze_exc.name)
+			entry = entry.replace("[server]", message.server.name)
+			entry = entry.replace("[count]", str(message.server.member_count))
+			entry = entry.replace("[mention]", phaaze_exc.mention)
+
+			entry = "Example with Phaaze:\n\n"+entry
+		else:
+			entry = "\n```"+entry+"```"
 
 		chan = kwargs['server_setting'].get('welcome_chan', "1337")
 		chan = f"<#{chan}>"
 
 		return await BASE.phaaze.send_message(
 			message.channel,
-			f":grey_exclamation: Current welcome message [{chan}]\nExample with Phaaze:\n\n{entry}")
+			f":grey_exclamation: Current welcome message [{chan}]\n{entry}")
 
 	async def get_welcome_priv(BASE, message):
 		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
@@ -236,18 +241,6 @@ class welcome(object):
 		entry = entry.replace("[mention]", phaaze_exc.mention)
 
 		return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: Current private welcome message\nExample with Phaaze:\n\n{entry}".format(entry=entry))
-
-	async def getraw_welcome(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-		entry = file["welcome"]
-
-		if entry == "":
-			return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: This Server don't has a welcome message")
-
-		chan = "<#{0}>".format(file["wel_chan"]) if file["wel_chan"] != "" else message.server.default_channel.mention
-
-		return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: Current RAW welcome message [{chan}]\n\n```{entry}```".format(entry=entry, chan=chan))
 
 	async def set_welcome_chan(BASE, message, preset=None):
 		m = message.content.split(" ")
