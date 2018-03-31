@@ -1,4 +1,4 @@
-import asyncio, discord, sys, traceback
+import asyncio, discord, traceback
 
 class phaaze(discord.Client):
 	def __init__(self, BASE):
@@ -10,7 +10,7 @@ class phaaze(discord.Client):
 		try:
 			await self.BASE.phaaze.change_presence(	game=discord.Game(	type=0,
 																		name=self.BASE.version_nr),
-													status=discord.Status.online)
+													status=discord.Status.offline)
 			setattr(self.BASE.vars, "app", await self.BASE.phaaze.application_info() )
 			self.BASE.moduls.Console.GREEN("SUCCESS", "Discord Connected")
 			setattr(self.BASE.vars, "discord_is_NOT_ready", False )
