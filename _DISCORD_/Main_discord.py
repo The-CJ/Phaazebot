@@ -22,7 +22,7 @@ class phaaze(discord.Client):
 	#message management
 	async def on_message(self, message):
 
-		if message.author.id != "117746512380952582": return
+		if message.author.id != "117746512380952582": return #During Dev.
 		if message.author == self.BASE.phaaze.user: return
 		if not self.BASE.is_ready.discord: return
 		if message.author.bot: return
@@ -41,18 +41,17 @@ class phaaze(discord.Client):
 		await self.BASE.moduls._Discord_.Discord_Events.event_logs.message_delete(self.BASE, message)
 
 	async def on_message_edit(self, before, after):
-		return #TODO: Fix this
-		await self.BASE.moduls._Discord_.Discord_Events.event_logs.message_edited(self.BASE, before, after)
+		# await self.BASE.moduls._Discord_.Discord_Events.event_logs.message_edited(self.BASE, before, after)
 
+		if after.author.id != "117746512380952582": return #During Dev.
 		if after.author == self.BASE.phaaze.user: return
-		if self.BASE.vars.discord_is_NOT_ready: return
+		if not self.BASE.is_ready.discord: return
 		if after.author.bot: return
 
 		if after.channel.is_private:
-			await self.BASE.moduls.Priv.base(self.BASE, after)
+			await self.BASE.moduls._Discord_.Priv.base(self.BASE, after)
 		else:
-			await self.BASE.moduls.Open.base(self.BASE, after)
-
+			await self.BASE.moduls._Discord_.Open.base(self.BASE, after)
 
 	#member management
 	async def on_member_join(self, member):

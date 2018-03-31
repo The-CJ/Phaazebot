@@ -16,15 +16,12 @@ async def Base(BASE, message, **kwargs):
 	check = m[0][3:]
 
 	if check.startswith("master"):
-		await BASE.moduls._Discord_.PROCESS.Owner.master(BASE, message, kwargs)
-
-	return
+		await BASE.moduls._Discord_.PROCESS.Owner.master.Base(BASE, message, kwargs)
 
 	if check.startswith("welcome"):
-		if await BASE.moduls.Utils.is_Owner(BASE, message):
-			await BASE.moduls.Owner_Commands.welcome.welcome(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_owner(BASE, message)
+		await BASE.moduls._Discord_.PROCESS.Owner.welcome.Base(BASE, message, kwargs)
+
+	return
 
 	if check.startswith("leave"):
 		if await BASE.moduls.Utils.is_Owner(BASE, message):

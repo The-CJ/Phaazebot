@@ -2,30 +2,30 @@
 
 import asyncio, json, discord
 
-async def master(BASE, message, kwargs):
-	available = ['normal', 'mod', 'level', 'custom']
-	m = message.content.lower().split()
+class master(object):
+	async def Base(BASE, message, kwargs):
+		available = ['normal', 'mod', 'level', 'custom']
+		m = message.content.lower().split()
 
-	if len(m) == 1:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
+		if len(m) == 1:
+			return await BASE.phaaze.send_message(message.channel, ":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
 
-	if m[1] == "normal":
-		await master_options.normal(BASE, message, kwargs)
+		if m[1] == "normal":
+			await master.normal(BASE, message, kwargs)
 
-	elif m[1] == "mod":
-		await master_options.mod(BASE, message, kwargs)
+		elif m[1] == "mod":
+			await master.mod(BASE, message, kwargs)
 
-	elif m[1] == "level":
-		await master_options.level(BASE, message, kwargs)
+		elif m[1] == "level":
+			await master.level(BASE, message, kwargs)
 
-	elif m[1] == "custom":
-		await master_options.custom(BASE, message, kwargs)
+		elif m[1] == "custom":
+			await master.custom(BASE, message, kwargs)
 
-	else:
-		av = ", ".join("`"+l+"`" for l in available)
-		return await BASE.phaaze.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
+		else:
+			av = ", ".join("`"+l+"`" for l in available)
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
 
-class master_options(object):
 	async def normal(BASE, message, kwargs):
 		m = message.content.lower().split()
 
@@ -47,7 +47,7 @@ class master_options(object):
 			content = dict(owner_disable_normal=state)
 		)
 		state = "**disabled** :red_circle:" if state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All Normal Commands are now Serverwide {state}`")
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All Normal Commands are now Serverwide {state}")
 
 	async def mod(BASE, message, kwargs):
 		m = message.content.lower().split()
@@ -70,7 +70,7 @@ class master_options(object):
 			content = dict(owner_disable_mod=state)
 		)
 		state = "**disabled** :red_circle:" if state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All Mod Commands are now Serverwide **{state}**`")
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All Mod Commands are now Serverwide {state}")
 
 	async def level(BASE, message, kwargs):
 		m = message.content.lower().split()
@@ -93,7 +93,7 @@ class master_options(object):
 			content = dict(owner_disable_level=state)
 		)
 		state = "**disabled** :red_circle:" if state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Levels are now Serverwide **{state}**`")
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Levels are now Serverwide {state}")
 
 	async def custom(BASE, message, kwargs):
 		m = message.content.lower().split()
@@ -113,89 +113,91 @@ class master_options(object):
 		BASE.PhaazeDB.update(
 			of = "discord/server_setting",
 			where = f"data['server_id'] == '{message.server.id}'",
-			content = dict(owner_disable_level=state)
+			content = dict(owner_disable_custom=state)
 		)
 		state = "**disabled** :red_circle:" if state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All custom commands are now Serverwide **{state}**`")
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All custom commands are now Serverwide {state}")
 
 class welcome(object):
 
-	async def welcome(BASE, message):
+	async def Base(BASE, message, kwargs):
 		m = message.content.split(" ")
 
 		#nothing
 		if len(m) == 1:
-			return await BASE.phaaze.send_message(message.channel, 	":warning: Syntax Error!\nUsage: `{0}{0}{0}welcome [Option]`\n\n"\
+			return await BASE.phaaze.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT * 3}welcome [Option]`\n\n"\
 																	"`get` - The current welcome message + channel\n"\
-																	"`getpriv` - The current private welcome message\n"\
-																	"`getraw` - The current unformated welcome message + channel\n"\
+																	"`get-priv` - The current private welcome message\n"\
+																	"`get-raw` - The current unformated welcome message + channel\n"\
 																	"`set` - Set the current welcome message\n"\
-																	"`chan` - Set the channel where the message appears\n"\
-																	"`priv` - Set a private message to new members\n"\
+																	"`set-chan` - Set the channel where the message appears\n"\
+																	"`set-priv` - Set a private message to new members\n"\
 																	"`clear` - Removes channel and message\n"\
-																	"`clearpriv` - Removes private message\n".format(BASE.vars.PT))
+																	"`clear-priv` - Removes private message\n")
 
-		#set
-		elif m[1].lower() == "set":
-			await welcome.set_welcome(BASE, message)
 		#get
 		elif m[1].lower() == "get":
-			await welcome.get_welcome(BASE, message)
-		#getpriv
-		elif m[1].lower() == "getpriv":
-			await welcome.get_welcome_priv(BASE, message)
-		#getraw
-		elif m[1].lower() == "getraw":
-			await welcome.getraw_welcome(BASE, message)
-		#chan
-		elif m[1].lower().startswith("chan"):
-			await welcome.set_welcome_chan(BASE, message)
+			await welcome.get_welcome(BASE, message, kwargs)
+		#get-priv
+		elif m[1].lower() == "get-priv":
+			await welcome.get_welcome_priv(BASE, message, kwargs)
+		#get-raw
+		elif m[1].lower() == "get-raw":
+			await welcome.getraw_welcome(BASE, message, kwargs)
+		#set
+		elif m[1].lower() == "set":
+			await welcome.set_welcome(BASE, message, kwargs)
+		#set_chan
+		elif m[1].lower() == "set_chan":
+			await welcome.set_welcome_chan(BASE, message, kwargs)
+		#set-priv
+		elif m[1].lower() == "set-priv":
+			await welcome.priv_welcome(BASE, message, kwargs)
 		#clear
 		elif m[1].lower() == "clear":
-			await welcome.clear_welcome(BASE, message)
-		#clearpriv
-		elif m[1].lower() == "clearpriv":
-			await welcome.clearpriv(BASE, message)
-		#priv
-		elif m[1].lower() == "priv":
-			await welcome.priv_welcome(BASE, message)
+			await welcome.clear_welcome(BASE, message, kwargs)
+		#clear-priv
+		elif m[1].lower() == "clear-priv":
+			await welcome.clearpriv(BASE, message, kwargs)
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, 	":warning: `{0}` is not available, try `{1}help welcome`".format(m[1], BASE.vars.PT))
+			return await BASE.phaaze.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 3}welcome`")
 
-	async def set_welcome(BASE, message): #TODO: Set used Channel to new default
+	async def set_welcome(BASE, message, kwargs):
 		m = message.content.split(" ")
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, 	":warning: Syntax Error!\nUsage: `{0}{0}{0}welcome set [Stuff]`\n\n"\
+			return await BASE.phaaze.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*3}welcome set [Stuff]`\n\n"\
 																	"`[Stuff]` - The Text that appears in your set channel if a new member join\n\n"\
 																	"You can use tokens in your `[Stuff]` that will be replaced by infos:\n"\
 																	"`[name]` - The name of the new member\n"\
 																	"`[mention]` - @mention the new member\n"\
 																	"`[server]` - The server name\n"\
-																	"`[count]` - Number the new member is".format(BASE.vars.PT))
+																	"`[count]` - Number the new member is")
 
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+		server_setting = kwargs['server_setting']
 
 		entry = " ".join(g for g in m[2:])
 
-		file["welcome"] = entry
-		if file.get("wel_chan", "") == "":
-			await welcome.set_welcome_chan(BASE, message, preset=message.channel)
+		server_setting["welcome_msg"] = entry
+		if server_setting.get("welcome_chan", None) == None:
+			server_setting['welcome_chan'] = message.channel.id
 
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=server_setting
+		)
 
-		phaaze_exc = await BASE.moduls.Utils.return_real_me(BASE, message)
+		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
 
 		entry = entry.replace("[name]", phaaze_exc.name)
 		entry = entry.replace("[server]", message.server.name)
 		entry = entry.replace("[count]", str(message.server.member_count))
 		entry = entry.replace("[mention]", phaaze_exc.mention)
 
-		chan = "<#{0}>".format(file["wel_chan"])
+		chan = f"<#{server_setting['welcome_chan']}>"
 
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: New welcome message set! [{chan}]\nExample with Phaaze:\n\n{entry}".format(entry=entry, chan=chan))
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: New welcome message set! [In {chan}]\nExample with Phaaze:\n\n{entry}")
 
 	async def get_welcome(BASE, message):
 		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
