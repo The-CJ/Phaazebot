@@ -5,12 +5,15 @@ import asyncio, os, json, Console
 async def get(BASE, message, server_setting, server_commands):
 	m = message.content.lower().split(" ")
 
-	if message.channel.id in server_setting.get("disable_chan_custom",[]):
-		return
+	if message.author.id in BASE.cooldown.Custom_CD: return
+
+	#are custom commands disabled?
+	if message.channel.id in server_setting.get("disable_chan_custom",[]): return
+	if server_setting.get("owner_disable_custom", False): return
 
 	for cmd in server_commands:
 		if cmd.get("trigger", None) == m[0]:
-			cmd["uses"] = cmd("uses", 0) + 1
+			cmd["uses"] = cmd.get("uses", 0) + 1
 
 			send = cmd.get("content", None)
 			if send == None: return
@@ -22,7 +25,12 @@ async def get(BASE, message, server_setting, server_commands):
 			send = send.replace("[uses]", str(cmd["uses"]))
 
 			await BASE.phaaze.send_message(message.channel, send)
-			await BASE.cooldown.CD_Custom(message)
+			BASE.PhaazeDB.update(
+				of="discord/commands/commands_"+message.server.id,
+				content=dict(uses = cmd["uses"]),
+				where="data['trigger'] == '{}'".format( cmd['trigger'] )
+			)
+			asyncio.ensure_future(BASE.cooldown.CD_Custom(message))
 
 async def add(BASE, message):
 	m = message.content.split(" ")

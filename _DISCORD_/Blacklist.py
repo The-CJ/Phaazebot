@@ -9,7 +9,7 @@ async def check(BASE, message, server_setting):
 
 	if not phaaze_perms.manage_messages: return
 
-	if await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): pass #return
+	if await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): return
 
 	server_setting["blacklist"] = server_setting.get("blacklist", [])
 	server_setting["ban_links"] = server_setting.get("ban_links", False)
@@ -34,7 +34,6 @@ async def check(BASE, message, server_setting):
 					except:
 						pass
 
-	print(server_setting["blacklist"])
 	for word in server_setting["blacklist"]:
 		if word.lower() in message.content.lower():
 			try:
