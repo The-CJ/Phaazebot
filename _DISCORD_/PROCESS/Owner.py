@@ -139,16 +139,19 @@ class welcome(object):
 		elif m[1].lower() == "get":
 			await welcome.get_welcome(BASE, message, kwargs, raw=False)
 		#get-priv
-		elif m[1].lower() == "get-priv": # todo
-			await welcome.get_welcome_priv(BASE, message, kwargs)
+		elif m[1].lower() == "get-priv":
+			await welcome.get_welcome_priv(BASE, message, kwargs, raw=False)
+		#get-priv
+		elif m[1].lower() == "get-priv-raw":
+			await welcome.get_welcome_priv(BASE, message, kwargs, raw=True)
 		#get-raw
 		elif m[1].lower() == "get-raw":
 			await welcome.get_welcome(BASE, message, kwargs, raw=True)
 		#set
 		elif m[1].lower() == "set":
 			await welcome.set_welcome(BASE, message, kwargs)
-		#set_chan
-		elif m[1].lower() == "set_chan": # todo
+		#set-chan
+		elif m[1].lower() == "set-chan":
 			await welcome.set_welcome_chan(BASE, message, kwargs)
 		#set-priv
 		elif m[1].lower() == "set-priv": # todo
@@ -199,6 +202,25 @@ class welcome(object):
 
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: New welcome message set! [In {chan}]\nExample with Phaaze:\n\n{entry}")
 
+	async def set_welcome_chan(BASE, message, kwargs):
+		m = message.content.split(" ")
+
+		if len(m) == 2:
+			chan = message.channel.id
+
+		elif len(message.channel_mentions) >= 1:
+			chan = message.channel_mentions[0].id
+
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(welcome_chan=chan)
+		)
+
+		return await BASE.phaaze.send_message(
+			message.channel,
+			f":white_check_mark: Welcome announce channel has been set to [<#{chan}>]")
+
 	async def get_welcome(BASE, message, kwargs, raw=False):
 		entry = kwargs['server_setting'].get('welcome_msg', None)
 		if entry == None:
@@ -225,52 +247,31 @@ class welcome(object):
 			message.channel,
 			f":grey_exclamation: Current welcome message [{chan}]\n{entry}")
 
-	async def get_welcome_priv(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+	async def get_welcome_priv(BASE, message, kwargs, raw=False):
+		entry = kwargs['server_setting'].get('welcome_msg_priv', None)
+		if entry == None:
+			return await BASE.phaaze.send_message(
+				message.channel,
+				":grey_exclamation: Seems like this Server currently don't has a private welcome message")
 
-		entry = file.get("private_welcome_message", "")
+		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
 
-		if entry == "":
-			return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: This Server doesn't have a private welcome message")
+		if not raw:
+			entry = entry.replace("[name]", phaaze_exc.name)
+			entry = entry.replace("[server]", message.server.name)
+			entry = entry.replace("[count]", str(message.server.member_count))
+			entry = entry.replace("[mention]", phaaze_exc.mention)
 
-		phaaze_exc = await BASE.moduls.Utils.return_real_me(BASE, message)
-
-		entry = entry.replace("[name]", phaaze_exc.name)
-		entry = entry.replace("[server]", message.server.name)
-		entry = entry.replace("[count]", str(message.server.member_count))
-		entry = entry.replace("[mention]", phaaze_exc.mention)
-
-		return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: Current private welcome message\nExample with Phaaze:\n\n{entry}".format(entry=entry))
-
-	async def set_welcome_chan(BASE, message, preset=None):
-		m = message.content.split(" ")
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-		if preset != None:
-			file["wel_chan"] = preset.id
-			with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-				json.dump(file, save)
-				setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
+			entry = "Example with Phaaze:\n\n"+entry
 		else:
+			entry = "\n```"+entry+"```"
 
-			if len(m) <= 2:
-				chan = message.channel.id
+		chan = kwargs['server_setting'].get('welcome_chan', "1337")
+		chan = f"<#{chan}>"
 
-			elif len(message.channel_mentions) >= 1:
-				chan = message.channel_mentions[0].id
-
-			else:
-				return await BASE.phaaze.send_message(message.channel, ":warning: You can mention a channel or leave it empty to use the current.")
-
-
-			file["wel_chan"] = chan
-
-			with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-				json.dump(file, save)
-				setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Welcome announce channel has been set to [<#{0}>]".format(chan))
+		return await BASE.phaaze.send_message(
+			message.channel,
+			f":grey_exclamation: Current private welcome message [{chan}]\n{entry}")
 
 	async def clear_welcome(BASE, message):
 		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
