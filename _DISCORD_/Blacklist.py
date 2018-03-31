@@ -4,29 +4,28 @@ import asyncio, json, re
 link_contents = ["http", ".de", "://", ".com", ".net", ".tv", "www."]
 
 async def check(BASE, message, server_setting):
-	me = await BASE.moduls.Utils.return_real_me(BASE, message)
+	me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
 	phaaze_perms = message.channel.permissions_for(me)
-	if not phaaze_perms.manage_messages:
-		return
-	if await BASE.moduls.Utils.is_Mod(BASE, message):
-		return
-	file = server_setting
 
-	file["blacklist"] = file.get("blacklist", [])
-	file["ban_links"] = file.get("ban_links", False)
-	file["link_whitelist"] = file.get("link_whitelist", [])
-	file["allow_link_role"] = file.get("allow_link_role", None)
+	if not phaaze_perms.manage_messages: return
 
-	punishment_level = file.get("punishment_level", "delete")
+	if await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): pass #return
+
+	server_setting["blacklist"] = server_setting.get("blacklist", [])
+	server_setting["ban_links"] = server_setting.get("ban_links", False)
+	server_setting["link_whitelist"] = server_setting.get("link_whitelist", [])
+	server_setting["allow_link_role"] = server_setting.get("allow_link_role", None)
+
+	punishment_level = server_setting.get("punishment_level", "delete")
 	m = message.content.lower().split(" ")
-	if file["ban_links"]:
+	if server_setting["ban_links"]:
 		for word in m:
 			for cont in link_contents:
 				if cont in word:
 					try:
-						if any([True for WORD in file["link_whitelist"] if WORD in word]):
+						if any([True for WORD in server_setting["link_whitelist"] if WORD in word]):
 							pass
-						elif file["allow_link_role"] in [r.id for r in message.author.roles]:
+						elif server_setting["allow_link_role"] in [r.id for r in message.author.roles]:
 							pass
 						else:
 							await BASE.phaaze.delete_message(message)
@@ -35,7 +34,8 @@ async def check(BASE, message, server_setting):
 					except:
 						pass
 
-	for word in file["blacklist"]:
+	print(server_setting["blacklist"])
+	for word in server_setting["blacklist"]:
 		if word.lower() in message.content.lower():
 			try:
 				if punishment_level == "delete":

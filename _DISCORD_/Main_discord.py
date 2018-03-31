@@ -10,7 +10,7 @@ class phaaze(discord.Client):
 		try:
 			await self.BASE.phaaze.change_presence(	game=discord.Game(	type=0,
 																		name=self.BASE.version_nr),
-													status=discord.Status.offline)
+													status=discord.Status.online)
 			setattr(self.BASE.vars, "app", await self.BASE.phaaze.application_info() )
 			self.BASE.moduls.Console.GREEN("SUCCESS", "Discord Connected")
 			setattr(self.BASE.is_ready, "discord", True )
@@ -22,6 +22,7 @@ class phaaze(discord.Client):
 	#message management
 	async def on_message(self, message):
 
+		if message.author.id != "117746512380952582": return
 		if message.author == self.BASE.phaaze.user: return
 		if not self.BASE.is_ready.discord: return
 		if message.author.bot: return

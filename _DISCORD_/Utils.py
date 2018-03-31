@@ -16,8 +16,6 @@ async def is_Mod(BASE, message):
 			c = True
 	if message.author == message.server.owner:
 		c = True
-	if message.author.id == BASE.vars.CJ_ID:
-		c = True
 
 	return c
 
@@ -25,8 +23,7 @@ async def is_Owner(BASE, message):
 	v = False
 	if message.author == message.server.owner:
 		v = True
-	if message.author.id == BASE.vars.CJ_ID:
-		v = True
+
 	return v
 
 async def no_mod(BASE, message):
@@ -38,9 +35,9 @@ async def no_owner(BASE, message):
 #serverfiles
 async def get_server_file(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="discord/server_setting", where="data['id'] == '{}'".format(id))
+	file = BASE.PhaazeDB.select(of="discord/server_setting", where="data['server_id'] == '{}'".format(id))
 
-	if len(file['data']) != 1:
+	if len(file['data']) == 0:
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
@@ -50,7 +47,7 @@ async def get_server_file(BASE, id, prevent_new=False):
 		return file['data'][0]
 
 async def make_server_file(BASE, id):
-	insert_ = {}
+	insert_ = dict()
 
 	insert_['server_id'] = id,
 	insert_['autorole'] = None,
@@ -85,7 +82,7 @@ async def make_server_file(BASE, id):
 
 	Console.CYAN("INFO", "New serverfile created")
 
-	BASE.PhaazeDB.insert(of="discord/server_setting", content=insert_)
+	BASE.PhaazeDB.insert(into="discord/server_setting", content=insert_)
 
 	return insert_
 
