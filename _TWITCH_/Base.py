@@ -316,7 +316,7 @@ async def lurkers(BASE):
 	while True:
 		to_check = ",".join(channel.room_id for channel in BASE.Twitch_IRC_connection.channels)
 		url = "https://api.twitch.tv/kraken/streams?channel=" + to_check
-		check = await BASE.moduls.Twitch.twitch_API_call(BASE, url)
+		check = await BASE.moduls._Twitch_.Utils.twitch_API_call(BASE, url)
 		if check.get("status", 200) > 400:
 			await asyncio.sleep(10)
 			continue

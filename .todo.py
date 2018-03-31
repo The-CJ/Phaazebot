@@ -10,4 +10,6 @@
 # TODO: Reprogramm Cleverbot (maybe multiplatform?)
 # TODO: Reprogramm Wikipedia (maybe multiplatform?)
 
+# TODO: need to fix Twitch Alerts
+
 # # # # # # # # #
