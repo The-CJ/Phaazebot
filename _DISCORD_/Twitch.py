@@ -2,8 +2,6 @@
 
 import time, asyncio, json, requests, random, os, discord, socket
 
-# FIXME: Vodcast error #BlameTwitch
-
 vip_list = ["the__cj", "phaazebot"]
 stream_nope = []
 

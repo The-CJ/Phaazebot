@@ -2,32 +2,26 @@
 
 import asyncio, os, json, Console
 
-async def get(BASE, message):
+async def get(BASE, message, server_setting, server_commands):
 	m = message.content.lower().split(" ")
 
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-	if await BASE.moduls.Utils.settings_check(BASE, message, "enable_custom"):#enable.. naja eigentlich disable.. aber egal
+	if message.channel.id in server_setting.get("disable_chan_custom",[]):
 		return
 
-	file["commands"] = file.get("commands", [])
+	for cmd in server_commands:
+		if cmd.get("trigger", None) == m[0]:
+			cmd["uses"] = cmd("uses", 0) + 1
 
-	for cmd in file["commands"]:
-		if cmd["trigger"] == m[0]:
-			cmd["uses"] = cmd["uses"] + 1
-			with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-				json.dump(file, save)
-				setattr(BASE.serverfiles, "server_"+message.server.id, file)
+			send = cmd.get("content", None)
+			if send == None: return
 
-			Send = cmd["text"]
+			send = send.replace("[user]", message.author.name)
+			send = send.replace("[server]", message.server.name)
+			send = send.replace("[count]", str(message.server.member_count))
+			send = send.replace("[mention]", message.author.mention)
+			send = send.replace("[uses]", str(cmd["uses"]))
 
-			Send = Send.replace("[user]",message.author.name)
-			Send = Send.replace("[server]",message.server.name)
-			Send = Send.replace("[count]",str(message.server.member_count))
-			Send = Send.replace("[mention]",message.author.mention)
-			Send = Send.replace("[uses]",str(cmd["uses"]))
-
-			await BASE.phaaze.send_message(message.channel, Send)
+			await BASE.phaaze.send_message(message.channel, send)
 			await BASE.cooldown.CD_Custom(message)
 
 async def add(BASE, message):

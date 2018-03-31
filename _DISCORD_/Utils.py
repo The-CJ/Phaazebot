@@ -37,118 +37,99 @@ async def no_owner(BASE, message):
 
 #serverfiles
 async def get_server_file(BASE, id, prevent_new=False):
-	#has file in lib
-	if hasattr(BASE.serverfiles, "server_"+id):
-		file = getattr(BASE.serverfiles, "server_"+id)
-		return file
+	#get
+	file = BASE.PhaazeDB.select(of="discord/server_setting", where="data['id'] == '{}'".format(id))
 
-	#need to load
-	try:
-		file = open("SERVERFILES/{0}.json".format(id), "r")
-		file = file.read()
-		file = json.loads(file)
+	if len(file['data']) != 1:
+		#didn't find entry -> make new
+		if prevent_new:
+			return None
+		else:
+			return await make_server_file(BASE, id)
+	else:
+		return file['data'][0]
 
-		#add to lib
-		setattr(BASE.serverfiles, "server_"+id, file)
+async def make_server_file(BASE, id):
+	insert_ = {}
 
-		return file
+	insert_['server_id'] = id,
+	insert_['autorole'] = None,
 
-	#none found, make new
-	except FileNotFoundError:
-		if prevent_new: return None
+	insert_['welcome_msg'] = None,
+	insert_['welcome_msg_priv'] = None,
+	insert_['welcome_chan'] = None,
 
-		file = await make_server_file(id)
-		return file
+	insert_['leave_msg'] = None,
+	insert_['leave_chan'] = None,
 
-	#json bullsahit
-	except json.decoder.JSONDecodeError:
-		BASE.moduls.Console.RED("CRITICAL ERROR", "Broken json server file")
+	insert_['blacklist'] = [],
+	insert_['blacklist_punishment'] = None,
 
-	#something new
-	except Exception as e:
-		print(str(e.__class__))
+	insert_['ban_links'] = False,
+	insert_['ban_links_whitelist'] = [],
+	insert_['ban_links_role'] = None,
 
-async def make_server_file(id):
-	struktur = {"id": id,
-				"commands": [],
+	insert_['enable_chan_ai'] = [],
+	insert_['enable_chan_nsfw'] = [],
+	insert_['enable_chan_game'] = [],
 
-				"welcome": "",
-				"wel_chan": "",
+	insert_['disable_chan_normal'] = [],
+	insert_['disable_chan_mod'] = [],
+	insert_['disable_chan_level'] = [],
+	insert_['disable_chan_custom'] = [],
 
-				"leave": "",
-				"lea_chan": "",
-
-				"autorole_id": "",
-				"blacklist": [],
-				"quotes": [],
-				"embed_alerts_chan": [],
-				"enable_fun": [],
-				"enable_nsfw": [],
-				"enable_osu": [],
-				"enable_custom": [],
-				"enable_levels": [],
-				"enable_ai": [],
-
-				"disable_normal": [] #
-				}
-	with open("SERVERFILES/{0}.json".format(id), "w") as new:
-		json.dump(struktur, new)
+	insert_['owner_disable_normal'] = False,
+	insert_['owner_disable_mod'] = False,
+	insert_['owner_disable_level'] = False,
+	insert_['owner_disable_custom'] = False,
 
 	Console.CYAN("INFO", "New serverfile created")
 
-	file = open("SERVERFILES/{0}.json".format(id), "r")
-	file = file.read()
-	file = json.loads(file)
+	BASE.PhaazeDB.insert(of="discord/server_setting", content=insert_)
 
-	return file
+	return insert_
 
 #levelfiles
-async def get_server_level_file(BASE, id):
-	#has file in lib
-	if hasattr(BASE.levelfiles, "level_"+id):
-		file = getattr(BASE.levelfiles, "level_"+id)
-		return file
+async def get_server_level_file(BASE, id, prevent_new=False):
+	#get
+	file = BASE.PhaazeDB.select(of="discord/level/level_"+str(id))
 
-	#need to load
-	try:
-		file = open("LEVELS/DISCORD/{0}.json".format(id), "r")
-		file = file.read()
-		file = json.loads(file)
+	if file['status'] == "error":
+		#didn't find entry -> make new
+		if prevent_new:
+			return None
+		else:
+			return await make_server_level_file(BASE, id)
+	else:
+		return file['data']
 
-		#add to lib
-		setattr(BASE.levelfiles, "level_"+id, file)
+async def make_server_level_file(BASE, id):
 
-		return file
+	BASE.PhaazeDB.create(of="discord/level/level_"+str(id))
+	Console.CYAN("INFO", "New serverlevelfile created")
 
-	#none found, make new
-	except FileNotFoundError:
+	return []
 
-		file = await make_server_level_file(id)
-		return file
+#customfiles
+async def get_server_commands(BASE, id, prevent_new=False):
+	#get
+	file = BASE.PhaazeDB.select(of="discord/commands/commands_"+str(id))
 
-	#json bullsahit
-	except json.decoder.JSONDecodeError:
-		BASE.moduls.Console.RED("CRITICAL ERROR", "Broken json level file")
+	if file['status'] == "error":
+		#didn't find entry -> make new
+		if prevent_new:
+			return None
+		else:
+			return await make_get_server_commands(BASE, id)
+	else:
+		return file['data']
 
-	#something new
-	except Exception as e:
-		print(str(e.__class__))
+async def make_get_server_commands(BASE, id):
 
-async def make_server_level_file(id):
-	struktur = {"id": id,
-				"members": [],
-				"disabled_channels": [],
-				"disabled_by_owner": 0,
-				"muted": 0
-				}
-	with open("LEVELS/DISCORD/{0}.json".format(id), "w") as new:
-		json.dump(struktur, new)
+	BASE.PhaazeDB.create(of="discord/commands/commands_"+str(id))
+	Console.CYAN("INFO", "New servercommandsfile created")
 
-	file = open("LEVELS/DISCORD/{0}.json".format(id), "r")
-	file = file.read()
-	file = json.loads(file)
-
-	return file
+	return []
 
 #trackfiles
 async def get_track_file(BASE, id):
@@ -208,16 +189,6 @@ async def make_track_level_file(id):
 
 	return file
 
-
-async def settings_check(BASE, message, term):
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-	file[term] = file.get(term, [])
-
-	if message.channel.id in file[term]:
-		return True
-	else:
-		return False
 
 async def about(BASE, message):
 	app = BASE.vars.app

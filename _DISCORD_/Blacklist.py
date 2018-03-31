@@ -3,13 +3,14 @@
 import asyncio, json, re
 link_contents = ["http", ".de", "://", ".com", ".net", ".tv", "www."]
 
-async def check(BASE, message):
-	if await BASE.moduls.Utils.is_Mod(BASE, message): return
+async def check(BASE, message, server_setting):
 	me = await BASE.moduls.Utils.return_real_me(BASE, message)
 	phaaze_perms = message.channel.permissions_for(me)
 	if not phaaze_perms.manage_messages:
 		return
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+	if await BASE.moduls.Utils.is_Mod(BASE, message):
+		return
+	file = server_setting
 
 	file["blacklist"] = file.get("blacklist", [])
 	file["ban_links"] = file.get("ban_links", False)

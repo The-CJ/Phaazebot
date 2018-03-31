@@ -1,5 +1,5 @@
 from colorama import Fore, Back, Style, init
-import asyncio, tkinter, datetime
+import asyncio, datetime
 init()
 
 WRITE = True
