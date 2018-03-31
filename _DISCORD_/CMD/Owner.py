@@ -1,9 +1,8 @@
 #BASE.moduls._Discord_.CMD.Owner
 
 import asyncio, json
-Available = ["mod_levels", "disable_levels"]
 
-async def base(BASE, message):
+async def Base(BASE, message, **kwargs):
 
 	m = message.content.lower().split(" ")
 	check = m[0][3:]

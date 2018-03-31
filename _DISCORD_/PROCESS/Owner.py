@@ -1,4 +1,4 @@
-##BASE.moduls._Discord_.CMD.Owner
+#BASE.moduls._Discord_.PROCESS.Owner
 
 Available = ["mod_levels", "disable_levels"]
 Anti_PM_Spam_Commands = []

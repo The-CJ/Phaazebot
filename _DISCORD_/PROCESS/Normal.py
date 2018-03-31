@@ -1,5 +1,4 @@
-##BASE.moduls._Discord_.CMD.Normal
-##BASE.moduls.Commands
+#BASE.moduls._Discord_.PROCESS.Normal
 
 Anti_PM_Spam_Commands = []
 import asyncio, json, requests, discord, random, re, datetime

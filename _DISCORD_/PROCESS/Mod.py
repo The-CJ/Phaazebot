@@ -1,4 +1,4 @@
-##BASE.moduls._Discord_.CMD.Mod
+#BASE.moduls._Discord_.PROCESS.Mod
 
 import asyncio, json, random, discord, tabulate
 Available = ["nsfw", "custom", "quotes", "ai", "nonmod", "level", "fun", "level_ask"]
