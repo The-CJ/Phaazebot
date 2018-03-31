@@ -154,7 +154,7 @@ class welcome(object):
 		elif m[1].lower() == "set-chan":
 			await welcome.set_welcome_chan(BASE, message, kwargs)
 		#set-priv
-		elif m[1].lower() == "set-priv": # todo
+		elif m[1].lower() == "set-priv":
 			await welcome.priv_welcome(BASE, message, kwargs)
 		#clear
 		elif m[1].lower() == "clear": # todo
@@ -285,35 +285,37 @@ class welcome(object):
 
 		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Welcome announce channel and message has been removed")
 
-	async def priv_welcome(BASE, message):
+	async def priv_welcome(BASE, message, kwargs):
 		m = message.content.split(" ")
-
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, 	":warning: Syntax Error!\nUsage: `{0}{0}{0}welcome priv [Stuff]`\n\n"\
-																	"`[Stuff]` - The Text that a new member will receive via DM on join\n\n"\
+			return await BASE.phaaze.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*3}welcome set-priv [Stuff]`\n\n"\
+																	"`[Stuff]` - The Text will send to a new member on join\n\n"\
 																	"You can use tokens in your `[Stuff]` that will be replaced by infos:\n"\
-																	"`[name]` - Shows the name of the new member\n"\
+																	"`[name]` - The name of the new member\n"\
 																	"`[mention]` - @mention the new member\n"\
 																	"`[server]` - The server name\n"\
-																	"`[count]` - Number the new member is".format(BASE.vars.PT))
+																	"`[count]` - Number the new member is")
 
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+		server_setting = kwargs['server_setting']
+
 		entry = " ".join(g for g in m[2:])
 
-		file["private_welcome_message"] = entry
+		server_setting["welcome_msg_priv"] = entry
 
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=server_setting
+		)
 
-		phaaze_exc = await BASE.moduls.Utils.return_real_me(BASE, message)
+		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
 
 		entry = entry.replace("[name]", phaaze_exc.name)
 		entry = entry.replace("[server]", message.server.name)
 		entry = entry.replace("[count]", str(message.server.member_count))
 		entry = entry.replace("[mention]", phaaze_exc.mention)
 
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Private welcome message set!\nExample with Phaaze:\n\n{entry}".format(entry=entry))
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: New welcome private message set!\nExample with Phaaze:\n\n{entry}")
 
 	async def clearpriv(BASE, message):
 		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
