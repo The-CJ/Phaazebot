@@ -11,40 +11,44 @@ async def Base(BASE, message, server_setting, server_levels):
 	#is a command
 	if message.content.startswith(BASE.vars.PT): return
 
-	#add cooldown
-	asyncio.ensure_future(BASE.cooldown.CD_Level(message))
-
 	#are levels disabled?
-	if message.channel.id in server_setting("disable_chan_level", []): return
+	if message.channel.id in server_setting.get("disable_chan_level", []): return
 	if server_setting.get("owner_disable_level", False): return
 
 	#get user
-	user = await get_user(file, message.author)
+	user = await get_user(BASE, server_levels, message.server.id, message.author.id)
 
+	user['exp'] = user.get("exp", 0)
 	user["exp"] += 1
 
 	if user["exp"] >= 1000000: user["exp"] = 1
 
 	#save progress
-	with open("LEVELS/DISCORD/{0}.json".format(message.server.id), "w") as save:
-		json.dump(file, save)
-		setattr(BASE.levelfiles, "level_"+message.server.id, file)
+	BASE.PhaazeDB.update(
+		of="discord/level/level_"+message.server.id,
+		where=f"data['member_id'] == '{user['member_id']}'",
+		content=dict(exp=user['exp'])
+	)
 
-		await check_level(BASE, message, user)
+	#add cooldown
+	asyncio.ensure_future(BASE.cooldown.CD_Level(message))
 
-async def get_user(file, member):
-	for user in file["members"]:
-		if user["id"] == member.id:
+	await check_level(BASE, message, user)
+
+async def get_user(BASE, level_file, server_id, member_id):
+	for user in level_file:
+		if user["member_id"] == member_id:
 			return user
 
 	#user was not found --> make new
-	user = {
-			"id": member.id,
-			"exp": 0,
-			"medal_custom": [],
-			"medal_normal": []
-			}
-	file["members"].append(user)
+	user = dict(
+			id = member_id,
+			exp = 0,
+			medal = [],
+			edited = False
+			)
+
+	BASE.PhaazeDB.insert(into="discord/level/level_"+server_id, content=user)
 	return user
 
 async def get_exp(lvl):
