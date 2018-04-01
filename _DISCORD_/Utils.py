@@ -53,7 +53,7 @@ async def make_server_file(BASE, id):
 	insert_['leave_chan'] = None,
 
 	insert_['blacklist'] = [],
-	insert_['blacklist_punishment'] = None,
+	insert_['blacklist_punishment'] = "leave",
 
 	insert_['ban_links'] = False,
 	insert_['ban_links_whitelist'] = [],

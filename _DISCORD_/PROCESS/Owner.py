@@ -331,147 +331,127 @@ class welcome(object):
 
 class leave(object):
 
-	async def leave(BASE, message):
+	async def Base(BASE, message, kwargs):
 		m = message.content.split(" ")
 
 		#nothing
 		if len(m) == 1:
-			return await BASE.phaaze.send_message(message.channel, 	":warning: Syntax Error!\nUsage: `{0}{0}{0}leave [Option]`\n"\
+			return await BASE.phaaze.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT * 3}leave [Option]`\n\n"\
 																	"`get` - The current leave message + channel\n"\
-																	"`getraw` - The current unformated leave message + channel\n"\
+																	"`get-raw` - The current unformated leave message + channel\n"\
 																	"`set` - Set the current leave message\n"\
-																	"`chan` - Set the channel where the message appears\n"\
-																	"`clear` - Removes channel and message\n\n"\
-																	"`{0}{0}{0}leave chan (channel)` to set where the message appears".format(BASE.vars.PT))
+																	"`set-chan` - Set the channel where the message appears\n"\
+																	"`clear` - Removes channel and message\n"\
+																	"*(Leave Events can't send Private messages)*")
 
-		#set
-		elif m[1].lower() == "set":
-			await leave.set_leave(BASE, message)
 		#get
 		elif m[1].lower() == "get":
-			await leave.get_leave(BASE, message)
+			await leave.get_leave(BASE, message, kwargs, raw = False)
 		#getraw
-		elif m[1].lower() == "getraw":
-			await leave.getraw_leave(BASE, message)
+		elif m[1].lower() == "get-raw":
+			await leave.get_leave(BASE, message, kwargs, raw = True)
+		#set
+		elif m[1].lower() == "set":
+			await leave.set_leave(BASE, message, kwargs)
 		#chan
-		elif m[1].lower().startswith("chan"):
-			await leave.set_leave_chan(BASE, message)
+		elif m[1].lower() == "set-chan":
+			await leave.set_leave_chan(BASE, message, kwargs)
 		#clear
 		elif m[1].lower() == "clear":
-			await leave.clear_leave(BASE, message)
+			await leave.clear_leave(BASE, message, kwargs)
 
-	async def set_leave(BASE, message):
+	async def set_leave(BASE, message, kwargs):
 		m = message.content.split(" ")
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, 	":warning: Syntax Error!\nUsage: `{0}{0}{0}leave set [Stuff]`\n\n"\
-																	"`[Stuff]` - The Text that appears in your set channel if a member leaves the server\n\n"\
+			return await BASE.phaaze.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*3}welcome set [Stuff]`\n\n"\
+																	"`[Stuff]` - The Text that appears in your set channel if a new member join\n\n"\
 																	"You can use tokens in your `[Stuff]` that will be replaced by infos:\n"\
-																	"`[name]` - The name of the member\n"\
-																	"`[mention]` - @mention from the member\n"\
+																	"`[name]` - The name of the new member\n"\
+																	"`[mention]` - @mention the new member\n"\
 																	"`[server]` - The server name\n"\
-																	"`[count]` - Number the member is".format(BASE.vars.PT))
+																	"`[count]` - Number the new member is")
 
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+		server_setting = kwargs['server_setting']
 
 		entry = " ".join(g for g in m[2:])
 
-		file["leave"] = entry
+		server_setting["leave_msg"] = entry
+		if server_setting.get("leave_chan", None) == None:
+			server_setting['leave_chan'] = message.channel.id
 
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=server_setting
+		)
 
-		phaaze_exc = await BASE.moduls.Utils.return_real_me(BASE, message)
-
-		entry = entry.replace("[name]", phaaze_exc.name)
-		entry = entry.replace("[server]", message.server.name)
-		entry = entry.replace("[count]", str(message.server.member_count))
-		entry = entry.replace("[mention]", phaaze_exc.mention)
-
-		chan = "<#{0}>".format(file["lea_chan"]) if file["lea_chan"] != "" else message.server.default_channel.mention
-
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: New leave message set! [{chan}]\nExample with Phaaze:\n\n{entry}".format(entry=entry, chan=chan))
-
-	async def get_leave(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-		entry = file["leave"]
-
-		if entry == "":
-			return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: This Server don't has a leave message")
-
-		phaaze_exc = await BASE.moduls.Utils.return_real_me(BASE, message)
+		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
 
 		entry = entry.replace("[name]", phaaze_exc.name)
 		entry = entry.replace("[server]", message.server.name)
 		entry = entry.replace("[count]", str(message.server.member_count))
 		entry = entry.replace("[mention]", phaaze_exc.mention)
 
-		chan = "<#{0}>".format(file["lea_chan"]) if file["lea_chan"] != "" else message.server.default_channel.mention
+		chan = f"<#{server_setting['leave_chan']}>"
 
-		return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: Current leave message [{chan}]\nExample with Phaaze:\n\n{entry}".format(entry=entry, chan=chan))
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: New leave message set! [In {chan}]\nExample with Phaaze:\n\n{entry}")
 
-	async def getraw_leave(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+	async def get_leave(BASE, message, kwargs, raw=False):
+		entry = kwargs['server_setting'].get('leave_msg', None)
+		if entry == None:
+			return await BASE.phaaze.send_message(
+				message.channel,
+				":grey_exclamation: Seems like this Server currently don't has a leave message")
 
-		entry = file["leave"]
+		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
 
-		if entry == "":
-			return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: This Server don't has a leave message")
+		if not raw:
+			entry = entry.replace("[name]", phaaze_exc.name)
+			entry = entry.replace("[server]", message.server.name)
+			entry = entry.replace("[count]", str(message.server.member_count))
+			entry = entry.replace("[mention]", phaaze_exc.mention)
 
-		chan = "<#{0}>".format(file["lea_chan"]) if file["lea_chan"] != "" else message.server.default_channel.mention
+			entry = "Example with Phaaze:\n\n"+entry
+		else:
+			entry = "\n```"+entry+"```"
 
-		return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: Current RAW leave message [{chan}]\n\n```{entry}```".format(entry=entry, chan=chan))
+		chan = kwargs['server_setting'].get('leave_chan', "1337")
+		chan = f"<#{chan}>"
 
-	async def set_leave_chan(BASE, message):
+		return await BASE.phaaze.send_message(
+			message.channel,
+			f":grey_exclamation: Current leave message [{chan}]\n{entry}")
+
+	async def set_leave_chan(BASE, message, kwargs):
 		m = message.content.split(" ")
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
 
-		if len(m) <= 2:
+		if len(m) == 2:
 			chan = message.channel.id
 
 		elif len(message.channel_mentions) >= 1:
 			chan = message.channel_mentions[0].id
 
-		else:
-			return await BASE.phaaze.send_message(message.channel, ":warning: You can mention a channel or leave it empty to use the current.")
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(leave_chan=chan)
+		)
 
+		return await BASE.phaaze.send_message(
+			message.channel,
+			f":white_check_mark: Leave announce channel has been set to [<#{chan}>]")
 
+	async def clear_leave(BASE, message, kwargs):
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(leave_msg=None, leave_chan=None)
+		)
 
-		if file["lea_chan"] == chan == message.server.default_channel.id:
-			return await BASE.phaaze.send_message(message.channel, ":warning: No other custom channel set and this is your server default channel.\nTry this command in another channel or add a channel mention.".format(chan))
-
-		elif file["lea_chan"] == chan:
-			file["lea_chan"] = ""
-
-			chan = message.server.default_channel.mention
-
-			with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-				json.dump(file, save)
-				setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Leave announce channel has been reset [{0}]".format(chan))
-
-		else:
-			file["lea_chan"] = chan
-
-			with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-				json.dump(file, save)
-				setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Leave announce channel has been set to [<#{0}>]".format(chan))
-
-	async def clear_leave(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-		file["lea_chan"] = ""
-		file["leave"] = ""
-
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Leave announce channel and message has been removed")
+		return await BASE.phaaze.send_message(
+			message.channel,
+			":white_check_mark: Leave announce channel and message has been removed"
+			)
 
 class logs(object):
 	async def logs_base(BASE, message):
