@@ -360,6 +360,9 @@ class Leave(object):
 		elif m[1].lower() == "clear":
 			await Leave.clear_leave(BASE, message, kwargs)
 
+		else:
+			return await BASE.phaaze.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 3}leave`")
+
 	async def set_leave(BASE, message, kwargs):
 		m = message.content.split(" ")
 		if len(m) == 2:
@@ -454,6 +457,7 @@ class Leave(object):
 			)
 
 class Autorole(object):
+
 	async def Base(BASE, message, kwargs):
 		m = message.content.split(" ")
 		if len(m) == 1:
@@ -471,6 +475,9 @@ class Autorole(object):
 
 		elif m[1].lower() == "clear":
 			await Autorole._clear_(BASE, message, kwargs)
+
+		else:
+			return await BASE.phaaze.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 3}autorole`")
 
 	async def _get_(BASE, message, kwargs):
 		current = kwargs.get('server_setting', {}).get('autorole', None)
@@ -551,25 +558,8 @@ class Autorole(object):
 
 		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Autorole has been cleared.")
 
-async def news(BASE, message):
-	file = open("UTILS/server_channel_id_for_news.json", "r").read()
-	file = json.loads(file)
+class Everything(object):
 
-	file["news_channels"] = file.get("news_channels", [])
-
-	if message.channel.id in file["news_channels"]:
-		file["news_channels"].remove(message.channel.id)
-		try:
-			await BASE.phaaze.send_message(message.channel, ":white_check_mark: Channel {} **removed** from PhaazeNews".format(message.channel.mention))
-		except:
-			pass
-
-	else:
-		file["news_channels"].append(message.channel.id)
-		try:
-			await BASE.phaaze.send_message(message.channel, ":white_check_mark: Channel {} **added** to PhaazeNews".format(message.channel.mention))
-		except:
-			pass
-
-	with open("UTILS/server_channel_id_for_news.json", "w") as save:
-		json.dump(file, save)
+	async def news(BASE, message, kwargs):
+		# TODO: add channel to PhaazeDB?
+		await BASE.phaaze.send_message(message.channel, ":x: Soon")

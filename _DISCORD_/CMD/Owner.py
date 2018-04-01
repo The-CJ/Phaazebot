@@ -24,6 +24,9 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("leave"):
 		return await BASE.moduls._Discord_.PROCESS.Owner.Leave.Base(BASE, message, kwargs)
 
+	if check.startswith("autorole"):
+		return await BASE.moduls._Discord_.PROCESS.Owner.Autorole.Base(BASE, message, kwargs)
+
 	if check.startswith("logs"):
 		return await BASE.phaaze.send_message(
 			message.channel,
@@ -31,8 +34,8 @@ async def Base(BASE, message, **kwargs):
 			f"		Goto https://phaaze.net/discord/dashboard/{message.server.id}#logs and log-in to configure everything"
 			)
 
-	if check.startswith("autorole"):
-		return await BASE.moduls._Discord_.PROCESS.Owner.Autorole.Base(BASE, message, kwargs)
+	if check.startswith("news"):
+		return await BASE.moduls._Discord_.PROCESS.Owner.Everything.news(BASE, message, kwargs)
 
 	return
 
@@ -43,8 +46,3 @@ async def Base(BASE, message, **kwargs):
 			await BASE.moduls.Utils.no_owner(BASE, message)
 
 
-	if check.startswith("news"):
-		if await BASE.moduls.Utils.is_Owner(BASE, message):
-			await BASE.moduls.Owner_Commands.news(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_owner(BASE, message)
