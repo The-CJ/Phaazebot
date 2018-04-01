@@ -16,13 +16,13 @@ async def Base(BASE, message, **kwargs):
 	check = m[0][3:]
 
 	if check.startswith("master"):
-		return await BASE.moduls._Discord_.PROCESS.Owner.master.Base(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.PROCESS.Owner.Master.Base(BASE, message, kwargs)
 
 	if check.startswith("welcome"):
-		return await BASE.moduls._Discord_.PROCESS.Owner.welcome.Base(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.PROCESS.Owner.Welcome.Base(BASE, message, kwargs)
 
 	if check.startswith("leave"):
-		return await BASE.moduls._Discord_.PROCESS.Owner.leave.Base(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.PROCESS.Owner.Leave.Base(BASE, message, kwargs)
 
 
 	if check.startswith("logs"):
@@ -32,6 +32,9 @@ async def Base(BASE, message, **kwargs):
 			f"		Goto https://phaaze.net/discord/dashboard/{message.server.id}#logs and log-in to configure everything"
 			)
 
+	if check.startswith("autorole"):
+		return await BASE.moduls._Discord_.PROCESS.Owner.autorole.Base(BASE, message, kwargs)
+
 	return
 
 	if check.startswith("twitch"):
@@ -40,11 +43,6 @@ async def Base(BASE, message, **kwargs):
 		else:
 			await BASE.moduls.Utils.no_owner(BASE, message)
 
-	if check.startswith("autorole"):
-		if await BASE.moduls.Utils.is_Owner(BASE, message):
-			await BASE.moduls.Owner_Commands.autorole.base(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_owner(BASE, message)
 
 	if check.startswith("news"):
 		if await BASE.moduls.Utils.is_Owner(BASE, message):

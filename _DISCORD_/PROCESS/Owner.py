@@ -2,7 +2,7 @@
 
 import asyncio, json, discord
 
-class master(object):
+class Master(object):
 	async def Base(BASE, message, kwargs):
 		available = ['normal', 'mod', 'level', 'custom']
 		m = message.content.lower().split()
@@ -11,16 +11,16 @@ class master(object):
 			return await BASE.phaaze.send_message(message.channel, ":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
 
 		if m[1] == "normal":
-			await master.normal(BASE, message, kwargs)
+			await Master.normal(BASE, message, kwargs)
 
 		elif m[1] == "mod":
-			await master.mod(BASE, message, kwargs)
+			await Master.mod(BASE, message, kwargs)
 
 		elif m[1] == "level":
-			await master.level(BASE, message, kwargs)
+			await Master.level(BASE, message, kwargs)
 
 		elif m[1] == "custom":
-			await master.custom(BASE, message, kwargs)
+			await Master.custom(BASE, message, kwargs)
 
 		else:
 			av = ", ".join("`"+l+"`" for l in available)
@@ -118,7 +118,7 @@ class master(object):
 		state = "**disabled** :red_circle:" if state else "**enabled** :large_blue_circle:"
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All custom commands are now Serverwide {state}")
 
-class welcome(object):
+class Welcome(object):
 
 	async def Base(BASE, message, kwargs):
 		m = message.content.split(" ")
@@ -137,31 +137,31 @@ class welcome(object):
 
 		#get
 		elif m[1].lower() == "get":
-			await welcome.get_welcome(BASE, message, kwargs, raw=False)
+			await Welcome.get_welcome(BASE, message, kwargs, raw=False)
 		#get-priv
 		elif m[1].lower() == "get-priv":
-			await welcome.get_welcome_priv(BASE, message, kwargs, raw=False)
+			await Welcome.get_welcome_priv(BASE, message, kwargs, raw=False)
 		#get-priv
 		elif m[1].lower() == "get-priv-raw":
-			await welcome.get_welcome_priv(BASE, message, kwargs, raw=True)
+			await Welcome.get_welcome_priv(BASE, message, kwargs, raw=True)
 		#get-raw
 		elif m[1].lower() == "get-raw":
-			await welcome.get_welcome(BASE, message, kwargs, raw=True)
+			await Welcome.get_welcome(BASE, message, kwargs, raw=True)
 		#set
 		elif m[1].lower() == "set":
-			await welcome.set_welcome(BASE, message, kwargs)
+			await Welcome.set_welcome(BASE, message, kwargs)
 		#set-chan
 		elif m[1].lower() == "set-chan":
-			await welcome.set_welcome_chan(BASE, message, kwargs)
+			await Welcome.set_welcome_chan(BASE, message, kwargs)
 		#set-priv
 		elif m[1].lower() == "set-priv":
-			await welcome.priv_welcome(BASE, message, kwargs)
+			await Welcome.priv_welcome(BASE, message, kwargs)
 		#clear
 		elif m[1].lower() == "clear":
-			await welcome.clear_welcome(BASE, message, kwargs)
+			await Welcome.clear_welcome(BASE, message, kwargs)
 		#clear-priv
 		elif m[1].lower() == "clear-priv":
-			await welcome.clearpriv(BASE, message, kwargs)
+			await Welcome.clearpriv(BASE, message, kwargs)
 
 		else:
 			return await BASE.phaaze.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 3}welcome`")
@@ -329,7 +329,7 @@ class welcome(object):
 			":white_check_mark: Private welcome message has been removed"
 		)
 
-class leave(object):
+class Leave(object):
 
 	async def Base(BASE, message, kwargs):
 		m = message.content.split(" ")
@@ -346,19 +346,19 @@ class leave(object):
 
 		#get
 		elif m[1].lower() == "get":
-			await leave.get_leave(BASE, message, kwargs, raw = False)
+			await Leave.get_leave(BASE, message, kwargs, raw = False)
 		#getraw
 		elif m[1].lower() == "get-raw":
-			await leave.get_leave(BASE, message, kwargs, raw = True)
+			await Leave.get_leave(BASE, message, kwargs, raw = True)
 		#set
 		elif m[1].lower() == "set":
-			await leave.set_leave(BASE, message, kwargs)
+			await Leave.set_leave(BASE, message, kwargs)
 		#chan
 		elif m[1].lower() == "set-chan":
-			await leave.set_leave_chan(BASE, message, kwargs)
+			await Leave.set_leave_chan(BASE, message, kwargs)
 		#clear
 		elif m[1].lower() == "clear":
-			await leave.clear_leave(BASE, message, kwargs)
+			await Leave.clear_leave(BASE, message, kwargs)
 
 	async def set_leave(BASE, message, kwargs):
 		m = message.content.split(" ")
