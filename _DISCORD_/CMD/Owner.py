@@ -24,7 +24,6 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("leave"):
 		return await BASE.moduls._Discord_.PROCESS.Owner.Leave.Base(BASE, message, kwargs)
 
-
 	if check.startswith("logs"):
 		return await BASE.phaaze.send_message(
 			message.channel,
@@ -33,7 +32,7 @@ async def Base(BASE, message, **kwargs):
 			)
 
 	if check.startswith("autorole"):
-		return await BASE.moduls._Discord_.PROCESS.Owner.autorole.Base(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.PROCESS.Owner.Autorole.Base(BASE, message, kwargs)
 
 	return
 
