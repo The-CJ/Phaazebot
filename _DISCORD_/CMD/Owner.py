@@ -24,13 +24,15 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("leave"):
 		return await BASE.moduls._Discord_.PROCESS.Owner.leave.Base(BASE, message, kwargs)
 
-	return
 
 	if check.startswith("logs"):
-		if await BASE.moduls.Utils.is_Owner(BASE, message):
-			await BASE.moduls.Owner_Commands.logs.logs_base(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_owner(BASE, message)
+		return await BASE.phaaze.send_message(
+			message.channel,
+			f":grey_exclamation: PhaazeDiscord-Logs configuration has moved to the PhaazeWebsite\n"\
+			f"		Goto https://phaaze.net/discord/dashboard/{message.server.id}#logs and log-in to configure everything"
+			)
+
+	return
 
 	if check.startswith("twitch"):
 		if await BASE.moduls.Utils.is_Owner(BASE, message):
