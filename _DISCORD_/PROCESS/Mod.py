@@ -21,7 +21,7 @@ class Settings(object):
 		elif m[1] == "game" and "" == "-": #TODO:
 			await Settings.game(BASE, message, kwargs)
 
-		elif m[1] == "nonmod": #TODO:
+		elif m[1] == "nonmod":
 			await Settings.nonmod(BASE, message, kwargs)
 
 		elif m[1] == "level":
@@ -221,6 +221,43 @@ class Settings(object):
 		)
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Level system is now {state} in {message.channel.mention}")
+
+	async def nonmod(BASE, message, kwargs):
+		m = message.content.lower().split()
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+
+		if m[2] in ['on', 'enable', 'yes']:
+			state = True
+
+		elif m[2] in ['off', 'disable', 'no']:
+			state = False
+
+		else:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+
+		server_setting = kwargs.get('server_setting', {})
+		channel_list = server_setting.get('disable_chan_normal', [])
+
+		if message.channel.id not in channel_list and state:
+			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already has allowes normal commands")
+
+		if message.channel.id in channel_list and not state:
+			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable normal commands in {message.channel.mention}, it's already disabled.")
+
+		if not state:
+			channel_list.append(message.channel.id)
+		else:
+			channel_list.remove(message.channel.id)
+
+		BASE.PhaazeDB.update(
+			of = "discord/server_setting",
+			where = f"data['server_id'] == '{message.server.id}'",
+			content = dict(disable_chan_normal=channel_list)
+		)
+		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All non-moderator commands are now {state} in {message.channel.mention}")
 
 class quote(object):
 	async def quote_base(BASE, message):
