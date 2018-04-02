@@ -38,16 +38,16 @@ async def base(BASE, message):
 			await BASE.moduls._Discord_.CMD.Owner.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
 
 	#mod
-	elif message.content.startswith(BASE.vars.PT * 2) and "" == "-":
+	elif message.content.startswith(BASE.vars.PT * 2):
 		if message.author.id not in BASE.cooldown.Mod_CD:
-			await BASE.moduls._Discord_.CMD.Mod.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
 			asyncio.ensure_future(BASE.cooldown.CD_Mod(message))
+			await BASE.moduls._Discord_.CMD.Mod.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
 
 	#normal
 	elif message.content.startswith(BASE.vars.PT) and "" == "-":
 		if message.author.id not in BASE.cooldown.Normal_CD:
-			await BASE.moduls._Discord_.CMD.Normal.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
 			asyncio.ensure_future(BASE.cooldown.CD_Normal(message))
+			await BASE.moduls._Discord_.CMD.Normal.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
 
 	#@phaazebot ai call
 	if message.edited_timestamp == None:

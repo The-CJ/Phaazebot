@@ -1,68 +1,78 @@
 #BASE.moduls._Discord_.PROCESS.Mod
 
-import asyncio, json, random, discord, tabulate
-Available = ["nsfw", "custom", "quotes", "ai", "nonmod", "level", "fun", "level_ask"]
+import asyncio, json, discord, tabulate
 
-async def settings(BASE, message):
-	m = message.content.lower().split()
+class Settings(object):
+	async def Base(BASE, message, kwargs):
+		available = ["nsfw", "custom", "level", "quotes", "ai", "nonmod", "game"]
+		m = message.content.lower().split()
 
-	if len(m) == 1:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Syntax Error!\n\nMissing option! Available are: {0}".format(", ".join("`"+l+"`" for l in Available)))
-	if m[1] not in Available:
-		return await BASE.phaaze.send_message(message.channel, ":warning: `{1}` is not a option! Available are: {0}".format(", ".join("`"+l+"`" for l in Available), m[1]))
+		if len(m) == 1:
+			return await BASE.phaaze.send_message(
+				message.channel,
+				":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
 
-	if m[1] == "nsfw":
-		await setting_args.nsfw(BASE, message)
+		elif m[1] == "ai": #TODO:
+			await Settings.ai(BASE, message, kwargs)
 
-	if m[1] == "custom":
-		await setting_args.custom(BASE, message)
+		if m[1] == "nsfw":
+			await Settings.nsfw(BASE, message, kwargs)
 
-	if m[1] == "quotes":
-		await setting_args.quotes(BASE, message)
+		elif m[1] == "game": #TODO:
+			await Settings.game(BASE, message, kwargs)
 
-	if m[1] == "ai":
-		await setting_args.ai(BASE, message)
+		elif m[1] == "nonmod": #TODO:
+			await Settings.nonmod(BASE, message, kwargs)
 
-	if m[1] == "nonmod":
-		await setting_args.all_(BASE, message)
+		elif m[1] == "level": #TODO:
+			await Settings.level(BASE, message, kwargs)
 
-	if m[1] == "level":
-		await setting_args.level(BASE, message)
+		elif m[1] == "custom": #TODO:
+			await Settings.custom(BASE, message, kwargs)
 
-	if m[1] == "fun":
-		await setting_args.fun(BASE, message)
-
-	if m[1] == "level_ask":
-		await setting_args.lvl_ask(BASE, message)
-
-class setting_args(object):
-
-	async def nsfw(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-		id = message.channel.id
-
-		try:
-			file["enable_nsfw"] = file["enable_nsfw"]
-		except:
-			file["enable_nsfw"] = []
-
-		if id in file["enable_nsfw"]:
-			file["enable_nsfw"].remove(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: NSFW Commands have been **disabled** :red_circle: for " + message.channel.mention)
-			except:
-				pass
+		elif m[1] == "quotes": #TODO:
+			await Settings.quotes(BASE, message, kwargs)
 
 		else:
-			file["enable_nsfw"].append(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: NSFW Commands have been **enabled** :large_blue_circle: for " + message.channel.mention)
-			except:
-				pass
+			av = ", ".join("`"+l+"`" for l in available)
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
 
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
+	async def nsfw(BASE, message, kwargs):
+		m = message.content.lower().split()
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+
+		if m[2] in ['on', 'enable', 'yes']:
+			state = True
+
+		elif m[2] in ['off', 'disable', 'no']:
+			state = False
+
+		else:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+
+		server_setting = kwargs.get('server_setting', {})
+		channel_list = server_setting.get('enable_chan_nsfw', [])
+
+		if message.channel.id in channel_list and state:
+			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already has enabled NSFW")
+
+		if message.channel.id not in channel_list and not state:
+			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable NSFW for {message.channel.mention}, it's already off.")
+
+		if state:
+			channel_list.append(message.channel.id)
+		else:
+			channel_list.remove(message.channel.id)
+
+		BASE.PhaazeDB.update(
+			of = "discord/server_setting",
+			where = f"data['server_id'] == '{message.server.id}'",
+			content = dict(enable_chan_nsfw=channel_list)
+		)
+		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: NSFW Commands are now {state} in {message.channel.mention}")
 
 	async def ai(BASE, message):
 		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
