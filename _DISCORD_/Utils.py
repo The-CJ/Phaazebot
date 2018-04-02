@@ -64,9 +64,9 @@ async def make_server_file(BASE, id):
 	insert_['enable_chan_game'] = [],
 
 	insert_['disable_chan_normal'] = [],
-	insert_['disable_chan_mod'] = [],
 	insert_['disable_chan_level'] = [],
 	insert_['disable_chan_custom'] = [],
+	insert_['disable_chan_quotes'] = [],
 
 	insert_['owner_disable_normal'] = False,
 	insert_['owner_disable_mod'] = False,
