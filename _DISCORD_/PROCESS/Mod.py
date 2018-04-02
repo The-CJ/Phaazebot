@@ -18,13 +18,13 @@ class Settings(object):
 		if m[1] == "nsfw":
 			await Settings.nsfw(BASE, message, kwargs)
 
-		elif m[1] == "game": #TODO:
+		elif m[1] == "game" and "" == "-": #TODO:
 			await Settings.game(BASE, message, kwargs)
 
 		elif m[1] == "nonmod": #TODO:
 			await Settings.nonmod(BASE, message, kwargs)
 
-		elif m[1] == "level": #TODO:
+		elif m[1] == "level":
 			await Settings.level(BASE, message, kwargs)
 
 		elif m[1] == "custom":
@@ -185,117 +185,42 @@ class Settings(object):
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Quote commands are now {state} in {message.channel.mention}")
 
-	async def all_(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-		id = message.channel.id
+	async def level(BASE, message, kwargs):
+		m = message.content.lower().split()
 
-		try:
-			file["disable_normal"] = file["disable_normal"]
-		except:
-			file["disable_normal"] = []
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
-		if id in file["disable_normal"]:
-			file["disable_normal"].remove(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: All Non mod commands have been **enabled** :large_blue_circle: for " + message.channel.mention + '  *(Does not effect custom commands)*')
-			except:
-				pass
+		if m[2] in ['on', 'enable', 'yes']:
+			state = True
+
+		elif m[2] in ['off', 'disable', 'no']:
+			state = False
 
 		else:
-			file["disable_normal"].append(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: All Non mod commands have been **disabled** :red_circle: for " + message.channel.mention + '  *(Does not effect custom commands)*')
-			except:
-				pass
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
+		server_setting = kwargs.get('server_setting', {})
+		channel_list = server_setting.get('disable_chan_level', [])
 
-	async def level(BASE, message):
-		file = await BASE.moduls.Utils.get_server_level_file(BASE, message.server.id)
-		id = message.channel.id
+		if message.channel.id not in channel_list and state:
+			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already has enabled Level System")
 
-		if file.get("muted", 0) == 1:
-			return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Level System has already been disabled by the server owner")
+		if message.channel.id in channel_list and not state:
+			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable Level system in {message.channel.mention}, it's already disabled.")
 
-		try:
-			file["disabled_channels"] = file["disabled_channels"]
-		except:
-			file["disabled_channels"] = []
-
-		if id in file["disabled_channels"]:
-			file["disabled_channels"].remove(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: Level System has been **enabled** :large_blue_circle: for " + message.channel.mention)
-			except:
-				pass
-
+		if not state:
+			channel_list.append(message.channel.id)
 		else:
-			file["disabled_channels"].append(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: Level System has been **disabled** :red_circle: for " + message.channel.mention)
-			except:
-				pass
+			channel_list.remove(message.channel.id)
 
-		with open("LEVELS/DISCORD/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.levelfiles, "level_"+message.server.id, file)
-
-	async def fun(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-		id = message.channel.id
-
-		try:
-			file["enable_fun"] = file["enable_fun"]
-		except:
-			file["enable_fun"] = []
-
-		if id in file["enable_fun"]:
-			file["enable_fun"].remove(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: Fun and Game Commands has been **enabled** :large_blue_circle: for " + message.channel.mention)
-			except:
-				pass
-
-		else:
-			file["enable_fun"].append(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: Fun and Game Commands has been **disabled** :red_circle: for " + message.channel.mention)
-			except:
-				pass
-
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.levelfiles, "server_"+message.server.id, file)
-
-	async def lvl_ask(BASE, message):
-		file = await BASE.moduls.Utils.get_server_level_file(BASE, message.server.id)
-		id = message.channel.id
-
-		try:
-			file["lvl_ask"] = file["lvl_ask"]
-		except:
-			file["lvl_ask"] = []
-
-		if id in file["lvl_ask"]:
-			file["lvl_ask"].remove(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: The `{0}leaderboard` and `{0}level` command has been **enabled** :large_blue_circle: for ".format(BASE.vars.PT) + message.channel.mention)
-			except:
-				pass
-
-		else:
-			file["lvl_ask"].append(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: The `{0}leaderboard` and `{0}level` command has been **disabled** :red_circle: for {1}\n*Members will still gain EXP*".format(BASE.vars.PT, message.channel.mention))
-
-			except:
-				pass
-
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.levelfiles, "server_"+message.server.id, file)
+		BASE.PhaazeDB.update(
+			of = "discord/server_setting",
+			where = f"data['server_id'] == '{message.server.id}'",
+			content = dict(disable_chan_level=channel_list)
+		)
+		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Level system is now {state} in {message.channel.mention}")
 
 class quote(object):
 	async def quote_base(BASE, message):
