@@ -220,7 +220,11 @@ class Settings(object):
 			content = dict(disable_chan_level=channel_list)
 		)
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Level system is now {state} in {message.channel.mention}")
+		return await BASE.phaaze.send_message(
+			message.channel,
+			f":white_check_mark: Level system is now {state} in {message.channel.mention}\n"\
+			f"(affects member XP gain and the use of level commands like: {BASE.vars.PT}level, {BASE.vars.PT}leaderboard, etc.)"
+		)
 
 	async def nonmod(BASE, message, kwargs):
 		m = message.content.lower().split()
@@ -257,7 +261,11 @@ class Settings(object):
 			content = dict(disable_chan_normal=channel_list)
 		)
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All non-moderator commands are now {state} in {message.channel.mention}")
+		return await BASE.phaaze.send_message(
+			message.channel,
+			f":white_check_mark: All non-moderator commands are now {state} in {message.channel.mention}\n"\
+			f"(Custom commands are not affected)"
+		)
 
 class quote(object):
 	async def quote_base(BASE, message):

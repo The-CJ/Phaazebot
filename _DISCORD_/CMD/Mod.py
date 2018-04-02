@@ -27,6 +27,8 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("setting"):
 		await BASE.moduls._Discord_.PROCESS.Mod.Settings.Base(BASE, message, kwargs)
 
+	return
+
 	if check.startswith("addcom"):
 		if await BASE.moduls.Utils.is_Mod(BASE, message):
 			await BASE.moduls.Custom.add(BASE, message)
