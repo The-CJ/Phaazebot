@@ -12,7 +12,7 @@ class Settings(object):
 				message.channel,
 				":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
 
-		elif m[1] == "ai": #TODO:
+		elif m[1] == "ai":
 			await Settings.ai(BASE, message, kwargs)
 
 		if m[1] == "nsfw":
@@ -74,32 +74,43 @@ class Settings(object):
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: NSFW Commands are now {state} in {message.channel.mention}")
 
-	async def ai(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-		id = message.channel.id
+	async def ai(BASE, message, kwargs):
+		m = message.content.lower().split()
 
-		try:
-			file["enable_ai"] = file["enable_ai"]
-		except:
-			file["enable_ai"] = []
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
-		if id in file["enable_ai"]:
-			file["enable_ai"].remove(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: AI Talk has been **disabled** :red_circle: for " + message.channel.mention)
-			except:
-				pass
+		if m[2] in ['on', 'enable', 'yes']:
+			state = True
+
+		elif m[2] in ['off', 'disable', 'no']:
+			state = False
 
 		else:
-			file["enable_ai"].append(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: AI Talk has been **enabled** :large_blue_circle: for " + message.channel.mention)
-			except:
-				pass
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
+		server_setting = kwargs.get('server_setting', {})
+		channel_list = server_setting.get('enable_chan_ai', [])
+
+		if message.channel.id in channel_list and state:
+			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already has enabled AI Talks")
+
+		if message.channel.id not in channel_list and not state:
+			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable AI Talks for {message.channel.mention}, it's already off.")
+
+		if state:
+			channel_list.append(message.channel.id)
+		else:
+			channel_list.remove(message.channel.id)
+
+		BASE.PhaazeDB.update(
+			of = "discord/server_setting",
+			where = f"data['server_id'] == '{message.server.id}'",
+			content = dict(enable_chan_ai=channel_list)
+		)
+		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: AI Talks Commands are now {state} in {message.channel.mention}")
+
 
 	async def custom(BASE, message):
 		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
