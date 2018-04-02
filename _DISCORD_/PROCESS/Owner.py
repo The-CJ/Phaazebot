@@ -35,7 +35,7 @@ class Master(object):
 		if m[2] in ['on', 'enable', 'yes']:
 			state = False
 
-		elif m[2] in ['off', 'dienable', 'no']:
+		elif m[2] in ['off', 'disable', 'no']:
 			state = True
 
 		else:
@@ -58,7 +58,7 @@ class Master(object):
 		if m[2] in ['on', 'enable', 'yes']:
 			state = False
 
-		elif m[2] in ['off', 'dienable', 'no']:
+		elif m[2] in ['off', 'disable', 'no']:
 			state = True
 
 		else:
@@ -81,7 +81,7 @@ class Master(object):
 		if m[2] in ['on', 'enable', 'yes']:
 			state = False
 
-		elif m[2] in ['off', 'dienable', 'no']:
+		elif m[2] in ['off', 'disable', 'no']:
 			state = True
 
 		else:
@@ -104,7 +104,7 @@ class Master(object):
 		if m[2] in ['on', 'enable', 'yes']:
 			state = False
 
-		elif m[2] in ['off', 'dienable', 'no']:
+		elif m[2] in ['off', 'disable', 'no']:
 			state = True
 
 		else:
