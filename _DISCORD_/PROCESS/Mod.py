@@ -30,7 +30,7 @@ class Settings(object):
 		elif m[1] == "custom":
 			await Settings.custom(BASE, message, kwargs)
 
-		elif m[1] == "quotes": #TODO:
+		elif m[1] == "quotes":
 			await Settings.quotes(BASE, message, kwargs)
 
 		else:
@@ -148,32 +148,42 @@ class Settings(object):
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Custom commands are now {state} in {message.channel.mention}")
 
-	async def quotes(BASE, message):
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-		id = message.channel.id
+	async def quotes(BASE, message, kwargs):
+		m = message.content.lower().split()
 
-		try:
-			file["quotes"] = file["quotes"]
-		except:
-			file["quotes"] = []
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
-		if id in file["quotes"]:
-			file["quotes"].remove(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: Quotes have been **enabled** :large_blue_circle: for " + message.channel.mention)
-			except:
-				pass
+		if m[2] in ['on', 'enable', 'yes']:
+			state = True
+
+		elif m[2] in ['off', 'disable', 'no']:
+			state = False
 
 		else:
-			file["quotes"].append(id)
-			try:
-				await BASE.phaaze.send_message(message.channel, ":white_check_mark: Quotes have been **disabled** :red_circle: for " + message.channel.mention)
-			except:
-				pass
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
+		server_setting = kwargs.get('server_setting', {})
+		channel_list = server_setting.get('disable_chan_quotes', [])
+
+		if message.channel.id not in channel_list and state:
+			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already allowes Quote commands")
+
+		if message.channel.id in channel_list and not state:
+			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable Quote commands in {message.channel.mention}, it's already disabled.")
+
+		if not state:
+			channel_list.append(message.channel.id)
+		else:
+			channel_list.remove(message.channel.id)
+
+		BASE.PhaazeDB.update(
+			of = "discord/server_setting",
+			where = f"data['server_id'] == '{message.server.id}'",
+			content = dict(disable_chan_quotes=channel_list)
+		)
+		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Quote commands are now {state} in {message.channel.mention}")
 
 	async def all_(BASE, message):
 		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
