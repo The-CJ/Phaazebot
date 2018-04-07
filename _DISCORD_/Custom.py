@@ -1,6 +1,8 @@
 ##BASE.moduls._Discord_.Custom
 
-import asyncio, os, json, Console
+import asyncio, json
+
+custom_command_limit = 150
 
 async def get(BASE, message, server_setting, server_commands):
 	m = message.content.lower().split(" ")
@@ -18,80 +20,80 @@ async def get(BASE, message, server_setting, server_commands):
 			send = cmd.get("content", None)
 			if send == None: return
 
-			send = send.replace("[user]", message.author.name)
-			send = send.replace("[server]", message.server.name)
-			send = send.replace("[count]", str(message.server.member_count))
-			send = send.replace("[mention]", message.author.mention)
+			send = send.replace("[user-name]", message.author.name)
+			send = send.replace("[user-mention]", message.author.mention)
+			send = send.replace("[channel-name]", message.channel.name)
+			send = send.replace("[channel-mention]", message.channel.mention)
+			send = send.replace("[server-name]", message.server.name)
+			send = send.replace("[server-count]", str(message.server.member_count))
 			send = send.replace("[uses]", str(cmd["uses"]))
 
 			await BASE.phaaze.send_message(message.channel, send)
 			BASE.PhaazeDB.update(
 				of="discord/commands/commands_"+message.server.id,
 				content=dict(uses = cmd["uses"]),
-				where="data['trigger'] == '{}'".format( cmd['trigger'] )
+				where="data['trigger'] == '{}'".format( str(cmd['trigger']) )
 			)
 			asyncio.ensure_future(BASE.cooldown.CD_Custom(message))
 
-async def add(BASE, message):
+async def add(BASE, message, kwargs):
 	m = message.content.split(" ")
 
 	if len(m) <= 2:
-		r = ":warning: Syntax Error!\nUsage: `{0}{0}addcom [Activator] [Respone]`\n\n"\
-			"**Tokens:** (<-- This will be replaced by Stuff)\n"\
-			"`[user]` - Member who triggered the command\n"\
-			"`[server]` - Server the command has been triggered\n"\
-			"`[count]` - Number of members the server has right now\n"\
-			"`[mention]` - @ mention the member\n"\
-			"`[uses]` - How many times a command has been used".format(BASE.vars.PT)
+		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}addcom [Trigger] [Content]`\n\n"\
+			"`[Trigger]` - The thing that makes the command appear (Case insensitive)\n"\
+			"`[Content]` - Whatever you want to show as the command content\n\n"\
+			"You can use tokens in your `[Content]` that will be replaced by infos:\n"\
+			"`[user-name]` - Current member name\n"\
+			"`[user-mention]` - Current member @ mention\n"\
+			"`[channel-name]` - Current channel name\n"\
+			"`[channel-mention]` - Current channel @ mention\n"\
+			"`[server-name]` - Current server name\n"\
+			"`[server-count]` - Number of members on the the server\n"\
+			"`[uses]` - How many times a command has been used"
 		return await BASE.phaaze.send_message(message.channel, r)
 
 	trigger = m[1].lower()
+	server_commands = kwargs.get('server_commands', {})
 
 	if len(trigger) >= 100:
-		return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Trigger to long, maximum 100 characters")
+		return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Trigger to long. Maximum: 100 characters")
 
 	if trigger == "all":
-		return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The trigger can't be `all`, try something else.")
+		return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The trigger `all` is reservated, try something else.")
 
-	text = " ".join(f for f in m[2:])
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+	#check if command exist
+	found = False
+	for com in server_commands:
+		if com.get("trigger", None).lower() == trigger:
+			found = True
+			break
 
-	file["commands"] = file.get("commands", [])
+	#update
+	if found:
+		content = " ".join(f for f in m[2:])
+		BASE.PhaazeDB.update(
+			of=f"discord/commands/commands_{message.server.id}",
+			where=f"data['trigger'] == '{trigger}'",
+			content=dict(content=str(content))
+		)
+		return await BASE.phaaze.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **updated!**')
 
-	sta = "created"
-	found = None
-
-	#check if there
-	for com in file["commands"]:
-		if com["trigger"].lower() == trigger.lower():
-			sta = "updated"
-			found = com
-
-	#not found
-	if found == None:
-
-		#150 reached
-		if len(file["commands"]) >= 150:
-			return await limit_reached(BASE, message)
-
-		file["commands"].append({
-								"trigger":trigger.lower(),
-								"uses":0,
-								"text": text
-								})
-	#found
+	#new
 	else:
-		found["text"] = text
+		if len(server_commands) >= custom_command_limit:
+			return await BASE.phaaze.send_message(message.channel, f":no_entry_sign: The limit of {custom_command_limit} custom commands is reached, delete some first.")
 
-	with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-		json.dump(file, save)
-		setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-	#logs
-	try: await BASE.moduls.Discord_Events.event_logs.custom_update(BASE, message, trigger, "add")
-	except: pass
-
-	await BASE.phaaze.send_message(message.channel, ':white_check_mark: Command "`{0}`" has been **{1}!**'.format(trigger, sta))
+		content = " ".join(f for f in m[2:])
+		BASE.PhaazeDB.insert(
+			into=f"discord/commands/commands_{message.server.id}",
+			content=dict(
+				content=str(content),
+				trigger=str(trigger),
+				uses=0
+			)
+		)
+		return await BASE.phaaze.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **created!**')
 
 async def rem(BASE, message):
 	m = message.content.split(" ")
@@ -154,9 +156,6 @@ async def get_all(BASE, message):
 	two = "\n".join("- `"+g["trigger"]+"`" for g in file.get("commands", []))
 
 	return await BASE.phaaze.send_message(message.channel, one + two)
-
-async def limit_reached(BASE, message):
-	await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The limit of 150 custom commands is reached, delete some first.")
 
 
 

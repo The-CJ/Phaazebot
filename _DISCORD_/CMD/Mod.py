@@ -17,7 +17,7 @@ async def Base(BASE, message, **kwargs):
 		asyncio.ensure_future(no_mod(BASE, message, kwargs))
 		return
 
-	if not BASE.moduls._Discord_.Utils.is_Owner(BASE, message) and kwargs.get('server_setting', {}).get('owner_disable_mod', False):
+	if not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message) and kwargs.get('server_setting', {}).get('owner_disable_mod', False):
 		asyncio.ensure_future(owner_disabled_mod(BASE, message, kwargs))
 		return
 
@@ -27,13 +27,11 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("setting"):
 		await BASE.moduls._Discord_.PROCESS.Mod.Settings.Base(BASE, message, kwargs)
 
-	return
 
 	if check.startswith("addcom"):
-		if await BASE.moduls.Utils.is_Mod(BASE, message):
-			await BASE.moduls.Custom.add(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_mod(BASE, message)
+		await BASE.moduls._Discord_.Custom.add(BASE, message, kwargs)
+
+	return
 
 	if check.startswith("delcom"):
 		if await BASE.moduls.Utils.is_Mod(BASE, message):
