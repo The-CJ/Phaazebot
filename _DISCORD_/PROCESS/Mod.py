@@ -334,6 +334,17 @@ class Quote(object):
 
 		return await BASE.phaaze.send_message(message.channel, content=f":white_check_mark: Quote #{m[2]} removed")
 
+	async def clear(BASE, message, kwargs):
+
+		await BASE.phaaze.send_message(message.channel,':question: Remove all quotes? `y/n`')
+		a = await BASE.phaaze.wait_for_message(timeout=30, author=message.author, channel=message.channel)
+		if a.content.lower() != "y":
+			return await BASE.phaaze.send_message(message.channel, ':warning: Canceled.')
+
+		del_ = BASE.PhaazeDB.delete(of=f"discord/quotes/quotes_{message.server.id}")
+		x = str( del_.get('hits', 'N/A') )
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All {x} Quote deleted")
+
 class prune(object):
 	async def prune(BASE, message):
 		me = await BASE.moduls.Utils.return_real_me(BASE, message)
