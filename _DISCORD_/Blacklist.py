@@ -89,9 +89,9 @@ async def Base(BASE, message, kwargs):
 		await Link.toggle(BASE, message, kwargs)
 	elif m[1] == "link-get":
 		await Link.get(BASE, message, kwargs)
-	elif m[1] == "link-add": #TODO:
+	elif m[1] == "link-add":
 		await Link.add(BASE, message, kwargs)
-	elif m[1] == "link-rem": #TODO:
+	elif m[1] == "link-rem":
 		await Link.rem(BASE, message, kwargs)
 	elif m[1] == "link-allow": #TODO:
 		await Link.allow(BASE, message, kwargs)
@@ -271,3 +271,26 @@ class Link(object):
 		)
 
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The link `{word}` has been added to the whitelist.")
+
+	async def rem(BASE, message, kwargs):
+		m = message.content.lower().split(" ")
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a link you wanna remove from the whitelist.")
+
+		whitelist = kwargs.get('server_setting', {}).get('ban_links_whitelist', [])
+
+		word = " ".join(l for l in m[2:])
+
+		if word in whitelist:
+			whitelist.remove(word)
+		else:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{word}` is not in the whitelist.")
+
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(ban_links_whitelist=whitelist)
+		)
+
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The link `{word}` has been removed from the whitelist.")
