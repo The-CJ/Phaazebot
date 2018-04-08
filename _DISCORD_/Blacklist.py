@@ -93,11 +93,11 @@ async def Base(BASE, message, kwargs):
 		await Link.add(BASE, message, kwargs)
 	elif m[1] == "link-rem":
 		await Link.rem(BASE, message, kwargs)
-	elif m[1] == "link-allow": #TODO:
+	elif m[1] == "link-allow":
 		await Link.allow(BASE, message, kwargs)
-	elif m[1] == "link-disallow": #TODO:
+	elif m[1] == "link-disallow":
 		await Link.disallow(BASE, message, kwargs)
-	elif m[1] == "link-clear": #TODO:
+	elif m[1] == "link-clear":
 		await Link.clear(BASE, message, kwargs)
 	else:
 		return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a option.".format(m[1]))
