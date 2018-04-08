@@ -81,7 +81,7 @@ async def Base(BASE, message, kwargs):
 		await get(BASE, message, kwargs)
 	elif m[1] == "add":
 		await add(BASE, message, kwargs)
-	elif m[1] == "rem": #TODO:
+	elif m[1] == "rem":
 		await rem(BASE, message, kwargs)
 	elif m[1] == "clear": #TODO:
 		await clear(BASE, message, kwargs)
@@ -178,18 +178,13 @@ async def add(BASE, message, kwargs):
 
 	return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The {type_}: `{word}` has been added to the blacklist.")
 
-async def rem(BASE, message):
+async def rem(BASE, message, kwargs):
 	m = message.content.lower().split(" ")
 
 	if len(m) == 2:
 		return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a word or a phrase you wanna remove.")
 
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-	try:
-		file["blacklist"] = file["blacklist"]
-	except:
-		file["blacklist"] = []
+	blacklist = kwargs.get('server_setting', {}).get('blacklist', [])
 
 	word = " ".join(l for l in m[2:])
 
@@ -198,16 +193,18 @@ async def rem(BASE, message):
 	else:
 		type_ = "word"
 
-	if word in file["blacklist"]:
-		file["blacklist"].remove(word)
+	if word in blacklist:
+		blacklist.remove(word)
 	else:
-		return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not in the blacklist.".format(word))
+		return await BASE.phaaze.send_message(message.channel, f":warning: `{word}` is not in the blacklist.")
 
-	with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-		json.dump(file, save)
-		setattr(BASE.serverfiles, "server_"+message.server.id, file)
+	BASE.PhaazeDB.update(
+		of="discord/server_setting",
+		where=f"data['server_id'] == '{message.server.id}'",
+		content=dict(blacklist=blacklist)
+	)
 
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: The {0}: `{1}` has been removed.".format(type_, word))
+	return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The {type_}: `{word}` has been removed from the blacklist.")
 
 async def clear(BASE, message):
 
