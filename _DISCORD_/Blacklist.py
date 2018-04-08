@@ -83,7 +83,7 @@ async def Base(BASE, message, kwargs):
 		await add(BASE, message, kwargs)
 	elif m[1] == "rem":
 		await rem(BASE, message, kwargs)
-	elif m[1] == "clear": #TODO:
+	elif m[1] == "clear":
 		await clear(BASE, message, kwargs)
 	elif m[1] == "link-toggle": #TODO:
 		await Link.toggle(BASE, message, kwargs)
@@ -206,28 +206,15 @@ async def rem(BASE, message, kwargs):
 
 	return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The {type_}: `{word}` has been removed from the blacklist.")
 
-async def clear(BASE, message):
+async def clear(BASE, message, kwargs):
 
-	h = await BASE.phaaze.send_message(message.channel, ":warning: Are you sure you wanna clear the blacklist completly?\n\n:regional_indicator_y:/:regional_indicator_n:")
+	BASE.PhaazeDB.update(
+		of="discord/server_setting",
+		where=f"data['server_id'] == '{message.server.id}'",
+		content=dict(blacklist=[])
+	)
 
-	def g(m):
-		if m.content.lower().startswith("y"):
-			return True
-		else:
-			return False
-
-	u = await BASE.phaaze.wait_for_message(timeout=30, author=message.author, channel=message.channel, check=g)
-
-	if u is not None:
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-		file["blacklist"] = []
-
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-		await BASE.phaaze.edit_message(h, new_content=":white_check_mark: Blacklist cleared.")
+	return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The blacklist has been cleared.")
 
 class Link(object):
 
