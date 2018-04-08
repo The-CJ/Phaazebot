@@ -87,7 +87,7 @@ async def Base(BASE, message, kwargs):
 		await clear(BASE, message, kwargs)
 	elif m[1] == "link-toggle":
 		await Link.toggle(BASE, message, kwargs)
-	elif m[1] == "link-get": #TODO:
+	elif m[1] == "link-get":
 		await Link.get(BASE, message, kwargs)
 	elif m[1] == "link-allow": #TODO:
 		await Link.allow(BASE, message, kwargs)
@@ -238,60 +238,13 @@ class Link(object):
 
 		return await BASE.phaaze.send_message(message.channel, a)
 
-	async def whitelist(BASE, message):
+	async def get(BASE, message, kwargs):
 
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+		whitelist = kwargs.get('server_setting', {}).get('ban_links_whitelist', [])
 
-		file["link_whitelist"] = file.get("link_whitelist", [])
-
-		if len(file["link_whitelist"]) == 0:
-			return await BASE.phaaze.send_message(message.channel, ":information_source: No links are whitelisted, every link gets deleted")
-
-		b = ", ".join("`"+word+"`" for word in file["link_whitelist"])
-		return await BASE.phaaze.send_message(message.channel, ":information_source: Allowed Links must contain: " + b)
-
-	async def add(BASE, message):
-		m = message.content.lower().split(" ")
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-		file["link_whitelist"] = file.get("link_whitelist", [])
-
-		file["link_whitelist"].append(m[2])
-
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: {0} has been added to the whitelist, link that contain this will not get deleted.".format(m[2]))
-
-	async def rem(BASE, message):
-		m = message.content.lower().split(" ")
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-		file["link_whitelist"] = file.get("link_whitelist", [])
-
-		if m[2] in file["link_whitelist"]:
-			file["link_whitelist"].remove(m[2])
+		if len(whitelist) == 0:
+			return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: No Links whitelisted! All links get removed")
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, ":warning: {0} is not in the whitelist.".format(m[3]))
-
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
-			return await BASE.phaaze.send_message(message.channel, "white_check_mark: {0} has been removed from the whitelist.".format(m[3]))
-
-	async def allow(BASE, message):
-		m = message.content.lower().split(" ")
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-		file["allow_link_role"] = file.get("allow_link_role", None)
-
-		if len(message.role_mentions) != 0:
-			file["allow_link_role"] = message.role_mentions[0].id
-		else:
-			return await BASE.phaaze.send_message(message.channel, ":warning: Missing Role Mention")
-
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: {0} has been set to link-allowed-role.".format(message.role_mentions[0].name))
+			l = ", ".join(b for b in whitelist)
+			return await BASE.phaaze.send_message(message.channel, f"A list of all whitelisted links on the server.\n\n```{l}```")
