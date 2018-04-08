@@ -85,7 +85,7 @@ async def Base(BASE, message, kwargs):
 		await rem(BASE, message, kwargs)
 	elif m[1] == "clear":
 		await clear(BASE, message, kwargs)
-	elif m[1] == "link-toggle": #TODO:
+	elif m[1] == "link-toggle":
 		await Link.toggle(BASE, message, kwargs)
 	elif m[1] == "link-get": #TODO:
 		await Link.get(BASE, message, kwargs)
@@ -218,25 +218,25 @@ async def clear(BASE, message, kwargs):
 
 class Link(object):
 
-	async def toggle(BASE, message):
+	async def toggle(BASE, message, kwargs):
 
-		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+		ban_links = kwargs.get('server_setting', {}).get('ban_links', False)
 
-		file["ban_links"] = file.get("ban_links", False)
-
-		if file["ban_links"]:
-			file["ban_links"] = False
-			try: await BASE.phaaze.send_message(message.channel, ":white_check_mark: Link protection has been disabled, all links allowed. :red_circle:")
-			except: pass
+		if ban_links:
+			ban_links = False
+			a = ":white_check_mark: Link protection has been disabled, all links allowed. :red_circle:"
 
 		else:
-			file["ban_links"] = True
-			try: await BASE.phaaze.send_message(message.channel, ":white_check_mark: Link protection has been enabled, all links will get deleted. :large_blue_circle:")
-			except: pass
+			ban_links = True
+			a = ":white_check_mark: Link protection has been enabled, all links will get deleted. :large_blue_circle:"
 
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(ban_links=ban_links)
+		)
+
+		return await BASE.phaaze.send_message(message.channel, a)
 
 	async def whitelist(BASE, message):
 
