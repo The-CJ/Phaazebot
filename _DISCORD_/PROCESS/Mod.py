@@ -315,6 +315,25 @@ class Quote(object):
 		em.set_footer(text=f'ID: {i}')
 		return await BASE.phaaze.send_message(message.channel, content=":white_check_mark: Quote added", embed=em)
 
+	async def rem(BASE, message, kwargs):
+		m = message.content.split()
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: You need to define a quote ID to remove.")
+
+		if not m[2].isdigit():
+			return await BASE.phaaze.send_message(message.channel, f":warning: Please define a numeric ID")
+
+		i = BASE.PhaazeDB.delete(
+			of=f"discord/quotes/quotes_{message.server.id}",
+			where=f"data['id'] == {m[2]}"
+		)
+
+		if i['hits'] != 1:
+			return await BASE.phaaze.send_message(message.channel, f":warning: There is no Quote with ID {m[2]}")
+
+		return await BASE.phaaze.send_message(message.channel, content=f":white_check_mark: Quote #{m[2]} removed")
+
 class prune(object):
 	async def prune(BASE, message):
 		me = await BASE.moduls.Utils.return_real_me(BASE, message)
