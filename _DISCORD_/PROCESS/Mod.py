@@ -267,96 +267,53 @@ class Settings(object):
 			f"(Custom commands are not affected)"
 		)
 
-class quote(object):
-	async def quote_base(BASE, message):
-		M = message.content.split(" ")
-		m = message.content.lower().split(" ")
+class Quote(object):
+
+	quote_limit = 100
+
+	async def Base(BASE, message, kwargs):
+		m = message.content.split(" ")
 
 		if len(m) == 1:
-			r = ":warning: Syntax Error!\nUsage: `{0}{0}quote [Option]`\n\n"\
-				"Options:\n"\
-				"`add` - Add a new qoute\n"\
-				"`rem` - Remove a quote based on there index number: `{0}{0}quote rem 69`\n"\
-				"`clear` - Remove all quotes".format(BASE.vars.PT)
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}quote [Option]`\n\n"\
+				f"`get` - Get a link to all quotes\n"\
+				f"`add` - Add a new quote\n"\
+				f"`rem` - Remove a quote based on there id number: `{BASE.vars.PT}quote rem 69`\n"\
+				f"`clear` - Remove all quotes"
 			return await BASE.phaaze.send_message(message.channel, r)
 
-		if m[1] == "add":
-			if len(m) == 2:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Missing quote content!")
-
-			file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-			try:
-				file["quotes"] = file["quotes"]
-			except:
-				file["quotes"] = []
-
-			in_file = len(file["quotes"])#
-			stuff = " ".join(d for d in M[2:])#
-
-			if in_file >= 200 :
-				return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: You hit the maximum of 200 quotes, try removing some")
-
-			file["quotes"].append({"content": stuff})
-
-			with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-				json.dump(file, save)
-				setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-			emb = discord.Embed(description=stuff, colour=int(0x7CFC00))
-			emb.set_footer(text="Quote #" + str(in_file + 1))
-
-			return await BASE.phaaze.send_message(message.channel, content=":white_check_mark: New quote added!", embed=emb)
-		elif m[1] == "clear":
-			h = await BASE.phaaze.send_message(message.channel, ":warning: Are you sure you wanna remove all quotes?\n\n:regional_indicator_y:/:regional_indicator_n:")
-
-			def g(m):
-				if m.content.lower().startswith("y"):
-					return True
-				else:
-					return False
-
-			u = await BASE.phaaze.wait_for_message(timeout=30, author=message.author, channel=message.channel, check=g)
-
-			if u is not None:
-				file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-				file["quotes"] = []
-
-				with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-					json.dump(file, save)
-					setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-				await BASE.phaaze.edit_message(h, new_content=":white_check_mark: All quotes removed.")
-		elif m[1] == "rem":
-			if len(m) == 2:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Missing quote index!")
-
-			if not m[2].isdigit(): return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a quote index number!")
-
-			file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-			try:
-				file["quotes"] = file["quotes"]
-			except:
-				file["quotes"] = []
-
-			try:
-				quote = file["quotes"][int(m[2]) - 1]
-				file["quotes"].remove(file["quotes"][int(m[2]) - 1])
-			except:
-				return await BASE.phaaze.send_message(message.channel, ":warning: No quote with index number `{0}` found!".format(str(int(m[2]) - 1)))
-
-			with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-				json.dump(file, save)
-				setattr(BASE.serverfiles, "server_"+message.server.id, file)
-
-			emb = discord.Embed(description=quote["content"], colour=int(0xFF6161))
-			emb.set_footer(text="Quote #" + m[2])
-
-			return await BASE.phaaze.send_message(message.channel, content=":white_check_mark: Quote #{0} removed!".format(m[2]), embed=emb )
+		elif m[1].lower() == "get":
+			return await BASE.phaaze.send_message(message.channel, f"All quotes for this server: https://phaaze.net/discord/quotes/{message.server.id}")
+		elif m[1].lower() == "add":
+			return await Quote.add(BASE, message, kwargs)
+		elif m[1].lower() == "rem":
+			return await Quote.rem(BASE, message, kwargs)
+		elif m[1].lower() == "clear":
+			return await Quote.clear(BASE, message, kwargs)
 		else:
-			return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not available. Available are `add`, `rem`, `clear`".format(m[1]))
+			return await BASE.phaaze.send_message(message.channel, f":warning: That's not an option.")
+
+	async def add(BASE, message, kwargs):
+		m = message.content.split()
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, f":warning: You need to define a quote to add.")
+
+		quote = " ".join(x for x in m[2:])
+		server_quotes = kwargs.get('server_quotes', {})
+
+		if len(server_quotes) >= Quote.quote_limit:
+			return await BASE.phaaze.send_message(message.channel, f":no_entry_sign: This server hit the quote limit of {Quote.quote_limit}, please remove some first.")
+
+		i = BASE.PhaazeDB.insert(
+			into=f"discord/quotes/quotes_{message.server.id}",
+			content=dict(content=quote)
+		)
+
+		em = discord.Embed(description=quote, colour=0x11EE11)
+		i = str(i['content']['id'])
+		em.set_footer(text=f'ID: {i}')
+		return await BASE.phaaze.send_message(message.channel, content=":white_check_mark: Quote added", embed=em)
 
 class prune(object):
 	async def prune(BASE, message):

@@ -25,24 +25,21 @@ async def Base(BASE, message, **kwargs):
 	check = m[0][2:]
 
 	if check.startswith("setting"):
-		await BASE.moduls._Discord_.PROCESS.Mod.Settings.Base(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.PROCESS.Mod.Settings.Base(BASE, message, kwargs)
 
 	if check.startswith("addcom"):
-		await BASE.moduls._Discord_.Custom.add(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.Custom.add(BASE, message, kwargs)
 
 	if check.startswith("delcom"):
-		await BASE.moduls._Discord_.Custom.rem(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.Custom.rem(BASE, message, kwargs)
 
 	if check.startswith("blacklist"):
-		await BASE.moduls._Discord_.Blacklist.Base(BASE, message, kwargs)
-		
-	return
+		return await BASE.moduls._Discord_.Blacklist.Base(BASE, message, kwargs)
 
 	if check.startswith("quote"):
-		if await BASE.moduls.Utils.is_Mod(BASE, message):
-			await BASE.moduls.Mod_Commands.quote.quote_base(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_mod(BASE, message)
+		return await BASE.moduls._Discord_.PROCESS.Mod.Quote.Base(BASE, message, kwargs)
+
+	return
 
 	if check.startswith("prune"):
 		if await BASE.moduls.Utils.is_Mod(BASE, message):
@@ -65,11 +62,5 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("level"):
 		if await BASE.moduls.Utils.is_Mod(BASE, message):
 			await BASE.moduls.Mod_Commands.level_base(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_mod(BASE, message)
-
-	if check.startswith("link"):
-		if await BASE.moduls.Utils.is_Mod(BASE, message):
-			await BASE.moduls.Mod_Commands.link.link(BASE, message)
 		else:
 			await BASE.moduls.Utils.no_mod(BASE, message)
