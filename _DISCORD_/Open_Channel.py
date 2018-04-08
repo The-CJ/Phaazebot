@@ -9,9 +9,10 @@ async def base(BASE, message):
 		await BASE.phaaze.add_roles(message.author, role)
 
 	#get server files
-	server_setting = await BASE.moduls._Discord_.Utils.get_server_file(BASE, message.server.id)
+	server_setting = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, message.server.id)
 	server_commands = await BASE.moduls._Discord_.Utils.get_server_commands(BASE, message.server.id)
-	server_levels = await BASE.moduls._Discord_.Utils.get_server_level_file(BASE, message.server.id)
+	server_levels = await BASE.moduls._Discord_.Utils.get_server_level(BASE, message.server.id)
+	server_quotes = await BASE.moduls._Discord_.Utils.get_server_quotes(BASE, message.server.id)
 
 	#blacklist (Only, when links are banned or at least one word is in the blacklist)
 	if server_setting.get('ban_links', False) or server_setting.get('blacklist', []) != []:
