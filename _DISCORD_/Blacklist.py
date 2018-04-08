@@ -77,7 +77,7 @@ async def Base(BASE, message, kwargs):
 
 	elif m[1] == "punishment":
 		await punishment(BASE, message, kwargs, me)
-	elif m[1] == "get": #TODO:
+	elif m[1] == "get":
 		await get(BASE, message, kwargs)
 	elif m[1] == "add": #TODO:
 		await add(BASE, message, kwargs)
@@ -139,20 +139,16 @@ async def punishment(BASE, message, kwargs, perms):
 	else:
 		return await BASE.phaaze.send_message(message.channel, "`{0}` is not a option".format(m[2]))
 
-async def get(BASE, message):
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+async def get(BASE, message, kwargs):
 
-	try:
-		file["blacklist"] = file["blacklist"]
-	except:
-		file["blacklist"] = []
+	blacklist = kwargs.get('server_setting', {}).get('blacklist', [])
 
-	if len(file["blacklist"]) == 0:
+	if len(blacklist) == 0:
 		return await BASE.phaaze.send_message(message.channel, "No words are banned! :thumbsup:")
 
 	else:
-		return await BASE.phaaze.send_message(message.channel,
-											"A list of all banned words and phrases on the server.\n\n```{0}```".format(", ".join(b for b in file["blacklist"])))
+		l = ", ".join(b for b in blacklist)
+		return await BASE.phaaze.send_message(message.channel, f"A list of all banned words and phrases on the server.\n\n```{l}```")
 
 async def add(BASE, message):
 	m = message.content.lower().split(" ")
