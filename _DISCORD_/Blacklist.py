@@ -1,6 +1,6 @@
 ##BASE.moduls._Discord_.Blacklist
 
-import asyncio, json
+import asyncio, json, discord
 link_contents = ["http", ".de", "://", ".com", ".net", ".tv", "www."]
 
 async def check(BASE, message, server_setting):
@@ -294,3 +294,91 @@ class Link(object):
 		)
 
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The link `{word}` has been removed from the whitelist.")
+
+	async def allow(BASE, message, kwargs):
+		m = message.content.lower().split(" ")
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a role you wanna add to link permits.")
+
+		ban_links_role = kwargs.get('server_setting', {}).get('ban_links_role', [])
+
+		#by role mention
+		if len(message.role_mentions) == 1:
+			role = message.role_mentions[0]
+
+		#by id
+		elif m[2].isdigit():
+			role = discord.utils.get(message.server.roles, id=m[2])
+			if role == None:
+				return await BASE.phaaze.send_message(
+					message.channel,
+					f":warning: No Role with the ID: `{m[2]}` found"
+				)
+
+		#by name
+		else:
+			r_n = " ".join(d for d in m[2:])
+			role = discord.utils.get(message.server.roles, name=r_n)
+			if role == None:
+				return await BASE.phaaze.send_message(
+					message.channel,
+					f":warning: No Role with the Name: `{r_n}` found."
+				)
+
+		if role.id in ban_links_role:
+			return await BASE.phaaze.send_message(message.channel, ":warning: This role allready is permited.")
+		else:
+			ban_links_role.append(role.id)
+
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(ban_links_role=ban_links_role)
+		)
+
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The role `{role.name}` has been permited to post links.")
+
+	async def disallow(BASE, message, kwargs):
+		m = message.content.lower().split(" ")
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a role you wanna remove the link permits.")
+
+		ban_links_role = kwargs.get('server_setting', {}).get('ban_links_role', [])
+
+		#by role mention
+		if len(message.role_mentions) == 1:
+			role = message.role_mentions[0]
+
+		#by id
+		elif m[2].isdigit():
+			role = discord.utils.get(message.server.roles, id=m[2])
+			if role == None:
+				return await BASE.phaaze.send_message(
+					message.channel,
+					f":warning: No Role with the ID: `{m[2]}` found"
+				)
+
+		#by name
+		else:
+			r_n = " ".join(d for d in m[2:])
+			role = discord.utils.get(message.server.roles, name=r_n)
+			if role == None:
+				return await BASE.phaaze.send_message(
+					message.channel,
+					f":warning: No Role with the Name: `{r_n}` found."
+				)
+
+		if role.id in ban_links_role:
+			ban_links_role.remove(role.id)
+		else:
+			return await BASE.phaaze.send_message(message.channel, ":warning: This role don't has link permits.")
+
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(ban_links_role=ban_links_role)
+		)
+
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The role `{role.name}` has been removed to post links.")
