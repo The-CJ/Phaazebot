@@ -30,25 +30,25 @@ async def base(BASE, message):
 	#dev
 	if message.content.startswith(BASE.vars.PT * 5):
 		if message.author.id in BASE.vars.developer_id:
-			await BASE.moduls._Discord_.CMD.Dev.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
+			await BASE.moduls._Discord_.CMD.Dev.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#owner
 	elif message.content.startswith(BASE.vars.PT * 3):
 		if message.author.id not in BASE.cooldown.Owner_CD:
 			asyncio.ensure_future(BASE.cooldown.CD_Owner(message))
-			await BASE.moduls._Discord_.CMD.Owner.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
+			await BASE.moduls._Discord_.CMD.Owner.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#mod
 	elif message.content.startswith(BASE.vars.PT * 2):
 		if message.author.id not in BASE.cooldown.Mod_CD:
 			asyncio.ensure_future(BASE.cooldown.CD_Mod(message))
-			await BASE.moduls._Discord_.CMD.Mod.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
+			await BASE.moduls._Discord_.CMD.Mod.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#normal
 	elif message.content.startswith(BASE.vars.PT) and "" == "-":
 		if message.author.id not in BASE.cooldown.Normal_CD:
 			asyncio.ensure_future(BASE.cooldown.CD_Normal(message))
-			await BASE.moduls._Discord_.CMD.Normal.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels)
+			await BASE.moduls._Discord_.CMD.Normal.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#@phaazebot ai call
 	if message.edited_timestamp == None:
