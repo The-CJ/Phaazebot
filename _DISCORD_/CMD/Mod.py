@@ -27,17 +27,13 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("setting"):
 		await BASE.moduls._Discord_.PROCESS.Mod.Settings.Base(BASE, message, kwargs)
 
-
 	if check.startswith("addcom"):
 		await BASE.moduls._Discord_.Custom.add(BASE, message, kwargs)
 
-	return
-
 	if check.startswith("delcom"):
-		if await BASE.moduls.Utils.is_Mod(BASE, message):
-			await BASE.moduls.Custom.rem(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_mod(BASE, message)
+		await BASE.moduls._Discord_.Custom.rem(BASE, message, kwargs)
+
+	return
 
 	if check.startswith("blacklist"):
 		if await BASE.moduls.Utils.is_Mod(BASE, message):
