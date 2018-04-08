@@ -1,6 +1,6 @@
 ##BASE.moduls._Discord_.Blacklist
 
-import asyncio, json, re
+import asyncio, json
 link_contents = ["http", ".de", "://", ".com", ".net", ".tv", "www."]
 
 async def check(BASE, message, server_setting):
@@ -11,49 +11,51 @@ async def check(BASE, message, server_setting):
 
 	if await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): return
 
-	server_setting["blacklist"] = server_setting.get("blacklist", [])
-	server_setting["ban_links"] = server_setting.get("ban_links", False)
-	server_setting["link_whitelist"] = server_setting.get("link_whitelist", [])
-	server_setting["allow_link_role"] = server_setting.get("allow_link_role", None)
-
+	blacklist = server_setting.get("blacklist", [])
+	ban_links = server_setting.get("ban_links", False)
+	link_whitelist = server_setting.get("link_whitelist", [])
+	allow_link_role = server_setting.get("allow_link_role", [])
 	punishment_level = server_setting.get("punishment_level", "delete")
-	m = message.content.lower().split(" ")
-	if server_setting["ban_links"]:
-		for word in m:
-			for cont in link_contents:
-				if cont in word:
-					try:
-						if any([True for WORD in server_setting["link_whitelist"] if WORD in word]):
-							pass
-						elif server_setting["allow_link_role"] in [r.id for r in message.author.roles]:
-							pass
-						else:
-							await BASE.phaaze.delete_message(message)
-							break
 
-					except:
-						pass
+	punish = False
 
-	for word in server_setting["blacklist"]:
+	#Link are not allowed
+	if ban_links:
+
+		#has not a role that allows links
+		if not any([True if role.id in allow_link_role else False for role in message.author.roles]):
+
+			#contains a link that is not allowed
+			for word in message.content.lower().split(' '):
+				if any([True if linkpart in word and not word in link_whitelist else False for linkpart in link_contents]):
+					punish = True
+					break
+
+	#Word Blacklist
+	for word in blacklist:
 		if word.lower() in message.content.lower():
-			try:
-				if punishment_level == "delete":
-					await BASE.phaaze.delete_message(message)
+			punish = True
+			break
 
-				elif punishment_level == "kick":
-					await BASE.phaaze.delete_message(message)
-					await BASE.phaaze.kick(message.author)
+	if punish:
+		try:
+			if punishment_level == "delete":
+				await BASE.phaaze.delete_message(message)
+			elif punishment_level == "kick":
+				await BASE.phaaze.delete_message(message)
+				await BASE.phaaze.kick(message.author)
+			elif punishment_level == "ban":
+				await BASE.phaaze.ban(message.author, delete_message_days=1)
 
-				elif punishment_level == "ban":
-					await BASE.phaaze.delete_message(message)
-					await BASE.phaaze.ban(message.author, delete_message_days=1)
+		except:
+			pass
 
-			except:
-				pass
 
-async def base(BASE, message):
-	me = await BASE.moduls.Utils.return_real_me(BASE, message)
-	if not me.server_permissions.manage_messages:
+async def base(BASE, message, kwargs):
+	me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+	phaaze_perms = message.channel.permissions_for(me)
+
+	if not phaaze_perms.manage_messages:
 		return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze need the `Manage messages` permission to execute Blacklist commands.")
 
 
@@ -67,7 +69,7 @@ async def base(BASE, message):
 			"`add` - Add a word / phrase to the blacklist\n"\
 			"`rem` - Remove a word / phrase from the blacklist\n"\
 			"`clear` - Remove all word / phrases, so the blacklist is empty".format(BASE.vars.PT)
-		a = await BASE.phaaze.send_message(message.channel, r)
+		return await BASE.phaaze.send_message(message.channel, r)
 
 	elif m[1] == "get":
 		await get(BASE, message)
