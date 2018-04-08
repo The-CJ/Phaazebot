@@ -79,7 +79,7 @@ async def Base(BASE, message, kwargs):
 		await punishment(BASE, message, kwargs, me)
 	elif m[1] == "get":
 		await get(BASE, message, kwargs)
-	elif m[1] == "add": #TODO:
+	elif m[1] == "add":
 		await add(BASE, message, kwargs)
 	elif m[1] == "rem": #TODO:
 		await rem(BASE, message, kwargs)
@@ -150,18 +150,13 @@ async def get(BASE, message, kwargs):
 		l = ", ".join(b for b in blacklist)
 		return await BASE.phaaze.send_message(message.channel, f"A list of all banned words and phrases on the server.\n\n```{l}```")
 
-async def add(BASE, message):
+async def add(BASE, message, kwargs):
 	m = message.content.lower().split(" ")
 
 	if len(m) == 2:
 		return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a word or a phrase to add.")
 
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-	try:
-		file["blacklist"] = file["blacklist"]
-	except:
-		file["blacklist"] = []
+	blacklist = kwargs.get('server_setting', {}).get('blacklist', [])
 
 	word = " ".join(l for l in m[2:])
 
@@ -170,16 +165,18 @@ async def add(BASE, message):
 	else:
 		type_ = "word"
 
-	if word in file["blacklist"]:
+	if word in blacklist:
 		return await BASE.phaaze.send_message(message.channel, ":warning: This {0} is already in the blacklist.".format(type_))
 	else:
-		file["blacklist"].append(word)
+		blacklist.append(word.lower())
 
-	with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-		json.dump(file, save)
-		setattr(BASE.serverfiles, "server_"+message.server.id, file)
+	BASE.PhaazeDB.update(
+		of="discord/server_setting",
+		where=f"data['server_id'] == '{message.server.id}'",
+		content=dict(blacklist=blacklist)
+	)
 
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: The {0}: `{1}` has been added.".format(type_, word))
+	return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The {type_}: `{word}` has been added to the blacklist.")
 
 async def rem(BASE, message):
 	m = message.content.lower().split(" ")
