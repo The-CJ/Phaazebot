@@ -50,39 +50,94 @@ async def check(BASE, message, server_setting):
 		except:
 			pass
 
-
-async def base(BASE, message, kwargs):
+async def Base(BASE, message, kwargs):
 	me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
 	phaaze_perms = message.channel.permissions_for(me)
 
 	if not phaaze_perms.manage_messages:
 		return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze need the `Manage messages` permission to execute Blacklist commands.")
 
-
 	m = message.content.lower().split(" ")
 
 	if len(m) == 1:
-		r = ":warning: Syntax Error!\nUsage: `{0}{0}blacklist [Option]`\n\n"\
-			"Options:\n"\
-			"`punishment` - Set the way Phaaze handles blacklisted words\n"\
-			"`get` - Get all words / phrase that are on the blacklist\n"\
+		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}blacklist [Option]`\n\n"\
+			"`punishment` - Set the way Phaaze handles blacklisted words or links\n"\
+			"`get` - Get all words / phrase on the blacklist\n"\
 			"`add` - Add a word / phrase to the blacklist\n"\
 			"`rem` - Remove a word / phrase from the blacklist\n"\
-			"`clear` - Remove all word / phrases, so the blacklist is empty".format(BASE.vars.PT)
+			"`clear` - Remove all word / phrasesfrom the blacklist\n"\
+			"`link-toggle` - Turns link protection on or off\n"\
+			"`link-get` - Get all links that are whitelisted\n"\
+			"`link-allow` - Add a role to post any links\n"\
+			"`link-disallow` - Remove a role to post any links\n"\
+			"`link-add` - Add a link to the whitelist\n"\
+			"`link-rem` - Remove a link from the whitelist\n"\
+			"`link-clear` - Remove all whitelisted links"
 		return await BASE.phaaze.send_message(message.channel, r)
 
-	elif m[1] == "get":
-		await get(BASE, message)
-	elif m[1] == "add":
-		await add(BASE, message)
-	elif m[1] == "rem":
-		await rem(BASE, message)
-	elif m[1] == "clear":
-		await clear(BASE, message)
 	elif m[1] == "punishment":
-		await punishment(BASE, message, me)
+		await punishment(BASE, message, kwargs, me)
+	elif m[1] == "get": #TODO:
+		await get(BASE, message, kwargs)
+	elif m[1] == "add": #TODO:
+		await add(BASE, message, kwargs)
+	elif m[1] == "rem": #TODO:
+		await rem(BASE, message, kwargs)
+	elif m[1] == "clear": #TODO:
+		await clear(BASE, message, kwargs)
+	elif m[1] == "link-toggle": #TODO:
+		await Link.toggle(BASE, message, kwargs)
+	elif m[1] == "link-get": #TODO:
+		await Link.get(BASE, message, kwargs)
+	elif m[1] == "link-allow": #TODO:
+		await Link.allow(BASE, message, kwargs)
+	elif m[1] == "link-disallow": #TODO:
+		await Link.disallow(BASE, message, kwargs)
+	elif m[1] == "link-add": #TODO:
+		await Link.add(BASE, message, kwargs)
+	elif m[1] == "link-rem": #TODO:
+		await Link.rem(BASE, message, kwargs)
+	elif m[1] == "link-clear": #TODO:
+		await Link.clear(BASE, message, kwargs)
 	else:
 		return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a option.".format(m[1]))
+
+async def punishment(BASE, message, kwargs, perms):
+	m = message.content.lower().split(" ")
+
+	if len(m) == 2:
+		blacklist_punishment = kwargs.get('server_setting', {}).get("blacklist_punishment", "delete")
+		return await BASE.phaaze.send_message(message.channel, f":grey_exclamation: Current punishment level: `{blacklist_punishment}`\nType: `{BASE.vars.PT}blacklist punishment (delete/kick/ban)` to change")
+
+	if m[2] == "delete":
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(blacklist_punishment = "delete"))
+		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Punishment Level set to: `delete`.\nPhaaze will only **delete** the message")
+
+	elif m[2] == "kick":
+		if not perms.server_permissions.kick_members:
+			return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze need the `Kick Members` permission to execute kick commands.")
+
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(blacklist_punishment = "kick"))
+		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Punishment Level set to: `kick`.\nPhaaze will **delete** the messages **and kick** the author")
+
+	elif m[2] == "ban":
+		if not perms.server_permissions.ban_members:
+			return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze need the `Ban Members` permission to execute kick commands.")
+
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(blacklist_punishment = "ban"))
+		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Punishment Level set to: `ban`.\nPhaaze will **delete** the messages **and ban** the author")
+
+	else:
+		return await BASE.phaaze.send_message(message.channel, "`{0}` is not a option".format(m[2]))
 
 async def get(BASE, message):
 	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
@@ -184,41 +239,82 @@ async def clear(BASE, message):
 
 		await BASE.phaaze.edit_message(h, new_content=":white_check_mark: Blacklist cleared.")
 
-async def punishment(BASE, message, perms):
-	m = message.content.lower().split(" ")
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+class Link(object):
 
-	file["punishment_level"] = file.get("punishment_level", "delete")
+	async def toggle(BASE, message):
 
-	if len(m) == 2:
-		return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: Current punishment level: `{0}`\nType: `{1}{1}blacklist punishment (delete/kick/ban)` to change".format(file["punishment_level"], BASE.vars.PT))
+		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
 
-	if m[2] == "delete":
-		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			file["punishment_level"] = "delete"
-			json.dump(file, save)
-			setattr(BASE.serverfiles, "server_"+message.server.id, file)
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Punishment Level set to: \"`delete`\". Phaaze will only **delete** blacklisted messages")
+		file["ban_links"] = file.get("ban_links", False)
 
-	elif m[2] == "kick":
-		if not perms.server_permissions.kick_members:
-			return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze need the `Kick Members` permission to execute kick commands.")
+		if file["ban_links"]:
+			file["ban_links"] = False
+			try: await BASE.phaaze.send_message(message.channel, ":white_check_mark: Link protection has been disabled, all links allowed. :red_circle:")
+			except: pass
+
+		else:
+			file["ban_links"] = True
+			try: await BASE.phaaze.send_message(message.channel, ":white_check_mark: Link protection has been enabled, all links will get deleted. :large_blue_circle:")
+			except: pass
 
 		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			file["punishment_level"] = "kick"
 			json.dump(file, save)
 			setattr(BASE.serverfiles, "server_"+message.server.id, file)
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Punishment Level set to: \"`kick`\". Phaaze will **delete** blacklisted messages **and kick** the author")
 
-	elif m[2] == "ban":
-		if not perms.server_permissions.ban_members:
-			return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze need the `Ban Members` permission to execute kick commands.")
+	async def whitelist(BASE, message):
+
+		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+
+		file["link_whitelist"] = file.get("link_whitelist", [])
+
+		if len(file["link_whitelist"]) == 0:
+			return await BASE.phaaze.send_message(message.channel, ":information_source: No links are whitelisted, every link gets deleted")
+
+		b = ", ".join("`"+word+"`" for word in file["link_whitelist"])
+		return await BASE.phaaze.send_message(message.channel, ":information_source: Allowed Links must contain: " + b)
+
+	async def add(BASE, message):
+		m = message.content.lower().split(" ")
+		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+
+		file["link_whitelist"] = file.get("link_whitelist", [])
+
+		file["link_whitelist"].append(m[2])
 
 		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
-			file["punishment_level"] = "ban"
 			json.dump(file, save)
 			setattr(BASE.serverfiles, "server_"+message.server.id, file)
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Punishment Level set to: \"`ban`\". Phaaze will **delete** blacklisted messages **and ban** the author")
+			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: {0} has been added to the whitelist, link that contain this will not get deleted.".format(m[2]))
 
-	else:
-		return await BASE.phaaze.send_message(message.channel, "`{0}` is not a option".format(m[2]))
+	async def rem(BASE, message):
+		m = message.content.lower().split(" ")
+		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+
+		file["link_whitelist"] = file.get("link_whitelist", [])
+
+		if m[2] in file["link_whitelist"]:
+			file["link_whitelist"].remove(m[2])
+
+		else:
+			return await BASE.phaaze.send_message(message.channel, ":warning: {0} is not in the whitelist.".format(m[3]))
+
+		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
+			json.dump(file, save)
+			setattr(BASE.serverfiles, "server_"+message.server.id, file)
+			return await BASE.phaaze.send_message(message.channel, "white_check_mark: {0} has been removed from the whitelist.".format(m[3]))
+
+	async def allow(BASE, message):
+		m = message.content.lower().split(" ")
+		file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+
+		file["allow_link_role"] = file.get("allow_link_role", None)
+
+		if len(message.role_mentions) != 0:
+			file["allow_link_role"] = message.role_mentions[0].id
+		else:
+			return await BASE.phaaze.send_message(message.channel, ":warning: Missing Role Mention")
+
+		with open("SERVERFILES/{0}.json".format(message.server.id), "w") as save:
+			json.dump(file, save)
+			setattr(BASE.serverfiles, "server_"+message.server.id, file)
+			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: {0} has been set to link-allowed-role.".format(message.role_mentions[0].name))

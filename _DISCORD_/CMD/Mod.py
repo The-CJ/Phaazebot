@@ -33,13 +33,10 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("delcom"):
 		await BASE.moduls._Discord_.Custom.rem(BASE, message, kwargs)
 
-	return
-
 	if check.startswith("blacklist"):
-		if await BASE.moduls.Utils.is_Mod(BASE, message):
-			await BASE.moduls.Blacklist.base(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_mod(BASE, message)
+		await BASE.moduls._Discord_.Blacklist.Base(BASE, message, kwargs)
+		
+	return
 
 	if check.startswith("quote"):
 		if await BASE.moduls.Utils.is_Mod(BASE, message):
