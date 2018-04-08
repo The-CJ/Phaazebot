@@ -1,6 +1,6 @@
 #BASE.moduls._Twitch_.Utils
 
-import asyncio, json
+import asyncio, json, requests
 
 #settings
 async def get_twitch_file(BASE, room_id):
@@ -129,71 +129,14 @@ async def get_channel_object(BASE, id=None, name=None):
 		for channel in BASE.Twitch_IRC_connection.channels:
 			if channel.name.lower() == name.lower():
 				return channel
+	return found
 
-#debug
-async def debug(BASE, message):
-	m = message.content.split(" ")
-
-	if message.content.startswith("!!!!!debug++"):
-		return await BASE.Twitch_IRC_connection.send_message(message.channel, "Unknown Operations")
-
-	elif message.content.startswith("!!!!!debug+"):
-		if len(m) == 1:
-			return await BASE.Twitch_IRC_connection.send_message(message.channel, "Missing Operations")
-		try:
-			f = await eval(" ".join(tt for tt in m[1:]))
-			await BASE.Twitch_IRC_connection.send_message(message.channel, str(f))
-		except Exception as Fail:
-			await BASE.Twitch_IRC_connection.send_message(message.channel, "ERROR: " + str(Fail))
-
-	elif message.content.startswith("!!!!!debug"):
-		if len(m) == 1:
-			return await BASE.Twitch_IRC_connection.send_message(message.channel, "Missing Operations")
-		try:
-			f = eval(" ".join(tt for tt in m[1:]))
-			await BASE.Twitch_IRC_connection.send_message(message.channel, str(f))
-		except Exception as Fail:
-			await BASE.Twitch_IRC_connection.send_message(message.channel, "ERROR: " + str(Fail))
-
-	elif message.content.startswith("!!!!!reload"):
-		try:
-			await BASE.Twitch_IRC_connection.send_message(message.channel, "imGlitch Reloading PhaazeOS Infobase...")
-			BASE.queue.TO_DISCORD_T.put_nowait(BASE.moduls.Utils.reload_(BASE))
-			await asyncio.sleep(3)
-			await BASE.Twitch_IRC_connection.send_message(message.channel, "SeemsGood Reload successfull.")
-		except Exception as Fail:
-			await BASE.Twitch_IRC_connection.send_message(message.channel, "panicBasket : Database is corrupted! Keeping old Database alive")
-
-async def get_opposite_osu_twitch(BASE, search_term, platform=None):
-	if platform == None or platform not in ["twitch", "osu"]:
-		return
-
-	file = json.loads(open("DATABASE/osu_twitch.json").read())
-
-	for data_object in file["objects"]:
-
-		if platform == "twitch":
-			if str(data_object["twitch"]["id"]) == str(search_term):
-				return data_object
-
-		if platform == "osu":
-			if data_object["osu"]["name"].lower() == search_term.lower():
-				return data_object
-
-	return None
-
-async def delete_verify(BASE, search_term, platform="twitch"):
-	file = json.loads(open("DATABASE/osu_twitch.json").read())
-
-	for data_object in file["objects"]:
-
-		if platform == "twitch":
-			if str(data_object["twitch"]["id"]) == str(search_term):
-				file["objects"].remove(data_object)
-
-		if platform == "osu":
-			if data_object["osu"]["name"].lower() == search_term.lower():
-				file["objects"].remove(data_object)
-
-		with open("DATABASE/osu_twitch.json", "w") as save:
-			json.dump(file, save)
+#API Call
+async def twitch_API_call(BASE, url):
+	key = BASE.access.Twitch_API_Token
+	header = {"Client-ID": key, "Accept": "application/vnd.twitchtv.v5+json"}
+	try:
+		resp = requests.get(url, headers = header)
+		return resp.json()
+	except:
+		return {'status': 500}

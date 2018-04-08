@@ -24,7 +24,7 @@ def fileserver_main(BASE, info, dump):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/fileserver/fileserver_main.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='db'))
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -36,7 +36,7 @@ def fileserver_login(BASE, info, dump):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/fileserver/fileserver_login.html', 'r').read()
 
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='db'))
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")

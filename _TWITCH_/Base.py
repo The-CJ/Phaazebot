@@ -24,7 +24,7 @@ async def on_message(BASE, message):
 
 	osu_active = settings.get("osu", False)
 	if osu_active:
-		if "osu.ppy.sh/s/" in message.content.lower() or "osu.ppy.sh/b/" in message.content.lower():
+		if "osu.ppy.sh/s/" in message.content.lower() or "osu.ppy.sh/b/" in message.content.lower() or "osu.ppy.sh/beatmapsets/" in message.content.lower()  :
 			await BASE.moduls.osu.twitch_osu(BASE, message)
 
 async def on_member_join(BASE, channel, name):
@@ -316,7 +316,7 @@ async def lurkers(BASE):
 	while True:
 		to_check = ",".join(channel.room_id for channel in BASE.Twitch_IRC_connection.channels)
 		url = "https://api.twitch.tv/kraken/streams?channel=" + to_check
-		check = await BASE.moduls.Twitch.twitch_API_call(BASE, url)
+		check = await BASE.moduls._Twitch_.Utils.twitch_API_call(BASE, url)
 		if check.get("status", 200) > 400:
 			await asyncio.sleep(10)
 			continue

@@ -5,8 +5,7 @@ import html
 def page_not_found(BASE, info, root, msg=""):
 	page = open('_WEB_/content/page_not_found.html', 'r').read()
 
-	page = page.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active=''))
-
+	page = BASE.moduls._Web_.Utils.format_html_functions(BASE, page, infos = info)
 
 	save_str = html.escape("Not Found: "+info['raw_path'])
 	page = page.replace("<!-- path -->", save_str)

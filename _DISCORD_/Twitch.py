@@ -1,8 +1,6 @@
-#BASE.moduls.Twitch
+#BASE.moduls._Discord_.Twitch
 
 import time, asyncio, json, requests, random, os, discord, socket
-
-# FIXME: Vodcast error #BlameTwitch
 
 vip_list = ["the__cj", "phaazebot"]
 stream_nope = []
@@ -561,12 +559,3 @@ async def change_custom_settings(BASE, message, _type_):
 
 
 	return
-
-async def twitch_API_call(BASE, url):
-	key = BASE.access.Twitch_API_Token
-	header = {"Client-ID": key, "Accept": "application/vnd.twitchtv.v5+json"}
-	try:
-		resp = requests.get(url, headers = header)
-		return resp.json()
-	except:
-		return {'status': 500}

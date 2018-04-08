@@ -1,4 +1,4 @@
-##BASE.cmds.NORMAL
+#BASE.moduls._Discord_.CMD.Normal
 
 import asyncio
 

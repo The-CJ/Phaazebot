@@ -2,11 +2,11 @@
 	max-width: 0;
 	-webkit-transition: .5s;
 	transition: .5s;
-	display: inline-block;
+	display: inline-flex;
 	overflow: hidden;
 }
 
-.expandable-btn:focus > .expandable_content {
+.expandable-btn:hover > .expandable_content {
   max-width: 30rem;
 }
 

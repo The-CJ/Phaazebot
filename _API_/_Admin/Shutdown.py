@@ -6,12 +6,10 @@ def api(BASE, info={}, from_web=False, **kwargs):
 	if not from_web: return
 
 	#start auth
-	session = info.get("cookies",{}).get("admin_session", None)
+	session = info.get("cookies",{}).get("phaaze_session", None)
 	auth_key = info.get("values",{}).get("auth_key", None)
-	username = info.get("values",{}).get("username", None)
-	passwd = info.get("values",{}).get("passwords", None)
 
-	admin = BASE.api.utils.authorise_admin(BASE, session=session, auth_key=auth_key, username=username, password=passwd)
+	admin = BASE.api.utils.get_phaaze_user(BASE, api_token=auth_key, session=session)
 	if admin == None: admin = {}
 
 	#end auth
@@ -43,12 +41,10 @@ def web(BASE, info={}, from_web=False, **kwargs):
 	if not from_web: return
 
 	#start auth
-	session = info.get("cookies",{}).get("admin_session", None)
+	session = info.get("cookies",{}).get("phaaze_session", None)
 	auth_key = info.get("values",{}).get("auth_key", None)
-	username = info.get("values",{}).get("username", None)
-	passwd = info.get("values",{}).get("passwords", None)
 
-	admin = BASE.api.utils.authorise_admin(BASE, session=session, auth_key=auth_key, username=username, password=passwd)
+	admin = BASE.api.utils.get_phaaze_user(BASE, api_token=auth_key, session=session)
 	if admin == None: admin = {}
 
 	#end auth

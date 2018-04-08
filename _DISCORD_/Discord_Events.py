@@ -1,11 +1,10 @@
-#BASE.moduls.Discord_Events
+#BASE.moduls._Discord_.Discord_Events
 
 import discord, asyncio, json, datetime
 
 async def member_join(BASE, member):
 	file = await BASE.moduls.Utils.get_server_file(BASE, member.server.id)
 	file["private_welcome_message"] = file.get("private_welcome_message", "")
-	await event_logs.join(BASE, member)
 	file["welcome"] = file.get("welcome", "")
 	file["private_welcome_message"] = file.get("private_welcome_message", "")
 	file["autorole_id"] = file.get("autorole_id", "")

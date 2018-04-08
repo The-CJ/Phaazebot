@@ -5,8 +5,6 @@ def invite(BASE, info, root, dump, msg="", server_id=""):
 
 	site = open("_WEB_\content\discord\discord_invite.html", 'r').read()
 
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
-
 	site = site.replace("<!-- message -->", msg)
 
 	if server_id != "":
@@ -16,6 +14,7 @@ def invite(BASE, info, root, dump, msg="", server_id=""):
 
 	site = site.replace("<!-- server_invite -->", invite_link)
 
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200

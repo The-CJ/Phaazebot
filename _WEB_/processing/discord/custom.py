@@ -6,7 +6,6 @@ def custom(BASE, info, root, dump, msg=""):
 	return_header = [('Content-Type','text/html')]
 
 	site = open("_WEB_\content\discord\discord_custom_view.html", 'r').read()
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
 	site = site.replace("<!-- message -->", msg)
 
 	server_id = info.get("path", [None])[0]
@@ -21,6 +20,7 @@ def custom(BASE, info, root, dump, msg=""):
 	site = site.replace("<!-- server_id -->", server_id)
 	site = site.replace("<!-- server.name -->", html.escape(server.name))
 
+	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200

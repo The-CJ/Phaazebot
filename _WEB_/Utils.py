@@ -1,6 +1,6 @@
 #BASE.moduls._Web_.Utils
 
-import html
+import re
 
 def get_navbar(active=''):
 	root = open('_WEB_/content/_navbar/navbar_content.html', 'r').read()
@@ -19,19 +19,39 @@ def get_navbar(active=''):
 
 	return navbar
 
-def discord_loggedin_field(image_path, name):
-	r = """
-          <div class="white" style="border-radius:25px;">
-            <img style="height:2em;margin:0.5em;" class="profil_picture inline align-middle" src="https://cdn.discordapp.com/[path]" alt="Avatar">
-            <span class="black-text align-middle inline" style="margin-right:0.5em">[name]</span>
-            <button type="button" class="btn-danger align-middle inline expandable-btn waves-effect" style="border-radius:25px;padding:.7em;">
-              <div class="material-icons align-middle inline">&nbsp;exit_to_app</div>
-              <div class="align-middle inline expandable_content">
-                <span onclick="javascript:discord_logout();">Logout</span>
-              </div>
-            </button>
-          </div>
+def format_html_functions(BASE, html_string, infos = {}):
 	"""
-	r = r.replace("[name]", html.escape(name))
-	r = r.replace("[path]", image_path)
-	return r
+	This function will take all
+	|>>>func()<<<|
+	in the .html,
+	execute them and insert the return vaule as string.
+
+	returns formated html
+	"""
+
+	search_results = re.finditer(r"\|>>>(.+)<<<\|" ,html_string)
+	for hit in search_results:
+		try:
+			calc_ = eval(hit.group(1))
+			html_string = html_string.replace(hit.group(0), calc_)
+		except:
+			html_string = html_string.replace(hit.group(0), "")
+
+	return html_string
+
+def get_logged_in_btn(BASE, infos, platform=None, **replacements):
+	if infos.get('user', None) == None:
+		pls_login = open('_WEB_\content\_buttons\pls_login.html').read()
+		return pls_login
+
+	main_btn = open('_WEB_\content\_buttons\phaaze_loggedin.html').read()
+
+	main_btn = main_btn.replace('{name}', infos.get('user', {}).get('phaaze_username', "[NAME N/A]"))
+	main_btn = main_btn.replace('{type}', infos.get('user', {}).get('type', "[TYPE N/A]"))
+
+	if infos.get('user', {}).get('img_path', None) != None:
+		img = "HELLO"
+	else:
+		img = "hidden"
+	main_btn = main_btn.replace('{img_path}', img)
+	return main_btn
