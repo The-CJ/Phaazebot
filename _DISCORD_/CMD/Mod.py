@@ -39,13 +39,10 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("quote"):
 		return await BASE.moduls._Discord_.PROCESS.Mod.Quote.Base(BASE, message, kwargs)
 
-	return
-
 	if check.startswith("prune"):
-		if await BASE.moduls.Utils.is_Mod(BASE, message):
-			await BASE.moduls.Mod_Commands.prune.prune(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_mod(BASE, message)
+		return await BASE.moduls._Discord_.PROCESS.Mod.Prune.Base(BASE, message, kwargs)
+
+	return
 
 	if check.startswith("serverinfo"):
 		if await BASE.moduls.Utils.is_Mod(BASE, message):
