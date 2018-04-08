@@ -382,3 +382,13 @@ class Link(object):
 		)
 
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The role `{role.name}` has been removed to post links.")
+
+	async def clear(BASE, message, kwargs):
+
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(ban_links_role=[])
+		)
+
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The link whitelist has been cleared.")
