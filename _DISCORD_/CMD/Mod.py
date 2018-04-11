@@ -42,6 +42,9 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("prune"):
 		return await BASE.moduls._Discord_.PROCESS.Mod.Prune.Base(BASE, message, kwargs)
 
+	if check.startswith("level"):
+		return await BASE.moduls._Discord_.PROCESS.Mod.Level.Base(BASE, message, kwargs)
+
 	return
 
 	if check.startswith("serverinfo"):
@@ -56,8 +59,3 @@ async def Base(BASE, message, **kwargs):
 		else:
 			await BASE.moduls.Utils.no_mod(BASE, message)
 
-	if check.startswith("level"):
-		if await BASE.moduls.Utils.is_Mod(BASE, message):
-			await BASE.moduls.Mod_Commands.level_base(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_mod(BASE, message)

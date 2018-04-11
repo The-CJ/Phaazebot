@@ -467,6 +467,77 @@ class Prune(object):
 			await asyncio.sleep(5)
 			return await BASE.phaaze.delete_message(confirm_delete)
 
+class Level(object):
+	async def Base(BASE, message, kwargs):
+		m = message.content.split(" ")
+
+		if len(m) == 1:
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level [Option]`\n\n"\
+				f"`exp` - Edit a users exp and level\n"\
+				f"`medal` - add/rem/clear a users medals"
+			return await BASE.phaaze.send_message(message.channel, r)
+
+		elif m[1].lower() == "exp":
+			return await Level.exp(BASE, message, kwargs)
+		elif m[1].lower() == "medal":
+			return await Level.medal(BASE, message, kwargs)
+		else:
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[1]}` is not an option.")
+
+	async def exp(BASE, message, kwargs):
+		m = message.content.split(" ")
+
+		if len(m) <= 3:
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level exp [New Exp] [Member]`\n\n"\
+				f"`Member` - a @ mention of the member you want to edit\n"\
+				f"`New Exp` - the new exp amount\n\n"\
+				f":information_source: Editing the exp in any way marks the user with a `[EDITED]` mark,\n"\
+				f"         that can only be removed by setting it back to 0"
+			return await BASE.phaaze.send_message(message.channel, r)
+
+		exp = m[2]
+		if not exp.isdigit():
+			return await BASE.phaaze.send_message(message.channel, ':warning: `[New Exp]` must be numeric (0-9999999)')
+
+		if len(message.mentions) > 0:
+			user = message.mentions[0]
+		else:
+			user = None
+
+		if user == None and m[3].isdigit():
+			user = discord.utils.get(message.server.members, id=m[3])
+
+		if user == None:
+			user = discord.utils.get(message.server.members, name=" ".join(f for f in m[3:]))
+
+		if user == None:
+			return await BASE.phaaze.send_message(message.channel, ':warning: Could not find a valid user, please mention a user, use his ID or the full name')
+
+		if user.bot:
+			return await BASE.phaaze.send_message(message.channel, ':no_entry_sign: That is a bot user. Bots don\'t have a level')
+
+		i = BASE.PhaazeDB.update(
+			of=f"discord/level/level_{message.server.id}",
+			where=f"data['member_id'] == '{user.id}'",
+			content=dict(exp = int(exp), edited=True if int(exp) != 0 else False)
+		)
+
+		if i.get('hits', 0) != 1:
+			return await BASE.phaaze.send_message(message.channel, ":warning: That user could not be found in the Datebase or never said anything")
+
+		if int(exp) != 0:
+			ed = "\nAdded the member a [EDITED] mark"
+		else:
+			ed = "\nRemoved the [EDITED] mark"
+
+		return await BASE.phaaze.send_message(
+			message.channel,
+			f':white_check_mark: `{user.name}` exp has been set to **{str(exp)}**{ed}')
+
+	async def medal(BASE, message, kwargs):
+		pass
+
+
 async def serverinfo(BASE, message):
 	m = message.content.split(" ")
 	s = message.server
