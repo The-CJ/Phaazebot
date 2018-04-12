@@ -489,7 +489,7 @@ class Level(object):
 
 		if len(m) <= 3:
 			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level exp [New Exp] [Member]`\n\n"\
-				f"`Member` - a @ mention of the member you want to edit\n"\
+				f"`Member` - a @ mention/id/name of the member you want to edit\n"\
 				f"`New Exp` - the new exp amount\n\n"\
 				f":information_source: Editing the exp in any way marks the user with a `[EDITED]` mark,\n"\
 				f"         that can only be removed by setting it back to 0"
@@ -526,16 +526,106 @@ class Level(object):
 			return await BASE.phaaze.send_message(message.channel, ":warning: That user could not be found in the Datebase or never said anything")
 
 		if int(exp) != 0:
-			ed = "\nAdded the member a [EDITED] mark"
+			ed = "\nAdded the member a **[EDITED]** mark"
 		else:
-			ed = "\nRemoved the [EDITED] mark"
+			ed = "\nRemoved the **[EDITED]** mark"
 
 		return await BASE.phaaze.send_message(
 			message.channel,
 			f':white_check_mark: `{user.name}` exp has been set to **{str(exp)}**{ed}')
 
 	async def medal(BASE, message, kwargs):
-		pass
+		m = message.content.split(" ")
+
+
+		if len(m) <= 3:
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level medal [Method] [@Member] [Medalname]`\n\n"\
+				f"`Method` - Add/Rem/Clear\n"\
+				f"`@Member` - a @ mention of the member you want to edit\n"\
+				f"`Medalname` - The actuall medall name"
+			return await BASE.phaaze.send_message(message.channel, r)
+
+		if m[2].lower() not in ["add", "rem", "clear"]:
+			return await BASE.phaaze.send_message(message.channel, ':warning: Please use a valid method.')
+
+		user = None
+		if len(message.mentions) > 0:
+			if message.mentions[0].id in m[3].lower():
+				user = message.mentions[0]
+
+		if user == None:
+			return await BASE.phaaze.send_message(message.channel, ':warning: Please mention a user before typing the medal name')
+
+		if user.bot:
+			return await BASE.phaaze.send_message(message.channel, ':no_entry_sign: That is a bot user. Bots can\'have medals')
+
+		command_medal = " ".join(d for d in m[4:])
+		if command_medal == "" and m[2].lower() != 'clear':
+			return await BASE.phaaze.send_message(message.channel, ':no_entry_sign: The Medal can\'t be empty.')
+
+		#get user from Level
+		db_user = BASE.PhaazeDB.select(
+			of=f"discord/level/level_{message.server.id}",
+			where=f"data['member_id'] == '{user.id}'",
+		)
+
+		if db_user.get('hits', 0) != 1:
+			return await BASE.phaaze.send_message(message.channel, ':warning: Seems like that user could not found in the Database.')
+
+		l_user = db_user['data'][0]
+
+		# rem
+		if m[2].lower() == "rem":
+			success = False
+			medals = l_user.get('medal', [])
+			try:
+				medals.remove(command_medal)
+				success = True
+			except:
+				success = False
+
+			if not success:
+				return await BASE.phaaze.send_message(message.channel, f':warning: Seems like that user don\'t has a medal named `{command_medal}`.')
+			else:
+				BASE.PhaazeDB.update(
+					of=f"discord/level/level_{message.server.id}",
+					where=f"data['member_id'] == '{user.id}'",
+					content=dict(medal=medals)
+				)
+				return await BASE.phaaze.send_message(message.channel, f':white_check_mark: `{command_medal}` has been removed from `{user.name}`.')
+
+		#add
+		elif m[2].lower() == "add":
+			success = False
+			medals = l_user.get('medal', [])
+			if command_medal in medals:
+				success = False
+			else:
+				success = True
+				medals.append(command_medal)
+
+			if not success:
+				return await BASE.phaaze.send_message(message.channel, f':warning: Seems like that user has a medal named `{command_medal}`.')
+			else:
+				BASE.PhaazeDB.update(
+					of=f"discord/level/level_{message.server.id}",
+					where=f"data['member_id'] == '{user.id}'",
+					content=dict(medal=medals)
+				)
+				return await BASE.phaaze.send_message(message.channel, f':white_check_mark: `{command_medal}` has been added to `{user.name}`.')
+
+		#clear
+		elif m[2].lower() == "clear":
+			BASE.PhaazeDB.update(
+				of=f"discord/level/level_{message.server.id}",
+				where=f"data['member_id'] == '{user.id}'",
+				content=dict(medal=[])
+			)
+			return await BASE.phaaze.send_message(message.channel, f':white_check_mark: All medals are removed from `{user.name}`.')
+
+		else:
+			return await BASE.phaaze.send_message(message.channel, f':warning: Please use a valid method.')
+
 
 
 async def serverinfo(BASE, message):
