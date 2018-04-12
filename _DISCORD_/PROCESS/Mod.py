@@ -563,6 +563,9 @@ class Level(object):
 		if command_medal == "" and m[2].lower() != 'clear':
 			return await BASE.phaaze.send_message(message.channel, ':no_entry_sign: The Medal can\'t be empty.')
 
+		if len(command_medal) >= 150:
+			return await BASE.phaaze.send_message(message.channel, ':no_entry_sign: The Medal can\'t be longer than 150 characters.')
+
 		#get user from Level
 		db_user = BASE.PhaazeDB.select(
 			of=f"discord/level/level_{message.server.id}",
@@ -625,8 +628,6 @@ class Level(object):
 
 		else:
 			return await BASE.phaaze.send_message(message.channel, f':warning: Please use a valid method.')
-
-
 
 async def serverinfo(BASE, message):
 	m = message.content.split(" ")
