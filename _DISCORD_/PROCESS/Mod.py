@@ -629,174 +629,100 @@ class Level(object):
 		else:
 			return await BASE.phaaze.send_message(message.channel, f':warning: Please use a valid method.')
 
-async def serverinfo(BASE, message):
-	m = message.content.split(" ")
-	s = message.server
-	rl = []
+class Utils(object):
 
-	#role list
-	for role in sorted(s.role_hierarchy, reverse=True):
-		if role.name != "@everyone":
-			rl.append([role.position, role.name])
+	async def serverinfo(BASE, message, kwargs):
+		server = message.server
+		rl = []
 
-	#channels
-	def channel_in_format():
-		VCs = []
-		TCs = []
-		total = 0
-		for channel in s.channels:
-			total += 1
-			if str(channel.type) == "text":
-				TCs.append(channel)
-			if str(channel.type) == "voice":
-				VCs.append(channel)
+		#role list
+		for role in sorted(server.role_hierarchy, reverse=True):
+			if role.name != "@everyone":
+				rl.append([role.position, role.name])
 
-		if len(VCs) != 1: VCs_s = "'s"
-		else: VCs_s = ""
-		if len(TCs) != 1: TCs_s = "'s"
-		else: TCs_s = ""
+		#channels
+		def channel_in_format():
+			VCs = []
+			TCs = []
+			total = 0
+			for channel in server.channels:
+				total += 1
+				if str(channel.type) == "text":
+					TCs.append(channel)
+				if str(channel.type) == "voice":
+					VCs.append(channel)
 
-		finished = "{0} - ({1} Text Channel{2} | {3} Voice Channel{4})".format(str(total), str(len(TCs)), TCs_s, str(len(VCs)), VCs_s)
-		return finished
+			if len(VCs) != 1: VCs_s = "'s"
+			else: VCs_s = ""
+			if len(TCs) != 1: TCs_s = "'s"
+			else: TCs_s = ""
 
-	#Emotes
-	def formated_emotes():
-		normal = []
-		managed = []
+			finished = "{0} - ({1} Text Channel{2} | {3} Voice Channel{4})".format(str(total), str(len(TCs)), TCs_s, str(len(VCs)), VCs_s)
+			return finished
 
-		for emo in s.emojis:
-			if not emo.managed:
-				normal.append(emo)
-			else:
-				managed.append(emo)
+		#Emotes
+		def formated_emotes():
+			normal = []
+			managed = []
 
-		if len(normal) != 1: normal_ = "'s"
-		else: normal_ = ""
+			for emo in server.emojis:
+				if not emo.managed:
+					normal.append(emo)
+				else:
+					managed.append(emo)
 
-		if len(managed) > 0:
-			man = " (+ {0} managed by Twitch)".format(str(len(managed)))
-		else: man = ""
+			if len(normal) != 1: plural = "'s"
+			else: plural = ""
 
-		return "{0}{1}".format(str(len(normal)),man)
+			if len(managed) > 0:
+				man = f" (+ {str(len(managed))} managed by Twitch)"
+			else: man = ""
 
-	main = 	"Server ID: {0}\n"\
-			"Region: {1}\n"\
-			"Members: {2}\n"\
-			"Channels: {3}\n"\
-			"Emotes: {4}\n"\
-			"Owner: {5}\n"\
-			"Verification Level: {6}\n"\
-			"Created at: {7}\n".format	(
-								s.id,											#0
-								str(s.region),									#1
-								str(s.member_count),							#2
-								channel_in_format(),							#3
-								formated_emotes(),								#4
-								str(s.owner),									#5
-								str(s.verification_level),						#6
-								s.created_at.strftime("%d,%m,%y (%H:%M:%S)")	#7
-										)
+			return f"{str(len(normal))}{plural}{man}"
 
-	tem = discord.Embed(
-			description=main)
+		created_at = server.created_at.strftime("%d,%m,%y (%H:%M:%S)")
 
-	if s.afk_channel != None:
-		min_time = str(round(s.afk_timeout / 60))
-		stuff = "{0} - Time: {1}m".format(s.afk_channel.name, min_time)
-		tem.add_field(name=":alarm_clock: AFK channel:",value=stuff,inline=True)
+		main = 	f"Server ID: {server.id}\n"\
+				f"Region: {str(server.region)}\n"\
+				f"Members: {str(server.member_count)}\n"\
+				f"Channels: {3}\n"\
+				f"Emotes: {4}\n"\
+				f"Owner: {server.owner.name}\n"\
+				f"Verification Level: {str(server.verification_level)}\n"\
+				f"Created at: {created_at}"
 
-	if len(rl) >= 1:
-		tem.add_field(name=":notepad_spiral: Roles:",value="```" + tabulate.tabulate(rl, tablefmt="plain") + "```",inline=False)
-	else:
-		tem.add_field(name=":notepad_spiral: Roles:",value="None",inline=False)
+		tem = discord.Embed(description=main)
 
-	tem.set_author(name="{0}".format(s.name))
-	if s.icon_url != "": tem.set_image(url=s.icon_url)
-	tem.set_footer(text="To get all roles by id use ``{0}{0}getroles`".format(BASE.vars.PT))
+		if server.afk_channel != None:
+			min_time = str(round(server.afk_timeout / 60))
+			stuff = "{0} - Time: {1}m".format(server.afk_channel.name, min_time)
+			tem.add_field(name=":alarm_clock: AFK channel:",value=stuff,inline=True)
 
-	return await BASE.phaaze.send_message(message.channel, content=message.author.mention, embed=tem)
-
-async def get_roles(BASE, message):
-	r = message.server.role_hierarchy
-
-	if len(r) == 0:
-		return await BASE.phaaze.send_message(message.channel, ":warning: This server don't have any roles.")
-
-	Ground = [["Pos:", "ID:", "Name:"],["","",""]]
-
-	for role in sorted(r, reverse=True):
-		if role.name != "@everyone":
-			Ground.append([str(role.position), role.id, role.name])
+		if len(rl) >= 1:
+			tem.add_field(name=":notepad_spiral: Roles:",value="```" + tabulate.tabulate(rl, tablefmt="plain") + "```",inline=False)
 		else:
-			Ground.append([str(role.position), role.id, "everyone"])
+			tem.add_field(name=":notepad_spiral: Roles:",value="None",inline=False)
 
-	formated_text = "```" + tabulate.tabulate(Ground, tablefmt="plain")
+		tem.set_author(name="{0}".format(server.name))
+		if server.icon_url != "": tem.set_image(url=server.icon_url)
+		tem.set_footer(text="To get all roles by id use ``{0}{0}getroles`".format(BASE.vars.PT))
 
-	return await BASE.phaaze.send_message(message.channel, formated_text[:1996] + "```")
+		return await BASE.phaaze.send_message(message.channel, embed=tem)
 
-async def level_base(BASE, message):
-	m = message.content.lower().split(" ")
-	M = message.content.split(" ")
-	file = await BASE.moduls.Utils.get_server_level_file(BASE, message.server.id)
+	async def get_roles(BASE, message):
+		r = message.server.role_hierarchy
 
-	if file["disabled_by_owner"] == 1 and message.author != message.server.owner:
-		return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The Serverowner disabled level manipulation.")
+		if len(r) == 0:
+			return await BASE.phaaze.send_message(message.channel, ":warning: This server don't have any roles.")
 
-	if len(m) == 1:
-		return await BASE.phaaze.send_message(message.channel,
-											":warning: Syntax Error!\n"\
-											"Usage: `{0}{0}level [Option]`\n\n"\
-											"`[Option]` - has to be:\n\n"\
-											"`exp` - e.g.: `{0}{0}level exp [@mention] [new_exp]`\n"\
-											"`medal` - e.g.: `{0}{0}level medal [add/rem/clear] [@mention] [medal_name]`".format(BASE.vars.PT) )
+		Ground = [["Pos:", "ID:", "Name:"],["","",""]]
 
-	elif m[1] == "exp":
-		try:
-			member = message.mentions[0]
-			if member.bot:
-				return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: `{}` is a Bot. Bots can't have levels".format(member.name))
-			exp = int(m[3])
-			user = await BASE.moduls.levels.Discord.get_user(file, member)
-
-			if 1000000 < exp:
-				return await BASE.phaaze.send_message(message.channel,
-									":no_entry_sign: {0}? ... is too high, if you ever reach this normally it will be resetted to 0".format(str(exp)))
-
-			user["exp"] = exp
-
-			if exp != 0:
-				user["edited"] = True
+		for role in sorted(r, reverse=True):
+			if role.name != "@everyone":
+				Ground.append([str(role.position), role.id, role.name])
 			else:
-				user["edited"] = False
+				Ground.append([str(role.position), role.id, "everyone"])
 
-			with open("LEVELS/DISCORD/{0}.json".format(message.server.id), "w") as save:
-				json.dump(file, save)
-				setattr(BASE.levelfiles, "level_"+message.server.id, file)
+		formated_text = "```" + tabulate.tabulate(Ground, tablefmt="plain")
 
-			if exp != 0:
-				return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Set `{0}`'s EXP set to **{1}** and added a *[EDITED]* mark\n(Set EXP to 0 to remove the mark)".format(member.name, str(exp)))
-
-			else:
-				return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Set `{0}`'s EXP reseted and remove the *[EDITED]* mark.".format(member.name))
-
-		except:
-			return await BASE.phaaze.send_message(message.channel, ":warning: You messed something up\n`{0}{0}level exp [@mention] [new_exp]`".format(BASE.vars.PT))
-
-	elif m[1] == "medal":
-		try:
-			medal_name = " ".join(g for g in M[4:])
-			user = message.mentions[0]
-			if user.bot:
-				return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: `{}` is a Bot. Bots can't have medals".format(user.name))
-
-			if m[2] == "add" and user.id in m[3]:
-				await BASE.moduls.levels.Discord.add_medal(BASE, message, user=user, medal=medal_name, type="custom")
-			elif m[2] == "rem" and user.id in m[3]:
-				await BASE.moduls.levels.Discord.rem_medal(BASE, message, user=user, medal=medal_name, type="custom")
-			elif m[2] == "clear" and user.id in m[3]:
-				await BASE.moduls.levels.Discord.clear_custom(BASE, message, user=user)
-
-			else: 0/0
-
-		except:
-			return await BASE.phaaze.send_message(message.channel, ":warning: You messed something up\n`{0}{0}level medal [add/rem/clear] [@mention] [medal_name]`".format(BASE.vars.PT))
+		return await BASE.phaaze.send_message(message.channel, formated_text[:1996] + "```")

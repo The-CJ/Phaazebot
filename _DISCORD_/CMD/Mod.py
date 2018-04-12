@@ -45,13 +45,10 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("level"):
 		return await BASE.moduls._Discord_.PROCESS.Mod.Level.Base(BASE, message, kwargs)
 
-	return
-
 	if check.startswith("serverinfo"):
-		if await BASE.moduls.Utils.is_Mod(BASE, message):
-			await BASE.moduls.Mod_Commands.serverinfo(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_mod(BASE, message)
+		return await BASE.moduls._Discord_.PROCESS.Mod.Utils.serverinfo(BASE, message, kwargs)
+
+	return
 
 	if check.startswith("getrole"):
 		if await BASE.moduls.Utils.is_Mod(BASE, message):
