@@ -709,7 +709,7 @@ class Utils(object):
 
 		return await BASE.phaaze.send_message(message.channel, embed=tem)
 
-	async def get_roles(BASE, message):
+	async def getroles(BASE, message, kwargs):
 		r = message.server.role_hierarchy
 
 		if len(r) == 0:

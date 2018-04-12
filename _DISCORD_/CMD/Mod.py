@@ -48,11 +48,5 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("serverinfo"):
 		return await BASE.moduls._Discord_.PROCESS.Mod.Utils.serverinfo(BASE, message, kwargs)
 
-	return
-
 	if check.startswith("getrole"):
-		if await BASE.moduls.Utils.is_Mod(BASE, message):
-			await BASE.moduls.Mod_Commands.get_roles(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_mod(BASE, message)
-
+		return await BASE.moduls._Discord_.PROCESS.Mod.Utils.getroles(BASE, message, kwargs)
