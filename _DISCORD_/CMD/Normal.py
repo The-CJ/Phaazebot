@@ -2,6 +2,8 @@
 
 import asyncio
 
+CMDs = ['custom', 'doujin', 'help', 'phaaze', 'command', 'quote', 'define', 'wiki', 'whois', 'level', 'leaderboard', 'emotes', 'osu', 'choice']
+
 class Forbidden(object):
 	async def disable_chan_normal(BASE, message, kwargs):
 		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Normal Commands are disabled for this channel, only Mods and the Serverowner can use them.")
@@ -13,21 +15,21 @@ class Forbidden(object):
 		await asyncio.sleep(2.5)
 		await BASE.phaaze.delete_message(m)
 
-
 async def Base(BASE, message, **kwargs):
-	server_setting = kwargs.get('server_setting', {})
-
-	if server_setting.get('owner_disable_normal', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message):
-		asyncio.ensure_future(Forbidden.owner_disabled_normal(BASE, message, kwargs))
-		return
-
-	if message.channel.id in server_setting.get('disable_chan_normal', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message):
-		asyncio.ensure_future(Forbidden.disable_chan_normal(BASE, message, kwargs))
-		return
-
 	m = message.content.lower().split(" ")
 	check = m[0][1:]
 
+	if kwargs.get('server_setting', {}).get('owner_disable_normal', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message):
+		if any([True if check.startswith(cmd) else False for cmd in CMDs]):
+			asyncio.ensure_future(Forbidden.owner_disabled_normal(BASE, message, kwargs))
+			return
+
+	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_normal', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message):
+		if any([True if check.startswith(cmd) else False for cmd in CMDs]):
+			asyncio.ensure_future(Forbidden.disable_chan_normal(BASE, message, kwargs))
+			return
+
+	# # #
 
 	if check.startswith("custom"):
 		return await BASE.moduls._Discord_.Custom.get_all(BASE, message, kwargs)
@@ -81,14 +83,14 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("emotes"):
 		await BASE.moduls.Commands.emotes(BASE, message)
 
-	if check.startswith("about"):
-		await BASE.moduls.Utils.about(BASE, message)
-
 	if check.startswith("osu"):
 		await BASE.moduls.Commands.osu_base(BASE, message)
 
 	if check.startswith("choice"):
 		await BASE.moduls.Commands.choice(BASE, message)
+
+	if check.startswith("about"): # IDEA: Remove?
+		await BASE.moduls.Utils.about(BASE, message)
 
 	return	#Soon TM
 

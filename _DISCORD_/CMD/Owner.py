@@ -1,6 +1,8 @@
 #BASE.moduls._Discord_.CMD.Owner
 
-import asyncio, json
+import asyncio
+
+CMDs = ['master', 'welcome', 'leave', 'autorole', 'logs', 'news', 'twitch']
 
 async def no_owner(BASE, message, kwargs):
 	m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: You can not use Owner Commands")
@@ -8,12 +10,15 @@ async def no_owner(BASE, message, kwargs):
 	await BASE.phaaze.delete_message(m)
 
 async def Base(BASE, message, **kwargs):
-	if not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message):
-		asyncio.ensure_future(no_owner(BASE, message, kwargs))
-		return
-
 	m = message.content.lower().split(" ")
 	check = m[0][3:]
+
+	if not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message):
+		if any([True if check.startswith(cmd) else False for cmd in CMDs]):
+			asyncio.ensure_future(no_owner(BASE, message, kwargs))
+			return
+
+	# # #
 
 	if check.startswith("master"):
 		return await BASE.moduls._Discord_.PROCESS.Owner.Master.Base(BASE, message, kwargs)
