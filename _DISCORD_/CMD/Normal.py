@@ -14,7 +14,7 @@ class Forbidden(object):
 		await BASE.phaaze.delete_message(m)
 
 
-async def Base(BASE, message, kwargs):
+async def Base(BASE, message, **kwargs):
 	server_setting = kwargs.get('server_setting', {})
 
 	if server_setting.get('owner_disable_normal', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message):
