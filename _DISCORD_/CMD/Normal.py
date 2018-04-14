@@ -2,15 +2,37 @@
 
 import asyncio
 
-async def base(BASE, message):
-	#all disabled
-	if await BASE.moduls.Utils.settings_check(BASE, message, "disable_normal"): return
+class Forbidden(object):
+	async def disable_chan_normal(BASE, message, kwargs):
+		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Normal Commands are disabled for this channel, only Mods and the Serverowner can use them.")
+		await asyncio.sleep(2.5)
+		await BASE.phaaze.delete_message(m)
+
+	async def owner_disabled_normal(BASE, message, kwargs):
+		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The Serverowner disabled Normal-commands, only the Serverowner can use them.")
+		await asyncio.sleep(2.5)
+		await BASE.phaaze.delete_message(m)
+
+
+async def Base(BASE, message, kwargs):
+	server_setting = kwargs.get('server_setting', {})
+
+	if server_setting.get('owner_disable_normal', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message):
+		asyncio.ensure_future(Forbidden.owner_disabled_normal(BASE, message, kwargs))
+		return
+
+	if message.channel.id in server_setting.get('disable_chan_normal', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message):
+		asyncio.ensure_future(Forbidden.disable_chan_normal(BASE, message, kwargs))
+		return
 
 	m = message.content.lower().split(" ")
 	check = m[0][1:]
 
+
 	if check.startswith("custom"):
-		await BASE.moduls.Custom.get_all(BASE, message)
+		return await BASE.moduls._Discord_.Custom.get_all(BASE, message, kwargs)
+
+	return
 
 	if check.startswith("doujin"):
 		if await BASE.moduls.Utils.settings_check(BASE, message, "enable_nsfw"):
@@ -78,16 +100,3 @@ async def base(BASE, message):
 
 	if check.startswith("credit"): #todo
 		await BASE.moduls.Commands.commands_base(BASE, message)
-
-class forbitten(object):
-	async def nsfw(BASE, message):
-		i = await BASE.phaaze.send_message(message.channel,
-		":no_entry_sign: This Commands can only used in enabled channels\nTo enable/disable: `{0}{0}settings nsfw`".format(BASE.vars.PT))
-		await asyncio.sleep(3)
-		return await BASE.phaaze.delete_message(i)
-
-	async def quotes(BASE, message):
-		i = await BASE.phaaze.send_message(message.channel,
-		":no_entry_sign: This Command has been disabled in this channels\nTo enable/disable: `{0}{0}settings quotes`".format(BASE.vars.PT))
-		await asyncio.sleep(3)
-		return await BASE.phaaze.delete_message(i)

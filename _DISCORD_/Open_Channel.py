@@ -45,7 +45,7 @@ async def base(BASE, message):
 			await BASE.moduls._Discord_.CMD.Mod.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#normal
-	elif message.content.startswith(BASE.vars.PT) and "" == "-":
+	elif message.content.startswith(BASE.vars.PT):
 		if message.author.id not in BASE.cooldown.Normal_CD:
 			asyncio.ensure_future(BASE.cooldown.CD_Normal(message))
 			await BASE.moduls._Discord_.CMD.Normal.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
