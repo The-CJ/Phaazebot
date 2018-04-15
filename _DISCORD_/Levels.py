@@ -111,8 +111,10 @@ async def get(BASE, message, kwargs):
 			user = discord.utils.get(message.server.members, name="".join(s for s in m[1:]))
 
 	if user == None:
-		return await BASE.phaaze.send_message(message.channel, f":warning: Could not find a valid user.\n`{BASE.vars.PT} [Option]`\n`[Option]` can be empty, @ mention, ID or the full member name.")
+		return await BASE.phaaze.send_message(message.channel, f":warning: Could not find a valid user.Try: `{BASE.vars.PT}level [Option]`\n`[Option]` can be empty, @ mention, ID or the full member name.")
 
+	if user.bot:
+		return await BASE.phaaze.send_message(message.channel, f":no_entry_sign: Bots don't have a level.")
 
 	# # #
 	level_user = await Utils.get_user(BASE, kwargs.get('server_levels', []), message.server.id, user.id, prevent_new=True)
@@ -127,7 +129,7 @@ async def get(BASE, message, kwargs):
 
 	return await BASE.phaaze.send_message(message.channel, f"💠 `{user.name}` **LVL: {str(level_current)}** - EXP: {str(exp_current)} / {str(exp_next)}.{edited}")
 
-async def leaderboards(BASE, message):
+async def leaderboard(BASE, message, kwargs):
 	m = message.content.split(" ")
 	file = await BASE.moduls.Utils.get_server_level_file(BASE, message.server.id)
 	if message.channel.id in file["disabled_channels"]: return
