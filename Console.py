@@ -1,4 +1,4 @@
-from colorama import Fore, Back, Style, init
+from colorama import Fore, Style, init
 import asyncio, datetime
 init()
 
@@ -16,8 +16,7 @@ async def Debug_and_status_console(BASE):
 
 	while BASE.active.debug_console:
 		if len(Save_print) > 0:
-			req = Save_print[0]
-			Save_print.remove(Save_print[0])
+			req = Save_print.pop(0)
 			try:
 				now = datetime.datetime.now()
 				time_ = "["+now.strftime("%H:%M:%S")+"]"
