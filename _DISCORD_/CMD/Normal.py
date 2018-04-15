@@ -39,6 +39,9 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("command"):
 		return await BASE.phaaze.send_message(message.channel, ":link: All commands Phaaze can do in one place\nhttps://phaaze.net/wiki/discord/commands")
 
+	if check.startswith("help"):
+		return await BASE.phaaze.send_message(message.channel, ":link: Need help with Phaaze? Maybe that can help:\nhttps://phaaze.net/wiki")
+
 	return
 
 	if check.startswith("doujin"):
@@ -46,9 +49,6 @@ async def Base(BASE, message, **kwargs):
 			await BASE.moduls.Commands.doujin(BASE, message).request()
 		else:
 			await BASE.cmds.NORMAL.forbitten.nsfw(BASE, message)
-
-	if check.startswith("help"):
-		await BASE.moduls.Help.base(BASE, message)
 
 	if check.startswith("phaaze"):
 		await BASE.moduls.Utils.phaaze(BASE, message)
