@@ -42,6 +42,9 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("help"):
 		return await BASE.phaaze.send_message(message.channel, ":link: Need help with Phaaze? Maybe that can help:\nhttps://phaaze.net/wiki")
 
+	if check.startswith("level"):
+		await BASE.moduls._Discord_.Levels.get(BASE, message, kwargs)
+
 	return
 
 	if check.startswith("doujin"):
@@ -75,9 +78,6 @@ async def Base(BASE, message, **kwargs):
 
 	if check.startswith("whois"):
 		await BASE.moduls.Commands.whois.whois(BASE, message)
-
-	if check.startswith("level"):
-		await BASE.moduls.levels.Discord.GetLevelStatus(BASE, message)
 
 	if check.startswith("leaderboard"):
 		await BASE.moduls.levels.Discord.leaderboards(BASE, message)

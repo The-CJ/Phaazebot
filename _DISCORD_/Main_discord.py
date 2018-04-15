@@ -22,7 +22,7 @@ class phaaze(discord.Client):
 	#message management
 	async def on_message(self, message):
 
-		if message.author.id != "117746512380952582": return #During Dev.
+		if not message.author.id in self.BASE.vars.developer_id: return #During Dev. + Patrons
 		if message.author == self.BASE.phaaze.user: return
 		if not self.BASE.is_ready.discord: return
 		if message.author.bot: return

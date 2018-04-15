@@ -9,6 +9,8 @@ async def base(BASE, message):
 		await BASE.phaaze.add_roles(message.author, role)
 
 	#get server files
+	# IDEA: MAYBE only call things when needed and not on every message, but i don't think its a big problem for now,
+	#       PhaazeDB can handle ~700 request/sec without a big delay. (Discord traffic on huge [5M user] bots ~100-200 msg/sec)
 	server_setting = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, message.server.id)
 	server_commands = await BASE.moduls._Discord_.Utils.get_server_commands(BASE, message.server.id)
 	server_levels = await BASE.moduls._Discord_.Utils.get_server_level(BASE, message.server.id)
