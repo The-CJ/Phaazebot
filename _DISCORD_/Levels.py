@@ -1,6 +1,6 @@
 #BASE.moduls._Discord_.Levels
 
-import asyncio, discord, json, tabulate, datetime
+import asyncio, discord, tabulate
 
 Medalls = {}
 
@@ -78,10 +78,8 @@ async def Base(BASE, message, server_setting, server_levels):
 	await Utils.check_level(BASE, message, user)
 
 async def get(BASE, message, kwargs):
-	if message.author.bot: return
-
-	if kwargs.get('server_setting', {}).get('owner_disable_level', False): return
-	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []): return
+	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message): return
+	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): return
 
 	m = message.content.split(" ")
 
@@ -130,80 +128,52 @@ async def get(BASE, message, kwargs):
 	return await BASE.phaaze.send_message(message.channel, f"💠 `{user.name}` **LVL: {str(level_current)}** - EXP: {str(exp_current)} / {str(exp_next)}.{edited}")
 
 async def leaderboard(BASE, message, kwargs):
-	m = message.content.split(" ")
-	file = await BASE.moduls.Utils.get_server_level_file(BASE, message.server.id)
-	if message.channel.id in file["disabled_channels"]: return
-	if file["muted"] == 1: return
-	disable_l_and_l = file.get("lvl_ask", [])
-	if message.channel.id in disable_l_and_l: return
+	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message): return
+	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): return
 
-	many = 5
+	m = message.content.split(" ")
+	count = 5
 
 	if len(m) > 1:
 		if m[1].isdigit():
 			if 1 <= int(m[1]) <= 15:
-				many = int(m[1])
+				count = int(m[1])
 			else:
-				return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The leaderboard's length must be: Min: 1 - Max: 15 or `all`")
-
-		elif m[1].lower() == "all":
-			many = int(message.server.member_count)
+				return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The leaderboard's length must be between 1 and 15")
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is unsupported, leaderboard's length must be: Min: 1 - Max: 15 or `all`".format(m[1]))
+			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[1]}` is unsupported, leaderboard's length must be between 1 and 15")
 
-	members_on_server = [mm.id for mm in message.server.members if not mm.bot]
-	members_to_list = []
-
-	for user in file["members"]:
-		if user["id"] in members_on_server:
-			members_to_list.append(user)
+	server_levels = kwargs.get('server_levels', [])
+	server_members = [member for member in message.server.members if not member.bot]
+	# Be sure saved member is on server
+	members_to_list = [member for member in server_levels if member.get('member_id', None) in [s.id for s in server_members] ]
 
 	if len(members_to_list) == 0:
 		return await BASE.phaaze.send_message(message.channel, ":question: Seems like there are no member with level for a leaderboard :(")
 
-	members_to_list = sorted(members_to_list, key=lambda exp: exp["exp"], reverse=True)
+	members_to_list = sorted(members_to_list, key=lambda user: user.get("exp", None), reverse=True)
 
 	#check if not to long
-	if len(members_to_list) < many:
-		many = len(members_to_list)
+	if len(members_to_list) < count:
+		count = len(members_to_list)
 
-	finshed_list = members_to_list[:many]
+	finshed_list = members_to_list[:count]
 
-	def get_user_name(_id):
-		for n in message.server.members:
-			if n.id == _id: return n.name
-
-	l = [["Rank:", "|", "LVL:", "|", "EXP:", "|", "Name:"], ["", "-", "", "-", "", "-", ""]]
+	leaderboard_list = [["Rank:", "|", "LVL:", "|", "EXP:", "|", "Name:"], ["", "-", "", "-", "", "-", ""]]
 	rank = 1
-	for mem in finshed_list:
-		cheated = mem.get("edited", False)
-		x = " [EDITED]" if cheated else ""
-		l.append(	[
-						"#"+str(rank),
-						"|",
-						str(await get_lvl(mem["exp"])),
-						"|",
-						mem["exp"],
-						"|",
-						get_user_name(mem["id"]) + x
-					]
-				)
+	for member in finshed_list:
+		edited = member.get("edited", False)
+		edited = " [EDITED]" if edited else ""
+		user_name = discord.utils.get(message.server.members, id=member.get('member_id', None))
+		if user_name == None:
+			user_name = "[N/A]"
+		else:
+			user_name = user_name.name
+		leaderboard_list.append( [ "#"+str(rank), "|", str(await Calc.get_lvl(member.get("exp", 0))), "|", str(member.get("exp", 0))+edited, "|", user_name ])
 		rank = rank + 1
 
-	return_message = "**Top {0} leaderboard** ```{1}```".format(str(many), tabulate.tabulate(l, tablefmt="plain"))
-
-	if len(return_message) >= 1999:
-		now = datetime.datetime.now()
-		gist_respone = await BASE.moduls.git_utils.post_gist(
-			description="Server level file for Discord Server: {}".format(message.server.name),
-			name="level_file_{0}_{1}".format(message.server.id, now.strftime("%Y-%m-%d")),
-			content=return_message
-			)
-		return_message = "Your member leaderboard is way too long, it's been dumped to a GitHub Gist\n\n{}".format(gist_respone)
+	table = tabulate.tabulate(leaderboard_list,tablefmt="plain")
+	return_message = f"**Top {str(count)} leaderboard** Wanna watch all? :link: https://phaaze.net/discord/level/{message.server.id} ```{table}```"
 
 	return await BASE.phaaze.send_message(message.channel, return_message)
-
-
-
-
