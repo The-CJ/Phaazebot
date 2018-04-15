@@ -25,7 +25,7 @@ async def get(BASE, message, server_setting, server_commands):
 			send = send.replace("[channel-name]", message.channel.name)
 			send = send.replace("[channel-mention]", message.channel.mention)
 			send = send.replace("[server-name]", message.server.name)
-			send = send.replace("[server-count]", str(message.server.member_count))
+			send = send.replace("[member-count]", str(message.server.member_count))
 			send = send.replace("[uses]", str(cmd["uses"]))
 
 			await BASE.phaaze.send_message(message.channel, send)
@@ -49,7 +49,7 @@ async def add(BASE, message, kwargs):
 			"`[channel-name]` - Current channel name\n"\
 			"`[channel-mention]` - Current channel @ mention\n"\
 			"`[server-name]` - Current server name\n"\
-			"`[server-count]` - Number of members on the the server\n"\
+			"`[member-count]` - Number of members on the the server\n"\
 			"`[uses]` - How many times a command has been used"
 		return await BASE.phaaze.send_message(message.channel, r)
 
