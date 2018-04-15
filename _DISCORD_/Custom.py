@@ -132,18 +132,18 @@ async def rem(BASE, message, kwargs):
 
 	return await BASE.phaaze.send_message(message.channel, f':white_check_mark: The command: "`{m[1].lower()}`" has been removed!')
 
-async def get_all(BASE, message):
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
+async def get_all(BASE, message, kwargs):
+	server_commands = kwargs.get('server_commands', [])
 
-	if len(file.get("commands", [])) == 0:
+	if len(server_commands) == 0:
 		return await BASE.phaaze.send_message(message.channel,
 		":grey_exclamation: This server don't have custom commands!")
 
-	one = "Available commands: **{}**\n\n".format(str(len( file.get("commands", []) )))
+	a = "\n".join(f"- `{cmd.get('trigger', '[N/A]')}`" for cmd in server_commands)
 
-	two = "\n".join("- `"+g["trigger"]+"`" for g in file.get("commands", []))
+	content = 	f"Available commands: **{str(len(server_commands))}**\n\n{a}"
 
-	return await BASE.phaaze.send_message(message.channel, one + two)
+	return await BASE.phaaze.send_message(message.channel, content)
 
 
 

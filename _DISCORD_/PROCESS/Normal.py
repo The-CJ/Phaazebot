@@ -3,7 +3,6 @@
 Anti_PM_Spam_Commands = []
 import asyncio, json, requests, discord, random, re, datetime
 from tabulate import tabulate
-import subprocess
 
 async def osu_base(BASE, message):
 	m = message.content.lower().split(" ")

@@ -25,8 +25,9 @@ async def is_Owner(BASE, message):
 		v = True
 
 	return v
+
 #serverfiles
-async def get_server_file(BASE, id, prevent_new=False):
+async def get_server_setting(BASE, id, prevent_new=False):
 	#get
 	file = BASE.PhaazeDB.select(of="discord/server_setting", where="data['server_id'] == '{}'".format(id))
 
@@ -73,14 +74,14 @@ async def make_server_file(BASE, id):
 	insert_['owner_disable_level'] = False,
 	insert_['owner_disable_custom'] = False,
 
-	Console.CYAN("INFO", "New serverfile created")
+	Console.CYAN("INFO", "New Server Settings DB entry")
 
 	BASE.PhaazeDB.insert(into="discord/server_setting", content=insert_)
 
 	return insert_
 
 #levelfiles
-async def get_server_level_file(BASE, id, prevent_new=False):
+async def get_server_level(BASE, id, prevent_new=False):
 	#get
 	file = BASE.PhaazeDB.select(of="discord/level/level_"+str(id))
 
@@ -96,7 +97,7 @@ async def get_server_level_file(BASE, id, prevent_new=False):
 async def make_server_level_file(BASE, id):
 
 	BASE.PhaazeDB.create(of="discord/level/level_"+str(id))
-	Console.CYAN("INFO", "New serverlevelfile created")
+	Console.CYAN("INFO", "New Server Level DB-Container created")
 
 	return []
 
@@ -117,7 +118,28 @@ async def get_server_commands(BASE, id, prevent_new=False):
 async def make_get_server_commands(BASE, id):
 
 	BASE.PhaazeDB.create(of="discord/commands/commands_"+str(id))
-	Console.CYAN("INFO", "New servercommandsfile created")
+	Console.CYAN("INFO", "New Server Command DB-Container created")
+
+	return []
+
+#customfiles
+async def get_server_quotes(BASE, id, prevent_new=False):
+	#get
+	file = BASE.PhaazeDB.select(of="discord/quotes/quotes_"+str(id))
+
+	if file['status'] == "error":
+		#didn't find entry -> make new
+		if prevent_new:
+			return None
+		else:
+			return await make_get_server_quotes(BASE, id)
+	else:
+		return file['data']
+
+async def make_get_server_quotes(BASE, id):
+
+	BASE.PhaazeDB.create(of="discord/quotes/quotes_"+str(id))
+	Console.CYAN("INFO", "New Server Quote DB-Container created")
 
 	return []
 
