@@ -346,7 +346,7 @@ class Quote(object):
 		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All {x} Quote deleted")
 
 class Prune(object):
-	async def prune(BASE, message, kwargs):
+	async def Base(BASE, message, kwargs):
 		me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
 		phaaze_perms = message.channel.permissions_for(me)
 		if not phaaze_perms.manage_messages:
