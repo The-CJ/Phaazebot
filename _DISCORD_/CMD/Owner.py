@@ -36,7 +36,7 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("logs"):
 		return await BASE.phaaze.send_message(
 			message.channel,
-			f":grey_exclamation: PhaazeDiscord-Logs configuration has moved to the PhaazeWebsite\n"\
+			f":link: PhaazeDiscord-Logs configuration has moved to the PhaazeWebsite\n"\
 			f"		Goto https://phaaze.net/discord/dashboard/{message.server.id}#logs and log-in to configure everything"
 			)
 

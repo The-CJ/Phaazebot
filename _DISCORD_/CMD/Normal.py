@@ -36,6 +36,9 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("custom"):
 		return await BASE.moduls._Discord_.Custom.get_all(BASE, message, kwargs)
 
+	if check.startswith("command"):
+		return await BASE.phaaze.send_message(message.channel, ":link: All commands Phaaze can do in one place\nhttps://phaaze.net/wiki/discord/commands")
+
 	return
 
 	if check.startswith("doujin"):
@@ -50,9 +53,6 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("phaaze"):
 		await BASE.moduls.Utils.phaaze(BASE, message)
 		await BASE.phaaze.send_message(message.channel, ":incoming_envelope: --> PM")
-
-	if check.startswith("command"):
-		await BASE.moduls.Commands.commands_base(BASE, message)
 
 	if check.startswith("quote"):
 		if not await BASE.moduls.Utils.settings_check(BASE, message, "quotes"):
