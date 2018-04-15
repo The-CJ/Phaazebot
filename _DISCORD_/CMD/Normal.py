@@ -2,7 +2,9 @@
 
 import asyncio
 
-CMDs = ['custom', 'doujin', 'help', 'phaaze', 'command', 'quote', 'define', 'wiki', 'whois', 'level', 'leaderboard', 'emotes', 'osu', 'choice']
+CMDs = ['custom', 'doujin', 'help', 'phaaze', 'command',
+		'quote', 'define', 'wiki', 'whois', 'level',
+		'leaderboard', 'emotes', 'osu', 'choice']
 
 class Forbidden(object):
 	async def disable_chan_normal(BASE, message, kwargs):

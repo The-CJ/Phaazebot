@@ -4,15 +4,16 @@ import asyncio
 
 CMDs = ['setting', 'addcom', 'delcom', 'blacklist', 'quote', 'prune', 'level', 'serverinfo', 'getrole']
 
-async def no_mod(BASE, message, kwargs):
-	m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: You can not use Mod Commands")
-	await asyncio.sleep(2.5)
-	await BASE.phaaze.delete_message(m)
+class Forbidden(object):
+	async def no_mod(BASE, message, kwargs):
+		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: You can not use Mod Commands")
+		await asyncio.sleep(2.5)
+		await BASE.phaaze.delete_message(m)
 
-async def owner_disabled_mod(BASE, message, kwargs):
-	m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The Serverowner disabled Mod-commands, only the Serverowner can use them")
-	await asyncio.sleep(2.5)
-	await BASE.phaaze.delete_message(m)
+	async def owner_disabled_mod(BASE, message, kwargs):
+		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The Serverowner disabled Mod-commands, only the Serverowner can use them")
+		await asyncio.sleep(2.5)
+		await BASE.phaaze.delete_message(m)
 
 async def Base(BASE, message, **kwargs):
 	m = message.content.lower().split(" ")
@@ -20,12 +21,12 @@ async def Base(BASE, message, **kwargs):
 
 	if not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message):
 		if any([True if check.startswith(cmd) else False for cmd in CMDs]):
-			asyncio.ensure_future(no_mod(BASE, message, kwargs))
+			asyncio.ensure_future(Forbidden.no_mod(BASE, message, kwargs))
 			return
 
 	if not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message) and kwargs.get('server_setting', {}).get('owner_disable_mod', False):
 		if any([True if check.startswith(cmd) else False for cmd in CMDs]):
-			asyncio.ensure_future(owner_disabled_mod(BASE, message, kwargs))
+			asyncio.ensure_future(Forbidden.owner_disabled_mod(BASE, message, kwargs))
 			return
 
 	# # #
