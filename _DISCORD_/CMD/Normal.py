@@ -51,6 +51,9 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("emotes"):
 		await BASE.moduls._Discord_.PROCESS.Normal.Everything.emotes(BASE, message, kwargs)
 
+	if check.startswith("whois"):
+		await BASE.moduls._Discord_.PROCESS.Normal.Whois.Base(BASE, message, kwargs)
+
 	return
 
 	if check.startswith("doujin"):
@@ -81,9 +84,6 @@ async def Base(BASE, message, **kwargs):
 
 		await asyncio.sleep(15)
 		BASE.cooldown.Wikipedia_cooldowns.remove(message.author.id)
-
-	if check.startswith("whois"):
-		await BASE.moduls.Commands.whois.whois(BASE, message)
 
 	if check.startswith("osu"):
 		await BASE.moduls.Commands.osu_base(BASE, message)

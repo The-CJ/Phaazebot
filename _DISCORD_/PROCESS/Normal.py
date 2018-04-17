@@ -4,6 +4,97 @@ Anti_PM_Spam_Commands = []
 import asyncio, requests, discord, random, re, datetime
 from tabulate import tabulate
 
+class Whois(object):
+
+	async def Base(BASE, message, kwargs):
+		m = message.content.split(" ")
+
+		#by_myself
+		if len(m) == 1:
+			return await Whois.finish(BASE, message, kwargs, message.author)
+
+		#by_mention
+		if message.mentions:
+			return await Whois.finish(BASE, message, kwargs, message.mentions[0])
+
+		#by_id
+		elif m[1].isdigit():
+			user = discord.utils.get(message.server.members, id= m[1])
+			if user is None:
+				return await BASE.phaaze.send_message(message.channel, f":warning: No user found with ID: {m[1]}")
+
+			return await Whois.finish(BASE, message, kwargs, user)
+
+		#by_name
+		else:
+			name = " ".join(s for s in m[1:])
+			user = discord.utils.get(message.server.members, name=name)
+			if user is None:
+				return await BASE.phaaze.send_message(message.channel, f":warning: No user found with Name: `{name}`")
+
+			return await Whois.finish(BASE, message, kwargs, user)
+
+	async def finish(BASE, message, kwargs, user):
+		if user.nick is not None:
+			user.nick = "Nickname: " + user.nick
+		else: user.nick == None
+		if str(user.status) == "online": status = "Online"
+		elif str(user.status) == "offline": status = "Offline"
+		elif str(user.status) == "idle": status = "AFK"
+		elif str(user.status) == "dnd": status = "Do not disturb"
+		else: status = "Unknown"
+
+		role_list = []
+		for role in sorted(user.roles, key=lambda role: role.position, reverse=True):
+			if role.name != "@everyone":
+				role_list.append([role.position, role.name])
+
+		now = datetime.datetime.now()
+		cr = user.created_at
+		jo = user.joined_at
+		formated_created = "{t_} *[{delta} days ago]*".format(
+															t_ = cr.strftime("%d.%m.%y (%H:%M)"),
+															delta = (now - cr).days)
+
+		formated_joined = "{t_} *[{delta} days ago]*".format(
+															t_ = jo.strftime("%d.%m.%y (%H:%M)"),
+															delta = (now - jo).days)
+
+		main = 	f"**ID**: {user.id}\n"\
+				f"**Discriminator**: {user.discriminator}\n"\
+				f"**Acc. created at**: {formated_created}\n"\
+				f"**Joined at**: {formated_joined}"
+
+		tem = discord.Embed (
+			title=user.nick,
+			color=user.colour.value,
+			description=main)
+
+		if user.bot:
+			tem.add_field(name=":robot: Bot-account:",value="True",inline=True)
+
+		if not user.game == None:
+			if user.game.type == 1:
+				tem.add_field(name=":video_camera: Currently Streaming:",value=user.game.name,inline=True)
+			else:
+				tem.add_field(name=":game_die: Playing:",value=user.game.name,inline=True)
+
+		tem.add_field(name=":satellite: Status:",value=status,inline=True)
+
+		if len(role_list) >= 1:
+			tem.add_field(name=":notepad_spiral: Roles:",value="```" + tabulate(role_list, tablefmt="plain") + "```",inline=False)
+		else:
+			tem.add_field(name=":notepad_spiral: Roles:",value="None",inline=False)
+
+		tem.set_author(name="Name: {0}".format(user.name))
+
+		if user.avatar_url != "":
+			tem.set_image(url=user.avatar_url)
+		else:
+			tem.set_image(url=user.default_avatar_url)
+
+		return await BASE.phaaze.send_message(message.channel, embed=tem)
+
 class Everything(object):
 	async def emotes(BASE, message, kwargs):
 		server_emotes = [e for e in message.server.emojis if not e.managed]
@@ -312,76 +403,6 @@ async def define(BASE, message):
 				else: More = None
 
 				return await BASE.phaaze.send_message(message.channel, embed=More, content=Result.format(thing) + ":book:: {0}\n\ne.g.: *{1}*".format(top, example))
-
-async def commands_base(BASE, message):
-	if message.author.id in Anti_PM_Spam_Commands:
-		return
-
-	Anti_PM_Spam_Commands.append(message.author.id)
-
-	try: await BASE.phaaze.send_message(message.channel, ":incoming_envelope: --> PM")
-	except: pass
-
-	level = 1
-	if await BASE.moduls.Utils.is_Mod(BASE, message):level = 2
-	if await BASE.moduls.Utils.is_Owner(BASE, message): level = 3
-
-	if level == 1:
-		norm = await BASE.moduls.Utils.get_Normal_Commands(BASE, message)
-		head = "Accessible Commands for you on: `{0}`".format(message.server.name)
-
-		norm.set_author(name="Commands", icon_url=BASE.vars.app.icon_url)
-		norm.set_footer(text="▶ Only returned Normal commands, you don't have access to high commands".format(BASE.vars.PT))
-		#
-		try: await BASE.phaaze.send_message(message.author, content=head, embed=norm)
-		except: pass
-		##
-		await asyncio.sleep(10)
-		Anti_PM_Spam_Commands.remove(message.author.id)
-
-	if level == 2:
-		norm = await BASE.moduls.Utils.get_Normal_Commands(BASE, message)
-		mod = await BASE.moduls.Utils.get_Mods_Commands(BASE, message)
-		head = "Accessible Commands for you on: `{0}`".format(message.server.name)
-
-		norm.set_author(name="Commands", icon_url=BASE.vars.app.icon_url)
-		mod.set_footer(text="▶ Returned Normal and Mod commands, because you don't have access to owner commands".format(BASE.vars.PT))
-		#
-		try: await BASE.phaaze.send_message(message.author, content=head, embed=norm)
-		except: pass
-		##
-		await asyncio.sleep(2)
-		#
-		try: await BASE.phaaze.send_message(message.author, embed=mod)
-		except: pass
-		##
-		await asyncio.sleep(20)
-		Anti_PM_Spam_Commands.remove(message.author.id)
-
-	if level == 3:
-		norm = await BASE.moduls.Utils.get_Normal_Commands(BASE, message)
-		mod = await BASE.moduls.Utils.get_Mods_Commands(BASE, message)
-		owner = await BASE.moduls.Utils.get_Owner_Commands(BASE, message)
-		head = "Accessible Commands for you on: `{0}`".format(message.server.name)
-
-		norm.set_author(name="Commands", icon_url=BASE.vars.app.icon_url)
-		owner.set_footer(text="▶ Returned all available commands".format(BASE.vars.PT))
-		#
-		try: await BASE.phaaze.send_message(message.author, content=head, embed=norm)
-		except: pass
-		##
-		await asyncio.sleep(2)
-		#
-		try: await BASE.phaaze.send_message(message.author, embed=mod)
-		except: pass
-		##
-		await asyncio.sleep(2)
-		#
-		try: await BASE.phaaze.send_message(message.author, embed=owner)
-		except: pass
-		##
-		await asyncio.sleep(30)
-		Anti_PM_Spam_Commands.remove(message.author.id)
 
 async def quotes(BASE, message):
 	m = message.content.split(" ")
@@ -1019,107 +1040,3 @@ class wiki(object):
 			return ":keycap_ten:"
 		if n > 10:
 			return ":arrow_forward:"
-
-class whois(object):
-	temp = re.compile(r'.*#[0-9]{4}')
-
-	async def whois(BASE, message):
-		m = message.content.split(" ")
-
-		#by_myself
-		if len(m) == 1:
-			return await whois.finish(BASE, message, message.author)
-
-		#by_mention
-		if len(message.mentions) >= 1:
-			if len(message.mentions) > 1:
-				return await BASE.phaaze.send_message(message.channel, ":warning: You can not mention multiple members, only 1.")
-			if not message.mentions[0].id in m[1]:
-				return await BASE.phaaze.send_message(message.channel, ":warning: The Member mention must be on first place")
-
-			return await whois.finish(BASE, message, message.mentions[0])
-
-		#contains a role
-		if len(message.role_mentions) > 0:
-			return await BASE.phaaze.send_message(message.channel, ":warning: Whois dosn't support roles.")
-
-		#by_id
-		elif m[1].isdigit() and len(m) == 2:
-			b = await whois.get_by_id(BASE, message, m[1])
-			if b is None: return await BASE.phaaze.send_message(message.channel, ":warning: The ID search didn't find anything.")
-			return await whois.finish(BASE, message, b)
-
-		#by_name
-		else:
-			b = await whois.get_by_name(BASE, message, m[1:])
-			if b is None: return await BASE.phaaze.send_message(message.channel, ":warning: The Name search didn't find anything.")
-			return await whois.finish(BASE, message, b)
-
-	async def get_by_id(BASE, message, number):
-		user = discord.utils.get(message.server.members, id=number)
-		return user
-
-	async def get_by_name(BASE, message, name):
-		name = " ".join(d for d in name)
-		user = discord.utils.get(message.server.members, name=name)
-		return user
-
-	async def finish(BASE, message, user):
-		if user.nick is not None:
-			user.nick = "Nickname: " + user.nick
-		else: user.nick == None
-		if str(user.status) == "online": status = "Online"
-		elif str(user.status) == "offline": status = "Offline"
-		elif str(user.status) == "idle": status = "AFK"
-		elif str(user.status) == "dnd": status = "Do not disturb"
-		else: status = "Unknown"
-
-		role_list = []
-		for role in sorted(user.roles, key=lambda role: role.position, reverse=True):
-			if role.name != "@everyone":
-				role_list.append([role.position, role.name])
-
-		now = datetime.datetime.now()
-		cr = user.created_at
-		jo = user.joined_at
-		formated_created = "{t_} *[{delta} days ago]*".format(
-															t_ = cr.strftime("%d.%m.%y (%H:%M)"),
-															delta = (now - cr).days)
-
-		formated_joined = "{t_} *[{delta} days ago]*".format(
-															t_ = jo.strftime("%d.%m.%y (%H:%M)"),
-															delta = (now - jo).days)
-
-		main = 	"**ID**: {0}\n"\
-				"**Discriminator**: {1}\n"\
-				"**Acc. created at**: {2}\n"\
-				"**Joined at**: {3}".format(user.id,
-											user.discriminator,
-											formated_created,
-											formated_joined)
-
-		tem = discord.Embed (
-			title=user.nick,
-			color=user.colour.value,
-			description=main)
-
-		if user.bot: tem.add_field(name=":robot: Bot-account:",value="True",inline=True)
-
-		if not user.game == None:
-			if user.game.type == 1:
-				tem.add_field(name=":video_camera: Currently Streaming:",value=user.game.name,inline=True)
-			else:
-				tem.add_field(name=":game_die: Playing:",value=user.game.name,inline=True)
-		tem.add_field(name=":satellite: Status:",value=status,inline=True)
-
-		if len(role_list) >= 1:
-			tem.add_field(name=":notepad_spiral: Roles:",value="```" + tabulate(role_list, tablefmt="plain") + "```",inline=False)
-		else:
-			tem.add_field(name=":notepad_spiral: Roles:",value="None",inline=False)
-
-		tem.set_author(name="Name: {0}".format(user.name))
-
-		if user.avatar_url != "": tem.set_image(url=user.avatar_url)
-		else: tem.set_image(url=user.default_avatar_url)
-
-		return await BASE.phaaze.send_message(message.channel, content=message.author.mention, embed=tem)
