@@ -1,8 +1,35 @@
 #BASE.moduls._Discord_.PROCESS.Normal
 
 Anti_PM_Spam_Commands = []
-import asyncio, json, requests, discord, random, re, datetime
+import asyncio, requests, discord, random, re, datetime
 from tabulate import tabulate
+
+class Everything(object):
+	async def emotes(BASE, message, kwargs):
+		server_emotes = [e for e in message.server.emojis if not e.managed]
+		server_emotes_managed = [e for e in message.server.emojis if e.managed]
+
+		if not server_emotes and not server_emotes_managed:
+			return await BASE.phaaze.send_message(message.channel, ":x: This Server has no Emotes at all")
+
+		if server_emotes:
+			e_ = " | ".join(str(e) + " - `" + e.name + "`" for e in sorted(server_emotes, key=lambda e: e.name))
+			server_emotes = f"Server Custom Emotes: **{str(len(server_emotes))}**\n\n{e_}\n"
+
+		else: server_emotes = ""
+
+		if server_emotes_managed:
+			e_ = " | ".join("`" + e.name + "`" for e in sorted(server_emotes_managed, key=lambda e: e.name))
+			server_emotes_managed = f"\nTwitch Integration Emotes: **{str(len(server_emotes_managed))}**\n\n{e_}"
+
+		else: server_emotes_managed = ""
+
+		x = "\n\nThere are to many Emotes to display all"
+		rep_message = server_emotes + server_emotes_managed
+		if len(rep_message) > 1999:
+			rep_message[:(1999-len(x))] + x
+
+		return await BASE.phaaze.send_message(message.channel, rep_message[:1999])
 
 async def osu_base(BASE, message):
 	m = message.content.lower().split(" ")
@@ -393,31 +420,6 @@ async def quotes(BASE, message):
 		emb = discord.Embed(description=qoute["content"], colour = int(0xCECEF6))
 		emb.set_footer(text="Quote #" + "".join(str(i+1) for i in o))
 		return await BASE.phaaze.send_message(message.channel, embed=emb)
-
-async def emotes(BASE, message):
-	server_emotes = [e for e in message.server.emojis if not e.managed]
-	server_emotes_L = len(server_emotes)
-	by_twitch = [e for e in message.server.emojis if e.managed]
-	by_twitch_L = len(by_twitch)
-
-	if by_twitch_L == 0 == server_emotes_L:
-		return await BASE.phaaze.send_message(message.channel, ":x: This Server has no Custom Emotes")
-
-	if server_emotes_L > 0:
-		server_e = "Server Custom Emotes: **{0}**\n\n{1}".format(
-									str(server_emotes_L),
-									"  |  ".join(str(e) + " - `" + e.name + "`" for e in sorted(server_emotes, key=lambda e: e.name)))
-	else: server_e = ""
-
-	if by_twitch_L > 0:
-		twitch_e = "\nTwitch Integration Emotes: **{0}**\n\n{1}".format(
-									str(by_twitch_L),
-									"  |  ".join(str(e) + " - `" + e.name + "`" for e in sorted(by_twitch, key=lambda e: e.name)))
-	else: twitch_e = ""
-
-	w = server_e + twitch_e
-
-	return await BASE.phaaze.send_message(message.channel, w[:1999])
 
 async def choice(BASE, message):
 	m = message.content.split(" ")

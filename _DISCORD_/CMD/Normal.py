@@ -48,6 +48,9 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("leaderboard"):
 		await BASE.moduls._Discord_.Levels.leaderboard(BASE, message, kwargs)
 
+	if check.startswith("emotes"):
+		await BASE.moduls._Discord_.PROCESS.Normal.Everything.emotes(BASE, message, kwargs)
+
 	return
 
 	if check.startswith("doujin"):
@@ -81,9 +84,6 @@ async def Base(BASE, message, **kwargs):
 
 	if check.startswith("whois"):
 		await BASE.moduls.Commands.whois.whois(BASE, message)
-
-	if check.startswith("emotes"):
-		await BASE.moduls.Commands.emotes(BASE, message)
 
 	if check.startswith("osu"):
 		await BASE.moduls.Commands.osu_base(BASE, message)
