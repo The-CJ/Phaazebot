@@ -1,8 +1,18 @@
 #BASE.moduls._Discord_.PROCESS.Normal
 
-Anti_PM_Spam_Commands = []
 import asyncio, requests, discord, random, re, datetime
 from tabulate import tabulate
+
+class Forbidden(object):
+	async def disable_chan_quote(BASE, message, kwargs):
+		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Quote ask is disabled for this channel, only Mods and the Serverowner can use them.")
+		await asyncio.sleep(2.5)
+		await BASE.phaaze.delete_message(m)
+
+	async def owner_disabled_quote(BASE, message, kwargs):
+		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The Serverowner disabled Quotes, only the Serverowner can use them.")
+		await asyncio.sleep(2.5)
+		await BASE.phaaze.delete_message(m)
 
 class Whois(object):
 
@@ -19,7 +29,7 @@ class Whois(object):
 
 		#by_id
 		elif m[1].isdigit():
-			user = discord.utils.get(message.server.members, id= m[1])
+			user = discord.utils.get(message.server.members, id=m[1])
 			if user is None:
 				return await BASE.phaaze.send_message(message.channel, f":warning: No user found with ID: {m[1]}")
 
@@ -37,6 +47,7 @@ class Whois(object):
 	async def finish(BASE, message, kwargs, user):
 		if user.nick is not None:
 			user.nick = "Nickname: " + user.nick
+
 		else: user.nick == None
 		if str(user.status) == "online": status = "Online"
 		elif str(user.status) == "offline": status = "Offline"
@@ -121,6 +132,40 @@ class Everything(object):
 			rep_message[:(1999-len(x))] + x
 
 		return await BASE.phaaze.send_message(message.channel, rep_message[:1999])
+
+class Quotes(object):
+	async def Base(BASE, message, kwargs):
+		if kwargs.get('server_setting', {}).get('owner_disable_quote', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message):
+			asyncio.ensure_future(Forbidden.owner_disabled_quote(BASE, message, kwargs))
+			return
+		if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_quote', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message):
+			asyncio.ensure_future(Forbidden.disable_chan_quote(BASE, message, kwargs))
+			return
+
+		m = message.content.split(' ')
+		server_quotes = kwargs.get('server_quotes', {})
+
+		if not server_quotes:
+			return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: This server don't has any Quotes")
+
+		if len(m) == 1:
+			quote = random.choice(server_quotes)
+			en = discord.Embed(description=quote.get('content', '[ERROR GETTING QUOTE INFO]'))
+			en.set_footer(text="ID: "+quote.get('id', '[N/A]'))
+			return await BASE.phaaze.send_message(message.channel, embed=en)
+
+		if not m[1].isdigit():
+			return await BASE.phaaze.send_message(message.channel, ":warning: If you want to get a specific quote use a number")
+
+		index = m[1]
+
+		for quote in server_quotes:
+			if quote.get('id', None) == index:
+				en = discord.Embed(description=quote.get('content', '[ERROR GETTING QUOTE INFO]'))
+				en.set_footer(text="ID: "+quote.get('id', '[N/A]'))
+				return await BASE.phaaze.send_message(message.channel, embed=en)
+
+		return await BASE.phaaze.send_message(message.channel, f":warning: No quote found with id {index}")
 
 async def osu_base(BASE, message):
 	m = message.content.lower().split(" ")
