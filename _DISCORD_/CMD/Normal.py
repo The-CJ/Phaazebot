@@ -61,7 +61,7 @@ async def Base(BASE, message, **kwargs):
 		return await BASE.moduls._Discord_.Utils.Phaaze_info.About(BASE, message, kwargs)
 
 	if check.startswith("quote"):
-		return await BASE.moduls._Discord_.PROCESS.Quotes.Base(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.PROCESS.Normal.Quotes.Base(BASE, message, kwargs)
 
 	return
 

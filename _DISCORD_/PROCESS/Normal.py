@@ -151,18 +151,18 @@ class Quotes(object):
 		if len(m) == 1:
 			quote = random.choice(server_quotes)
 			en = discord.Embed(description=quote.get('content', '[ERROR GETTING QUOTE INFO]'))
-			en.set_footer(text="ID: "+quote.get('id', '[N/A]'))
+			en.set_footer(text="ID: "+str(quote.get('id', '[N/A]')))
 			return await BASE.phaaze.send_message(message.channel, embed=en)
 
 		if not m[1].isdigit():
 			return await BASE.phaaze.send_message(message.channel, ":warning: If you want to get a specific quote use a number")
 
-		index = m[1]
+		index = int(m[1])
 
 		for quote in server_quotes:
 			if quote.get('id', None) == index:
 				en = discord.Embed(description=quote.get('content', '[ERROR GETTING QUOTE INFO]'))
-				en.set_footer(text="ID: "+quote.get('id', '[N/A]'))
+				en.set_footer(text="ID: "+str(quote.get('id', '[N/A]')))
 				return await BASE.phaaze.send_message(message.channel, embed=en)
 
 		return await BASE.phaaze.send_message(message.channel, f":warning: No quote found with id {index}")
