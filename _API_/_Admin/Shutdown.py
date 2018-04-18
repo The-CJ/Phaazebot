@@ -14,7 +14,7 @@ def api(BASE, info={}, from_web=False, **kwargs):
 
 	#end auth
 
-	if admin.get('type', None) != 'superadmin':
+	if admin.get('type', "").lower() != 'superadmin':
 		class r (object):
 			content = json.dumps(dict(status='error', msg='unauthorised')).encode("UTF-8")
 			response = 400
@@ -49,7 +49,7 @@ def web(BASE, info={}, from_web=False, **kwargs):
 
 	#end auth
 
-	if admin.get('type', None) != 'superadmin':
+	if admin.get('type', "").lower() != 'superadmin':
 		class r (object):
 			content = json.dumps(dict(status='error', msg='unauthorised')).encode("UTF-8")
 			response = 400

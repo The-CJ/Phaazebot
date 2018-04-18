@@ -43,16 +43,25 @@ async def Base(BASE, message, **kwargs):
 		return await BASE.phaaze.send_message(message.channel, ":link: Need help with Phaaze? Maybe that can help:\nhttps://phaaze.net/wiki")
 
 	if check.startswith("level"):
-		await BASE.moduls._Discord_.Levels.get(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.Levels.get(BASE, message, kwargs)
 
 	if check.startswith("leaderboard"):
-		await BASE.moduls._Discord_.Levels.leaderboard(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.Levels.leaderboard(BASE, message, kwargs)
 
 	if check.startswith("emotes"):
-		await BASE.moduls._Discord_.PROCESS.Normal.Everything.emotes(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.PROCESS.Normal.Everything.emotes(BASE, message, kwargs)
 
 	if check.startswith("whois"):
-		await BASE.moduls._Discord_.PROCESS.Normal.Whois.Base(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.PROCESS.Normal.Whois.Base(BASE, message, kwargs)
+
+	if check.startswith("phaazeinfo"):
+		return await BASE.moduls._Discord_.Utils.Phaaze_info.Info(BASE, message, kwargs)
+
+	if check.startswith("phaaze"):
+		return await BASE.moduls._Discord_.Utils.Phaaze_info.About(BASE, message, kwargs)
+
+	if check.startswith("quote"):
+		return await BASE.moduls._Discord_.PROCESS.Quotes.Base(BASE, message, kwargs)
 
 	return
 
@@ -61,16 +70,6 @@ async def Base(BASE, message, **kwargs):
 			await BASE.moduls.Commands.doujin(BASE, message).request()
 		else:
 			await BASE.cmds.NORMAL.forbitten.nsfw(BASE, message)
-
-	if check.startswith("phaaze"):
-		await BASE.moduls.Utils.phaaze(BASE, message)
-		await BASE.phaaze.send_message(message.channel, ":incoming_envelope: --> PM")
-
-	if check.startswith("quote"):
-		if not await BASE.moduls.Utils.settings_check(BASE, message, "quotes"):
-			await BASE.moduls.Commands.quotes(BASE, message)
-		else:
-			await BASE.cmds.NORMAL.forbitten.quotes(BASE, message)
 
 	if check.startswith("define"):
 		await BASE.moduls.Commands.define(BASE, message)
