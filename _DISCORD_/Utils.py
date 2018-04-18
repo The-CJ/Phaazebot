@@ -144,121 +144,109 @@ async def make_get_server_quotes(BASE, id):
 	return []
 
 #stuff
-async def about(BASE, message):
-	app = BASE.vars.app
-	Admin_invite = discord.utils.oauth_url(app.id, discord.Permissions(permissions=8))
-	what = 	"Phaaze is a multiplatform bot, for Discord, Twitch and osu!\n"\
-			"Free for all and open for everyone.\n\n"\
-			"Phaaze comes with commands for fun, custom commands with changeable trigger, Twitch alerts, levels, osu! stats, wikipedia, Google search, urban, NSFW and many more...\n"\
-			"\nWanna add Phaaze to your server, or in your Twitch chat?"
-	t = discord.Embed(
-						description=what,
-						colour=int(0x00FFD0),
-						type="rich")
-	t.set_thumbnail(url=BASE.phaaze.user.avatar_url)
-	t.set_footer(text="Need help or more infos? '{0}help'".format(BASE.vars.PT), icon_url=app.icon_url)
-	t.set_author(name="Phaazebot", url="", icon_url=app.icon_url)
+class Phaaze_info(object):
+	async def Info(BASE, message, kwargs):
+		finish = ""
+		finish += f"{BASE.vars.Logo}\n"
+		finish += f"{' '*5}{BASE.version}\n"
+		finish += f"{' '*5}Uptime: {Phaaze_info.get_uptime(BASE)}\n\n"
 
-	t.add_field(name="Phaaze for Discord", value="Just click this link and select a server:\n"+Admin_invite, inline=False)
-	t.add_field(name="Phaaze for Twitch", value="Go to http://www.twitch.tv/phaazebot and type `>join` for adding it to your channel", inline=False)
-	t.add_field(name="Support Phaaze", value="Phaaze will always be free, support it to keep it that way:\nhttps://www.patreon.com/the_cj", inline=False)
-	t.add_field(name="Phaaze Server", value="https://discord.gg/ZymrebS | https://discord.me/phaaze", inline=False)
-	return await BASE.phaaze.send_message(message.channel, embed=t)
+		finish += f"Status:\n{Phaaze_info.get_status_tablulate(BASE)}\n\n"
 
-async def get_unique_members(BASE):
-	a = []
+		finish += "-- Stats for Discord --\n\n"
 
-	for server in BASE.phaaze.servers:
-		for member in server.members:
-			if member.id not in a: a.append(member.id)
+		finish += Phaaze_info.get_discord_infos(BASE)
 
-	return len(a)
+		finish += f"\n\nContact:\n"
+		finish += f"Developer: {str(BASE.vars.app.owner)} | ID: {BASE.vars.app.owner.id}\n"
+		finish += f"Mail: admin@phaaze.net\n"
+		finish += f"Dev Server: https://discord.gg/ZymrebS | https://discord.me/phaaze\n"
 
-async def get_uptime(BASE):
-	uptime_var_1 = BASE.uptime_var_1
-	uptime_var_2 = time.time()
+		try:
+			await BASE.phaaze.send_message(message.channel, ":incoming_envelope: -> PM")
+			return await BASE.phaaze.send_message(message.author, f"```{finish}```")
 
-	now = int(uptime_var_2) - int(uptime_var_1) # sec
+		except:
+			pass
 
-	m, s = divmod(now, 60) # min, sec
-	h, m = divmod(m, 60) # hour, min
-	d, h = divmod(h, 24) # days, hour
-	w, d = divmod(d, 7) #week, days
+	def get_uptime(BASE):
+		uptime_var_1 = BASE.uptime_var_1
+		uptime_var_2 = time.time()
 
-	r = ""
+		now = int(uptime_var_2) - int(uptime_var_1) # sec
 
-	if s > 0: r = str(s) + "s" + r
-	if m > 0: r = str(m) + "m-" + r
-	if h > 0: r = str(h) + "h-" + r
-	if d > 0: r = str(d) + "d-" + r
-	if w > 0: r = str(d) + "w-" + r
+		m, s = divmod(now, 60) # min, sec
+		h, m = divmod(m, 60) # hour, min
+		d, h = divmod(h, 24) # days, hour
+		w, d = divmod(d, 7) #week, days
 
-	return r
+		r = ""
 
-async def phaaze(BASE, message):
-	m = 	[
+		if s > 0: r = str(s) + "s" + r
+		if m > 0: r = str(m) + "m-" + r
+		if h > 0: r = str(h) + "h-" + r
+		if d > 0: r = str(d) + "d-" + r
+		if w > 0: r = str(d) + "w-" + r
 
-			["PhaazeMain", ":", "Active"],
-			["PhaazeDiscord", ":", "Active"],
-			["PhaazeTwitchIRCv3", ":", "Active"],
-			["PhaazeTwitchAlerts", ":", "Active"],
-			["PhaazeAI", ":", "Active"],
-			["PhaazeMusic", ":", "Offline"],
-			["PhaazeWebsite", ":", "Active"],
-			["PhaazeOsu!", ":", "Active"],
-			["PhaazeOsu!IRC", ":", "Active"],
-			["PhaazeTwitter", ":", "Active"]
+		return r
 
-			]
+	def get_status_tablulate(BASE):
+		status = [
+			["PhaazeOS", ":", "Active" if BASE.active.main else "Offline"],
+			["PhaazeWeb", ":", "Active" if BASE.active.web else "Offline"],
+			["PhaazeAPI", ":", "Active" if BASE.active.api else "Offline"],
+			["PhaazeDiscord", ":", "Active" if BASE.active.discord else "Offline"],
+			["PhaazeTwitchIRC", ":", "Active" if BASE.active.twitch_irc else "Offline"],
+			["PhaazeTwitchAlerts", ":", "Active" if BASE.active.twitch_alert else "Offline"],
+			["PhaazeAI", ":", "Active" if BASE.active.ai else "Offline"],
+			["PhaazeMusic", ":", "Active" if BASE.active.music else "Offline"],
+			["PhaazeOsu!Functions", ":", "Active" if BASE.active.osu else "Offline"],
+			["PhaazeOsu!IRC", ":", "Active" if BASE.active.osu_irc else "Offline"],
+			["PhaazeTwitter", ":", "Active" if BASE.active.twitter else "Offline"],
+			["PhaazeYouTube", ":", "Active" if BASE.active.youtube else "Offline"],
+		]
 
-	mm = "```{logo}\n		{version}\n".format(logo=BASE.vars.Logo, version=BASE.version)
+		return tabulate.tabulate(status, tablefmt="plain")
 
-	mmm = mm + "		Uptime: {uptime}\n\nStatus:\n{moduls}\n".format(uptime=await get_uptime(BASE),moduls=tabulate.tabulate(m, tablefmt="plain"))
-
-	d = 	[
-
-			["Library:", "discord.py - " + discord.__version__],
+	def get_discord_infos(BASE):
+		infos = [
+			["Libary", "Rapptz/discord.py - " + discord.__version__],
 			["ID:", BASE.phaaze.user.id],
 			["Nickname:", BASE.phaaze.user.name],
-			["Discriminator:", "#" + BASE.phaaze.user.discriminator],
-			["Active in:", "{0} Servers".format(str(len(BASE.phaaze.servers)))],
-			["Can see:", "{0} unique Members".format(str(await get_unique_members(BASE)))]
+			["Discriminator:", f"#{BASE.phaaze.user.discriminator}"],
+			["Active in:", f"{str(len(BASE.phaaze.servers))} Servers"],
+			["Can see:", f"{Phaaze_info.get_unique_members(BASE)} unique Members"]
+		]
 
-			]
+		return tabulate.tabulate(infos, tablefmt="plain")
 
-	dd = "\nDiscord:\n\n{0}\n ".format(tabulate.tabulate(d, tablefmt="plain"))
+	def get_unique_members(BASE):
+		a = []
 
-	t = 	[
+		for server in BASE.phaaze.servers:
+			for member in server.members:
+				if member.id not in a: a.append(member.id)
 
-			["API:", "Active"],
-			["Nickname:", "Phaazebot"],
-			["Active IRC Channels:", "N/A"],
-			["msg/m:", "N/A"],
+		return len(a)
 
+	async def About(BASE, message, kwargs):
+		app = BASE.vars.app
+		Admin_invite = discord.utils.oauth_url(app.id, discord.Permissions(permissions=8))
+		what = 	"Phaaze is a multiplatform bot, for Discord, Twitch and osu!\n"\
+				"Free for all and open for everyone.\n\n"\
+				"Phaaze comes with commands for fun, custom commands with changeable trigger, Twitch alerts, levels, osu! stats, wikipedia, Google search, urban, NSFW and many more...\n"\
+				"\nWanna add Phaaze to your server, or in your Twitch chat?"
+		t = discord.Embed(
+							description=what,
+							colour=int(0x00FFD0),
+							type="rich")
+		t.set_thumbnail(url=BASE.phaaze.user.avatar_url)
+		t.set_footer(text="Powered by PhaazeOS", icon_url=app.icon_url)
+		t.set_author(name="Phaazebot", url="", icon_url=app.icon_url)
 
-			]
-
-	tt = "\nTwitch:\n\n{0}\n".format(tabulate.tabulate(t, tablefmt="plain"))
-
-	o = 	[
-
-			["API:", "Active"],
-			["PP calc:", "Active"],
-			["Nickname:", "Phaazebot"],
-			["Users Online:", "N/A"]
-
-			]
-
-	oo = "\nOsu!:\n\n{0}\n".format(tabulate.tabulate(o, tablefmt="plain"))
-
-	p = "{0} | ID:{1}\n".format(str(BASE.vars.app.owner), BASE.vars.app.owner.id)
-	p = p + "https://discord.gg/ZymrebS | https://discord.me/phaaze"
-
-	pp = "\nDeveloper Contact:\n\n{0}```".format(p)
-
-	ALL = mmm+dd+tt+oo+pp
-
-	try:
-		await BASE.phaaze.send_message(message.author, ALL)
-	except:
-		pass
+		t.add_field(name="Phaaze for Discord", value="Just click this link and select a server:\n"+Admin_invite, inline=False)
+		t.add_field(name="Phaaze for Twitch", value="Go to https://www.twitch.tv/phaazebot and type `>join` for adding it to your channel", inline=False)
+		t.add_field(name="Phaaze Website", value="https://phaaze.net", inline=False)
+		t.add_field(name="Phaaze Server", value="https://discord.gg/ZymrebS | https://discord.me/phaaze", inline=False)
+		t.add_field(name="Support Phaaze", value="Phaaze will always be free, support it to keep it that way:\nhttps://www.patreon.com/the_cj", inline=False)
+		return await BASE.phaaze.send_message(message.channel, embed=t)
