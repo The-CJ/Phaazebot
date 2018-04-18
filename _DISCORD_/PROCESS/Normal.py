@@ -1,6 +1,5 @@
 #BASE.moduls._Discord_.PROCESS.Normal
 
-Anti_PM_Spam_Commands = []
 import asyncio, requests, discord, random, re, datetime
 from tabulate import tabulate
 
@@ -19,7 +18,7 @@ class Whois(object):
 
 		#by_id
 		elif m[1].isdigit():
-			user = discord.utils.get(message.server.members, id= m[1])
+			user = discord.utils.get(message.server.members, id=m[1])
 			if user is None:
 				return await BASE.phaaze.send_message(message.channel, f":warning: No user found with ID: {m[1]}")
 
@@ -37,6 +36,7 @@ class Whois(object):
 	async def finish(BASE, message, kwargs, user):
 		if user.nick is not None:
 			user.nick = "Nickname: " + user.nick
+
 		else: user.nick == None
 		if str(user.status) == "online": status = "Online"
 		elif str(user.status) == "offline": status = "Offline"
