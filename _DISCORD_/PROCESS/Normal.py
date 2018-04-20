@@ -14,6 +14,69 @@ class Forbidden(object):
 		await asyncio.sleep(2.5)
 		await BASE.phaaze.delete_message(m)
 
+class Everything(object):
+	async def emotes(BASE, message, kwargs):
+		server_emotes = [e for e in message.server.emojis if not e.managed]
+		server_emotes_managed = [e for e in message.server.emojis if e.managed]
+
+		if not server_emotes and not server_emotes_managed:
+			return await BASE.phaaze.send_message(message.channel, ":x: This Server has no Emotes at all")
+
+		if server_emotes:
+			e_ = " | ".join(str(e) + " - `" + e.name + "`" for e in sorted(server_emotes, key=lambda e: e.name))
+			server_emotes = f"Server Custom Emotes: **{str(len(server_emotes))}**\n\n{e_}\n"
+
+		else: server_emotes = ""
+
+		if server_emotes_managed:
+			e_ = " | ".join("`" + e.name + "`" for e in sorted(server_emotes_managed, key=lambda e: e.name))
+			server_emotes_managed = f"\nTwitch Integration Emotes: **{str(len(server_emotes_managed))}**\n\n{e_}"
+
+		else: server_emotes_managed = ""
+
+		x = "\n\nThere are to many Emotes to display all"
+		rep_message = server_emotes + server_emotes_managed
+		if len(rep_message) > 1999:
+			rep_message[:(1999-len(x))] + x
+
+		return await BASE.phaaze.send_message(message.channel, rep_message[:1999])
+
+	async def define(BASE, message, kwargs):
+		LINK = "https://mashape-community-urban-dictionary.p.mashape.com/define"
+		TERM = "?term="
+		Header = {'X-Mashape-Key': BASE.access.Mashape}
+
+		m = message.content.split(" ")
+
+		if len(m) == 1:
+			return await BASE.phaaze.send_message(message.channel, f':warning: You need to define a word. `{BASE.vars.PT}define [thing]`')
+
+		thing = " ".join(g for g in m[1:])
+
+		if "phaaze" in message.content.lower() or "phaazebot" in message.content.lower():
+			return await BASE.phaaze.send_message(message.channel, "Thats me :D")
+
+		#request or end
+		try:
+			res = requests.get(LINK+TERM+thing, headers= Header).json()
+		except:
+			return await BASE.phaaze.send_message(message.channel, ":warning: A Error occurred during your requestyour request, try agoin later")
+
+		if not res.get("list", []):
+			return await BASE.phaaze.send_message(message.channel, f":x: Sorry, but Urban dictionary don't know what: `{thing}` is")
+
+		top = res.get("list", [])[0].get("definition", "[N/A]")
+		example = res.get("list", [])[0].get("example", "[N/A]")
+
+		rest_list = res["list"][1:]
+
+		emb = discord.Embed(description=":notebook_with_decorative_cover:\n"+top)
+		emb.set_author(name=thing, url="http://www.urbandictionary.com/define.php?term="+thing.replace(" ", "+"))
+		emb.add_field(name=":book: Example", value=example)
+		if rest_list: emb.set_footer(text=f"and {str(len(rest_list))} other definitions")
+
+		return await BASE.phaaze.send_message(message.channel, embed=emb)
+
 class Whois(object):
 
 	async def Base(BASE, message, kwargs):
@@ -105,33 +168,6 @@ class Whois(object):
 			tem.set_image(url=user.default_avatar_url)
 
 		return await BASE.phaaze.send_message(message.channel, embed=tem)
-
-class Everything(object):
-	async def emotes(BASE, message, kwargs):
-		server_emotes = [e for e in message.server.emojis if not e.managed]
-		server_emotes_managed = [e for e in message.server.emojis if e.managed]
-
-		if not server_emotes and not server_emotes_managed:
-			return await BASE.phaaze.send_message(message.channel, ":x: This Server has no Emotes at all")
-
-		if server_emotes:
-			e_ = " | ".join(str(e) + " - `" + e.name + "`" for e in sorted(server_emotes, key=lambda e: e.name))
-			server_emotes = f"Server Custom Emotes: **{str(len(server_emotes))}**\n\n{e_}\n"
-
-		else: server_emotes = ""
-
-		if server_emotes_managed:
-			e_ = " | ".join("`" + e.name + "`" for e in sorted(server_emotes_managed, key=lambda e: e.name))
-			server_emotes_managed = f"\nTwitch Integration Emotes: **{str(len(server_emotes_managed))}**\n\n{e_}"
-
-		else: server_emotes_managed = ""
-
-		x = "\n\nThere are to many Emotes to display all"
-		rep_message = server_emotes + server_emotes_managed
-		if len(rep_message) > 1999:
-			rep_message[:(1999-len(x))] + x
-
-		return await BASE.phaaze.send_message(message.channel, rep_message[:1999])
 
 class Quotes(object):
 	async def Base(BASE, message, kwargs):
@@ -405,49 +441,6 @@ async def osu_base(BASE, message):
 
 		else:
 			return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
-
-async def define(BASE, message):
-	LINK = "https://mashape-community-urban-dictionary.p.mashape.com/define"
-	TERM = "?term="
-	Header = {'X-Mashape-Key': BASE.access.Mashape}
-
-	m = message.content.split(" ")
-	mm = message.content.lower().split(" ")
-
-	if len(m) == 1:
-		return await BASE.phaaze.send_message(message.channel, ':warning: You need to define a word. `{0}define [thing]`'.format(BASE.vars.PT))
-
-	else:
-		thing = " ".join(g for g in m[1:])
-
-		if "phaaze" in mm or "phaazebot" in mm:
-			return await BASE.phaaze.send_message(message.channel, "Thats me :D")
-
-		#request or end
-		try:
-			res = requests.get(LINK+TERM+thing, headers= Header).json()
-		except:
-			return await BASE.phaaze.send_message(message.channel, ":warning: A Error occurred during your requestyour request, try agoin later")
-
-	#0 result
-		if len(res["list"]) == 0:
-			return await BASE.phaaze.send_message(message.channel, ":x: Sorry, but Urban dictionary don't know what: `{0}` is".format(thing))
-
-		else:
-			Result = ":notebook_with_decorative_cover:   **{0}**:\n\n"
-
-			top = res["list"][0]["definition"]
-			example = res["list"][0]["example"]
-
-			rest_list = res["list"][1:]
-
-			if len(rest_list) == 0:
-				return await BASE.phaaze.send_message(message.channel, Result.format(thing) + ":book:: {0}\n\ne.g.: *{1}*".format(top, example))
-			else:
-				if len(res["list"]) > 1: More = discord.Embed(title="and {0} other definitions".format(str(len(rest_list))), url="http://www.urbandictionary.com/define.php?term="+thing.replace(" ", "+"))
-				else: More = None
-
-				return await BASE.phaaze.send_message(message.channel, embed=More, content=Result.format(thing) + ":book:: {0}\n\ne.g.: *{1}*".format(top, example))
 
 async def quotes(BASE, message):
 	m = message.content.split(" ")

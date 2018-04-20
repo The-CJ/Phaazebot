@@ -63,15 +63,12 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("quote"):
 		return await BASE.moduls._Discord_.PROCESS.Normal.Quotes.Base(BASE, message, kwargs)
 
+	if check.startswith("define"):
+		return await BASE.moduls._Discord_.PROCESS.Normal.Everything.define(BASE, message, kwargs)
+
 	return
 
 	if check.startswith("doujin"):
-		if await BASE.moduls.Utils.settings_check(BASE, message, "enable_nsfw"):
-			await BASE.moduls.Commands.doujin(BASE, message).request()
-		else:
-			await BASE.cmds.NORMAL.forbitten.nsfw(BASE, message)
-
-	if check.startswith("define"):
 		await BASE.moduls.Commands.define(BASE, message)
 
 	if check.startswith("wiki"):
