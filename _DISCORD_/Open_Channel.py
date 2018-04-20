@@ -1,6 +1,6 @@
 ##BASE.moduls._Discord_.Open
 
-import asyncio, requests, socket, json, discord
+import asyncio, discord
 
 async def base(BASE, message):
 	#R.o.D. Sys Overr.

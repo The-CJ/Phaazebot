@@ -66,20 +66,13 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("define"):
 		return await BASE.moduls._Discord_.PROCESS.Normal.Everything.define(BASE, message, kwargs)
 
+	if check.startswith("wiki"):
+		return await BASE.moduls._Discord_.PROCESS.Normal.Wiki.Base(BASE, message, kwargs)
+
 	return
 
 	if check.startswith("doujin"):
 		await BASE.moduls.Commands.define(BASE, message)
-
-	if check.startswith("wiki"):
-		if message.author.id in BASE.cooldown.Wikipedia_cooldowns: return
-
-		BASE.cooldown.Wikipedia_cooldowns.append(message.author.id)
-
-		await BASE.moduls.Commands.wiki.wiki(BASE, message)
-
-		await asyncio.sleep(15)
-		BASE.cooldown.Wikipedia_cooldowns.remove(message.author.id)
 
 	if check.startswith("osu"):
 		await BASE.moduls.Commands.osu_base(BASE, message)

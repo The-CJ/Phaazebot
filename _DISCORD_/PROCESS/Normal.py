@@ -203,6 +203,114 @@ class Quotes(object):
 
 		return await BASE.phaaze.send_message(message.channel, f":warning: No quote found with id {index}")
 
+class Wiki(object):
+
+	SEARCH = "https://{}.wikipedia.org/w/api.php?action=opensearch&limit=7&search="
+	SUMMARY = "https://{}.wikipedia.org/api/rest_v1/page/summary/"
+
+	async def Base(BASE, message, kwargs):
+		if message.author.id not in BASE.cooldown.Owner_CD:
+			asyncio.ensure_future(BASE.cooldown.CD_Wikipedia(message))
+		else: return
+
+		m = message.content.split()
+
+		if len(m) == 1:
+			return await BASE.phaaze.send_message(message.channel, f":warning: You need to define something you wanna search for. `{BASE.vars.PT}wiki(/Language) [thing]"\
+			f"`\n\n`(/Language)` - (Optional) change the return language e.g. `{BASE.vars.PT}wiki/de YouTube` return German results | Default: en\n`[thing]` - whatever you wanna look up.")
+
+		language = Wiki.get_language(m[0])
+		thing = " ".join(w for w in m[1:])
+
+		try:
+			r = requests.get( Wiki.SEARCH.format(language)+thing ).json()
+		except:
+			return await BASE.phaaze.send_message(message.channel, f":warning: Could not connect to Wikipedia, maybe the language you (`{language}`) entered is not avaliable?.")
+
+		r = Wiki.remove_refereTo(r)
+
+		if not r[1]:
+			return await BASE.phaaze.send_message(
+				message.channel, f":x: Wikipedia could not found anything for `{thing}` , try again in a moment.")
+
+		if len(r[1]) == 1:
+			return await Wiki.get_summary(BASE, message, kwargs, language, r[1][0])
+
+		if r[0].lower() in [t.lower() for t in r[1]]:
+			return await Wiki.get_summary(BASE, message, kwargs, language, r[0])
+
+		else:
+			return await Wiki.get_autocomplete(BASE, message, kwargs, language, r)
+
+	async def get_autocomplete(BASE, message, kwargs, language, r):
+		rText = ""
+		n = 1
+		for element in r[1]:
+			rText += f"{Wiki.get_number(n)} {element}\n"
+			n += 1
+		emb = discord.Embed(title=":grey_exclamation: There are multiple results. Please choose", description=rText)
+		emb.set_footer(text="Please type only the number you wanna search.")
+
+		x = await BASE.phaaze.send_message(message.channel, embed=emb)
+		a = await BASE.phaaze.wait_for_message(timeout=15, author=message.author, channel=message.channel)
+		if not a.content.lower().isdigit():
+			await BASE.phaaze.delete_message(x)
+			return await BASE.phaaze.send_message(message.channel, ":warning: Please only enter a number... Try later again")
+
+		elif not (0 < int(a.content) <= len(r[1])):
+			await BASE.phaaze.delete_message(x)
+			return await BASE.phaaze.send_message(message.channel, f":warning: Please only enter a number between 1 - {str(len(r[1]))}... Try later again")
+
+		else:
+			return await Wiki.get_summary(BASE, message, kwargs, language, r[1][(int(a.content)-1)])
+
+	async def get_summary(BASE, message, kwargs, language, therm):
+		FAIL = '[ERROR REQUEST]'
+		r = requests.get( Wiki.SUMMARY.format(language)+therm ).json()
+
+		emb = discord.Embed(title=r.get('description', None) ,description=r.get('extract', FAIL), url=r.get('content_urls', {}).get('desktop', {}).get('page', ""))
+		emb.set_author(name=r.get('title', FAIL), url=r.get('content_urls', {}).get('desktop', {}).get('page', ""))
+		emb.set_thumbnail(url=r.get('thumbnail', {}).get('source', ''))
+		return await BASE.phaaze.send_message(message.channel, embed=emb)
+
+	def get_language(str_):
+		spl = str_.split('/')
+		if len(spl) >= 2:
+			return spl[1]
+		else:
+			return "en"
+
+	def get_number(number):
+		if number == 1:
+			return ":one: "
+
+		if number == 2:
+			return ":two: "
+
+		if number == 3:
+			return ":three: "
+
+		if number == 4:
+			return ":four: "
+
+		if number == 5:
+			return ":five: "
+
+		if number == 6:
+			return ":six: "
+
+		if number == 7:
+			return ":seven: "
+
+	def remove_refereTo(r):
+		try:
+			if r[2][0].lower().endswith(":") or r[2][0].lower() == "":
+				r[1].pop(0)
+				r[2].pop(0)
+		except: pass
+
+		return r
+
 async def osu_base(BASE, message):
 	m = message.content.lower().split(" ")
 
@@ -923,158 +1031,3 @@ class doujin(object):
 			return await self.BASE.phaaze.send_message(self.message.author, "http://phaaze.wikia.com/wiki/Discord-Commands-Normal-doujin\n" + self.BASE.vars.doujin_help)
 		except:
 			pass
-
-class wiki(object):
-	async def wiki(BASE, message):
-		wikipedia = BASE.moduls.wikipedia
-
-		m = message.content.split(" ")
-
-		#no term
-		if len(m) == 1:
-			return await BASE.phaaze.send_message(message.channel, ':warning: You need to define a thing you wanna ask. `{0}wikipedia[lang] [thing]`\n`[lang]` - Can be empty or used with a "/" to change the return language e.g.: `{0}wikipedia/de Apfelbaum`, Default is "en"\n`[thing]` - Whatever you wanna search'.format(BASE.vars.PT))
-
-		#set things
-		thing = " ".join(g for g in m[1:])
-		lang = m[0].split("/")
-
-		#change lang?
-		if len(lang) > 1:
-			wikipedia.set_lang(lang[1])
-			LINK = 'https://' + lang[1].lower() + '.wikipedia.org/wiki/'
-		else:
-			wikipedia.set_lang("en")
-			LINK = 'https://en.wikipedia.org/wiki/'
-
-		#exactly
-		try:
-			page = wikipedia.page(thing,auto_suggest=False)
-
-			#short it
-			text = page.summary[:1900]
-			if len(page.summary) > 1900: text = text + ". . . . . :bookmark_tabs: And more."
-
-			#aaaand finished
-			send = ":books: **{0}**\n\n{1}".format(page.title,text)
-			return await BASE.phaaze.send_message(message.channel, send, embed=discord.Embed(title="Go to the full page.", url=LINK+page.title))
-
-		#recommendations
-		except:
-			#get hits and recommendations
-			list, or_that = wikipedia.search(thing, suggestion=True)
-
-			#0 liste, 0 vorschläge
-			if len(list) == 0 and or_that == None:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Seems like Wikipedia don't know what: `{}`, is.".format(thing))
-
-			#0 hits, aber autokorrektur
-			elif len(list) == 0:
-				t =  await BASE.phaaze.send_message(message.channel, ":scroll: Do You mean: `{}`?\n\n:regional_indicator_y: / :regional_indicator_n:".format(or_that))
-				choose = await BASE.phaaze.wait_for_message(timeout=30, author=message.author, channel=message.channel)
-				if choose != None:
-					if choose.content.lower() == "y":
-						try:
-							page = wikipedia.page(or_that)
-						except:
-							return await BASE.phaaze.send_message(message.channel, ":warning: Sorry, but an unknown Error just broke the internet, try something else.")
-
-						#short it
-						text = page.summary[:1900]
-						if len(page.summary) > 1900: text = text + ". . . . . :bookmark_tabs: And more."
-
-						#aaaand finished
-						send = ":books: **{0}**\n\n{1}".format(page.title,text)
-						return await BASE.phaaze.edit_message(t, new_content=send, embed=None)
-
-			#found one. or two, or 3 or...
-			if len(list) > 0:
-				NR = 1
-				ressults = []
-				to_search = []
-
-				#make a happy little list
-				for sugg in list:
-					if sugg.lower() != thing.lower():
-						to_search.append(sugg)
-						ressults.append("{0} {1}".format(wiki.get_keycap(NR),sugg))
-						NR = NR + 1
-					else:
-						pass
-
-				#put stuff together
-
-				if or_that != None:
-					Maybe = "\n:zero: Or do you mean: `" + or_that + "`?"
-				else:
-					Maybe = ""
-				base = ":mag_right: What exactly are you looking for?\n\n{0}\n{1}".format("\n".join(f for f in ressults), Maybe)
-
-				#send question and get more stuff
-				msg = await BASE.phaaze.send_message(message.channel, base)
-
-				def sure(m):
-					try:
-						nr = int(m.content)
-						return 10 >= nr > -1
-
-					except:
-						return False
-
-				#choose a thing
-				choose = await BASE.phaaze.wait_for_message(timeout=30, author=message.author, channel=message.channel, check=sure)
-
-				#work on result
-				if not choose == None:
-					#change lang?
-					if len(lang) > 1:
-						wikipedia.set_lang(lang[1])
-					else:
-						wikipedia.set_lang("en")
-
-					#select and request page
-					file = int(choose.content) - 1
-
-					if file > len(list) - 1:
-						return
-
-					if file != -1:
-						try:
-							page = wikipedia.page(to_search[file])
-						except:
-							return await BASE.phaaze.send_message(message.channel, ":warning: Sorry, but an unknown Error just broke the internet, try something else")
-					else:
-						page = wikipedia.page(or_that)
-
-					#short it
-					text = page.summary[:1900]
-					if len(page.summary) > 1900: text = text + ". . . . . :bookmark_tabs: And more."
-
-					#aaaand finished
-					send = ":books: **{0}**\n\n{1}".format(page.title,text)
-					return await BASE.phaaze.edit_message(msg, new_content=send, embed=None)
-
-	def get_keycap(n):
-		if n == 0:
-			return ":zero:"
-		if n == 1:
-			return ":one:"
-		if n == 2:
-			return ":two:"
-		if n == 3:
-			return ":three:"
-		if n == 4:
-			return ":four:"
-		if n == 5:
-			return ":five:"
-		if n == 6:
-			return ":six:"
-		if n == 7:
-			return ":seven:"
-		if n == 8:
-			return ":eight:"
-		if n == 9:
-			return ":nine:"
-		if n == 10:
-			return ":keycap_ten:"
-		if n > 10:
-			return ":arrow_forward:"

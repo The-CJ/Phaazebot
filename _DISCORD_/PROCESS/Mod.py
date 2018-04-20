@@ -1,6 +1,6 @@
 #BASE.moduls._Discord_.PROCESS.Mod
 
-import asyncio, json, discord, tabulate
+import asyncio, discord, tabulate
 
 class Settings(object):
 	async def Base(BASE, message, kwargs):
