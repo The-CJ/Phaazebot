@@ -1,16 +1,8 @@
 __pycache__
 ACCESS_DATA
-DATABASE
-LEVELS
-SERVERFILES
-STUFF
-VARS/cmdlist/cj.txt
-CMD/_CJ.py
-/logging_.py
 UTILS/twitch_streams
 UTILS/server_channel_id_for_new.json
 UTILS/*.txt
-VARS/Schregstrich.txt
 Phaaze_main.py
 _TWITCH_/Channel*
 _TWITCH_/_achtive_channels.json
