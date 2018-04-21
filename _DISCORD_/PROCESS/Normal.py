@@ -77,6 +77,34 @@ class Everything(object):
 
 		return await BASE.phaaze.send_message(message.channel, embed=emb)
 
+	async def choice(BASE, message, kwargs):
+		m = message.content.split(" ")
+		if len(m) == 1:
+			return await BASE.phaaze.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
+
+		M = message.content.split(" ", 1)[1].split(";")
+
+		for item in M:
+			item.replace(" ","")
+			item.replace("	","")
+
+		try:
+			M.remove("")
+		except:
+			pass
+
+		if len(M) == 1:
+			return await BASE.phaaze.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
+
+		winner = random.choice(M)
+		winner = winner.replace("`", "")
+		winner = winner.replace("@everyone", "")
+		winner = winner.replace("**", "")
+
+		resp = "And the winner is...\n\n:game_die:- **{}** -:8ball:".format(winner)
+
+		return await BASE.phaaze.send_message(message.channel, resp)
+		
 class Whois(object):
 
 	async def Base(BASE, message, kwargs):
@@ -551,34 +579,6 @@ async def osu_base(BASE, message):
 
 		else:
 			return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
-
-async def choice(BASE, message):
-	m = message.content.split(" ")
-	if len(m) == 1:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
-
-	M = message.content.split(" ", 1)[1].split(";")
-
-	for item in M:
-		item.replace(" ","")
-		item.replace("	","")
-
-	try:
-		M.remove("")
-	except:
-		pass
-
-	if len(M) == 1:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
-
-	winner = random.choice(M)
-	winner = winner.replace("`", "")
-	winner = winner.replace("@everyone", "")
-	winner = winner.replace("**", "")
-
-	resp = "And the winner is...\n\n:game_die:- **{}** -:8ball:".format(winner)
-
-	return await BASE.phaaze.send_message(message.channel, resp)
 
 #Currently unusable D:
 class Doujin(object):

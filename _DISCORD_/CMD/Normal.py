@@ -72,14 +72,15 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("doujin"):
 		return await BASE.moduls._Discord_.PROCESS.Normal.Doujin.Base(BASE, message, kwargs)
 
+	if check.startswith("choice"):
+		return await BASE.moduls._Discord_.PROCESS.Normal.Everything.choice(BASE, message, kwargs)
+
 	return
 
 
 	if check.startswith("osu"):
 		await BASE.moduls.Commands.osu_base(BASE, message)
 
-	if check.startswith("choice"):
-		await BASE.moduls.Commands.choice(BASE, message)
 
 	if check.startswith("about"): # IDEA: Remove?
 		await BASE.moduls.Utils.about(BASE, message)
