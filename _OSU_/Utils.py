@@ -59,50 +59,21 @@ async def get_pp(ID, c100=0, c50=0, misses=0, sv=1, acc=100.0, combo=0, mod_s=""
 
 	return e
 
-async def get_user(BASE, user=None, mode="0"):
-	if user == None: return None
+async def get_user(BASE, u=None, m="0", t=None):
+	if u == None: return None
 
-	result = requests.get(MAIN + USER + "?k="+BASE.access.Osu_API_Token + "&m={0}&u={1}".format(mode, user))
+	if t==None and u.isdigit():
+		t="id"
+	elif t==None and not u.isdigit():
+		t="string"
+
+	result = requests.get(f"{MAIN}{USER}?k={BASE.access.Osu_API_Token}&m={m}&type={t}&u={u}")
 	result = result.json()
 
 	#not found
 	if result == []: return None
-	else: result = result[0]
 
-	class user_info(object):
-		def __init__(self, result):
-
-			if mode == "0": mode_name = "osu!"
-			if mode == "1": mode_name = "osu!taiko"
-			if mode == "2": mode_name = "osu!ctb"
-			if mode == "3": mode_name = "osu!mania"
-
-			self.json = result
-			self.mode = mode
-			self.mode_name = mode_name
-			self.name = result["username"]
-			self.user_id = result["user_id"]
-			self.playcount = result["playcount"]
-
-			self.pp = result["pp_raw"]
-			self.level = result["level"]
-			self.acc = result["accuracy"]
-
-			self.rank = result["pp_rank"]
-			self.country_rank =result["pp_country_rank"]
-			self.country = result["country"].lower()
-
-			self.total_score = result["total_score"]
-			self.ranked_score = result["ranked_score"]
-
-			self.count_50 = result["count50"]
-			self.count_100 = result["count100"]
-			self.count_300 = result["count300"]
-			self.count_A = result["count_rank_a"]
-			self.count_S = result["count_rank_s"]
-			self.count_SS = result["count_rank_ss"]
-
-	return user_info(result)
+	return result[0]
 
 async def get_all_maps(BASE, ID=None, mode="b"):
 	KEY = "?k={0}".format(BASE.access.Osu_API_Token)
