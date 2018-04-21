@@ -593,7 +593,7 @@ class Osu(object):
 		EMB.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
 		EMB.set_author(name="Stats for: {0}".format(mode.lower().capitalize()))
 
-		return await BASE.phaaze.send_message(message.channel, content=message.author.mention, embed=EMB)
+		return await BASE.phaaze.send_message(message.channel, embed=EMB)
 
 	def extract_user(str_):
 		#link
