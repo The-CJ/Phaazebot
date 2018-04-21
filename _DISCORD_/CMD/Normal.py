@@ -69,10 +69,11 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("wiki"):
 		return await BASE.moduls._Discord_.PROCESS.Normal.Wiki.Base(BASE, message, kwargs)
 
+	if check.startswith("doujin"):
+		return await BASE.moduls._Discord_.PROCESS.Normal.Doujin.Base(BASE, message, kwargs)
+
 	return
 
-	if check.startswith("doujin"):
-		await BASE.moduls.Commands.define(BASE, message)
 
 	if check.startswith("osu"):
 		await BASE.moduls.Commands.osu_base(BASE, message)

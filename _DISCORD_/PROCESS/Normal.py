@@ -250,6 +250,7 @@ class Wiki(object):
 			n += 1
 		emb = discord.Embed(title=":grey_exclamation: There are multiple results. Please choose", description=rText)
 		emb.set_footer(text="Please type only the number you wanna search.")
+		emb.set_footer(text="Provided by Wikipedia", icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/2000px-Wikipedia-logo-v2.svg.png")
 
 		x = await BASE.phaaze.send_message(message.channel, embed=emb)
 		a = await BASE.phaaze.wait_for_message(timeout=15, author=message.author, channel=message.channel)
@@ -271,6 +272,7 @@ class Wiki(object):
 		emb = discord.Embed(title=r.get('description', None) ,description=r.get('extract', FAIL), url=r.get('content_urls', {}).get('desktop', {}).get('page', ""))
 		emb.set_author(name=r.get('title', FAIL), url=r.get('content_urls', {}).get('desktop', {}).get('page', ""))
 		emb.set_thumbnail(url=r.get('thumbnail', {}).get('source', ''))
+		emb.set_footer(text="Provided by Wikipedia", icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/2000px-Wikipedia-logo-v2.svg.png")
 		return await BASE.phaaze.send_message(message.channel, embed=emb)
 
 	def get_language(str_):
@@ -550,44 +552,6 @@ async def osu_base(BASE, message):
 		else:
 			return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
 
-async def quotes(BASE, message):
-	m = message.content.split(" ")
-
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-	try:
-		file["quotes"] = file["quotes"]
-	except:
-		file["quotes"] = []
-
-	if len(file["quotes"]) == 0:
-		i = await BASE.phaaze.send_message(message.channel, ":grey_exclamation: This server don't have any quotes.")
-		await asyncio.sleep(5)
-		return await BASE.phaaze.delete_message(i)
-
-	if len(m) == 1:
-		qoute = random.choice( file["quotes"] )
-		o = [i for i,x in enumerate(file["quotes"]) if x == qoute]
-		emb = discord.Embed(description=qoute["content"], colour = int(0xCECEF6))
-		emb.set_footer(text="Quote #" + "".join(str(i+1) for i in o))
-		return await BASE.phaaze.send_message(message.channel, embed=emb)
-
-	if len(m) >= 2:
-		ll = len(file["quotes"])
-
-		if m[1].isdigit():
-			nr = int(m[1])
-			if nr > ll:
-				nr = random.choice(range(1, ll))
-		else:
-			nr = random.choice(range(1, ll))
-
-		qoute = file["quotes"][nr-1]
-		o = [i for i,x in enumerate(file["quotes"]) if x == qoute]
-		emb = discord.Embed(description=qoute["content"], colour = int(0xCECEF6))
-		emb.set_footer(text="Quote #" + "".join(str(i+1) for i in o))
-		return await BASE.phaaze.send_message(message.channel, embed=emb)
-
 async def choice(BASE, message):
 	m = message.content.split(" ")
 	if len(m) == 1:
@@ -616,11 +580,13 @@ async def choice(BASE, message):
 
 	return await BASE.phaaze.send_message(message.channel, resp)
 
-class doujin(object):
+#Currently unusable D:
+class Doujin(object):
 
-	def __init__(self, BASE, message):
+	def __init__(self, BASE, message, kwargs):
 		self.BASE = BASE
 		self.message = message
+		self.kwargs = kwargs
 
 		self.parameter = {}
 		pass
@@ -1010,7 +976,7 @@ class doujin(object):
 
 		async def noting_found(self):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				await self.BASE.phaaze.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
