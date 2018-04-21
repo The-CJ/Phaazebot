@@ -104,7 +104,7 @@ class Everything(object):
 		resp = "And the winner is...\n\n:game_die:- **{}** -:8ball:".format(winner)
 
 		return await BASE.phaaze.send_message(message.channel, resp)
-		
+
 class Whois(object):
 
 	async def Base(BASE, message, kwargs):
@@ -341,244 +341,276 @@ class Wiki(object):
 
 		return r
 
-async def osu_base(BASE, message):
-	m = message.content.lower().split(" ")
+class Osu(object):
+	async def Base(BASE, message, kwargs):
 
-	if len(m) == 1:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Missing a option!  Usage: `{0}osu [Option]`\n\n Available options: `stats`, `map`, `calc`".format(BASE.vars.PT))
+		m = message.content.lower().split(" ")
 
-	elif len(m) >= 2:
+		if len(m) == 1:
+			return await BASE.phaaze.send_message(
+				message.channel,
+				f":warning: Missing a option!  Usage: `{BASE.vars.PT}osu [Option]`\n\n"\
+				f"Available options: `stats`, `map`, `calc`")
 
-		if m[1].startswith("stats"):
-			if len(m) == 2:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Missing User!  Usage: `{0}osu stats(mode) [User - link, name or id]`\n".format(BASE.vars.PT) + '`(mode)` - Can be empty, `/osu`, `/ctb`, `/mania` or `/taiko`')
+		elif len(m) >= 2:
 
-			else:
-				c = m[1].split("/")
-				try: mode = c[1]
-				except: mode = "osu"
+			if m[1].startswith("stats"):
+				return await Osu.stats(BASE, message, kwargs)
 
-				#set mode
-				if mode == "osu": MODE = "0"
-				elif mode == "taiko": MODE = "1"
-				elif mode == "ctb": MODE = "2"
-				elif mode == "mania": MODE = "3"
-				elif mode == "": return await BASE.phaaze.send_message(message.channel, ":warning: Option after `stats/` is missing. Available Options are: `osu,ctb,mania,taiko`  Or leave it free an remove the `/`.")
-				else: return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a gamemode, Available are: `osu`,`ctb`,`mania`,`taiko`".format(c[1]))
+			elif m[1].startswith("map"):
+				if len(m) == 2:
+					return await BASE.phaaze.send_message(message.channel, ":warning: Missing Map Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
 
-				#get user stuff
-				req_user = message.content.split(" ")[2]
+				#find mode and id
+				try:
+					if "osu.ppy.sh/s/" in m[2]:
+						search_id = m[2].split("/s/")[1]
+						mode = "s"
 
-				#stuff is a link --> get name/id
-				if "osu.ppy.sh/u" in req_user:
-					req_user = req_user.split("u/")[1]
+					elif "osu.ppy.sh/b/" in m[2]:
+						search_id = m[2].split("/b/")[1]
+						mode = "b"
 
-				#get_user
-				User = await BASE.moduls.osu.get_user(BASE, user=req_user, mode=MODE)
-				if User == None: return await BASE.phaaze.send_message(message.channel, ":warning: The given User could not found!")
+					elif "osu.ppy.sh/u/" in m[2]:
+						search_id = m[2].split("/u/")[1]
+						mode = "u"
 
-				stuff = ":globe_with_meridians: #{rank}  -  :flag_{country}: #{country_rank}\n"\
-						":part_alternation_mark: {pp} pp\n"\
-						":dart: {acc}% Accuracy\n"\
-						":military_medal: Level: {level}\n"\
-						":timer: Playcount: {playcount}\n"\
-						":chart_with_upwards_trend: Ranked Score: {ranked_score}\n"\
-						":card_box: Total Score: {total_score}\n"\
-						":id: {user_id}".format(
-										rank = "{:,}".format(int(User.rank)) if User.rank != None else "N/A",
-										country = User.country,
-										country_rank = "{:,}".format(int(User.country_rank)) if User.country_rank != None else "N/A",
-										pp = "{:,}".format(round(float(User.pp), 2)) if User.pp != None and User.pp != "0" else "N/A",
-										acc = str(round(float(User.acc), 2)) if User.acc != None else "N/A",
-										level = str(round(float(User.level), 1)) if User.level != None else "N/A",
-										playcount = "{:,}".format(int(User.playcount)) if User.playcount != None else "N/A",
-										ranked_score = "{:,}".format(int(User.ranked_score)) if User.ranked_score != None else "N/A",
-										total_score = "{:,}".format(int(User.total_score)) if User.total_score != None else "N/A",
-										user_id = User.user_id
-										)
+					else: 0/0
+				except:
+					return await BASE.phaaze.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
 
-				EMB = discord.Embed(
-					title=User.name,
-					url="https://osu.ppy.sh/u/"+User.user_id,
-					color=int(0xFF69B4),
-					description=stuff
-					)
+				#get set/map/creator
+				stuff = await BASE.moduls.osu.get_all_maps(BASE, ID=search_id, mode=mode)
+				if stuff == None and mode == "u": return await BASE.phaaze.send_message(message.channel, ":warning: The user does not exist or dosn't created any beatmaps".format(BASE.vars.PT))
+				if stuff == None: return await BASE.phaaze.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
 
-				if User.count_A != User.count_S != User.count_SS != None != User.count_50 != User.count_100 != User.count_300:
-					table_R = 	[
-									["A:", "{:,}".format(int(User.count_A))],
-									["S:", "{:,}".format(int(User.count_S))],
-									["SS:", "{:,}".format(int(User.count_SS))]
-								]
+				#one
+				if mode == "b" or mode == "s" and len(stuff.all_maps) == 1: #one map
+					beatmap = stuff.all_maps[0]
+					meep = 	"mapped by {creator}\n\n"\
+							"{symbol} **{approved_name}** | :green_heart: Favourite: **{favo}** {source}\n"\
+							":star:: **{diff}** | :notes: BPM: **{bpm}** | :stopwatch: Lenght: **{full}** *(Drain: {drain})*\n"\
+							":small_red_triangle:CS: {cs} | :small_red_triangle:AR: {ar} | :small_red_triangle:OD: {od} | :small_red_triangle:HP: {hp}\n"\
+							"*MapID: {mID} | SetID: {sID}*".format	(
+										symbol = await BASE.moduls.Utils.get_osu_status_symbol(beatmap.approved),
+										approved_name = beatmap.approved_name,
+										creator = beatmap.creator,
+										diff = str(round(beatmap.diff, 2)),
+										bpm = str(round(beatmap.bpm)),
+										cs = str(beatmap.cs),
+										ar = str(beatmap.ar),
+										od = str(beatmap.od),
+										hp = str(beatmap.hp),
+										full = str(beatmap.lenght),
+										drain = str(beatmap.drain),
+										source = "| :triangular_flag_on_post: Source: **" + beatmap.source + "**" if beatmap.source != "" else "",
+										favo = beatmap.favos,
+										mID = beatmap.Map_ID,
+										sID = beatmap.Set_ID
+											)
 
-					EMB.add_field(name="Ranks:",value="```{}```".format(tabulate(table_R, tablefmt="plain")), inline=True)
+					osu_aw = discord.Embed	(
+									color=int(0xFF69B4),
+									title=beatmap.version,
+									url="https://osu.ppy.sh/b/{0}".format(beatmap.Map_ID),
+									description=meep
+											)
 
-				EMB.set_thumbnail(url="https://a.ppy.sh/{0}".format(User.user_id))
-				EMB.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
-				EMB.set_author(name="Stats for: {0}".format(User.mode_name))
+					osu_aw.set_author(url="https://osu.ppy.sh/b/{0}".format(beatmap.Map_ID) ,name="{0} - {1}".format(beatmap.artist, beatmap.title))
+					osu_aw.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
+					osu_aw.set_thumbnail(url="https://b.ppy.sh/thumb/{0}l.jpg".format(beatmap.Set_ID))
 
-				return await BASE.phaaze.send_message(message.channel, content=message.author.mention, embed=EMB)
+					pp_100 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=100.0)
+					pp_99 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=99.0)
+					pp_98 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=98.0)
 
-		elif m[1].startswith("map"):
-			if len(m) == 2:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Missing Map Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+					osu_aw.add_field(name="PPcalc:",value="{pp_100}pp for 100% | {pp_99}pp for 99% | {pp_98}pp for 98%...\n`{PT}osu calc [maplink] (options)`".format	(
+																																										PT = BASE.vars.PT,
+																																										pp_100 = str(round(float(pp_100.pp), 2)),
+																																										pp_99 = str(round(float(pp_99.pp), 2)),
+																																										pp_98 = str(round(float(pp_98.pp), 2))
 
-			#find mode and id
-			try:
-				if "osu.ppy.sh/s/" in m[2]:
-					search_id = m[2].split("/s/")[1]
-					mode = "s"
+																																											), inline=True)
 
-				elif "osu.ppy.sh/b/" in m[2]:
-					search_id = m[2].split("/b/")[1]
-					mode = "b"
+					if not beatmap.tags == []:
+						osu_aw.add_field(name="Tags:",value=", ".join(tag for tag in beatmap.tags), inline=True)
 
-				elif "osu.ppy.sh/u/" in m[2]:
-					search_id = m[2].split("/u/")[1]
-					mode = "u"
-
-				else: 0/0
-			except:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
-
-			#get set/map/creator
-			stuff = await BASE.moduls.osu.get_all_maps(BASE, ID=search_id, mode=mode)
-			if stuff == None and mode == "u": return await BASE.phaaze.send_message(message.channel, ":warning: The user does not exist or dosn't created any beatmaps".format(BASE.vars.PT))
-			if stuff == None: return await BASE.phaaze.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
-
-			#one
-			if mode == "b" or mode == "s" and len(stuff.all_maps) == 1: #one map
-				beatmap = stuff.all_maps[0]
-				meep = 	"mapped by {creator}\n\n"\
-						"{symbol} **{approved_name}** | :green_heart: Favourite: **{favo}** {source}\n"\
-						":star:: **{diff}** | :notes: BPM: **{bpm}** | :stopwatch: Lenght: **{full}** *(Drain: {drain})*\n"\
-						":small_red_triangle:CS: {cs} | :small_red_triangle:AR: {ar} | :small_red_triangle:OD: {od} | :small_red_triangle:HP: {hp}\n"\
-						"*MapID: {mID} | SetID: {sID}*".format	(
-									symbol = await BASE.moduls.Utils.get_osu_status_symbol(beatmap.approved),
-									approved_name = beatmap.approved_name,
-									creator = beatmap.creator,
-									diff = str(round(beatmap.diff, 2)),
-									bpm = str(round(beatmap.bpm)),
-									cs = str(beatmap.cs),
-									ar = str(beatmap.ar),
-									od = str(beatmap.od),
-									hp = str(beatmap.hp),
-									full = str(beatmap.lenght),
-									drain = str(beatmap.drain),
-									source = "| :triangular_flag_on_post: Source: **" + beatmap.source + "**" if beatmap.source != "" else "",
-									favo = beatmap.favos,
-									mID = beatmap.Map_ID,
-									sID = beatmap.Set_ID
-										)
-
-				osu_aw = discord.Embed	(
-								color=int(0xFF69B4),
-								title=beatmap.version,
-								url="https://osu.ppy.sh/b/{0}".format(beatmap.Map_ID),
-								description=meep
-										)
-
-				osu_aw.set_author(url="https://osu.ppy.sh/b/{0}".format(beatmap.Map_ID) ,name="{0} - {1}".format(beatmap.artist, beatmap.title))
-				osu_aw.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
-				osu_aw.set_thumbnail(url="https://b.ppy.sh/thumb/{0}l.jpg".format(beatmap.Set_ID))
-
-				pp_100 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=100.0)
-				pp_99 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=99.0)
-				pp_98 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=98.0)
-
-				osu_aw.add_field(name="PPcalc:",value="{pp_100}pp for 100% | {pp_99}pp for 99% | {pp_98}pp for 98%...\n`{PT}osu calc [maplink] (options)`".format	(
-																																									PT = BASE.vars.PT,
-																																									pp_100 = str(round(float(pp_100.pp), 2)),
-																																									pp_99 = str(round(float(pp_99.pp), 2)),
-																																									pp_98 = str(round(float(pp_98.pp), 2))
-
-																																										), inline=True)
-
-				if not beatmap.tags == []:
-					osu_aw.add_field(name="Tags:",value=", ".join(tag for tag in beatmap.tags), inline=True)
-
-				return await BASE.phaaze.send_message(message.channel, embed=osu_aw)
+					return await BASE.phaaze.send_message(message.channel, embed=osu_aw)
 
 
-			#set
-			elif mode == "s":
-				base_infos = stuff.map_sets[0][0]
-
-				listi = []
-				for map_ in sorted(stuff.map_sets[0], key=lambda map__: map__.diff):
-					diff = "★ " + str(round(map_.diff, 2))
-					cs = "CS: " + str(round(map_.cs, 2))
-					ar = "AR: " + str(round(map_.ar, 2))
-					hp = "HP: " + str(round(map_.hp, 2))
-					od = "OD: " + str(round(map_.od, 2))
-					_id = "ID: " + str(map_.Map_ID)
-					listi.append([map_.version, "|", cs, "|", ar, "|", hp, "|", od, "|", diff, "|", _id])
-
-				fff = 	"**{artist} - {title}**\n"\
-						"Mapset by: **{creator}** | {symbol} **{approved_name}** - BPM: **{bpm}**\n"\
-						"```{diff_list}```".format	(
-											creator = base_infos.creator,
-											symbol = await BASE.moduls.Utils.get_osu_status_symbol(base_infos.approved),
-											approved_name = base_infos.approved_name,
-											artist = base_infos.artist,
-											title = base_infos.title,
-											diff_list = tabulate(listi, tablefmt="plain"),
-											bpm = str(round(base_infos.bpm)))
-
-				ggt = discord.Embed(title="Check it out", url="https://osu.ppy.sh/s/{0}".format(base_infos.Set_ID), color=int(0xFF69B4))
-
-				if len(fff) > 1997: fff = ":no_entry_sign: Seems like this Mapset has to many diffs, its to much for the Discord message limit, sorry."
-
-				return await BASE.phaaze.send_message(message.channel, content=fff, embed=ggt)
-
-
-			#creator
-			elif mode == "u":
-				base_infos = stuff.map_sets[0][0]
-				base_res = "All Maps by **{0}**\n\n".format(base_infos.creator)
-
-				for _set in stuff.map_sets:
+				#set
+				elif mode == "s":
+					base_infos = stuff.map_sets[0][0]
 
 					listi = []
-
-					for map_ in sorted(_set, key=lambda map__: map__.diff):
+					for map_ in sorted(stuff.map_sets[0], key=lambda map__: map__.diff):
 						diff = "★ " + str(round(map_.diff, 2))
 						cs = "CS: " + str(round(map_.cs, 2))
 						ar = "AR: " + str(round(map_.ar, 2))
 						hp = "HP: " + str(round(map_.hp, 2))
 						od = "OD: " + str(round(map_.od, 2))
 						_id = "ID: " + str(map_.Map_ID)
-						listi.append([map_.version, "|", diff])
+						listi.append([map_.version, "|", cs, "|", ar, "|", hp, "|", od, "|", diff, "|", _id])
 
-					base_res  = base_res + "**{artist} - {title}** | https://osu.ppy.sh/s/{IDD}\n{symbol} **{approved_name}** - BPM: **{bpm}**\n```{diff_list}```\n".format	(
-																													artist = _set[0].artist,
-																													title = _set[0].title,
-																													symbol = await BASE.moduls.Utils.get_osu_status_symbol(_set[0].approved),
-																													approved_name = _set[0].approved_name,
-																													bpm = str(round(_set[0].bpm)),
-																													diff_list = tabulate(listi, tablefmt="plain"),
-																													IDD = _set[0].Set_ID
-																															)
-				ebb = discord.Embed(
-						color=int(0xFF69B4),
-						title="See them all",
-						url="https://osu.ppy.sh/u/{0}".format(base_infos.creator))
+					fff = 	"**{artist} - {title}**\n"\
+							"Mapset by: **{creator}** | {symbol} **{approved_name}** - BPM: **{bpm}**\n"\
+							"```{diff_list}```".format	(
+												creator = base_infos.creator,
+												symbol = await BASE.moduls.Utils.get_osu_status_symbol(base_infos.approved),
+												approved_name = base_infos.approved_name,
+												artist = base_infos.artist,
+												title = base_infos.title,
+												diff_list = tabulate(listi, tablefmt="plain"),
+												bpm = str(round(base_infos.bpm)))
 
-				if len(base_res) > 1997: base_res = ":no_entry_sign: Seems like **{0}** made to many Maps, its to much for the Discord message limit, sorry.".format(base_infos.creator)
+					ggt = discord.Embed(title="Check it out", url="https://osu.ppy.sh/s/{0}".format(base_infos.Set_ID), color=int(0xFF69B4))
 
-				await BASE.phaaze.send_message(message.channel, content=base_res, embed=ebb)
-				try: await BASE.phaaze.delete_message(message)
-				except: pass
-				return
+					if len(fff) > 1997: fff = ":no_entry_sign: Seems like this Mapset has to many diffs, its to much for the Discord message limit, sorry."
 
-		elif m[1].startswith("track"):
-			return await BASE.phaaze.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
+					return await BASE.phaaze.send_message(message.channel, content=fff, embed=ggt)
 
-		elif m[1].startswith("calc"):
-			await BASE.moduls.osu.pp_calc_for_maps(BASE, message)
 
+				#creator
+				elif mode == "u":
+					base_infos = stuff.map_sets[0][0]
+					base_res = "All Maps by **{0}**\n\n".format(base_infos.creator)
+
+					for _set in stuff.map_sets:
+
+						listi = []
+
+						for map_ in sorted(_set, key=lambda map__: map__.diff):
+							diff = "★ " + str(round(map_.diff, 2))
+							cs = "CS: " + str(round(map_.cs, 2))
+							ar = "AR: " + str(round(map_.ar, 2))
+							hp = "HP: " + str(round(map_.hp, 2))
+							od = "OD: " + str(round(map_.od, 2))
+							_id = "ID: " + str(map_.Map_ID)
+							listi.append([map_.version, "|", diff])
+
+						base_res  = base_res + "**{artist} - {title}** | https://osu.ppy.sh/s/{IDD}\n{symbol} **{approved_name}** - BPM: **{bpm}**\n```{diff_list}```\n".format	(
+																														artist = _set[0].artist,
+																														title = _set[0].title,
+																														symbol = await BASE.moduls.Utils.get_osu_status_symbol(_set[0].approved),
+																														approved_name = _set[0].approved_name,
+																														bpm = str(round(_set[0].bpm)),
+																														diff_list = tabulate(listi, tablefmt="plain"),
+																														IDD = _set[0].Set_ID
+																																)
+					ebb = discord.Embed(
+							color=int(0xFF69B4),
+							title="See them all",
+							url="https://osu.ppy.sh/u/{0}".format(base_infos.creator))
+
+					if len(base_res) > 1997: base_res = ":no_entry_sign: Seems like **{0}** made to many Maps, its to much for the Discord message limit, sorry.".format(base_infos.creator)
+
+					await BASE.phaaze.send_message(message.channel, content=base_res, embed=ebb)
+					try: await BASE.phaaze.delete_message(message)
+					except: pass
+					return
+
+			elif m[1].startswith("track"):
+				return await BASE.phaaze.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
+
+			elif m[1].startswith("calc"):
+				await BASE.moduls.osu.pp_calc_for_maps(BASE, message)
+
+			else:
+				return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
+
+	async def stats(BASE, message, kwargs):
+		m = message.content.split(" ")
+
+		if len(m) == 2:
+			return await BASE.phaaze.send_message(
+				message.channel,
+				f":warning: Missing User!\nUsage: `{BASE.vars.PT}osu stats(mode) [User]`\n"\
+				f'`(mode)` - Optional: Can be empty, `/osu`, `/ctb`, `/mania` or `/taiko`\n'\
+				f'`[User]` - osu link, name or id')
+
+		c = m[2].split("/")
+		try: mode = c[1]
+		except: mode = "osu"
+
+		#set mode
+		if mode == "osu": MODE = "0"
+		elif mode == "taiko": MODE = "1"
+		elif mode == "ctb": MODE = "2"
+		elif mode == "mania": MODE = "3"
+		elif mode == "":
+			return await BASE.phaaze.send_message(message.channel, ":warning: Option after `stats/` is missing. Available Options are: `osu, ctb ,mania ,taiko`  Or leave it free and remove the `/`.")
 		else:
-			return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
+			return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a gamemode, Available are: `osu`,`ctb`,`mania`,`taiko`".format(c[1]))
+
+		user_info, type_ = Osu.extract_user(" ".join(c for c in m[2:]))
+
+		User = await BASE.moduls._Osu_.Utils.get_user(BASE, u=user_info, m=MODE, t=type_)
+		if User == None:
+			return await BASE.phaaze.send_message(message.channel, ":warning: The given User could not found!")
+
+		# Format the shit out of it :D
+
+		pp = "{:,}".format(round(float(User.get('pp_raw', "0")), 2)) if User.get('pp_raw', None) != None else "-∞"
+		acc = str(round(float(User.get('accuracy', None)), 2)) if User.get('accuracy', None) != None else "-∞"
+		level = str(round(float(User.get('level', None)), 1)) if User.get('level', None) != None else "N/A"
+		playcount = "{:,}".format(int(User.get('playcount', None))) if User.get('playcount', None) != None else "N/A"
+		ranked_score = "{:,}".format(int(User.get('ranked_score', None))) if User.get('ranked_score', None) != None else "-∞"
+		total_score = "{:,}".format(int(User.get('total_score',None))) if User.get('total_score', None) != None else "-∞"
+		rank = "{:,}".format(int(User.get('pp_rank', None))) if User.get('pp_rank', None) != None else "-∞"
+		country_rank = "{:,}".format(int(User.get('pp_country_rank', None))) if User.get('pp_country_rank', None) != None else "-∞"
+
+		rtext = f":globe_with_meridians: #{rank}  |  :flag_{User.get('country','EU').lower()}: #{country_rank}\n"\
+				f":part_alternation_mark: {pp} pp\n"\
+				f":dart: {acc}% Accuracy\n"\
+				f":military_medal: Level: {level}\n"\
+				f":timer: Playcount: {playcount}\n"\
+				f":chart_with_upwards_trend: Ranked Score: {ranked_score}\n"\
+				f":card_box: Total Score: {total_score}\n"\
+				f":id: {User.get('user_id', 'N/A')}"
+
+		EMB = discord.Embed(
+			title=User.get('username','[N/A]'),
+			url="https://osu.ppy.sh/users/"+User.get('user_id', "3"),
+			color=int(0xFF69B4),
+			description=rtext
+			)
+
+		def none_is_zero(s):
+			if s == None: return "0"
+			return s
+
+		table_R = 	[
+						["A:", "{:,}".format(int(none_is_zero(User.get('count_rank_a', 0))))],
+						["S:", "{:,}".format(int(none_is_zero(User.get('count_rank_s', 0))))],
+						["SS:", "{:,}".format(int(none_is_zero(User.get('count_rank_ss', 0))))],
+						["SX:", "{:,}".format(int(none_is_zero(User.get('count_rank_sh', 0))))],
+						["SSX:", "{:,}".format(int(none_is_zero(User.get('count_rank_ssh', 0))))],
+					]
+
+		EMB.add_field(name="Ranks:",value="```{}```".format(tabulate(table_R, tablefmt="plain")), inline=True)
+
+		EMB.set_thumbnail(url="https://a.ppy.sh/{0}".format(User.get('user_id', '3')))
+		EMB.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
+		EMB.set_author(name="Stats for: {0}".format(mode.lower().capitalize()))
+
+		return await BASE.phaaze.send_message(message.channel, content=message.author.mention, embed=EMB)
+
+	def extract_user(str_):
+		#link
+		u = re.match(r'https://osu\.ppy\.sh/(users|u)/(.+)', str_)
+		t = "string"
+		if u != None:
+			u = u.group(2)
+			if u.isdigit():
+				t = "id"
+
+			return u , t
+
+		if str_.isdigit():
+			t = "id"
+
+		return str_, t
+
 
 #Currently unusable D:
 class Doujin(object):

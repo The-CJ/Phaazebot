@@ -75,15 +75,8 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("choice"):
 		return await BASE.moduls._Discord_.PROCESS.Normal.Everything.choice(BASE, message, kwargs)
 
-	return
-
-
 	if check.startswith("osu"):
-		await BASE.moduls.Commands.osu_base(BASE, message)
-
-
-	if check.startswith("about"): # IDEA: Remove?
-		await BASE.moduls.Utils.about(BASE, message)
+		return await BASE.moduls._Discord_.PROCESS.Normal.Osu.Base(BASE, message, kwargs)
 
 	return	#Soon TM
 
