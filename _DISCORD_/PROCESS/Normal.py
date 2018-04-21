@@ -528,7 +528,7 @@ class Osu(object):
 				f'`(mode)` - Optional: Can be empty, `/osu`, `/ctb`, `/mania` or `/taiko`\n'\
 				f'`[User]` - osu link, name or id')
 
-		c = m[2].split("/")
+		c = m[1].split("/")
 		try: mode = c[1]
 		except: mode = "osu"
 
@@ -610,7 +610,6 @@ class Osu(object):
 			t = "id"
 
 		return str_, t
-
 
 #Currently unusable D:
 class Doujin(object):
