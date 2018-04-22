@@ -1,6 +1,6 @@
 ##BASE.moduls._Discord_.Blacklist
 
-import asyncio, json, discord
+import asyncio, discord
 link_contents = ["http", ".de", "://", ".com", ".net", ".tv", "www."]
 
 async def check(BASE, message, server_setting):

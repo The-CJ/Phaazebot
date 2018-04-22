@@ -1,6 +1,6 @@
 ##BASE.moduls._Discord_.Custom
 
-import asyncio, json
+import asyncio
 
 custom_command_limit = 150
 

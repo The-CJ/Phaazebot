@@ -59,4 +59,4 @@ async def base(BASE, message):
 			check = m.replace("!", "")
 			check = check.replace("$", "")
 			if check == BASE.phaaze.user.mention:
-				return await BASE.moduls.cleverbot.discord(BASE, message)
+				return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze AI Moduls not avalible for now.")
