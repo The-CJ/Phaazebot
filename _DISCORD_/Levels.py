@@ -18,7 +18,7 @@ class Calc(object):
 class Utils(object):
 	async def get_user(BASE, level_file, server_id, member_id, prevent_new=False):
 		for user in level_file:
-			if user["member_id"] == member_id:
+			if user.get("member_id", None) == member_id:
 				return user
 
 		#user was not found --> make new
