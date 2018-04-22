@@ -23,7 +23,7 @@ class Utils(object):
 
 		#user was not found --> make new
 		user = dict(
-				id = member_id,
+				member_id = member_id,
 				exp = 0,
 				medal = [],
 				edited = False
@@ -123,9 +123,20 @@ async def get(BASE, message, kwargs):
 	exp_current = level_user.get('exp', 0)
 	level_current = await Calc.get_lvl(exp_current)
 	exp_next = await Calc.get_exp(level_current)
-	edited = " [EDITED]" if level_user.get('edited', False) else ""
+	avatar = user.avatar_url if user.avatar_url != None else user.default_avatar_url
 
-	return await BASE.phaaze.send_message(message.channel, f"💠 `{user.name}` **LVL: {str(level_current)}** - EXP: {str(exp_current)} / {str(exp_next)}.{edited}")
+	emb = discord.Embed(color=0x00ffdd)
+	emb.set_author(name=user.name, icon_url=avatar)
+
+	emb.add_field(name="Level:",value=str(level_current),inline=True)
+	emb.add_field(name="Exp:",value=f"{str(exp_current)} / {str(exp_next)}",inline=True)
+	if level_user.get('edited', False):
+		emb.add_field(name=":warning: EDITED:",value="Exp value got edited.", inline=True)
+
+	if level_user.get('medal', []):
+		emb.add_field(name="Medals:",value="\n".join(m for m in level_user.get('medal', [])), inline=False)
+
+	return await BASE.phaaze.send_message(message.channel, embed=emb)
 
 async def leaderboard(BASE, message, kwargs):
 	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message): return
