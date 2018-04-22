@@ -123,7 +123,7 @@ async def get(BASE, message, kwargs):
 	exp_current = level_user.get('exp', 0)
 	level_current = await Calc.get_lvl(exp_current)
 	exp_next = await Calc.get_exp(level_current)
-	avatar = user.avatar_url if user.avatar_url != None else user.default_avatar_url
+	avatar = user.avatar_url if "" != user.avatar_url != None else user.default_avatar_url
 
 	emb = discord.Embed(color=0x00ffdd)
 	emb.set_author(name=user.name, icon_url=avatar)

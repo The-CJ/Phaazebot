@@ -22,7 +22,6 @@ class phaaze(discord.Client):
 	#message management
 	async def on_message(self, message):
 
-		if not message.author.id in self.BASE.vars.developer_id: return #During Dev. + Patrons
 		if message.author == self.BASE.phaaze.user: return
 		if not self.BASE.is_ready.discord: return
 		if message.author.bot: return
@@ -37,13 +36,11 @@ class phaaze(discord.Client):
 			await self.BASE.moduls._Discord_.Open.base(self.BASE, message)
 
 	async def on_message_delete(self, message):
-		return #TODO: Fix this
-		await self.BASE.moduls._Discord_.Discord_Events.event_logs.message_delete(self.BASE, message)
+		await self.BASE.moduls._Discord_.Discord_Events.Message.delete(self.BASE, message) # TODO:
 
 	async def on_message_edit(self, before, after):
-		# await self.BASE.moduls._Discord_.Discord_Events.event_logs.message_edited(self.BASE, before, after)
+		await self.BASE.moduls._Discord_.Discord_Events.Message.edit(self.BASE, after) # TODO:
 
-		if after.author.id != "117746512380952582": return #During Dev.
 		if after.author == self.BASE.phaaze.user: return
 		if not self.BASE.is_ready.discord: return
 		if after.author.bot: return
@@ -55,44 +52,35 @@ class phaaze(discord.Client):
 
 	#member management
 	async def on_member_join(self, member):
-		return #TODO: Fix this
-		await self.BASE.moduls._Discord_.Discord_Events.member_join(self.BASE, member)
+		await self.BASE.moduls._Discord_.Discord_Events.Member.join(self.BASE, member) # TODO: Logs
 
 	async def on_member_remove(self, member):
-		return #TODO: Fix this
-		await self.BASE.moduls._Discord_.Discord_Events.member_remove(self.BASE, member)
+		await self.BASE.moduls._Discord_.Discord_Events.Member.remove(self.BASE, member) # TODO: Logs
 
 	async def on_member_ban(self, member):
-		return #TODO: Fix this
-		await self.BASE.moduls._Discord_.Discord_Events.event_logs.member_ban(self.BASE, member)
+		await self.BASE.moduls._Discord_.Discord_Events.Member.ban(self.BASE, member) # TODO:
 
 	async def on_member_unban(self, server, user):
-		return #TODO: Fix this
-		await self.BASE.moduls._Discord_.Discord_Events.event_logs.member_unban(self.BASE, server, user)
+		await self.BASE.moduls._Discord_.Discord_Events.Member.unban(self.BASE, server, user) # TODO:
 
 	async def on_member_update(self, before, after):
-		return #TODO: Fix this
-		await self.BASE.moduls._Discord_.Discord_Events.event_logs.member_update(self.BASE, before, after)
+		await self.BASE.moduls._Discord_.Discord_Events.Member.update(self.BASE, before, after) # TODO:
 
 	#channel management
 	async def on_channel_create(self, channel):
-		return #TODO: Fix this
 		if channel.is_private: return
-		await self.BASE.moduls._Discord_.Discord_Events.event_logs.channel_update(self.BASE, channel, "add")
+		await self.BASE.moduls._Discord_.Discord_Events.Channel.create(self.BASE, channel) # TODO:
 
 	async def on_channel_delete(self, channel):
-		return #TODO: Fix this
 		if channel.is_private: return
-		await self.BASE.moduls._Discord_.Discord_Events.event_logs.channel_update(self.BASE, channel, "rem")
+		await self.BASE.moduls._Discord_.Discord_Events.Channel.delete(self.BASE, channel) # TODO:
 
 	#role management
 	async def on_server_role_create(self, role):
-		return #TODO: Fix this
-		await self.BASE.moduls._Discord_.Discord_Events.event_logs.role_updates(self.BASE, role, "add")
+		await self.BASE.moduls._Discord_.Discord_Events.Role.create(self.BASE, role) # TODO:
 
 	async def on_server_role_delete(self, role):
-		return #TODO: Fix this
-		await self.BASE.moduls._Discord_.Discord_Events.event_logs.role_updates(self.BASE, role, "rem")
+		await self.BASE.moduls._Discord_.Discord_Events.Role.delete(self.BASE, role) # TODO:
 
 	#errors
 	async def on_error(self, event_method, *args, **kwargs):

@@ -1,6 +1,6 @@
 #BASE.moduls._Discord_.Utils
 
-import asyncio, Console, json, discord, tabulate, time
+import asyncio, Console, discord, tabulate, time
 
 async def return_real_me(BASE, message):
 	return discord.utils.get(message.server.members, id=BASE.phaaze.user.id)
@@ -74,6 +74,9 @@ async def make_server_file(BASE, id):
 	insert_['owner_disable_level'] = False,
 	insert_['owner_disable_custom'] = False,
 
+	insert_['track_options'] = [],
+	insert_['track_channel'] = None,
+
 	Console.CYAN("INFO", "New Server Settings DB entry")
 
 	BASE.PhaazeDB.insert(into="discord/server_setting", content=insert_)
@@ -122,7 +125,7 @@ async def make_get_server_commands(BASE, id):
 
 	return []
 
-#customfiles
+#customquotes
 async def get_server_quotes(BASE, id, prevent_new=False):
 	#get
 	file = BASE.PhaazeDB.select(of="discord/quotes/quotes_"+str(id))

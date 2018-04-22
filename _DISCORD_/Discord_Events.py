@@ -2,118 +2,192 @@
 
 import discord, asyncio, json, datetime
 
-async def member_join(BASE, member):
-	file = await BASE.moduls.Utils.get_server_file(BASE, member.server.id)
-	file["private_welcome_message"] = file.get("private_welcome_message", "")
-	file["welcome"] = file.get("welcome", "")
-	file["private_welcome_message"] = file.get("private_welcome_message", "")
-	file["autorole_id"] = file.get("autorole_id", "")
+class Message(object):
+	async def delete(BASE, message):
+		pass
 
-	if file["welcome"] != "":
-		try:
-			chan = discord.Object(id=file["wel_chan"]) if file["wel_chan"] != "" else member.server.default_channel
+	async def edit(BASE, message):
+		pass
 
-			entry = file["welcome"]
+class Member(object):
+	async def join(BASE, member):
+		server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
-			entry = entry.replace("[name]", member.name)
-			entry = entry.replace("[server]", member.server.name)
-			entry = entry.replace("[count]", str(member.server.member_count))
-			entry = entry.replace("[mention]", member.mention)
+		#track: Member.join
+		if "Message.join" in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+			try:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
 
-			try: await BASE.phaaze.send_message(chan, entry[:1997])
-			except Exception as e:
+				emb = discord.Embed(
+					discription=f"{member.name}\n{member.mention}",
+					timestamp=datetime.datetime.now(),
+					color=0x00ff00
+				)
+				emb.set_thumbnail(url=avatar)
+				emb.set_author(name="Log Event - [Member Join]")
+				await BASE.phaaze.send_message(chan, embed=emb)
+			except:
+				pass
 
-				file["welcome"] = ""
-				file["wel_chan"] = ""
+		#welcome message
+		if server_settings.get("welcome_msg", None) != None:
+			try:
+				chan = discord.Object(id=server_settings.get("welcome_chan"))
 
-				with open("SERVERFILES/{0}.json".format(member.server.id), "w") as save:
-					json.dump(file, save)
-					setattr(BASE.serverfiles, "server_"+member.server.id, file)
+				entry = server_settings.get("welcome_msg", None)
+
+				entry = entry.replace("[name]", member.name)
+				entry = entry.replace("[server]", member.server.name)
+				entry = entry.replace("[count]", str(member.server.member_count))
+				entry = entry.replace("[mention]", member.mention)
+
+				try: await BASE.phaaze.send_message(chan, entry[:1997])
+				except Exception as e:
+
+					BASE.PhaazeDB.update(
+						of=f"discord/server_setting",
+						where=f"data['server_id'] == '{member.server.id}'",
+						content=dict( welcome_chan=None, welcome_msg=None )
+					)
 
 					if str(e.__class__) == "<class 'discord.errors.NotFound'>":
-						await BASE.phaaze.send_message(member.server.owner, ":warning: The welcome announcement channel in `{0}` wasn't found. Welcome setting has been reset.".format(member.server.name))
+						await BASE.phaaze.send_message(
+							member.server.owner,
+							f":warning: The welcome announcement channel in `{member.server.name}` wasn't found. Welcome settings has been reset.")
 
 					if str(e.__class__) == "<class 'discord.errors.Forbidden'>":
-						await BASE.phaaze.send_message(member.server.owner, ":warning: Phaaze don't have permissions in `{0}` to send the welcome message. Welcome setting has been reset.".format(member.server.name))
-		except:
-			pass
+						await BASE.phaaze.send_message(
+							member.server.owner,
+							f":warning: Phaaze don't have permissions in `{member.server.name}` to send the welcome message. Welcome setting has been reset.")
+			except:
+				pass
 
-	if file["private_welcome_message"] != "":
-		try:
-			entry = file["private_welcome_message"]
+		#welcome private message
+		if server_settings.get("welcome_msg_priv", None) != None:
+			try:
+				entry = server_settings.get("welcome_msg_priv", None)
 
-			entry = entry.replace("[name]", member.name)
-			entry = entry.replace("[server]", member.server.name)
-			entry = entry.replace("[count]", str(member.server.member_count))
-			entry = entry.replace("[mention]", member.mention)
+				entry = entry.replace("[name]", member.name)
+				entry = entry.replace("[server]", member.server.name)
+				entry = entry.replace("[count]", str(member.server.member_count))
+				entry = entry.replace("[mention]", member.mention)
 
-			try: await BASE.phaaze.send_message(member, entry[:1997])
+				try: await BASE.phaaze.send_message(member, entry[:1997])
+				except Exception as e:
+
+					if str(e.__class__) == "<class 'discord.errors.Forbidden'>":
+						await BASE.phaaze.send_message(
+							member.server.owner,
+							f":warning: Phaaze could not send the Private welcome message for a new member in `{member.server.name}` Private welcome setting has been reset.")
+			except:
+				pass
+
+		#autorole
+		if server_settings.get("autorole", None) != None:
+			try:
+				role = discord.utils.get(member.server.roles, id=server_settings.get("autorole", None))
+				if role == None:
+					BASE.PhaazeDB.update(
+						of=f"discord/server_setting",
+						where=f"data['server_id'] == '{member.server.id}'",
+						content=dict( autorole=None )
+					)
+
+					return await BASE.phaaze.send_message(
+						member.server.owner,
+						f":warning: The Autorole in `{member.server.name}` wasn't found. Autorole has been reset.")
+
+				await BASE.phaaze.add_roles(member, role)
+
 			except Exception as e:
-
-				file["private_welcome_message"] = ""
-
-				with open("SERVERFILES/{0}.json".format(member.server.id), "w") as save:
-					json.dump(file, save)
-					setattr(BASE.serverfiles, "server_"+member.server.id, file)
-
-					if str(e.__class__) == "<class 'discord.errors.Forbidden'>":
-						await BASE.phaaze.send_message(member.server.owner, ":warning: Phaaze could not send the Private welcome message for a new member in `{0}` Private welcome setting has been reset.".format(member.server.name))
-		except:
-			pass
-
-	if file["autorole_id"] != "":
-		try:
-			role = discord.utils.get(member.server.roles, id=file["autorole_id"])
-			if role == None:
-				file["autorole_id"] = ""
-				with open("SERVERFILES/{0}.json".format(member.server.id), "w") as save:
-					json.dump(file, save)
-					setattr(BASE.serverfiles, "server_"+member.server.id, file)
-					return await BASE.phaaze.send_message(member.server.owner, ":warning: The Autorole in `{0}` wasn't found. Autorole has been reset.".format(member.server.name))
-
-			return await BASE.phaaze.add_roles(member, role)
-
-		except Exception as e:
-			file["autorole_id"] = ""
-			with open("SERVERFILES/{0}.json".format(member.server.id), "w") as save:
-				json.dump(file, save)
-				setattr(BASE.serverfiles, "server_"+member.server.id, file)
-
-			if str(e.__class__) == "<class 'discord.errors.NotFound'>":
-				return await BASE.phaaze.send_message(member.server.owner, ":warning: The Autorole in `{0}` wasn't found. Autorole has been reset.".format(member.server.name))
-
-			if str(e.__class__) == "<class 'discord.errors.Forbidden'>":
-				return await BASE.phaaze.send_message(member.server.owner, ":warning: Phaaze doesn't have permissions to give `{1}` the Autorole in `{0}`. Autorole has been reset.".format(member.server.name, member.name))
-
-async def member_remove(BASE, member):
-	file = await BASE.moduls.Utils.get_server_file(BASE, member.server.id)
-	await event_logs.leave(BASE, member)
-	file["leave"] = file.get("leave", "")
-	if file["leave"] != "":
-		chan = discord.Object(id=file["lea_chan"]) if file["lea_chan"] != "" else member.server.default_channel
-
-		entry = file["leave"]
-
-		entry = entry.replace("[name]", member.name)
-		entry = entry.replace("[server]", member.server.name)
-		entry = entry.replace("[count]", str(member.server.member_count))
-		entry = entry.replace("[mention]", member.mention)
-
-		try: return await BASE.phaaze.send_message(chan, entry[:1997])
-		except Exception as e:
-
-			file["leave"] = ""
-			file["lea_chan"] = ""
-
-			with open("SERVERFILES/{0}.json".format(member.server.id), "w") as save:
-				json.dump(file, save)
-				setattr(BASE.serverfiles, "server_"+member.server.id, file)
+				BASE.PhaazeDB.update(
+					of=f"discord/server_setting",
+					where=f"data['server_id'] == '{member.server.id}'",
+					content=dict( autorole=None )
+				)
 
 				if str(e.__class__) == "<class 'discord.errors.NotFound'>":
-					return await BASE.phaaze.send_message(member.server.owner, ":warning: The welcome announcement channel in `{0}` wasn't found. **Welcome setting has been reset.**".format(member.server.name))
+					return await BASE.phaaze.send_message(member.server.owner, ":warning: The Autorole in `{0}` wasn't found. Autorole has been reset.".format(member.server.name))
 
 				if str(e.__class__) == "<class 'discord.errors.Forbidden'>":
-					return await BASE.phaaze.send_message(member.server.owner, ":warning: Phaaze don't have permissions in `{0}` to send the welcome message. **Welcome setting has been reset.**".format(member.server.name))
+					return await BASE.phaaze.send_message(member.server.owner, ":warning: Phaaze doesn't have permissions to give `{1}` the Autorole in `{0}`. Autorole has been reset.".format(member.server.name, member.name))
+
+	async def remove(BASE, member):
+		server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
+
+		#track: Member.remove
+		if "Message.remove" in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+			try:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
+
+				emb = discord.Embed(
+					discription=f"{member.name}\n{member.mention}",
+					timestamp=datetime.datetime.now(),
+					color=0xff0000
+				)
+				emb.set_thumbnail(url=avatar)
+				emb.set_author(name="Log Event - [Member Leave]")
+				await BASE.phaaze.send_message(chan, embed=emb)
+			except:
+				pass
+
+		#welcome message
+		if server_settings.get("leave_msg", None) != None:
+			try:
+				chan = discord.Object(id=server_settings.get("leave_chan"))
+
+				entry = server_settings.get("leave_msg", None)
+
+				entry = entry.replace("[name]", member.name)
+				entry = entry.replace("[server]", member.server.name)
+				entry = entry.replace("[count]", str(member.server.member_count))
+				entry = entry.replace("[mention]", member.mention)
+
+				try: await BASE.phaaze.send_message(chan, entry[:1997])
+				except Exception as e:
+
+					BASE.PhaazeDB.update(
+						of=f"discord/server_setting",
+						where=f"data['server_id'] == '{member.server.id}'",
+						content=dict( leave_chan=None, leave_msg=None )
+					)
+
+					if str(e.__class__) == "<class 'discord.errors.NotFound'>":
+						await BASE.phaaze.send_message(
+							member.server.owner,
+							f":warning: The leave announcement channel in `{member.server.name}` wasn't found. Leave settings has been reset.")
+
+					if str(e.__class__) == "<class 'discord.errors.Forbidden'>":
+						await BASE.phaaze.send_message(
+							member.server.owner,
+							f":warning: Phaaze don't have permissions in `{member.server.name}` to send the leave message. Leave setting has been reset.")
+			except:
+				pass
+
+	async def ban(BASE, message):
+		pass
+
+	async def unban(BASE, server, user):
+		pass
+
+	async def update(BASE, before, after):
+		pass
+
+class Channel(object):
+	async def create(BASE, channel):
+		pass
+
+	async def delete(BASE, channel):
+		pass
+
+class Role(object):
+	async def create(BASE, channel):
+		pass
+
+	async def delete(BASE, channel):
+		pass
 
 class event_logs(object):
 	async def join(BASE, member):
