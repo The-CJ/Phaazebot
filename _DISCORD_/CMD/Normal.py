@@ -70,7 +70,7 @@ async def Base(BASE, message, **kwargs):
 		return await BASE.moduls._Discord_.PROCESS.Normal.Wiki.Base(BASE, message, kwargs)
 
 	if check.startswith("doujin"):
-		return await BASE.moduls._Discord_.PROCESS.Normal.Doujin.Base(BASE, message, kwargs)
+		return await BASE.moduls._Discord_.PROCESS.Normal.Doujin(BASE, message, kwargs).Base()
 
 	if check.startswith("choice"):
 		return await BASE.moduls._Discord_.PROCESS.Normal.Everything.choice(BASE, message, kwargs)

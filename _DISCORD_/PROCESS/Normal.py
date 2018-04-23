@@ -634,7 +634,7 @@ class Doujin(object):
 		await asyncio.sleep(15)
 		await self.BASE.phaaze.delete_message(I)
 
-	async def request(self):
+	async def Base(self):
 		M = self.message.content.replace("\n", " ")
 		m = M.lower()
 
