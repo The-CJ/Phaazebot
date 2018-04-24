@@ -52,19 +52,19 @@ class phaaze(discord.Client):
 
 	#member management
 	async def on_member_join(self, member):
-		await self.BASE.moduls._Discord_.Discord_Events.Member.join(self.BASE, member) # TODO: Logs
+		await self.BASE.moduls._Discord_.Discord_Events.Member.join(self.BASE, member)
 
 	async def on_member_remove(self, member):
-		await self.BASE.moduls._Discord_.Discord_Events.Member.remove(self.BASE, member) # TODO: Logs
+		await self.BASE.moduls._Discord_.Discord_Events.Member.remove(self.BASE, member)
 
 	async def on_member_ban(self, member):
-		await self.BASE.moduls._Discord_.Discord_Events.Member.ban(self.BASE, member) # TODO:
+		await self.BASE.moduls._Discord_.Discord_Events.Member.ban(self.BASE, member)
 
 	async def on_member_unban(self, server, user):
-		await self.BASE.moduls._Discord_.Discord_Events.Member.unban(self.BASE, server, user) # TODO:
+		await self.BASE.moduls._Discord_.Discord_Events.Member.unban(self.BASE, server, user)
 
 	async def on_member_update(self, before, after):
-		await self.BASE.moduls._Discord_.Discord_Events.Member.update(self.BASE, before, after) # TODO:
+		await self.BASE.moduls._Discord_.Discord_Events.Member.update(self.BASE, before, after)
 
 	#channel management
 	async def on_channel_create(self, channel):

@@ -2,6 +2,8 @@
 
 import discord, asyncio, json, datetime
 
+# TODO: ADD Id field to all
+
 class Message(object):
 	async def delete(BASE, message):
 		try:
@@ -21,7 +23,7 @@ class Message(object):
 				await BASE.phaaze.send_message(chan, embed=emb)
 		except:
 			pass
-			
+
 	async def edit(BASE, before, after):
 		try:
 			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, after.server.id)
@@ -198,14 +200,48 @@ class Member(object):
 			except:
 				pass
 
-	async def ban(BASE, message):
-		pass
+	async def ban(BASE, member):
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
+
+			#track: Member.remove
+			if "Member.ban".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
+
+				emb = discord.Embed(
+					description=f"{member.name}\n{member.mention}",
+					timestamp=datetime.datetime.now(),
+					color=0xff0000
+				)
+				emb.set_thumbnail(url=avatar)
+				emb.set_author(name="Log Event - [Member Ban]")
+				await BASE.phaaze.send_message(chan, embed=emb)
+		except:
+			pass
 
 	async def unban(BASE, server, user):
-		pass
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, server.id)
+
+			#track: Member.remove
+			if "Member.unban".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+				avatar = user.avatar_url if "" != user.avatar_url != None else user.default_avatar_url
+
+				emb = discord.Embed(
+					description=f"{user.name}",
+					timestamp=datetime.datetime.now(),
+					color=0x55ff00
+				)
+				emb.set_thumbnail(url=avatar)
+				emb.set_author(name="Log Event - [Member Unban]")
+				await BASE.phaaze.send_message(chan, embed=emb)
+		except:
+			pass
 
 	async def update(BASE, before, after):
-		pass
+		pass # NOTE: I have no idea what to log...
 
 class Channel(object):
 	async def create(BASE, channel):
