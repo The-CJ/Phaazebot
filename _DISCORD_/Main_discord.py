@@ -73,14 +73,14 @@ class phaaze(discord.Client):
 
 	async def on_channel_delete(self, channel):
 		if channel.is_private: return
-		await self.BASE.moduls._Discord_.Discord_Events.Channel.delete(self.BASE, channel) # TODO:
+		await self.BASE.moduls._Discord_.Discord_Events.Channel.delete(self.BASE, channel)
 
 	#role management
 	async def on_server_role_create(self, role):
-		await self.BASE.moduls._Discord_.Discord_Events.Role.create(self.BASE, role) # TODO:
+		await self.BASE.moduls._Discord_.Discord_Events.Role.create(self.BASE, role)
 
 	async def on_server_role_delete(self, role):
-		await self.BASE.moduls._Discord_.Discord_Events.Role.delete(self.BASE, role) # TODO:
+		await self.BASE.moduls._Discord_.Discord_Events.Role.delete(self.BASE, role)
 
 	#errors
 	async def on_error(self, event_method, *args, **kwargs):
