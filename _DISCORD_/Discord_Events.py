@@ -4,10 +4,42 @@ import discord, asyncio, json, datetime
 
 class Message(object):
 	async def delete(BASE, message):
-		pass
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, message.server.id)
 
-	async def edit(BASE, message):
-		pass
+			#track: Message.delete
+			if "Message.delete".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+
+				emb = discord.Embed(
+					description=f"```{message.content[:1990]}```",
+					timestamp=datetime.datetime.now(),
+					color=0xffc9c9
+				)
+				emb.add_field(name='Author', value=f"{message.author.name}\n{message.author.mention}", inline=False)
+				emb.set_author(name="Log Event - [Message Delete]")
+				await BASE.phaaze.send_message(chan, embed=emb)
+		except:
+			pass
+			
+	async def edit(BASE, before, after):
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, after.server.id)
+
+			#track: Message.edit
+			if "Message.edit".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+
+				emb = discord.Embed(
+					description=f"From:```{before.content[:950]}```\nTo:```{after.content[:950]}```",
+					timestamp=datetime.datetime.now(),
+					color=0xbbbbbb
+				)
+				emb.add_field(name='Author', value=f"{after.author.name}\n{after.author.mention}", inline=False)
+				emb.set_author(name="Log Event - [Message Edited]")
+				await BASE.phaaze.send_message(chan, embed=emb)
+		except:
+			pass
 
 class Member(object):
 	async def join(BASE, member):

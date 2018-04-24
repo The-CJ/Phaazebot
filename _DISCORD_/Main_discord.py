@@ -36,10 +36,10 @@ class phaaze(discord.Client):
 			await self.BASE.moduls._Discord_.Open.base(self.BASE, message)
 
 	async def on_message_delete(self, message):
-		await self.BASE.moduls._Discord_.Discord_Events.Message.delete(self.BASE, message) # TODO:
+		await self.BASE.moduls._Discord_.Discord_Events.Message.delete(self.BASE, message)
 
 	async def on_message_edit(self, before, after):
-		await self.BASE.moduls._Discord_.Discord_Events.Message.edit(self.BASE, after) # TODO:
+		await self.BASE.moduls._Discord_.Discord_Events.Message.edit(self.BASE, before, after) # TODO:
 
 		if after.author == self.BASE.phaaze.user: return
 		if not self.BASE.is_ready.discord: return
