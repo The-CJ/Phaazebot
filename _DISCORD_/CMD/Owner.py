@@ -34,11 +34,7 @@ async def Base(BASE, message, **kwargs):
 		return await BASE.moduls._Discord_.PROCESS.Owner.Autorole.Base(BASE, message, kwargs)
 
 	if check.startswith("logs"):
-		return await BASE.phaaze.send_message(
-			message.channel,
-			f":link: PhaazeDiscord-Logs configuration has moved to the PhaazeWebsite\n"\
-			f"		Goto https://phaaze.net/discord/dashboard/{message.server.id}#logs and log-in to configure everything"
-			)
+		return await BASE.moduls._Discord_.PROCESS.Owner.Logs.Base(BASE, message, kwargs)
 
 	if check.startswith("news"):
 		return await BASE.moduls._Discord_.PROCESS.Owner.Everything.news(BASE, message, kwargs)

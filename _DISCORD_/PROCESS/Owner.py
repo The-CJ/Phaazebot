@@ -558,6 +558,81 @@ class Autorole(object):
 
 		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Autorole has been cleared.")
 
+class Logs(object):
+
+	AV = [
+			# IDEA: Maybe add more? IDK... Discord Audit Logs cover also much
+
+			'message.delete','message.edit','message.prune',
+			'member.join','member.remove','member.ban','member.unban','member.update',
+			'channel.create','channel.delete',
+			'role.create','role.delete',
+			'phaaze.custom', 'phaaze.quote'
+		]
+
+	async def Base(BASE, message, kwargs):
+		m = message.content.split()
+
+		if len(m) == 1 and not m[0].lower() == f"{BASE.vars.PT * 3}logs-chan":
+			return await BASE.phaaze.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT * 3}logs(-chan) [Option] [State]`\n\n"\
+																	f"`[Option]` - The Log Option you want to toggle/ or the channel mention when used `{BASE.vars.PT * 3}logs-chan`\n"\
+																	f"`[State]` - The new State, `on` or `off`\n\n"\
+																	f":link: PhaazeDiscord-Logs configuration is a lot easier on to the PhaazeWebsite\n"\
+																	f"{' '*5}Goto https://phaaze.net/discord/dashboard/{message.server.id}#logs and log-in to configure everything")
+
+		if m[0].lower() == f"{BASE.vars.PT * 3}logs-chan":
+			if len(m) == 1:
+				chan = message.channel
+
+			elif message.channel_mentions:
+				chan = message.channel_mentions[0]
+
+			else:
+				return await BASE.phaaze.send_message(message.channel, ":warning: Please mention a channel or leave it blank to use this one.")
+
+			BASE.PhaazeDB.update(
+				of="discord/server_setting",
+				where=f"data['server_id'] == '{message.server.id}'",
+				content=dict(track_channel=chan.id)
+			)
+
+			return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Log channel has been set to {chan.mention} - all events will appear there.")
+		else:
+			if not m[1].lower() in Logs.AV:
+				return await BASE.phaaze.send_message(message.channel, f":warning: {m[1]} is not a valid option - available:\n\n"+'\n'.join(o for o in Logs.AV))
+
+			if len(m) < 3 or not m[2].lower() in ['enable','on', 'off','disable']:
+				return await BASE.phaaze.send_message(message.channel, ":warning: Please use a valid state (`on` | `off`)")
+
+			return await Logs.set_state(BASE, message, kwargs, m[1].lower(), m[2].lower())
+
+	async def set_state(BASE, message, kwargs, option, state):
+		if state.lower() in ['on', 'enable']: s = True
+		elif state.lower() in ['off', 'disable']: s = False
+		else:
+			return await BASE.phaaze.send_message(message.channel, ":warning: Please use a valid state (`on` | `off`)")
+
+		if s and option.lower() in kwargs.get('server_setting',{}).get('track_options', []):
+			return await BASE.phaaze.send_message(message.channel, f":warning: Log Option: `{option}` aleady is active.")
+
+		elif not s and not option.lower() in kwargs.get('server_setting',{}).get('track_options', []):
+			return await BASE.phaaze.send_message(message.channel, f":warning: Log Option: `{option}` aleady is disabled.")
+
+
+		settings = kwargs.get('server_setting',{}).get('track_options', [])
+		if s:
+			settings.append(option.lower())
+		else:
+			settings.remove(option.lower())
+
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(track_options=settings)
+		)
+
+		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Log Option: `{option}` has been {'enabled'if s else 'diabled'}.")
+
 class Everything(object):
 
 	async def news(BASE, message, kwargs):
