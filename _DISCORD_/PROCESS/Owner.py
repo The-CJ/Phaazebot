@@ -1,6 +1,6 @@
 #BASE.moduls._Discord_.PROCESS.Owner
 
-import asyncio, json, discord
+import asyncio, discord
 
 class Master(object):
 	async def Base(BASE, message, kwargs):
@@ -573,12 +573,15 @@ class Logs(object):
 	async def Base(BASE, message, kwargs):
 		m = message.content.split()
 
+		enabled_l = ", ".join( f"`{o}`" for o in kwargs.get('server_setting',{}).get('track_options', []) )
+
 		if len(m) == 1 and not m[0].lower() == f"{BASE.vars.PT * 3}logs-chan":
 			return await BASE.phaaze.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT * 3}logs(-chan) [Option] [State]`\n\n"\
 																	f"`[Option]` - The Log Option you want to toggle/ or the channel mention when used `{BASE.vars.PT * 3}logs-chan`\n"\
 																	f"`[State]` - The new State, `on` or `off`\n\n"\
 																	f":link: PhaazeDiscord-Logs configuration is a lot easier on to the PhaazeWebsite\n"\
-																	f"{' '*5}Goto https://phaaze.net/discord/dashboard/{message.server.id}#logs and log-in to configure everything")
+																	f"{' '*7}Goto https://phaaze.net/discord/dashboard/{message.server.id}#logs and log-in to configure everything\n\n"\
+																	f"Currently enabled options: {enabled_l}")
 
 		if m[0].lower() == f"{BASE.vars.PT * 3}logs-chan":
 			if len(m) == 1:
