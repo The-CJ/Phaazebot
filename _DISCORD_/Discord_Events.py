@@ -18,7 +18,7 @@ class Message(object):
 					timestamp=datetime.datetime.now(),
 					color=0xffc9c9
 				)
-				emb.add_field(name='Author', value=f"{message.author.name}\n{message.author.mention}", inline=False)
+				emb.add_field(name='Author', value=f"{message.author.name}\n{message.author.mention}\n{message.author.id}", inline=False)
 				emb.set_author(name="Log Event - [Message Delete]")
 				await BASE.phaaze.send_message(chan, embed=emb)
 		except:
@@ -37,7 +37,7 @@ class Message(object):
 					timestamp=datetime.datetime.now(),
 					color=0xbbbbbb
 				)
-				emb.add_field(name='Author', value=f"{after.author.name}\n{after.author.mention}", inline=False)
+				emb.add_field(name='Author', value=f"{after.author.name}\n{after.author.mention}\n{message.author.id}", inline=False)
 				emb.set_author(name="Log Event - [Message Edited]")
 				await BASE.phaaze.send_message(chan, embed=emb)
 		except:
@@ -54,7 +54,7 @@ class Member(object):
 				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
 
 				emb = discord.Embed(
-					description=f"{member.name}\n{member.mention}",
+					description=f"{member.name}\n{member.mention}\n{member.id}",
 					timestamp=datetime.datetime.now(),
 					color=0x00ff00
 				)
@@ -157,7 +157,7 @@ class Member(object):
 				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
 
 				emb = discord.Embed(
-					description=f"{member.name}\n{member.mention}",
+					description=f"{member.name}\n{member.mention}\n{member.id}",
 					timestamp=datetime.datetime.now(),
 					color=0xff0000
 				)
@@ -210,7 +210,7 @@ class Member(object):
 				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
 
 				emb = discord.Embed(
-					description=f"{member.name}\n{member.mention}",
+					description=f"{member.name}\n{member.mention}\n{member.id}",
 					timestamp=datetime.datetime.now(),
 					color=0xff0000
 				)
@@ -230,7 +230,7 @@ class Member(object):
 				avatar = user.avatar_url if "" != user.avatar_url != None else user.default_avatar_url
 
 				emb = discord.Embed(
-					description=f"{user.name}",
+					description=f"{user.name}\n{user.id}",
 					timestamp=datetime.datetime.now(),
 					color=0x55ff00
 				)
@@ -253,7 +253,7 @@ class Channel(object):
 				chan = discord.Object(id=server_settings.get("track_channel"))
 
 				emb = discord.Embed(
-					description=f"{channel.name}\n{channel.mention}",
+					description=f"{channel.name}\n{channel.mention}\n{channel.id}",
 					timestamp=datetime.datetime.now(),
 					color=0x00ee00
 				)
@@ -271,7 +271,7 @@ class Channel(object):
 				chan = discord.Object(id=server_settings.get("track_channel"))
 
 				emb = discord.Embed(
-					description=f"{channel.name}\n{channel.mention}",
+					description=f"{channel.name}\n{channel.mention}\n{channel.id}",
 					timestamp=datetime.datetime.now(),
 					color=0xee0000
 				)
@@ -290,7 +290,7 @@ class Role(object):
 				chan = discord.Object(id=server_settings.get("track_channel"))
 
 				emb = discord.Embed(
-					description=f"{role.name}",
+					description=f"{role.name}\n{role.id}",
 					timestamp=datetime.datetime.now(),
 					color=0x00ee00
 				)
@@ -308,7 +308,7 @@ class Role(object):
 				chan = discord.Object(id=server_settings.get("track_channel"))
 
 				emb = discord.Embed(
-					description=f"{role.name}",
+					description=f"{role.name}\n{role.id}",
 					timestamp=datetime.datetime.now(),
 					color=0x00ee00
 				)
