@@ -14,13 +14,13 @@ class Member(object):
 		server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
 		#track: Member.join
-		if "Message.join" in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+		if "Member.join".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
 			try:
 				chan = discord.Object(id=server_settings.get("track_channel"))
 				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
 
 				emb = discord.Embed(
-					discription=f"{member.name}\n{member.mention}",
+					description=f"{member.name}\n{member.mention}",
 					timestamp=datetime.datetime.now(),
 					color=0x00ff00
 				)
@@ -117,13 +117,13 @@ class Member(object):
 		server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
 		#track: Member.remove
-		if "Message.remove" in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+		if "Member.remove".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
 			try:
 				chan = discord.Object(id=server_settings.get("track_channel"))
 				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
 
 				emb = discord.Embed(
-					discription=f"{member.name}\n{member.mention}",
+					description=f"{member.name}\n{member.mention}",
 					timestamp=datetime.datetime.now(),
 					color=0xff0000
 				)

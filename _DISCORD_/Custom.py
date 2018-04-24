@@ -35,6 +35,7 @@ async def get(BASE, message, server_setting, server_commands):
 				where="data['trigger'] == '{}'".format( str(cmd['trigger']) )
 			)
 			asyncio.ensure_future(BASE.cooldown.CD_Custom(message))
+			break
 
 async def add(BASE, message, kwargs):
 	m = message.content.split(" ")
