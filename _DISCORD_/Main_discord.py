@@ -69,7 +69,7 @@ class phaaze(discord.Client):
 	#channel management
 	async def on_channel_create(self, channel):
 		if channel.is_private: return
-		await self.BASE.moduls._Discord_.Discord_Events.Channel.create(self.BASE, channel) # TODO:
+		await self.BASE.moduls._Discord_.Discord_Events.Channel.create(self.BASE, channel)
 
 	async def on_channel_delete(self, channel):
 		if channel.is_private: return

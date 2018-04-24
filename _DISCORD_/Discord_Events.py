@@ -245,10 +245,40 @@ class Member(object):
 
 class Channel(object):
 	async def create(BASE, channel):
-		pass
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, channel.server.id)
+
+			#track: Channel.create
+			if "Channel.create".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+
+				emb = discord.Embed(
+					description=f"{channel.name}\n{channel.mention}",
+					timestamp=datetime.datetime.now(),
+					color=0x00ee00
+				)
+				emb.set_author(name="Log Event - [Channel Created]")
+				await BASE.phaaze.send_message(chan, embed=emb)
+		except:
+			pass
 
 	async def delete(BASE, channel):
-		pass
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, channel.server.id)
+
+			#track: Channel.delete
+			if "Channel.delete".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+
+				emb = discord.Embed(
+					description=f"{channel.name}\n{channel.mention}",
+					timestamp=datetime.datetime.now(),
+					color=0xee0000
+				)
+				emb.set_author(name="Log Event - [Channel Deleted]")
+				await BASE.phaaze.send_message(chan, embed=emb)
+		except:
+			pass
 
 class Role(object):
 	async def create(BASE, channel):
