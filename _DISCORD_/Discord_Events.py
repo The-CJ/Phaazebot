@@ -11,11 +11,11 @@ class Message(object):
 
 class Member(object):
 	async def join(BASE, member):
-		server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
-		#track: Member.join
-		if "Member.join".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
-			try:
+			#track: Member.join
+			if "Member.join".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
 				chan = discord.Object(id=server_settings.get("track_channel"))
 				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
 
@@ -27,8 +27,8 @@ class Member(object):
 				emb.set_thumbnail(url=avatar)
 				emb.set_author(name="Log Event - [Member Join]")
 				await BASE.phaaze.send_message(chan, embed=emb)
-			except:
-				pass
+		except:
+			pass
 
 		#welcome message
 		if server_settings.get("welcome_msg", None) != None:
@@ -114,11 +114,11 @@ class Member(object):
 					return await BASE.phaaze.send_message(member.server.owner, ":warning: Phaaze doesn't have permissions to give `{1}` the Autorole in `{0}`. Autorole has been reset.".format(member.server.name, member.name))
 
 	async def remove(BASE, member):
-		server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
-		#track: Member.remove
-		if "Member.remove".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
-			try:
+			#track: Member.remove
+			if "Member.remove".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
 				chan = discord.Object(id=server_settings.get("track_channel"))
 				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
 
@@ -130,8 +130,8 @@ class Member(object):
 				emb.set_thumbnail(url=avatar)
 				emb.set_author(name="Log Event - [Member Leave]")
 				await BASE.phaaze.send_message(chan, embed=emb)
-			except:
-				pass
+		except:
+			pass
 
 		#welcome message
 		if server_settings.get("leave_msg", None) != None:
