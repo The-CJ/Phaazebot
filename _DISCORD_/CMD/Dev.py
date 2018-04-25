@@ -10,12 +10,8 @@ async def Base(BASE, message, **kwargs):
 		await BASE.moduls._Discord_.PROCESS.Dev.debug(BASE, message, kwargs)
 
 	elif check.startswith("reload"):
-		await BASE.phaaze.send_message(message.channel, ":warning: Reloading entire PhaazeOS... :recycle:")
-		try:
-			BASE.moduls.Utils.reload_base(BASE)
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Reload successfull.")
-		except:
-			return await BASE.phaaze.send_message(message.channel, ":octagonal_sign: Database is corrupted! Keeping old Database alive.")
+		await BASE.phaaze.send_message(message.channel, ":warning: Reloading entire PhaazeOS. Please wait.")
+		asyncio.ensure_future(BASE.moduls.Utils.reload_base(BASE), loop=BASE.Worker_loop)
 
 	elif check.startswith("global"):
 		await BASE.moduls._Discord_.PROCESS.Dev.global_message(BASE, message, kwargs)
