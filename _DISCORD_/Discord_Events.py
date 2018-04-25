@@ -37,7 +37,26 @@ class Message(object):
 					timestamp=datetime.datetime.now(),
 					color=0xbbbbbb
 				)
-				emb.add_field(name='Author', value=f"{after.author.name}\n{after.author.mention}\n{message.author.id}", inline=False)
+				emb.add_field(name='Author', value=f"{after.author.name}\n{after.author.mention}\n{after.author.id}", inline=False)
+				emb.set_author(name="Log Event - [Message Edited]")
+				await BASE.phaaze.send_message(chan, embed=emb)
+		except:
+			pass
+
+	async def prune(BASE, message, amount):
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, message.server.id)
+
+			#track: Message.edit
+			if "Message.prune".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+
+				emb = discord.Embed(
+					description=f"Pruned {str(amount)} in `{message.channel.name}`",
+					timestamp=datetime.datetime.now(),
+					color=0xbbbbbb
+				)
+				emb.add_field(name='Author', value=f"{message.author.name}\n{message.author.mention}\n{message.author.id}", inline=False)
 				emb.set_author(name="Log Event - [Message Edited]")
 				await BASE.phaaze.send_message(chan, embed=emb)
 		except:
@@ -316,6 +335,83 @@ class Role(object):
 				await BASE.phaaze.send_message(chan, embed=emb)
 		except:
 			pass
+
+class Phaaze(object):
+	async def custom(BASE, server_id, state, trigger=None):
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, server_id)
+
+			#track: Phaaze.custom
+			if "Phaaze.custom".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+
+				if state.lower() == "add" and trigger != None:
+					emb = discord.Embed(
+						description=f"Trigger: {trigger}",
+						timestamp=datetime.datetime.now(),
+						color=0x00ee00
+					)
+					emb.set_author(name="Log Event - [Custom Command Created]")
+					await BASE.phaaze.send_message(chan, embed=emb)
+
+				if state.lower() == "remove" and trigger != None:
+					emb = discord.Embed(
+						description=f"Trigger: {trigger}",
+						timestamp=datetime.datetime.now(),
+						color=0xee0000
+					)
+					emb.set_author(name="Log Event - [Custom Command Removed]")
+					await BASE.phaaze.send_message(chan, embed=emb)
+
+				if state.lower() == "update" and trigger != None:
+					emb = discord.Embed(
+						description=f"Trigger: {trigger}",
+						timestamp=datetime.datetime.now(),
+						color=0xeeee00
+					)
+					emb.set_author(name="Log Event - [Custom Command Updated]")
+					await BASE.phaaze.send_message(chan, embed=emb)
+		except:
+			pass
+
+	async def quote(BASE, message, state):
+		try:
+			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, message.server.id)
+
+			#track: Phaaze.quote
+			if "Phaaze.quote".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
+				chan = discord.Object(id=server_settings.get("track_channel"))
+
+				if state.lower() == "add":
+					emb = discord.Embed(
+						description=f"Executed by: \n{message.author.name}\n{message.author.mention}\n{message.author.id}",
+						timestamp=datetime.datetime.now(),
+						color=0x00ee00
+					)
+					emb.set_author(name="Log Event - [Quote Created]")
+					await BASE.phaaze.send_message(chan, embed=emb)
+
+				if state.lower() == "remove":
+					emb = discord.Embed(
+						description=f"Executed by: \n{message.author.name}\n{message.author.mention}\n{message.author.id}",
+						timestamp=datetime.datetime.now(),
+						color=0xee0000
+					)
+					emb.set_author(name="Log Event - [Quote Removed]")
+					await BASE.phaaze.send_message(chan, embed=emb)
+
+				if state.lower() == "clear":
+					emb = discord.Embed(
+						description=f"Executed by: \n{message.author.name}\n{message.author.mention}\n{message.author.id}",
+						timestamp=datetime.datetime.now(),
+						color=0xff0000
+					)
+					emb.set_author(name="Log Event - [All Quotes Cleared]")
+					await BASE.phaaze.send_message(chan, embed=emb)
+
+		except:
+			pass
+
 
 class event_logs(object):
 	async def join(BASE, member):
