@@ -399,6 +399,7 @@ class Prune(object):
 
 			return del_
 
+		BASE.moduls._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
 		delete = await BASE.phaaze.purge_from(message.channel, limit=300, check=need_delete)
 
 		await BASE.moduls._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
@@ -420,6 +421,7 @@ class Prune(object):
 			if r.content.lower() != "y":
 				return await BASE.phaaze.send_message(message.channel, ":warning: Prune canceled.")
 
+		BASE.moduls._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
 		delete = await BASE.phaaze.purge_from(message.channel, limit=c+1)
 
 		await BASE.moduls._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
@@ -440,6 +442,7 @@ class Prune(object):
 
 			return del_
 
+		BASE.moduls._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
 		delete = await BASE.phaaze.purge_from(message.channel, limit=300, check=need_delete)
 
 		if len(delete) == 0:
@@ -464,6 +467,7 @@ class Prune(object):
 
 			return del_
 
+		BASE.moduls._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
 		delete = await BASE.phaaze.purge_from(message.channel, limit=300, check=need_delete)
 
 		if len(delete) == 0:
