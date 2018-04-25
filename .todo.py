@@ -8,7 +8,6 @@
 # TODO: Add method to reset level on leave
 
 # TODO: >>>master news
-# TODO: >>>logs
 # TODO: API rewrite
 # TODO: Discord Events
 # TODO: Phaaze Cleverbot... someday

@@ -43,39 +43,39 @@ async def get_server_setting(BASE, id, prevent_new=False):
 async def make_server_file(BASE, id):
 	insert_ = dict()
 
-	insert_['server_id'] = id,
-	insert_['autorole'] = None,
+	insert_['server_id'] = id
+	insert_['autorole'] = None
 
-	insert_['welcome_msg'] = None,
-	insert_['welcome_msg_priv'] = None,
-	insert_['welcome_chan'] = None,
+	insert_['welcome_msg'] = None
+	insert_['welcome_msg_priv'] = None
+	insert_['welcome_chan'] = None
 
-	insert_['leave_msg'] = None,
-	insert_['leave_chan'] = None,
+	insert_['leave_msg'] = None
+	insert_['leave_chan'] = None
 
-	insert_['blacklist'] = [],
-	insert_['blacklist_punishment'] = "leave",
+	insert_['blacklist'] = []
+	insert_['blacklist_punishment'] = "leave"
 
-	insert_['ban_links'] = False,
-	insert_['ban_links_whitelist'] = [],
-	insert_['ban_links_role'] = None,
+	insert_['ban_links'] = False
+	insert_['ban_links_whitelist'] = []
+	insert_['ban_links_role'] = []
 
-	insert_['enable_chan_ai'] = [],
-	insert_['enable_chan_nsfw'] = [],
-	insert_['enable_chan_game'] = [],
+	insert_['enable_chan_ai'] = []
+	insert_['enable_chan_nsfw'] = []
+	insert_['enable_chan_game'] = []
 
-	insert_['disable_chan_normal'] = [],
-	insert_['disable_chan_level'] = [],
-	insert_['disable_chan_custom'] = [],
-	insert_['disable_chan_quotes'] = [],
+	insert_['disable_chan_normal'] = []
+	insert_['disable_chan_level'] = []
+	insert_['disable_chan_custom'] = []
+	insert_['disable_chan_quotes'] = []
 
-	insert_['owner_disable_normal'] = False,
-	insert_['owner_disable_mod'] = False,
-	insert_['owner_disable_level'] = False,
-	insert_['owner_disable_custom'] = False,
+	insert_['owner_disable_normal'] = False
+	insert_['owner_disable_mod'] = False
+	insert_['owner_disable_level'] = False
+	insert_['owner_disable_custom'] = False
 
-	insert_['track_options'] = [],
-	insert_['track_channel'] = None,
+	insert_['track_options'] = []
+	insert_['track_channel'] = None
 
 	Console.CYAN("INFO", "New Server Settings DB entry")
 
@@ -99,7 +99,7 @@ async def get_server_level(BASE, id, prevent_new=False):
 
 async def make_server_level_file(BASE, id):
 
-	BASE.PhaazeDB.create(of="discord/level/level_"+str(id))
+	BASE.PhaazeDB.create(name="discord/level/level_"+str(id))
 	Console.CYAN("INFO", "New Server Level DB-Container created")
 
 	return []
@@ -120,7 +120,7 @@ async def get_server_commands(BASE, id, prevent_new=False):
 
 async def make_get_server_commands(BASE, id):
 
-	BASE.PhaazeDB.create(of="discord/commands/commands_"+str(id))
+	BASE.PhaazeDB.create(name="discord/commands/commands_"+str(id))
 	Console.CYAN("INFO", "New Server Command DB-Container created")
 
 	return []
@@ -141,7 +141,7 @@ async def get_server_quotes(BASE, id, prevent_new=False):
 
 async def make_get_server_quotes(BASE, id):
 
-	BASE.PhaazeDB.create(of="discord/quotes/quotes_"+str(id))
+	BASE.PhaazeDB.create(name="discord/quotes/quotes_"+str(id))
 	Console.CYAN("INFO", "New Server Quote DB-Container created")
 
 	return []
