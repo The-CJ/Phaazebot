@@ -12,7 +12,7 @@ async def Base(BASE, message, **kwargs):
 	elif check.startswith("reload"):
 		await BASE.phaaze.send_message(message.channel, ":warning: Reloading entire PhaazeOS... :recycle:")
 		try:
-			await BASE.moduls.Utils.reload_base(BASE)
+			BASE.moduls.Utils.reload_base(BASE)
 			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Reload successfull.")
 		except:
 			return await BASE.phaaze.send_message(message.channel, ":octagonal_sign: Database is corrupted! Keeping old Database alive.")

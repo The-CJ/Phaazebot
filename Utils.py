@@ -34,16 +34,14 @@ def get_osu_status_symbol(state):
 	else: return ":question:"
 
 #OS controll
-async def reload_base(BASE):
+def reload_base(BASE):
 	try:
 		BASE.moduls.Console.BLUE("SYSTEM INFO","Reloading Base...")
 		BASE.RELOAD = True
 		BASE.load_BASE(BASE)
 		BASE.moduls._Web_.Base.RequestHandler.BASE = BASE
-		await asyncio.sleep(3)
-		setattr(BASE.vars, "app", await BASE.phaaze.application_info() )
-		setattr(BASE.vars, "discord_is_NOT_ready", False )
-		await BASE.phaaze.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online)
+		setattr(BASE.vars, "app", BASE.run_async(BASE.phaaze.application_info(), loop=BASE.Discord_loop ))
+		BASE.run_async(BASE.phaaze.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online), loop=BASE.Discord_loop)
 		BASE.RELOAD = False
 
 	except Exception as e:
