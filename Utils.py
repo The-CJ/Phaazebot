@@ -35,21 +35,24 @@ def get_osu_status_symbol(state):
 
 #OS controll
 async def reload_base(BASE):
-	try:
-		BASE.moduls.Console.BLUE("SYSTEM INFO","Reloading Base...")
-		BASE.RELOAD = True
-		BASE.load_BASE(BASE)
-		BASE.moduls.Console.BLUE("SYSTEM INFO","Base Reloaded")
-		BASE.moduls._Web_.Base.RequestHandler.BASE = BASE
-		BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Web-Handler")
-		setattr(BASE.vars, "app", BASE.run_async(BASE.phaaze.application_info(), exc_loop=BASE.Discord_loop) )
-		BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Discord App Info")
-		BASE.run_async(BASE.phaaze.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online), exc_loop=BASE.Discord_loop)
-		BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Discord Status")
-		BASE.RELOAD = False
-		BASE.moduls.Console.BLUE("SYSTEM INFO","BASE Reload Successfull!")
+	BASE.RELOAD = True
+	BASE.moduls.Console.BLUE("SYSTEM INFO","Reloading Base...")
 
-	except Exception as e:
-		print(str(e.__class__))
-		print(str(e))
-		0/0
+	BASE.load_BASE(BASE)
+	BASE.moduls.Console.BLUE("SYSTEM INFO","Base Reloaded")
+
+	BASE.moduls._Web_.Base.RequestHandler.BASE = BASE
+	BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Web-Handler")
+
+	setattr(BASE.vars, "app", BASE.run_async(BASE.phaaze.application_info(), exc_loop=BASE.Discord_loop) )
+	BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Discord App Info")
+
+	BASE.run_async(BASE.phaaze.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online), exc_loop=BASE.Discord_loop)
+	BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Discord Status")
+
+	BASE.moduls._Twitch_.Alerts.Init_Main(BASE)
+	BASE.moduls.Console.BLUE("SYSTEM INFO","Reinitialized Twitch Alert")
+
+	BASE.RELOAD = False
+	BASE.moduls.Console.BLUE("SYSTEM INFO","BASE Reload Successfull!")
+

@@ -37,14 +37,9 @@ async def Base(BASE, message, **kwargs):
 		return await BASE.moduls._Discord_.PROCESS.Owner.Logs.Base(BASE, message, kwargs)
 
 	if check.startswith("news"):
-		return await BASE.moduls._Discord_.PROCESS.Owner.Everything.news(BASE, message, kwargs)
-
-	return
+		return await BASE.moduls._Discord_.PROCESS.Owner.Everything.news(BASE, message, kwargs) #TODO: Fix
 
 	if check.startswith("twitch"):
-		if await BASE.moduls.Utils.is_Owner(BASE, message):
-			await BASE.moduls.Twitch.twitch_alerts_base(BASE, message)
-		else:
-			await BASE.moduls.Utils.no_owner(BASE, message)
+		return await BASE.moduls._Discord_.Twitch.Base(BASE, message, kwargs)
 
 

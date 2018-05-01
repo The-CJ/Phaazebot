@@ -8,8 +8,10 @@ function toggle_module(mo) {
 
 }
 
-function evalCommand() {
-  var command = $('#eval_command').val();
+function evalCommand(command) {
+  if (command == null) {
+    command = $('#eval_command').val(); 
+  }
   var r = {};
   r['command'] = command;
   $.post("/api/admin/eval_command", JSON.stringify(r), function (data) {

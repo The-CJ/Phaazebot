@@ -2,6 +2,8 @@
 
 import asyncio, json, requests
 
+MAIN = "https://api.twitch.tv/kraken/"
+
 #settings
 async def get_twitch_file(BASE, room_id):
 	#has file in lib
@@ -131,12 +133,44 @@ async def get_channel_object(BASE, id=None, name=None):
 				return channel
 	return found
 
-#API Call
-async def twitch_API_call(BASE, url):
+# # #
+
+def API_call(BASE, url):
 	key = BASE.access.Twitch_API_Token
 	header = {"Client-ID": key, "Accept": "application/vnd.twitchtv.v5+json"}
 	try:
 		resp = requests.get(url, headers = header)
 		return resp.json()
 	except:
-		return {'status': 500}
+		raise ConnectionError('No Twitch API Response')
+
+def get_user(BASE, twitch_info, search="id"):
+	try:
+		if search == "id":
+			s = "users/"
+			link = MAIN + s + twitch_info
+			res = API_call(BASE, link)
+			return res
+
+		elif search == "name":
+			s = "users?login="
+			link = MAIN + s + twitch_info
+			res = API_call(BASE, link)
+
+			#No User
+			if res.get("_total", 0) != 1: return None
+
+			return res["users"][0]
+
+	except:
+		return None
+
+def get_streams(BASE, streams):
+	if type(streams) == str:
+		streams = [streams]
+	try:
+		link = MAIN + 'streams?channel=' + ",".join(stream for stream in streams)
+		res = API_call(BASE, link)
+		return res
+	except:
+		return None
