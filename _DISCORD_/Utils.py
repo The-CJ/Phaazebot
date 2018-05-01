@@ -161,11 +161,7 @@ class Phaaze_info(object):
 		finish += Phaaze_info.get_discord_infos(BASE)
 
 		finish += f"\n\nContact:\n"
-<<<<<<< HEAD
 		finish += f"Developer: {str(BASE.vars.app.owner)} | ID: {BASE.vars.app.owner.id}\n"
-=======
-		finish += f"Developer: {str(BASE.vars.app.owner)} | ID: {BASE.vars.app.owner.id}"
->>>>>>> 165408809952f707feb5a4f4e6a16822552f18cb
 		finish += f"Mail: admin@phaaze.net\n"
 		finish += f"Dev Server: https://discord.gg/ZymrebS | https://discord.me/phaaze\n"
 
@@ -248,16 +244,6 @@ class Phaaze_info(object):
 							colour=int(0x00FFD0),
 							type="rich")
 		t.set_thumbnail(url=BASE.phaaze.user.avatar_url)
-<<<<<<< HEAD
-		t.set_footer(text="Powered by PhaazeOS", icon_url=app.icon_url)
-		t.set_author(name="Phaazebot", url="", icon_url=app.icon_url)
-
-		t.add_field(name="Phaaze for Discord", value="Just click this link and select a server:\n"+Admin_invite, inline=False)
-		t.add_field(name="Phaaze for Twitch", value="Go to https://www.twitch.tv/phaazebot and type `>join` for adding it to your channel", inline=False)
-		t.add_field(name="Phaaze Website", value="https://phaaze.net", inline=False)
-		t.add_field(name="Phaaze Server", value="https://discord.gg/ZymrebS | https://discord.me/phaaze", inline=False)
-		t.add_field(name="Support Phaaze", value="Phaaze will always be free, support it to keep it that way:\nhttps://www.patreon.com/the_cj", inline=False)
-=======
 		t.set_footer(text="Want more infos? Goto https://phaaze.net", icon_url=app.icon_url)
 		t.set_author(name="Phaazebot", url="", icon_url=app.icon_url)
 
@@ -265,5 +251,4 @@ class Phaaze_info(object):
 		t.add_field(name="Phaaze for Twitch", value="Go to http://www.twitch.tv/phaazebot and type `>join` for adding it to your channel", inline=False)
 		t.add_field(name="Support Phaaze", value="Phaaze will always be free, support it to keep it that way:\nhttps://www.patreon.com/the_cj", inline=False)
 		t.add_field(name="Phaaze Server", value="https://discord.gg/ZymrebS | https://discord.me/phaaze", inline=False)
->>>>>>> 165408809952f707feb5a4f4e6a16822552f18cb
 		return await BASE.phaaze.send_message(message.channel, embed=t)
