@@ -9,6 +9,5 @@
 
 # TODO: >>>master news
 # TODO: API rewrite
-# TODO: Discord Events
 # TODO: Phaaze Cleverbot... someday
 # # # # # # # # #
