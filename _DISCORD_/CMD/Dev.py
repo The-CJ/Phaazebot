@@ -10,7 +10,7 @@ async def Base(BASE, message, **kwargs):
 		await BASE.moduls._Discord_.PROCESS.Dev.debug(BASE, message, kwargs)
 
 	elif check.startswith("reload"):
-		await BASE.phaaze.send_message(message.channel, ":warning: Reloading entire PhaazeOS. Please wait.")
+		await BASE.discord.send_message(message.channel, ":warning: Reloading entire PhaazeOS. Please wait.")
 		asyncio.ensure_future(BASE.moduls.Utils.reload_base(BASE), loop=BASE.Worker_loop)
 
 	elif check.startswith("global"):
@@ -20,10 +20,10 @@ async def Base(BASE, message, **kwargs):
 		await BASE.moduls._Discord_.PROCESS.Dev.news(BASE, message, kwargs)
 
 	elif check.startswith("shutdown"):
-		try: await BASE.phaaze.send_message(message.channel, "PhaazeOS will now shutdown savely.")
+		try: await BASE.discord.send_message(message.channel, "PhaazeOS will now shutdown savely.")
 		except: pass
 
 		await BASE.shutdown(BASE)
 
 	else:
-		return await BASE.phaaze.send_message(message.channel, "Unknown Overwrite Command.")
+		return await BASE.discord.send_message(message.channel, "Unknown Overwrite Command.")

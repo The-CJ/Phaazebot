@@ -6,11 +6,11 @@ async def base(BASE, message):
 	#R.o.D. Sys Overr.
 	if len(message.author.roles) == 1 and message.server.id == "117801129496150019":
 		role = discord.utils.get(message.server.roles, id="117808048919019527")
-		await BASE.phaaze.add_roles(message.author, role)
+		await BASE.discord.add_roles(message.author, role)
 
 	#get server files
 	# IDEA: MAYBE only call things when needed and not on every message, but i don't think its a big problem for now,
-	#       PhaazeDB can handle ~700 request/sec without a big delay. (Discord traffic on huge [5M user] bots ~100-200 msg/sec)
+	#       PhaazeDB can handle ~700 request/sec without a big delay. (Discord traffic on huge [5M user] servers: ~100-200 msg/sec)
 	server_setting = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, message.server.id)
 	server_commands = await BASE.moduls._Discord_.Utils.get_server_commands(BASE, message.server.id)
 	server_levels = await BASE.moduls._Discord_.Utils.get_server_level(BASE, message.server.id)
@@ -54,9 +54,9 @@ async def base(BASE, message):
 
 	#@phaazebot ai call
 	if message.edited_timestamp == None:
-		if message.content.startswith("<") and BASE.phaaze.user.id in message.content:
+		if message.content.startswith("<") and BASE.discord.user.id in message.content:
 			m = message.content.split()[0]
 			check = m.replace("!", "")
 			check = check.replace("$", "")
-			if check == BASE.phaaze.user.mention:
-				return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze AI Moduls not avalible for now.")
+			if check == BASE.discord.user.mention:
+				return await BASE.discord.send_message(message.channel, ":no_entry_sign: Phaaze AI Moduls not avalible for now.")

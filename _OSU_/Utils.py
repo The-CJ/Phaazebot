@@ -185,7 +185,7 @@ async def pp_calc_for_maps(BASE, message):
 	m = message.content.split(" ")
 
 	if len(m) == 2:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Missing Maplink (and options)\n\nOptions:\n`acc=[X]` - e.g. `acc=98,4` \n`combo=[X]` - e.g. `combo=1455` (0 == Full Combo)\n`miss=[X]` - e.g. `miss=4`\n`mods=[X]` - e.g. `mods=HDHR`\n\n**options seperated with Spaces**")
+		return await BASE.discord.send_message(message.channel, ":warning: Missing Maplink (and options)\n\nOptions:\n`acc=[X]` - e.g. `acc=98,4` \n`combo=[X]` - e.g. `combo=1455` (0 == Full Combo)\n`miss=[X]` - e.g. `miss=4`\n`mods=[X]` - e.g. `mods=HDHR`\n\n**options seperated with Spaces**")
 
 	if len(m) >= 3:
 		def get_id_from_link(number):
@@ -204,9 +204,9 @@ async def pp_calc_for_maps(BASE, message):
 
 		map_id_number = get_id_from_link(m[2])
 		if "/s/" in m[2]:
-			return await BASE.phaaze.send_message(message.channel, ":warning: PP Calc only works for single maps, not mapsets")
+			return await BASE.discord.send_message(message.channel, ":warning: PP Calc only works for single maps, not mapsets")
 		if map_id_number == None:
-			return await BASE.phaaze.send_message(message.channel, ":warning: Invalid Maplink. Only Map link or ID are vaild.")
+			return await BASE.discord.send_message(message.channel, ":warning: Invalid Maplink. Only Map link or ID are vaild.")
 
 	map_id_number = map_id_number.split("&")[0]
 
@@ -222,30 +222,30 @@ async def pp_calc_for_maps(BASE, message):
 				try:
 					v = float(option.split("=")[1])
 					if not 0 < v < 100:
-						return await BASE.phaaze.send_message(message.channel, ":warning: `acc` value has to be 0 < [X] <= 100.")
+						return await BASE.discord.send_message(message.channel, ":warning: `acc` value has to be 0 < [X] <= 100.")
 					acc_ = v
-				except: return await BASE.phaaze.send_message(message.channel, ":warning: `acc` value can only be a *int* or *float*.")
+				except: return await BASE.discord.send_message(message.channel, ":warning: `acc` value can only be a *int* or *float*.")
 
 			elif option.lower().startswith("combo="):
 				try:
 					v = int(option.split("=")[1])
 					combo_ = v
-				except: return await BASE.phaaze.send_message(message.channel, ":warning: `combo` value can only be a *int* from 0-[max_combo].")
+				except: return await BASE.discord.send_message(message.channel, ":warning: `combo` value can only be a *int* from 0-[max_combo].")
 
 			elif option.lower().startswith("miss="):
 				try:
 					v = int(option.split("=")[1])
 					miss_ = v
-				except: return await BASE.phaaze.send_message(message.channel, ":warning: `miss` value can only be a *int* from 0-[max_hit_obj].")
+				except: return await BASE.discord.send_message(message.channel, ":warning: `miss` value can only be a *int* from 0-[max_hit_obj].")
 
 			elif option.lower().startswith("mods="):
 				try:
 					v = option.split("=")[1].upper()
 					mods_ = v
-				except: return await BASE.phaaze.send_message(message.channel, ":warning: Invaild syntax for `mods`.")
+				except: return await BASE.discord.send_message(message.channel, ":warning: Invaild syntax for `mods`.")
 
 			else:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Invalid Option, `{0}` could not be processed, available are `mods`, `acc`, `combo` and `miss`".format(option))
+				return await BASE.discord.send_message(message.channel, ":warning: Invalid Option, `{0}` could not be processed, available are `mods`, `acc`, `combo` and `miss`".format(option))
 
 	result = await BASE.moduls.osu_utils.get_pp(map_id_number, acc=acc_, misses=miss_, combo=combo_, mod_s=mods_)
 
@@ -261,7 +261,7 @@ async def pp_calc_for_maps(BASE, message):
 	j = "{0}% - Combo: {5}/{2} - misses: {3} with {4}\nWhould give... : **{1}pp** 			*(+-2%)*".format(str(round(acc_)), str(round(result.pp, 1)), str(round(result.maxcombo)), str(miss_), moddds, str(combo_) if combo_ != 0 else str(round(result.maxcombo)))
 	osu_aw.add_field(name="PP Calc.:",value=j, inline=False)
 
-	return await BASE.phaaze.send_message(message.channel, embed=osu_aw)
+	return await BASE.discord.send_message(message.channel, embed=osu_aw)
 
 async def twitch_osu(BASE, message):
 	def get_link_out_of_content(content):

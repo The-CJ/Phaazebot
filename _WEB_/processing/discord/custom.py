@@ -12,7 +12,7 @@ def custom(BASE, info, root, dump, msg=""):
 	if server_id == None:
 		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
-	server = BASE.phaaze.get_server(server_id)
+	server = BASE.discord.get_server(server_id)
 
 	if server == None:
 		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)

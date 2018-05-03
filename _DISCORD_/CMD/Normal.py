@@ -8,14 +8,14 @@ CMDs = ['custom', 'doujin', 'help', 'phaaze', 'command',
 
 class Forbidden(object):
 	async def disable_chan_normal(BASE, message, kwargs):
-		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Normal Commands are disabled for this channel, only Mods and the Serverowner can use them.")
+		m = await BASE.discord.send_message(message.channel, ":no_entry_sign: Normal Commands are disabled for this channel, only Mods and the Serverowner can use them.")
 		await asyncio.sleep(2.5)
-		await BASE.phaaze.delete_message(m)
+		await BASE.discord.delete_message(m)
 
 	async def owner_disabled_normal(BASE, message, kwargs):
-		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The Serverowner disabled Normal-commands, only the Serverowner can use them.")
+		m = await BASE.discord.send_message(message.channel, ":no_entry_sign: The Serverowner disabled Normal-commands, only the Serverowner can use them.")
 		await asyncio.sleep(2.5)
-		await BASE.phaaze.delete_message(m)
+		await BASE.discord.delete_message(m)
 
 async def Base(BASE, message, **kwargs):
 	m = message.content.lower().split(" ")
@@ -37,10 +37,10 @@ async def Base(BASE, message, **kwargs):
 		return await BASE.moduls._Discord_.Custom.get_all(BASE, message, kwargs)
 
 	if check.startswith("command"):
-		return await BASE.phaaze.send_message(message.channel, ":link: All commands Phaaze can do in one place\nhttps://phaaze.net/wiki/discord/commands")
+		return await BASE.discord.send_message(message.channel, ":link: All commands Phaaze can do in one place\nhttps://phaaze.net/wiki/discord/commands")
 
 	if check.startswith("help"):
-		return await BASE.phaaze.send_message(message.channel, ":link: Need help with Phaaze? Maybe that can help:\nhttps://phaaze.net/wiki")
+		return await BASE.discord.send_message(message.channel, ":link: Need help with Phaaze? Maybe that can help:\nhttps://phaaze.net/wiki")
 
 	if check.startswith("level"):
 		return await BASE.moduls._Discord_.Levels.get(BASE, message, kwargs)

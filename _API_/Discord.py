@@ -91,7 +91,7 @@ def change_bot_name(BASE, info={}, from_web=False, **kwargs):
 		if bot_name == None:
 			raise AttributeError("missing 'bot_name' field")
 
-		func = BASE.phaaze.edit_profile(username=str(bot_name))
+		func = BASE.discord.edit_profile(username=str(bot_name))
 		f = asyncio.ensure_future(func, loop=BASE.Discord_loop)
 	else:
 		pass
@@ -109,7 +109,7 @@ def change_bot_picture(BASE, info={}, from_web=False, **kwargs):
 		if type(picture) is not bytes:
 			raise AttributeError("field 'picture' must be bytes")
 
-		func = BASE.phaaze.edit_profile(avatar=picture)
+		func = BASE.discord.edit_profile(avatar=picture)
 		f = asyncio.ensure_future(func, loop=BASE.Discord_loop)
 
 	if from_web:
@@ -129,7 +129,7 @@ def change_bot_picture(BASE, info={}, from_web=False, **kwargs):
 				return r
 
 			if admin.get("type", None) == "superadmin" or admin.get("type", None) == "admin":
-				func = BASE.phaaze.edit_profile(avatar=info['content'])
+				func = BASE.discord.edit_profile(avatar=info['content'])
 				f = asyncio.ensure_future(func, loop=BASE.Discord_loop)
 				class r (object):
 					content = json.dumps(dict(msg="ok")).encode("UTF-8")
@@ -157,7 +157,7 @@ def change_bot_picture(BASE, info={}, from_web=False, **kwargs):
 				return r
 
 			if admin.get("type", None) == "superadmin" or admin.get("type", None) == "admin":
-				func = BASE.phaaze.edit_profile(avatar=info['content'])
+				func = BASE.discord.edit_profile(avatar=info['content'])
 				f = asyncio.ensure_future(func, loop=BASE.Discord_loop)
 				class r (object):
 					content = json.dumps(dict(msg="ok")).encode("UTF-8")

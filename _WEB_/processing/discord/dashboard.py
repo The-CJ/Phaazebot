@@ -14,7 +14,7 @@ def main(BASE, info, root, dump):
 	return dashboard(BASE, info, root, dump, server_id)
 
 def dashboard(BASE, info, root, dump, server_id):
-	discord_server = BASE.phaaze.get_server(server_id)
+	discord_server = BASE.discord.get_server(server_id)
 	if discord_server == None:
 		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
@@ -41,7 +41,7 @@ def dashboard(BASE, info, root, dump, server_id):
 		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
 	saved_settings = BASE.call_from_async( BASE.moduls.Utils.get_server_file(BASE, server_id, prevent_new=True), BASE.Discord_loop )
-	server_object = BASE.phaaze.get_server(server_id)
+	server_object = BASE.discord.get_server(server_id)
 
 	#Finish up -- Replace Parts
 	site = site.replace("<!-- Server_name -->", html.escape(discord_server_data.get('name', "[Server N/A]")))

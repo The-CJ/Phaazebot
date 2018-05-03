@@ -81,7 +81,7 @@ def delet(BASE, info={}, from_web=False, **kwargs):
 		discord_user = BASE.api.utils.get_discord_user_by_session(BASE, session)
 
 		try:
-			discord_server = BASE.phaaze.get_server(server_id)
+			discord_server = BASE.discord.get_server(server_id)
 			discord_member = discord_server.get_member(discord_user.get('user_info', {}).get('id', None) )
 			perm = discord_member.server_permissions
 			if perm.manage_server or perm.administrator:

@@ -6,9 +6,9 @@ CMDs = ['master', 'welcome', 'leave', 'autorole', 'logs', 'news', 'twitch']
 
 class Forbidden(object):
 	async def no_owner(BASE, message, kwargs):
-		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: You can not use Server Owner Commands")
+		m = await BASE.discord.send_message(message.channel, ":no_entry_sign: You can not use Server Owner Commands")
 		await asyncio.sleep(2.5)
-		await BASE.phaaze.delete_message(m)
+		await BASE.discord.delete_message(m)
 
 async def Base(BASE, message, **kwargs):
 	m = message.content.lower().split(" ")

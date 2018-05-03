@@ -44,10 +44,10 @@ async def reload_base(BASE):
 	BASE.moduls._Web_.Base.RequestHandler.BASE = BASE
 	BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Web-Handler")
 
-	setattr(BASE.vars, "app", BASE.run_async(BASE.phaaze.application_info(), exc_loop=BASE.Discord_loop) )
+	setattr(BASE.vars, "app", BASE.run_async(BASE.discord.application_info(), exc_loop=BASE.Discord_loop) )
 	BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Discord App Info")
 
-	BASE.run_async(BASE.phaaze.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online), exc_loop=BASE.Discord_loop)
+	BASE.run_async(BASE.discord.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online), exc_loop=BASE.Discord_loop)
 	BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Discord Status")
 
 	BASE.moduls._Twitch_.Alerts.Init_Main(BASE)

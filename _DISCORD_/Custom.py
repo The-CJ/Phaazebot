@@ -28,7 +28,7 @@ async def get(BASE, message, server_setting, server_commands):
 			send = send.replace("[member-count]", str(message.server.member_count))
 			send = send.replace("[uses]", str(cmd["uses"]))
 
-			await BASE.phaaze.send_message(message.channel, send)
+			await BASE.discord.send_message(message.channel, send)
 			BASE.PhaazeDB.update(
 				of="discord/commands/commands_"+message.server.id,
 				content=dict(uses = cmd["uses"]),
@@ -52,16 +52,16 @@ async def add(BASE, message, kwargs):
 			"`[server-name]` - Current server name\n"\
 			"`[member-count]` - Number of members on the the server\n"\
 			"`[uses]` - How many times a command has been used"
-		return await BASE.phaaze.send_message(message.channel, r)
+		return await BASE.discord.send_message(message.channel, r)
 
 	trigger = m[1].lower()
 	server_commands = kwargs.get('server_commands', [])
 
 	if len(trigger) >= 100:
-		return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Trigger to long. Maximum: 100 characters")
+		return await BASE.discord.send_message(message.channel, ":no_entry_sign: Trigger to long. Maximum: 100 characters")
 
 	if trigger == "all":
-		return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The trigger `all` is reservated, try something else.")
+		return await BASE.discord.send_message(message.channel, ":no_entry_sign: The trigger `all` is reservated, try something else.")
 
 	#check if command exist
 	found = False
@@ -79,12 +79,12 @@ async def add(BASE, message, kwargs):
 			content=dict(content=str(content))
 		)
 		await BASE.moduls._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "update", trigger=trigger)
-		return await BASE.phaaze.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **updated!**')
+		return await BASE.discord.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **updated!**')
 
 	#new
 	else:
 		if len(server_commands) >= custom_command_limit:
-			return await BASE.phaaze.send_message(message.channel, f":no_entry_sign: The limit of {custom_command_limit} custom commands is reached, delete some first.")
+			return await BASE.discord.send_message(message.channel, f":no_entry_sign: The limit of {custom_command_limit} custom commands is reached, delete some first.")
 
 		content = " ".join(f for f in m[2:])
 		BASE.PhaazeDB.insert(
@@ -96,26 +96,26 @@ async def add(BASE, message, kwargs):
 			)
 		)
 		await BASE.moduls._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "new", trigger=trigger)
-		return await BASE.phaaze.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **created!**')
+		return await BASE.discord.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **created!**')
 
 async def rem(BASE, message, kwargs):
 	m = message.content.split(" ")
 
 	if len(m) <= 1:
 		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}delcom [trigger]` or `{BASE.vars.PT}delcom all`"
-		return await BASE.phaaze.send_message(message.channel, r)
+		return await BASE.discord.send_message(message.channel, r)
 
 	found = False
 
 	if m[1].lower() == "all":
-		await BASE.phaaze.send_message(message.channel,':question: Remove all commands? `y/n`')
-		a = await BASE.phaaze.wait_for_message(timeout=30, author=message.author, channel=message.channel)
+		await BASE.discord.send_message(message.channel,':question: Remove all commands? `y/n`')
+		a = await BASE.discord.wait_for_message(timeout=30, author=message.author, channel=message.channel)
 		if a.content.lower() != "y":
-			return await BASE.phaaze.send_message(message.channel, ':warning: Canceled.')
+			return await BASE.discord.send_message(message.channel, ':warning: Canceled.')
 
 		del_ = BASE.PhaazeDB.delete(of=f"discord/commands/commands_{message.server.id}")
 		x = str( del_.get('hits', 'N/A') )
-		return await BASE.phaaze.send_message(message.channel, f':white_check_mark: All {x} commands removed.')
+		return await BASE.discord.send_message(message.channel, f':white_check_mark: All {x} commands removed.')
 
 	server_commands = kwargs.get('server_commands', [])
 	found = False
@@ -126,7 +126,7 @@ async def rem(BASE, message, kwargs):
 			break
 
 	if not found:
-		return await BASE.phaaze.send_message(message.channel, f':warning: There is no command called: `{m[1].lower()}`')
+		return await BASE.discord.send_message(message.channel, f':warning: There is no command called: `{m[1].lower()}`')
 
 	BASE.PhaazeDB.delete(
 		of=f"discord/commands/commands_{message.server.id}",
@@ -134,36 +134,19 @@ async def rem(BASE, message, kwargs):
 		)
 
 	await BASE.moduls._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "remove", trigger=m[1])
-	return await BASE.phaaze.send_message(message.channel, f':white_check_mark: The command: "`{m[1].lower()}`" has been removed!')
+	return await BASE.discord.send_message(message.channel, f':white_check_mark: The command: "`{m[1].lower()}`" has been removed!')
 
 async def get_all(BASE, message, kwargs):
 	server_commands = kwargs.get('server_commands', [])
 
 	if len(server_commands) == 0:
-		return await BASE.phaaze.send_message(message.channel,
+		return await BASE.discord.send_message(message.channel,
 		":grey_exclamation: This server don't have custom commands!")
 
 	a = "\n".join(f"- `{cmd.get('trigger', '[N/A]')}`" for cmd in server_commands)
 
 	content = 	f"Available commands: **{str(len(server_commands))}**\n\n{a}"
 
-	return await BASE.phaaze.send_message(message.channel, content)
+	return await BASE.discord.send_message(message.channel, content)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#

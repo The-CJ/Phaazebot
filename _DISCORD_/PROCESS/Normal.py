@@ -5,14 +5,14 @@ from tabulate import tabulate
 
 class Forbidden(object):
 	async def disable_chan_quote(BASE, message, kwargs):
-		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Quote ask is disabled for this channel, only Mods and the Serverowner can use them.")
+		m = await BASE.discord.send_message(message.channel, ":no_entry_sign: Quote ask is disabled for this channel, only Mods and the Serverowner can use them.")
 		await asyncio.sleep(2.5)
-		await BASE.phaaze.delete_message(m)
+		await BASE.discord.delete_message(m)
 
 	async def owner_disabled_quote(BASE, message, kwargs):
-		m = await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The Serverowner disabled Quotes, only the Serverowner can use them.")
+		m = await BASE.discord.send_message(message.channel, ":no_entry_sign: The Serverowner disabled Quotes, only the Serverowner can use them.")
 		await asyncio.sleep(2.5)
-		await BASE.phaaze.delete_message(m)
+		await BASE.discord.delete_message(m)
 
 class Everything(object):
 	async def emotes(BASE, message, kwargs):
@@ -20,7 +20,7 @@ class Everything(object):
 		server_emotes_managed = [e for e in message.server.emojis if e.managed]
 
 		if not server_emotes and not server_emotes_managed:
-			return await BASE.phaaze.send_message(message.channel, ":x: This Server has no Emotes at all")
+			return await BASE.discord.send_message(message.channel, ":x: This Server has no Emotes at all")
 
 		if server_emotes:
 			e_ = " | ".join(str(e) + " - `" + e.name + "`" for e in sorted(server_emotes, key=lambda e: e.name))
@@ -39,7 +39,7 @@ class Everything(object):
 		if len(rep_message) > 1999:
 			rep_message[:(1999-len(x))] + x
 
-		return await BASE.phaaze.send_message(message.channel, rep_message[:1999])
+		return await BASE.discord.send_message(message.channel, rep_message[:1999])
 
 	async def define(BASE, message, kwargs):
 		LINK = "https://mashape-community-urban-dictionary.p.mashape.com/define"
@@ -49,21 +49,21 @@ class Everything(object):
 		m = message.content.split(" ")
 
 		if len(m) == 1:
-			return await BASE.phaaze.send_message(message.channel, f':warning: You need to define a word. `{BASE.vars.PT}define [thing]`')
+			return await BASE.discord.send_message(message.channel, f':warning: You need to define a word. `{BASE.vars.PT}define [thing]`')
 
 		thing = " ".join(g for g in m[1:])
 
 		if "phaaze" in message.content.lower() or "phaazebot" in message.content.lower():
-			return await BASE.phaaze.send_message(message.channel, "Thats me :D")
+			return await BASE.discord.send_message(message.channel, "Thats me :D")
 
 		#request or end
 		try:
 			res = requests.get(LINK+TERM+thing, headers= Header).json()
 		except:
-			return await BASE.phaaze.send_message(message.channel, ":warning: A Error occurred during your requestyour request, try agoin later")
+			return await BASE.discord.send_message(message.channel, ":warning: A Error occurred during your requestyour request, try agoin later")
 
 		if not res.get("list", []):
-			return await BASE.phaaze.send_message(message.channel, f":x: Sorry, but Urban dictionary don't know what: `{thing}` is")
+			return await BASE.discord.send_message(message.channel, f":x: Sorry, but Urban dictionary don't know what: `{thing}` is")
 
 		top = res.get("list", [])[0].get("definition", "[N/A]")
 		example = res.get("list", [])[0].get("example", "[N/A]")
@@ -75,12 +75,12 @@ class Everything(object):
 		emb.add_field(name=":book: Example", value=example)
 		if rest_list: emb.set_footer(text=f"and {str(len(rest_list))} other definitions")
 
-		return await BASE.phaaze.send_message(message.channel, embed=emb)
+		return await BASE.discord.send_message(message.channel, embed=emb)
 
 	async def choice(BASE, message, kwargs):
 		m = message.content.split(" ")
 		if len(m) == 1:
-			return await BASE.phaaze.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
+			return await BASE.discord.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
 
 		M = message.content.split(" ", 1)[1].split(";")
 
@@ -94,7 +94,7 @@ class Everything(object):
 			pass
 
 		if len(M) == 1:
-			return await BASE.phaaze.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
+			return await BASE.discord.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
 
 		winner = random.choice(M)
 		winner = winner.replace("`", "")
@@ -103,7 +103,7 @@ class Everything(object):
 
 		resp = "And the winner is...\n\n:game_die:- **{}** -:8ball:".format(winner)
 
-		return await BASE.phaaze.send_message(message.channel, resp)
+		return await BASE.discord.send_message(message.channel, resp)
 
 class Whois(object):
 
@@ -122,7 +122,7 @@ class Whois(object):
 		elif m[1].isdigit():
 			user = discord.utils.get(message.server.members, id=m[1])
 			if user is None:
-				return await BASE.phaaze.send_message(message.channel, f":warning: No user found with ID: {m[1]}")
+				return await BASE.discord.send_message(message.channel, f":warning: No user found with ID: {m[1]}")
 
 			return await Whois.finish(BASE, message, kwargs, user)
 
@@ -131,7 +131,7 @@ class Whois(object):
 			name = " ".join(s for s in m[1:])
 			user = discord.utils.get(message.server.members, name=name)
 			if user is None:
-				return await BASE.phaaze.send_message(message.channel, f":warning: No user found with Name: `{name}`")
+				return await BASE.discord.send_message(message.channel, f":warning: No user found with Name: `{name}`")
 
 			return await Whois.finish(BASE, message, kwargs, user)
 
@@ -195,7 +195,7 @@ class Whois(object):
 		else:
 			tem.set_image(url=user.default_avatar_url)
 
-		return await BASE.phaaze.send_message(message.channel, embed=tem)
+		return await BASE.discord.send_message(message.channel, embed=tem)
 
 class Quotes(object):
 	async def Base(BASE, message, kwargs):
@@ -210,16 +210,16 @@ class Quotes(object):
 		server_quotes = kwargs.get('server_quotes', {})
 
 		if not server_quotes:
-			return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: This server don't has any Quotes")
+			return await BASE.discord.send_message(message.channel, ":grey_exclamation: This server don't has any Quotes")
 
 		if len(m) == 1:
 			quote = random.choice(server_quotes)
 			en = discord.Embed(description=quote.get('content', '[ERROR GETTING QUOTE INFO]'))
 			en.set_footer(text="ID: "+str(quote.get('id', '[N/A]')))
-			return await BASE.phaaze.send_message(message.channel, embed=en)
+			return await BASE.discord.send_message(message.channel, embed=en)
 
 		if not m[1].isdigit():
-			return await BASE.phaaze.send_message(message.channel, ":warning: If you want to get a specific quote use a number")
+			return await BASE.discord.send_message(message.channel, ":warning: If you want to get a specific quote use a number")
 
 		index = int(m[1])
 
@@ -227,9 +227,9 @@ class Quotes(object):
 			if quote.get('id', None) == index:
 				en = discord.Embed(description=quote.get('content', '[ERROR GETTING QUOTE INFO]'))
 				en.set_footer(text="ID: "+str(quote.get('id', '[N/A]')))
-				return await BASE.phaaze.send_message(message.channel, embed=en)
+				return await BASE.discord.send_message(message.channel, embed=en)
 
-		return await BASE.phaaze.send_message(message.channel, f":warning: No quote found with id {index}")
+		return await BASE.discord.send_message(message.channel, f":warning: No quote found with id {index}")
 
 class Wiki(object):
 
@@ -244,7 +244,7 @@ class Wiki(object):
 		m = message.content.split()
 
 		if len(m) == 1:
-			return await BASE.phaaze.send_message(message.channel, f":warning: You need to define something you wanna search for. `{BASE.vars.PT}wiki(/Language) [thing]"\
+			return await BASE.discord.send_message(message.channel, f":warning: You need to define something you wanna search for. `{BASE.vars.PT}wiki(/Language) [thing]"\
 			f"`\n\n`(/Language)` - (Optional) change the return language e.g. `{BASE.vars.PT}wiki/de YouTube` return German results | Default: en\n`[thing]` - whatever you wanna look up.")
 
 		language = Wiki.get_language(m[0])
@@ -253,12 +253,12 @@ class Wiki(object):
 		try:
 			r = requests.get( Wiki.SEARCH.format(language)+thing ).json()
 		except:
-			return await BASE.phaaze.send_message(message.channel, f":warning: Could not connect to Wikipedia, maybe the language you (`{language}`) entered is not avaliable?.")
+			return await BASE.discord.send_message(message.channel, f":warning: Could not connect to Wikipedia, maybe the language you (`{language}`) entered is not avaliable?.")
 
 		r = Wiki.remove_refereTo(r)
 
 		if not r[1]:
-			return await BASE.phaaze.send_message(
+			return await BASE.discord.send_message(
 				message.channel, f":x: Wikipedia could not found anything for `{thing}` , try again in a moment.")
 
 		if len(r[1]) == 1:
@@ -280,15 +280,15 @@ class Wiki(object):
 		emb.set_footer(text="Please type only the number you wanna search.")
 		emb.set_footer(text="Provided by Wikipedia", icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/2000px-Wikipedia-logo-v2.svg.png")
 
-		x = await BASE.phaaze.send_message(message.channel, embed=emb)
-		a = await BASE.phaaze.wait_for_message(timeout=15, author=message.author, channel=message.channel)
+		x = await BASE.discord.send_message(message.channel, embed=emb)
+		a = await BASE.discord.wait_for_message(timeout=15, author=message.author, channel=message.channel)
 		if not a.content.lower().isdigit():
-			await BASE.phaaze.delete_message(x)
-			return await BASE.phaaze.send_message(message.channel, ":warning: Please only enter a number... Try later again")
+			await BASE.discord.delete_message(x)
+			return await BASE.discord.send_message(message.channel, ":warning: Please only enter a number... Try later again")
 
 		elif not (0 < int(a.content) <= len(r[1])):
-			await BASE.phaaze.delete_message(x)
-			return await BASE.phaaze.send_message(message.channel, f":warning: Please only enter a number between 1 - {str(len(r[1]))}... Try later again")
+			await BASE.discord.delete_message(x)
+			return await BASE.discord.send_message(message.channel, f":warning: Please only enter a number between 1 - {str(len(r[1]))}... Try later again")
 
 		else:
 			return await Wiki.get_summary(BASE, message, kwargs, language, r[1][(int(a.content)-1)])
@@ -301,7 +301,7 @@ class Wiki(object):
 		emb.set_author(name=r.get('title', FAIL), url=r.get('content_urls', {}).get('desktop', {}).get('page', ""))
 		emb.set_thumbnail(url=r.get('thumbnail', {}).get('source', ''))
 		emb.set_footer(text="Provided by Wikipedia", icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/2000px-Wikipedia-logo-v2.svg.png")
-		return await BASE.phaaze.send_message(message.channel, embed=emb)
+		return await BASE.discord.send_message(message.channel, embed=emb)
 
 	def get_language(str_):
 		spl = str_.split('/')
@@ -347,7 +347,7 @@ class Osu(object):
 		m = message.content.lower().split(" ")
 
 		if len(m) == 1:
-			return await BASE.phaaze.send_message(
+			return await BASE.discord.send_message(
 				message.channel,
 				f":warning: Missing a option!  Usage: `{BASE.vars.PT}osu [Option]`\n\n"\
 				f"Available options: `stats`, `map`, `calc`")
@@ -359,7 +359,7 @@ class Osu(object):
 
 			elif m[1].startswith("map"):
 				if len(m) == 2:
-					return await BASE.phaaze.send_message(message.channel, ":warning: Missing Map Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+					return await BASE.discord.send_message(message.channel, ":warning: Missing Map Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
 
 				#find mode and id
 				try:
@@ -377,12 +377,12 @@ class Osu(object):
 
 					else: 0/0
 				except:
-					return await BASE.phaaze.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+					return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
 
 				#get set/map/creator
 				stuff = await BASE.moduls.osu.get_all_maps(BASE, ID=search_id, mode=mode)
-				if stuff == None and mode == "u": return await BASE.phaaze.send_message(message.channel, ":warning: The user does not exist or dosn't created any beatmaps".format(BASE.vars.PT))
-				if stuff == None: return await BASE.phaaze.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+				if stuff == None and mode == "u": return await BASE.discord.send_message(message.channel, ":warning: The user does not exist or dosn't created any beatmaps".format(BASE.vars.PT))
+				if stuff == None: return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
 
 				#one
 				if mode == "b" or mode == "s" and len(stuff.all_maps) == 1: #one map
@@ -435,7 +435,7 @@ class Osu(object):
 					if not beatmap.tags == []:
 						osu_aw.add_field(name="Tags:",value=", ".join(tag for tag in beatmap.tags), inline=True)
 
-					return await BASE.phaaze.send_message(message.channel, embed=osu_aw)
+					return await BASE.discord.send_message(message.channel, embed=osu_aw)
 
 
 				#set
@@ -467,7 +467,7 @@ class Osu(object):
 
 					if len(fff) > 1997: fff = ":no_entry_sign: Seems like this Mapset has to many diffs, its to much for the Discord message limit, sorry."
 
-					return await BASE.phaaze.send_message(message.channel, content=fff, embed=ggt)
+					return await BASE.discord.send_message(message.channel, content=fff, embed=ggt)
 
 
 				#creator
@@ -504,25 +504,25 @@ class Osu(object):
 
 					if len(base_res) > 1997: base_res = ":no_entry_sign: Seems like **{0}** made to many Maps, its to much for the Discord message limit, sorry.".format(base_infos.creator)
 
-					await BASE.phaaze.send_message(message.channel, content=base_res, embed=ebb)
-					try: await BASE.phaaze.delete_message(message)
+					await BASE.discord.send_message(message.channel, content=base_res, embed=ebb)
+					try: await BASE.discord.delete_message(message)
 					except: pass
 					return
 
 			elif m[1].startswith("track"):
-				return await BASE.phaaze.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
+				return await BASE.discord.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
 
 			elif m[1].startswith("calc"):
 				await BASE.moduls.osu.pp_calc_for_maps(BASE, message)
 
 			else:
-				return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
+				return await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
 
 	async def stats(BASE, message, kwargs):
 		m = message.content.split(" ")
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(
+			return await BASE.discord.send_message(
 				message.channel,
 				f":warning: Missing User!\nUsage: `{BASE.vars.PT}osu stats(mode) [User]`\n"\
 				f'`(mode)` - Optional: Can be empty, `/osu`, `/ctb`, `/mania` or `/taiko`\n'\
@@ -538,15 +538,15 @@ class Osu(object):
 		elif mode == "ctb": MODE = "2"
 		elif mode == "mania": MODE = "3"
 		elif mode == "":
-			return await BASE.phaaze.send_message(message.channel, ":warning: Option after `stats/` is missing. Available Options are: `osu, ctb ,mania ,taiko`  Or leave it free and remove the `/`.")
+			return await BASE.discord.send_message(message.channel, ":warning: Option after `stats/` is missing. Available Options are: `osu, ctb ,mania ,taiko`  Or leave it free and remove the `/`.")
 		else:
-			return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a gamemode, Available are: `osu`,`ctb`,`mania`,`taiko`".format(c[1]))
+			return await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a gamemode, Available are: `osu`,`ctb`,`mania`,`taiko`".format(c[1]))
 
 		user_info, type_ = Osu.extract_user(" ".join(c for c in m[2:]))
 
 		User = await BASE.moduls._Osu_.Utils.get_user(BASE, u=user_info, m=MODE, t=type_)
 		if User == None:
-			return await BASE.phaaze.send_message(message.channel, ":warning: The given User could not found!")
+			return await BASE.discord.send_message(message.channel, ":warning: The given User could not found!")
 
 		# Format the shit out of it :D
 
@@ -593,7 +593,7 @@ class Osu(object):
 		EMB.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
 		EMB.set_author(name="Stats for: {0}".format(mode.lower().capitalize()))
 
-		return await BASE.phaaze.send_message(message.channel, embed=EMB)
+		return await BASE.discord.send_message(message.channel, embed=EMB)
 
 	def extract_user(str_):
 		#link
@@ -623,7 +623,7 @@ class Doujin(object):
 		pass
 
 	async def api_error_message(self):
-		I = await self.BASE.phaaze.send_message(
+		I = await self.BASE.discord.send_message(
 			self.message.channel,
 			content=None,
 			embed=discord.Embed(
@@ -632,7 +632,7 @@ class Doujin(object):
 				description="'>doujin' and all subcommands won't work for now.\nTry later again..."
 			))
 		await asyncio.sleep(15)
-		await self.BASE.phaaze.delete_message(I)
+		await self.BASE.discord.delete_message(I)
 
 	async def Base(self):
 		M = self.message.content.replace("\n", " ")
@@ -883,12 +883,12 @@ class Doujin(object):
 		emb.set_image(url=Book["Meta"]["Thumb"])
 		emb.set_footer(text="Provided by Tsumino", icon_url="http://www.tsumino.com/content/res/logo.png")
 
-		return await self.BASE.phaaze.send_message(self.message.channel, embed=emb)
+		return await self.BASE.discord.send_message(self.message.channel, embed=emb)
 
 	class errors:
 		async def no_options(self):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -899,13 +899,13 @@ class Doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def missing_value(self, short_, long_):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -916,13 +916,13 @@ class Doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def too_high(self, short_, long_):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -933,13 +933,13 @@ class Doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def too_many_inputs(self, short_, long_):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -950,13 +950,13 @@ class Doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def wrong_type(self, short_, long_, type_):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -967,13 +967,13 @@ class Doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_, type_))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def non_found(self, short_, long_, values):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -984,13 +984,13 @@ class Doujin(object):
 							"`{2}` yield no ressults\n".format(short_, long_, values))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def unknown(self, value):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -1001,13 +1001,13 @@ class Doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, value))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def noting_found(self):
 			try:
-				await self.BASE.phaaze.send_message(
+				await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -1021,10 +1021,10 @@ class Doujin(object):
 
 	async def _help(self):
 		try:
-			await self.BASE.phaaze.send_message(self.message.channel, ":incoming_envelope: --> PM")
+			await self.BASE.discord.send_message(self.message.channel, ":incoming_envelope: --> PM")
 		except:
 			pass
 		try:
-			return await self.BASE.phaaze.send_message(self.message.author, "http://phaaze.wikia.com/wiki/Discord-Commands-Normal-doujin\n" + self.BASE.vars.doujin_help)
+			return await self.BASE.discord.send_message(self.message.author, "http://phaaze.wikia.com/wiki/Discord-Commands-Normal-doujin\n" + self.BASE.vars.doujin_help)
 		except:
 			pass

@@ -1,17 +1,17 @@
 import asyncio, discord, traceback
 
-class phaaze(discord.Client):
+class Init_discord(discord.Client):
 	def __init__(self, BASE):
-		BASE.phaaze = self
+		BASE.discord = self
 		self.BASE = BASE
 		super().__init__()
 
 	async def on_ready(self):
 		try:
-			await self.BASE.phaaze.change_presence(	game=discord.Game(	type=0,
+			await self.BASE.discord.change_presence(	game=discord.Game(	type=0,
 																		name=self.BASE.version_nr),
 													status=discord.Status.online)
-			setattr(self.BASE.vars, "app", await self.BASE.phaaze.application_info() )
+			setattr(self.BASE.vars, "app", await self.BASE.discord.application_info() )
 			self.BASE.moduls.Console.GREEN("SUCCESS", "Discord Connected")
 			setattr(self.BASE.is_ready, "discord", True )
 		except:
@@ -22,12 +22,12 @@ class phaaze(discord.Client):
 	#message management
 	async def on_message(self, message):
 
-		if message.author == self.BASE.phaaze.user: return
+		if message.author == self.BASE.discord.user: return
 		if not self.BASE.is_ready.discord: return
 		if message.author.bot: return
 
 		if "phaaze" in message.content.lower():
-			try: await self.BASE.phaaze.send_typing(message.channel)
+			try: await self.BASE.discord.send_typing(message.channel)
 			except: pass
 
 		if message.channel.is_private:
@@ -41,7 +41,7 @@ class phaaze(discord.Client):
 	async def on_message_edit(self, before, after):
 		await self.BASE.moduls._Discord_.Discord_Events.Message.edit(self.BASE, before, after) # TODO:
 
-		if after.author == self.BASE.phaaze.user: return
+		if after.author == self.BASE.discord.user: return
 		if not self.BASE.is_ready.discord: return
 		if after.author.bot: return
 

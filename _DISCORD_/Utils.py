@@ -3,7 +3,7 @@
 import asyncio, Console, discord, tabulate, time
 
 async def return_real_me(BASE, message):
-	return discord.utils.get(message.server.members, id=BASE.phaaze.user.id)
+	return discord.utils.get(message.server.members, id=BASE.discord.user.id)
 
 async def is_Mod(BASE, message):
 	c = False
@@ -166,8 +166,8 @@ class Phaaze_info(object):
 		finish += f"Dev Server: https://discord.gg/ZymrebS | https://discord.me/phaaze\n"
 
 		try:
-			await BASE.phaaze.send_message(message.channel, ":incoming_envelope: -> PM")
-			return await BASE.phaaze.send_message(message.author, f"```{finish}```")
+			await BASE.discord.send_message(message.channel, ":incoming_envelope: -> PM")
+			return await BASE.discord.send_message(message.author, f"```{finish}```")
 
 		except:
 			pass
@@ -214,10 +214,10 @@ class Phaaze_info(object):
 	def get_discord_infos(BASE):
 		infos = [
 			["Libary", "Rapptz/discord.py - " + discord.__version__],
-			["ID:", BASE.phaaze.user.id],
-			["Nickname:", BASE.phaaze.user.name],
-			["Discriminator:", f"#{BASE.phaaze.user.discriminator}"],
-			["Active in:", f"{str(len(BASE.phaaze.servers))} Servers"],
+			["ID:", BASE.discord.user.id],
+			["Nickname:", BASE.discord.user.name],
+			["Discriminator:", f"#{BASE.discord.user.discriminator}"],
+			["Active in:", f"{str(len(BASE.discord.servers))} Servers"],
 			["Can see:", f"{Phaaze_info.get_unique_members(BASE)} unique Members"]
 		]
 
@@ -226,7 +226,7 @@ class Phaaze_info(object):
 	def get_unique_members(BASE):
 		a = []
 
-		for server in BASE.phaaze.servers:
+		for server in BASE.discord.servers:
 			for member in server.members:
 				if member.id not in a: a.append(member.id)
 
@@ -243,7 +243,7 @@ class Phaaze_info(object):
 							description=what,
 							colour=int(0x00FFD0),
 							type="rich")
-		t.set_thumbnail(url=BASE.phaaze.user.avatar_url)
+		t.set_thumbnail(url=BASE.discord.user.avatar_url)
 		t.set_footer(text="Want more infos? Goto https://phaaze.net", icon_url=app.icon_url)
 		t.set_author(name="Phaazebot", url="", icon_url=app.icon_url)
 
@@ -251,4 +251,4 @@ class Phaaze_info(object):
 		t.add_field(name="Phaaze for Twitch", value="Go to http://www.twitch.tv/phaazebot and type `>join` for adding it to your channel", inline=False)
 		t.add_field(name="Support Phaaze", value="Phaaze will always be free, support it to keep it that way:\nhttps://www.patreon.com/the_cj", inline=False)
 		t.add_field(name="Phaaze Server", value="https://discord.gg/ZymrebS | https://discord.me/phaaze", inline=False)
-		return await BASE.phaaze.send_message(message.channel, embed=t)
+		return await BASE.discord.send_message(message.channel, embed=t)

@@ -25,7 +25,7 @@ class Message(object):
 				)
 				emb.add_field(name='Author', value=f"{message.author.name}\n{message.author.mention}\n{message.author.id}", inline=False)
 				emb.set_author(name="Log Event - [Message Delete]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -45,7 +45,7 @@ class Message(object):
 				)
 				emb.add_field(name='Author', value=f"{after.author.name}\n{after.author.mention}\n{after.author.id}", inline=False)
 				emb.set_author(name="Log Event - [Message Edited]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -64,7 +64,7 @@ class Message(object):
 				)
 				emb.add_field(name='Author', value=f"{message.author.name}\n{message.author.mention}\n{message.author.id}", inline=False)
 				emb.set_author(name="Log Event - [Message Pruned]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -85,7 +85,7 @@ class Member(object):
 				)
 				emb.set_thumbnail(url=avatar)
 				emb.set_author(name="Log Event - [Member Join]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -101,7 +101,7 @@ class Member(object):
 				entry = entry.replace("[count]", str(member.server.member_count))
 				entry = entry.replace("[mention]", member.mention)
 
-				try: await BASE.phaaze.send_message(chan, entry[:1997])
+				try: await BASE.discord.send_message(chan, entry[:1997])
 				except Exception as e:
 
 					BASE.PhaazeDB.update(
@@ -111,12 +111,12 @@ class Member(object):
 					)
 
 					if str(e.__class__) == "<class 'discord.errors.NotFound'>":
-						await BASE.phaaze.send_message(
+						await BASE.discord.send_message(
 							member.server.owner,
 							f":warning: The welcome announcement channel in `{member.server.name}` wasn't found. Welcome settings has been reset.")
 
 					if str(e.__class__) == "<class 'discord.errors.Forbidden'>":
-						await BASE.phaaze.send_message(
+						await BASE.discord.send_message(
 							member.server.owner,
 							f":warning: Phaaze don't have permissions in `{member.server.name}` to send the welcome message. Welcome setting has been reset.")
 			except:
@@ -132,11 +132,11 @@ class Member(object):
 				entry = entry.replace("[count]", str(member.server.member_count))
 				entry = entry.replace("[mention]", member.mention)
 
-				try: await BASE.phaaze.send_message(member, entry[:1997])
+				try: await BASE.discord.send_message(member, entry[:1997])
 				except Exception as e:
 
 					if str(e.__class__) == "<class 'discord.errors.Forbidden'>":
-						await BASE.phaaze.send_message(
+						await BASE.discord.send_message(
 							member.server.owner,
 							f":warning: Phaaze could not send the Private welcome message for a new member in `{member.server.name}` Private welcome setting has been reset.")
 			except:
@@ -153,11 +153,11 @@ class Member(object):
 						content=dict( autorole=None )
 					)
 
-					return await BASE.phaaze.send_message(
+					return await BASE.discord.send_message(
 						member.server.owner,
 						f":warning: The Autorole in `{member.server.name}` wasn't found. Autorole has been reset.")
 
-				await BASE.phaaze.add_roles(member, role)
+				await BASE.discord.add_roles(member, role)
 
 			except Exception as e:
 				BASE.PhaazeDB.update(
@@ -167,10 +167,10 @@ class Member(object):
 				)
 
 				if str(e.__class__) == "<class 'discord.errors.NotFound'>":
-					return await BASE.phaaze.send_message(member.server.owner, ":warning: The Autorole in `{0}` wasn't found. Autorole has been reset.".format(member.server.name))
+					return await BASE.discord.send_message(member.server.owner, ":warning: The Autorole in `{0}` wasn't found. Autorole has been reset.".format(member.server.name))
 
 				if str(e.__class__) == "<class 'discord.errors.Forbidden'>":
-					return await BASE.phaaze.send_message(member.server.owner, ":warning: Phaaze doesn't have permissions to give `{1}` the Autorole in `{0}`. Autorole has been reset.".format(member.server.name, member.name))
+					return await BASE.discord.send_message(member.server.owner, ":warning: Phaaze doesn't have permissions to give `{1}` the Autorole in `{0}`. Autorole has been reset.".format(member.server.name, member.name))
 
 	async def remove(BASE, member):
 		try:
@@ -188,7 +188,7 @@ class Member(object):
 				)
 				emb.set_thumbnail(url=avatar)
 				emb.set_author(name="Log Event - [Member Leave]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -204,7 +204,7 @@ class Member(object):
 				entry = entry.replace("[count]", str(member.server.member_count))
 				entry = entry.replace("[mention]", member.mention)
 
-				try: await BASE.phaaze.send_message(chan, entry[:1997])
+				try: await BASE.discord.send_message(chan, entry[:1997])
 				except Exception as e:
 
 					BASE.PhaazeDB.update(
@@ -214,12 +214,12 @@ class Member(object):
 					)
 
 					if str(e.__class__) == "<class 'discord.errors.NotFound'>":
-						await BASE.phaaze.send_message(
+						await BASE.discord.send_message(
 							member.server.owner,
 							f":warning: The leave announcement channel in `{member.server.name}` wasn't found. Leave settings has been reset.")
 
 					if str(e.__class__) == "<class 'discord.errors.Forbidden'>":
-						await BASE.phaaze.send_message(
+						await BASE.discord.send_message(
 							member.server.owner,
 							f":warning: Phaaze don't have permissions in `{member.server.name}` to send the leave message. Leave setting has been reset.")
 			except:
@@ -241,7 +241,7 @@ class Member(object):
 				)
 				emb.set_thumbnail(url=avatar)
 				emb.set_author(name="Log Event - [Member Ban]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -261,7 +261,7 @@ class Member(object):
 				)
 				emb.set_thumbnail(url=avatar)
 				emb.set_author(name="Log Event - [Member Unban]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -283,7 +283,7 @@ class Channel(object):
 					color=0x00ee00
 				)
 				emb.set_author(name="Log Event - [Channel Created]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -301,7 +301,7 @@ class Channel(object):
 					color=0xee0000
 				)
 				emb.set_author(name="Log Event - [Channel Deleted]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -320,7 +320,7 @@ class Role(object):
 					color=0x00ee00
 				)
 				emb.set_author(name="Log Event - [Role Created]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -338,7 +338,7 @@ class Role(object):
 					color=0x00ee00
 				)
 				emb.set_author(name="Log Event - [Role Deleted]")
-				await BASE.phaaze.send_message(chan, embed=emb)
+				await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -358,7 +358,7 @@ class Phaaze(object):
 						color=0x00ee00
 					)
 					emb.set_author(name="Log Event - [Custom Command Created]")
-					await BASE.phaaze.send_message(chan, embed=emb)
+					await BASE.discord.send_message(chan, embed=emb)
 
 				if state.lower() == "remove" and trigger != None:
 					emb = discord.Embed(
@@ -367,7 +367,7 @@ class Phaaze(object):
 						color=0xee0000
 					)
 					emb.set_author(name="Log Event - [Custom Command Removed]")
-					await BASE.phaaze.send_message(chan, embed=emb)
+					await BASE.discord.send_message(chan, embed=emb)
 
 				if state.lower() == "update" and trigger != None:
 					emb = discord.Embed(
@@ -376,7 +376,7 @@ class Phaaze(object):
 						color=0xeeee00
 					)
 					emb.set_author(name="Log Event - [Custom Command Updated]")
-					await BASE.phaaze.send_message(chan, embed=emb)
+					await BASE.discord.send_message(chan, embed=emb)
 		except:
 			pass
 
@@ -395,7 +395,7 @@ class Phaaze(object):
 						color=0x00ee00
 					)
 					emb.set_author(name="Log Event - [Quote Created]")
-					await BASE.phaaze.send_message(chan, embed=emb)
+					await BASE.discord.send_message(chan, embed=emb)
 
 				if state.lower() == "remove":
 					emb = discord.Embed(
@@ -404,7 +404,7 @@ class Phaaze(object):
 						color=0xee0000
 					)
 					emb.set_author(name="Log Event - [Quote Removed]")
-					await BASE.phaaze.send_message(chan, embed=emb)
+					await BASE.discord.send_message(chan, embed=emb)
 
 				if state.lower() == "clear":
 					emb = discord.Embed(
@@ -413,7 +413,7 @@ class Phaaze(object):
 						color=0xff0000
 					)
 					emb.set_author(name="Log Event - [All Quotes Cleared]")
-					await BASE.phaaze.send_message(chan, embed=emb)
+					await BASE.discord.send_message(chan, embed=emb)
 
 		except:
 			pass

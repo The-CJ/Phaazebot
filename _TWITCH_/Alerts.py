@@ -141,7 +141,7 @@ class Init_Main(object):
 			for channel_id in discord_channel:
 				chan = discord.Object(id=channel_id)
 				asyncio.ensure_future(
-					self.BASE.phaaze.send_message(chan, embed=emb),
+					self.BASE.discord.send_message(chan, embed=emb),
 					loop=self.BASE.Discord_loop
 				)
 
@@ -164,7 +164,7 @@ class Init_Main(object):
 			for channel_id in discord_channel:
 				chan = discord.Object(id=channel_id)
 				asyncio.ensure_future(
-					self.BASE.phaaze.send_message(chan, embed=emb),
+					self.BASE.discord.send_message(chan, embed=emb),
 					loop=self.BASE.Discord_loop
 				)
 
