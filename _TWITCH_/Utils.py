@@ -146,21 +146,24 @@ def API_call(BASE, url):
 
 def get_user(BASE, twitch_info, search="id"):
 	try:
-		if search == "id":
-			s = "users/"
-			link = MAIN + s + twitch_info
-			res = API_call(BASE, link)
-			return res
 
-		elif search == "name":
-			s = "users?login="
-			link = MAIN + s + twitch_info
-			res = API_call(BASE, link)
+		if type(twitch_info) == str:
+			twitch_info = [twitch_info]
 
-			#No User
-			if res.get("_total", 0) != 1: return None
+		s = "/"
+		if search == "name":
+			s = "?login="
+		elif search == "id":
+			s = "?id="
 
-			return res["users"][0]
+		link = MAIN + "users" + s + ",".join(thing for thing in twitch_info)
+
+		res = API_call(BASE, link)
+
+		#No User
+		if res.get("_total", 0) == 0: return None
+
+		return res["users"]
 
 	except:
 		return None

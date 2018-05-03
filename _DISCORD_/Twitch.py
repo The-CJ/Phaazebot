@@ -3,7 +3,7 @@
 import asyncio, discord
 
 async def Base(BASE, message, kwargs):
-	AV = ["track", "custom", "get", "reset"]
+	AV = ["track", "get", "reset"]
 	m = message.content.split(" ")
 
 	if len(m) == 1:
@@ -17,39 +17,11 @@ async def Base(BASE, message, kwargs):
 
 		return await track(BASE, message, kwargs, m[2])
 
-	elif m[1].lower() == "custom":
-		if len(m) == 2:
-			await BASE.discord.send_message(message.channel, ":warning: missing option: `message`, `game` or `template`")
-		elif m[2].lower() == "message":
-			await change_custom_settings(BASE, message, "message")
-		elif m[2].lower() == "game":
-			await change_custom_settings(BASE, message, "game")
-		elif m[2].lower() == "template":
-			await change_custom_settings(BASE, message, "template")
-		else:
-			await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a option, try: `message`, `game` or `template`".format(m[2].lower()))
+	elif m[1].lower() == "custom" and ""=="-":
+		await BASE.discord.send_message(message.channel, ":no_entry_sign: SOON:tm: or so")
 
 	elif m[1].lower() == "get":
-		found = []
-		for file in os.listdir("UTILS/twitch_streams"):
-			if file.endswith(".json") and not file.startswith("_"):
-				with open("UTILS/twitch_streams/"+file, "r") as stream_file:
-					stream_file = json.loads(stream_file.read())
-					if message.channel.id in stream_file["d_channel"]:
-						found.append(file.replace(".json", ""))
-
-		response = await twitch_API_call(BASE, "https://api.twitch.tv/kraken/users?id=" + ",".join(_id for _id in found))
-
-		if response.get("stats", 200) == 400:
-			return await BASE.discord.send_message(message.channel, ":information_source: No active Twitch Alerts in {0}".format(message.channel.mention))
-
-		if response.get("_total", 0) == 0:
-			return await BASE.discord.send_message(message.channel, ":information_source: No active Twitch Alerts in {0}".format(message.channel.mention))
-
-		found_names = [stream["display_name"] for stream in response["users"]]
-
-		e = ", ".join(name for name in found_names)
-		return await BASE.discord.send_message(message.channel, ":information_source: Twitch Alerts in {0} for Twitch Channels: {1}".format(message.channel.mention, e))
+		return await get(BASE, message, kwargs)
 
 	elif m[1].lower() == "reset":
 		pass
@@ -81,3 +53,23 @@ async def track(BASE, message, kwargs, twitch_name):
 		return await BASE.discord.send_message(
 			message.channel,
 			f":warning: Something Strange happen, your changes could not be processed, maybe Twitch Alerts are disbled by the Developer?")
+
+async def get(BASE, message, kwargs):
+	res = BASE.PhaazeDB.select(
+		of=f"twitch/alerts",
+		where=f"'{message.channel.id}' in data['discord_channel']"
+	)
+
+	if not res.get('data', []):
+		return await BASE.discord.send_message(message.channel, f"No Twitch channels are tracked in {message.channel.mention}")
+
+	channel = [a.get('twitch_id', "0") for a in res.get('data', [])]
+
+	channel_result = BASE.moduls._Twitch_.Utils.get_user(BASE, channel, search="id")
+
+	if channel_result == None:
+		return await BASE.discord.send_message(message.channel, f"No valid Twitch channels are tracked in {message.channel.mention}")
+
+	x = ",".join( f"`{x.get('display_name', 'N/A')}`" for x in channel_result )
+	return await BASE.discord.send_message(message.channel, f"All tracked Twitch channel in {message.channel.mention}\n\n{x}")
+
