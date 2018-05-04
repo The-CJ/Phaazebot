@@ -99,7 +99,7 @@ async def reset(BASE, message, kwargs):
 		)
 
 	channel_result = BASE.modules._Twitch_.Utils.get_user(BASE, search, search="id")
-	x = ",".join( f"`{x.get('display_name', 'N/A')}`" for x in channel_result )
+	x = ",".join( f"`{c.get('display_name', 'N/A')}`" for c in channel_result )
 
 	return await BASE.discord.send_message(
 		message.channel,
