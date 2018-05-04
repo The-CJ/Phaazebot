@@ -1,6 +1,6 @@
-#BASE.moduls._Discord_.PROCESS.Mod
+#BASE.modules._Discord_.PROCESS.Mod
 
-import asyncio, json, discord, tabulate
+import asyncio, discord, tabulate
 
 class Settings(object):
 	async def Base(BASE, message, kwargs):
@@ -8,7 +8,7 @@ class Settings(object):
 		m = message.content.lower().split()
 
 		if len(m) == 1:
-			return await BASE.phaaze.send_message(
+			return await BASE.discord.send_message(
 				message.channel,
 				":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
 
@@ -35,13 +35,13 @@ class Settings(object):
 
 		else:
 			av = ", ".join("`"+l+"`" for l in available)
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
 
 	async def nsfw(BASE, message, kwargs):
 		m = message.content.lower().split()
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		if m[2] in ['on', 'enable', 'yes']:
 			state = True
@@ -50,16 +50,16 @@ class Settings(object):
 			state = False
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		server_setting = kwargs.get('server_setting', {})
 		channel_list = server_setting.get('enable_chan_nsfw', [])
 
 		if message.channel.id in channel_list and state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already has enabled NSFW")
+			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already has enabled NSFW")
 
 		if message.channel.id not in channel_list and not state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable NSFW for {message.channel.mention}, it's already off.")
+			return await BASE.discord.send_message(message.channel, f":warning: Can't disable NSFW for {message.channel.mention}, it's already off.")
 
 		if state:
 			channel_list.append(message.channel.id)
@@ -72,13 +72,13 @@ class Settings(object):
 			content = dict(enable_chan_nsfw=channel_list)
 		)
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: NSFW Commands are now {state} in {message.channel.mention}")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: NSFW Commands are now {state} in {message.channel.mention}")
 
 	async def ai(BASE, message, kwargs):
 		m = message.content.lower().split()
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		if m[2] in ['on', 'enable', 'yes']:
 			state = True
@@ -87,16 +87,16 @@ class Settings(object):
 			state = False
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		server_setting = kwargs.get('server_setting', {})
 		channel_list = server_setting.get('enable_chan_ai', [])
 
 		if message.channel.id in channel_list and state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already has enabled AI Talks")
+			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already has enabled AI Talks")
 
 		if message.channel.id not in channel_list and not state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable AI Talks for {message.channel.mention}, it's already off.")
+			return await BASE.discord.send_message(message.channel, f":warning: Can't disable AI Talks for {message.channel.mention}, it's already off.")
 
 		if state:
 			channel_list.append(message.channel.id)
@@ -109,13 +109,13 @@ class Settings(object):
 			content = dict(enable_chan_ai=channel_list)
 		)
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: AI Talks Commands are now {state} in {message.channel.mention}")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: AI Talks Commands are now {state} in {message.channel.mention}")
 
 	async def custom(BASE, message, kwargs):
 		m = message.content.lower().split()
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		if m[2] in ['on', 'enable', 'yes']:
 			state = True
@@ -124,16 +124,16 @@ class Settings(object):
 			state = False
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		server_setting = kwargs.get('server_setting', {})
 		channel_list = server_setting.get('disable_chan_custom', [])
 
 		if message.channel.id not in channel_list and state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already allowes Custom commands")
+			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already allowes Custom commands")
 
 		if message.channel.id in channel_list and not state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable Custom commands in {message.channel.mention}, it's already disabled.")
+			return await BASE.discord.send_message(message.channel, f":warning: Can't disable Custom commands in {message.channel.mention}, it's already disabled.")
 
 		if not state:
 			channel_list.append(message.channel.id)
@@ -146,13 +146,13 @@ class Settings(object):
 			content = dict(disable_chan_custom=channel_list)
 		)
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Custom commands are now {state} in {message.channel.mention}")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: Custom commands are now {state} in {message.channel.mention}")
 
 	async def quotes(BASE, message, kwargs):
 		m = message.content.lower().split()
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		if m[2] in ['on', 'enable', 'yes']:
 			state = True
@@ -161,16 +161,16 @@ class Settings(object):
 			state = False
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		server_setting = kwargs.get('server_setting', {})
 		channel_list = server_setting.get('disable_chan_quotes', [])
 
 		if message.channel.id not in channel_list and state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already allowes Quote commands")
+			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already allowes Quote commands")
 
 		if message.channel.id in channel_list and not state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable Quote commands in {message.channel.mention}, it's already disabled.")
+			return await BASE.discord.send_message(message.channel, f":warning: Can't disable Quote commands in {message.channel.mention}, it's already disabled.")
 
 		if not state:
 			channel_list.append(message.channel.id)
@@ -183,13 +183,13 @@ class Settings(object):
 			content = dict(disable_chan_quotes=channel_list)
 		)
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: Quote commands are now {state} in {message.channel.mention}")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: Quote commands are now {state} in {message.channel.mention}")
 
 	async def level(BASE, message, kwargs):
 		m = message.content.lower().split()
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		if m[2] in ['on', 'enable', 'yes']:
 			state = True
@@ -198,16 +198,16 @@ class Settings(object):
 			state = False
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		server_setting = kwargs.get('server_setting', {})
 		channel_list = server_setting.get('disable_chan_level', [])
 
 		if message.channel.id not in channel_list and state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already has enabled Level System")
+			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already has enabled Level System")
 
 		if message.channel.id in channel_list and not state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable Level system in {message.channel.mention}, it's already disabled.")
+			return await BASE.discord.send_message(message.channel, f":warning: Can't disable Level system in {message.channel.mention}, it's already disabled.")
 
 		if not state:
 			channel_list.append(message.channel.id)
@@ -220,7 +220,7 @@ class Settings(object):
 			content = dict(disable_chan_level=channel_list)
 		)
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(
+		return await BASE.discord.send_message(
 			message.channel,
 			f":white_check_mark: Level system is now {state} in {message.channel.mention}\n"\
 			f"(affects member XP gain and the use of level commands like: {BASE.vars.PT}level, {BASE.vars.PT}leaderboard, etc.)"
@@ -230,7 +230,7 @@ class Settings(object):
 		m = message.content.lower().split()
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		if m[2] in ['on', 'enable', 'yes']:
 			state = True
@@ -239,16 +239,16 @@ class Settings(object):
 			state = False
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
 		server_setting = kwargs.get('server_setting', {})
 		channel_list = server_setting.get('disable_chan_normal', [])
 
 		if message.channel.id not in channel_list and state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: {message.channel.mention} already has allowes normal commands")
+			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already has allowes normal commands")
 
 		if message.channel.id in channel_list and not state:
-			return await BASE.phaaze.send_message(message.channel, f":warning: Can't disable normal commands in {message.channel.mention}, it's already disabled.")
+			return await BASE.discord.send_message(message.channel, f":warning: Can't disable normal commands in {message.channel.mention}, it's already disabled.")
 
 		if not state:
 			channel_list.append(message.channel.id)
@@ -261,7 +261,7 @@ class Settings(object):
 			content = dict(disable_chan_normal=channel_list)
 		)
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.phaaze.send_message(
+		return await BASE.discord.send_message(
 			message.channel,
 			f":white_check_mark: All non-moderator commands are now {state} in {message.channel.mention}\n"\
 			f"(Custom commands are not affected)"
@@ -280,10 +280,10 @@ class Quote(object):
 				f"`add` - Add a new quote\n"\
 				f"`rem` - Remove a quote based on there id number: `{BASE.vars.PT}quote rem 69`\n"\
 				f"`clear` - Remove all quotes"
-			return await BASE.phaaze.send_message(message.channel, r)
+			return await BASE.discord.send_message(message.channel, r)
 
 		elif m[1].lower() == "get":
-			return await BASE.phaaze.send_message(message.channel, f"All quotes for this server: https://phaaze.net/discord/quotes/{message.server.id}")
+			return await BASE.discord.send_message(message.channel, f"All quotes for this server: https://phaaze.net/discord/quotes/{message.server.id}")
 		elif m[1].lower() == "add":
 			return await Quote.add(BASE, message, kwargs)
 		elif m[1].lower() == "rem":
@@ -291,19 +291,19 @@ class Quote(object):
 		elif m[1].lower() == "clear":
 			return await Quote.clear(BASE, message, kwargs)
 		else:
-			return await BASE.phaaze.send_message(message.channel, f":warning: That's not an option.")
+			return await BASE.discord.send_message(message.channel, f":warning: That's not an option.")
 
 	async def add(BASE, message, kwargs):
 		m = message.content.split()
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, f":warning: You need to define a quote to add.")
+			return await BASE.discord.send_message(message.channel, f":warning: You need to define a quote to add.")
 
 		quote = " ".join(x for x in m[2:])
 		server_quotes = kwargs.get('server_quotes', {})
 
 		if len(server_quotes) >= Quote.quote_limit:
-			return await BASE.phaaze.send_message(message.channel, f":no_entry_sign: This server hit the quote limit of {Quote.quote_limit}, please remove some first.")
+			return await BASE.discord.send_message(message.channel, f":no_entry_sign: This server hit the quote limit of {Quote.quote_limit}, please remove some first.")
 
 		i = BASE.PhaazeDB.insert(
 			into=f"discord/quotes/quotes_{message.server.id}",
@@ -313,16 +313,17 @@ class Quote(object):
 		em = discord.Embed(description=quote, colour=0x11EE11)
 		i = str(i['content']['id'])
 		em.set_footer(text=f'ID: {i}')
-		return await BASE.phaaze.send_message(message.channel, content=":white_check_mark: Quote added", embed=em)
+		await BASE.modules._Discord_.Discord_Events.Phaaze.quote(BASE, message, "add")
+		return await BASE.discord.send_message(message.channel, content=":white_check_mark: Quote added", embed=em)
 
 	async def rem(BASE, message, kwargs):
 		m = message.content.split()
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, f":warning: You need to define a quote ID to remove.")
+			return await BASE.discord.send_message(message.channel, f":warning: You need to define a quote ID to remove.")
 
 		if not m[2].isdigit():
-			return await BASE.phaaze.send_message(message.channel, f":warning: Please define a numeric ID")
+			return await BASE.discord.send_message(message.channel, f":warning: Please define a numeric ID")
 
 		i = BASE.PhaazeDB.delete(
 			of=f"discord/quotes/quotes_{message.server.id}",
@@ -330,33 +331,35 @@ class Quote(object):
 		)
 
 		if i['hits'] != 1:
-			return await BASE.phaaze.send_message(message.channel, f":warning: There is no Quote with ID {m[2]}")
+			return await BASE.discord.send_message(message.channel, f":warning: There is no Quote with ID {m[2]}")
 
-		return await BASE.phaaze.send_message(message.channel, content=f":white_check_mark: Quote #{m[2]} removed")
+		await BASE.modules._Discord_.Discord_Events.Phaaze.quote(BASE, message, "remove")
+		return await BASE.discord.send_message(message.channel, content=f":white_check_mark: Quote #{m[2]} removed")
 
 	async def clear(BASE, message, kwargs):
 
-		await BASE.phaaze.send_message(message.channel,':question: Remove all quotes? `y/n`')
-		a = await BASE.phaaze.wait_for_message(timeout=30, author=message.author, channel=message.channel)
+		await BASE.discord.send_message(message.channel,':question: Remove all quotes? `y/n`')
+		a = await BASE.discord.wait_for_message(timeout=30, author=message.author, channel=message.channel)
 		if a.content.lower() != "y":
-			return await BASE.phaaze.send_message(message.channel, ':warning: Canceled.')
+			return await BASE.discord.send_message(message.channel, ':warning: Canceled.')
 
 		del_ = BASE.PhaazeDB.delete(of=f"discord/quotes/quotes_{message.server.id}")
 		x = str( del_.get('hits', 'N/A') )
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: All {x} Quote deleted")
+		await BASE.modules._Discord_.Discord_Events.Phaaze.quote(BASE, message, "clear")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: All {x} Quote deleted")
 
 class Prune(object):
 	async def Base(BASE, message, kwargs):
-		me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+		me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 		phaaze_perms = message.channel.permissions_for(me)
 		if not phaaze_perms.manage_messages:
-			return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze need the `Manage messages` permissions to execute prune")
+			return await BASE.discord.send_message(message.channel, ":no_entry_sign: Phaaze need the `Manage messages` permissions to execute prune")
 
 		m = message.content.split(" ")
 
 		#nothing
 		if len(m) == 1:
-			return await BASE.phaaze.send_message(message.channel,
+			return await BASE.discord.send_message(message.channel,
 												f":warning: Syntax Error!\n"\
 												f"Usage: `{BASE.vars.PT*2}prune [Option]`\n\n"\
 												"`[Option]` - has to be a:\n\n"\
@@ -368,7 +371,7 @@ class Prune(object):
 		#by mention
 		if len(message.mentions) >= 1:
 			if len(message.mentions) > 1:
-				return await BASE.phaaze.send_message(message.channel, ":warning: You can not mention multiple members, only 1")
+				return await BASE.discord.send_message(message.channel, ":warning: You can not mention multiple members, only 1")
 
 			return await Prune.by_mention(BASE, message, kwargs, message.mentions[0])
 
@@ -396,31 +399,35 @@ class Prune(object):
 
 			return del_
 
-		delete = await BASE.phaaze.purge_from(message.channel, limit=300, check=need_delete)
+		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
+		delete = await BASE.discord.purge_from(message.channel, limit=300, check=need_delete)
 
-		confirm_delete = await BASE.phaaze.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages form `{1}` :pencil2:".format(str(len(delete)),user.name))
+		await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
+		confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages form `{1}` :pencil2:".format(str(len(delete)),user.name))
 		await asyncio.sleep(5)
-		return await BASE.phaaze.delete_message(confirm_delete)
+		return await BASE.discord.delete_message(confirm_delete)
 
 	async def by_number(BASE, message, kwargs, number):
 		c = int(number)
 
 		if c == 0:
-			return await BASE.phaaze.send_message(message.channel, ":white_check_mark: **0** messages got deleted. Good job you genius, you deleted nothing.")
+			return await BASE.discord.send_message(message.channel, ":white_check_mark: **0** messages got deleted. Good job you genius, you deleted nothing.")
 		if c > 500:
-			return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: **{0}** messages are to much in one. Try making 2 small request, instead of 1 big.".format(str(c)))
+			return await BASE.discord.send_message(message.channel, ":no_entry_sign: **{0}** messages are to much in one. Try making 2 small request, instead of 1 big.".format(str(c)))
 		if c >= 100:
-			await BASE.phaaze.send_message(message.channel, ":question: **{0}** are a lot, are you sure you wanna delete all of them?\n\ny/n".format(str(c)))
+			await BASE.discord.send_message(message.channel, ":question: **{0}** are a lot, are you sure you wanna delete all of them?\n\ny/n".format(str(c)))
 
-			r = await BASE.phaaze.wait_for_message(timeout=30, author=message.author, channel=message.channel)
+			r = await BASE.discord.wait_for_message(timeout=30, author=message.author, channel=message.channel)
 			if r.content.lower() != "y":
-				return await BASE.phaaze.send_message(message.channel, ":warning: Prune canceled.")
+				return await BASE.discord.send_message(message.channel, ":warning: Prune canceled.")
 
-		delete = await BASE.phaaze.purge_from(message.channel, limit=c+1)
+		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
+		delete = await BASE.discord.purge_from(message.channel, limit=c+1)
 
-		confirm_delete = await BASE.phaaze.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages :pencil2:".format(str(len(delete)-1)))
+		await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
+		confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages :pencil2:".format(str(len(delete)-1)))
 		await asyncio.sleep(5)
-		return await BASE.phaaze.delete_message(confirm_delete)
+		return await BASE.discord.delete_message(confirm_delete)
 
 	async def by_id(BASE, message, kwargs, id_):
 
@@ -435,15 +442,17 @@ class Prune(object):
 
 			return del_
 
-		delete = await BASE.phaaze.purge_from(message.channel, limit=300, check=need_delete)
+		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
+		delete = await BASE.discord.purge_from(message.channel, limit=300, check=need_delete)
 
 		if len(delete) == 0:
-			return await BASE.phaaze.send_message(message.channel, ":warning: No messages are deleted, make sure the ID is from a member that typed something in the near past")
+			return await BASE.discord.send_message(message.channel, ":warning: No messages are deleted, make sure the ID is from a member that typed something in the near past")
 
 		else:
-			confirm_delete = await BASE.phaaze.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages, that are matching the ID :pencil2:".format(str(len(delete))))
+			await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
+			confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages, that are matching the ID :pencil2:".format(str(len(delete))))
 			await asyncio.sleep(5)
-			return await BASE.phaaze.delete_message(confirm_delete)
+			return await BASE.discord.delete_message(confirm_delete)
 
 	async def by_name(BASE, message, kwargs, name):
 
@@ -458,14 +467,16 @@ class Prune(object):
 
 			return del_
 
-		delete = await BASE.phaaze.purge_from(message.channel, limit=300, check=need_delete)
+		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
+		delete = await BASE.discord.purge_from(message.channel, limit=300, check=need_delete)
 
 		if len(delete) == 0:
-			return await BASE.phaaze.send_message(message.channel, ":warning: No messages are deleted, make sure the name is correct.")
+			return await BASE.discord.send_message(message.channel, ":warning: No messages are deleted, make sure the name is correct.")
 		else:
-			confirm_delete = await BASE.phaaze.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages from `{1}` :pencil2:".format(str(len(delete)), name))
+			await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
+			confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages from `{1}` :pencil2:".format(str(len(delete)), name))
 			await asyncio.sleep(5)
-			return await BASE.phaaze.delete_message(confirm_delete)
+			return await BASE.discord.delete_message(confirm_delete)
 
 class Level(object):
 	async def Base(BASE, message, kwargs):
@@ -475,14 +486,14 @@ class Level(object):
 			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level [Option]`\n\n"\
 				f"`exp` - Edit a users exp and level\n"\
 				f"`medal` - add/rem/clear a users medals"
-			return await BASE.phaaze.send_message(message.channel, r)
+			return await BASE.discord.send_message(message.channel, r)
 
 		elif m[1].lower() == "exp":
 			return await Level.exp(BASE, message, kwargs)
 		elif m[1].lower() == "medal":
 			return await Level.medal(BASE, message, kwargs)
 		else:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[1]}` is not an option.")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not an option.")
 
 	async def exp(BASE, message, kwargs):
 		m = message.content.split(" ")
@@ -493,11 +504,11 @@ class Level(object):
 				f"`New Exp` - the new exp amount\n\n"\
 				f":information_source: Editing the exp in any way marks the user with a `[EDITED]` mark,\n"\
 				f"         that can only be removed by setting it back to 0"
-			return await BASE.phaaze.send_message(message.channel, r)
+			return await BASE.discord.send_message(message.channel, r)
 
 		exp = m[2]
 		if not exp.isdigit():
-			return await BASE.phaaze.send_message(message.channel, ':warning: `[New Exp]` must be numeric (0-9999999)')
+			return await BASE.discord.send_message(message.channel, ':warning: `[New Exp]` must be numeric (0-9999999)')
 
 		if len(message.mentions) > 0:
 			user = message.mentions[0]
@@ -511,10 +522,10 @@ class Level(object):
 			user = discord.utils.get(message.server.members, name=" ".join(f for f in m[3:]))
 
 		if user == None:
-			return await BASE.phaaze.send_message(message.channel, ':warning: Could not find a valid user, please mention a user, use his ID or the full name')
+			return await BASE.discord.send_message(message.channel, ':warning: Could not find a valid user, please mention a user, use his ID or the full name')
 
 		if user.bot:
-			return await BASE.phaaze.send_message(message.channel, ':no_entry_sign: That is a bot user. Bots don\'t have a level')
+			return await BASE.discord.send_message(message.channel, ':no_entry_sign: That is a bot user. Bots don\'t have a level')
 
 		i = BASE.PhaazeDB.update(
 			of=f"discord/level/level_{message.server.id}",
@@ -523,14 +534,14 @@ class Level(object):
 		)
 
 		if i.get('hits', 0) != 1:
-			return await BASE.phaaze.send_message(message.channel, ":warning: That user could not be found in the Datebase or never said anything")
+			return await BASE.discord.send_message(message.channel, ":warning: That user could not be found in the Datebase or never said anything")
 
 		if int(exp) != 0:
 			ed = "\nAdded the member a **[EDITED]** mark"
 		else:
 			ed = "\nRemoved the **[EDITED]** mark"
 
-		return await BASE.phaaze.send_message(
+		return await BASE.discord.send_message(
 			message.channel,
 			f':white_check_mark: `{user.name}` exp has been set to **{str(exp)}**{ed}')
 
@@ -543,10 +554,10 @@ class Level(object):
 				f"`Method` - Add/Rem/Clear\n"\
 				f"`@Member` - a @ mention of the member you want to edit\n"\
 				f"`Medalname` - The actuall medall name"
-			return await BASE.phaaze.send_message(message.channel, r)
+			return await BASE.discord.send_message(message.channel, r)
 
 		if m[2].lower() not in ["add", "rem", "clear"]:
-			return await BASE.phaaze.send_message(message.channel, ':warning: Please use a valid method.')
+			return await BASE.discord.send_message(message.channel, ':warning: Please use a valid method.')
 
 		user = None
 		if len(message.mentions) > 0:
@@ -554,17 +565,17 @@ class Level(object):
 				user = message.mentions[0]
 
 		if user == None:
-			return await BASE.phaaze.send_message(message.channel, ':warning: Please mention a user before typing the medal name')
+			return await BASE.discord.send_message(message.channel, ':warning: Please mention a user before typing the medal name')
 
 		if user.bot:
-			return await BASE.phaaze.send_message(message.channel, ':no_entry_sign: That is a bot user. Bots can\'have medals')
+			return await BASE.discord.send_message(message.channel, ':no_entry_sign: That is a bot user. Bots can\'have medals')
 
 		command_medal = " ".join(d for d in m[4:])
 		if command_medal == "" and m[2].lower() != 'clear':
-			return await BASE.phaaze.send_message(message.channel, ':no_entry_sign: The Medal can\'t be empty.')
+			return await BASE.discord.send_message(message.channel, ':no_entry_sign: The Medal can\'t be empty.')
 
 		if len(command_medal) >= 150:
-			return await BASE.phaaze.send_message(message.channel, ':no_entry_sign: The Medal can\'t be longer than 150 characters.')
+			return await BASE.discord.send_message(message.channel, ':no_entry_sign: The Medal can\'t be longer than 150 characters.')
 
 		#get user from Level
 		db_user = BASE.PhaazeDB.select(
@@ -573,7 +584,7 @@ class Level(object):
 		)
 
 		if db_user.get('hits', 0) != 1:
-			return await BASE.phaaze.send_message(message.channel, ':warning: Seems like that user could not found in the Database.')
+			return await BASE.discord.send_message(message.channel, ':warning: Seems like that user could not found in the Database.')
 
 		l_user = db_user['data'][0]
 
@@ -588,14 +599,14 @@ class Level(object):
 				success = False
 
 			if not success:
-				return await BASE.phaaze.send_message(message.channel, f':warning: Seems like that user don\'t has a medal named `{command_medal}`.')
+				return await BASE.discord.send_message(message.channel, f':warning: Seems like that user don\'t has a medal named `{command_medal}`.')
 			else:
 				BASE.PhaazeDB.update(
 					of=f"discord/level/level_{message.server.id}",
 					where=f"data['member_id'] == '{user.id}'",
 					content=dict(medal=medals)
 				)
-				return await BASE.phaaze.send_message(message.channel, f':white_check_mark: `{command_medal}` has been removed from `{user.name}`.')
+				return await BASE.discord.send_message(message.channel, f':white_check_mark: `{command_medal}` has been removed from `{user.name}`.')
 
 		#add
 		elif m[2].lower() == "add":
@@ -608,14 +619,14 @@ class Level(object):
 				medals.append(command_medal)
 
 			if not success:
-				return await BASE.phaaze.send_message(message.channel, f':warning: Seems like that user has a medal named `{command_medal}`.')
+				return await BASE.discord.send_message(message.channel, f':warning: Seems like that user has a medal named `{command_medal}`.')
 			else:
 				BASE.PhaazeDB.update(
 					of=f"discord/level/level_{message.server.id}",
 					where=f"data['member_id'] == '{user.id}'",
 					content=dict(medal=medals)
 				)
-				return await BASE.phaaze.send_message(message.channel, f':white_check_mark: `{command_medal}` has been added to `{user.name}`.')
+				return await BASE.discord.send_message(message.channel, f':white_check_mark: `{command_medal}` has been added to `{user.name}`.')
 
 		#clear
 		elif m[2].lower() == "clear":
@@ -624,10 +635,10 @@ class Level(object):
 				where=f"data['member_id'] == '{user.id}'",
 				content=dict(medal=[])
 			)
-			return await BASE.phaaze.send_message(message.channel, f':white_check_mark: All medals are removed from `{user.name}`.')
+			return await BASE.discord.send_message(message.channel, f':white_check_mark: All medals are removed from `{user.name}`.')
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, f':warning: Please use a valid method.')
+			return await BASE.discord.send_message(message.channel, f':warning: Please use a valid method.')
 
 class Utils(object):
 
@@ -707,13 +718,13 @@ class Utils(object):
 		if server.icon_url != "": tem.set_image(url=server.icon_url)
 		tem.set_footer(text="To get all roles by id use ``{0}{0}getroles`".format(BASE.vars.PT))
 
-		return await BASE.phaaze.send_message(message.channel, embed=tem)
+		return await BASE.discord.send_message(message.channel, embed=tem)
 
 	async def getroles(BASE, message, kwargs):
 		r = message.server.role_hierarchy
 
 		if len(r) == 0:
-			return await BASE.phaaze.send_message(message.channel, ":warning: This server don't have any roles.")
+			return await BASE.discord.send_message(message.channel, ":warning: This server don't have any roles.")
 
 		Ground = [["Pos:", "ID:", "Name:"],["","",""]]
 
@@ -725,4 +736,4 @@ class Utils(object):
 
 		formated_text = "```" + tabulate.tabulate(Ground, tablefmt="plain")
 
-		return await BASE.phaaze.send_message(message.channel, formated_text[:1996] + "```")
+		return await BASE.discord.send_message(message.channel, formated_text[:1996] + "```")

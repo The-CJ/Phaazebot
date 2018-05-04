@@ -1,4 +1,4 @@
-#BASE.moduls._Web_.Base.root.admin.admin
+#BASE.modules._Web_.Base.root.admin.admin
 
 import  html, os
 
@@ -31,7 +31,7 @@ def admin_main(BASE, info, msg=""):
 	#Replace Parts
 	site = site.replace("<!-- msg -->", msg)
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -44,7 +44,7 @@ def admin_login(BASE, info, msg=""):
 	site = open('_WEB_/content/admin/admin_login.html', 'r').read()
 	site = site.replace("<!-- msg -->", msg)
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -68,7 +68,7 @@ def view_page(BASE, info):
 			js_var_path += path + "/"
 			folder = os.listdir(path)
 	except:
-		return BASE.moduls._Web_.Base.root.page_not_found.page_not_found(BASE, info, None)
+		return BASE.modules._Web_.Base.root.page_not_found.page_not_found(BASE, info, None)
 
 	folder_spec = dict()
 
@@ -83,7 +83,7 @@ def view_page(BASE, info):
 	site = site.replace("{'name':'type'}", str(folder_spec))
 	site = site.replace("[js_var_path]", str("'"+js_var_path+"'"))
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200
@@ -105,7 +105,7 @@ def edit_page(BASE, info):
 	site = site.replace("<!-- page_content -->", html.escape(content))
 	site = site.replace("<!-- page_index -->", html.escape(page_index))
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200

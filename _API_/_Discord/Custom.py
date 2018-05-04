@@ -26,7 +26,7 @@ def get(BASE, info={}, from_web=False, **kwargs):
 			raise AttributeError("missing 'id' value")
 
 
-	x = BASE.moduls.Utils.get_server_file(BASE, server_id, prevent_new=True)
+	x = BASE.modules.Utils.get_server_file(BASE, server_id, prevent_new=True)
 	save_settings = BASE.call_from_async(x ,BASE.Discord_loop)
 
 	if save_settings == None: save_settings = {}
@@ -81,7 +81,7 @@ def delet(BASE, info={}, from_web=False, **kwargs):
 		discord_user = BASE.api.utils.get_discord_user_by_session(BASE, session)
 
 		try:
-			discord_server = BASE.phaaze.get_server(server_id)
+			discord_server = BASE.discord.get_server(server_id)
 			discord_member = discord_server.get_member(discord_user.get('user_info', {}).get('id', None) )
 			perm = discord_member.server_permissions
 			if perm.manage_server or perm.administrator:
@@ -97,7 +97,7 @@ def delet(BASE, info={}, from_web=False, **kwargs):
 		return r
 
 	#get server file
-	x = BASE.moduls.Utils.get_server_file(BASE, server_id, prevent_new=True)
+	x = BASE.modules.Utils.get_server_file(BASE, server_id, prevent_new=True)
 	save_settings = BASE.call_from_async(x ,BASE.Discord_loop)
 
 	#get command -> delete

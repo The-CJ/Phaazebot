@@ -1,4 +1,4 @@
-#BASE.moduls._TWITCH_.CMD.Normal
+#BASE.modules._TWITCH_.CMD.Normal
 
 import asyncio, json, random
 
@@ -12,7 +12,7 @@ async def block_quotes(_id_):
 async def Quote(BASE, message):
 	if message.room_id in block_q: return
 	asyncio.ensure_future(block_quotes(message.room_id))
-	file = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+	file = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 	allow_quotes = file.get("quote_active", False)
 	if not allow_quotes: return
 

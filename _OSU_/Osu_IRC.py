@@ -1,4 +1,4 @@
-#BASE.moduls._Osu_.IRC
+#BASE.modules._Osu_.IRC
 
 import time, discord, requests, socket, asyncio, json
 
@@ -62,7 +62,7 @@ class _IRC_():
 				try:
 					self.connection.connect((self.server, self.port))
 				except:
-					self.BASE.moduls.Console.RED("ERROR", "Unable to connect to the Osu IRC")
+					self.BASE.modules.Console.RED("ERROR", "Unable to connect to the Osu IRC")
 					self.connection.close()
 					self.last_ping = time.time()
 					await asyncio.sleep(10)
@@ -82,7 +82,7 @@ class _IRC_():
 				disconnected = int(time.time()) - int(self.last_ping)
 				if int(disconnected) > 300:
 					#Osu issn't pinging us, most likly means connection timeout --> Reconnect
-					self.BASE.moduls.Console.RED("ERROR", "No Osu! IRC Server response")
+					self.BASE.modules.Console.RED("ERROR", "No Osu! IRC Server response")
 					self.connection.close()
 					break
 
@@ -106,7 +106,7 @@ class _IRC_():
 
 						#we are connected
 						if ":cho.ppy.sh 001" in data:
-							self.BASE.moduls.Console.GREEN("SUCCESS", "Osu! IRC Connected")
+							self.BASE.modules.Console.GREEN("SUCCESS", "Osu! IRC Connected")
 
 						#response to PING
 						if data.startswith("PING"):
@@ -116,7 +116,7 @@ class _IRC_():
 						#on_message
 						if "cho@ppy.sh PRIVMSG" in data:
 							message = Get_classes_from_data.message(data)
-							asyncio.ensure_future(self.BASE.moduls._Osu_.Base.on_message(self.BASE, message))
+							asyncio.ensure_future(self.BASE.modules._Osu_.Base.on_message(self.BASE, message))
 
 				except socket.timeout:
 					await asyncio.sleep(0.025)

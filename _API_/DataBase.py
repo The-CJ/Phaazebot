@@ -31,7 +31,7 @@ def login(BASE, info={}, from_web=False, **kwargs):
 			header = [('Content-Type', 'application/json')]
 		return r
 
-	new_session = BASE.moduls._Web_.Base.Utils.get_session_key()
+	new_session = BASE.modules._Web_.Base.Utils.get_session_key()
 
 	entry = dict(session_id = new_session, username=file_server_user['loginname'])
 	BASE.PhaazeDB.insert(into="session/file_server", content=entry)

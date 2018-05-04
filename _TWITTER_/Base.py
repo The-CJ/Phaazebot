@@ -1,4 +1,4 @@
-#BASE.moduls._Twitter_.Base
+#BASE.modules._Twitter_.Base
 
 import asyncio, twitter, time, requests
 

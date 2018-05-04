@@ -1,4 +1,4 @@
-#BASE.moduls._Osu_.Utils
+#BASE.modules._Osu_.Utils
 
 import asyncio, random, json,requests, os, discord, re
 from UTILS import oppai as oppai
@@ -18,7 +18,7 @@ async def verify(BASE, message):
 	m = message.content.split(" ")
 
 	if len(m) == 1:
-		confirm = await BASE.moduls._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.name, platform="osu")
+		confirm = await BASE.modules._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.name, platform="osu")
 		if confirm == None:
 			if message.name in already_in_pairing_proccess:
 				return await BASE.Osu_IRC.send_message(message.name, "You are already in a verify proccess. if you forgot your Number wait 5min and try it again.")
@@ -59,50 +59,21 @@ async def get_pp(ID, c100=0, c50=0, misses=0, sv=1, acc=100.0, combo=0, mod_s=""
 
 	return e
 
-async def get_user(BASE, user=None, mode="0"):
-	if user == None: return None
+async def get_user(BASE, u=None, m="0", t=None):
+	if u == None: return None
 
-	result = requests.get(MAIN + USER + "?k="+BASE.access.Osu_API_Token + "&m={0}&u={1}".format(mode, user))
+	if t==None and u.isdigit():
+		t="id"
+	elif t==None and not u.isdigit():
+		t="string"
+
+	result = requests.get(f"{MAIN}{USER}?k={BASE.access.Osu_API_Token}&m={m}&type={t}&u={u}")
 	result = result.json()
 
 	#not found
 	if result == []: return None
-	else: result = result[0]
 
-	class user_info(object):
-		def __init__(self, result):
-
-			if mode == "0": mode_name = "osu!"
-			if mode == "1": mode_name = "osu!taiko"
-			if mode == "2": mode_name = "osu!ctb"
-			if mode == "3": mode_name = "osu!mania"
-
-			self.json = result
-			self.mode = mode
-			self.mode_name = mode_name
-			self.name = result["username"]
-			self.user_id = result["user_id"]
-			self.playcount = result["playcount"]
-
-			self.pp = result["pp_raw"]
-			self.level = result["level"]
-			self.acc = result["accuracy"]
-
-			self.rank = result["pp_rank"]
-			self.country_rank =result["pp_country_rank"]
-			self.country = result["country"].lower()
-
-			self.total_score = result["total_score"]
-			self.ranked_score = result["ranked_score"]
-
-			self.count_50 = result["count50"]
-			self.count_100 = result["count100"]
-			self.count_300 = result["count300"]
-			self.count_A = result["count_rank_a"]
-			self.count_S = result["count_rank_s"]
-			self.count_SS = result["count_rank_ss"]
-
-	return user_info(result)
+	return result[0]
 
 async def get_all_maps(BASE, ID=None, mode="b"):
 	KEY = "?k={0}".format(BASE.access.Osu_API_Token)
@@ -214,7 +185,7 @@ async def pp_calc_for_maps(BASE, message):
 	m = message.content.split(" ")
 
 	if len(m) == 2:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Missing Maplink (and options)\n\nOptions:\n`acc=[X]` - e.g. `acc=98,4` \n`combo=[X]` - e.g. `combo=1455` (0 == Full Combo)\n`miss=[X]` - e.g. `miss=4`\n`mods=[X]` - e.g. `mods=HDHR`\n\n**options seperated with Spaces**")
+		return await BASE.discord.send_message(message.channel, ":warning: Missing Maplink (and options)\n\nOptions:\n`acc=[X]` - e.g. `acc=98,4` \n`combo=[X]` - e.g. `combo=1455` (0 == Full Combo)\n`miss=[X]` - e.g. `miss=4`\n`mods=[X]` - e.g. `mods=HDHR`\n\n**options seperated with Spaces**")
 
 	if len(m) >= 3:
 		def get_id_from_link(number):
@@ -233,9 +204,9 @@ async def pp_calc_for_maps(BASE, message):
 
 		map_id_number = get_id_from_link(m[2])
 		if "/s/" in m[2]:
-			return await BASE.phaaze.send_message(message.channel, ":warning: PP Calc only works for single maps, not mapsets")
+			return await BASE.discord.send_message(message.channel, ":warning: PP Calc only works for single maps, not mapsets")
 		if map_id_number == None:
-			return await BASE.phaaze.send_message(message.channel, ":warning: Invalid Maplink. Only Map link or ID are vaild.")
+			return await BASE.discord.send_message(message.channel, ":warning: Invalid Maplink. Only Map link or ID are vaild.")
 
 	map_id_number = map_id_number.split("&")[0]
 
@@ -251,32 +222,32 @@ async def pp_calc_for_maps(BASE, message):
 				try:
 					v = float(option.split("=")[1])
 					if not 0 < v < 100:
-						return await BASE.phaaze.send_message(message.channel, ":warning: `acc` value has to be 0 < [X] <= 100.")
+						return await BASE.discord.send_message(message.channel, ":warning: `acc` value has to be 0 < [X] <= 100.")
 					acc_ = v
-				except: return await BASE.phaaze.send_message(message.channel, ":warning: `acc` value can only be a *int* or *float*.")
+				except: return await BASE.discord.send_message(message.channel, ":warning: `acc` value can only be a *int* or *float*.")
 
 			elif option.lower().startswith("combo="):
 				try:
 					v = int(option.split("=")[1])
 					combo_ = v
-				except: return await BASE.phaaze.send_message(message.channel, ":warning: `combo` value can only be a *int* from 0-[max_combo].")
+				except: return await BASE.discord.send_message(message.channel, ":warning: `combo` value can only be a *int* from 0-[max_combo].")
 
 			elif option.lower().startswith("miss="):
 				try:
 					v = int(option.split("=")[1])
 					miss_ = v
-				except: return await BASE.phaaze.send_message(message.channel, ":warning: `miss` value can only be a *int* from 0-[max_hit_obj].")
+				except: return await BASE.discord.send_message(message.channel, ":warning: `miss` value can only be a *int* from 0-[max_hit_obj].")
 
 			elif option.lower().startswith("mods="):
 				try:
 					v = option.split("=")[1].upper()
 					mods_ = v
-				except: return await BASE.phaaze.send_message(message.channel, ":warning: Invaild syntax for `mods`.")
+				except: return await BASE.discord.send_message(message.channel, ":warning: Invaild syntax for `mods`.")
 
 			else:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Invalid Option, `{0}` could not be processed, available are `mods`, `acc`, `combo` and `miss`".format(option))
+				return await BASE.discord.send_message(message.channel, ":warning: Invalid Option, `{0}` could not be processed, available are `mods`, `acc`, `combo` and `miss`".format(option))
 
-	result = await BASE.moduls.osu_utils.get_pp(map_id_number, acc=acc_, misses=miss_, combo=combo_, mod_s=mods_)
+	result = await BASE.modules.osu_utils.get_pp(map_id_number, acc=acc_, misses=miss_, combo=combo_, mod_s=mods_)
 
 	osu_aw = discord.Embed	(	title = "{0}".format(result.version),
 								description = "mabbed by: {0}".format(result.creator),
@@ -290,7 +261,7 @@ async def pp_calc_for_maps(BASE, message):
 	j = "{0}% - Combo: {5}/{2} - misses: {3} with {4}\nWhould give... : **{1}pp** 			*(+-2%)*".format(str(round(acc_)), str(round(result.pp, 1)), str(round(result.maxcombo)), str(miss_), moddds, str(combo_) if combo_ != 0 else str(round(result.maxcombo)))
 	osu_aw.add_field(name="PP Calc.:",value=j, inline=False)
 
-	return await BASE.phaaze.send_message(message.channel, embed=osu_aw)
+	return await BASE.discord.send_message(message.channel, embed=osu_aw)
 
 async def twitch_osu(BASE, message):
 	def get_link_out_of_content(content):
@@ -319,7 +290,7 @@ async def twitch_osu(BASE, message):
 
 	search_id, mode = get_link_out_of_content(message.content)
 
-	osu_user = await BASE.moduls._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.room_id, platform="twitch")
+	osu_user = await BASE.modules._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.room_id, platform="twitch")
 	if osu_user == None: return
 
 	osu_maps = await get_all_maps(BASE, ID=search_id, mode=mode)
@@ -376,10 +347,10 @@ class pairing_object(object):
 
 				async def end(self):
 					if self.twitch_id != None:
-						self.BASE.moduls._Twitch_.CMD.Mods.already_in_pairing_proccess.remove(self.twitch_id)
+						self.BASE.modules._Twitch_.CMD.Mods.already_in_pairing_proccess.remove(self.twitch_id)
 
 						if self.osu_name != None:
-							self.BASE.moduls._Osu_.Utils.already_in_pairing_proccess.remove(self.osu_name)
+							self.BASE.modules._Osu_.Utils.already_in_pairing_proccess.remove(self.osu_name)
 
 							self.BASE.queue.twitch_osu_verify.remove(self)
 

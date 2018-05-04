@@ -1,15 +1,15 @@
-##BASE.moduls._Discord_.Blacklist
+##BASE.modules._Discord_.Blacklist
 
-import asyncio, json, discord
+import asyncio, discord
 link_contents = ["http", ".de", "://", ".com", ".net", ".tv", "www."]
 
 async def check(BASE, message, server_setting):
-	me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+	me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 	phaaze_perms = message.channel.permissions_for(me)
 
 	if not phaaze_perms.manage_messages: return
 
-	if await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): return
+	if await BASE.modules._Discord_.Utils.is_Mod(BASE, message): return
 
 	blacklist = server_setting.get("blacklist", [])
 	ban_links = server_setting.get("ban_links", False)
@@ -40,22 +40,22 @@ async def check(BASE, message, server_setting):
 	if punish:
 		try:
 			if punishment_level == "delete":
-				await BASE.phaaze.delete_message(message)
+				await BASE.discord.delete_message(message)
 			elif punishment_level == "kick":
-				await BASE.phaaze.delete_message(message)
-				await BASE.phaaze.kick(message.author)
+				await BASE.discord.delete_message(message)
+				await BASE.discord.kick(message.author)
 			elif punishment_level == "ban":
-				await BASE.phaaze.ban(message.author, delete_message_days=1)
+				await BASE.discord.ban(message.author, delete_message_days=1)
 
 		except:
 			pass
 
 async def Base(BASE, message, kwargs):
-	me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+	me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 	phaaze_perms = message.channel.permissions_for(me)
 
 	if not phaaze_perms.manage_messages:
-		return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze need the `Manage messages` permission to execute Blacklist commands.")
+		return await BASE.discord.send_message(message.channel, ":no_entry_sign: Phaaze need the `Manage messages` permission to execute Blacklist commands.")
 
 	m = message.content.lower().split(" ")
 
@@ -73,7 +73,7 @@ async def Base(BASE, message, kwargs):
 			"`link-add` - Add a link to the whitelist\n"\
 			"`link-rem` - Remove a link from the whitelist\n"\
 			"`link-clear` - Remove all whitelisted links"
-		return await BASE.phaaze.send_message(message.channel, r)
+		return await BASE.discord.send_message(message.channel, r)
 
 	elif m[1] == "punishment":
 		await punishment(BASE, message, kwargs, me)
@@ -100,61 +100,61 @@ async def Base(BASE, message, kwargs):
 	elif m[1] == "link-clear":
 		await Link.clear(BASE, message, kwargs)
 	else:
-		return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a option.".format(m[1]))
+		return await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a option.".format(m[1]))
 
 async def punishment(BASE, message, kwargs, perms):
 	m = message.content.lower().split(" ")
 
 	if len(m) == 2:
 		blacklist_punishment = kwargs.get('server_setting', {}).get("blacklist_punishment", "delete")
-		return await BASE.phaaze.send_message(message.channel, f":grey_exclamation: Current punishment level: `{blacklist_punishment}`\nType: `{BASE.vars.PT}blacklist punishment (delete/kick/ban)` to change")
+		return await BASE.discord.send_message(message.channel, f":grey_exclamation: Current punishment level: `{blacklist_punishment}`\nType: `{BASE.vars.PT}blacklist punishment (delete/kick/ban)` to change")
 
 	if m[2] == "delete":
 		BASE.PhaazeDB.update(
 			of="discord/server_setting",
 			where=f"data['server_id'] == '{message.server.id}'",
 			content=dict(blacklist_punishment = "delete"))
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Punishment Level set to: `delete`.\nPhaaze will only **delete** the message")
+		return await BASE.discord.send_message(message.channel, ":white_check_mark: Punishment Level set to: `delete`.\nPhaaze will only **delete** the message")
 
 	elif m[2] == "kick":
 		if not perms.server_permissions.kick_members:
-			return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze need the `Kick Members` permission to execute kick commands.")
+			return await BASE.discord.send_message(message.channel, ":no_entry_sign: Phaaze need the `Kick Members` permission to execute kick commands.")
 
 		BASE.PhaazeDB.update(
 			of="discord/server_setting",
 			where=f"data['server_id'] == '{message.server.id}'",
 			content=dict(blacklist_punishment = "kick"))
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Punishment Level set to: `kick`.\nPhaaze will **delete** the messages **and kick** the author")
+		return await BASE.discord.send_message(message.channel, ":white_check_mark: Punishment Level set to: `kick`.\nPhaaze will **delete** the messages **and kick** the author")
 
 	elif m[2] == "ban":
 		if not perms.server_permissions.ban_members:
-			return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: Phaaze need the `Ban Members` permission to execute kick commands.")
+			return await BASE.discord.send_message(message.channel, ":no_entry_sign: Phaaze need the `Ban Members` permission to execute kick commands.")
 
 		BASE.PhaazeDB.update(
 			of="discord/server_setting",
 			where=f"data['server_id'] == '{message.server.id}'",
 			content=dict(blacklist_punishment = "ban"))
-		return await BASE.phaaze.send_message(message.channel, ":white_check_mark: Punishment Level set to: `ban`.\nPhaaze will **delete** the messages **and ban** the author")
+		return await BASE.discord.send_message(message.channel, ":white_check_mark: Punishment Level set to: `ban`.\nPhaaze will **delete** the messages **and ban** the author")
 
 	else:
-		return await BASE.phaaze.send_message(message.channel, "`{0}` is not a option".format(m[2]))
+		return await BASE.discord.send_message(message.channel, "`{0}` is not a option".format(m[2]))
 
 async def get(BASE, message, kwargs):
 
 	blacklist = kwargs.get('server_setting', {}).get('blacklist', [])
 
 	if len(blacklist) == 0:
-		return await BASE.phaaze.send_message(message.channel, "No words are banned! :thumbsup:")
+		return await BASE.discord.send_message(message.channel, "No words are banned! :thumbsup:")
 
 	else:
 		l = ", ".join(b for b in blacklist)
-		return await BASE.phaaze.send_message(message.channel, f"A list of all banned words and phrases on the server.\n\n```{l}```")
+		return await BASE.discord.send_message(message.channel, f"A list of all banned words and phrases on the server.\n\n```{l}```")
 
 async def add(BASE, message, kwargs):
 	m = message.content.lower().split(" ")
 
 	if len(m) == 2:
-		return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a word or a phrase to add.")
+		return await BASE.discord.send_message(message.channel, ":warning: You need to define a word or a phrase to add.")
 
 	blacklist = kwargs.get('server_setting', {}).get('blacklist', [])
 
@@ -166,7 +166,7 @@ async def add(BASE, message, kwargs):
 		type_ = "word"
 
 	if word in blacklist:
-		return await BASE.phaaze.send_message(message.channel, ":warning: This {0} is already in the blacklist.".format(type_))
+		return await BASE.discord.send_message(message.channel, ":warning: This {0} is already in the blacklist.".format(type_))
 	else:
 		blacklist.append(word.lower())
 
@@ -176,13 +176,13 @@ async def add(BASE, message, kwargs):
 		content=dict(blacklist=blacklist)
 	)
 
-	return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The {type_}: `{word}` has been added to the blacklist.")
+	return await BASE.discord.send_message(message.channel, f":white_check_mark: The {type_}: `{word}` has been added to the blacklist.")
 
 async def rem(BASE, message, kwargs):
 	m = message.content.lower().split(" ")
 
 	if len(m) == 2:
-		return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a word or a phrase you wanna remove.")
+		return await BASE.discord.send_message(message.channel, ":warning: You need to define a word or a phrase you wanna remove.")
 
 	blacklist = kwargs.get('server_setting', {}).get('blacklist', [])
 
@@ -196,7 +196,7 @@ async def rem(BASE, message, kwargs):
 	if word in blacklist:
 		blacklist.remove(word)
 	else:
-		return await BASE.phaaze.send_message(message.channel, f":warning: `{word}` is not in the blacklist.")
+		return await BASE.discord.send_message(message.channel, f":warning: `{word}` is not in the blacklist.")
 
 	BASE.PhaazeDB.update(
 		of="discord/server_setting",
@@ -204,7 +204,7 @@ async def rem(BASE, message, kwargs):
 		content=dict(blacklist=blacklist)
 	)
 
-	return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The {type_}: `{word}` has been removed from the blacklist.")
+	return await BASE.discord.send_message(message.channel, f":white_check_mark: The {type_}: `{word}` has been removed from the blacklist.")
 
 async def clear(BASE, message, kwargs):
 
@@ -214,7 +214,7 @@ async def clear(BASE, message, kwargs):
 		content=dict(blacklist=[])
 	)
 
-	return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The blacklist has been cleared.")
+	return await BASE.discord.send_message(message.channel, f":white_check_mark: The blacklist has been cleared.")
 
 class Link(object):
 
@@ -236,31 +236,31 @@ class Link(object):
 			content=dict(ban_links=ban_links)
 		)
 
-		return await BASE.phaaze.send_message(message.channel, a)
+		return await BASE.discord.send_message(message.channel, a)
 
 	async def get(BASE, message, kwargs):
 
 		whitelist = kwargs.get('server_setting', {}).get('ban_links_whitelist', [])
 
 		if len(whitelist) == 0:
-			return await BASE.phaaze.send_message(message.channel, ":grey_exclamation: No Links whitelisted! All links get removed")
+			return await BASE.discord.send_message(message.channel, ":grey_exclamation: No Links whitelisted! All links get removed")
 
 		else:
 			l = ", ".join(b for b in whitelist)
-			return await BASE.phaaze.send_message(message.channel, f"A list of all whitelisted links on the server.\n\n```{l}```")
+			return await BASE.discord.send_message(message.channel, f"A list of all whitelisted links on the server.\n\n```{l}```")
 
 	async def add(BASE, message, kwargs):
 		m = message.content.lower().split(" ")
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a link to whitelist.")
+			return await BASE.discord.send_message(message.channel, ":warning: You need to define a link to whitelist.")
 
 		whitelist = kwargs.get('server_setting', {}).get('ban_links_whitelist', [])
 
 		word = " ".join(l for l in m[2:])
 
 		if word in whitelist:
-			return await BASE.phaaze.send_message(message.channel, ":warning: This link already is whitelisted.")
+			return await BASE.discord.send_message(message.channel, ":warning: This link already is whitelisted.")
 		else:
 			whitelist.append(word.lower())
 
@@ -270,13 +270,13 @@ class Link(object):
 			content=dict(ban_links_whitelist=whitelist)
 		)
 
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The link `{word}` has been added to the whitelist.")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: The link `{word}` has been added to the whitelist.")
 
 	async def rem(BASE, message, kwargs):
 		m = message.content.lower().split(" ")
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a link you wanna remove from the whitelist.")
+			return await BASE.discord.send_message(message.channel, ":warning: You need to define a link you wanna remove from the whitelist.")
 
 		whitelist = kwargs.get('server_setting', {}).get('ban_links_whitelist', [])
 
@@ -285,7 +285,7 @@ class Link(object):
 		if word in whitelist:
 			whitelist.remove(word)
 		else:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{word}` is not in the whitelist.")
+			return await BASE.discord.send_message(message.channel, f":warning: `{word}` is not in the whitelist.")
 
 		BASE.PhaazeDB.update(
 			of="discord/server_setting",
@@ -293,13 +293,13 @@ class Link(object):
 			content=dict(ban_links_whitelist=whitelist)
 		)
 
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The link `{word}` has been removed from the whitelist.")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: The link `{word}` has been removed from the whitelist.")
 
 	async def allow(BASE, message, kwargs):
 		m = message.content.lower().split(" ")
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a role you wanna add to link permits.")
+			return await BASE.discord.send_message(message.channel, ":warning: You need to define a role you wanna add to link permits.")
 
 		ban_links_role = kwargs.get('server_setting', {}).get('ban_links_role', [])
 
@@ -311,7 +311,7 @@ class Link(object):
 		elif m[2].isdigit():
 			role = discord.utils.get(message.server.roles, id=m[2])
 			if role == None:
-				return await BASE.phaaze.send_message(
+				return await BASE.discord.send_message(
 					message.channel,
 					f":warning: No Role with the ID: `{m[2]}` found"
 				)
@@ -321,13 +321,13 @@ class Link(object):
 			r_n = " ".join(d for d in m[2:])
 			role = discord.utils.get(message.server.roles, name=r_n)
 			if role == None:
-				return await BASE.phaaze.send_message(
+				return await BASE.discord.send_message(
 					message.channel,
 					f":warning: No Role with the Name: `{r_n}` found."
 				)
 
 		if role.id in ban_links_role:
-			return await BASE.phaaze.send_message(message.channel, ":warning: This role allready is permited.")
+			return await BASE.discord.send_message(message.channel, ":warning: This role allready is permited.")
 		else:
 			ban_links_role.append(role.id)
 
@@ -337,13 +337,13 @@ class Link(object):
 			content=dict(ban_links_role=ban_links_role)
 		)
 
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The role `{role.name}` has been permited to post links.")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: The role `{role.name}` has been permited to post links.")
 
 	async def disallow(BASE, message, kwargs):
 		m = message.content.lower().split(" ")
 
 		if len(m) == 2:
-			return await BASE.phaaze.send_message(message.channel, ":warning: You need to define a role you wanna remove the link permits.")
+			return await BASE.discord.send_message(message.channel, ":warning: You need to define a role you wanna remove the link permits.")
 
 		ban_links_role = kwargs.get('server_setting', {}).get('ban_links_role', [])
 
@@ -355,7 +355,7 @@ class Link(object):
 		elif m[2].isdigit():
 			role = discord.utils.get(message.server.roles, id=m[2])
 			if role == None:
-				return await BASE.phaaze.send_message(
+				return await BASE.discord.send_message(
 					message.channel,
 					f":warning: No Role with the ID: `{m[2]}` found"
 				)
@@ -365,7 +365,7 @@ class Link(object):
 			r_n = " ".join(d for d in m[2:])
 			role = discord.utils.get(message.server.roles, name=r_n)
 			if role == None:
-				return await BASE.phaaze.send_message(
+				return await BASE.discord.send_message(
 					message.channel,
 					f":warning: No Role with the Name: `{r_n}` found."
 				)
@@ -373,7 +373,7 @@ class Link(object):
 		if role.id in ban_links_role:
 			ban_links_role.remove(role.id)
 		else:
-			return await BASE.phaaze.send_message(message.channel, ":warning: This role don't has link permits.")
+			return await BASE.discord.send_message(message.channel, ":warning: This role don't has link permits.")
 
 		BASE.PhaazeDB.update(
 			of="discord/server_setting",
@@ -381,7 +381,7 @@ class Link(object):
 			content=dict(ban_links_role=ban_links_role)
 		)
 
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The role `{role.name}` has been removed to post links.")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: The role `{role.name}` has been removed to post links.")
 
 	async def clear(BASE, message, kwargs):
 
@@ -391,4 +391,4 @@ class Link(object):
 			content=dict(ban_links_role=[])
 		)
 
-		return await BASE.phaaze.send_message(message.channel, f":white_check_mark: The link whitelist has been cleared.")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: The link whitelist has been cleared.")

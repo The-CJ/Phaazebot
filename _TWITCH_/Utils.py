@@ -1,6 +1,8 @@
-#BASE.moduls._Twitch_.Utils
+#BASE.modules._Twitch_.Utils
 
 import asyncio, json, requests
+
+MAIN = "https://api.twitch.tv/kraken/"
 
 #settings
 async def get_twitch_file(BASE, room_id):
@@ -27,7 +29,7 @@ async def get_twitch_file(BASE, room_id):
 
 	#json bullsahit
 	except json.decoder.JSONDecodeError:
-		BASE.moduls.Console.RED("CRITICAL ERROR", "Broken json twitch channel file")
+		BASE.modules.Console.RED("CRITICAL ERROR", "Broken json twitch channel file")
 
 	#something new
 	except Exception as e:
@@ -38,7 +40,7 @@ async def make_twitch_file(BASE, room_id):
 	with open("_TWITCH_/Channel_files/{0}.json".format(room_id), "w") as new:
 		json.dump(struktur, new)
 
-	BASE.moduls.Console.CYAN("INFO", "New Twitch Channel created")
+	BASE.modules.Console.CYAN("INFO", "New Twitch Channel created")
 
 	file = open("_TWITCH_/Channel_files/{0}.json".format(room_id), "r")
 	file = file.read()
@@ -71,7 +73,7 @@ async def get_twitch_level_file_(BASE, room_id):
 
 	#json bullsahit
 	except json.decoder.JSONDecodeError:
-		BASE.moduls.Console.RED("CRITICAL ERROR", "Broken json twitch level file")
+		BASE.modules.Console.RED("CRITICAL ERROR", "Broken json twitch level file")
 
 	#something new
 	except Exception as e:
@@ -101,14 +103,14 @@ async def get_twitch_level_file(BASE, room_id):
 
 	#json bullsahit
 	except json.decoder.JSONDecodeError:
-		BASE.moduls.Console.RED("CRITICAL ERROR", "Broken json twitch level file")
+		BASE.modules.Console.RED("CRITICAL ERROR", "Broken json twitch level file")
 
 async def make_twitch_level_file(BASE, room_id):
 	struktur = {"room_id": room_id, "user": []}
 	with open("_TWITCH_/Channel_level_files/{0}.json".format(room_id), "w") as new:
 		json.dump(struktur, new)
 
-	BASE.moduls.Console.CYAN("INFO", "New Twitch Level created")
+	BASE.modules.Console.CYAN("INFO", "New Twitch Level created")
 
 	file = open("_TWITCH_/Channel_level_files/{0}.json".format(room_id), "r")
 	file = file.read()
@@ -131,12 +133,47 @@ async def get_channel_object(BASE, id=None, name=None):
 				return channel
 	return found
 
-#API Call
-async def twitch_API_call(BASE, url):
+# # #
+
+def API_call(BASE, url):
 	key = BASE.access.Twitch_API_Token
 	header = {"Client-ID": key, "Accept": "application/vnd.twitchtv.v5+json"}
 	try:
 		resp = requests.get(url, headers = header)
 		return resp.json()
 	except:
-		return {'status': 500}
+		raise ConnectionError('No Twitch API Response')
+
+def get_user(BASE, twitch_info, search="id"):
+	try:
+
+		if type(twitch_info) == str:
+			twitch_info = [twitch_info]
+
+		s = "/"
+		if search == "name":
+			s = "?login="
+		elif search == "id":
+			s = "?id="
+
+		link = MAIN + "users" + s + ",".join(thing for thing in twitch_info)
+
+		res = API_call(BASE, link)
+
+		#No User
+		if res.get("_total", 0) == 0: return None
+
+		return res["users"]
+
+	except:
+		return None
+
+def get_streams(BASE, streams):
+	if type(streams) == str:
+		streams = [streams]
+	try:
+		link = MAIN + 'streams?channel=' + ",".join(stream for stream in streams)
+		res = API_call(BASE, link)
+		return res
+	except:
+		return None

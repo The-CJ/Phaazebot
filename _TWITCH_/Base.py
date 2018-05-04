@@ -1,4 +1,4 @@
-#BASE.moduls._Twitch_.Base
+#BASE.modules._Twitch_.Base
 import asyncio, json, requests
 
 custom_commands_in_last_15s = []
@@ -7,7 +7,7 @@ async def on_message(BASE, message):
 	if message.name == "phaazebot": return
 	m = message.content.split(" ")
 
-	settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+	settings = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 
 	for command in settings.get("commands", []):
 		if command["trigger"] == m[0].lower():
@@ -20,12 +20,12 @@ async def on_message(BASE, message):
 
 	stats_active = settings.get("stats", False)
 	if stats_active:
-		await BASE.moduls._Twitch_.Gold.Base(BASE, message)
+		await BASE.modules._Twitch_.Gold.Base(BASE, message)
 
 	osu_active = settings.get("osu", False)
 	if osu_active:
 		if "osu.ppy.sh/s/" in message.content.lower() or "osu.ppy.sh/b/" in message.content.lower() or "osu.ppy.sh/beatmapsets/" in message.content.lower()  :
-			await BASE.moduls.osu.twitch_osu(BASE, message)
+			await BASE.modules.osu.twitch_osu(BASE, message)
 
 async def on_member_join(BASE, channel, name):
 	for chan in BASE.Twitch_IRC_connection.channels:
@@ -52,7 +52,7 @@ async def on_member_leave(BASE, channel, name):
 async def on_sub(BASE, sub):
 	default_sub_message = "PogChamp [name] just subscribed! Thanks [name]"
 	default_resub_message = "PogChamp [name] just subscribed for [months] months in a row! Thanks for the continued support [name] <3"
-	settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, sub.room_id)
+	settings = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, sub.room_id)
 
 	if settings.get('sub_alert', False) == True or sub.channel == "the__cj":
 
@@ -93,7 +93,7 @@ class Settings(object):
 			await Settings.Osu(BASE, message)
 
 	async def Stats(BASE, message):
-		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+		settings = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["stats"] = settings.get("stats", False)
 		m = message.content.split(" ")
 
@@ -125,7 +125,7 @@ class Settings(object):
 				Settings.error_message)
 
 	async def Quotes(BASE, message):
-		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+		settings = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["quote_active"] = settings.get("quote_active", False)
 		m = message.content.split(" ")
 
@@ -157,7 +157,7 @@ class Settings(object):
 				Settings.error_message)
 
 	async def Game(BASE, message):
-		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+		settings = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["games"] = settings.get("games", False)
 		m = message.content.split(" ")
 
@@ -192,7 +192,7 @@ class Settings(object):
 				Settings.error_message)
 
 	async def Osu(BASE, message):
-		settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+		settings = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 		settings["osu"] = settings.get("osu", False)
 		m = message.content.split(" ")
 
@@ -231,52 +231,52 @@ class Commands(object):
 
 		if trigger.startswith("!!!!"):
 			if message.name != "the__cj": return
-			await BASE.moduls._Twitch_.Utils.debug(BASE, message)
+			await BASE.modules._Twitch_.Utils.debug(BASE, message)
 
 		elif trigger.startswith("setting"):
-			await BASE.moduls._Twitch_.Base.Settings.Base(BASE, message)
+			await BASE.modules._Twitch_.Base.Settings.Base(BASE, message)
 
 		elif trigger.startswith("battle"):
-			await BASE.moduls._Twitch_.Games.battle(BASE, message)
+			await BASE.modules._Twitch_.Games.battle(BASE, message)
 
 		elif trigger.startswith("mission"):
-			await BASE.moduls._Twitch_.Games.mission(BASE, message)
+			await BASE.modules._Twitch_.Games.mission(BASE, message)
 
 		elif trigger.startswith("stats"):
-			await BASE.moduls._Twitch_.Gold.stats(BASE, message)
+			await BASE.modules._Twitch_.Gold.stats(BASE, message)
 
 		elif trigger.startswith("toptime"):
-			await BASE.moduls._Twitch_.Gold.leaderboard(BASE, message, locals(), art="time")
+			await BASE.modules._Twitch_.Gold.leaderboard(BASE, message, locals(), art="time")
 
 		elif trigger.startswith("topmoney"):
-			await BASE.moduls._Twitch_.Gold.leaderboard(BASE, message, locals(), art="money")
+			await BASE.modules._Twitch_.Gold.leaderboard(BASE, message, locals(), art="money")
 
 		elif trigger.startswith("quote"):
-			await BASE.moduls._Twitch_.CMD.Normal.Quote(BASE, message)
+			await BASE.modules._Twitch_.CMD.Normal.Quote(BASE, message)
 
 		elif trigger.startswith("addquote"):
-			await BASE.moduls._Twitch_.CMD.Mods.Quotes.add(BASE, message)
+			await BASE.modules._Twitch_.CMD.Mods.Quotes.add(BASE, message)
 
 		elif trigger.startswith("delquote"):
-			await BASE.moduls._Twitch_.CMD.Mods.Quotes.rem(BASE, message)
+			await BASE.modules._Twitch_.CMD.Mods.Quotes.rem(BASE, message)
 
 		elif trigger.startswith("addcom"):
-			await BASE.moduls._Twitch_.CMD.Mods.Coms.add(BASE, message)
+			await BASE.modules._Twitch_.CMD.Mods.Coms.add(BASE, message)
 
 		elif trigger.startswith("delcom"):
-			await BASE.moduls._Twitch_.CMD.Mods.Coms.rem(BASE, message)
+			await BASE.modules._Twitch_.CMD.Mods.Coms.rem(BASE, message)
 
 		elif trigger.startswith("osuverify"):
-			await BASE.moduls._Twitch_.CMD.Mods.verify(BASE, message)
+			await BASE.modules._Twitch_.CMD.Mods.verify(BASE, message)
 
 		elif trigger.startswith("osudisconnect"):
-			await BASE.moduls._Twitch_.CMD.Mods.osu_disco(BASE, message)
+			await BASE.modules._Twitch_.CMD.Mods.osu_disco(BASE, message)
 
 		elif trigger.startswith("join"):
-			await BASE.moduls._Twitch_.Base.Commands.join(BASE, message)
+			await BASE.modules._Twitch_.Base.Commands.join(BASE, message)
 
 		elif trigger.startswith("leave"):
-			await BASE.moduls._Twitch_.Base.Commands.leave(BASE, message)
+			await BASE.modules._Twitch_.Base.Commands.leave(BASE, message)
 
 	async def leave(BASE, message):
 		if message.save_name.lower() == message.channel.lower() or \
@@ -316,7 +316,7 @@ async def lurkers(BASE):
 	while True:
 		to_check = ",".join(channel.room_id for channel in BASE.Twitch_IRC_connection.channels)
 		url = "https://api.twitch.tv/kraken/streams?channel=" + to_check
-		check = await BASE.moduls._Twitch_.Utils.twitch_API_call(BASE, url)
+		check = await BASE.modules._Twitch_.Utils.twitch_API_call(BASE, url)
 		if check.get("status", 200) > 400:
 			await asyncio.sleep(10)
 			continue
@@ -332,7 +332,7 @@ async def lurkers(BASE):
 			if not channel.live:
 				continue
 			try:
-				level_file = await BASE.moduls._Twitch_.Utils.get_twitch_level_file(BASE, channel.room_id)
+				level_file = await BASE.modules._Twitch_.Utils.get_twitch_level_file(BASE, channel.room_id)
 				level_file["user"] = level_file.get("user", [])
 
 				check_if_in_stream = [u for u in channel.user]

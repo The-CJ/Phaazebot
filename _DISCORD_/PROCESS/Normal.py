@@ -1,463 +1,629 @@
-#BASE.moduls._Discord_.PROCESS.Normal
+#BASE.modules._Discord_.PROCESS.Normal
 
-Anti_PM_Spam_Commands = []
-import asyncio, json, requests, discord, random, re, datetime
+import asyncio, requests, discord, random, re, datetime
 from tabulate import tabulate
 
-async def osu_base(BASE, message):
-	m = message.content.lower().split(" ")
+class Forbidden(object):
+	async def disable_chan_quote(BASE, message, kwargs):
+		m = await BASE.discord.send_message(message.channel, ":no_entry_sign: Quote ask is disabled for this channel, only Mods and the Serverowner can use them.")
+		await asyncio.sleep(2.5)
+		await BASE.discord.delete_message(m)
 
-	if len(m) == 1:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Missing a option!  Usage: `{0}osu [Option]`\n\n Available options: `stats`, `map`, `calc`".format(BASE.vars.PT))
+	async def owner_disabled_quote(BASE, message, kwargs):
+		m = await BASE.discord.send_message(message.channel, ":no_entry_sign: The Serverowner disabled Quotes, only the Serverowner can use them.")
+		await asyncio.sleep(2.5)
+		await BASE.discord.delete_message(m)
 
-	elif len(m) >= 2:
+class Everything(object):
+	async def emotes(BASE, message, kwargs):
+		server_emotes = [e for e in message.server.emojis if not e.managed]
+		server_emotes_managed = [e for e in message.server.emojis if e.managed]
 
-		if m[1].startswith("stats"):
-			if len(m) == 2:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Missing User!  Usage: `{0}osu stats(mode) [User - link, name or id]`\n".format(BASE.vars.PT) + '`(mode)` - Can be empty, `/osu`, `/ctb`, `/mania` or `/taiko`')
+		if not server_emotes and not server_emotes_managed:
+			return await BASE.discord.send_message(message.channel, ":x: This Server has no Emotes at all")
 
+		if server_emotes:
+			e_ = " | ".join(str(e) + " - `" + e.name + "`" for e in sorted(server_emotes, key=lambda e: e.name))
+			server_emotes = f"Server Custom Emotes: **{str(len(server_emotes))}**\n\n{e_}\n"
+
+		else: server_emotes = ""
+
+		if server_emotes_managed:
+			e_ = " | ".join("`" + e.name + "`" for e in sorted(server_emotes_managed, key=lambda e: e.name))
+			server_emotes_managed = f"\nTwitch Integration Emotes: **{str(len(server_emotes_managed))}**\n\n{e_}"
+
+		else: server_emotes_managed = ""
+
+		x = "\n\nThere are to many Emotes to display all"
+		rep_message = server_emotes + server_emotes_managed
+		if len(rep_message) > 1999:
+			rep_message[:(1999-len(x))] + x
+
+		return await BASE.discord.send_message(message.channel, rep_message[:1999])
+
+	async def define(BASE, message, kwargs):
+		LINK = "https://mashape-community-urban-dictionary.p.mashape.com/define"
+		TERM = "?term="
+		Header = {'X-Mashape-Key': BASE.access.Mashape}
+
+		m = message.content.split(" ")
+
+		if len(m) == 1:
+			return await BASE.discord.send_message(message.channel, f':warning: You need to define a word. `{BASE.vars.PT}define [thing]`')
+
+		thing = " ".join(g for g in m[1:])
+
+		if "phaaze" in message.content.lower() or "phaazebot" in message.content.lower():
+			return await BASE.discord.send_message(message.channel, "Thats me :D")
+
+		#request or end
+		try:
+			res = requests.get(LINK+TERM+thing, headers= Header).json()
+		except:
+			return await BASE.discord.send_message(message.channel, ":warning: A Error occurred during your requestyour request, try agoin later")
+
+		if not res.get("list", []):
+			return await BASE.discord.send_message(message.channel, f":x: Sorry, but Urban dictionary don't know what: `{thing}` is")
+
+		top = res.get("list", [])[0].get("definition", "[N/A]")
+		example = res.get("list", [])[0].get("example", "[N/A]")
+
+		rest_list = res["list"][1:]
+
+		emb = discord.Embed(description=":notebook_with_decorative_cover:\n"+top)
+		emb.set_author(name=thing, url="http://www.urbandictionary.com/define.php?term="+thing.replace(" ", "+"))
+		emb.add_field(name=":book: Example", value=example)
+		if rest_list: emb.set_footer(text=f"and {str(len(rest_list))} other definitions")
+
+		return await BASE.discord.send_message(message.channel, embed=emb)
+
+	async def choice(BASE, message, kwargs):
+		m = message.content.split(" ")
+		if len(m) == 1:
+			return await BASE.discord.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
+
+		M = message.content.split(" ", 1)[1].split(";")
+
+		for item in M:
+			item.replace(" ","")
+			item.replace("	","")
+
+		try:
+			M.remove("")
+		except:
+			pass
+
+		if len(M) == 1:
+			return await BASE.discord.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
+
+		winner = random.choice(M)
+		winner = winner.replace("`", "")
+		winner = winner.replace("@everyone", "")
+		winner = winner.replace("**", "")
+
+		resp = "And the winner is...\n\n:game_die:- **{}** -:8ball:".format(winner)
+
+		return await BASE.discord.send_message(message.channel, resp)
+
+class Whois(object):
+
+	async def Base(BASE, message, kwargs):
+		m = message.content.split(" ")
+
+		#by_myself
+		if len(m) == 1:
+			return await Whois.finish(BASE, message, kwargs, message.author)
+
+		#by_mention
+		if message.mentions:
+			return await Whois.finish(BASE, message, kwargs, message.mentions[0])
+
+		#by_id
+		elif m[1].isdigit():
+			user = discord.utils.get(message.server.members, id=m[1])
+			if user is None:
+				return await BASE.discord.send_message(message.channel, f":warning: No user found with ID: {m[1]}")
+
+			return await Whois.finish(BASE, message, kwargs, user)
+
+		#by_name
+		else:
+			name = " ".join(s for s in m[1:])
+			user = discord.utils.get(message.server.members, name=name)
+			if user is None:
+				return await BASE.discord.send_message(message.channel, f":warning: No user found with Name: `{name}`")
+
+			return await Whois.finish(BASE, message, kwargs, user)
+
+	async def finish(BASE, message, kwargs, user):
+		if user.nick is not None:
+			user.nick = "Nickname: " + user.nick
+
+		else: user.nick == None
+		if str(user.status) == "online": status = "Online"
+		elif str(user.status) == "offline": status = "Offline"
+		elif str(user.status) == "idle": status = "AFK"
+		elif str(user.status) == "dnd": status = "Do not disturb"
+		else: status = "Unknown"
+
+		role_list = []
+		for role in sorted(user.roles, key=lambda role: role.position, reverse=True):
+			if role.name != "@everyone":
+				role_list.append([role.position, role.name])
+
+		now = datetime.datetime.now()
+		cr = user.created_at
+		jo = user.joined_at
+		formated_created = "{t_} *[{delta} days ago]*".format(
+															t_ = cr.strftime("%d.%m.%y (%H:%M)"),
+															delta = (now - cr).days)
+
+		formated_joined = "{t_} *[{delta} days ago]*".format(
+															t_ = jo.strftime("%d.%m.%y (%H:%M)"),
+															delta = (now - jo).days)
+
+		main = 	f"**ID**: {user.id}\n"\
+				f"**Discriminator**: {user.discriminator}\n"\
+				f"**Acc. created at**: {formated_created}\n"\
+				f"**Joined at**: {formated_joined}"
+
+		tem = discord.Embed (
+			title=user.nick,
+			color=user.colour.value,
+			description=main)
+
+		if user.bot:
+			tem.add_field(name=":robot: Bot-account:",value="True",inline=True)
+
+		if not user.game == None:
+			if user.game.type == 1:
+				tem.add_field(name=":video_camera: Currently Streaming:",value=user.game.name,inline=True)
 			else:
-				c = m[1].split("/")
-				try: mode = c[1]
-				except: mode = "osu"
+				tem.add_field(name=":game_die: Playing:",value=user.game.name,inline=True)
 
-				#set mode
-				if mode == "osu": MODE = "0"
-				elif mode == "taiko": MODE = "1"
-				elif mode == "ctb": MODE = "2"
-				elif mode == "mania": MODE = "3"
-				elif mode == "": return await BASE.phaaze.send_message(message.channel, ":warning: Option after `stats/` is missing. Available Options are: `osu,ctb,mania,taiko`  Or leave it free an remove the `/`.")
-				else: return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a gamemode, Available are: `osu`,`ctb`,`mania`,`taiko`".format(c[1]))
+		tem.add_field(name=":satellite: Status:",value=status,inline=True)
 
-				#get user stuff
-				req_user = message.content.split(" ")[2]
+		if len(role_list) >= 1:
+			tem.add_field(name=":notepad_spiral: Roles:",value="```" + tabulate(role_list, tablefmt="plain") + "```",inline=False)
+		else:
+			tem.add_field(name=":notepad_spiral: Roles:",value="None",inline=False)
 
-				#stuff is a link --> get name/id
-				if "osu.ppy.sh/u" in req_user:
-					req_user = req_user.split("u/")[1]
+		tem.set_author(name="Name: {0}".format(user.name))
 
-				#get_user
-				User = await BASE.moduls.osu.get_user(BASE, user=req_user, mode=MODE)
-				if User == None: return await BASE.phaaze.send_message(message.channel, ":warning: The given User could not found!")
+		if user.avatar_url != "":
+			tem.set_image(url=user.avatar_url)
+		else:
+			tem.set_image(url=user.default_avatar_url)
 
-				stuff = ":globe_with_meridians: #{rank}  -  :flag_{country}: #{country_rank}\n"\
-						":part_alternation_mark: {pp} pp\n"\
-						":dart: {acc}% Accuracy\n"\
-						":military_medal: Level: {level}\n"\
-						":timer: Playcount: {playcount}\n"\
-						":chart_with_upwards_trend: Ranked Score: {ranked_score}\n"\
-						":card_box: Total Score: {total_score}\n"\
-						":id: {user_id}".format(
-										rank = "{:,}".format(int(User.rank)) if User.rank != None else "N/A",
-										country = User.country,
-										country_rank = "{:,}".format(int(User.country_rank)) if User.country_rank != None else "N/A",
-										pp = "{:,}".format(round(float(User.pp), 2)) if User.pp != None and User.pp != "0" else "N/A",
-										acc = str(round(float(User.acc), 2)) if User.acc != None else "N/A",
-										level = str(round(float(User.level), 1)) if User.level != None else "N/A",
-										playcount = "{:,}".format(int(User.playcount)) if User.playcount != None else "N/A",
-										ranked_score = "{:,}".format(int(User.ranked_score)) if User.ranked_score != None else "N/A",
-										total_score = "{:,}".format(int(User.total_score)) if User.total_score != None else "N/A",
-										user_id = User.user_id
-										)
+		return await BASE.discord.send_message(message.channel, embed=tem)
 
-				EMB = discord.Embed(
-					title=User.name,
-					url="https://osu.ppy.sh/u/"+User.user_id,
-					color=int(0xFF69B4),
-					description=stuff
-					)
+class Quotes(object):
+	async def Base(BASE, message, kwargs):
+		if kwargs.get('server_setting', {}).get('owner_disable_quote', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message):
+			asyncio.ensure_future(Forbidden.owner_disabled_quote(BASE, message, kwargs))
+			return
+		if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_quote', []) and not await BASE.modules._Discord_.Utils.is_Mod(BASE, message):
+			asyncio.ensure_future(Forbidden.disable_chan_quote(BASE, message, kwargs))
+			return
 
-				if User.count_A != User.count_S != User.count_SS != None != User.count_50 != User.count_100 != User.count_300:
-					table_R = 	[
-									["A:", "{:,}".format(int(User.count_A))],
-									["S:", "{:,}".format(int(User.count_S))],
-									["SS:", "{:,}".format(int(User.count_SS))]
-								]
+		m = message.content.split(' ')
+		server_quotes = kwargs.get('server_quotes', {})
 
-					EMB.add_field(name="Ranks:",value="```{}```".format(tabulate(table_R, tablefmt="plain")), inline=True)
+		if not server_quotes:
+			return await BASE.discord.send_message(message.channel, ":grey_exclamation: This server don't has any Quotes")
 
-				EMB.set_thumbnail(url="https://a.ppy.sh/{0}".format(User.user_id))
-				EMB.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
-				EMB.set_author(name="Stats for: {0}".format(User.mode_name))
+		if len(m) == 1:
+			quote = random.choice(server_quotes)
+			en = discord.Embed(description=quote.get('content', '[ERROR GETTING QUOTE INFO]'))
+			en.set_footer(text="ID: "+str(quote.get('id', '[N/A]')))
+			return await BASE.discord.send_message(message.channel, embed=en)
 
-				return await BASE.phaaze.send_message(message.channel, content=message.author.mention, embed=EMB)
+		if not m[1].isdigit():
+			return await BASE.discord.send_message(message.channel, ":warning: If you want to get a specific quote use a number")
 
-		elif m[1].startswith("map"):
-			if len(m) == 2:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Missing Map Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+		index = int(m[1])
 
-			#find mode and id
-			try:
-				if "osu.ppy.sh/s/" in m[2]:
-					search_id = m[2].split("/s/")[1]
-					mode = "s"
+		for quote in server_quotes:
+			if quote.get('id', None) == index:
+				en = discord.Embed(description=quote.get('content', '[ERROR GETTING QUOTE INFO]'))
+				en.set_footer(text="ID: "+str(quote.get('id', '[N/A]')))
+				return await BASE.discord.send_message(message.channel, embed=en)
 
-				elif "osu.ppy.sh/b/" in m[2]:
-					search_id = m[2].split("/b/")[1]
-					mode = "b"
+		return await BASE.discord.send_message(message.channel, f":warning: No quote found with id {index}")
 
-				elif "osu.ppy.sh/u/" in m[2]:
-					search_id = m[2].split("/u/")[1]
-					mode = "u"
+class Wiki(object):
 
-				else: 0/0
-			except:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+	SEARCH = "https://{}.wikipedia.org/w/api.php?action=opensearch&limit=7&search="
+	SUMMARY = "https://{}.wikipedia.org/api/rest_v1/page/summary/"
 
-			#get set/map/creator
-			stuff = await BASE.moduls.osu.get_all_maps(BASE, ID=search_id, mode=mode)
-			if stuff == None and mode == "u": return await BASE.phaaze.send_message(message.channel, ":warning: The user does not exist or dosn't created any beatmaps".format(BASE.vars.PT))
-			if stuff == None: return await BASE.phaaze.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+	async def Base(BASE, message, kwargs):
+		if message.author.id not in BASE.cooldown.Owner_CD:
+			asyncio.ensure_future(BASE.cooldown.CD_Wikipedia(message))
+		else: return
 
-			#one
-			if mode == "b" or mode == "s" and len(stuff.all_maps) == 1: #one map
-				beatmap = stuff.all_maps[0]
-				meep = 	"mapped by {creator}\n\n"\
-						"{symbol} **{approved_name}** | :green_heart: Favourite: **{favo}** {source}\n"\
-						":star:: **{diff}** | :notes: BPM: **{bpm}** | :stopwatch: Lenght: **{full}** *(Drain: {drain})*\n"\
-						":small_red_triangle:CS: {cs} | :small_red_triangle:AR: {ar} | :small_red_triangle:OD: {od} | :small_red_triangle:HP: {hp}\n"\
-						"*MapID: {mID} | SetID: {sID}*".format	(
-									symbol = await BASE.moduls.Utils.get_osu_status_symbol(beatmap.approved),
-									approved_name = beatmap.approved_name,
-									creator = beatmap.creator,
-									diff = str(round(beatmap.diff, 2)),
-									bpm = str(round(beatmap.bpm)),
-									cs = str(beatmap.cs),
-									ar = str(beatmap.ar),
-									od = str(beatmap.od),
-									hp = str(beatmap.hp),
-									full = str(beatmap.lenght),
-									drain = str(beatmap.drain),
-									source = "| :triangular_flag_on_post: Source: **" + beatmap.source + "**" if beatmap.source != "" else "",
-									favo = beatmap.favos,
-									mID = beatmap.Map_ID,
-									sID = beatmap.Set_ID
-										)
+		m = message.content.split()
 
-				osu_aw = discord.Embed	(
-								color=int(0xFF69B4),
-								title=beatmap.version,
-								url="https://osu.ppy.sh/b/{0}".format(beatmap.Map_ID),
-								description=meep
-										)
+		if len(m) == 1:
+			return await BASE.discord.send_message(message.channel, f":warning: You need to define something you wanna search for. `{BASE.vars.PT}wiki(/Language) [thing]"\
+			f"`\n\n`(/Language)` - (Optional) change the return language e.g. `{BASE.vars.PT}wiki/de YouTube` return German results | Default: en\n`[thing]` - whatever you wanna look up.")
 
-				osu_aw.set_author(url="https://osu.ppy.sh/b/{0}".format(beatmap.Map_ID) ,name="{0} - {1}".format(beatmap.artist, beatmap.title))
-				osu_aw.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
-				osu_aw.set_thumbnail(url="https://b.ppy.sh/thumb/{0}l.jpg".format(beatmap.Set_ID))
+		language = Wiki.get_language(m[0])
+		thing = " ".join(w for w in m[1:])
 
-				pp_100 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=100.0)
-				pp_99 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=99.0)
-				pp_98 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=98.0)
+		try:
+			r = requests.get( Wiki.SEARCH.format(language)+thing ).json()
+		except:
+			return await BASE.discord.send_message(message.channel, f":warning: Could not connect to Wikipedia, maybe the language you (`{language}`) entered is not avaliable?.")
 
-				osu_aw.add_field(name="PPcalc:",value="{pp_100}pp for 100% | {pp_99}pp for 99% | {pp_98}pp for 98%...\n`{PT}osu calc [maplink] (options)`".format	(
-																																									PT = BASE.vars.PT,
-																																									pp_100 = str(round(float(pp_100.pp), 2)),
-																																									pp_99 = str(round(float(pp_99.pp), 2)),
-																																									pp_98 = str(round(float(pp_98.pp), 2))
+		r = Wiki.remove_refereTo(r)
 
-																																										), inline=True)
+		if not r[1]:
+			return await BASE.discord.send_message(
+				message.channel, f":x: Wikipedia could not found anything for `{thing}` , try again in a moment.")
 
-				if not beatmap.tags == []:
-					osu_aw.add_field(name="Tags:",value=", ".join(tag for tag in beatmap.tags), inline=True)
+		if len(r[1]) == 1:
+			return await Wiki.get_summary(BASE, message, kwargs, language, r[1][0])
 
-				return await BASE.phaaze.send_message(message.channel, embed=osu_aw)
+		if r[0].lower() in [t.lower() for t in r[1]]:
+			return await Wiki.get_summary(BASE, message, kwargs, language, r[0])
+
+		else:
+			return await Wiki.get_autocomplete(BASE, message, kwargs, language, r)
+
+	async def get_autocomplete(BASE, message, kwargs, language, r):
+		rText = ""
+		n = 1
+		for element in r[1]:
+			rText += f"{Wiki.get_number(n)} {element}\n"
+			n += 1
+		emb = discord.Embed(title=":grey_exclamation: There are multiple results. Please choose", description=rText)
+		emb.set_footer(text="Please type only the number you wanna search.")
+		emb.set_footer(text="Provided by Wikipedia", icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/2000px-Wikipedia-logo-v2.svg.png")
+
+		x = await BASE.discord.send_message(message.channel, embed=emb)
+		a = await BASE.discord.wait_for_message(timeout=15, author=message.author, channel=message.channel)
+		if not a.content.lower().isdigit():
+			await BASE.discord.delete_message(x)
+			return await BASE.discord.send_message(message.channel, ":warning: Please only enter a number... Try later again")
+
+		elif not (0 < int(a.content) <= len(r[1])):
+			await BASE.discord.delete_message(x)
+			return await BASE.discord.send_message(message.channel, f":warning: Please only enter a number between 1 - {str(len(r[1]))}... Try later again")
+
+		else:
+			return await Wiki.get_summary(BASE, message, kwargs, language, r[1][(int(a.content)-1)])
+
+	async def get_summary(BASE, message, kwargs, language, therm):
+		FAIL = '[ERROR REQUEST]'
+		r = requests.get( Wiki.SUMMARY.format(language)+therm ).json()
+
+		emb = discord.Embed(title=r.get('description', None) ,description=r.get('extract', FAIL), url=r.get('content_urls', {}).get('desktop', {}).get('page', ""))
+		emb.set_author(name=r.get('title', FAIL), url=r.get('content_urls', {}).get('desktop', {}).get('page', ""))
+		emb.set_thumbnail(url=r.get('thumbnail', {}).get('source', ''))
+		emb.set_footer(text="Provided by Wikipedia", icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/2000px-Wikipedia-logo-v2.svg.png")
+		return await BASE.discord.send_message(message.channel, embed=emb)
+
+	def get_language(str_):
+		spl = str_.split('/')
+		if len(spl) >= 2:
+			return spl[1]
+		else:
+			return "en"
+
+	def get_number(number):
+		if number == 1:
+			return ":one: "
+
+		if number == 2:
+			return ":two: "
+
+		if number == 3:
+			return ":three: "
+
+		if number == 4:
+			return ":four: "
+
+		if number == 5:
+			return ":five: "
+
+		if number == 6:
+			return ":six: "
+
+		if number == 7:
+			return ":seven: "
+
+	def remove_refereTo(r):
+		try:
+			if r[2][0].lower().endswith(":") or r[2][0].lower() == "":
+				r[1].pop(0)
+				r[2].pop(0)
+		except: pass
+
+		return r
+
+class Osu(object):
+	async def Base(BASE, message, kwargs):
+
+		m = message.content.lower().split(" ")
+
+		if len(m) == 1:
+			return await BASE.discord.send_message(
+				message.channel,
+				f":warning: Missing a option!  Usage: `{BASE.vars.PT}osu [Option]`\n\n"\
+				f"Available options: `stats`, `map`, `calc`")
+
+		elif len(m) >= 2:
+
+			if m[1].startswith("stats"):
+				return await Osu.stats(BASE, message, kwargs)
+
+			elif m[1].startswith("map"):
+				if len(m) == 2:
+					return await BASE.discord.send_message(message.channel, ":warning: Missing Map Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+
+				#find mode and id
+				try:
+					if "osu.ppy.sh/s/" in m[2]:
+						search_id = m[2].split("/s/")[1]
+						mode = "s"
+
+					elif "osu.ppy.sh/b/" in m[2]:
+						search_id = m[2].split("/b/")[1]
+						mode = "b"
+
+					elif "osu.ppy.sh/u/" in m[2]:
+						search_id = m[2].split("/u/")[1]
+						mode = "u"
+
+					else: 0/0
+				except:
+					return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+
+				#get set/map/creator
+				stuff = await BASE.modules.osu.get_all_maps(BASE, ID=search_id, mode=mode)
+				if stuff == None and mode == "u": return await BASE.discord.send_message(message.channel, ":warning: The user does not exist or dosn't created any beatmaps".format(BASE.vars.PT))
+				if stuff == None: return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+
+				#one
+				if mode == "b" or mode == "s" and len(stuff.all_maps) == 1: #one map
+					beatmap = stuff.all_maps[0]
+					meep = 	"mapped by {creator}\n\n"\
+							"{symbol} **{approved_name}** | :green_heart: Favourite: **{favo}** {source}\n"\
+							":star:: **{diff}** | :notes: BPM: **{bpm}** | :stopwatch: Lenght: **{full}** *(Drain: {drain})*\n"\
+							":small_red_triangle:CS: {cs} | :small_red_triangle:AR: {ar} | :small_red_triangle:OD: {od} | :small_red_triangle:HP: {hp}\n"\
+							"*MapID: {mID} | SetID: {sID}*".format	(
+										symbol = await BASE.modules.Utils.get_osu_status_symbol(beatmap.approved),
+										approved_name = beatmap.approved_name,
+										creator = beatmap.creator,
+										diff = str(round(beatmap.diff, 2)),
+										bpm = str(round(beatmap.bpm)),
+										cs = str(beatmap.cs),
+										ar = str(beatmap.ar),
+										od = str(beatmap.od),
+										hp = str(beatmap.hp),
+										full = str(beatmap.lenght),
+										drain = str(beatmap.drain),
+										source = "| :triangular_flag_on_post: Source: **" + beatmap.source + "**" if beatmap.source != "" else "",
+										favo = beatmap.favos,
+										mID = beatmap.Map_ID,
+										sID = beatmap.Set_ID
+											)
+
+					osu_aw = discord.Embed	(
+									color=int(0xFF69B4),
+									title=beatmap.version,
+									url="https://osu.ppy.sh/b/{0}".format(beatmap.Map_ID),
+									description=meep
+											)
+
+					osu_aw.set_author(url="https://osu.ppy.sh/b/{0}".format(beatmap.Map_ID) ,name="{0} - {1}".format(beatmap.artist, beatmap.title))
+					osu_aw.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
+					osu_aw.set_thumbnail(url="https://b.ppy.sh/thumb/{0}l.jpg".format(beatmap.Set_ID))
+
+					pp_100 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=100.0)
+					pp_99 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=99.0)
+					pp_98 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=98.0)
+
+					osu_aw.add_field(name="PPcalc:",value="{pp_100}pp for 100% | {pp_99}pp for 99% | {pp_98}pp for 98%...\n`{PT}osu calc [maplink] (options)`".format	(
+																																										PT = BASE.vars.PT,
+																																										pp_100 = str(round(float(pp_100.pp), 2)),
+																																										pp_99 = str(round(float(pp_99.pp), 2)),
+																																										pp_98 = str(round(float(pp_98.pp), 2))
+
+																																											), inline=True)
+
+					if not beatmap.tags == []:
+						osu_aw.add_field(name="Tags:",value=", ".join(tag for tag in beatmap.tags), inline=True)
+
+					return await BASE.discord.send_message(message.channel, embed=osu_aw)
 
 
-			#set
-			elif mode == "s":
-				base_infos = stuff.map_sets[0][0]
-
-				listi = []
-				for map_ in sorted(stuff.map_sets[0], key=lambda map__: map__.diff):
-					diff = "★ " + str(round(map_.diff, 2))
-					cs = "CS: " + str(round(map_.cs, 2))
-					ar = "AR: " + str(round(map_.ar, 2))
-					hp = "HP: " + str(round(map_.hp, 2))
-					od = "OD: " + str(round(map_.od, 2))
-					_id = "ID: " + str(map_.Map_ID)
-					listi.append([map_.version, "|", cs, "|", ar, "|", hp, "|", od, "|", diff, "|", _id])
-
-				fff = 	"**{artist} - {title}**\n"\
-						"Mapset by: **{creator}** | {symbol} **{approved_name}** - BPM: **{bpm}**\n"\
-						"```{diff_list}```".format	(
-											creator = base_infos.creator,
-											symbol = await BASE.moduls.Utils.get_osu_status_symbol(base_infos.approved),
-											approved_name = base_infos.approved_name,
-											artist = base_infos.artist,
-											title = base_infos.title,
-											diff_list = tabulate(listi, tablefmt="plain"),
-											bpm = str(round(base_infos.bpm)))
-
-				ggt = discord.Embed(title="Check it out", url="https://osu.ppy.sh/s/{0}".format(base_infos.Set_ID), color=int(0xFF69B4))
-
-				if len(fff) > 1997: fff = ":no_entry_sign: Seems like this Mapset has to many diffs, its to much for the Discord message limit, sorry."
-
-				return await BASE.phaaze.send_message(message.channel, content=fff, embed=ggt)
-
-
-			#creator
-			elif mode == "u":
-				base_infos = stuff.map_sets[0][0]
-				base_res = "All Maps by **{0}**\n\n".format(base_infos.creator)
-
-				for _set in stuff.map_sets:
+				#set
+				elif mode == "s":
+					base_infos = stuff.map_sets[0][0]
 
 					listi = []
-
-					for map_ in sorted(_set, key=lambda map__: map__.diff):
+					for map_ in sorted(stuff.map_sets[0], key=lambda map__: map__.diff):
 						diff = "★ " + str(round(map_.diff, 2))
 						cs = "CS: " + str(round(map_.cs, 2))
 						ar = "AR: " + str(round(map_.ar, 2))
 						hp = "HP: " + str(round(map_.hp, 2))
 						od = "OD: " + str(round(map_.od, 2))
 						_id = "ID: " + str(map_.Map_ID)
-						listi.append([map_.version, "|", diff])
+						listi.append([map_.version, "|", cs, "|", ar, "|", hp, "|", od, "|", diff, "|", _id])
 
-					base_res  = base_res + "**{artist} - {title}** | https://osu.ppy.sh/s/{IDD}\n{symbol} **{approved_name}** - BPM: **{bpm}**\n```{diff_list}```\n".format	(
-																													artist = _set[0].artist,
-																													title = _set[0].title,
-																													symbol = await BASE.moduls.Utils.get_osu_status_symbol(_set[0].approved),
-																													approved_name = _set[0].approved_name,
-																													bpm = str(round(_set[0].bpm)),
-																													diff_list = tabulate(listi, tablefmt="plain"),
-																													IDD = _set[0].Set_ID
-																															)
-				ebb = discord.Embed(
-						color=int(0xFF69B4),
-						title="See them all",
-						url="https://osu.ppy.sh/u/{0}".format(base_infos.creator))
+					fff = 	"**{artist} - {title}**\n"\
+							"Mapset by: **{creator}** | {symbol} **{approved_name}** - BPM: **{bpm}**\n"\
+							"```{diff_list}```".format	(
+												creator = base_infos.creator,
+												symbol = await BASE.modules.Utils.get_osu_status_symbol(base_infos.approved),
+												approved_name = base_infos.approved_name,
+												artist = base_infos.artist,
+												title = base_infos.title,
+												diff_list = tabulate(listi, tablefmt="plain"),
+												bpm = str(round(base_infos.bpm)))
 
-				if len(base_res) > 1997: base_res = ":no_entry_sign: Seems like **{0}** made to many Maps, its to much for the Discord message limit, sorry.".format(base_infos.creator)
+					ggt = discord.Embed(title="Check it out", url="https://osu.ppy.sh/s/{0}".format(base_infos.Set_ID), color=int(0xFF69B4))
 
-				await BASE.phaaze.send_message(message.channel, content=base_res, embed=ebb)
-				try: await BASE.phaaze.delete_message(message)
-				except: pass
-				return
+					if len(fff) > 1997: fff = ":no_entry_sign: Seems like this Mapset has to many diffs, its to much for the Discord message limit, sorry."
 
-		elif m[1].startswith("track"):
-			return await BASE.phaaze.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
+					return await BASE.discord.send_message(message.channel, content=fff, embed=ggt)
 
-		elif m[1].startswith("calc"):
-			await BASE.moduls.osu.pp_calc_for_maps(BASE, message)
 
-		else:
-			return await BASE.phaaze.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
+				#creator
+				elif mode == "u":
+					base_infos = stuff.map_sets[0][0]
+					base_res = "All Maps by **{0}**\n\n".format(base_infos.creator)
 
-async def define(BASE, message):
-	LINK = "https://mashape-community-urban-dictionary.p.mashape.com/define"
-	TERM = "?term="
-	Header = {'X-Mashape-Key': BASE.access.Mashape}
+					for _set in stuff.map_sets:
 
-	m = message.content.split(" ")
-	mm = message.content.lower().split(" ")
+						listi = []
 
-	if len(m) == 1:
-		return await BASE.phaaze.send_message(message.channel, ':warning: You need to define a word. `{0}define [thing]`'.format(BASE.vars.PT))
+						for map_ in sorted(_set, key=lambda map__: map__.diff):
+							diff = "★ " + str(round(map_.diff, 2))
+							cs = "CS: " + str(round(map_.cs, 2))
+							ar = "AR: " + str(round(map_.ar, 2))
+							hp = "HP: " + str(round(map_.hp, 2))
+							od = "OD: " + str(round(map_.od, 2))
+							_id = "ID: " + str(map_.Map_ID)
+							listi.append([map_.version, "|", diff])
 
-	else:
-		thing = " ".join(g for g in m[1:])
+						base_res  = base_res + "**{artist} - {title}** | https://osu.ppy.sh/s/{IDD}\n{symbol} **{approved_name}** - BPM: **{bpm}**\n```{diff_list}```\n".format	(
+																														artist = _set[0].artist,
+																														title = _set[0].title,
+																														symbol = await BASE.modules.Utils.get_osu_status_symbol(_set[0].approved),
+																														approved_name = _set[0].approved_name,
+																														bpm = str(round(_set[0].bpm)),
+																														diff_list = tabulate(listi, tablefmt="plain"),
+																														IDD = _set[0].Set_ID
+																																)
+					ebb = discord.Embed(
+							color=int(0xFF69B4),
+							title="See them all",
+							url="https://osu.ppy.sh/u/{0}".format(base_infos.creator))
 
-		if "phaaze" in mm or "phaazebot" in mm:
-			return await BASE.phaaze.send_message(message.channel, "Thats me :D")
+					if len(base_res) > 1997: base_res = ":no_entry_sign: Seems like **{0}** made to many Maps, its to much for the Discord message limit, sorry.".format(base_infos.creator)
 
-		#request or end
-		try:
-			res = requests.get(LINK+TERM+thing, headers= Header).json()
-		except:
-			return await BASE.phaaze.send_message(message.channel, ":warning: A Error occurred during your requestyour request, try agoin later")
+					await BASE.discord.send_message(message.channel, content=base_res, embed=ebb)
+					try: await BASE.discord.delete_message(message)
+					except: pass
+					return
 
-	#0 result
-		if len(res["list"]) == 0:
-			return await BASE.phaaze.send_message(message.channel, ":x: Sorry, but Urban dictionary don't know what: `{0}` is".format(thing))
+			elif m[1].startswith("track"):
+				return await BASE.discord.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
 
-		else:
-			Result = ":notebook_with_decorative_cover:   **{0}**:\n\n"
+			elif m[1].startswith("calc"):
+				await BASE.modules.osu.pp_calc_for_maps(BASE, message)
 
-			top = res["list"][0]["definition"]
-			example = res["list"][0]["example"]
-
-			rest_list = res["list"][1:]
-
-			if len(rest_list) == 0:
-				return await BASE.phaaze.send_message(message.channel, Result.format(thing) + ":book:: {0}\n\ne.g.: *{1}*".format(top, example))
 			else:
-				if len(res["list"]) > 1: More = discord.Embed(title="and {0} other definitions".format(str(len(rest_list))), url="http://www.urbandictionary.com/define.php?term="+thing.replace(" ", "+"))
-				else: More = None
+				return await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
 
-				return await BASE.phaaze.send_message(message.channel, embed=More, content=Result.format(thing) + ":book:: {0}\n\ne.g.: *{1}*".format(top, example))
+	async def stats(BASE, message, kwargs):
+		m = message.content.split(" ")
 
-async def commands_base(BASE, message):
-	if message.author.id in Anti_PM_Spam_Commands:
-		return
+		if len(m) == 2:
+			return await BASE.discord.send_message(
+				message.channel,
+				f":warning: Missing User!\nUsage: `{BASE.vars.PT}osu stats(mode) [User]`\n"\
+				f'`(mode)` - Optional: Can be empty, `/osu`, `/ctb`, `/mania` or `/taiko`\n'\
+				f'`[User]` - osu link, name or id')
 
-	Anti_PM_Spam_Commands.append(message.author.id)
+		c = m[1].split("/")
+		try: mode = c[1]
+		except: mode = "osu"
 
-	try: await BASE.phaaze.send_message(message.channel, ":incoming_envelope: --> PM")
-	except: pass
-
-	level = 1
-	if await BASE.moduls.Utils.is_Mod(BASE, message):level = 2
-	if await BASE.moduls.Utils.is_Owner(BASE, message): level = 3
-
-	if level == 1:
-		norm = await BASE.moduls.Utils.get_Normal_Commands(BASE, message)
-		head = "Accessible Commands for you on: `{0}`".format(message.server.name)
-
-		norm.set_author(name="Commands", icon_url=BASE.vars.app.icon_url)
-		norm.set_footer(text="▶ Only returned Normal commands, you don't have access to high commands".format(BASE.vars.PT))
-		#
-		try: await BASE.phaaze.send_message(message.author, content=head, embed=norm)
-		except: pass
-		##
-		await asyncio.sleep(10)
-		Anti_PM_Spam_Commands.remove(message.author.id)
-
-	if level == 2:
-		norm = await BASE.moduls.Utils.get_Normal_Commands(BASE, message)
-		mod = await BASE.moduls.Utils.get_Mods_Commands(BASE, message)
-		head = "Accessible Commands for you on: `{0}`".format(message.server.name)
-
-		norm.set_author(name="Commands", icon_url=BASE.vars.app.icon_url)
-		mod.set_footer(text="▶ Returned Normal and Mod commands, because you don't have access to owner commands".format(BASE.vars.PT))
-		#
-		try: await BASE.phaaze.send_message(message.author, content=head, embed=norm)
-		except: pass
-		##
-		await asyncio.sleep(2)
-		#
-		try: await BASE.phaaze.send_message(message.author, embed=mod)
-		except: pass
-		##
-		await asyncio.sleep(20)
-		Anti_PM_Spam_Commands.remove(message.author.id)
-
-	if level == 3:
-		norm = await BASE.moduls.Utils.get_Normal_Commands(BASE, message)
-		mod = await BASE.moduls.Utils.get_Mods_Commands(BASE, message)
-		owner = await BASE.moduls.Utils.get_Owner_Commands(BASE, message)
-		head = "Accessible Commands for you on: `{0}`".format(message.server.name)
-
-		norm.set_author(name="Commands", icon_url=BASE.vars.app.icon_url)
-		owner.set_footer(text="▶ Returned all available commands".format(BASE.vars.PT))
-		#
-		try: await BASE.phaaze.send_message(message.author, content=head, embed=norm)
-		except: pass
-		##
-		await asyncio.sleep(2)
-		#
-		try: await BASE.phaaze.send_message(message.author, embed=mod)
-		except: pass
-		##
-		await asyncio.sleep(2)
-		#
-		try: await BASE.phaaze.send_message(message.author, embed=owner)
-		except: pass
-		##
-		await asyncio.sleep(30)
-		Anti_PM_Spam_Commands.remove(message.author.id)
-
-async def quotes(BASE, message):
-	m = message.content.split(" ")
-
-	file = await BASE.moduls.Utils.get_server_file(BASE, message.server.id)
-
-	try:
-		file["quotes"] = file["quotes"]
-	except:
-		file["quotes"] = []
-
-	if len(file["quotes"]) == 0:
-		i = await BASE.phaaze.send_message(message.channel, ":grey_exclamation: This server don't have any quotes.")
-		await asyncio.sleep(5)
-		return await BASE.phaaze.delete_message(i)
-
-	if len(m) == 1:
-		qoute = random.choice( file["quotes"] )
-		o = [i for i,x in enumerate(file["quotes"]) if x == qoute]
-		emb = discord.Embed(description=qoute["content"], colour = int(0xCECEF6))
-		emb.set_footer(text="Quote #" + "".join(str(i+1) for i in o))
-		return await BASE.phaaze.send_message(message.channel, embed=emb)
-
-	if len(m) >= 2:
-		ll = len(file["quotes"])
-
-		if m[1].isdigit():
-			nr = int(m[1])
-			if nr > ll:
-				nr = random.choice(range(1, ll))
+		#set mode
+		if mode == "osu": MODE = "0"
+		elif mode == "taiko": MODE = "1"
+		elif mode == "ctb": MODE = "2"
+		elif mode == "mania": MODE = "3"
+		elif mode == "":
+			return await BASE.discord.send_message(message.channel, ":warning: Option after `stats/` is missing. Available Options are: `osu, ctb ,mania ,taiko`  Or leave it free and remove the `/`.")
 		else:
-			nr = random.choice(range(1, ll))
+			return await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a gamemode, Available are: `osu`,`ctb`,`mania`,`taiko`".format(c[1]))
 
-		qoute = file["quotes"][nr-1]
-		o = [i for i,x in enumerate(file["quotes"]) if x == qoute]
-		emb = discord.Embed(description=qoute["content"], colour = int(0xCECEF6))
-		emb.set_footer(text="Quote #" + "".join(str(i+1) for i in o))
-		return await BASE.phaaze.send_message(message.channel, embed=emb)
+		user_info, type_ = Osu.extract_user(" ".join(c for c in m[2:]))
 
-async def emotes(BASE, message):
-	server_emotes = [e for e in message.server.emojis if not e.managed]
-	server_emotes_L = len(server_emotes)
-	by_twitch = [e for e in message.server.emojis if e.managed]
-	by_twitch_L = len(by_twitch)
+		User = await BASE.modules._Osu_.Utils.get_user(BASE, u=user_info, m=MODE, t=type_)
+		if User == None:
+			return await BASE.discord.send_message(message.channel, ":warning: The given User could not found!")
 
-	if by_twitch_L == 0 == server_emotes_L:
-		return await BASE.phaaze.send_message(message.channel, ":x: This Server has no Custom Emotes")
+		# Format the shit out of it :D
 
-	if server_emotes_L > 0:
-		server_e = "Server Custom Emotes: **{0}**\n\n{1}".format(
-									str(server_emotes_L),
-									"  |  ".join(str(e) + " - `" + e.name + "`" for e in sorted(server_emotes, key=lambda e: e.name)))
-	else: server_e = ""
+		pp = "{:,}".format(round(float(User.get('pp_raw', "0")), 2)) if User.get('pp_raw', None) != None else "-∞"
+		acc = str(round(float(User.get('accuracy', None)), 2)) if User.get('accuracy', None) != None else "-∞"
+		level = str(round(float(User.get('level', None)), 1)) if User.get('level', None) != None else "N/A"
+		playcount = "{:,}".format(int(User.get('playcount', None))) if User.get('playcount', None) != None else "N/A"
+		ranked_score = "{:,}".format(int(User.get('ranked_score', None))) if User.get('ranked_score', None) != None else "-∞"
+		total_score = "{:,}".format(int(User.get('total_score',None))) if User.get('total_score', None) != None else "-∞"
+		rank = "{:,}".format(int(User.get('pp_rank', None))) if User.get('pp_rank', None) != None else "-∞"
+		country_rank = "{:,}".format(int(User.get('pp_country_rank', None))) if User.get('pp_country_rank', None) != None else "-∞"
 
-	if by_twitch_L > 0:
-		twitch_e = "\nTwitch Integration Emotes: **{0}**\n\n{1}".format(
-									str(by_twitch_L),
-									"  |  ".join(str(e) + " - `" + e.name + "`" for e in sorted(by_twitch, key=lambda e: e.name)))
-	else: twitch_e = ""
+		rtext = f":globe_with_meridians: #{rank}  |  :flag_{User.get('country','EU').lower()}: #{country_rank}\n"\
+				f":part_alternation_mark: {pp} pp\n"\
+				f":dart: {acc}% Accuracy\n"\
+				f":military_medal: Level: {level}\n"\
+				f":timer: Playcount: {playcount}\n"\
+				f":chart_with_upwards_trend: Ranked Score: {ranked_score}\n"\
+				f":card_box: Total Score: {total_score}\n"\
+				f":id: {User.get('user_id', 'N/A')}"
 
-	w = server_e + twitch_e
+		EMB = discord.Embed(
+			title=User.get('username','[N/A]'),
+			url="https://osu.ppy.sh/users/"+User.get('user_id', "3"),
+			color=int(0xFF69B4),
+			description=rtext
+			)
 
-	return await BASE.phaaze.send_message(message.channel, w[:1999])
+		def none_is_zero(s):
+			if s == None: return "0"
+			return s
 
-async def choice(BASE, message):
-	m = message.content.split(" ")
-	if len(m) == 1:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
+		table_R = 	[
+						["A:", "{:,}".format(int(none_is_zero(User.get('count_rank_a', 0))))],
+						["S:", "{:,}".format(int(none_is_zero(User.get('count_rank_s', 0))))],
+						["SS:", "{:,}".format(int(none_is_zero(User.get('count_rank_ss', 0))))],
+						["SX:", "{:,}".format(int(none_is_zero(User.get('count_rank_sh', 0))))],
+						["SSX:", "{:,}".format(int(none_is_zero(User.get('count_rank_ssh', 0))))],
+					]
 
-	M = message.content.split(" ", 1)[1].split(";")
+		EMB.add_field(name="Ranks:",value="```{}```".format(tabulate(table_R, tablefmt="plain")), inline=True)
 
-	for item in M:
-		item.replace(" ","")
-		item.replace("	","")
+		EMB.set_thumbnail(url="https://a.ppy.sh/{0}".format(User.get('user_id', '3')))
+		EMB.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
+		EMB.set_author(name="Stats for: {0}".format(mode.lower().capitalize()))
 
-	try:
-		M.remove("")
-	except:
-		pass
+		return await BASE.discord.send_message(message.channel, embed=EMB)
 
-	if len(M) == 1:
-		return await BASE.phaaze.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
+	def extract_user(str_):
+		#link
+		u = re.match(r'https://osu\.ppy\.sh/(users|u)/(.+)', str_)
+		t = "string"
+		if u != None:
+			u = u.group(2)
+			if u.isdigit():
+				t = "id"
 
-	winner = random.choice(M)
-	winner = winner.replace("`", "")
-	winner = winner.replace("@everyone", "")
-	winner = winner.replace("**", "")
+			return u , t
 
-	resp = "And the winner is...\n\n:game_die:- **{}** -:8ball:".format(winner)
+		if str_.isdigit():
+			t = "id"
 
-	return await BASE.phaaze.send_message(message.channel, resp)
+		return str_, t
 
-class doujin(object):
+#Currently unusable D:
+class Doujin(object):
 
-	def __init__(self, BASE, message):
+	def __init__(self, BASE, message, kwargs):
 		self.BASE = BASE
 		self.message = message
+		self.kwargs = kwargs
 
 		self.parameter = {}
 		pass
 
 	async def api_error_message(self):
-		I = await self.BASE.phaaze.send_message(
+		I = await self.BASE.discord.send_message(
 			self.message.channel,
 			content=None,
 			embed=discord.Embed(
@@ -466,9 +632,9 @@ class doujin(object):
 				description="'>doujin' and all subcommands won't work for now.\nTry later again..."
 			))
 		await asyncio.sleep(15)
-		await self.BASE.phaaze.delete_message(I)
+		await self.BASE.discord.delete_message(I)
 
-	async def request(self):
+	async def Base(self):
 		M = self.message.content.replace("\n", " ")
 		m = M.lower()
 
@@ -717,12 +883,12 @@ class doujin(object):
 		emb.set_image(url=Book["Meta"]["Thumb"])
 		emb.set_footer(text="Provided by Tsumino", icon_url="http://www.tsumino.com/content/res/logo.png")
 
-		return await self.BASE.phaaze.send_message(self.message.channel, embed=emb)
+		return await self.BASE.discord.send_message(self.message.channel, embed=emb)
 
 	class errors:
 		async def no_options(self):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -733,13 +899,13 @@ class doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def missing_value(self, short_, long_):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -750,13 +916,13 @@ class doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def too_high(self, short_, long_):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -767,13 +933,13 @@ class doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def too_many_inputs(self, short_, long_):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -784,13 +950,13 @@ class doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def wrong_type(self, short_, long_, type_):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -801,13 +967,13 @@ class doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_, type_))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def non_found(self, short_, long_, values):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -818,13 +984,13 @@ class doujin(object):
 							"`{2}` yield no ressults\n".format(short_, long_, values))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def unknown(self, value):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				I = await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -835,13 +1001,13 @@ class doujin(object):
 							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, value))
 					)
 				await asyncio.sleep(15)
-				await self.BASE.phaaze.delete_message(I)
+				await self.BASE.discord.delete_message(I)
 			except:
 				pass
 
 		async def noting_found(self):
 			try:
-				I = await self.BASE.phaaze.send_message(
+				await self.BASE.discord.send_message(
 					self.message.channel,
 					content=None,
 					embed=discord.Embed(
@@ -855,269 +1021,10 @@ class doujin(object):
 
 	async def _help(self):
 		try:
-			await self.BASE.phaaze.send_message(self.message.channel, ":incoming_envelope: --> PM")
+			await self.BASE.discord.send_message(self.message.channel, ":incoming_envelope: --> PM")
 		except:
 			pass
 		try:
-			return await self.BASE.phaaze.send_message(self.message.author, "http://phaaze.wikia.com/wiki/Discord-Commands-Normal-doujin\n" + self.BASE.vars.doujin_help)
+			return await self.BASE.discord.send_message(self.message.author, "http://phaaze.wikia.com/wiki/Discord-Commands-Normal-doujin\n" + self.BASE.vars.doujin_help)
 		except:
 			pass
-
-class wiki(object):
-	async def wiki(BASE, message):
-		wikipedia = BASE.moduls.wikipedia
-
-		m = message.content.split(" ")
-
-		#no term
-		if len(m) == 1:
-			return await BASE.phaaze.send_message(message.channel, ':warning: You need to define a thing you wanna ask. `{0}wikipedia[lang] [thing]`\n`[lang]` - Can be empty or used with a "/" to change the return language e.g.: `{0}wikipedia/de Apfelbaum`, Default is "en"\n`[thing]` - Whatever you wanna search'.format(BASE.vars.PT))
-
-		#set things
-		thing = " ".join(g for g in m[1:])
-		lang = m[0].split("/")
-
-		#change lang?
-		if len(lang) > 1:
-			wikipedia.set_lang(lang[1])
-			LINK = 'https://' + lang[1].lower() + '.wikipedia.org/wiki/'
-		else:
-			wikipedia.set_lang("en")
-			LINK = 'https://en.wikipedia.org/wiki/'
-
-		#exactly
-		try:
-			page = wikipedia.page(thing,auto_suggest=False)
-
-			#short it
-			text = page.summary[:1900]
-			if len(page.summary) > 1900: text = text + ". . . . . :bookmark_tabs: And more."
-
-			#aaaand finished
-			send = ":books: **{0}**\n\n{1}".format(page.title,text)
-			return await BASE.phaaze.send_message(message.channel, send, embed=discord.Embed(title="Go to the full page.", url=LINK+page.title))
-
-		#recommendations
-		except:
-			#get hits and recommendations
-			list, or_that = wikipedia.search(thing, suggestion=True)
-
-			#0 liste, 0 vorschläge
-			if len(list) == 0 and or_that == None:
-				return await BASE.phaaze.send_message(message.channel, ":warning: Seems like Wikipedia don't know what: `{}`, is.".format(thing))
-
-			#0 hits, aber autokorrektur
-			elif len(list) == 0:
-				t =  await BASE.phaaze.send_message(message.channel, ":scroll: Do You mean: `{}`?\n\n:regional_indicator_y: / :regional_indicator_n:".format(or_that))
-				choose = await BASE.phaaze.wait_for_message(timeout=30, author=message.author, channel=message.channel)
-				if choose != None:
-					if choose.content.lower() == "y":
-						try:
-							page = wikipedia.page(or_that)
-						except:
-							return await BASE.phaaze.send_message(message.channel, ":warning: Sorry, but an unknown Error just broke the internet, try something else.")
-
-						#short it
-						text = page.summary[:1900]
-						if len(page.summary) > 1900: text = text + ". . . . . :bookmark_tabs: And more."
-
-						#aaaand finished
-						send = ":books: **{0}**\n\n{1}".format(page.title,text)
-						return await BASE.phaaze.edit_message(t, new_content=send, embed=None)
-
-			#found one. or two, or 3 or...
-			if len(list) > 0:
-				NR = 1
-				ressults = []
-				to_search = []
-
-				#make a happy little list
-				for sugg in list:
-					if sugg.lower() != thing.lower():
-						to_search.append(sugg)
-						ressults.append("{0} {1}".format(wiki.get_keycap(NR),sugg))
-						NR = NR + 1
-					else:
-						pass
-
-				#put stuff together
-
-				if or_that != None:
-					Maybe = "\n:zero: Or do you mean: `" + or_that + "`?"
-				else:
-					Maybe = ""
-				base = ":mag_right: What exactly are you looking for?\n\n{0}\n{1}".format("\n".join(f for f in ressults), Maybe)
-
-				#send question and get more stuff
-				msg = await BASE.phaaze.send_message(message.channel, base)
-
-				def sure(m):
-					try:
-						nr = int(m.content)
-						return 10 >= nr > -1
-
-					except:
-						return False
-
-				#choose a thing
-				choose = await BASE.phaaze.wait_for_message(timeout=30, author=message.author, channel=message.channel, check=sure)
-
-				#work on result
-				if not choose == None:
-					#change lang?
-					if len(lang) > 1:
-						wikipedia.set_lang(lang[1])
-					else:
-						wikipedia.set_lang("en")
-
-					#select and request page
-					file = int(choose.content) - 1
-
-					if file > len(list) - 1:
-						return
-
-					if file != -1:
-						try:
-							page = wikipedia.page(to_search[file])
-						except:
-							return await BASE.phaaze.send_message(message.channel, ":warning: Sorry, but an unknown Error just broke the internet, try something else")
-					else:
-						page = wikipedia.page(or_that)
-
-					#short it
-					text = page.summary[:1900]
-					if len(page.summary) > 1900: text = text + ". . . . . :bookmark_tabs: And more."
-
-					#aaaand finished
-					send = ":books: **{0}**\n\n{1}".format(page.title,text)
-					return await BASE.phaaze.edit_message(msg, new_content=send, embed=None)
-
-	def get_keycap(n):
-		if n == 0:
-			return ":zero:"
-		if n == 1:
-			return ":one:"
-		if n == 2:
-			return ":two:"
-		if n == 3:
-			return ":three:"
-		if n == 4:
-			return ":four:"
-		if n == 5:
-			return ":five:"
-		if n == 6:
-			return ":six:"
-		if n == 7:
-			return ":seven:"
-		if n == 8:
-			return ":eight:"
-		if n == 9:
-			return ":nine:"
-		if n == 10:
-			return ":keycap_ten:"
-		if n > 10:
-			return ":arrow_forward:"
-
-class whois(object):
-	temp = re.compile(r'.*#[0-9]{4}')
-
-	async def whois(BASE, message):
-		m = message.content.split(" ")
-
-		#by_myself
-		if len(m) == 1:
-			return await whois.finish(BASE, message, message.author)
-
-		#by_mention
-		if len(message.mentions) >= 1:
-			if len(message.mentions) > 1:
-				return await BASE.phaaze.send_message(message.channel, ":warning: You can not mention multiple members, only 1.")
-			if not message.mentions[0].id in m[1]:
-				return await BASE.phaaze.send_message(message.channel, ":warning: The Member mention must be on first place")
-
-			return await whois.finish(BASE, message, message.mentions[0])
-
-		#contains a role
-		if len(message.role_mentions) > 0:
-			return await BASE.phaaze.send_message(message.channel, ":warning: Whois dosn't support roles.")
-
-		#by_id
-		elif m[1].isdigit() and len(m) == 2:
-			b = await whois.get_by_id(BASE, message, m[1])
-			if b is None: return await BASE.phaaze.send_message(message.channel, ":warning: The ID search didn't find anything.")
-			return await whois.finish(BASE, message, b)
-
-		#by_name
-		else:
-			b = await whois.get_by_name(BASE, message, m[1:])
-			if b is None: return await BASE.phaaze.send_message(message.channel, ":warning: The Name search didn't find anything.")
-			return await whois.finish(BASE, message, b)
-
-	async def get_by_id(BASE, message, number):
-		user = discord.utils.get(message.server.members, id=number)
-		return user
-
-	async def get_by_name(BASE, message, name):
-		name = " ".join(d for d in name)
-		user = discord.utils.get(message.server.members, name=name)
-		return user
-
-	async def finish(BASE, message, user):
-		if user.nick is not None:
-			user.nick = "Nickname: " + user.nick
-		else: user.nick == None
-		if str(user.status) == "online": status = "Online"
-		elif str(user.status) == "offline": status = "Offline"
-		elif str(user.status) == "idle": status = "AFK"
-		elif str(user.status) == "dnd": status = "Do not disturb"
-		else: status = "Unknown"
-
-		role_list = []
-		for role in sorted(user.roles, key=lambda role: role.position, reverse=True):
-			if role.name != "@everyone":
-				role_list.append([role.position, role.name])
-
-		now = datetime.datetime.now()
-		cr = user.created_at
-		jo = user.joined_at
-		formated_created = "{t_} *[{delta} days ago]*".format(
-															t_ = cr.strftime("%d.%m.%y (%H:%M)"),
-															delta = (now - cr).days)
-
-		formated_joined = "{t_} *[{delta} days ago]*".format(
-															t_ = jo.strftime("%d.%m.%y (%H:%M)"),
-															delta = (now - jo).days)
-
-		main = 	"**ID**: {0}\n"\
-				"**Discriminator**: {1}\n"\
-				"**Acc. created at**: {2}\n"\
-				"**Joined at**: {3}".format(user.id,
-											user.discriminator,
-											formated_created,
-											formated_joined)
-
-		tem = discord.Embed (
-			title=user.nick,
-			color=user.colour.value,
-			description=main)
-
-		if user.bot: tem.add_field(name=":robot: Bot-account:",value="True",inline=True)
-
-		if not user.game == None:
-			if user.game.type == 1:
-				tem.add_field(name=":video_camera: Currently Streaming:",value=user.game.name,inline=True)
-			else:
-				tem.add_field(name=":game_die: Playing:",value=user.game.name,inline=True)
-		tem.add_field(name=":satellite: Status:",value=status,inline=True)
-
-		if len(role_list) >= 1:
-			tem.add_field(name=":notepad_spiral: Roles:",value="```" + tabulate(role_list, tablefmt="plain") + "```",inline=False)
-		else:
-			tem.add_field(name=":notepad_spiral: Roles:",value="None",inline=False)
-
-		tem.set_author(name="Name: {0}".format(user.name))
-
-		if user.avatar_url != "": tem.set_image(url=user.avatar_url)
-		else: tem.set_image(url=user.default_avatar_url)
-
-		return await BASE.phaaze.send_message(message.channel, content=message.author.mention, embed=tem)

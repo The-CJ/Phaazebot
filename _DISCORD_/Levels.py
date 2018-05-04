@@ -1,4 +1,4 @@
-#BASE.moduls._Discord_.Levels
+#BASE.modules._Discord_.Levels
 
 import asyncio, discord, tabulate
 
@@ -18,12 +18,12 @@ class Calc(object):
 class Utils(object):
 	async def get_user(BASE, level_file, server_id, member_id, prevent_new=False):
 		for user in level_file:
-			if user["member_id"] == member_id:
+			if user.get("member_id", None) == member_id:
 				return user
 
 		#user was not found --> make new
 		user = dict(
-				id = member_id,
+				member_id = member_id,
 				exp = 0,
 				medal = [],
 				edited = False
@@ -43,7 +43,7 @@ class Utils(object):
 
 			#on level up
 			if next_lvl_exp == user["exp"]:
-				try: return await BASE.phaaze.send_message(message.channel, message.author.mention + "  is now Level **{0}** :tada:".format(current_level+1))
+				try: return await BASE.discord.send_message(message.channel, message.author.mention + "  is now Level **{0}** :tada:".format(current_level+1))
 				except: pass
 
 async def Base(BASE, message, server_setting, server_levels):
@@ -78,8 +78,8 @@ async def Base(BASE, message, server_setting, server_levels):
 	await Utils.check_level(BASE, message, user)
 
 async def get(BASE, message, kwargs):
-	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message): return
-	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): return
+	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message): return
+	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.modules._Discord_.Utils.is_Mod(BASE, message): return
 
 	m = message.content.split(" ")
 
@@ -88,7 +88,7 @@ async def get(BASE, message, kwargs):
 			level = int(m[2])-1
 			if level != -1:
 				xp = await Calc.get_exp(level)
-				return await BASE.phaaze.send_message(message.channel, f"Level **{m[2]}** = **{str(xp)}+** EXP")
+				return await BASE.discord.send_message(message.channel, f"Level **{m[2]}** = **{str(xp)}+** EXP")
 
 	user = None
 
@@ -109,27 +109,38 @@ async def get(BASE, message, kwargs):
 			user = discord.utils.get(message.server.members, name="".join(s for s in m[1:]))
 
 	if user == None:
-		return await BASE.phaaze.send_message(message.channel, f":warning: Could not find a valid user.Try: `{BASE.vars.PT}level [Option]`\n`[Option]` can be empty, @ mention, ID or the full member name.")
+		return await BASE.discord.send_message(message.channel, f":warning: Could not find a valid user.Try: `{BASE.vars.PT}level [Option]`\n`[Option]` can be empty, @ mention, ID or the full member name.")
 
 	if user.bot:
-		return await BASE.phaaze.send_message(message.channel, f":no_entry_sign: Bots don't have a level.")
+		return await BASE.discord.send_message(message.channel, f":no_entry_sign: Bots don't have a level.")
 
 	# # #
 	level_user = await Utils.get_user(BASE, kwargs.get('server_levels', []), message.server.id, user.id, prevent_new=True)
 
 	if level_user == None:
-		return await BASE.phaaze.send_message(message.channel, f":warning: Seems like there is no level for `{user.name}`\nMaybe the user never typed anything or got deleted.")
+		return await BASE.discord.send_message(message.channel, f":warning: Seems like there is no level for `{user.name}`\nMaybe the user never typed anything or got deleted.")
 
 	exp_current = level_user.get('exp', 0)
 	level_current = await Calc.get_lvl(exp_current)
 	exp_next = await Calc.get_exp(level_current)
-	edited = " [EDITED]" if level_user.get('edited', False) else ""
+	avatar = user.avatar_url if "" != user.avatar_url != None else user.default_avatar_url
 
-	return await BASE.phaaze.send_message(message.channel, f"💠 `{user.name}` **LVL: {str(level_current)}** - EXP: {str(exp_current)} / {str(exp_next)}.{edited}")
+	emb = discord.Embed(color=0x00ffdd)
+	emb.set_author(name=user.name, icon_url=avatar)
+
+	emb.add_field(name="Level:",value=str(level_current),inline=True)
+	emb.add_field(name="Exp:",value=f"{str(exp_current)} / {str(exp_next)}",inline=True)
+	if level_user.get('edited', False):
+		emb.add_field(name=":warning: EDITED:",value="Exp value got edited.", inline=True)
+
+	if level_user.get('medal', []):
+		emb.add_field(name="Medals:",value="\n".join(m for m in level_user.get('medal', [])), inline=False)
+
+	return await BASE.discord.send_message(message.channel, embed=emb)
 
 async def leaderboard(BASE, message, kwargs):
-	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message): return
-	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): return
+	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message): return
+	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.modules._Discord_.Utils.is_Mod(BASE, message): return
 
 	m = message.content.split(" ")
 	count = 5
@@ -139,10 +150,10 @@ async def leaderboard(BASE, message, kwargs):
 			if 1 <= int(m[1]) <= 15:
 				count = int(m[1])
 			else:
-				return await BASE.phaaze.send_message(message.channel, ":no_entry_sign: The leaderboard's length must be between 1 and 15")
+				return await BASE.discord.send_message(message.channel, ":no_entry_sign: The leaderboard's length must be between 1 and 15")
 
 		else:
-			return await BASE.phaaze.send_message(message.channel, f":warning: `{m[1]}` is unsupported, leaderboard's length must be between 1 and 15")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is unsupported, leaderboard's length must be between 1 and 15")
 
 	server_levels = kwargs.get('server_levels', [])
 	server_members = [member for member in message.server.members if not member.bot]
@@ -150,7 +161,7 @@ async def leaderboard(BASE, message, kwargs):
 	members_to_list = [member for member in server_levels if member.get('member_id', None) in [s.id for s in server_members] ]
 
 	if len(members_to_list) == 0:
-		return await BASE.phaaze.send_message(message.channel, ":question: Seems like there are no member with level for a leaderboard :(")
+		return await BASE.discord.send_message(message.channel, ":question: Seems like there are no member with level for a leaderboard :(")
 
 	members_to_list = sorted(members_to_list, key=lambda user: user.get("exp", None), reverse=True)
 
@@ -176,4 +187,4 @@ async def leaderboard(BASE, message, kwargs):
 	table = tabulate.tabulate(leaderboard_list,tablefmt="plain")
 	return_message = f"**Top {str(count)} leaderboard** Wanna watch all? :link: https://phaaze.net/discord/level/{message.server.id} ```{table}```"
 
-	return await BASE.phaaze.send_message(message.channel, return_message)
+	return await BASE.discord.send_message(message.channel, return_message)

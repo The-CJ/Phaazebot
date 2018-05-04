@@ -1,4 +1,4 @@
-#BASE.moduls._Web_.Base.root.discord.main
+#BASE.modules._Web_.Base.root.discord.main
 
 import http.cookies as cookie
 from importlib import reload
@@ -67,10 +67,10 @@ def discord_main(BASE, info, dump):
 		dump['image_path'] = "embed/avatars/{}.png".format(str( int(dump['discord_user_data']['discriminator']) % 5 ))
 
 	#Replace Parts
-	site = site.replace("<!-- Navbar -->", BASE.moduls._Web_.Utils.get_navbar(active='discord'))
+	site = site.replace("<!-- Navbar -->", BASE.modules._Web_.Utils.get_navbar(active='discord'))
 
 	info['dump'] = dump
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	#add profile Picture
 
@@ -93,7 +93,7 @@ def discord_login(BASE, info, msg=""):
 	elif msg != "":
 		site = site.replace("<!-- Error -->", msg)
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")

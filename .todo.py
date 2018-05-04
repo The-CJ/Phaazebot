@@ -7,9 +7,7 @@
 # TODO: Twitch raid message
 # TODO: Add method to reset level on leave
 
-# TODO: Reprogramm Cleverbot (maybe multiplatform?)
-# TODO: Reprogramm Wikipedia (maybe multiplatform?)
-
-# TODO: need to fix Twitch Alerts
-
+# TODO: >>>master news
+# TODO: API rewrite
+# TODO: Phaaze Cleverbot... someday
 # # # # # # # # #

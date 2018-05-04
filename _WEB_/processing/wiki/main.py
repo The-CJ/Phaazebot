@@ -1,4 +1,4 @@
-#BASE.moduls._Web_.Base.root.wiki.main
+#BASE.modules._Web_.Base.root.wiki.main
 
 from importlib import reload
 import json, hashlib, random, string, html
@@ -28,7 +28,7 @@ def wiki(BASE, info):
 		content = content.replace("<!-- tryed_path -->", page_index)
 
 	site = site.replace("<!-- about_content -->", content)
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200

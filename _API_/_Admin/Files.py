@@ -13,8 +13,9 @@ def edit(BASE, info={}, from_web=False, **kwargs):
 	if admin == None: admin = {}
 
 	#end auth
+	print(admin)
 
-	if admin.get('type', None) != 'superadmin':
+	if admin.get('type', "").lower() != 'superadmin':
 		class r (object):
 			content = json.dumps(dict(status='error', msg='unauthorised')).encode("UTF-8")
 			response = 400

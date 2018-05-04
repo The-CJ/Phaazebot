@@ -1,4 +1,4 @@
-#BASE.moduls._Twitch_.Games
+#BASE.modules._Twitch_.Games
 
 import asyncio, random
 
@@ -8,14 +8,14 @@ active_missions = []
 
 """Battle game"""
 async def battle(BASE, message):
-	file = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+	file = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 	file["games"] = file.get("games", False)
 	if not file["games"]: return
 
 	#make new game
 	if not message.room_id in [game.room_id for game in active_battle_games]:
 
-		ok = await BASE.moduls._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", 200)
+		ok = await BASE.modules._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", 200)
 		if not ok: return
 
 		new_game = battel_game(BASE, message.room_id, message.channel)
@@ -42,7 +42,7 @@ async def battle(BASE, message):
 					return
 
 				else:
-					ok = await BASE.moduls._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", 200)
+					ok = await BASE.modules._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", 200)
 					if not ok:return
 					game.fighter.append({"name": message.display_name, "_id": message.user_id})
 
@@ -69,7 +69,7 @@ class battel_game(object):
 		winner = random.choice(self.fighter)
 		win = len(self.fighter) * 200
 
-		await self.BASE.moduls._Twitch_.Gold.edit_gold(self.BASE, self.room_id, winner["_id"], "+", win)
+		await self.BASE.modules._Twitch_.Gold.edit_gold(self.BASE, self.room_id, winner["_id"], "+", win)
 		await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "The fight is over, the winner is: {0}, Congratulation! You won {1} Credits.".format(winner["name"], str(win)))
 		while not self.timeout == 0:
 			self.timeout -= 1
@@ -79,7 +79,7 @@ class battel_game(object):
 
 """Mission Game"""
 async def mission(BASE, message):
-	file = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+	file = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 	file["games"] = file.get("games", False)
 	if not file["games"]: return
 
@@ -97,7 +97,7 @@ async def mission(BASE, message):
 	#new
 	if not message.room_id in [game.room_id for game in active_missions]:
 
-		ok = await BASE.moduls._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", bet)
+		ok = await BASE.modules._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", bet)
 		if not ok: return
 
 		new_game = mission_game(BASE, message.room_id, message.channel)
@@ -125,7 +125,7 @@ async def mission(BASE, message):
 					return
 
 				else:
-					ok = await BASE.moduls._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", bet)
+					ok = await BASE.modules._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", bet)
 					if not ok:return
 					game.fighter.append({"name": message.display_name, "_id": message.user_id, "amount": bet})
 
@@ -154,7 +154,7 @@ class mission_game(object):
 		win_or_lose = [True, True, True, False, False, False, True]
 		for player in self.fighter:
 			if random.choice(win_or_lose):
-				success = await self.BASE.moduls._Twitch_.Gold.edit_gold(
+				success = await self.BASE.modules._Twitch_.Gold.edit_gold(
 											self.BASE,
 											self.room_id,
 											player["_id"],
