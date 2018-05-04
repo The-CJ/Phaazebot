@@ -1,8 +1,8 @@
-#BASE.moduls._Twitch_.Alerts
+#BASE.modules._Twitch_.Alerts
 
 import asyncio, discord
 
-#BASE.moduls._Twitch_.Alerts.Main
+#BASE.modules._Twitch_.Alerts.Main
 class Init_Main(object):
 
 	def __init__(self, BASE):
@@ -11,7 +11,7 @@ class Init_Main(object):
 
 		#add to BASE
 		self.BASE = BASE
-		BASE.moduls._Twitch_.Alerts.Main = self
+		BASE.modules._Twitch_.Alerts.Main = self
 
 	def stop(self):
 		self.running = False
@@ -20,14 +20,14 @@ class Init_Main(object):
 		while self.running:
 			all_alerts = self.BASE.PhaazeDB.select(of="twitch/alerts").get('data',[])
 			try:
-				live_streams = self.BASE.moduls._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in all_alerts if s.get('twitch_id', None) != None])
+				live_streams = self.BASE.modules._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in all_alerts if s.get('twitch_id', None) != None])
 				if live_streams.get('_total', 0) == 0:
 					await asyncio.sleep(60*3)
 					continue
 				live_streams = live_streams.get('streams', 0)
 
 			except:
-				self.BASE.moduls.Console.RED("ERROR", "No Twitch API Response")
+				self.BASE.modules.Console.RED("ERROR", "No Twitch API Response")
 				await asyncio.sleep(60*3)
 				continue
 
@@ -170,7 +170,7 @@ class Init_Main(object):
 
 	class Discord(object):
 		def toggle_chan(BASE, twitch_id, discord_channel_id):
-			twitch_info = BASE.moduls._Twitch_.Alerts.Main.get_alert_info(twitch_id)
+			twitch_info = BASE.modules._Twitch_.Alerts.Main.get_alert_info(twitch_id)
 			twitch_discord_channel_list = twitch_info.get('discord_channel', [])
 
 			if discord_channel_id in twitch_discord_channel_list:

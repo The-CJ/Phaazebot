@@ -1,4 +1,4 @@
-#BASE.moduls._Web_.Base.root.main
+#BASE.modules._Web_.Base.root.main
 
 from importlib import reload
 import traceback
@@ -72,7 +72,7 @@ def main(BASE, info, root):
 def main_site(BASE, info):
 	site = open('_WEB_/content/main.html', 'r').read()
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")

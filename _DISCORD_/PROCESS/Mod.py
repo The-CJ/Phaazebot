@@ -1,4 +1,4 @@
-#BASE.moduls._Discord_.PROCESS.Mod
+#BASE.modules._Discord_.PROCESS.Mod
 
 import asyncio, discord, tabulate
 
@@ -313,7 +313,7 @@ class Quote(object):
 		em = discord.Embed(description=quote, colour=0x11EE11)
 		i = str(i['content']['id'])
 		em.set_footer(text=f'ID: {i}')
-		await BASE.moduls._Discord_.Discord_Events.Phaaze.quote(BASE, message, "add")
+		await BASE.modules._Discord_.Discord_Events.Phaaze.quote(BASE, message, "add")
 		return await BASE.discord.send_message(message.channel, content=":white_check_mark: Quote added", embed=em)
 
 	async def rem(BASE, message, kwargs):
@@ -333,7 +333,7 @@ class Quote(object):
 		if i['hits'] != 1:
 			return await BASE.discord.send_message(message.channel, f":warning: There is no Quote with ID {m[2]}")
 
-		await BASE.moduls._Discord_.Discord_Events.Phaaze.quote(BASE, message, "remove")
+		await BASE.modules._Discord_.Discord_Events.Phaaze.quote(BASE, message, "remove")
 		return await BASE.discord.send_message(message.channel, content=f":white_check_mark: Quote #{m[2]} removed")
 
 	async def clear(BASE, message, kwargs):
@@ -345,12 +345,12 @@ class Quote(object):
 
 		del_ = BASE.PhaazeDB.delete(of=f"discord/quotes/quotes_{message.server.id}")
 		x = str( del_.get('hits', 'N/A') )
-		await BASE.moduls._Discord_.Discord_Events.Phaaze.quote(BASE, message, "clear")
+		await BASE.modules._Discord_.Discord_Events.Phaaze.quote(BASE, message, "clear")
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: All {x} Quote deleted")
 
 class Prune(object):
 	async def Base(BASE, message, kwargs):
-		me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+		me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 		phaaze_perms = message.channel.permissions_for(me)
 		if not phaaze_perms.manage_messages:
 			return await BASE.discord.send_message(message.channel, ":no_entry_sign: Phaaze need the `Manage messages` permissions to execute prune")
@@ -399,10 +399,10 @@ class Prune(object):
 
 			return del_
 
-		BASE.moduls._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
+		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
 		delete = await BASE.discord.purge_from(message.channel, limit=300, check=need_delete)
 
-		await BASE.moduls._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
+		await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
 		confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages form `{1}` :pencil2:".format(str(len(delete)),user.name))
 		await asyncio.sleep(5)
 		return await BASE.discord.delete_message(confirm_delete)
@@ -421,10 +421,10 @@ class Prune(object):
 			if r.content.lower() != "y":
 				return await BASE.discord.send_message(message.channel, ":warning: Prune canceled.")
 
-		BASE.moduls._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
+		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
 		delete = await BASE.discord.purge_from(message.channel, limit=c+1)
 
-		await BASE.moduls._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
+		await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
 		confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages :pencil2:".format(str(len(delete)-1)))
 		await asyncio.sleep(5)
 		return await BASE.discord.delete_message(confirm_delete)
@@ -442,14 +442,14 @@ class Prune(object):
 
 			return del_
 
-		BASE.moduls._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
+		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
 		delete = await BASE.discord.purge_from(message.channel, limit=300, check=need_delete)
 
 		if len(delete) == 0:
 			return await BASE.discord.send_message(message.channel, ":warning: No messages are deleted, make sure the ID is from a member that typed something in the near past")
 
 		else:
-			await BASE.moduls._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
+			await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
 			confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages, that are matching the ID :pencil2:".format(str(len(delete))))
 			await asyncio.sleep(5)
 			return await BASE.discord.delete_message(confirm_delete)
@@ -467,13 +467,13 @@ class Prune(object):
 
 			return del_
 
-		BASE.moduls._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
+		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
 		delete = await BASE.discord.purge_from(message.channel, limit=300, check=need_delete)
 
 		if len(delete) == 0:
 			return await BASE.discord.send_message(message.channel, ":warning: No messages are deleted, make sure the name is correct.")
 		else:
-			await BASE.moduls._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
+			await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
 			confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages from `{1}` :pencil2:".format(str(len(delete)), name))
 			await asyncio.sleep(5)
 			return await BASE.discord.delete_message(confirm_delete)

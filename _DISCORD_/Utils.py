@@ -1,4 +1,4 @@
-#BASE.moduls._Discord_.Utils
+#BASE.modules._Discord_.Utils
 
 import asyncio, Console, discord, tabulate, time
 

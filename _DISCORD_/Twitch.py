@@ -1,4 +1,4 @@
-#BASE.moduls._Discord_.Twitch
+#BASE.modules._Discord_.Twitch
 
 import asyncio, discord
 
@@ -32,7 +32,7 @@ async def Base(BASE, message, kwargs):
 async def track(BASE, message, kwargs, twitch_name):
 
 	#get channel + check if a real channel
-	chan = BASE.moduls._Twitch_.Utils.get_user(BASE, twitch_name, search="name")
+	chan = BASE.modules._Twitch_.Utils.get_user(BASE, twitch_name, search="name")
 	if chan == None:
 		return await BASE.discord.send_message(
 			message.channel,
@@ -40,7 +40,7 @@ async def track(BASE, message, kwargs, twitch_name):
 
 	chan = chan[0]
 
-	state = BASE.moduls._Twitch_.Alerts.Main.Discord.toggle_chan(BASE, chan.get("_id", None), message.channel.id)
+	state = BASE.modules._Twitch_.Alerts.Main.Discord.toggle_chan(BASE, chan.get("_id", None), message.channel.id)
 
 	display_name = chan.get('display_name',"N/A")
 	if state == "add":
@@ -67,7 +67,7 @@ async def get(BASE, message, kwargs):
 
 	channel = [a.get('twitch_id', "0") for a in res.get('data', [])]
 
-	channel_result = BASE.moduls._Twitch_.Utils.get_user(BASE, channel, search="id")
+	channel_result = BASE.modules._Twitch_.Utils.get_user(BASE, channel, search="id")
 
 	if channel_result == None:
 		return await BASE.discord.send_message(message.channel, f":information_source: No valid Twitch channels are tracked in {message.channel.mention}")
@@ -98,7 +98,7 @@ async def reset(BASE, message, kwargs):
 			content = dict (discord_channel = match['discord_channel'])
 		)
 
-	channel_result = BASE.moduls._Twitch_.Utils.get_user(BASE, search, search="id")
+	channel_result = BASE.modules._Twitch_.Utils.get_user(BASE, search, search="id")
 	x = ",".join( f"`{x.get('display_name', 'N/A')}`" for x in channel_result )
 
 	return await BASE.discord.send_message(

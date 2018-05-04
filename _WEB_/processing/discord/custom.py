@@ -1,4 +1,4 @@
-#BASE.moduls._Web_.Base.root.discord.custom
+#BASE.modules._Web_.Base.root.discord.custom
 
 import html
 
@@ -10,17 +10,17 @@ def custom(BASE, info, root, dump, msg=""):
 
 	server_id = info.get("path", [None])[0]
 	if server_id == None:
-		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
+		return BASE.modules._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
 	server = BASE.discord.get_server(server_id)
 
 	if server == None:
-		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
+		return BASE.modules._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
 	site = site.replace("<!-- server_id -->", server_id)
 	site = site.replace("<!-- server.name -->", html.escape(server.name))
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200

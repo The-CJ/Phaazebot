@@ -1,11 +1,11 @@
-#BASE.moduls._Web_.Base.root.action_not_allowed
+#BASE.modules._Web_.Base.root.action_not_allowed
 
 import html
 
 def action_not_allowed(BASE, info, root):
 	page = open('_WEB_/content/action_not_allowed.html', 'r').read()
 
-	page = BASE.moduls._Web_.Utils.format_html_functions(BASE, page, infos = info)
+	page = BASE.modules._Web_.Utils.format_html_functions(BASE, page, infos = info)
 
 	save_str = html.escape(info['raw_path'])
 	page = page.replace("<!-- path -->", save_str)

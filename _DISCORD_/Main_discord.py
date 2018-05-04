@@ -11,10 +11,10 @@ class Init_discord(discord.Client):
 																		name=self.BASE.version_nr),
 													status=discord.Status.online)
 			setattr(self.BASE.vars, "app", await self.BASE.discord.application_info() )
-			self.BASE.moduls.Console.GREEN("SUCCESS", "Discord Connected")
+			self.BASE.modules.Console.GREEN("SUCCESS", "Discord Connected")
 			setattr(self.BASE.is_ready, "discord", True )
 		except:
-			self.BASE.moduls.Console.YELLOW("WARNING", "Discord Gatway Error --> Changing.")
+			self.BASE.modules.Console.YELLOW("WARNING", "Discord Gatway Error --> Changing.")
 			await asyncio.sleep(3)
 			await self.on_ready()
 
@@ -30,56 +30,56 @@ class Init_discord(discord.Client):
 			except: pass
 
 		if message.channel.is_private:
-			await self.BASE.moduls._Discord_.Priv.base(self.BASE, message)
+			await self.BASE.modules._Discord_.Priv.base(self.BASE, message)
 		else:
-			await self.BASE.moduls._Discord_.Open.base(self.BASE, message)
+			await self.BASE.modules._Discord_.Open.base(self.BASE, message)
 
 	async def on_message_delete(self, message):
-		await self.BASE.moduls._Discord_.Discord_Events.Message.delete(self.BASE, message)
+		await self.BASE.modules._Discord_.Discord_Events.Message.delete(self.BASE, message)
 
 	async def on_message_edit(self, before, after):
-		await self.BASE.moduls._Discord_.Discord_Events.Message.edit(self.BASE, before, after) # TODO:
+		await self.BASE.modules._Discord_.Discord_Events.Message.edit(self.BASE, before, after) # TODO:
 
 		if after.author == self.BASE.discord.user: return
 		if not self.BASE.is_ready.discord: return
 		if after.author.bot: return
 
 		if after.channel.is_private:
-			await self.BASE.moduls._Discord_.Priv.base(self.BASE, after)
+			await self.BASE.modules._Discord_.Priv.base(self.BASE, after)
 		else:
-			await self.BASE.moduls._Discord_.Open.base(self.BASE, after)
+			await self.BASE.modules._Discord_.Open.base(self.BASE, after)
 
 	#member management
 	async def on_member_join(self, member):
-		await self.BASE.moduls._Discord_.Discord_Events.Member.join(self.BASE, member)
+		await self.BASE.modules._Discord_.Discord_Events.Member.join(self.BASE, member)
 
 	async def on_member_remove(self, member):
-		await self.BASE.moduls._Discord_.Discord_Events.Member.remove(self.BASE, member)
+		await self.BASE.modules._Discord_.Discord_Events.Member.remove(self.BASE, member)
 
 	async def on_member_ban(self, member):
-		await self.BASE.moduls._Discord_.Discord_Events.Member.ban(self.BASE, member)
+		await self.BASE.modules._Discord_.Discord_Events.Member.ban(self.BASE, member)
 
 	async def on_member_unban(self, server, user):
-		await self.BASE.moduls._Discord_.Discord_Events.Member.unban(self.BASE, server, user)
+		await self.BASE.modules._Discord_.Discord_Events.Member.unban(self.BASE, server, user)
 
 	async def on_member_update(self, before, after):
-		await self.BASE.moduls._Discord_.Discord_Events.Member.update(self.BASE, before, after)
+		await self.BASE.modules._Discord_.Discord_Events.Member.update(self.BASE, before, after)
 
 	#channel management
 	async def on_channel_create(self, channel):
 		if channel.is_private: return
-		await self.BASE.moduls._Discord_.Discord_Events.Channel.create(self.BASE, channel)
+		await self.BASE.modules._Discord_.Discord_Events.Channel.create(self.BASE, channel)
 
 	async def on_channel_delete(self, channel):
 		if channel.is_private: return
-		await self.BASE.moduls._Discord_.Discord_Events.Channel.delete(self.BASE, channel)
+		await self.BASE.modules._Discord_.Discord_Events.Channel.delete(self.BASE, channel)
 
 	#role management
 	async def on_server_role_create(self, role):
-		await self.BASE.moduls._Discord_.Discord_Events.Role.create(self.BASE, role)
+		await self.BASE.modules._Discord_.Discord_Events.Role.create(self.BASE, role)
 
 	async def on_server_role_delete(self, role):
-		await self.BASE.moduls._Discord_.Discord_Events.Role.delete(self.BASE, role)
+		await self.BASE.modules._Discord_.Discord_Events.Role.delete(self.BASE, role)
 
 	#errors
 	async def on_error(self, event_method, *args, **kwargs):

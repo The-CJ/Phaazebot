@@ -1,4 +1,4 @@
-#BASE.moduls._Twitch_.Utils
+#BASE.modules._Twitch_.Utils
 
 import asyncio, json, requests
 
@@ -29,7 +29,7 @@ async def get_twitch_file(BASE, room_id):
 
 	#json bullsahit
 	except json.decoder.JSONDecodeError:
-		BASE.moduls.Console.RED("CRITICAL ERROR", "Broken json twitch channel file")
+		BASE.modules.Console.RED("CRITICAL ERROR", "Broken json twitch channel file")
 
 	#something new
 	except Exception as e:
@@ -40,7 +40,7 @@ async def make_twitch_file(BASE, room_id):
 	with open("_TWITCH_/Channel_files/{0}.json".format(room_id), "w") as new:
 		json.dump(struktur, new)
 
-	BASE.moduls.Console.CYAN("INFO", "New Twitch Channel created")
+	BASE.modules.Console.CYAN("INFO", "New Twitch Channel created")
 
 	file = open("_TWITCH_/Channel_files/{0}.json".format(room_id), "r")
 	file = file.read()
@@ -73,7 +73,7 @@ async def get_twitch_level_file_(BASE, room_id):
 
 	#json bullsahit
 	except json.decoder.JSONDecodeError:
-		BASE.moduls.Console.RED("CRITICAL ERROR", "Broken json twitch level file")
+		BASE.modules.Console.RED("CRITICAL ERROR", "Broken json twitch level file")
 
 	#something new
 	except Exception as e:
@@ -103,14 +103,14 @@ async def get_twitch_level_file(BASE, room_id):
 
 	#json bullsahit
 	except json.decoder.JSONDecodeError:
-		BASE.moduls.Console.RED("CRITICAL ERROR", "Broken json twitch level file")
+		BASE.modules.Console.RED("CRITICAL ERROR", "Broken json twitch level file")
 
 async def make_twitch_level_file(BASE, room_id):
 	struktur = {"room_id": room_id, "user": []}
 	with open("_TWITCH_/Channel_level_files/{0}.json".format(room_id), "w") as new:
 		json.dump(struktur, new)
 
-	BASE.moduls.Console.CYAN("INFO", "New Twitch Level created")
+	BASE.modules.Console.CYAN("INFO", "New Twitch Level created")
 
 	file = open("_TWITCH_/Channel_level_files/{0}.json".format(room_id), "r")
 	file = file.read()

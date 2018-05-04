@@ -1,4 +1,4 @@
-#BASE.moduls._Osu_.Utils
+#BASE.modules._Osu_.Utils
 
 import asyncio, random, json,requests, os, discord, re
 from UTILS import oppai as oppai
@@ -18,7 +18,7 @@ async def verify(BASE, message):
 	m = message.content.split(" ")
 
 	if len(m) == 1:
-		confirm = await BASE.moduls._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.name, platform="osu")
+		confirm = await BASE.modules._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.name, platform="osu")
 		if confirm == None:
 			if message.name in already_in_pairing_proccess:
 				return await BASE.Osu_IRC.send_message(message.name, "You are already in a verify proccess. if you forgot your Number wait 5min and try it again.")
@@ -247,7 +247,7 @@ async def pp_calc_for_maps(BASE, message):
 			else:
 				return await BASE.discord.send_message(message.channel, ":warning: Invalid Option, `{0}` could not be processed, available are `mods`, `acc`, `combo` and `miss`".format(option))
 
-	result = await BASE.moduls.osu_utils.get_pp(map_id_number, acc=acc_, misses=miss_, combo=combo_, mod_s=mods_)
+	result = await BASE.modules.osu_utils.get_pp(map_id_number, acc=acc_, misses=miss_, combo=combo_, mod_s=mods_)
 
 	osu_aw = discord.Embed	(	title = "{0}".format(result.version),
 								description = "mabbed by: {0}".format(result.creator),
@@ -290,7 +290,7 @@ async def twitch_osu(BASE, message):
 
 	search_id, mode = get_link_out_of_content(message.content)
 
-	osu_user = await BASE.moduls._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.room_id, platform="twitch")
+	osu_user = await BASE.modules._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.room_id, platform="twitch")
 	if osu_user == None: return
 
 	osu_maps = await get_all_maps(BASE, ID=search_id, mode=mode)
@@ -347,10 +347,10 @@ class pairing_object(object):
 
 				async def end(self):
 					if self.twitch_id != None:
-						self.BASE.moduls._Twitch_.CMD.Mods.already_in_pairing_proccess.remove(self.twitch_id)
+						self.BASE.modules._Twitch_.CMD.Mods.already_in_pairing_proccess.remove(self.twitch_id)
 
 						if self.osu_name != None:
-							self.BASE.moduls._Osu_.Utils.already_in_pairing_proccess.remove(self.osu_name)
+							self.BASE.modules._Osu_.Utils.already_in_pairing_proccess.remove(self.osu_name)
 
 							self.BASE.queue.twitch_osu_verify.remove(self)
 

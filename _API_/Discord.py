@@ -35,7 +35,7 @@ def login(BASE, info={}, from_web=False, **kwargs):
 	auth_discord_user= BASE.api.discord.get_user(BASE, oauth_key=r.get('access_token', None))
 
 	save_object = dict(
-		session = BASE.moduls._Web_.Base.Utils.get_session_key(),
+		session = BASE.modules._Web_.Base.Utils.get_session_key(),
 		access_token = r.get('access_token', None),
 		token_type = r.get('token_type', None),
 		refresh_token = r.get('refresh_token', None),

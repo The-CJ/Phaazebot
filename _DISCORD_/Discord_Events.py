@@ -1,4 +1,4 @@
-#BASE.moduls._Discord_.Discord_Events
+#BASE.modules._Discord_.Discord_Events
 
 import discord, asyncio, json, datetime
 
@@ -12,7 +12,7 @@ class Message(object):
 				try: Message.prune_lock.remove(message.channel.id)
 				except: pass
 				return
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, message.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, message.server.id)
 
 			#track: Message.delete
 			if "Message.delete".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -32,7 +32,7 @@ class Message(object):
 	async def edit(BASE, before, after):
 		try:
 			if before.content == after.content: return
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, after.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, after.server.id)
 
 			#track: Message.edit
 			if "Message.edit".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -51,7 +51,7 @@ class Message(object):
 
 	async def prune(BASE, message, amount):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, message.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, message.server.id)
 
 			#track: Message.edit
 			if "Message.prune".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -71,7 +71,7 @@ class Message(object):
 class Member(object):
 	async def join(BASE, member):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
 			#track: Member.join
 			if "Member.join".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -174,7 +174,7 @@ class Member(object):
 
 	async def remove(BASE, member):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
 			#track: Member.remove
 			if "Member.remove".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -227,7 +227,7 @@ class Member(object):
 
 	async def ban(BASE, member):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, member.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
 			#track: Member.remove
 			if "Member.ban".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -247,7 +247,7 @@ class Member(object):
 
 	async def unban(BASE, server, user):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, server.id)
 
 			#track: Member.remove
 			if "Member.unban".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -271,7 +271,7 @@ class Member(object):
 class Channel(object):
 	async def create(BASE, channel):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, channel.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, channel.server.id)
 
 			#track: Channel.create
 			if "Channel.create".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -289,7 +289,7 @@ class Channel(object):
 
 	async def delete(BASE, channel):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, channel.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, channel.server.id)
 
 			#track: Channel.delete
 			if "Channel.delete".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -308,7 +308,7 @@ class Channel(object):
 class Role(object):
 	async def create(BASE, role):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, role.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, role.server.id)
 
 			#track: Channel.create
 			if "Role.create".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -326,7 +326,7 @@ class Role(object):
 
 	async def delete(BASE, role):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, role.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, role.server.id)
 
 			#track: Channel.delete
 			if "Role.delete".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -345,7 +345,7 @@ class Role(object):
 class Phaaze(object):
 	async def custom(BASE, server_id, state, trigger=None):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, server_id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, server_id)
 
 			#track: Phaaze.custom
 			if "Phaaze.custom".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
@@ -382,7 +382,7 @@ class Phaaze(object):
 
 	async def quote(BASE, message, state):
 		try:
-			server_settings = await BASE.moduls._Discord_.Utils.get_server_setting(BASE, message.server.id)
+			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, message.server.id)
 
 			#track: Phaaze.quote
 			if "Phaaze.quote".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:

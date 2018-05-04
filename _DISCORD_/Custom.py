@@ -1,4 +1,4 @@
-##BASE.moduls._Discord_.Custom
+##BASE.modules._Discord_.Custom
 
 import asyncio
 
@@ -78,7 +78,7 @@ async def add(BASE, message, kwargs):
 			where=f"data['trigger'] == '{trigger}'",
 			content=dict(content=str(content))
 		)
-		await BASE.moduls._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "update", trigger=trigger)
+		await BASE.modules._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "update", trigger=trigger)
 		return await BASE.discord.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **updated!**')
 
 	#new
@@ -95,7 +95,7 @@ async def add(BASE, message, kwargs):
 				uses=0
 			)
 		)
-		await BASE.moduls._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "new", trigger=trigger)
+		await BASE.modules._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "new", trigger=trigger)
 		return await BASE.discord.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **created!**')
 
 async def rem(BASE, message, kwargs):
@@ -133,7 +133,7 @@ async def rem(BASE, message, kwargs):
 		where=f"data['trigger'] == '{found}'"
 		)
 
-	await BASE.moduls._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "remove", trigger=m[1])
+	await BASE.modules._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "remove", trigger=m[1])
 	return await BASE.discord.send_message(message.channel, f':white_check_mark: The command: "`{m[1].lower()}`" has been removed!')
 
 async def get_all(BASE, message, kwargs):

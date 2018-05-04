@@ -1,4 +1,4 @@
-#BASE.moduls._Twitch_.Gold
+#BASE.modules._Twitch_.Gold
 
 import asyncio, json, requests
 
@@ -10,8 +10,8 @@ async def timeout_stats(room_id):
 	asked_stats.remove(room_id)
 
 async def Base(BASE, message):
-	level_file = await BASE.moduls._Twitch_.Utils.get_twitch_level_file(BASE, message.room_id)
-	room_obj = await BASE.moduls._Twitch_.Utils.get_channel_object(BASE, name=message.channel)
+	level_file = await BASE.modules._Twitch_.Utils.get_twitch_level_file(BASE, message.room_id)
+	room_obj = await BASE.modules._Twitch_.Utils.get_channel_object(BASE, name=message.channel)
 
 	if room_obj == None:
 		return
@@ -71,7 +71,7 @@ async def get_user(BASE, _all_, term, method="id"):
 	return user
 
 async def edit_gold(BASE, room_id, user_id, sub_or_rem, change):
-	file = await BASE.moduls._Twitch_.Utils.get_twitch_level_file(BASE, room_id)
+	file = await BASE.modules._Twitch_.Utils.get_twitch_level_file(BASE, room_id)
 	all_user = file.get("user", [])
 	author = await get_user(BASE, all_user, user_id)
 
@@ -95,11 +95,11 @@ async def stats(BASE, message):
 	if message.room_id in asked_stats: return
 	asyncio.ensure_future(timeout_stats(message.room_id))
 
-	settings = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+	settings = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 	stats_active = settings.get("stats", False)
 	if not stats_active: return
 
-	level_file = await BASE.moduls._Twitch_.Utils.get_twitch_level_file(BASE, message.room_id)
+	level_file = await BASE.modules._Twitch_.Utils.get_twitch_level_file(BASE, message.room_id)
 	all_user = level_file.get("user", [])
 
 	m = message.content.split(" ")
@@ -122,8 +122,8 @@ async def stats(BASE, message):
 			time_in_min = author.get("time", 1) * 5
 			hours = str(round(time_in_min / 60, 1))
 
-			lvl_oder_so = str(await BASE.moduls._Twitch_.Base.Calc.get_lvl(author["time"]))
-			ttlvlup = await BASE.moduls._Twitch_.Base.Calc.get_exp(int(lvl_oder_so))
+			lvl_oder_so = str(await BASE.modules._Twitch_.Base.Calc.get_lvl(author["time"]))
+			ttlvlup = await BASE.modules._Twitch_.Base.Calc.get_exp(int(lvl_oder_so))
 			time_to_next = str(round((ttlvlup * 5) / 60, 1))
 
 			resp = "@{0}, Credits: {2} | Level: {3} ({1}h/{4}h)".format(message.save_name, hours, gold, lvl_oder_so, time_to_next)
@@ -150,8 +150,8 @@ async def stats(BASE, message):
 			time_in_min = found_user.get("time", 1) * 5
 			hours = str(round(time_in_min / 60, 1))
 
-			lvl_oder_so = str(await BASE.moduls._Twitch_.Base.Calc.get_lvl(found_user["time"]))
-			ttlvlup = await BASE.moduls._Twitch_.Base.Calc.get_exp(int(lvl_oder_so))
+			lvl_oder_so = str(await BASE.modules._Twitch_.Base.Calc.get_lvl(found_user["time"]))
+			ttlvlup = await BASE.modules._Twitch_.Base.Calc.get_exp(int(lvl_oder_so))
 			time_to_next = str(round((ttlvlup * 5) / 60, 1))
 
 			resp = "Stats for: {0}, Credits: {2} | Level: {3} ({1}h/{4}h)".format(found_user["call_name"], hours, gold, lvl_oder_so, time_to_next)

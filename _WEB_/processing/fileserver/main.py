@@ -1,4 +1,4 @@
-#BASE.moduls._Web_.Base.root.fileserver.main
+#BASE.modules._Web_.Base.root.fileserver.main
 
 import http.cookies as cookie
 from importlib import reload
@@ -24,7 +24,7 @@ def fileserver_main(BASE, info, dump):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/fileserver/fileserver_main.html', 'r').read()
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")
@@ -36,7 +36,7 @@ def fileserver_login(BASE, info, dump):
 	return_header = [('Content-Type','text/html')]
 	site = open('_WEB_/content/fileserver/fileserver_login.html', 'r').read()
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	class r (object):
 		content = site.encode("UTF-8")

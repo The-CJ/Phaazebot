@@ -1,4 +1,4 @@
-#BASE.moduls._Discord_.PROCESS.Owner
+#BASE.modules._Discord_.PROCESS.Owner
 
 import asyncio, discord
 
@@ -191,7 +191,7 @@ class Welcome(object):
 			content=server_setting
 		)
 
-		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+		phaaze_exc = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
 		entry = entry.replace("[name]", phaaze_exc.name)
 		entry = entry.replace("[server]", message.server.name)
@@ -228,7 +228,7 @@ class Welcome(object):
 				message.channel,
 				":grey_exclamation: Seems like this Server currently don't has a welcome message")
 
-		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+		phaaze_exc = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
 		if not raw:
 			entry = entry.replace("[name]", phaaze_exc.name)
@@ -254,7 +254,7 @@ class Welcome(object):
 				message.channel,
 				":grey_exclamation: Seems like this Server currently don't has a private welcome message")
 
-		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+		phaaze_exc = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
 		if not raw:
 			entry = entry.replace("[name]", phaaze_exc.name)
@@ -308,7 +308,7 @@ class Welcome(object):
 			content=server_setting
 		)
 
-		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+		phaaze_exc = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
 		entry = entry.replace("[name]", phaaze_exc.name)
 		entry = entry.replace("[server]", message.server.name)
@@ -388,7 +388,7 @@ class Leave(object):
 			content=server_setting
 		)
 
-		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+		phaaze_exc = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
 		entry = entry.replace("[name]", phaaze_exc.name)
 		entry = entry.replace("[server]", message.server.name)
@@ -406,7 +406,7 @@ class Leave(object):
 				message.channel,
 				":grey_exclamation: Seems like this Server currently don't has a leave message")
 
-		phaaze_exc = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+		phaaze_exc = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
 		if not raw:
 			entry = entry.replace("[name]", phaaze_exc.name)
@@ -495,7 +495,7 @@ class Autorole(object):
 
 	async def _set_(BASE, message, kwargs):
 		m = message.content.split(" ")
-		me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+		me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
 		if not me.server_permissions.manage_roles:
 			return await BASE.discord.send_message(

@@ -1,4 +1,4 @@
-#BASE.moduls.Utils
+#BASE.modules.Utils
 
 import asyncio, discord
 
@@ -36,23 +36,23 @@ def get_osu_status_symbol(state):
 #OS controll
 async def reload_base(BASE):
 	BASE.RELOAD = True
-	BASE.moduls.Console.BLUE("SYSTEM INFO","Reloading Base...")
+	BASE.modules.Console.BLUE("SYSTEM INFO","Reloading Base...")
 
 	BASE.load_BASE(BASE)
-	BASE.moduls.Console.BLUE("SYSTEM INFO","Base Reloaded")
+	BASE.modules.Console.BLUE("SYSTEM INFO","Base Reloaded")
 
-	BASE.moduls._Web_.Base.RequestHandler.BASE = BASE
-	BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Web-Handler")
+	BASE.modules._Web_.Base.RequestHandler.BASE = BASE
+	BASE.modules.Console.BLUE("SYSTEM INFO","Refreshed Web-Handler")
 
 	setattr(BASE.vars, "app", BASE.run_async(BASE.discord.application_info(), exc_loop=BASE.Discord_loop) )
-	BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Discord App Info")
+	BASE.modules.Console.BLUE("SYSTEM INFO","Refreshed Discord App Info")
 
 	BASE.run_async(BASE.discord.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online), exc_loop=BASE.Discord_loop)
-	BASE.moduls.Console.BLUE("SYSTEM INFO","Refreshed Discord Status")
+	BASE.modules.Console.BLUE("SYSTEM INFO","Refreshed Discord Status")
 
-	BASE.moduls._Twitch_.Alerts.Init_Main(BASE)
-	BASE.moduls.Console.BLUE("SYSTEM INFO","Reinitialized Twitch Alert")
+	BASE.modules._Twitch_.Alerts.Init_Main(BASE)
+	BASE.modules.Console.BLUE("SYSTEM INFO","Reinitialized Twitch Alert")
 
 	BASE.RELOAD = False
-	BASE.moduls.Console.BLUE("SYSTEM INFO","BASE Reload Successfull!")
+	BASE.modules.Console.BLUE("SYSTEM INFO","BASE Reload Successfull!")
 

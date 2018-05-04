@@ -1,4 +1,4 @@
-#BASE.moduls._Web_.Base.root.discord.invite
+#BASE.modules._Web_.Base.root.discord.invite
 
 def invite(BASE, info, root, dump, msg="", server_id=""):
 	return_header = [('Content-Type','text/html')]
@@ -14,7 +14,7 @@ def invite(BASE, info, root, dump, msg="", server_id=""):
 
 	site = site.replace("<!-- server_invite -->", invite_link)
 
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 	class r (object):
 		content = site.encode("UTF-8")
 		response = 200

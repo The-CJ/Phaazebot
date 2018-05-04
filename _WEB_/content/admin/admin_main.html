@@ -15,7 +15,7 @@
 
 	<body class="stylish-color">
 		<!-- Navbar -->
-		|>>>BASE.moduls._Web_.Utils.format_html_functions( BASE, BASE.moduls._Web_.Utils.get_navbar(active='admin'), infos=infos )<<<|
+		|>>>BASE.modules._Web_.Utils.format_html_functions( BASE, BASE.modules._Web_.Utils.get_navbar(active='admin'), infos=infos )<<<|
 
 		<div class="container white-text">
 			<div class="row" style="margin-top:1em;">
@@ -43,7 +43,7 @@
 					</a>
 				</div>
 				<div class="col">
-					<button type="button" class="btn" style="padding:2em;margin:2em;text-transform: none;background:#444444;"onclick="evalCommand('BASE.run_async(BASE.moduls.Utils.reload_base(BASE))')">Reload System</button>
+					<button type="button" class="btn" style="padding:2em;margin:2em;text-transform: none;background:#444444;"onclick="evalCommand('BASE.run_async(BASE.modules.Utils.reload_base(BASE))')">Reload System</button>
 				</div>
 				<div class="col">
 					<a href="#" onclick="window.location.port=2000">
@@ -63,17 +63,17 @@
 				</div>
 			</div>
 
-			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/web.html', 'r').read())<<<|
+			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/web.html', 'r').read())<<<|
 			<hr>
-			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/api.html', 'r').read())<<<|
+			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/api.html', 'r').read())<<<|
 			<hr>
-			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/discord.html', 'r').read())<<<|
+			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/discord.html', 'r').read())<<<|
 			<hr>
-			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/twitch.html', 'r').read())<<<|
+			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/twitch.html', 'r').read())<<<|
 			<hr>
-			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/twitch_alerts.html', 'r').read())<<<|
+			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/twitch_alerts.html', 'r').read())<<<|
 			<hr>
-			|>>>BASE.moduls._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/osu.html', 'r').read())<<<|
+			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/osu.html', 'r').read())<<<|
 
 		</div>
 

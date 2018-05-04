@@ -1,4 +1,4 @@
-#BASE.moduls._Discord_.PROCESS.Dev
+#BASE.modules._Discord_.PROCESS.Dev
 
 import asyncio, discord, json
 
@@ -46,7 +46,7 @@ async def news(BASE, message, kwargs):
 	u = await BASE.discord.wait_for_message(timeout=30, author=message.author, channel=message.channel)
 
 	if u.content == "y":
-		await BASE.moduls._Twitter_.Base.send_tweet(BASE, mes)
+		await BASE.modules._Twitter_.Base.send_tweet(BASE, mes)
 		for channel_id in all_channels:
 			try:
 				await BASE.discord.send_message(discord.Object(id=channel_id), mes)

@@ -1,4 +1,4 @@
-#BASE.moduls._Web_.Base.root.discord.dashboard
+#BASE.modules._Web_.Base.root.discord.dashboard
 
 import http.cookies as cookie
 from importlib import reload
@@ -16,7 +16,7 @@ def main(BASE, info, root, dump):
 def dashboard(BASE, info, root, dump, server_id):
 	discord_server = BASE.discord.get_server(server_id)
 	if discord_server == None:
-		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
+		return BASE.modules._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
 	discord_member = discord_server.get_member(dump['discord_user_data'].get('id', None))
 	if discord_member == None:
@@ -38,9 +38,9 @@ def dashboard(BASE, info, root, dump, server_id):
 	#get server object
 	discord_server_data = BASE.api.discord.get_server(BASE, server_id=server_id)
 	if discord_server_data.get("code", None) == 50001:
-		return BASE.moduls._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
+		return BASE.modules._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
-	saved_settings = BASE.call_from_async( BASE.moduls.Utils.get_server_file(BASE, server_id, prevent_new=True), BASE.Discord_loop )
+	saved_settings = BASE.call_from_async( BASE.modules.Utils.get_server_file(BASE, server_id, prevent_new=True), BASE.Discord_loop )
 	server_object = BASE.discord.get_server(server_id)
 
 	#Finish up -- Replace Parts
@@ -52,7 +52,7 @@ def dashboard(BASE, info, root, dump, server_id):
 	info['root'] = root
 	info['dump'] = dump
 	info['server_id'] = server_id
-	site = BASE.moduls._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
 
 	#add profile Picture
 

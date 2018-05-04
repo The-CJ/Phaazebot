@@ -1,15 +1,15 @@
-##BASE.moduls._Discord_.Blacklist
+##BASE.modules._Discord_.Blacklist
 
 import asyncio, discord
 link_contents = ["http", ".de", "://", ".com", ".net", ".tv", "www."]
 
 async def check(BASE, message, server_setting):
-	me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+	me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 	phaaze_perms = message.channel.permissions_for(me)
 
 	if not phaaze_perms.manage_messages: return
 
-	if await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): return
+	if await BASE.modules._Discord_.Utils.is_Mod(BASE, message): return
 
 	blacklist = server_setting.get("blacklist", [])
 	ban_links = server_setting.get("ban_links", False)
@@ -51,7 +51,7 @@ async def check(BASE, message, server_setting):
 			pass
 
 async def Base(BASE, message, kwargs):
-	me = await BASE.moduls._Discord_.Utils.return_real_me(BASE, message)
+	me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 	phaaze_perms = message.channel.permissions_for(me)
 
 	if not phaaze_perms.manage_messages:

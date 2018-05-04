@@ -1,4 +1,4 @@
-#BASE.moduls._Discord_.Levels
+#BASE.modules._Discord_.Levels
 
 import asyncio, discord, tabulate
 
@@ -78,8 +78,8 @@ async def Base(BASE, message, server_setting, server_levels):
 	await Utils.check_level(BASE, message, user)
 
 async def get(BASE, message, kwargs):
-	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message): return
-	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): return
+	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message): return
+	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.modules._Discord_.Utils.is_Mod(BASE, message): return
 
 	m = message.content.split(" ")
 
@@ -139,8 +139,8 @@ async def get(BASE, message, kwargs):
 	return await BASE.discord.send_message(message.channel, embed=emb)
 
 async def leaderboard(BASE, message, kwargs):
-	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message): return
-	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message): return
+	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message): return
+	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.modules._Discord_.Utils.is_Mod(BASE, message): return
 
 	m = message.content.split(" ")
 	count = 5

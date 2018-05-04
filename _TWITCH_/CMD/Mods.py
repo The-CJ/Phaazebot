@@ -1,4 +1,4 @@
-#BASE.moduls._TWITCH_.CMD.Mods
+#BASE.modules._TWITCH_.CMD.Mods
 
 import asyncio, random, json, time
 max_quotes = 200
@@ -14,7 +14,7 @@ class Quotes(object):
 					"@{0}, Missing arguments | !addquote [quote]".format(message.save_name))
 
 		else:
-			file = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+			file = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 			all_quotes = file["quotes"] = file.get("quotes", [])
 			check = [q["index"] for q in all_quotes]
 			if len(check) > 198:
@@ -43,7 +43,7 @@ class Quotes(object):
 				message.channel,
 				"@{0}, Missing arguments | !delquote [index]".format(message.save_name))
 
-		file = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+		file = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 
 		if not m[1].isdigit():
 			return await BASE.Twitch_IRC_connection.send_message(
@@ -81,7 +81,7 @@ class Coms(object):
 					"@{0}, Missing arguments | !addcom [trigger] [content]".format(message.save_name))
 
 		else:
-			file = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+			file = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 			all_coms = file["commands"] = file.get("commands", [])
 			check = [c["trigger"] for c in all_coms]
 
@@ -113,7 +113,7 @@ class Coms(object):
 				message.channel,
 				"@{0}, Missing arguments | !delcom [trigger]".format(message.save_name))
 
-		file = await BASE.moduls._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+		file = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 
 		all_coms = file["commands"] = file.get("commands", [])
 		for c in all_coms:
@@ -136,11 +136,11 @@ async def verify(BASE, message):
 	m = message.content.split(" ")
 
 	if len(m) == 1:
-		confirm = await BASE.moduls._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.room_id, platform="twitch")
+		confirm = await BASE.modules._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.room_id, platform="twitch")
 		if confirm == None:
 			if message.room_id in already_in_pairing_proccess:
 				return await BASE.Twitch_IRC_connection.send_message(message.name, "@{0} You are already in a verify proccess. if you forgot your Number wait 5min and try it again.".format(message.save_name))
-			pair_number = str(BASE.moduls._Osu_.Utils.pairing_object(BASE, twitch_id=str(message.room_id), twitch_name=message.save_name).verify)
+			pair_number = str(BASE.modules._Osu_.Utils.pairing_object(BASE, twitch_id=str(message.room_id), twitch_name=message.save_name).verify)
 			await BASE.Twitch_IRC_connection.send_message(message.name, "@{1} Your account is not paired to a Osu! account. | Send {2} a privat osu! ingame message with '!verify {0}' to pair it. (you have 5min)".format(pair_number, message.save_name, BASE.Osu_IRC.nickname))
 			already_in_pairing_proccess.append(message.room_id)
 
@@ -167,11 +167,11 @@ async def osu_disco(BASE, message):
 
 	m = message.content.split(" ")
 
-	confirm = await BASE.moduls._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.room_id, platform="twitch")
+	confirm = await BASE.modules._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.room_id, platform="twitch")
 
 	if confirm == None:
 		await BASE.Twitch_IRC_connection.send_message(message.name, "@{0} You never connected a Osu! account.".format(message.save_name))
 
 	else:
 		await BASE.Twitch_IRC_connection.send_message(message.name, "Your connection to Osu Account: {0} has been deleted".format(confirm["osu"]["name"]))
-		await BASE.moduls._Twitch_.Utils.delete_verify(BASE, message.room_id, platform="twitch")
+		await BASE.modules._Twitch_.Utils.delete_verify(BASE, message.room_id, platform="twitch")

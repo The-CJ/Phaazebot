@@ -1,4 +1,4 @@
-#BASE.moduls.Twitch_IRC
+#BASE.modules.Twitch_IRC
 
 import time, discord, requests, socket, asyncio, json, re
 
@@ -85,7 +85,7 @@ class Init_twitch():
 			await self.join_channel(channel)
 			await asyncio.sleep(30/50)
 
-		self.BASE.moduls.Console.CYAN("INFO", "Joined: {} Twitch channels".format(str(len(file.get("channels", [])))))
+		self.BASE.modules.Console.CYAN("INFO", "Joined: {} Twitch channels".format(str(len(file.get("channels", [])))))
 
 	#main connection
 	async def run(self):
@@ -99,7 +99,7 @@ class Init_twitch():
 				try:
 					self.connection.connect((self.server, self.port))
 				except:
-					self.BASE.moduls.Console.RED("ERROR", "Unable to connect to the Twitch IRC")
+					self.BASE.modules.Console.RED("ERROR", "Unable to connect to the Twitch IRC")
 					self.connection.close()
 					self.last_ping = time.time()
 					await asyncio.sleep(10)
@@ -128,7 +128,7 @@ class Init_twitch():
 				disconnected = int(time.time()) - int(self.last_ping)
 				if int(disconnected) > 800:
 					#Twitch issn't pinging us, most likly means connection timeout --> Reconnect
-					self.BASE.moduls.Console.RED("ERROR", "No Twitch IRC Server response")
+					self.BASE.modules.Console.RED("ERROR", "No Twitch IRC Server response")
 					self.connection.close()
 					break
 
@@ -150,7 +150,7 @@ class Init_twitch():
 
 						#we are connected
 						if ":tmi.twitch.tv 001" in data:
-							self.BASE.moduls.Console.GREEN("SUCCESS", "Twitch IRC Connected")
+							self.BASE.modules.Console.GREEN("SUCCESS", "Twitch IRC Connected")
 
 						#response to PING
 						if data.startswith("PING"):
@@ -161,9 +161,9 @@ class Init_twitch():
 						if ".tmi.twitch.tv PRIVMSG #" in data and data.startswith("@"):
 							try: message = Get_classes_from_data.Twitch_message(data)
 							except:
-								self.BASE.moduls.Console.RED("ERROR", "Failed to process Twitch Message")
+								self.BASE.modules.Console.RED("ERROR", "Failed to process Twitch Message")
 								continue
-							asyncio.ensure_future( self.BASE.moduls._Twitch_.Base.on_message(self.BASE, message) )
+							asyncio.ensure_future( self.BASE.modules._Twitch_.Base.on_message(self.BASE, message) )
 
 						#on_member_join
 						if "tmi.twitch.tv JOIN #" in data and data.startswith(":"):
@@ -172,7 +172,7 @@ class Init_twitch():
 
 							channel = data.split("#")[1]
 
-							asyncio.ensure_future( self.BASE.moduls._Twitch_.Base.on_member_join(self.BASE, channel, name) )
+							asyncio.ensure_future( self.BASE.modules._Twitch_.Base.on_member_join(self.BASE, channel, name) )
 
 						#on_member_leave
 						if "tmi.twitch.tv PART #" in data and data.startswith(":"):
@@ -181,7 +181,7 @@ class Init_twitch():
 
 							channel = data.split("#")[1]
 
-							asyncio.ensure_future( self.BASE.moduls._Twitch_.Base.on_member_leave(self.BASE, channel, name) )
+							asyncio.ensure_future( self.BASE.modules._Twitch_.Base.on_member_leave(self.BASE, channel, name) )
 
 						#on other event
 						if ":tmi.twitch.tv USERNOTICE #" in data and data.startswith("@"):
@@ -194,9 +194,9 @@ class Init_twitch():
 
 								try:
 									sub_message = Get_classes_from_data.Twitch_sub(data)
-									asyncio.ensure_future( self.BASE.moduls._Twitch_.Base.on_sub(self.BASE, sub_message) )
+									asyncio.ensure_future( self.BASE.modules._Twitch_.Base.on_sub(self.BASE, sub_message) )
 								except:
-									self.BASE.moduls.Console.RED("ERROR", "Failed to process Twitch Sub")
+									self.BASE.modules.Console.RED("ERROR", "Failed to process Twitch Sub")
 									continue
 
 							#Raid event
@@ -204,9 +204,9 @@ class Init_twitch():
 								return #TODO: Make something with this
 								try:
 									raid__message = Get_classes_from_data.Twitch_sub(data)
-									asyncio.ensure_future( self.BASE.moduls._Twitch_.Base.on_raid(self.BASE, raid__message) )
+									asyncio.ensure_future( self.BASE.modules._Twitch_.Base.on_raid(self.BASE, raid__message) )
 								except:
-									self.BASE.moduls.Console.RED("ERROR", "Failed to process Twitch Sub")
+									self.BASE.modules.Console.RED("ERROR", "Failed to process Twitch Sub")
 									continue
 
 

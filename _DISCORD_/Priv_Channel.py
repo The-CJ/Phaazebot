@@ -1,4 +1,4 @@
-##BASE.moduls._Discord_.Priv
+##BASE.modules._Discord_.Priv
 
 import asyncio, discord
 

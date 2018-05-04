@@ -24,11 +24,11 @@ def api(BASE, info={}, from_web=False, **kwargs):
 	time = int(info.get("values",{}).get("time", 5))
 
 	async def timeout(BASE, t ):
-		BASE.moduls.Console.YELLOW("OVERWRITE", "API Disabled for " + str(time) + " min")
+		BASE.modules.Console.YELLOW("OVERWRITE", "API Disabled for " + str(time) + " min")
 		BASE.active.api = False
 		await asyncio.sleep(t*60)
 		BASE.active.api = True
-		BASE.moduls.Console.YELLOW("OVERWRITE", "API timeout over -> Starting")
+		BASE.modules.Console.YELLOW("OVERWRITE", "API timeout over -> Starting")
 
 	asyncio.ensure_future(timeout(BASE, time), loop=BASE.Worker_loop)
 	class r (object):
@@ -59,11 +59,11 @@ def web(BASE, info={}, from_web=False, **kwargs):
 	time = int(info.get("values",{}).get("time", 5))
 
 	async def timeout(BASE, t ):
-		BASE.moduls.Console.YELLOW("OVERWRITE", "Main Web Disabled for " + str(time) + " min")
+		BASE.modules.Console.YELLOW("OVERWRITE", "Main Web Disabled for " + str(time) + " min")
 		BASE.active.web = False
 		await asyncio.sleep(t*60)
 		BASE.active.web = True
-		BASE.moduls.Console.YELLOW("OVERWRITE", "Main Web timeout over -> Starting")
+		BASE.modules.Console.YELLOW("OVERWRITE", "Main Web timeout over -> Starting")
 
 	asyncio.ensure_future(timeout(BASE, time), loop=BASE.Worker_loop)
 	class r (object):

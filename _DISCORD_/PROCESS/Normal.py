@@ -1,4 +1,4 @@
-#BASE.moduls._Discord_.PROCESS.Normal
+#BASE.modules._Discord_.PROCESS.Normal
 
 import asyncio, requests, discord, random, re, datetime
 from tabulate import tabulate
@@ -199,10 +199,10 @@ class Whois(object):
 
 class Quotes(object):
 	async def Base(BASE, message, kwargs):
-		if kwargs.get('server_setting', {}).get('owner_disable_quote', False) and not await BASE.moduls._Discord_.Utils.is_Owner(BASE, message):
+		if kwargs.get('server_setting', {}).get('owner_disable_quote', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message):
 			asyncio.ensure_future(Forbidden.owner_disabled_quote(BASE, message, kwargs))
 			return
-		if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_quote', []) and not await BASE.moduls._Discord_.Utils.is_Mod(BASE, message):
+		if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_quote', []) and not await BASE.modules._Discord_.Utils.is_Mod(BASE, message):
 			asyncio.ensure_future(Forbidden.disable_chan_quote(BASE, message, kwargs))
 			return
 
@@ -380,7 +380,7 @@ class Osu(object):
 					return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
 
 				#get set/map/creator
-				stuff = await BASE.moduls.osu.get_all_maps(BASE, ID=search_id, mode=mode)
+				stuff = await BASE.modules.osu.get_all_maps(BASE, ID=search_id, mode=mode)
 				if stuff == None and mode == "u": return await BASE.discord.send_message(message.channel, ":warning: The user does not exist or dosn't created any beatmaps".format(BASE.vars.PT))
 				if stuff == None: return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
 
@@ -392,7 +392,7 @@ class Osu(object):
 							":star:: **{diff}** | :notes: BPM: **{bpm}** | :stopwatch: Lenght: **{full}** *(Drain: {drain})*\n"\
 							":small_red_triangle:CS: {cs} | :small_red_triangle:AR: {ar} | :small_red_triangle:OD: {od} | :small_red_triangle:HP: {hp}\n"\
 							"*MapID: {mID} | SetID: {sID}*".format	(
-										symbol = await BASE.moduls.Utils.get_osu_status_symbol(beatmap.approved),
+										symbol = await BASE.modules.Utils.get_osu_status_symbol(beatmap.approved),
 										approved_name = beatmap.approved_name,
 										creator = beatmap.creator,
 										diff = str(round(beatmap.diff, 2)),
@@ -420,9 +420,9 @@ class Osu(object):
 					osu_aw.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
 					osu_aw.set_thumbnail(url="https://b.ppy.sh/thumb/{0}l.jpg".format(beatmap.Set_ID))
 
-					pp_100 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=100.0)
-					pp_99 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=99.0)
-					pp_98 = await BASE.moduls.osu_utils.get_pp(beatmap.Map_ID, acc=98.0)
+					pp_100 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=100.0)
+					pp_99 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=99.0)
+					pp_98 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=98.0)
 
 					osu_aw.add_field(name="PPcalc:",value="{pp_100}pp for 100% | {pp_99}pp for 99% | {pp_98}pp for 98%...\n`{PT}osu calc [maplink] (options)`".format	(
 																																										PT = BASE.vars.PT,
@@ -456,7 +456,7 @@ class Osu(object):
 							"Mapset by: **{creator}** | {symbol} **{approved_name}** - BPM: **{bpm}**\n"\
 							"```{diff_list}```".format	(
 												creator = base_infos.creator,
-												symbol = await BASE.moduls.Utils.get_osu_status_symbol(base_infos.approved),
+												symbol = await BASE.modules.Utils.get_osu_status_symbol(base_infos.approved),
 												approved_name = base_infos.approved_name,
 												artist = base_infos.artist,
 												title = base_infos.title,
@@ -491,7 +491,7 @@ class Osu(object):
 						base_res  = base_res + "**{artist} - {title}** | https://osu.ppy.sh/s/{IDD}\n{symbol} **{approved_name}** - BPM: **{bpm}**\n```{diff_list}```\n".format	(
 																														artist = _set[0].artist,
 																														title = _set[0].title,
-																														symbol = await BASE.moduls.Utils.get_osu_status_symbol(_set[0].approved),
+																														symbol = await BASE.modules.Utils.get_osu_status_symbol(_set[0].approved),
 																														approved_name = _set[0].approved_name,
 																														bpm = str(round(_set[0].bpm)),
 																														diff_list = tabulate(listi, tablefmt="plain"),
@@ -513,7 +513,7 @@ class Osu(object):
 				return await BASE.discord.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
 
 			elif m[1].startswith("calc"):
-				await BASE.moduls.osu.pp_calc_for_maps(BASE, message)
+				await BASE.modules.osu.pp_calc_for_maps(BASE, message)
 
 			else:
 				return await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
@@ -544,7 +544,7 @@ class Osu(object):
 
 		user_info, type_ = Osu.extract_user(" ".join(c for c in m[2:]))
 
-		User = await BASE.moduls._Osu_.Utils.get_user(BASE, u=user_info, m=MODE, t=type_)
+		User = await BASE.modules._Osu_.Utils.get_user(BASE, u=user_info, m=MODE, t=type_)
 		if User == None:
 			return await BASE.discord.send_message(message.channel, ":warning: The given User could not found!")
 
