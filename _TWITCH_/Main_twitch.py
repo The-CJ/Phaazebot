@@ -2,11 +2,10 @@
 
 import time, discord, requests, socket, asyncio, json, re
 
-#BASE.Twitch_IRC_connection
-class _IRC_():
+#BASE.twitch
+class Init_twitch():
 	def __init__(self, BASE):
 		self.BASE = BASE
-		BASE.Twitch_IRC_connection = self
 
 		self.running = True
 

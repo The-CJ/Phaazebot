@@ -2,7 +2,6 @@ import asyncio, discord, traceback
 
 class Init_discord(discord.Client):
 	def __init__(self, BASE):
-		BASE.discord = self
 		self.BASE = BASE
 		super().__init__()
 
