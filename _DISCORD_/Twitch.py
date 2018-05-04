@@ -82,9 +82,14 @@ async def reset(BASE, message, kwargs):
 	)
 
 	res = res.get('data', [])
+	if not res:
+		return await BASE.discord.send_message(message.channel, f":information_source: {message.channel.mention} don't have any alerts")
+
+	search = []
 
 	for match in res:
 		twitch_id = match.get('twitch_id', None)
+		search.append(twitch_id)
 		match['discord_channel'].remove(message.channel.id)
 
 		BASE.PhaazeDB.update(
@@ -93,6 +98,10 @@ async def reset(BASE, message, kwargs):
 			content = dict (discord_channel = match['discord_channel'])
 		)
 
+	channel_result = BASE.moduls._Twitch_.Utils.get_user(BASE, search, search="id")
+	x = ",".join( f"`{x.get('display_name', 'N/A')}`" for x in channel_result )
 
-	return await BASE.discord.send_message(message.channel, f":white_check_mark: All tracked Twitch channel in {message.channel.mention}\nHave been removed")
+	return await BASE.discord.send_message(
+		message.channel,
+		f":white_check_mark: All tracked Twitch channel in {message.channel.mention}\nHave been removed\n\nRemoved Tracked channels: {x}")
 
