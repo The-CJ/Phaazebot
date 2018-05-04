@@ -24,7 +24,7 @@ async def Base(BASE, message, kwargs):
 		return await get(BASE, message, kwargs)
 
 	elif m[1].lower() == "reset":
-		pass
+		return await reset(BASE, message, kwargs)
 
 	else:
 		return await BASE.discord.send_message(message.channel, ":warning: `{1}` is not a option, available are: {0}".format(" ".join(f"`{g}`" for g in AV), m[1]))
@@ -37,6 +37,8 @@ async def track(BASE, message, kwargs, twitch_name):
 		return await BASE.discord.send_message(
 			message.channel,
 			f":warning: There is no channel called: `{twitch_name}`\nOr Twitch API is down. Make sure you don't make a typo and try again.")
+
+	chan = chan[0]
 
 	state = BASE.moduls._Twitch_.Alerts.Main.Discord.toggle_chan(BASE, chan.get("_id", None), message.channel.id)
 
@@ -61,15 +63,36 @@ async def get(BASE, message, kwargs):
 	)
 
 	if not res.get('data', []):
-		return await BASE.discord.send_message(message.channel, f"No Twitch channels are tracked in {message.channel.mention}")
+		return await BASE.discord.send_message(message.channel, f":information_source: No Twitch channels are tracked in {message.channel.mention}")
 
 	channel = [a.get('twitch_id', "0") for a in res.get('data', [])]
 
 	channel_result = BASE.moduls._Twitch_.Utils.get_user(BASE, channel, search="id")
 
 	if channel_result == None:
-		return await BASE.discord.send_message(message.channel, f"No valid Twitch channels are tracked in {message.channel.mention}")
+		return await BASE.discord.send_message(message.channel, f":information_source: No valid Twitch channels are tracked in {message.channel.mention}")
 
 	x = ",".join( f"`{x.get('display_name', 'N/A')}`" for x in channel_result )
-	return await BASE.discord.send_message(message.channel, f"All tracked Twitch channel in {message.channel.mention}\n\n{x}")
+	return await BASE.discord.send_message(message.channel, f":information_source:  All tracked Twitch channel in {message.channel.mention}\n\n{x}")
+
+async def reset(BASE, message, kwargs):
+	res = BASE.PhaazeDB.select(
+		of=f"twitch/alerts",
+		where=f"'{message.channel.id}' in data['discord_channel']"
+	)
+
+	res = res.get('data', [])
+
+	for match in res:
+		twitch_id = match.get('twitch_id', None)
+		match['discord_channel'].remove(message.channel.id)
+
+		BASE.PhaazeDB.update(
+			of = f"twitch/alerts",
+			where = f"data['twitch_id'] == '{twitch_id}'",
+			content = dict (discord_channel = match['discord_channel'])
+		)
+
+
+	return await BASE.discord.send_message(message.channel, f":white_check_mark: All tracked Twitch channel in {message.channel.mention}\nHave been removed")
 
