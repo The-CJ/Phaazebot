@@ -1,30 +1,26 @@
 #BASE.modules.Twitch_IRC
 
-import time, discord, requests, socket, asyncio, json, re
+import time, twitch, socket, asyncio, json, re
 
 #BASE.twitch
 class Init_twitch():
-	def __init__(self, BASE):
+	def __init__(self, BASE, token=None, nickname=None):
 		self.BASE = BASE
 
-		self.running = True
+		self.running = False
 
+		self.token = token
+		self.nickname = nickname
 		self.server = "irc.twitch.tv"
 		self.port = 6667
 		self.last_ping = time.time()
 
-		self.oauth = self.BASE.access.Twitch_IRC_Token
-		self.twitch_client_id = self.BASE.access.Twitch_API_Token #Testphasen mit admin API gehn ganz gern schief xD
-
-		self.nickname = "Phaazebot"
-		self.owner = "The__CJ"
-		self.twitch_id = 94638902
-
-		self.channels = []
-		self.hold_connetion_open = True
 		self.connection = None
+		self.channels = {}
 
-	async def shutdown(self):
+		self.traffic = 0
+
+	async def stop(self):
 		self.running = False
 		await asyncio.sleep(0.5)
 		self.connection.close()
@@ -37,7 +33,7 @@ class Init_twitch():
 		self.connection.send(bytes("NICK {0}\r\n".format(self.nickname), 'UTF-8'))
 
 	async def send_pass(self):
-		self.connection.send(bytes("PASS {0}\r\n".format(self.oauth), 'UTF-8'))
+		self.connection.send(bytes("PASS {0}\r\n".format(self.token), 'UTF-8'))
 
 	async def req_membership(self):
 		self.connection.send(bytes("CAP REQ :twitch.tv/membership\r\n", 'UTF-8'))
@@ -58,26 +54,23 @@ class Init_twitch():
 
 	#comms
 	async def send_message(self, channel, message):
-		if self.hold_connetion_open:
-			if self.BASE.cooldown.SPECIAL_COOLDOWNS.Twitch_message_counter <= 29:
-				self.connection.send(bytes("PRIVMSG #{0} :{1}\r\n".format(channel.lower(), message), 'UTF-8'))
-				self.BASE.cooldown.SPECIAL_COOLDOWNS.Twitch_message_counter += 1
-			else:
-				self.BASE.queue.TO_TWITCH_T.put_nowait(self.send_message(channel, message))
+		if self.traffic <= 29:
+			self.connection.send(bytes("PRIVMSG #{0} :{1}\r\n".format(channel.lower(), message), 'UTF-8'))
+			self.traffic += 1
+		else:
+			self.BASE.queue.TO_TWITCH_T.put_nowait(self.send_message(channel, message))
 
 	async def join_channel(self, channel):
-		if self.hold_connetion_open:
-			self.connection.send(bytes("JOIN #{0}\r\n".format(channel.lower()), 'UTF-8'))
-			if not channel.lower() in [c.name for c in self.channels]:
-				self.channels.append(channel_class(self.BASE, channel))
+		self.connection.send(bytes("JOIN #{0}\r\n".format(channel.lower()), 'UTF-8'))
+		#if not channel.lower() in [c.name for c in self.channels]:
+		#	self.channels.append(channel_class(self.BASE, channel))
 
 	async def part_channel(self, channel):
-		if self.hold_connetion_open:
-			self.connection.send(bytes("PART #{0}\r\n".format(channel.lower()), 'UTF-8'))
-			if channel in [c.name for c in self.channels]:
-				for c in self.channels:
-					if c.name.lower() == channel.lower():
-						self.channels.remove(c)
+		self.connection.send(bytes("PART #{0}\r\n".format(channel.lower()), 'UTF-8'))
+		#if channel in [c.name for c in self.channels]:
+		#	for c in self.channels:
+		#		if c.name.lower() == channel.lower():
+		#			self.channels.remove(c)
 
 	async def join_all_channel(self):
 		file = json.loads(open("_TWITCH_/_achtive_channels.json", "r").read())
@@ -89,41 +82,44 @@ class Init_twitch():
 
 	#main connection
 	async def run(self):
+		self.running = True
+		self.last_ping = time.time()
+
 		while self.running:
-			self.last_ping = time.time()
 
 			#init connection
-			if self.hold_connetion_open:
-				#connect to server
-				setattr(self, "connection", socket.socket())
-				try:
-					self.connection.connect((self.server, self.port))
-				except:
-					self.BASE.modules.Console.RED("ERROR", "Unable to connect to the Twitch IRC")
-					self.connection.close()
-					self.last_ping = time.time()
-					await asyncio.sleep(10)
-					continue
+			self.connection = socket.socket()
+			self.last_ping = time.time()
 
-				self.connection.settimeout(0.005)
+			try:
+				self.connection.connect((self.server, self.port))
+			except:
+				self.BASE.modules.Console.RED("ERROR", "Unable to connect to the Twitch IRC")
+				self.connection.close()
+				self.last_ping = time.time()
+				await asyncio.sleep(10)
+				continue
 
-				#login
-				await self.send_pass()
-				await self.send_nick()
+			self.connection.settimeout(0.005)
 
-				#get infos
-				await self.req_membership()
-				await self.req_commands()
-				await self.req_tags()
+			#login
+			await self.send_pass()
+			await self.send_nick()
 
-				#join main channel
-				await self.join_channel(self.nickname)
-				asyncio.ensure_future( self.join_all_channel() )
+			#get infos
+			await self.req_membership()
+			await self.req_commands()
+			await self.req_tags()
 
-				self.BASE.vars.twitch_IRC_is_NOT_ready = False
+			#join main channel
+			await self.join_channel(self.nickname)
+			#asyncio.ensure_future( self.join_all_channel() ) #FIXME:
 
-			while self.hold_connetion_open == True and self.running:
-				data_cluster = ""
+			self.BASE.is_ready.twitch = True
+
+			#listen to twitch
+			while self.running:
+				raw_data_bytes = ""
 
 				disconnected = int(time.time()) - int(self.last_ping)
 				if int(disconnected) > 800:
@@ -133,40 +129,38 @@ class Init_twitch():
 					break
 
 				try:
-					data_cluster = data_cluster + self.connection.recv(4096).decode('UTF-8')
-					data_cluster_parts = data_cluster.splitlines()
+					raw_data_bytes = raw_data_bytes + self.connection.recv(4096).decode('UTF-8')
+					raw_data = raw_data_bytes.splitlines()
 
-					if len(data_cluster_parts) == 0:
+					if len(raw_data) == 0:
 						#Twitch send nothing, most likly means connection timeout --> Reconnect
 						break
 
-					#Twitch can give more than one segment in one datacluster
-					for data in data_cluster_parts:
-						#just to be sure
-						if data == "" or data == " " or data == None: continue
+					for data in raw_data:
+						#Twitch can give more than one segment in a datacluster
 
 						#save, no Unicode debug print of all data
-						#FIXME await self.save_print_raw_data(data)
+						#await self.save_print_raw_data(data) # DEBUG:
 
-						#we are connected
-						if ":tmi.twitch.tv 001" in data:
-							self.BASE.modules.Console.GREEN("SUCCESS", "Twitch IRC Connected")
+						#just to be sure
+						if data in ["", " ", None]: continue
 
 						#response to PING
-						if data.startswith("PING"):
-							await self.send_pong()
+						elif re.match(r'^PING', data) != None:
 							self.last_ping = time.time()
+							await self.send_pong()
 
-						#on message
-						if ".tmi.twitch.tv PRIVMSG #" in data and data.startswith("@"):
-							try: message = Get_classes_from_data.Twitch_message(data)
-							except:
-								self.BASE.modules.Console.RED("ERROR", "Failed to process Twitch Message")
-								continue
-							asyncio.ensure_future( self.BASE.modules._Twitch_.Base.on_message(self.BASE, message) )
+						#we are connected
+						elif re.match(r"^:tmi\.twitch\.tv 001.*", data) != None:
+							self.BASE.modules.Console.GREEN("SUCCESS", "Twitch IRC Connected")
+
+						#on_message
+						elif re.match(r'^@.+\.tmi\.twitch\.tv PRIVMSG #.+', data) != None:
+							message = OBJECT_GENERATOR.Message(data)
+							asyncio.ensure_future( self.on_message(message) )
 
 						#on_member_join
-						if "tmi.twitch.tv JOIN #" in data and data.startswith(":"):
+						elif re.match(r"^:tmi.+\.twitch\.tv JOIN #.+", data) != None:
 							name = data.split("!")[1]
 							name = name.split("@")[0]
 
@@ -213,27 +207,16 @@ class Init_twitch():
 				except socket.timeout:
 					await asyncio.sleep(0.025)
 
+			self.BASE.is_ready.twitch = False
 
-class Get_classes_from_data(object):
+	#events
+	async def on_message(self, message):
+		pass
+
+class OBJECT_GENERATOR(object):
 	"""Class contains all init-classes for Twitch IRC data"""
 
-	class Twitch_message(object):
-		eg_me = "@badges=moderator/1,premium/1;"\
-				"color=#696969;"\
-				"display-name=The__CJ;"\
-				"emotes=1902:6-10/25:0-4,12-16;"\
-				"id=067a9351-a907-4196-9a30-30f57cf8d0d0;"\
-				"mod=1;"\
-				"room-id=94638902;"\
-				"sent-ts=1490652372908;"\
-				"subscriber=0;"\
-				"tmi-sent-ts=1490652371316;"\
-				"turbo=0;"\
-				"user-id=67664971;"\
-				"user-type=mod"\
-				" :the__cj!the__cj@the__cj.tmi.twitch.tv PRIVMSG #phaazebot :Kappa Keepo hi"
-
-
+	class Message(object):
 		def __init__(self, data):
 			self.raw = data
 
@@ -288,7 +271,7 @@ class Get_classes_from_data(object):
 
 		def get_emotes(self, arg):
 			"""emotes=1902:6-10/25:0-4,12-16"""
-			e = [{"index": 1902, "ammount": 1}, {"index": 25, "ammount": 2}]
+			#[{"index": 1902, "ammount": 1}, {"index": 25, "ammount": 2}]
 
 			x = arg.split("=")[1]
 
@@ -489,16 +472,3 @@ class channel_class(object):
 		self.room_id = str(get_id_from_room_name(BASE, self.name))
 		self.user = []
 		self.live = False
-
-def get_id_from_room_name(BASE, name):
-	key = BASE.access.Twitch_API_Token
-	header = {"Client-ID": key, "Accept": "application/vnd.twitchtv.v5+json"}
-
-	try:
-		resp = requests.get("https://api.twitch.tv/kraken/users?login={0}".format(name), headers = header)
-		resp = resp.json()
-		room_id = resp["users"][0]["_id"]
-		return room_id
-
-	except:
-		return 0

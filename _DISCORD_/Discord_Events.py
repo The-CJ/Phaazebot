@@ -1,6 +1,6 @@
 #BASE.modules._Discord_.Discord_Events
 
-import discord, asyncio, json, datetime
+import discord, asyncio, datetime
 
 class Message(object):
 	prune_lock = []
