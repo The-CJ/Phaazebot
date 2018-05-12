@@ -1,7 +1,6 @@
 ##BASE.modules._Discord_.Blacklist
 
-import asyncio, discord
-link_contents = ["http", ".de", "://", ".com", ".net", ".tv", "www."]
+import asyncio, discord, re
 
 async def check(BASE, message, server_setting):
 	me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
@@ -25,11 +24,20 @@ async def check(BASE, message, server_setting):
 		#has not a role that allows links
 		if not any([True if role.id in allow_link_role else False for role in message.author.roles]):
 
-			#contains a link that is not allowed
-			for word in message.content.lower().split(' '):
-				if any([True if linkpart in word and not word in link_whitelist else False for linkpart in link_contents]):
-					punish = True
-					break
+			found_links = re.finditer(r'(https?:\/\/)?(\.?[a-zA-Z0-9]+)+\.[a-zA-Z0-9]{2,8}(\/[^ \n]+)*', message.content)
+			if found_links != None:
+
+				for hit in found_links:
+					p = True
+
+					for white_link in link_whitelist:
+						if re.search(white_link, hit.group(0)) != None:
+							p = False
+							break
+
+					if p:
+						punish = True
+						break
 
 	#Word Blacklist
 	for word in blacklist:
@@ -70,9 +78,9 @@ async def Base(BASE, message, kwargs):
 			"`link-get` - Get all links that are whitelisted\n"\
 			"`link-allow` - Add a role to post any links\n"\
 			"`link-disallow` - Remove a role to post any links\n"\
-			"`link-add` - Add a link to the whitelist\n"\
-			"`link-rem` - Remove a link from the whitelist\n"\
-			"`link-clear` - Remove all whitelisted links"
+			"`link-add` - Add a exception to the whitelist\n"\
+			"`link-rem` - Remove a exception from the whitelist\n"\
+			"`link-clear` - Remove all whitelisted exceptions"
 		return await BASE.discord.send_message(message.channel, r)
 
 	elif m[1] == "punishment":
@@ -253,14 +261,14 @@ class Link(object):
 		m = message.content.lower().split(" ")
 
 		if len(m) == 2:
-			return await BASE.discord.send_message(message.channel, ":warning: You need to define a link to whitelist.")
+			return await BASE.discord.send_message(message.channel, ":warning: You need to define a link regex exception to whitelist.\nWhat is regex? : https://regexr.com/ : https://regex101.com/")
 
 		whitelist = kwargs.get('server_setting', {}).get('ban_links_whitelist', [])
 
 		word = " ".join(l for l in m[2:])
 
 		if word in whitelist:
-			return await BASE.discord.send_message(message.channel, ":warning: This link already is whitelisted.")
+			return await BASE.discord.send_message(message.channel, ":warning: This link exception already is whitelisted.")
 		else:
 			whitelist.append(word.lower())
 
@@ -270,13 +278,13 @@ class Link(object):
 			content=dict(ban_links_whitelist=whitelist)
 		)
 
-		return await BASE.discord.send_message(message.channel, f":white_check_mark: The link `{word}` has been added to the whitelist.")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: The link exception `{word}` has been added to the whitelist.")
 
 	async def rem(BASE, message, kwargs):
 		m = message.content.lower().split(" ")
 
 		if len(m) == 2:
-			return await BASE.discord.send_message(message.channel, ":warning: You need to define a link you wanna remove from the whitelist.")
+			return await BASE.discord.send_message(message.channel, ":warning: You need to define a link exception you wanna remove from the whitelist.")
 
 		whitelist = kwargs.get('server_setting', {}).get('ban_links_whitelist', [])
 
