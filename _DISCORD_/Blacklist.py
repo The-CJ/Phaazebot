@@ -2,6 +2,8 @@
 
 import asyncio, discord, re
 
+link_regex = re.compile(r'(https?:\/\/)?(\.?[a-zA-Z0-9]+)+\.[a-zA-Z0-9]{2,8}(\/[^ \n]+)*')
+
 async def check(BASE, message, server_setting):
 	me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 	phaaze_perms = message.channel.permissions_for(me)
@@ -24,7 +26,7 @@ async def check(BASE, message, server_setting):
 		#has not a role that allows links
 		if not any([True if role.id in allow_link_role else False for role in message.author.roles]):
 
-			found_links = re.finditer(r'(https?:\/\/)?(\.?[a-zA-Z0-9]+)+\.[a-zA-Z0-9]{2,8}(\/[^ \n]+)*', message.content)
+			found_links = re.finditer(link_regex, message.content)
 			if found_links != None:
 
 				for hit in found_links:
