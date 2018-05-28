@@ -41,10 +41,10 @@ def format_html_functions(BASE, html_string, infos = {}):
 
 def get_logged_in_btn(BASE, infos, platform=None, **replacements):
 	if infos.get('user', None) == None:
-		pls_login = open('_WEB_\content\_buttons\pls_login.html').read()
+		pls_login = open('_WEB_/content/_buttons/pls_login.html', 'r').read()
 		return pls_login
 
-	main_btn = open('_WEB_\content\_buttons\phaaze_loggedin.html').read()
+	main_btn = open('_WEB_/content/_buttons/phaaze_loggedin.html', 'r').read()
 
 	main_btn = main_btn.replace('{name}', infos.get('user', {}).get('phaaze_username', "[NAME N/A]"))
 	main_btn = main_btn.replace('{type}', infos.get('user', {}).get('type', "[TYPE N/A]"))
