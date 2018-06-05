@@ -12,7 +12,7 @@
 	</head>
 	<body class="stylish-color">
 
-		|>>>BASE.modules._Web_.Utils.format_html_functions( BASE, BASE.modules._Web_.Utils.get_navbar(active=''), infos=infos )<<<|
+		|>>>values['navbar']<<<|
 
 		<div class="container text-center">
 			<div class="row" style="margin-top:50px;" >
@@ -23,7 +23,7 @@
 					<p class="white-text h1 pos-absolute text-center" style="left:-4px; top:10%; width: 100%; font-size:300px; opacity:0.1;">404</p>
 					<a href="/"><img src="/img/favicon.ico" class="animation-spin" style="width: 100%;"></a>
 					<p class="white-text h1 pos-relative" style="top:-25%; width: 100%;">Sorry, but your way leads into darkness...</p>
-					<p class="white-text pos-relative" style="top:-25%; width: 100%;"><!-- path --></p>
+					<p class="white-text pos-relative" style="top:-25%; width: 100%;">|>>>values['path']<<<|</p>
 				</div>
 
 				<span class="col-md-3"></span>
@@ -40,7 +40,7 @@
 							-1px -1px 1px black;
 						}
 					</style>
-					<h1 class="red-text"><b><!-- msg --></b></h1>
+					<h1 class="red-text"><b>|>>>values['msg']<<<|</b></h1>
 				</div>
 			</div>
 		</div>

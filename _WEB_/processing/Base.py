@@ -1,9 +1,9 @@
-#BASE.modules._Web_.Base.root.main
+#BASE.modules._Web_.Base.root.Base
 
 from importlib import reload
 import traceback
 
-def main(BASE, info, root):
+def main_(BASE, info, root):
 	session=info.get('cookies', {}).get('phaaze_session', None)
 	phaaze_username = info.get('values', {}).get('phaaze_username', None)
 	password = info.get('values', {}).get('password', None)
@@ -69,20 +69,22 @@ def main(BASE, info, root):
 		print("Tryed access: "+info['path'][0])
 		return root.page_not_found.page_not_found(BASE, info, root)
 
-def main_site(BASE, info):
+def main(self, request):
 	site = open('_WEB_/content/main.html', 'r').read()
 
-	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
+	current_navbar = self.format_html(self.BASE.modules._Web_.Utils.get_navbar(active=''))
 
-	class r (object):
-		content = site.encode("UTF-8")
-		response = 200
-		header = [('Content-Type','text/html')]
-	return r
+	site = self.format_html(site, navbar=current_navbar)
 
-def get_favicon():
-	class r (object):
-		content = open('_WEB_/content/favicon.ico', 'rb').read()
-		response = 200
-		header = [('Content-Type','image/x-icon')]
-	return r
+	return self.response(
+		body=site,
+		status=200,
+		content_type='text/html'
+	)
+
+def get_favicon(self, request):
+	return self.response(
+		body=open('_WEB_/content/favicon.ico', 'rb').read(),
+		status=200,
+		content_type='image/x-icon'
+	)

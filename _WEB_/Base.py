@@ -11,6 +11,9 @@ class root(object):
 	def __init__(self, BASE):
 		self.BASE = BASE
 		self.response = web.Response
+		self.format_html_regex = re.compile(r"\|>>>(.+)<<<\|")
+
+	from _WEB_.Utils import format_html_functions as format_html
 
 	# class discord(object):
 	# 	import _WEB_.processing.discord.main as main							#/discord
@@ -21,22 +24,23 @@ class root(object):
 	# class fileserver(object):													#
 	# 	import _WEB_.processing.fileserver.main as main							#/fileserver
 	# 																			#
-	# class wiki(object):															#
+	# class wiki(object):														#
 	# 	import _WEB_.processing.wiki.main as main								#/wiki
 	# 																			#
 	# class admin(object):														#
 	# 	import _WEB_.processing.admin.admin as admin							#/admin
 	# 																			#
-	# class account(object):														#
+	# class account(object):													#
 	# 	import _WEB_.processing.account.main as account							#/account
 																				#
 	from _WEB_.js.Base import main as js										#/js
 	from _WEB_.css.Base import main as css										#/css
 	from _WEB_.img.Base import main as img										#/img
 																				#
-	# import _WEB_.processing.main as main										#/
+	from _WEB_.processing.Base import get_favicon as favicon					#/favicon.ico
+	from _WEB_.processing.Base import main as main								#/
 	from _WEB_.processing.page_not_found import main as page_not_found			#<404>
-	# from _WEB_.processing.action_not_allowed import main as action_not_allowed	#<400/401/402>
+	from _WEB_.processing.action_not_allowed import main as action_not_allowed	#<400/401/402>
 
 
 def webserver(BASE):
@@ -66,8 +70,12 @@ def webserver(BASE):
     #     loop = asyncio.get_event_loop()
     #     self._server = await self._make_server()
 
+	server.router.add_route('*', '/', root.main)
+	server.router.add_route('*', '/favicon.ico', root.favicon)
+
 	server.router.add_route('*', '/img{file:.*}', root.img)
 	server.router.add_route('*', '/css{file:.*}', root.css)
 	server.router.add_route('*', '/js{file:.*}', root.js)
+
 	server.router.add_route('*', '/{x:.*}', root.page_not_found)
 	web.run_app(server, port=80)

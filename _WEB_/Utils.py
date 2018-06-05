@@ -19,7 +19,10 @@ def get_navbar(active=''):
 
 	return navbar
 
-def format_html_functions(BASE, html_string, infos = {}):
+#this function is loaded into the BASE.moduls._Web_.Base.root as format_html()
+# so its easy accessable from every request via self.format_html(html_string)
+# it can call functions or just replace vars (can also ge given by **values)
+def format_html_functions(self, html_string, **values):
 	"""
 	This function will take all
 	|>>>func()<<<|
@@ -29,7 +32,7 @@ def format_html_functions(BASE, html_string, infos = {}):
 	returns formated html
 	"""
 
-	search_results = re.finditer(r"\|>>>(.+)<<<\|" ,html_string)
+	search_results = re.finditer(self.format_html_regex ,html_string)
 	for hit in search_results:
 		try:
 			calc_ = eval(hit.group(1))

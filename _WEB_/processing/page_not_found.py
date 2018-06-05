@@ -5,11 +5,10 @@ import html
 def main(self, request, msg=""):
 	page = open('_WEB_/content/page_not_found.html', 'r').read()
 
-	#page = self.BASE.modules._Web_.Utils.format_html_functions(self.BASE, page)
-
 	save_str = html.escape("Not Found: "+request.path)
-	page = page.replace("<!-- path -->", save_str)
-	page = page.replace("<!-- msg -->", msg)
+	current_navbar = self.format_html(self.BASE.modules._Web_.Utils.get_navbar(active=''))
+
+	page = self.format_html(page, msg=msg, path=save_str, navbar=current_navbar)
 
 	return self.response(
 		text=page,
