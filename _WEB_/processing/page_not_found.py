@@ -2,18 +2,17 @@
 
 import html
 
-def page_not_found(BASE, info, root, msg=""):
+def main(self, request, msg=""):
 	page = open('_WEB_/content/page_not_found.html', 'r').read()
 
-	page = BASE.modules._Web_.Utils.format_html_functions(BASE, page, infos = info)
+	#page = self.BASE.modules._Web_.Utils.format_html_functions(self.BASE, page)
 
-	save_str = html.escape("Not Found: "+info['raw_path'])
+	save_str = html.escape("Not Found: "+request.path)
 	page = page.replace("<!-- path -->", save_str)
 	page = page.replace("<!-- msg -->", msg)
 
-	class r (object):
-		content = page.encode('utf-8')
-		response = 404
-		header = [('Content-Type','text/html')]
-	return r
-
+	return self.response(
+		text=page,
+		status=404,
+		content_type='text/html'
+	)
