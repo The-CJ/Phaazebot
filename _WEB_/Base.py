@@ -30,9 +30,9 @@ class root(object):
 	# class account(object):														#
 	# 	import _WEB_.processing.account.main as account							#/account
 																				#
-	from _WEB_.js.Base import main as js												#/js
-	# from _WEB_.css import main as css											#/css
-	# from _WEB_.img import main as img											#/img
+	from _WEB_.js.Base import main as js										#/js
+	from _WEB_.css.Base import main as css										#/css
+	from _WEB_.img.Base import main as img										#/img
 																				#
 	# import _WEB_.processing.main as main										#/
 	from _WEB_.processing.page_not_found import main as page_not_found			#<404>
@@ -66,6 +66,8 @@ def webserver(BASE):
     #     loop = asyncio.get_event_loop()
     #     self._server = await self._make_server()
 
+	server.router.add_route('*', '/img{file:.*}', root.img)
+	server.router.add_route('*', '/css{file:.*}', root.css)
 	server.router.add_route('*', '/js{file:.*}', root.js)
 	server.router.add_route('*', '/{x:.*}', root.page_not_found)
 	web.run_app(server, port=80)
