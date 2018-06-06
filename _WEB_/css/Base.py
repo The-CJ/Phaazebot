@@ -2,7 +2,7 @@
 import json
 
 #BASE.modules._Web_.Base.root.css
-def main(self, request):
+async def main(self, request):
 
 	file_name = request.match_info.get('file', None)
 

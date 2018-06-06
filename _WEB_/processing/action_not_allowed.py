@@ -2,7 +2,7 @@
 
 import html
 
-def main(BASE, info, root):
+async def main(BASE, info, root):
 	page = open('_WEB_/content/action_not_allowed.html', 'r').read()
 
 	page = BASE.modules._Web_.Utils.format_html_functions(BASE, page, infos = info)

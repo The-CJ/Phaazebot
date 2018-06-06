@@ -2,7 +2,7 @@
 
 import html
 
-def main(self, request, msg=""):
+async def main(self, request, msg=""):
 	page = open('_WEB_/content/page_not_found.html', 'r').read()
 
 	save_str = html.escape("Not Found: "+request.path)

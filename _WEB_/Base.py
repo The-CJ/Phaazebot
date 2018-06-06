@@ -1,8 +1,6 @@
 #BASE.modules._Web_.Base
 
 import time, datetime, asyncio, re, json
-import http.server
-import urllib.parse as url_parse
 import hashlib, random, string, ssl
 from aiohttp import web
 
@@ -12,8 +10,24 @@ class root(object):
 		self.BASE = BASE
 		self.response = web.Response
 		self.format_html_regex = re.compile(r"\|>>>(.+)<<<\|")
+		self.api = self.init_api(self)
 
+	# Utility functions that are needed everywhere
 	from _WEB_.Utils import format_html_functions as format_html
+	from _API_.Utils import get_user_informations as get_user_info
+	from _API_.Utils import password as password
+	from _API_.Utils import make_session_key as make_session_key
+
+	class init_api(object):
+		def __init__(self, root):
+			self.root = root
+
+		from _API_.Base import nothing as nothing								#/api
+		from _API_.Base import unknown as unknown								#/api/?
+																				#
+		from _API_.Utils import login as login									#/api/login
+		from _API_.Utils import logout as logout								#/api/logout
+
 
 	# class discord(object):
 	# 	import _WEB_.processing.discord.main as main							#/discord
@@ -42,10 +56,10 @@ class root(object):
 	from _WEB_.processing.page_not_found import main as page_not_found			#<404>
 	from _WEB_.processing.action_not_allowed import main as action_not_allowed	#<400/401/402>
 
-
 def webserver(BASE):
 	server = web.Application()
 	root = BASE.modules._Web_.Base.root(BASE)
+	BASE.web = server
     # NOTE: I have no idea why, BUT aoihttp does not support apps started in a side thread,
     # to be precise, it once did, but not in 3.3.0 why... idk,
     # what i know, you can fix it, just replace this:
@@ -70,12 +84,18 @@ def webserver(BASE):
     #     loop = asyncio.get_event_loop()
     #     self._server = await self._make_server()
 
-	server.router.add_route('*', '/', root.main)
-	server.router.add_route('*', '/favicon.ico', root.favicon)
+	server.router.add_route('GET', '/', root.main)
+	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
+	# server.router.add_route('*', '/api/games/webosu', root.api.games_webosu)
+	server.router.add_route('*', '/api/login', root.api.login)
+	server.router.add_route('*', '/api/logout', root.api.logout)
+	server.router.add_route('GET', '/api/{path:.*}', root.api.unknown)
 
-	server.router.add_route('*', '/img{file:.*}', root.img)
-	server.router.add_route('*', '/css{file:.*}', root.css)
-	server.router.add_route('*', '/js{file:.*}', root.js)
+	server.router.add_route('GET', '/favicon.ico', root.favicon)
+
+	server.router.add_route('GET', '/img{file:.*}', root.img)
+	server.router.add_route('GET', '/css{file:.*}', root.css)
+	server.router.add_route('GET', '/js{file:.*}', root.js)
 
 	server.router.add_route('*', '/{x:.*}', root.page_not_found)
 	web.run_app(server, port=80)

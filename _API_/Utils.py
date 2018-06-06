@@ -1,114 +1,158 @@
-#BASE.api.Utils
 
-import json, requests, hashlib
+import asyncio
+import json, requests, hashlib, datetime, random, string
 
 # log in/out
 # /api/login
-def login(BASE, info={}, from_web=False, **kwargs):
-	content = info.get("content", "")
-	try:
-		f = json.loads(content)
-	except:
-		f = {}
+async def login(self, request, **kwargs):
 
-	password = f.get("password", "")
-	phaaze_username = f.get("phaaze_username", "")
+	auth_user = await self.root.get_user_info(request)
 
-	if password == "" or phaaze_username == "":
-		class r (object):
-			content = json.dumps(dict(error="missing_data")).encode("UTF-8")
-			response = 400
-			header = [('Content-Type', 'application/json')]
-		return r
+	_POST = await request.post()
+	if auth_user == None and (_POST.get('phaaze_username', None) == None or _POST.get('password', None) == None):
+		return self.root.response(
+			status=400,
+			text=json.dumps( dict(error="missing_data", status=400, message="fields 'password' and 'phaaze_username' must be defined") ),
+			content_type="application/json"
+		)
 
-	user = get_phaaze_user(BASE, phaaze_username=phaaze_username, password=password)
+	if auth_user == None:
+		return self.response(
+			status=404,
+			text=json.dumps( dict(error="wrong_data", status=404, message="'password' or 'phaaze_username' could not be found") ),
+			content_type="application/json"
+			)
 
-	if user == None:
-		class r (object):
-			content = json.dumps(dict(error="wrong_data")).encode("UTF-8")
-			response = 401
-			header = [('Content-Type', 'application/json')]
-		return r
+	new_session = self.root.BASE.modules._Web_.Base.root.make_session_key()
 
-	new_session = BASE.modules._Web_.Base.Utils.get_session_key()
+	entry = dict(session = new_session, user_id=auth_user['id'])
+	self.BASE.PhaazeDB.insert(into="session/phaaze", content=entry)
 
-	entry = dict(session = new_session, user_id=user['id'])
-	BASE.PhaazeDB.insert(into="session/phaaze", content=entry)
-
-	class r (object):
-		content = json.dumps(dict(phaaze_session=new_session)).encode("UTF-8")
-		response = 200
-		header = [('Content-Type', 'application/json')]
-	return r
+	return self.root.response(
+		text=json.dumps( dict(phaaze_session=new_session,status=200) ),
+		content_type="application/json",
+		status=200
+	)
 
 # /api/logout
-def logout(BASE, info={}, from_web=False, **kwargs):
-	content = info.get("content", "")
-	try:
-		f = json.loads(content)
-	except:
-		f = {}
+async def logout(self, request, **kwargs):
 
-	session_key = info.get('cookies', {}).get("phaaze_session", None)
-	if session_key == None:
-		session_key = f.get('session', None)
+	user = await self.root.get_user_info(request)
 
-	if session_key == None:
-		class r (object):
-			content = json.dumps(dict(error='missing_session_key')).encode("UTF-8")
-			response = 400
-			header = [('Content-Type', 'application/json')]
-		return r
+	if user == None:
+		return self.response(
+			text=json.dumps( dict(error='missing_session_key', status=400) ),
+			content_type="application/json",
+			status=400
+		)
 
-	res = BASE.PhaazeDB.delete(of="session/phaaze", where="data['session'] == '{}'".format(session_key))
+	res = BASE.PhaazeDB.delete(of="session/phaaze", where=f"data['session'] == '{session_key}'")
 
 	if res['hits'] == 1:
-		class r (object):
-			content = json.dumps(dict(msg='success')).encode("UTF-8")
-			response = 200
-			header = [('Content-Type', 'application/json')]
-		return r
+		return self.response(
+			text=json.dumps( dict(status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
 
 #get user infos
+async def get_user_informations(self, request, **kwargs):
 
-def get_phaaze_user(BASE, phaaze_username=None, password=None, session=None, api_token=None, **kwarg):
+	_GET = dict()
+	_POST = dict()
+	_JSON = dict()
 
-	#via username and password
-	if phaaze_username != None and password != None:
-		search_str = 'data["phaaze_username"] == "{}" '.format(phaaze_username)
-		password = hashlib.sha256(password.encode("UTF-8")).hexdigest()
-		search_str = search_str + "and data['password'] == '{}'".format(password)
-		res = BASE.PhaazeDB.select(of="user", where=search_str)
-		if len(res['data']) != 1:
-			return None
+	try:
+		_GET = request.query
+	except Exception as e:
+		pass
 
-		else:
-			return res['data'][0]
+	try:
+		_POST = await request.post()
+	except Exception as e:
+		pass
 
-	if session != None:
-		search_str = 'data["session"] == "{}" '.format(session)
-		res = BASE.PhaazeDB.select(of="session/phaaze", where=search_str)
+	try:
+		_JSON = await request.json()
+	except Exception as e:
+		pass
+
+	# All vars have the same Auth way: Systemcall var -> POST -> JSON Content -> GET
+
+	#via session
+	phaaze_session = request.headers.get('phaaze_session', None)
+	if phaaze_session != None:
+		search_str = f'data["session"] == "{phaaze_session}" '
+		res = self.BASE.PhaazeDB.select(of="session/phaaze", where=search_str)
 		if len(res['data']) != 1:
 			return None
 
 		else:
 			user_session = res['data'][0]
 
-		search_str = 'int(data["id"]) == {} '.format(user_session.get('user_id',"0"))
-		res = BASE.PhaazeDB.select(of="user", where=search_str)
+		uid = user_session.get('user_id',"0")
+		search_str = f'int(data["id"]) == int({uid}) '
+		res = self.BASE.PhaazeDB.select(of="user", where=search_str)
 		if len(res['data']) != 1:
 			return None
 
 		else:
 			return res['data'][0]
 
-#discord
+	#via api token
+	phaaze_token = kwargs.get('phaaze_token', None)
+	if phaaze_token == None:
+		phaaze_token = _POST.get('phaaze_token', None)
+	if phaaze_token == None:
+		phaaze_token = _JSON.get('phaaze_token', None)
+	if phaaze_token == None:
+		phaaze_token = _GET.get('phaaze_token', None)
+	if phaaze_token == None:
+		phaaze_token = request.headers.get('phaaze_token', None)
 
-def get_discord_user_by_session(BASE, session):
-
-	search_str = 'data["session"] == "{}"'.format(session)
-	res = BASE.PhaazeDB.select(of="session/discord", where=search_str)
-	if len(res['data']) == 0:
+	if phaaze_token != None:
 		return None
+		# TODO: be able ti auth with token
 
-	return res['data'][0]
+	#via username and password
+	phaaze_password = kwargs.get('password', None)
+	if phaaze_password == None:
+		phaaze_password = _POST.get('password', None)
+	if phaaze_password == None:
+		phaaze_password = _JSON.get('password', None)
+	if phaaze_password == None:
+		phaaze_password = _GET.get('password', None)
+
+	phaaze_username = kwargs.get('phaaze_username', None)
+	if phaaze_username == None:
+		phaaze_username = _POST.get('phaaze_username', None)
+	if phaaze_username == None:
+		phaaze_username = _JSON.get('phaaze_username', None)
+	if phaaze_username == None:
+		phaaze_username = _GET.get('phaaze_username', None)
+
+	if phaaze_username != None and phaaze_password != None:
+		phaaze_password = password(phaaze_password)
+		search_str = f"data['phaaze_username'] == '{phaaze_username}' and data['password'] == '{phaaze_password}'"
+		res = self.BASE.PhaazeDB.select(of="user", where=search_str)
+		if len(res['data']) != 1:
+			return None
+
+		else:
+			return res['data'][0]
+
+	return None
+
+#from string into password
+def password(passwd):
+	password = hashlib.sha256(passwd.encode("UTF-8")).hexdigest()
+	return password
+
+#generate a new sesssion key
+def make_session_key():
+	snonce = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(8))
+	stime = hashlib.sha1( str(datetime.datetime.now()).encode("UTF-8") + snonce ).hexdigest()
+
+	key = str(stime)
+	return key
