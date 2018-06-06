@@ -28,6 +28,8 @@ class root(object):
 		from _API_.Utils import login as login									#/api/login
 		from _API_.Utils import logout as logout								#/api/logout
 
+		#only temoraly?
+		from _API_.Base import games_webosu as games_webosu						#/api/games/webosu
 
 	# class discord(object):
 	# 	import _WEB_.processing.discord.main as main							#/discord
@@ -86,7 +88,7 @@ def webserver(BASE):
 
 	server.router.add_route('GET', '/', root.main)
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
-	# server.router.add_route('*', '/api/games/webosu', root.api.games_webosu)
+	server.router.add_route('*', '/api/games/webosu', root.api.games_webosu)
 	server.router.add_route('*', '/api/login', root.api.login)
 	server.router.add_route('*', '/api/logout', root.api.logout)
 	server.router.add_route('GET', '/api/{path:.*}', root.api.unknown)
