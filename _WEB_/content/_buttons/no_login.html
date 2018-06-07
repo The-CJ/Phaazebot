@@ -1,6 +1,48 @@
-<div class="white" style="border-radius: 20px">
-  <button type="button" class="btn-primary btn expandable-btn" style="margin:0;padding:.5em;border-radius: 20px" onclick="window.location='/account'">
-    <i class="material-icons" style="position: relative;top: 1px;left:2px;">account_circle</i>
-    <span style="position: relative;bottom: 6px;" class="expandable_content">Login</span>
-  </button>
+<style media="screen">
+
+  .button-no_login-base {
+    border-radius: 20px;
+  }
+
+  .button-no_login-base a{
+    display: unset;
+  }
+
+  .button-no_login-btn {
+    margin:0;
+    padding:.5em;
+    border-radius: 20px
+  }
+
+  .button-no_login-btn i {
+    position: relative;
+    top: 1px;
+    left:2px;
+  }
+
+  .button-no_login-btn span {
+    max-width: 0;
+  	transition: .5s;
+  	display: inline-flex;
+    position: relative;
+  	overflow: hidden;
+  }
+
+  .button-no_login-btn:hover span {
+    max-width: 30rem;
+  }
+
+  a:focus .button-no_login-btn span {
+    max-width: 30rem;
+  }
+
+</style>
+
+<div class="button-no_login-base">
+  <a href="/account">
+    <button type="button" class="btn-primary btn button-no_login-btn">
+      <i class="material-icons">account_circle</i>
+      <span>Login</span>
+    </button>
+  </a>
 </div>

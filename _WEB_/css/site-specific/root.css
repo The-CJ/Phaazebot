@@ -17,3 +17,7 @@
 	animation-timing-function: linear;
 	animation-direction: reverse;
 }
+
+.root-logo {
+  width: 100%;
+}

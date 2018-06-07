@@ -1,0 +1,13 @@
+.page_not_found-404 {
+  font-size: 25vw;
+  font-weight: 400;
+  opacity: 0.15;
+}
+
+.page_not_found-logo {
+  width: 100%;
+  position: relative;
+}
+.page_not_found-logo img {
+  width: 100%;
+}
