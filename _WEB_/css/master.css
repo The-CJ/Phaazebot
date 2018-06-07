@@ -1,0 +1,20 @@
+* {
+	box-sizing: border-box;
+}
+
+pre {
+	border-radius: 5px;
+	border: 1px solid lightgrey;
+	background: rgba(50,50,50,0.5);
+	padding: 0.5em;
+	padding-left: 0.9em;
+	color: white;
+}
+
+.centered {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-right: -50%;
+	transform: translate(-50%, -50%);
+}

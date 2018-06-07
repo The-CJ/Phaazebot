@@ -1,4 +1,4 @@
-#BASE.modules._Web_.Base.root.action_not_allowed
+#BASE.modules._Web_.Base.root.web.action_not_allowed
 
 import html
 
