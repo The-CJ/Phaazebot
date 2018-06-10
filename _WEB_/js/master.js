@@ -96,7 +96,7 @@ function copy_data_fields(from, to) {
   $('#'+to).val(from_val);
 }
 
-function _show_message(content, color, text_color, symbol, link) {
+function _show_message(content, color, text_color, symbol, link, time) {
   // The display field is located in the main navbar, so its everywere.
   var message_field = $('#_message_field');
 
@@ -107,6 +107,13 @@ function _show_message(content, color, text_color, symbol, link) {
   message.find('h1').text(content);
   message_bar_raw.append(message_bar_time)
   message.append(message_bar_raw);
+
+  if (time != null) {
+    message_bar_time.css('animation-duration', time+'ms');
+    message.css('animation-duration', time+'ms');
+  } else {
+    time = 10000;
+  }
 
   if (color != null) {
     message.css('background', color);
@@ -124,6 +131,6 @@ function _show_message(content, color, text_color, symbol, link) {
 
   setTimeout(function () {
     message.remove();
-  }, 10000);
+  }, time);
 
 }

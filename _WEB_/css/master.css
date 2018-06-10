@@ -35,11 +35,14 @@ pre {
 #_message_field {
 	width: 100%;
 	z-index: 15000;
-	position: absolute;
+	position: fixed;
+	top: 10vh;
 }
 
 #_message_field ._message h1{
 	font-size: 120%;
+	padding:0.25rem;
+	margin:0;
 }
 
 #_message_field ._message {
@@ -58,9 +61,11 @@ pre {
 	}
 	90%{
 		opacity: 1;
+		max-height: 100%;
 	}
 	100%{
 		opacity: 0;
+		max-height: 0;
 	}
 }
 
