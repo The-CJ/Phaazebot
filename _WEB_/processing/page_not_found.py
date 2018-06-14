@@ -1,6 +1,6 @@
 #BASE.modules._Web_.Base.root.web.page_not_found
 
-import html
+import html, asyncio
 
 async def main(self, request, msg=""):
 	page = open('_WEB_/content/page_not_found.html', 'r').read()

@@ -10,7 +10,7 @@ def get_navbar(active=''):
         except:
             pass
 
-        ac = re.finditer('\\{selected_(.+)\\}', navbar)
+        ac = re.finditer(r'\{selected_(.+)\}', navbar)
         for c in ac:
             if c.group(0) == active:
                 navbar = navbar.replace(c.group(0), 'active')

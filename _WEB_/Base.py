@@ -1,7 +1,7 @@
 #BASE.modules._Web_.Base
 
-import time, datetime, asyncio, re, json
-import hashlib, random, string, ssl
+import re
+import ssl
 from aiohttp import web
 
 class root(object):
@@ -20,6 +20,7 @@ class root(object):
 	from _API_.Utils import password as password
 	from _API_.Utils import make_session_key as make_session_key
 
+	# /api/ ...
 	class init_api(object):
 		def __init__(self, root):
 			self.root = root
@@ -33,6 +34,7 @@ class root(object):
 		#only temoraly?																		#
 		from _API_.Base import games_webosu as games_webosu									#/api/games/webosu
 
+	# / ...
 	class init_web(object):																	#
 		def __init__(self, root):															#
 			self.root = root																#
@@ -43,6 +45,7 @@ class root(object):
 																							#
 		from _WEB_.processing.Base import get_favicon as favicon							#/favicon.ico
 		from _WEB_.processing.Base import main as main										#/
+		from _WEB_.processing.Base import cert as cert										#/.well-known/acme-challenge/
 		from _WEB_.processing.page_not_found import main as page_not_found					#<404>
 		from _WEB_.processing.action_not_allowed import main as action_not_allowed			#<400/401/402>
 
@@ -69,6 +72,8 @@ def webserver(BASE):
 	root = BASE.modules._Web_.Base.root(BASE)
 	BASE.web = server
 
+	server.router.add_route('GET', '/.well-known/acme-challenge/{cert_file:.+}', root.web.cert)
+
 	# main
 	server.router.add_route('GET', '/', root.web.main)
 	server.router.add_route('GET', '/favicon.ico', root.web.favicon)
@@ -88,27 +93,8 @@ def webserver(BASE):
 	# somewhere but i don't know
 	server.router.add_route('*',   '/{x:.*}', root.web.page_not_found)
 
-    # NOTE: I have no idea why, BUT aoihttp does not support apps started in a side thread,
-    # to be precise, it once did, but not in 3.3.0 why... idk,
-    # what i know, you can fix it, just replace this:
-    # In: python3.XX/site-packages/aiohttp/web_runner.py :
+	###################################
 
-    # async def setup(self):
-    #     loop = asyncio.get_event_loop()
-    #
-    #     if self._handle_signals:
-    #         try:
-    #             loop.add_signal_handler(signal.SIGINT, _raise_graceful_exit)
-    #             loop.add_signal_handler(signal.SIGTERM, _raise_graceful_exit)
-    #         except NotImplementedError:  # pragma: no cover
-    #             # add_signal_handler is not implemented on Windows
-    #             pass
-    #
-    #     self._server = await self._make_server()
-
-    # with something.. like this
-
-    # async def setup(self):
-    #     loop = asyncio.get_event_loop()
-    #     self._server = await self._make_server()
-	web.run_app(server, port=80)
+	SSL = ssl.SSLContext()
+	SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/cert.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
+	web.run_app(server, ssl_context=SSL, port=443)
