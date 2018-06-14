@@ -55,17 +55,6 @@ function phaaze_login() {
   );
 }
 
-var entityMap = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-  "'": '&#39;',
-  '/': '&#x2F;',
-  '`': '&#x60;',
-  '=': '&#x3D;'
-};
-
 function escapeHtml (string) {
   return String(string).replace(/[&<>"'`=\/]/g, function (s) {
     return entityMap[s];
@@ -107,23 +96,41 @@ function copy_data_fields(from, to) {
   $('#'+to).val(from_val);
 }
 
-function _show_message(content, style) {
+function _show_message(content, color, text_color, symbol, link, time) {
   // The display field is located in the main navbar, so its everywere.
   var message_field = $('#_message_field');
 
-  var id_ = "msg_field_" + Math.floor((Math.random() * 10000) + 1);
-  var outer_field = $('<div class="message_box"></div>');
-  var inner_field = $('<div style="margin:1em;"></div>');
-  inner_field.text(content);
+  var message = $('<div class="_message"><h1></h1></div>');
+  var message_bar_raw = $('<div class="_message_bar_raw"></div>')
+  var message_bar_time = $('<div class="_message_bar_left"></div>')
 
-  outer_field.attr('style', style);
-  outer_field.attr('id', id_);
-  outer_field.html(inner_field);
+  message.find('h1').text(content);
+  message_bar_raw.append(message_bar_time)
+  message.append(message_bar_raw);
 
-  message_field.append(outer_field);
+  if (time != null) {
+    message_bar_time.css('animation-duration', time+'ms');
+    message.css('animation-duration', time+'ms');
+  } else {
+    time = 10000;
+  }
+
+  if (color != null) {
+    message.css('background', color);
+  } else {
+    message.css('background', '#4285FF');
+  }
+
+  if (text_color != null) {
+    message.css('color', text_color);
+  } else {
+    message.css('color', 'white');
+  }
+
+  message_field.append(message);
 
   setTimeout(function () {
-    $('#'+id_).remove();
-  }, 5000);
+    message.remove();
+  }, time);
 
 }

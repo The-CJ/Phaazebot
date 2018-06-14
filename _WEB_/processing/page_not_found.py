@@ -1,19 +1,17 @@
-#BASE.modules._Web_.Base.root.page_not_found
+#BASE.modules._Web_.Base.root.web.page_not_found
 
-import html
+import html, asyncio
 
-def page_not_found(BASE, info, root, msg=""):
+async def main(self, request, msg=""):
 	page = open('_WEB_/content/page_not_found.html', 'r').read()
 
-	page = BASE.modules._Web_.Utils.format_html_functions(BASE, page, infos = info)
+	save_str = html.escape("Not Found: "+request.path)
+	current_navbar = self.root.format_html(self.root.BASE.modules._Web_.Utils.get_navbar(active=''))
 
-	save_str = html.escape("Not Found: "+info['raw_path'])
-	page = page.replace("<!-- path -->", save_str)
-	page = page.replace("<!-- msg -->", msg)
+	page = self.root.format_html(page, msg=msg, path=save_str, navbar=current_navbar)
 
-	class r (object):
-		content = page.encode('utf-8')
-		response = 404
-		header = [('Content-Type','text/html')]
-	return r
-
+	return self.root.response(
+		text=page,
+		status=404,
+		content_type='text/html'
+	)

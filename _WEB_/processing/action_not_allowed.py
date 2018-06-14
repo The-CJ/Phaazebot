@@ -1,8 +1,8 @@
-#BASE.modules._Web_.Base.root.action_not_allowed
+#BASE.modules._Web_.Base.root.web.action_not_allowed
 
 import html
 
-def action_not_allowed(BASE, info, root):
+async def main(BASE, info, root):
 	page = open('_WEB_/content/action_not_allowed.html', 'r').read()
 
 	page = BASE.modules._Web_.Utils.format_html_functions(BASE, page, infos = info)
@@ -15,4 +15,3 @@ def action_not_allowed(BASE, info, root):
 		response = 403
 		header = [('Content-Type','text/html')]
 	return r
-

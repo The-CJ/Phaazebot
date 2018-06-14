@@ -1,31 +1,34 @@
 #BASE.modules._Twitch_.Base
-import asyncio, json, requests
 
-custom_commands_in_last_15s = []
+import asyncio, json
 
 async def on_message(BASE, message):
-	if message.name == "phaazebot": return
-	m = message.content.split(" ")
 
-	settings = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
+	# NOTE: -
+	# PhaazeDB can handle ~700 request/sec without a big delay.
+	# Discord traffic at highest: ~200 request/s calculated with 5M+ Users
+	# means there are ~500 request/s left, based on twitchstatus.com we have ~ 900-1000 msg/s on ALL channels
+	# calculated with 200 - 400 channels (~5-20 msg/s) should not be a huge problem and have space for PhaazeWeb and more
 
-	for command in settings.get("commands", []):
-		if command["trigger"] == m[0].lower():
-			if not (message.channel + command["trigger"]) in custom_commands_in_last_15s:
-				asyncio.ensure_future(timeout_command((message.channel + command["trigger"])))
-				await BASE.Twitch_IRC_connection.send_message(message.channel, command["content"])
+	channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel.id)
+	channel_commands = await BASE.modules._Twitch_.Utils.get_channel_commands(BASE, message.channel.id)
+	#channel_levels =   await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, message.channel.id)
+	#channel_quotes =   await BASE.modules._Twitch_.Utils.get_channel_quotes(BASE, message.channel.id)
 
-	if message.content.startswith("!"):
-		await Commands.check_commands(BASE, message)
+	#blacklist (Only, when links are banned or at least one word is in the blacklist)
+	if channel_settings.get('ban_links', False) or channel_settings.get('blacklist', []) != []:
+		await BASE.modules._Twitch_.Blacklist.check(BASE, message, channel_settings)
 
-	stats_active = settings.get("stats", False)
-	if stats_active:
-		await BASE.modules._Twitch_.Gold.Base(BASE, message)
+	return
 
-	osu_active = settings.get("osu", False)
-	if osu_active:
-		if "osu.ppy.sh/s/" in message.content.lower() or "osu.ppy.sh/b/" in message.content.lower() or "osu.ppy.sh/beatmapsets/" in message.content.lower()  :
-			await BASE.modules.osu.twitch_osu(BASE, message)
+	await BASE.modules._Twitch_.Custom.get(BASE, message, channel_settings=channel_settings, channel_commands=channel_commands)
+
+	if message.content.startswith('!'):
+		pass
+
+	"""Phaaze Commands"""
+
+
 
 async def on_member_join(BASE, channel, name):
 	for chan in BASE.Twitch_IRC_connection.channels:

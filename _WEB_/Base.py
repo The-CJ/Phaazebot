@@ -1,159 +1,100 @@
 #BASE.modules._Web_.Base
 
-import time, datetime, asyncio, re, json
-import http.server
-import urllib.parse as url_parse
-import hashlib, random, string, ssl
-
-the_list_of_endpoint_that_gets_always_triggered_by_annoying_bots_on_search_of_something__That_i_will_anwnser_with_a_toaster = [
-	'/phpMyAdmin', '/php', '/pma', '/ccvv', '/index.php', '/robots.txt', '/cfide', '/webman',
-	'/hnap1', '/webman', '/vendor', '/http:', '/zabbit', '/myadmin', '/wp-admin'
-]
+import re
+import ssl
+from aiohttp import web
 
 class root(object):
 
-	class discord(object):
-		import _WEB_.processing.discord.main as main							#/discord
-		import _WEB_.processing.discord.dashboard as dashboard					#/discord/dashboard
-		import _WEB_.processing.discord.invite as invite						#/discord/invite
-		import _WEB_.processing.discord.custom as custom						#/discord/custom
-																				#
-	class fileserver(object):													#
-		import _WEB_.processing.fileserver.main as main							#/fileserver
-																				#
-	class wiki(object):															#
-		import _WEB_.processing.wiki.main as main								#/wiki
-																				#
-	class admin(object):														#
-		import _WEB_.processing.admin.admin as admin							#/admin
-																				#
-	class account(object):														#
-		import _WEB_.processing.account.main as account							#/account
-																				#
-	import _WEB_.js.main as js													#/js
-	import _WEB_.css.main as css												#/css
-	import _WEB_.img.main as img												#/img
-																				#
-	import _WEB_.processing.main as main										#/
-	import _WEB_.processing.page_not_found as page_not_found					#<404>
-	import _WEB_.processing.action_not_allowed as action_not_allowed			#<400/401/402>
+	def __init__(self, BASE):
+		self.BASE = BASE
+		self.response = web.Response
+		self.format_html_regex = re.compile(r"\|>>>(.+)<<<\|")
 
+		self.web = self.init_web(self)
+		self.api = self.init_api(self)
 
-class Utils(object):
+	# Utility functions that are needed everywhere
+	from _WEB_.Utils import format_html_functions as format_html
+	from _API_.Utils import get_user_informations as get_user_info
+	from _API_.Utils import password as password
+	from _API_.Utils import make_session_key as make_session_key
 
-	def parse_url(url):
-		url = url_parse.unquote_plus(url)
-		raw_list = url.split('?')
+	# /api/ ...
+	class init_api(object):
+		def __init__(self, root):
+			self.root = root
 
-		#get path parts
-		path_parts = raw_list[0].split("/")
-		while '' in path_parts:
-			path_parts.remove('')
+		from _API_.Base import nothing as nothing											#/api
+		from _API_.Base import unknown as unknown											#/api/?
+																							#
+		from _API_.Utils import login as login												#/api/login
+		from _API_.Utils import logout as logout											#/api/logout
+																							#
+		#only temoraly?																		#
+		from _API_.Base import games_webosu as games_webosu									#/api/games/webosu
 
-		#No more vars? -> return
-		if len(raw_list) == 1:
-			values = dict()
-			return dict(raw_path= url, path=path_parts, values=values)
+	# / ...
+	class init_web(object):																	#
+		def __init__(self, root):															#
+			self.root = root																#
+																							#
+		from _WEB_.js.Base import main as js												#/js
+		from _WEB_.css.Base import main as css												#/css
+		from _WEB_.img.Base import main as img												#/img
+																							#
+		from _WEB_.processing.Base import get_favicon as favicon							#/favicon.ico
+		from _WEB_.processing.Base import main as main										#/
+		from _WEB_.processing.Base import cert as cert										#/.well-known/acme-challenge/
+		from _WEB_.processing.page_not_found import main as page_not_found					#<404>
+		from _WEB_.processing.action_not_allowed import main as action_not_allowed			#<400/401/402>
 
-		#more vars
-		other_arguments = raw_list[1]
-		all_args = other_arguments.split("&")
-		if len(all_args) == 0:
-			all_args = other_arguments
-		values = dict()
-		for arg in all_args:
-			hit = re.search(r"(\w+)(=(\S+)|=)?", arg)
-			if hit == None: continue
+	# class discord(object):																#
+	# 	import _WEB_.processing.discord.main as main										#/discord
+	# 	import _WEB_.processing.discord.dashboard as dashboard								#/discord/dashboard
+	# 	import _WEB_.processing.discord.invite as invite									#/discord/invite
+	# 	import _WEB_.processing.discord.custom as custom									#/discord/custom
+	# 																						#
+	# class fileserver(object):																#
+	# 	import _WEB_.processing.fileserver.main as main										#/fileserver
+	# 																						#
+	# class wiki(object):																	#
+	# 	import _WEB_.processing.wiki.main as main											#/wiki
+	# 																						#
+	# class admin(object):																	#
+	# 	import _WEB_.processing.admin.admin as admin										#/admin
+	# 																						#
+	# class account(object):																#
+	# 	import _WEB_.processing.account.main as account										#/account
 
-			if hit.group(2) == None and hit.group(3) == None:
-				values[hit.group(1)] = True
-			else:
-				values[hit.group(1)] = hit.group(3)
+def webserver(BASE):
+	server = web.Application()
+	root = BASE.modules._Web_.Base.root(BASE)
+	BASE.web = server
 
-		return dict(raw_path= url, path=path_parts, values=values)
+	server.router.add_route('GET', '/.well-known/acme-challenge/{cert_file:.+}', root.web.cert)
 
-	def parse_cookies(head):
-		kekse = head.get('Cookie', None)
-		if kekse == None: return {}
+	# main
+	server.router.add_route('GET', '/', root.web.main)
+	server.router.add_route('GET', '/favicon.ico', root.web.favicon)
 
-		cookiejar = {}
-		for keks in kekse.split(";"):
-			try:
-				key, value = keks.split("=")
-				cookiejar[key.replace(" ", "")] = value.replace(" ", "")
-			except:
-				pass
-		return cookiejar
+	# /api
+	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
+	server.router.add_route('*',   '/api/games/webosu', root.api.games_webosu)
+	server.router.add_route('*',   '/api/login', root.api.login)
+	server.router.add_route('*',   '/api/logout', root.api.logout)
+	server.router.add_route('GET', '/api/{path:.*}', root.api.unknown)
 
-	def get_content(rfile, headers):
-		try: length = int(headers["Content-Length"])
-		except: length = 0
+	# /js /img /css
+	server.router.add_route('GET', '/img{file:.*}', root.web.img)
+	server.router.add_route('GET', '/css{file:.*}', root.web.css)
+	server.router.add_route('GET', '/js{file:.*}', root.web.js)
 
-		content = rfile.read(length)
-		return content
+	# somewhere but i don't know
+	server.router.add_route('*',   '/{x:.*}', root.web.page_not_found)
 
-	def get_session_key():
-		stime = hashlib.sha1( str(datetime.datetime.now()).encode("UTF-8") ).hexdigest()
-		snonce = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(8))
+	###################################
 
-		key = str(stime) + str(snonce)
-		return key
-
-def process(BASE, info):
-
-	if ""=="":
-		r = root.main.main(BASE, info, root)
-
-	return r
-
-class RequestHandler(http.server.BaseHTTPRequestHandler):
-
-	def do_POST(self):
-		self.do_GET()
-
-	def do_GET(self):
-
-		if not RequestHandler.BASE.active.web: return
-
-		if self.path.lower() in the_list_of_endpoint_that_gets_always_triggered_by_annoying_bots_on_search_of_something__That_i_will_anwnser_with_a_toaster:
-			return
-
-		#path, raw_path, values
-		information = Utils.parse_url(self.path)
-		information['header'] = self.headers
-		information['cookies'] = Utils.parse_cookies(self.headers)
-		information['content'] = Utils.get_content(self.rfile, self.headers)
-
-		return_value = process(RequestHandler.BASE, information)
-		if return_value == None:
-			class r(object):
-				response=500
-				header=[('Content-Type','text/html')]
-				content=b""
-
-			return_value = r
-
-		#200, 404, etc
-		self.send_response(return_value.response)
-
-		#send all head vars
-		for head_value in return_value.header:
-			self.send_header(head_value[0] ,head_value[1])
-
-		#end headers
-		self.end_headers()
-
-		#send content
-		if type(return_value.content) is not bytes: return_value.content = str(return_value.content).encode("UTF-8")
-		self.wfile.write(return_value.content)
-		self.wfile.flush()
-
-	def log_message(self, format, *args):
-		return
-
-async def webserver(BASE):
-	RequestHandler.BASE = BASE
-	server = http.server.HTTPServer(('0.0.0.0', 80), RequestHandler)
-	# server = ssl.wrap_socket(server.socket, certfile=None, server_side=True)
-	server.serve_forever()
-
+	SSL = ssl.SSLContext()
+	SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/cert.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
+	web.run_app(server, ssl_context=SSL, port=443)
