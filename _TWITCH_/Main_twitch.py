@@ -13,16 +13,13 @@ class Init_twitch(twitch.Client):
 		self.BASE.is_ready.twitch = True
 		self.BASE.modules.Console.GREEN("SUCCESS", "Twitch IRC Connected")
 		await self.join_channel(self.nickname)
-		await self.join_channel("the__cj")
+		await self.join_channel("the__cj") #FIXME: testing
 
 	#message management
 	async def on_message(self, message):
-		if message.name.lower() == "phaazebot": return
+		if message.name.lower() == self.nickname.lower(): return
 
 		if not self.BASE.is_ready.twitch: return
-		#if message.author is a BOT: return
 
 		await self.BASE.modules._Twitch_.Base.on_message(self.BASE, message)
-
-
 
