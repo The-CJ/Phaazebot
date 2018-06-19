@@ -48,11 +48,11 @@ async def make_channel_settings(BASE, id):
 	insert_['ban_links'] = False
 	insert_['regulars'] = []
 	insert_['link_whitelist'] = []
-	insert_['blacklist_punishment'] = 0
 	insert_['blacklist'] = []
+	insert_['blacklist_punishment'] = 0
+	insert_['blacklist_message'] = None
+	insert_['blacklist_link_message'] = None
 
-	insert_['message_blacklist'] = None
-	insert_['message_link'] = None
 
 	BASE.PhaazeDB.insert(into="twitch/channel_settings", content=insert_)
 	BASE.modules.Console.CYAN("INFO", "New Twitch Setting DB entry")
