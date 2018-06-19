@@ -10,17 +10,16 @@ async def on_message(BASE, message):
 	# means there are ~500 request/s left, based on twitchstatus.com we have ~ 900-1000 msg/s on ALL channels
 	# calculated with 200 - 400 channels (~5-20 msg/s) should not be a huge problem and have space for PhaazeWeb and more
 
-	channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel.id)
-	channel_commands = await BASE.modules._Twitch_.Utils.get_channel_commands(BASE, message.channel.id)
+	channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+	channel_commands = await BASE.modules._Twitch_.Utils.get_channel_commands(BASE, message.channel_id)
 	#channel_levels =   await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, message.channel.id)
 	#channel_quotes =   await BASE.modules._Twitch_.Utils.get_channel_quotes(BASE, message.channel.id)
 
-	#blacklist (Only, when links are banned or at least one word is in the blacklist)
-	if channel_settings.get('ban_links', False) or channel_settings.get('blacklist', []) != []:
+	#blacklist (Only, when links are banned or at least one word is in the blacklist AND there is a purge/timeout)
+	if channel_settings.get("blacklist_punishment", 0) != 0 and (channel_settings.get('ban_links', False) or channel_settings.get('blacklist', []) != []):
 		await BASE.modules._Twitch_.Blacklist.check(BASE, message, channel_settings)
 
-	return
-
+	return #TODO: later
 	await BASE.modules._Twitch_.Custom.get(BASE, message, channel_settings=channel_settings, channel_commands=channel_commands)
 
 	if message.content.startswith('!'):
