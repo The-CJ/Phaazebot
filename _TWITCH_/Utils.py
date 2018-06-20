@@ -45,9 +45,11 @@ async def make_channel_settings(BASE, id):
 	insert_['active_quotes'] = False
 	insert_['active_custom'] = True
 	insert_['active_games'] = False
+
 	insert_['ban_links'] = False
 	insert_['regulars'] = []
 	insert_['link_whitelist'] = []
+
 	insert_['blacklist'] = []
 	insert_['blacklist_punishment'] = 0
 	insert_['blacklist_notify'] = True

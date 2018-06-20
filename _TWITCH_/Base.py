@@ -19,8 +19,9 @@ async def on_message(BASE, message):
 	if channel_settings.get("blacklist_punishment", 0) != 0 and (channel_settings.get('ban_links', False) or channel_settings.get('blacklist', []) != []):
 		await BASE.modules._Twitch_.Blacklist.check(BASE, message, channel_settings)
 
-	return #TODO: later
-	await BASE.modules._Twitch_.Custom.get(BASE, message, channel_settings=channel_settings, channel_commands=channel_commands)
+	#custom command
+	if len(channel_commands) != 0 and channel_settings.get('active_custom', False):
+		await BASE.modules._Twitch_.Custom.get(BASE, message, channel_settings=channel_settings, channel_commands=channel_commands)
 
 	if message.content.startswith('!'):
 		pass
