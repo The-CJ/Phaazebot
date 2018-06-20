@@ -76,7 +76,7 @@ async def punish(BASE, message, channel_settings, reason="word"):
 		m = m + " [Warning]"
 
 	#send a message to warn the user, but dont spam it
-	if not message.channel_id in channel_cooldown:
+	if not message.channel_id in channel_cooldown and channel_settings.get("blacklist_notify", False):
 		try:
 			asyncio.ensure_future(cooldown(message.channel_id))
 			await BASE.twitch.send_message(message.channel_name, m)

@@ -50,9 +50,9 @@ async def make_channel_settings(BASE, id):
 	insert_['link_whitelist'] = []
 	insert_['blacklist'] = []
 	insert_['blacklist_punishment'] = 0
+	insert_['blacklist_notify'] = True
 	insert_['blacklist_message'] = None
 	insert_['blacklist_link_message'] = None
-
 
 	BASE.PhaazeDB.insert(into="twitch/channel_settings", content=insert_)
 	BASE.modules.Console.CYAN("INFO", "New Twitch Setting DB entry")
@@ -125,6 +125,7 @@ async def make_channel_quotes(BASE, id):
 # # #
 
 def API_call(BASE, url):
+	#main api call
 	key = BASE.access.Twitch_API_Token
 	header = {"Client-ID": key, "Accept": "application/vnd.twitchtv.v5+json"}
 	try:
