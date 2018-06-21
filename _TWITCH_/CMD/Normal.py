@@ -1,7 +1,9 @@
 #BASE.modules._TWITCH_.CMD.Normal
 
-import asyncio, json, random
+import asyncio, random
 
+async def Base(BASE, message, **kwargs):  
+	pass
 
 block_q = []
 async def block_quotes(_id_):

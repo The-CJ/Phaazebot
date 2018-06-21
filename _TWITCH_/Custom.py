@@ -31,6 +31,7 @@ async def get(BASE, message, **kwargs):
 			send = send.replace('{display_name}', message.display_name)
 			send = send.replace('{name}', message.name)
 			send = send.replace('{user_id}', message.user_id)
+
 			await BASE.twitch.send_message(message.channel_name, send)
 			BASE.PhaazeDB.update(
 				of="twitch/commands/commands_"+message.channel_id,
@@ -47,32 +48,19 @@ async def add(BASE, message, kwargs):
 	m = message.content.split(" ")
 
 	if len(m) <= 2:
-		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}addcom [Trigger] [Content]`\n\n"\
-			"`[Trigger]` - The thing that makes the command appear (Case insensitive)\n"\
-			"`[Content]` - Whatever you want to show as the command content\n\n"\
-			"You can use tokens in your `[Content]` that will be replaced by infos:\n"\
-			"`[user-name]` - Current member name\n"\
-			"`[user-mention]` - Current member @ mention\n"\
-			"`[channel-name]` - Current channel name\n"\
-			"`[channel-mention]` - Current channel @ mention\n"\
-			"`[server-name]` - Current server name\n"\
-			"`[member-count]` - Number of members on the the server\n"\
-			"`[uses]` - How many times a command has been used"
-		return await BASE.discord.send_message(message.channel, r)
+		r = f"Error! > !addcom [Trigger] [Content]"
+		return await BASE.twitch.send_message(message.channel_name, r)
 
 	trigger = m[1].lower()
-	server_commands = kwargs.get('server_commands', [])
+	channel_commands = kwargs.get('channel_commands', [])
 
-	if len(trigger) >= 100:
-		return await BASE.discord.send_message(message.channel, ":no_entry_sign: Trigger to long. Maximum: 100 characters")
-
-	if trigger == "all":
-		return await BASE.discord.send_message(message.channel, ":no_entry_sign: The trigger `all` is reservated, try something else.")
+	if len(trigger) >= 50:
+		return await BASE.twitch.send_message(message.channel_name, "Error: Trigger is to long. Maximum: 50 characters")
 
 	#check if command exist
 	found = False
-	for com in server_commands:
-		if com.get("trigger", None).lower() == trigger:
+	for cmd in channel_commands:
+		if cmd.get("trigger", None).lower() == trigger:
 			found = True
 			break
 
@@ -80,33 +68,56 @@ async def add(BASE, message, kwargs):
 	if found:
 		content = " ".join(f for f in m[2:])
 		BASE.PhaazeDB.update(
-			of=f"discord/commands/commands_{message.server.id}",
+			of=f"twitch/commands/commands_{message.channel_id}",
 			where=f"data['trigger'] == '{trigger}'",
 			content=dict(content=str(content))
 		)
-		await BASE.modules._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "update", trigger=trigger)
-		return await BASE.discord.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **updated!**')
+		return await BASE.twitch.send_message(message.channel_name, f'Command "{trigger}" has been updated!')
 
 	#new
 	else:
-		if len(server_commands) >= custom_command_limit:
-			return await BASE.discord.send_message(message.channel, f":no_entry_sign: The limit of {custom_command_limit} custom commands is reached, delete some first.")
+		if len(channel_commands) >= custom_command_limit:
+			return await BASE.twitch.send_message(message.channel_name, f"Error: The limit of {custom_command_limit} custom commands is reached, delete some first.")
 
 		content = " ".join(f for f in m[2:])
 		BASE.PhaazeDB.insert(
-			into=f"discord/commands/commands_{message.server.id}",
+			into=f"twitch/commands/commands_{message.channel_id}",
 			content=dict(
 				content=str(content),
 				trigger=str(trigger),
-				uses=0
+				uses=0,
+				cooldown=10 # <- can only be changed via web
 			)
 		)
-		await BASE.modules._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "new", trigger=trigger)
-		return await BASE.discord.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **created!**')
+		return await BASE.twitch.send_message(message.channel_name, f'Command "{trigger}" has been created!')
+
+async def rem(BASE, message, kwargs):
+	m = message.content.split(" ")
+
+	if len(m) <= 1:
+		r = f"Error! > !delcom [trigger]"
+		return await BASE.twitch.send_message(message.channel_name, r)
+
+	channel_commands = kwargs.get('channel_commands', [])
+	found = False
+
+	for cmd in channel_commands:
+		if cmd.get("trigger", None) == m[1].lower():
+			found = cmd.get("trigger", None)
+			break
+
+	if found == False:
+		return await BASE.twitch.send_message(message.channel_name, f'There is no command called: "{m[1].lower()}"')
+
+	BASE.PhaazeDB.delete(
+		of=f"twitch/commands/commands_{message.channel_id}",
+		where=f"data['trigger'] == '{found}'"
+		)
+
+	return await BASE.twitch.send_message(message.channel_name, f'The command: "{m[1].lower()}" has been removed!')
 
 async def cooldown(cidcmd_hash, timeout):
-	#updated the command cooldown list
-	#its filled with hash string
+	# cooldown a command, so it can't be spammed
 	custom_command_cooldown.append(cidcmd_hash)
 	await asyncio.sleep(timeout)
 	custom_command_cooldown.remove(cidcmd_hash)
