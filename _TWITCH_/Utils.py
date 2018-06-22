@@ -19,9 +19,16 @@ async def is_Mod(BASE, message):
 async def is_Owner(BASE, message):
 	if message.user_type.lower() == "admin": return True
 	if message.user_type.lower() == "staff": return True
+
 	if message.name == message.channel.name: return True
 
 	return False
+
+async def is_admin(BASE, message):
+	if message.user_type.lower() == "admin": return True
+	if message.user_type.lower() == "staff": return True
+
+	return True#False
 
 #channelfiles
 async def get_channel_settings(BASE, id, prevent_new=False):

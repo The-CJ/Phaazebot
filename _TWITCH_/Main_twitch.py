@@ -13,7 +13,6 @@ class Init_twitch(twitch.Client):
 		self.BASE.is_ready.twitch = True
 		self.BASE.modules.Console.GREEN("SUCCESS", "Twitch IRC Connected")
 		await self.join_channel(self.nickname)
-		await self.join_channel("the__cj") #FIXME: testing
 
 	#message management
 	async def on_message(self, message):

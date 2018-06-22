@@ -25,6 +25,10 @@ async def on_message(BASE, message):
 
 	#Phaaze Commands
 	if message.content.startswith('!'):
+		if message.channel_name.lower() == BASE.twitch.nickname.lower():
+		#phaaze channel only
+			await BASE.modules._Twitch_.CMD.Normal.Main_channel(BASE, message, channel_settings=channel_settings, channel_commands=channel_commands)
+
 		if await BASE.modules._Twitch_.Utils.is_Owner(BASE, message):
 		#owner
 			await BASE.modules._Twitch_.CMD.Owner.Base(BASE, message, channel_settings=channel_settings, channel_commands=channel_commands)
