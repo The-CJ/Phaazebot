@@ -14,3 +14,6 @@ async def Main_channel(BASE, message, **kwargs):
 	if check.startswith("join"):
 		return await BASE.modules._Twitch_.PROCESS.Owner.Everything.join(BASE, message, kwargs)
 
+	if check.startswith("leave"):
+		return await BASE.modules._Twitch_.PROCESS.Owner.Everything.leave(BASE, message, kwargs)
+

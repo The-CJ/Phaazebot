@@ -49,3 +49,21 @@ class Everything(object):
 			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfull joined your channel!')
 
 
+	async def leave(BASE, message, kwargs):
+		#check if in
+		check = BASE.PhaazeDB.select(of='setting/twitch_channel', where=f"str(data['twitch_id']) == str('{message.user_id}')")
+		data = check.get('data', [])
+		#is in
+		if data == []:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze is not in your channel')
+
+		#its in -> remove it
+		else :
+			BASE.PhaazeDB.delete(
+				of='setting/twitch_channel',
+				where = f"str(data['twitch_id']) == str('{message.user_id}')"
+				)
+			await BASE.twitch.part_channel(message.name)
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfully left your channel!')
+
+
