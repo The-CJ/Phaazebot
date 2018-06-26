@@ -1,95 +1,49 @@
-#BASE.modules._Twitch_.Gold
+#BASE.modules._Twitch_.Level
 
 import asyncio, json, requests
 
-"""Global status storage"""
-asked_stats = []
-async def timeout_stats(room_id):
-	asked_stats.append(room_id)
-	await asyncio.sleep(2)
-	asked_stats.remove(room_id)
+async def Base(BASE, message, **kwargs):
 
-async def Base(BASE, message):
-	level_file = await BASE.modules._Twitch_.Utils.get_twitch_level_file(BASE, message.room_id)
-	room_obj = await BASE.modules._Twitch_.Utils.get_channel_object(BASE, name=message.channel)
-
-	if room_obj == None:
+	#not for owner
+	if message.channel_name == message.name:
 		return
 
-	if message.name in BASE.vars.twitch_bots:
+	#only if channel is live
+	if not message.channel_id in BASE.twitch.live and False: # DEBUG: testing
 		return
 
-	#channnel is not live
-	if not room_obj.live:
-		return
+	#get levels
+	channel_levels = await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, message.channel_id)
 
-	all_user = level_file.get("user", [])
+	# IDEA: add a DB function that updates if there, else create
 
-	author = await get_user(BASE, all_user, message.user_id)
-
-	if author == None:
-		author = dict()
-		author["user_id"] = message.user_id
-		author["name"] = message.name
-		author["call_name"] = message.save_name
-		author["amount"] = 1
-		author["time"] = 1
-		author["active"] = 5
-
-		if message.channel == message.name:
-			author["active"] = 0
-
-		level_file["user"].append(author)
-
-	else:
-		author["amount"] += 1
-		author["active"] = 5
-		author["name"] = message.name
-		author["call_name"] = message.save_name
-
-		if message.channel == message.name:
-			author["active"] = 0
-
-	with open("_TWITCH_/Channel_level_files/{0}.json".format(message.room_id), "w") as save:
-		setattr(BASE.twitchlevelfiles, "channel_"+message.room_id, level_file)
-		json.dump(level_file, save)
-
-async def get_user(BASE, _all_, term, method="id"):
 	user = None
-	if method == "id":
-		for u in _all_:
-			if int(u["user_id"]) == int(term):
-				user = u
-				break
 
-	elif method == "name":
-		for u in _all_:
-			if str(u["name"]) == str(term):
-				user = u
-				break
+	for check_user in channel_levels:
+		if check_user.get('user_id', None) == message.user_id:
+			user = check_user
 
-	return user
+	if user == None:
+		new_user = dict(
+			user_id = message.user_id,
+			user_name = message.name,
+			user_display_name = message.display_name,
+			amout_time = 1,
+			amout_currency = 1,
+			active = 5
+		)
 
-async def edit_gold(BASE, room_id, user_id, sub_or_rem, change):
-	file = await BASE.modules._Twitch_.Utils.get_twitch_level_file(BASE, room_id)
-	all_user = file.get("user", [])
-	author = await get_user(BASE, all_user, user_id)
+		BASE.PhaazeDB.insert(into=f'twitch/level/level_{message.channel_id}', content=new_user)
 
-	if author == None: return False
-	if sub_or_rem == "-":
-		if ( author["amount"] - change ) < 0: return False
-
-	if sub_or_rem == "+":
-		author["amount"] += change
-	elif sub_or_rem == "-":
-		author["amount"] -= change
 	else:
-		raise
+		c = dict(
+			user_name = message.name,
+			user_display_name = message.display_name,
+			amout_currency = user.get('amout_currency',0) + 1,
+			active = 5,
+		)
 
-	with open("_TWITCH_/Channel_level_files/{0}.json".format(room_id), "w") as save:
-		setattr(BASE.twitchlevelfiles, "channel_"+room_id, file)
-		json.dump(file, save)
-		return True
+		BASE.PhaazeDB.update(of=f"twitch/level/level_{message.channel_id}", content=c)
 
 async def stats(BASE, message):
 	if message.room_id in asked_stats: return

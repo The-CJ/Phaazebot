@@ -8,6 +8,7 @@ class Init_twitch(twitch.Client):
 	def __init__(self, BASE):
 		self.BASE = BASE
 		super().__init__()
+		self.live = [] # string list of channel id's
 
 	async def on_ready(self):
 		self.BASE.modules.Console.GREEN("SUCCESS", "Twitch IRC Connected")
@@ -24,7 +25,6 @@ class Init_twitch(twitch.Client):
 		if not self.BASE.is_ready.twitch: return
 
 		await self.BASE.modules._Twitch_.Base.on_message(self.BASE, message)
-
 
 	async def join_all(self):
 		req = self.BASE.PhaazeDB.select(of="setting/twitch_channel")
