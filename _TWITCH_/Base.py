@@ -46,7 +46,6 @@ async def on_message(BASE, message):
 		#normal
 		await BASE.modules._Twitch_.CMD.Normal.Base(BASE, message, channel_settings=channel_settings)
 
-
 class Commands(object):
 
 	async def check_commands(BASE, message):
@@ -104,59 +103,88 @@ class Commands(object):
 
 #async handler loop
 async def lurkers(BASE):
+	default_level_message = ">> [display_name] is now level [level]"
 	sleep_time = 60 * 5
 
 	while True:
-		to_check = ",".join(channel.room_id for channel in BASE.Twitch_IRC_connection.channels)
-		url = "https://api.twitch.tv/kraken/streams?channel=" + to_check
-		check = await BASE.modules._Twitch_.Utils.twitch_API_call(BASE, url)
-		if check.get("status", 200) > 400:
+		to_check = []
+		for c in BASE.twitch.channels:
+			channel = BASE.twitch.channels[c]
+			if channel.id != None:
+				to_check.append( channel.id )
+
+		url = "https://api.twitch.tv/kraken/streams?channel=" + ",".join(f for f in to_check)
+		check = BASE.modules._Twitch_.Utils.API_call(BASE, url)
+		if check.get("status", 400) > 400:
 			await asyncio.sleep(10)
 			continue
 
-		found = [str(stream["channel"]["_id"]) for stream in check["streams"]]
-		for check_live in BASE.Twitch_IRC_connection.channels:
-			if check_live.room_id in found:
-				check_live.live = True
-			else:
-				check_live.live = False
+		live_streams = check.get('streams', [])
+		BASE.twitch.live = [stream.get('channel', {}).get('_id') for stream in live_streams]
 
-		for channel in BASE.Twitch_IRC_connection.channels:
-			if not channel.live:
+		for channel_id in BASE.twitch.channels:
+			channel = BASE.twitch.channels[channel_id]
+
+			if not channel.id in BASE.twitch.live:
 				continue
+
 			try:
-				level_file = await BASE.modules._Twitch_.Utils.get_twitch_level_file(BASE, channel.room_id)
-				level_file["user"] = level_file.get("user", [])
+				channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, channel.id)
 
-				check_if_in_stream = [u for u in channel.user]
+				#channel has levels disabled
+				if not channel_settings.get('active_custom', False):
+					continue
 
-				for user in level_file["user"]:
-					if user["name"] in check_if_in_stream:
-						user["time"] += 1
-						user["amount"] += 10
+				channel_levels = await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, channel.id)
 
-						user["active"] = user.get("active", 0)
-						if user["active"] > 0:
-							user["active"] -= 1
-					else:
-						user["active"] = user.get("active", 0)
-						if user["active"] > 0:
-							user["active"] = 0
+				# NOTE: making it actully name based, because Twitch is to dumb to send ID's - Thanks
+				# FIXME: Maybe sometimes fix this to ID
+				viewers = [user.name for user in channel.users]
 
-					now_level = await Calc.get_lvl(user["time"])
-					exp_to_next = await Calc.get_exp(now_level)
+				update_user_watch = []
 
-					if exp_to_next == user["time"] and user["active"] != 0:
-						await BASE.Twitch_IRC_connection.send_message(channel.name, ">> {0} is now {2} level {1}".format(user["call_name"], str(now_level+1), channel.name))
-						user["time"] += 1
+				for user in channel_levels:
+					if user.get("user_name", None) in viewers:
+						update_user_watch.append(user.get('user_id', None))
 
-				with open("_TWITCH_/Channel_level_files/{0}.json".format(channel.room_id), "w") as save:
-					setattr(BASE.twitchlevelfiles, "channel_"+channel.room_id, level_file)
-					json.dump(level_file, save)
+					now_level = Calc.get_lvl(user.get('amout_time', 0)+5)
+					exp_to_next = Calc.get_exp(now_level)
+
+					#has a new level
+					if exp_to_next == user.get('amout_time', 0) and user.get("active", 0) != 0:
+
+						#get level message
+						level_message = channel_settings.get('message_level', default_level_message)
+						if level_message == None:
+							level_message = default_level_message
+
+						level_message = level_message.replace( '[display_name]', user.get('user_display_name', '[N/A]') )
+						level_message = level_message.replace( '[name]', user.get('user_name', '[N/A]') )
+						level_message = level_message.replace( '[level]', now_level+1 )
+
+						asyncio.ensure_future(
+							BASE.twitch.send_message( channel.name, level_message )
+						)
+
+				BASE.PhaazeBD.update(
+					of=f"twitch/level/level_{channel.id}",
+					where=f"data['user_id'] in {str(update_user_watch)}",
+					content=f"data['amout_time'] += 5; data['amout_curreny'] += {channel_settings.get('gain_curreny', 1)}; data['active'] -= 1")
 
 				await asyncio.sleep(0.05)
 			except:
 				pass
 
 		await asyncio.sleep( sleep_time )
+
+class Calc(object):
+
+	def get_exp(lvl):
+		return round( 4 + ((lvl * 3) + (lvl * (lvl * 3) * 2)) )
+
+	def get_lvl(exp):
+		lvl = 0
+		while Calc.get_exp(lvl) < exp:
+			lvl += 1
+		return lvl
 

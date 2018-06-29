@@ -1,8 +1,9 @@
 #BASE.modules._Twitch_.Level
 
-import asyncio, json, requests
+import asyncio
 
 async def Base(BASE, message, **kwargs):
+	channel_settings = kwargs.get('channel_settings', {})
 
 	#not for owner
 	if message.channel_name == message.name:
@@ -33,17 +34,24 @@ async def Base(BASE, message, **kwargs):
 			active = 5
 		)
 
-		BASE.PhaazeDB.insert(into=f'twitch/level/level_{message.channel_id}', content=new_user)
+		BASE.PhaazeDB.insert(
+			into=f'twitch/level/level_{message.channel_id}',
+			content=new_user
+		)
 
 	else:
 		c = dict(
 			user_name = message.name,
 			user_display_name = message.display_name,
-			amout_currency = user.get('amout_currency',0) + 1,
+			amout_currency = user.get('amout_currency',0) + channel_settings.get('gain_curreny_message', 1),
 			active = 5,
 		)
 
-		BASE.PhaazeDB.update(of=f"twitch/level/level_{message.channel_id}", content=c)
+		BASE.PhaazeDB.update(
+			of=f"twitch/level/level_{message.channel_id}",
+			content=c,
+			where=f"str(data['user_id']) == str({message.user_id})"
+		)
 
 async def stats(BASE, message):
 	if message.room_id in asked_stats: return

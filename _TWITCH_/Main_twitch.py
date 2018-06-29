@@ -17,6 +17,7 @@ class Init_twitch(twitch.Client):
 		await self.join_channel(self.nickname)
 
 		await self.join_all()
+		asyncio.ensure_future( self.BASE.modules._Twitch_.Base.lurkers(self.BASE) )
 		self.BASE.is_ready.twitch = True
 
 	#message management
@@ -40,3 +41,6 @@ class Init_twitch(twitch.Client):
 			await asyncio.sleep(request_limit / 32)
 
 		self.BASE.modules.Console.GREEN('SUCCESS', f'Joined all {str(len(data))} Channels')
+
+	async def on_raw_data(self, r):
+		pass#print(r)

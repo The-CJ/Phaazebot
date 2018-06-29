@@ -58,6 +58,9 @@ async def make_channel_settings(BASE, id):
 	insert_['regulars'] = []
 	insert_['link_whitelist'] = []
 
+	insert_['gain_curreny'] = 1
+	insert_['gain_curreny_message'] = 1
+
 	insert_['blacklist'] = []
 	insert_['blacklist_punishment'] = 0
 	insert_['blacklist_notify'] = True
