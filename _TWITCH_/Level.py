@@ -29,8 +29,8 @@ async def Base(BASE, message, **kwargs):
 			user_id = message.user_id,
 			user_name = message.name,
 			user_display_name = message.display_name,
-			amout_time = 1,
-			amout_currency = 1,
+			amount_time = 1,
+			amount_currency = 1,
 			active = 5
 		)
 
@@ -43,7 +43,7 @@ async def Base(BASE, message, **kwargs):
 		c = dict(
 			user_name = message.name,
 			user_display_name = message.display_name,
-			amout_currency = user.get('amout_currency',0) + channel_settings.get('gain_curreny_message', 1),
+			amount_currency = user.get('amount_currency',0) + channel_settings.get('gain_currency_message', 1),
 			active = 5,
 		)
 

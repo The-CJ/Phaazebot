@@ -1,6 +1,6 @@
 #BASE.modules._Twitch_.Base
 
-import asyncio, json
+import asyncio
 
 async def on_message(BASE, message):
 
@@ -103,7 +103,7 @@ class Commands(object):
 
 #async handler loop
 async def lurkers(BASE):
-	default_level_message = ">> [display_name] is now level [level]"
+	default_level_message = ">> {display_name} is now level {level}"
 	sleep_time = 60 * 5
 
 	while True:
@@ -120,7 +120,7 @@ async def lurkers(BASE):
 			continue
 
 		live_streams = check.get('streams', [])
-		BASE.twitch.live = [stream.get('channel', {}).get('_id') for stream in live_streams]
+		BASE.twitch.live = [stream.get('channel', {}).get('_id', None) for stream in live_streams]
 
 		for channel_id in BASE.twitch.channels:
 			channel = BASE.twitch.channels[channel_id]
@@ -147,20 +147,20 @@ async def lurkers(BASE):
 					if user.get("user_name", None) in viewers:
 						update_user_watch.append(user.get('user_id', None))
 
-					now_level = Calc.get_lvl(user.get('amout_time', 0)+5)
+					now_level = Calc.get_lvl(user.get('amount_time', 0)+5)
 					exp_to_next = Calc.get_exp(now_level)
 
 					#has a new level
-					if exp_to_next == user.get('amout_time', 0) and user.get("active", 0) != 0:
+					if exp_to_next == user.get('amount_time', 0) and user.get("active", 0) != 0:
 
 						#get level message
 						level_message = channel_settings.get('message_level', default_level_message)
 						if level_message == None:
 							level_message = default_level_message
 
-						level_message = level_message.replace( '[display_name]', user.get('user_display_name', '[N/A]') )
-						level_message = level_message.replace( '[name]', user.get('user_name', '[N/A]') )
-						level_message = level_message.replace( '[level]', now_level+1 )
+						level_message = level_message.replace( '{display_name}', user.get('user_display_name', '[N/A]') )
+						level_message = level_message.replace( '{name}', user.get('user_name', '[N/A]') )
+						level_message = level_message.replace( '{level}', now_level+1 )
 
 						asyncio.ensure_future(
 							BASE.twitch.send_message( channel.name, level_message )
@@ -169,7 +169,7 @@ async def lurkers(BASE):
 				BASE.PhaazeBD.update(
 					of=f"twitch/level/level_{channel.id}",
 					where=f"data['user_id'] in {str(update_user_watch)}",
-					content=f"data['amout_time'] += 5; data['amout_curreny'] += {channel_settings.get('gain_curreny', 1)}; data['active'] -= 1")
+					content=f"data['amount_time'] += 5; data['amount_currency'] += {channel_settings.get('gain_currency', 1)}; data['active'] -= 1")
 
 				await asyncio.sleep(0.05)
 			except:
