@@ -8,7 +8,8 @@ custom_command_cooldown = []
 async def get(BASE, message, **kwargs):
 	m = message.content.split(' ')
 	channel_setting = kwargs.get("channel_settings", {})
-	channel_commands = kwargs.get("channel_commands", [])
+
+	channel_commands = kwargs.get('channel_commands', [])
 
 	if message.channel_id in custom_command_cooldown: return
 
@@ -52,7 +53,7 @@ async def add(BASE, message, kwargs):
 		return await BASE.twitch.send_message(message.channel_name, r)
 
 	trigger = m[1].lower()
-	channel_commands = kwargs.get('channel_commands', [])
+	channel_commands = await BASE.modules._Twitch_.Utils.get_channel_commands(BASE, message.channel_id)
 
 	if len(trigger) >= 50:
 		return await BASE.twitch.send_message(message.channel_name, "Error: Trigger is to long. Maximum: 50 characters")
@@ -98,7 +99,7 @@ async def rem(BASE, message, kwargs):
 		r = f"Error! > !delcom [trigger]"
 		return await BASE.twitch.send_message(message.channel_name, r)
 
-	channel_commands = kwargs.get('channel_commands', [])
+	channel_commands = await BASE.modules._Twitch_.Utils.get_channel_commands(BASE, message.channel_id)
 	found = False
 
 	for cmd in channel_commands:

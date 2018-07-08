@@ -105,6 +105,7 @@ class Commands(object):
 async def lurkers(BASE):
 	default_level_message = ">> {display_name} is now level {level}"
 	sleep_time = 60 * 5
+	already_announced_problem = False
 
 	while True:
 		to_check = []
@@ -113,15 +114,23 @@ async def lurkers(BASE):
 			if channel.id != None:
 				to_check.append( channel.id )
 
-		url = "https://api.twitch.tv/kraken/streams?channel=" + ",".join(f for f in to_check)
-		check = BASE.modules._Twitch_.Utils.API_call(BASE, url)
+		try:
+			url = "https://api.twitch.tv/kraken/streams?channel=" + ",".join(f for f in to_check)
+			check = BASE.modules._Twitch_.Utils.API_call(BASE, url)
+		except:
+			check = dict(status=500)
 		if check.get("status", 400) > 400:
+			if not already_announced_problem:
+				BASE.modules.Console.RED('ERROR', "Twitch Lurker Loop cause a unknown error")
+				already_announced_problem = True
 			await asyncio.sleep(10)
 			continue
 
-		live_streams = check.get('streams', [])
-		BASE.twitch.live = [stream.get('channel', {}).get('_id', None) for stream in live_streams]
+		already_announced_problem = False
 
+		live_streams = check.get('streams', [])
+		BASE.twitch.live = [str(stream.get('channel', {}).get('_id', None)) for stream in live_streams]
+		
 		for channel_id in BASE.twitch.channels:
 			channel = BASE.twitch.channels[channel_id]
 
@@ -132,26 +141,38 @@ async def lurkers(BASE):
 				channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, channel.id)
 
 				#channel has levels disabled
-				if not channel_settings.get('active_custom', False):
+				if not channel_settings.get('active_level', False):
 					continue
 
 				channel_levels = await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, channel.id)
 
 				# NOTE: making it actully name based, because Twitch is to dumb to send ID's - Thanks
 				# FIXME: Maybe sometimes fix this to ID
-				viewers = [user.name for user in channel.users]
-
+				viewers = [channel.users[user].name for user in channel.users]
+				print(viewers)
 				update_user_watch = []
 
+				#check if user has level up
 				for user in channel_levels:
+
+					#NOTE: remove bot user from gain exp and time
+
 					if user.get("user_name", None) in viewers:
 						update_user_watch.append(user.get('user_id', None))
+					else:
+						continue
 
-					now_level = Calc.get_lvl(user.get('amount_time', 0)+5)
+					#no level alert for owner
+					if channel.name == user.get("user_name", None):
+						continue
+
+					now_level = Calc.get_lvl(user.get('amount_time', 0)+1)
 					exp_to_next = Calc.get_exp(now_level)
-
+					
+					print(f"{str(exp_to_next)} - {str(user.get('amount_time', 0))}")
+					
 					#has a new level
-					if exp_to_next == user.get('amount_time', 0) and user.get("active", 0) != 0:
+					if exp_to_next == user.get('amount_time', 0)+1 and user.get("active", 0) != 0:
 
 						#get level message
 						level_message = channel_settings.get('message_level', default_level_message)
@@ -160,20 +181,21 @@ async def lurkers(BASE):
 
 						level_message = level_message.replace( '{display_name}', user.get('user_display_name', '[N/A]') )
 						level_message = level_message.replace( '{name}', user.get('user_name', '[N/A]') )
-						level_message = level_message.replace( '{level}', now_level+1 )
+						level_message = level_message.replace( '{level}', str(now_level+1) )
+						level_message = level_message.replace( '{time}',  str(round((user.get('amount_time', 0)*5) / 60, 1)) )
 
 						asyncio.ensure_future(
 							BASE.twitch.send_message( channel.name, level_message )
 						)
-
-				BASE.PhaazeBD.update(
+				BASE.PhaazeDB.update(
 					of=f"twitch/level/level_{channel.id}",
-					where=f"data['user_id'] in {str(update_user_watch)}",
-					content=f"data['amount_time'] += 5; data['amount_currency'] += {channel_settings.get('gain_currency', 1)}; data['active'] -= 1")
+					where=f"str(data['user_id']) in {str(update_user_watch)}",
+					content=f"data['amount_time'] += 1; data['amount_currency'] += {channel_settings.get('gain_currency', 1)}; data['active'] -= 1")
 
 				await asyncio.sleep(0.05)
 			except:
-				pass
+				BASE.modules.Console.RED('ERROR', "Twitch Lurker Loop cause a unknown error")
+				await asyncio.sleep( sleep_time/2 )
 
 		await asyncio.sleep( sleep_time )
 

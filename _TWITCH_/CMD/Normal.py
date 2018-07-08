@@ -5,6 +5,8 @@ import asyncio
 async def Base(BASE, message, **kwargs):
 	m = message.content.lower().split(" ")
 	check = m[0][1:]
+	if check.startswith("stats"):
+		return await BASE.modules._Twitch_.Level.stats(BASE, message, kwargs)
 
 async def Main_channel(BASE, message, **kwargs):
 	m = message.content.lower().split(" ")

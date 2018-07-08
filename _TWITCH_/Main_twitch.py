@@ -16,12 +16,13 @@ class Init_twitch(twitch.Client):
 		#join all channel
 		await self.join_channel(self.nickname)
 
-		await self.join_all()
-		asyncio.ensure_future( self.BASE.modules._Twitch_.Base.lurkers(self.BASE) )
 		self.BASE.is_ready.twitch = True
+		asyncio.ensure_future( self.BASE.modules._Twitch_.Base.lurkers(self.BASE) )
+		await self.join_all()
 
 	#message management
 	async def on_message(self, message):
+		print(message.content)
 		if message.name.lower() == self.nickname.lower(): return
 		if not self.BASE.is_ready.twitch: return
 
