@@ -26,9 +26,6 @@ async def on_message(BASE, message):
 	if channel_settings.get('active_level', False):
 		await BASE.modules._Twitch_.Level.Base(BASE, message, channel_settings=channel_settings)
 
-	#todo in function
-	# channel_quotes = await BASE.modules._Twitch_.Utils.get_channel_quotes(BASE, message.channel.id)
-
 	#Phaaze Commands
 	if message.content.startswith('!'):
 		if message.channel_name.lower() == BASE.twitch.nickname.lower():
@@ -52,11 +49,11 @@ class Commands(object):
 		m = message.content.lower().split(" ")
 		trigger = m[0][1:]
 
-		if trigger.startswith("!!!!"):
-			if message.name != "the__cj": return
-			await BASE.modules._Twitch_.Utils.debug(BASE, message)
+		#if trigger.startswith("!!!!"):
+		#	if message.name != "the__cj": return
+		#	await BASE.modules._Twitch_.Utils.debug(BASE, message)
 
-		elif trigger.startswith("setting"):
+		if trigger.startswith("setting"):
 			await BASE.modules._Twitch_.Base.Settings.Base(BASE, message)
 
 		elif trigger.startswith("battle"):
@@ -65,8 +62,8 @@ class Commands(object):
 		elif trigger.startswith("mission"):
 			await BASE.modules._Twitch_.Games.mission(BASE, message)
 
-		elif trigger.startswith("stats"):
-			await BASE.modules._Twitch_.Gold.stats(BASE, message)
+		#elif trigger.startswith("stats"):
+		#	await BASE.modules._Twitch_.Gold.stats(BASE, message)
 
 		elif trigger.startswith("toptime"):
 			await BASE.modules._Twitch_.Gold.leaderboard(BASE, message, locals(), art="time")
@@ -83,11 +80,11 @@ class Commands(object):
 		elif trigger.startswith("delquote"):
 			await BASE.modules._Twitch_.CMD.Mods.Quotes.rem(BASE, message)
 
-		elif trigger.startswith("addcom"):
-			await BASE.modules._Twitch_.CMD.Mods.Coms.add(BASE, message)
+		#elif trigger.startswith("addcom"):
+		#	await BASE.modules._Twitch_.CMD.Mods.Coms.add(BASE, message)
 
-		elif trigger.startswith("delcom"):
-			await BASE.modules._Twitch_.CMD.Mods.Coms.rem(BASE, message)
+		#elif trigger.startswith("delcom"):
+		#	await BASE.modules._Twitch_.CMD.Mods.Coms.rem(BASE, message)
 
 		elif trigger.startswith("osuverify"):
 			await BASE.modules._Twitch_.CMD.Mods.verify(BASE, message)
@@ -95,11 +92,12 @@ class Commands(object):
 		elif trigger.startswith("osudisconnect"):
 			await BASE.modules._Twitch_.CMD.Mods.osu_disco(BASE, message)
 
-		elif trigger.startswith("join"):
-			await BASE.modules._Twitch_.Base.Commands.join(BASE, message)
+		#elif trigger.startswith("join"):
+		#	await BASE.modules._Twitch_.Base.Commands.join(BASE, message)
 
-		elif trigger.startswith("leave"):
-			await BASE.modules._Twitch_.Base.Commands.leave(BASE, message)
+		#elif trigger.startswith("leave"):
+		#	await BASE.modules._Twitch_.Base.Commands.leave(BASE, message)
+
 
 #async handler loop
 async def lurkers(BASE):
@@ -107,7 +105,7 @@ async def lurkers(BASE):
 	sleep_time = 60 * 5
 	already_announced_problem = False
 
-	while True:
+	while BASE.twitch.lurker_loop_running:
 		to_check = []
 		for c in BASE.twitch.channels:
 			channel = BASE.twitch.channels[c]
@@ -121,7 +119,7 @@ async def lurkers(BASE):
 			check = dict(status=500)
 		if check.get("status", 400) > 400:
 			if not already_announced_problem:
-				BASE.modules.Console.RED('ERROR', "Twitch Lurker Loop cause a unknown error")
+				BASE.modules.Console.RED('ERROR', "No Twitch API awnser")
 				already_announced_problem = True
 			await asyncio.sleep(10)
 			continue
@@ -130,7 +128,7 @@ async def lurkers(BASE):
 
 		live_streams = check.get('streams', [])
 		BASE.twitch.live = [str(stream.get('channel', {}).get('_id', None)) for stream in live_streams]
-		
+
 		for channel_id in BASE.twitch.channels:
 			channel = BASE.twitch.channels[channel_id]
 
@@ -148,8 +146,7 @@ async def lurkers(BASE):
 
 				# NOTE: making it actully name based, because Twitch is to dumb to send ID's - Thanks
 				# FIXME: Maybe sometimes fix this to ID
-				viewers = [channel.users[user].name for user in channel.users]
-				print(viewers)
+				viewers = [channel.users[user_name].name for user_name in channel.users]
 				update_user_watch = []
 
 				#check if user has level up
@@ -168,9 +165,7 @@ async def lurkers(BASE):
 
 					now_level = Calc.get_lvl(user.get('amount_time', 0)+1)
 					exp_to_next = Calc.get_exp(now_level)
-					
-					print(f"{str(exp_to_next)} - {str(user.get('amount_time', 0))}")
-					
+
 					#has a new level
 					if exp_to_next == user.get('amount_time', 0)+1 and user.get("active", 0) != 0:
 
@@ -190,7 +185,7 @@ async def lurkers(BASE):
 				BASE.PhaazeDB.update(
 					of=f"twitch/level/level_{channel.id}",
 					where=f"str(data['user_id']) in {str(update_user_watch)}",
-					content=f"data['amount_time'] += 1; data['amount_currency'] += {channel_settings.get('gain_currency', 1)}; data['active'] -= 1")
+					content=f"data['amount_time'] += 1; data['amount_currency'] += {channel_settings.get('gain_currency', 1)}; if data.get('active', 0) > 0: data['active'] -= 1")
 
 				await asyncio.sleep(0.05)
 			except:

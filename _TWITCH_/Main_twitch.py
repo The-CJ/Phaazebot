@@ -9,20 +9,26 @@ class Init_twitch(twitch.Client):
 		self.BASE = BASE
 		super().__init__()
 		self.live = [] # string list of channel id's
+		self.lurker_loop_running = False
 
 	async def on_ready(self):
 		self.BASE.modules.Console.GREEN("SUCCESS", "Twitch IRC Connected")
 
-		#join all channel
+		#join own channel
 		await self.join_channel(self.nickname)
 
 		self.BASE.is_ready.twitch = True
-		asyncio.ensure_future( self.BASE.modules._Twitch_.Base.lurkers(self.BASE) )
+	
+		# Because Twitch like reconnecting us
+		if not self.lurker_loop_running:
+			self.lurker_loop_running = True
+			asyncio.ensure_future( self.BASE.modules._Twitch_.Base.lurkers(self.BASE) )
+
+		#join all channel
 		await self.join_all()
 
 	#message management
 	async def on_message(self, message):
-		print(message.content)
 		if message.name.lower() == self.nickname.lower(): return
 		if not self.BASE.is_ready.twitch: return
 
