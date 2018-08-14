@@ -1,161 +1,111 @@
-#BASE.modules._Twitch_.Gold
+#BASE.modules._Twitch_.Level
 
-import asyncio, json, requests
+import asyncio
 
-"""Global status storage"""
-asked_stats = []
-async def timeout_stats(room_id):
-	asked_stats.append(room_id)
-	await asyncio.sleep(2)
-	asked_stats.remove(room_id)
+cooldown_stats = []
 
-async def Base(BASE, message):
-	level_file = await BASE.modules._Twitch_.Utils.get_twitch_level_file(BASE, message.room_id)
-	room_obj = await BASE.modules._Twitch_.Utils.get_channel_object(BASE, name=message.channel)
+async def Base(BASE, message, **kwargs):
+	channel_settings = kwargs.get('channel_settings', {})
 
-	if room_obj == None:
+	#only if channel is live
+	if not message.channel_id in BASE.twitch.live and False: # DEBUG: testing
 		return
 
-	if message.name in BASE.vars.twitch_bots:
-		return
+	#get levels
+	channel_levels = await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, message.channel_id)
 
-	#channnel is not live
-	if not room_obj.live:
-		return
+	# IDEA: add a DB function that updates if there, else create
 
-	all_user = level_file.get("user", [])
-
-	author = await get_user(BASE, all_user, message.user_id)
-
-	if author == None:
-		author = dict()
-		author["user_id"] = message.user_id
-		author["name"] = message.name
-		author["call_name"] = message.save_name
-		author["amount"] = 1
-		author["time"] = 1
-		author["active"] = 5
-
-		if message.channel == message.name:
-			author["active"] = 0
-
-		level_file["user"].append(author)
-
-	else:
-		author["amount"] += 1
-		author["active"] = 5
-		author["name"] = message.name
-		author["call_name"] = message.save_name
-
-		if message.channel == message.name:
-			author["active"] = 0
-
-	with open("_TWITCH_/Channel_level_files/{0}.json".format(message.room_id), "w") as save:
-		setattr(BASE.twitchlevelfiles, "channel_"+message.room_id, level_file)
-		json.dump(level_file, save)
-
-async def get_user(BASE, _all_, term, method="id"):
 	user = None
-	if method == "id":
-		for u in _all_:
-			if int(u["user_id"]) == int(term):
-				user = u
-				break
 
-	elif method == "name":
-		for u in _all_:
-			if str(u["name"]) == str(term):
-				user = u
-				break
+	for check_user in channel_levels:
+		if check_user.get('user_id', None) == message.user_id:
+			user = check_user
 
-	return user
+	if user == None:
+		new_user = dict(
+			user_id = message.user_id,
+			user_name = message.name,
+			user_display_name = message.display_name,
+			amount_time = 1,
+			amount_currency = 1,
+			active = 5
+		)
 
-async def edit_gold(BASE, room_id, user_id, sub_or_rem, change):
-	file = await BASE.modules._Twitch_.Utils.get_twitch_level_file(BASE, room_id)
-	all_user = file.get("user", [])
-	author = await get_user(BASE, all_user, user_id)
+		BASE.PhaazeDB.insert(
+			into=f'twitch/level/level_{message.channel_id}',
+			content=new_user
+		)
 
-	if author == None: return False
-	if sub_or_rem == "-":
-		if ( author["amount"] - change ) < 0: return False
-
-	if sub_or_rem == "+":
-		author["amount"] += change
-	elif sub_or_rem == "-":
-		author["amount"] -= change
 	else:
-		raise
+		c = dict(
+			user_name = message.name,
+			user_display_name = message.display_name,
+			amount_currency = user.get('amount_currency',0) + channel_settings.get('gain_currency_message', 1),
+			active = 5,
+		)
 
-	with open("_TWITCH_/Channel_level_files/{0}.json".format(room_id), "w") as save:
-		setattr(BASE.twitchlevelfiles, "channel_"+room_id, file)
-		json.dump(file, save)
-		return True
+		BASE.PhaazeDB.update(
+			of=f"twitch/level/level_{message.channel_id}",
+			content=c,
+			where=f"str(data['user_id']) == str({message.user_id})"
+		)
 
-async def stats(BASE, message):
-	if message.room_id in asked_stats: return
-	asyncio.ensure_future(timeout_stats(message.room_id))
+async def stats(BASE, message, kwargs):
+	if message.channel_id in cooldown_stats: return
 
-	settings = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
-	stats_active = settings.get("stats", False)
-	if not stats_active: return
+	#timeout this channel
+	asyncio.ensure_future(timeout_stats(message.channel_id))
 
-	level_file = await BASE.modules._Twitch_.Utils.get_twitch_level_file(BASE, message.room_id)
-	all_user = level_file.get("user", [])
+	channel_settings = kwargs.get('channel_settings', None)
+
+	#level disabled
+	if not channel_settings.get("active_level", False):
+		return
 
 	m = message.content.split(" ")
 	if len(m) == 1:
-
-		author = await get_user(BASE, all_user, message.user_id)
-
-		#owner
-		if message.channel == message.name:
-			gold = str(author.get("amount", 0))
-			return await BASE.Twitch_IRC_connection.send_message(message.channel, "@{0}, Credits: {1} | Level: ∞ (Channel Owner)".format(message.save_name, str(gold)))
-
-		#none found
-		if author == None:
-			return await BASE.Twitch_IRC_connection.send_message(message.channel, "@{0}, sorry but you don't have stats yet.".format(message.save_name))
-
-		else:
-			gold = str(author.get("amount", 0))
-
-			time_in_min = author.get("time", 1) * 5
-			hours = str(round(time_in_min / 60, 1))
-
-			lvl_oder_so = str(await BASE.modules._Twitch_.Base.Calc.get_lvl(author["time"]))
-			ttlvlup = await BASE.modules._Twitch_.Base.Calc.get_exp(int(lvl_oder_so))
-			time_to_next = str(round((ttlvlup * 5) / 60, 1))
-
-			resp = "@{0}, Credits: {2} | Level: {3} ({1}h/{4}h)".format(message.save_name, hours, gold, lvl_oder_so, time_to_next)
-			return await BASE.Twitch_IRC_connection.send_message(message.channel, resp)
-
+		u = 0
+		search_user = message.name
 	else:
-		search_term = m[1]
+		u = 1
+		search_user = m[1]
 
-		found_user = await get_user(BASE, all_user, search_term.lower(), method="name")
+	user = BASE.PhaazeDB.select(
+		of = f"twitch/level/level_{message.channel_id}",
+		where = f"data['user_name'] == '{str(search_user).lower()}'",
+	#	limit = 1
+	)
 
-		# already existing Twitch bots ignore
-		if found_user["name"] in BASE.vars.twitch_bots: return
+	if user.get('data', []) == []:
+		if u == 1:
+			return await BASE.twitch.send_message(message.channel_name, f"@{message.display_name}, no stats found for: {search_user}.")
+		elif u == 0:
+			return await BASE.twitch.send_message(message.channel_name, f"@{message.display_name}, sorry but you don't have stats yet.")
+	
+	user = user['data'][0]
 
-		if found_user == None:
-			return await BASE.Twitch_IRC_connection.send_message(message.channel, "@{0}, no stats found for: {1}.".format(message.save_name, search_term))
+	#owner
+	if message.channel_name == message.name:
+		currency = str( user.get("amount_currency", 0) )
+		return await BASE.twitch.send_message(message.channel_name, f"@{message.display_name}, Credits: {currency} | Level: ∞ (Channel Owner)")
 
-		if found_user["name"] == message.channel:
-			gold = str(found_user.get("amount", 0))
-			return await BASE.Twitch_IRC_connection.send_message(message.channel, "Stats for: {0}, Credits: {1} | Level: ∞ (Channel Owner)".format(found_user["call_name"], str(gold)))
 
-		else:
-			gold = str(found_user.get("amount", 0))
+	currency = str(user.get("amount_currency", 0))
+	time = user.get("amount_time", 1) * 5
+	hours = str(round(time / 60, 1))
 
-			time_in_min = found_user.get("time", 1) * 5
-			hours = str(round(time_in_min / 60, 1))
 
-			lvl_oder_so = str(await BASE.modules._Twitch_.Base.Calc.get_lvl(found_user["time"]))
-			ttlvlup = await BASE.modules._Twitch_.Base.Calc.get_exp(int(lvl_oder_so))
-			time_to_next = str(round((ttlvlup * 5) / 60, 1))
+	current_level = str( BASE.modules._Twitch_.Base.Calc.get_lvl(time/5))
+	current_exp = BASE.modules._Twitch_.Base.Calc.get_exp(int(current_level))
+	time_to_next = str(round((current_exp * 5) / 60, 1))
 
-			resp = "Stats for: {0}, Credits: {2} | Level: {3} ({1}h/{4}h)".format(found_user["call_name"], hours, gold, lvl_oder_so, time_to_next)
-			return await BASE.Twitch_IRC_connection.send_message(message.channel, resp)
+	if u == 0:
+		resp = f"@{message.display_name}, Credits: {currency} | Level: {current_level} ({hours}h/{time_to_next}h)"
+	elif u == 1:
+		resp = f"Stats for: {search_user}, Credits: {currency} | Level: {current_level} ({hours}h/{time_to_next}h)"
+		
+	return await BASE.twitch.send_message(message.channel_name, resp)
 
 async def leaderboard(BASE, message, package, art="time"):
 	settings = await package["BASE"].moduls._Twitch_.Utils.get_twitch_file(package["BASE"], package["message"].room_id)
@@ -207,3 +157,9 @@ async def leaderboard(BASE, message, package, art="time"):
 			continue
 
 	return await BASE.Twitch_IRC_connection.send_message(message.channel, " | ".join(x for x in end_list))
+
+async def timeout_stats(room_id, timeout=5):
+	cooldown_stats.append(room_id)
+	await asyncio.sleep(timeout)
+	cooldown_stats.remove(room_id)
+

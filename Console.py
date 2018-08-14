@@ -2,6 +2,13 @@ from colorama import Fore, Style, init
 import asyncio, datetime
 init()
 
+# import logging
+# from systemd.journal import JournalHandler
+# log = logging.getLogger()
+# log.setLevel(1)
+# log.addHandler(JournalHandler())
+# log.error('Hi')
+
 WRITE = True
 
 ##INFO

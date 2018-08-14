@@ -96,5 +96,5 @@ def webserver(BASE):
 	###################################
 
 	SSL = ssl.SSLContext()
-	SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/cert.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
-	web.run_app(server, ssl_context=SSL, port=443)
+	SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
+	web.run_app(server, handle_signals=False, ssl_context=SSL, port=443)

@@ -358,6 +358,7 @@ class Osu(object):
 				return await Osu.stats(BASE, message, kwargs)
 
 			elif m[1].startswith("map"):
+				# TODO: Fix map stats for new osu design
 				if len(m) == 2:
 					return await BASE.discord.send_message(message.channel, ":warning: Missing Map Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
 
