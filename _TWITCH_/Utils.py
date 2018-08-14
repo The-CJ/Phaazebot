@@ -68,7 +68,7 @@ async def make_channel_settings(BASE, id):
 	insert_['blacklist_link_message'] = None
 
 	BASE.PhaazeDB.insert(into="twitch/channel_settings", content=insert_)
-	BASE.modules.Console.CYAN("INFO", "New Twitch Setting DB entry")
+	BASE.modules.Console.INFO("New Twitch Setting DB entry")
 
 	return insert_
 
@@ -89,7 +89,7 @@ async def get_channel_commands(BASE, id, prevent_new=False):
 async def make_channel_commands(BASE, id):
 
 	BASE.PhaazeDB.create(name="twitch/commands/commands_"+str(id))
-	BASE.modules.Console.CYAN("INFO", "New Twitch Channel Command DB-Container created")
+	BASE.modules.Console.INFO("New Twitch Channel Command DB-Container created")
 
 	return []
 
@@ -110,7 +110,7 @@ async def get_channel_levels(BASE, id, prevent_new=False):
 async def make_channel_levels(BASE, id):
 
 	BASE.PhaazeDB.create(name="twitch/level/level_"+str(id))
-	BASE.modules.Console.CYAN("INFO", "New Twitch Channel Level DB-Container created")
+	BASE.modules.Console.INFO("New Twitch Channel Level DB-Container created")
 
 	return []
 
@@ -131,7 +131,7 @@ async def get_channel_quotes(BASE, id, prevent_new=False):
 async def make_channel_quotes(BASE, id):
 
 	BASE.PhaazeDB.create(name="twitch/quotes/quotes_"+str(id))
-	BASE.modules.Console.CYAN("INFO", "New Twitch Quote Level DB-Container created")
+	BASE.modules.Console.INFO("New Twitch Quote Level DB-Container created")
 
 	return []
 

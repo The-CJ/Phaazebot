@@ -119,7 +119,7 @@ async def lurkers(BASE):
 			check = dict(status=500)
 		if check.get("status", 400) > 400:
 			if not already_announced_problem:
-				BASE.modules.Console.RED('ERROR', "No Twitch API awnser")
+				BASE.modules.Console.ERROR("No Twitch API awnser")
 				already_announced_problem = True
 			await asyncio.sleep(10)
 			continue
@@ -189,7 +189,7 @@ async def lurkers(BASE):
 
 				await asyncio.sleep(0.05)
 			except:
-				BASE.modules.Console.RED('ERROR', "Twitch Lurker Loop cause a unknown error")
+				BASE.modules.Console.CRITICAL("Twitch Lurker Loop cause a unknown error")
 				await asyncio.sleep( sleep_time/2 )
 
 		await asyncio.sleep( sleep_time )

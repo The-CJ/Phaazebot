@@ -1,59 +1,23 @@
-from colorama import Fore, Style, init
-import asyncio, datetime
-init()
+import logging
 
-# import logging
-# from systemd.journal import JournalHandler
-# log = logging.getLogger()
-# log.setLevel(1)
-# log.addHandler(JournalHandler())
-# log.error('Hi')
+LOG = logging.getLogger('PhaazeOS')
+LOG.setLevel(logging.DEBUG)
+SH = logging.StreamHandler()
+SHF = logging.Formatter("[%(levelname)s] %(message)s")
+SH.setFormatter(SHF)
+LOG.addHandler(SH)
 
-WRITE = True
+def DEBUG(m):
+	LOG.debug(m)
 
-##INFO
-#Color format
-#Fore: 		BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, RESET.
-#Back: 		BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, RESET.
-#Style: 	DIM, NORMAL, BRIGHT, RESET_ALL
+def INFO(m):
+	LOG.info(m)
 
-Save_print = []
-async def Debug_and_status_console(BASE):
-	"""Thread save Debug Console"""
+def WARNING(m):
+	LOG.warning(m)
 
-	while BASE.active.debug_console:
-		if len(Save_print) > 0:
-			req = Save_print.pop(0)
-			try:
-				now = datetime.datetime.now()
-				time_ = "["+now.strftime("%H:%M:%S")+"]"
-				print(time_ + req)
-			except: print("[" + Fore.RED + "CRITICAL ERROR" + Style.RESET_ALL + "] " + "Printing in Debug Console+ Failed")
+def ERROR(m):
+	LOG.error(m)
 
-		await asyncio.sleep(0.01)
-
-	print("[INFO] Debug Console has been shutdown")
-
-def WHITE(a, m):
-	Save_print.append("[" + a + Style.RESET_ALL + "]  " + m)
-
-def BLACK(a, m):
-	Save_print.append("[" + Fore.BLACK + a + Style.RESET_ALL + "]  " + m)
-
-def RED(a, m):
-	Save_print.append("[" + Fore.RED + a + Style.RESET_ALL + "] " + m)
-
-def GREEN(a, m):
-	Save_print.append("[" + Fore.GREEN + a + Style.RESET_ALL + "] " + m)
-
-def YELLOW(a, m):
-	Save_print.append("[" + Fore.YELLOW + a + Style.RESET_ALL + "] " + m)
-
-def BLUE(a, m):
-	Save_print.append("[" + Fore.BLUE + Style.BRIGHT + a + Style.RESET_ALL + "] " + m)
-
-def MAGENTA(a, m):
-	Save_print.append("[" + Fore.MAGENTA + a + Style.RESET_ALL + "] " + m)
-
-def CYAN(a, m):
-	Save_print.append("[" + Fore.CYAN + a + Style.RESET_ALL + "] " + m)
+def CRITICAL(m):
+	LOG.critical(m)

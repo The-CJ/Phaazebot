@@ -77,7 +77,7 @@ async def make_server_file(BASE, id):
 	insert_['track_options'] = []
 	insert_['track_channel'] = None
 
-	BASE.modules.Console.CYAN("INFO", "New Discord Server Settings DB entry")
+	BASE.modules.Console.INFO("New Discord Server Settings DB entry")
 
 	BASE.PhaazeDB.insert(into="discord/server_setting", content=insert_)
 
@@ -100,7 +100,7 @@ async def get_server_level(BASE, id, prevent_new=False):
 async def make_server_level_file(BASE, id):
 
 	BASE.PhaazeDB.create(name="discord/level/level_"+str(id))
-	BASE.modules.Console.CYAN("INFO", "New Discord Server Level DB-Container created")
+	BASE.modules.Console.INFO("New Discord Server Level DB-Container created")
 
 	return []
 
@@ -121,7 +121,7 @@ async def get_server_commands(BASE, id, prevent_new=False):
 async def make_get_server_commands(BASE, id):
 
 	BASE.PhaazeDB.create(name="discord/commands/commands_"+str(id))
-	BASE.modules.Console.CYAN("INFO", "New Discord Server Command DB-Container created")
+	BASE.modules.Console.INFO("New Discord Server Command DB-Container created")
 
 	return []
 
@@ -142,7 +142,7 @@ async def get_server_quotes(BASE, id, prevent_new=False):
 async def make_get_server_quotes(BASE, id):
 
 	BASE.PhaazeDB.create(name="discord/quotes/quotes_"+str(id))
-	BASE.modules.Console.CYAN("INFO", "New Discord Server Quote DB-Container created")
+	BASE.modules.Console.INFO("New Discord Server Quote DB-Container created")
 
 	return []
 
