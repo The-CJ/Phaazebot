@@ -185,7 +185,7 @@ async def lurkers(BASE):
 				BASE.PhaazeDB.update(
 					of=f"twitch/level/level_{channel.id}",
 					where=f"str(data['user_id']) in {str(update_user_watch)}",
-					content=f"data['amount_time'] += 1; data['amount_currency'] += {channel_settings.get('gain_currency', 1)}; if data.get('active', 0) > 0: data['active'] -= 1")
+					content=f"data['amount_time'] += 1; data['amount_currency'] += {channel_settings.get('gain_currency', 1)}; data['active'] -= 1 if data.get('active', 0) else 0")
 
 				await asyncio.sleep(0.05)
 			except:

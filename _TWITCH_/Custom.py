@@ -32,6 +32,7 @@ async def get(BASE, message, **kwargs):
 			send = send.replace('{display_name}', message.display_name)
 			send = send.replace('{name}', message.name)
 			send = send.replace('{user_id}', message.user_id)
+			send = send.replace('{uses}', str(cmd.get('uses', 0)))
 
 			await BASE.twitch.send_message(message.channel_name, send)
 			BASE.PhaazeDB.update(
