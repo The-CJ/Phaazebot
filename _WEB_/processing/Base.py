@@ -36,9 +36,9 @@ async def cert(self, request):
 	cert_file = cert_file.replace('..','')
 	try:
 		file_ = open(cert_root+cert_path+cert_file, 'rb').read()
-		self.root.BASE.modules.Console.YELLOW('CERT-Info', 'Successfull call to certfile: '+cert_file)
+		self.root.BASE.modules.Console.WARNING('CERT-Info - Successfull call to certfile: '+cert_file)
 	except:
-		self.root.BASE.modules.Console.RED('CERT-Info', f"Invalid call to certs: '{str(cert_file)}' from IP: {request.remote}")
+		self.root.BASE.modules.Console.ERROR(f"CERT-Info - Invalid call to certs: '{str(cert_file)}' from IP: {request.remote}")
 		return await self.root.web.page_not_found(request)
 
 	return self.root.response(

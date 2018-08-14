@@ -11,10 +11,10 @@ class Init_discord(discord.Client):
 																		name=self.BASE.version_nr),
 													status=discord.Status.online)
 			setattr(self.BASE.vars, "app", await self.BASE.discord.application_info() )
-			self.BASE.modules.Console.GREEN("SUCCESS", "Discord Connected")
+			self.BASE.modules.Console.INFO("Discord Connected")
 			setattr(self.BASE.is_ready, "discord", True )
 		except:
-			self.BASE.modules.Console.YELLOW("WARNING", "Discord Gatway Error --> Changing.")
+			self.BASE.modules.Console.WARNING("Discord Gatway Error --> Changing.")
 			await asyncio.sleep(3)
 			await self.on_ready()
 
@@ -83,5 +83,5 @@ class Init_discord(discord.Client):
 
 	#errors
 	async def on_error(self, event_method, *args, **kwargs):
-		print('Ignoring exception in {}'.format(event_method))
+		self.BASE.modules.Console.ERROR('Ignoring exception in {}'.format(event_method))
 		traceback.print_exc()

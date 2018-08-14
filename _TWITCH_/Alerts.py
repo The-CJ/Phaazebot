@@ -27,7 +27,7 @@ class Init_Main(object):
 				live_streams = live_streams.get('streams', 0)
 
 			except:
-				self.BASE.modules.Console.RED("ERROR", "No Twitch API Response")
+				self.BASE.modules.Console.ERROR("No Twitch API Response")
 				await asyncio.sleep(60*3)
 				continue
 

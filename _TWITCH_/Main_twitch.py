@@ -1,6 +1,6 @@
 #BASE.modules.Twitch_IRC
 
-import asyncio, traceback
+import asyncio
 import twitch_irc as twitch
 
 #BASE.twitch
@@ -12,13 +12,13 @@ class Init_twitch(twitch.Client):
 		self.lurker_loop_running = False
 
 	async def on_ready(self):
-		self.BASE.modules.Console.GREEN("SUCCESS", "Twitch IRC Connected")
+		self.BASE.modules.Console.INFO("Twitch IRC Connected")
 
 		#join own channel
 		await self.join_channel(self.nickname)
 
 		self.BASE.is_ready.twitch = True
-	
+
 		# Because Twitch like reconnecting us
 		if not self.lurker_loop_running:
 			self.lurker_loop_running = True
@@ -47,7 +47,7 @@ class Init_twitch(twitch.Client):
 			await self.join_channel(channel_name)
 			await asyncio.sleep(request_limit / 32)
 
-		self.BASE.modules.Console.GREEN('SUCCESS', f'Joined all {str(len(data))} Channels')
+		self.BASE.modules.Console.INFO(f'Joined all {str(len(data))} Twitch Channels')
 
 	async def on_raw_data(self, r):
-		pass#print(r)
+		pass

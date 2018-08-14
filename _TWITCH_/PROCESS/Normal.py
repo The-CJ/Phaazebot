@@ -11,4 +11,4 @@ class Quote(object):
 		if channel_settings.get('active_quotes', False): return
 
 		channel_quotes = await BASE.modules._Twitch_.Utils.get_channel_quotes(BASE, message.channel_id)
-		print(channel_quotes) # TODO: make quotes quoting again
+		BASE.modules.Console.DEBUG(channel_quotes) # TODO: make quotes quoting again

@@ -9,7 +9,7 @@ async def main(self, request, msg=""):
 	current_navbar = self.root.format_html(self.root.BASE.modules._Web_.Utils.get_navbar(active=''))
 
 	page = self.root.format_html(page, msg=msg, path=save_str, navbar=current_navbar)
-	print(request.path)
+	self.root.BASE.modules.Console.DEBUG(request.path)
 	return self.root.response(
 		text=page,
 		status=404,
