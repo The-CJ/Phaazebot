@@ -1,19 +1,20 @@
 #BASE.modules._Discord_.Levels
 
-import asyncio, discord, tabulate
+import asyncio, discord, tabulate, math
 
 Medalls = {}
 
 class Calc(object):
-	async def get_exp(lvl):
-		lvl = int(lvl)
-		return round( 75 + ((lvl * 75) + (lvl * (lvl*5) * 2)) )
+	LEVEL_DEFAULT_EXP = 65
+	LEVEL_MULTIPLIER = 0.15
 
-	async def get_lvl(exp):
-		lvl = 0
-		while await Calc.get_exp(lvl) < exp:
-			lvl += 1
-		return lvl
+	def get_lvl(xp: int):
+		l = (-Calc.LEVEL_DEFAULT_EXP + (Calc.LEVEL_DEFAULT_EXP ** 2 - 4 * (Calc.LEVEL_DEFAULT_EXP * Calc.LEVEL_MULTIPLIER) * (-xp)) ** 0.5) / (2 * (Calc.LEVEL_DEFAULT_EXP * Calc.LEVEL_MULTIPLIER))
+		return math.floor(l)
+
+	def get_exp(lvl: int):
+		l = (lvl * Calc.LEVEL_DEFAULT_EXP) + ( (Calc.LEVEL_MULTIPLIER * lvl) * (lvl * Calc.LEVEL_DEFAULT_EXP) )
+		return math.floor(l)
 
 class Utils(object):
 	async def get_user(BASE, level_file, server_id, member_id, prevent_new=False):
@@ -37,9 +38,9 @@ class Utils(object):
 
 	async def check_level(BASE, message, user):
 			#get level from exp
-			current_level = await Calc.get_lvl(user["exp"])
+			current_level = Calc.get_lvl(user.get('exp', 0))
 			#needed to next level
-			next_lvl_exp = await Calc.get_exp(current_level)
+			next_lvl_exp = Calc.get_exp(current_level+1)
 
 			#on level up
 			if next_lvl_exp == user["exp"]:
@@ -85,9 +86,9 @@ async def get(BASE, message, kwargs):
 
 	if message.content.lower().startswith(f"{BASE.vars.PT}level calc "):
 		if m[2].isdigit():
-			level = int(m[2])-1
-			if level != -1:
-				xp = await Calc.get_exp(level)
+			level = int(m[2])
+			if level != 0:
+				xp = Calc.get_exp(level)
 				return await BASE.discord.send_message(message.channel, f"Level **{m[2]}** = **{str(xp)}+** EXP")
 
 	user = None
@@ -121,8 +122,8 @@ async def get(BASE, message, kwargs):
 		return await BASE.discord.send_message(message.channel, f":warning: Seems like there is no level for `{user.name}`\nMaybe the user never typed anything or got deleted.")
 
 	exp_current = level_user.get('exp', 0)
-	level_current = await Calc.get_lvl(exp_current)
-	exp_next = await Calc.get_exp(level_current)
+	level_current = Calc.get_lvl(exp_current)
+	exp_next = Calc.get_exp(level_current+1)
 	avatar = user.avatar_url if "" != user.avatar_url != None else user.default_avatar_url
 
 	emb = discord.Embed(color=0x00ffdd)
@@ -131,7 +132,7 @@ async def get(BASE, message, kwargs):
 	emb.add_field(name="Level:",value=str(level_current),inline=True)
 	emb.add_field(name="Exp:",value=f"{str(exp_current)} / {str(exp_next)}",inline=True)
 	if level_user.get('edited', False):
-		emb.add_field(name=":warning: EDITED:",value="Exp value got edited.", inline=True)
+		emb.add_field(name=":warning: EDITED",value="Exp value got edited.", inline=True)
 
 	if level_user.get('medal', []):
 		emb.add_field(name="Medals:",value="\n".join(m for m in level_user.get('medal', [])), inline=False)

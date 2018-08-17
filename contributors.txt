@@ -1,0 +1,5 @@
+Please ignore this file, that just for me to remember all persons that helped me make the bot,
+when i will make the wiki entry for contributors or so.
+
+Heapunderflow : Threading, and to many small things that i stuck sometimes
+SFGrenade : Level calculation algorithm rework/perfection
