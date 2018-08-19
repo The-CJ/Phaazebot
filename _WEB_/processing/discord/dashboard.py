@@ -40,7 +40,7 @@ def dashboard(BASE, info, root, dump, server_id):
 	if discord_server_data.get("code", None) == 50001:
 		return BASE.modules._Web_.Base.root.discord.invite.invite(BASE, info, root, dump, msg="Seems Like Phaaze is not on this server.", server_id=server_id)
 
-	saved_settings = BASE.call_from_async( BASE.modules.Utils.get_server_file(BASE, server_id, prevent_new=True), BASE.Discord_loop )
+	saved_settings = BASE.run_async( BASE.modules.Utils.get_server_file(BASE, server_id, prevent_new=True), BASE.Discord_loop )
 	server_object = BASE.discord.get_server(server_id)
 
 	#Finish up -- Replace Parts

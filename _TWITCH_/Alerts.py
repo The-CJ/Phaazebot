@@ -38,7 +38,7 @@ class Init_Main(object):
 			for twitch_id in old_:
 
 				twitch_api_info = new_.get(twitch_id, {}).get('twitch_api_info', {})
-				discord_channel = old_[twitch_id].get('discord_channel', [])
+				db_info = old_.get('db_info', {})
 
 				old_status = old_[twitch_id].get('live', False)
 				new_status = new_.get(twitch_id, {}).get('live', False)
@@ -48,21 +48,23 @@ class Init_Main(object):
 
 				# has gone live
 				if old_status != new_status and new_status == True:
-					self.event_live(twitch_api_info, discord_channel=discord_channel)
+					self.event_live(twitch_info=twitch_api_info, db_info=db_info)
 
 				# was live, changed game
 				elif old_game != new_game and new_game != None:
-					self.event_gamechange(twitch_api_info, discord_channel=discord_channel)
+					self.event_gamechange(twitch_info=twitch_api_info, db_info=db_info)
 
 
 			sorted_games_id_list = self.sort_game_channel_list(live_streams)
 
-			self.BASE.PhaazeDB.update(of="twitch/alerts", content=dict(live=False, game=None), where=f"data['twitch_id'] not in {str(id_list_of_live_channel)}")
-			self.BASE.PhaazeDB.update(of="twitch/alerts", content=dict(live=True), where=f"data['twitch_id'] in {str(id_list_of_live_channel)}")
+			self.BASE.PhaazeDB.update(of="twitch/alerts", content=f"data['live'] = True if data['twitch_id'] in {str(id_list_of_live_channel)} else False")
+
+			game_update = ""
 			for game in sorted_games_id_list:
 				id_list = sorted_games_id_list[game]
-				self.BASE.PhaazeDB.update(of="twitch/alerts", content=dict(game=game), where=f"data['twitch_id'] in {str(id_list)}")
+				game_update += f"data['game'] = '{game}' if data['twitch_id'] in {str(id_list)} else data.get('game', None);"
 
+			self.BASE.PhaazeDB.update(of="twitch/alerts", content=game_update)
 			await asyncio.sleep(20)
 
 	def get_alert_info(self, twitch_id, prevent_new=False):
@@ -105,24 +107,25 @@ class Init_Main(object):
 			live = None
 
 			twitch_api_info = None
-			discord_channel = stream.get('discord_channel', [])
+			db_info = None
 
 			if type_ == "db":
 				key = stream.get('twitch_id', None)
 				game = stream.get('game', None)
 				live = stream.get('live', False)
+				db_info = stream
 			elif type_ == "twitch":
 				key = stream.get('channel', {}).get('_id', None)
 				game = stream.get('game', None)
 				live = True
 				twitch_api_info = stream
 
-			r[str(key)] = dict( game=game, live=live, twitch_api_info=twitch_api_info, discord_channel=discord_channel )
+			r[str(key)] = dict( game=game, live=live, twitch_api_info=twitch_api_info, db_info=db_info )
 
 		return r
 
 	#Stream Events
-	def event_live(self, twitch_info, discord_channel=[]):
+	def event_live(self, twitch_info=dict(), db_info=dict()):
 		if twitch_info.get('stream_type', None) != 'live': return
 
 		game = twitch_info.get('game', '[N/A]')
@@ -132,6 +135,7 @@ class Init_Main(object):
 		status = twitch_info.get('channel', {}).get('status', '[N/A]')
 
 		#Discord
+		discord_channel = db_info.get('discord_channel', [])
 		if discord_channel:
 			emb = discord.Embed(title=status, url=url, description=f":game_die: Playing: **{game}**", color=0x6441A4)
 			emb.set_author(name=display_name, url=url, icon_url=logo)
@@ -145,7 +149,7 @@ class Init_Main(object):
 					loop=self.BASE.Discord_loop
 				)
 
-	def event_gamechange(self, twitch_info, discord_channel=[]):
+	def event_gamechange(self, twitch_info=dict(), db_info=dict()):
 		if twitch_info.get('stream_type', None) != 'live': return
 
 		game = twitch_info.get('game', '[N/A]')
@@ -155,6 +159,7 @@ class Init_Main(object):
 		status = twitch_info.get('channel', {}).get('status', '[N/A]')
 
 		#Discord
+		discord_channel = db_info.get('discord_channel', [])
 		if discord_channel:
 			emb = discord.Embed(title=status, url=url, description=f":game_die: Now Playing: **{game}**", color=0x6441A4)
 			emb.set_author(name=display_name, url=url, icon_url=logo)

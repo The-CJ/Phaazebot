@@ -98,7 +98,7 @@ def delet(BASE, info={}, from_web=False, **kwargs):
 
 	#get server file
 	x = BASE.modules.Utils.get_server_file(BASE, server_id, prevent_new=True)
-	save_settings = BASE.call_from_async(x ,BASE.Discord_loop)
+	save_settings = BASE.run_async(x ,BASE.Discord_loop)
 
 	#get command -> delete
 	found = False
