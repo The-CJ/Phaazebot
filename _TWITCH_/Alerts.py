@@ -38,7 +38,7 @@ class Init_Main(object):
 			for twitch_id in old_:
 
 				twitch_api_info = new_.get(twitch_id, {}).get('twitch_api_info', {})
-				db_info = old_.get('db_info', {})
+				db_info = old_.get(twitch_id, {}).get('db_info', {})
 
 				old_status = old_[twitch_id].get('live', False)
 				new_status = new_.get(twitch_id, {}).get('live', False)
@@ -48,12 +48,12 @@ class Init_Main(object):
 
 				# has gone live
 				if old_status != new_status and new_status == True:
+
 					self.event_live(twitch_info=twitch_api_info, db_info=db_info)
 
 				# was live, changed game
 				elif old_game != new_game and new_game != None:
 					self.event_gamechange(twitch_info=twitch_api_info, db_info=db_info)
-
 
 			sorted_games_id_list = self.sort_game_channel_list(live_streams)
 
@@ -76,7 +76,6 @@ class Init_Main(object):
 			insert_['live'] = False
 			insert_['game'] = None
 			insert_['discord_channel'] = []
-			insert_['discord_format'] = {}
 
 			if not prevent_new: self.BASE.PhaazeDB.insert(into="twitch/alerts", content=insert_)
 			return insert_
@@ -146,7 +145,9 @@ class Init_Main(object):
 			for channel_id in discord_channel:
 				#check for custom format
 				alert_format = None
-
+				res = self.BASE.PhaazeDB.select(of="twitch/alert_format", where=f"data['discord_channel_id'] == '{channel_id}'", limit=1)
+				if res.get('data', []):
+					alert_format = res.get('data', [])[0].get('custom_alert', None)
 
 				chan = discord.Object(id=channel_id)
 				asyncio.ensure_future(
