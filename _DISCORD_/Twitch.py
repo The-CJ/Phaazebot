@@ -3,7 +3,7 @@
 import asyncio, discord
 
 async def Base(BASE, message, kwargs):
-	AV = ["track", "get", "reset"]
+	AV = ["track", "get", "reset", "custom"]
 	m = message.content.split(" ")
 
 	if len(m) == 1:
@@ -17,8 +17,11 @@ async def Base(BASE, message, kwargs):
 
 		return await track(BASE, message, kwargs, m[2])
 
-	elif m[1].lower() == "custom" and ""=="-":
-		await BASE.discord.send_message(message.channel, ":no_entry_sign: SOON:tm: or so")
+	elif m[1].lower() == "custom":
+		if len(m) <= 2:
+			return await BASE.discord.send_message(message.channel, f":warning: You need to add a custom format to the alert:\n`{BASE.vars.PT*3}twitch custom [Custom_message]`")
+
+		return await custom(BASE, message, kwargs, " ".join(m[2:]))
 
 	elif m[1].lower() == "get":
 		return await get(BASE, message, kwargs)
@@ -104,4 +107,29 @@ async def reset(BASE, message, kwargs):
 	return await BASE.discord.send_message(
 		message.channel,
 		f":white_check_mark: All tracked Twitch channel in {message.channel.mention}\nHave been removed\n\nRemoved Tracked channels: {x}")
+
+async def custom(BASE, message, kwargs, custom_alert):
+	if custom_alert.lower() == "clear":
+		BASE.PhaazeDB.delete(of='twitch/alert_format', where=f"data['discord_channel_id'] == '{message.channel.id}'")
+		return await BASE.discord.send_message(message.channel, ':white_check_mark: Custom alert cleared')
+
+
+	res = BASE.PhaazeDB.select(of=f"twitch/alert_format", where=f"data['discord_channel_id'] == '{message.channel.id}'", limit=1)
+	found = True if res.get('data', []) else False
+
+	if custom_alert.lower() == "get":
+		if found:
+			e = res.get('data', [])[0]
+			a = e.get('custom_alert', "[N/A]")
+			return await BASE.discord.send_message(message.channel, f':white_check_mark: Current Custom alert:\n```{a}```')
+		else:
+			return await BASE.discord.send_message(message.channel, f':warning: This channel has no custom alert')
+
+	else:
+		if found:
+			BASE.PhaazeDB.update(of="twitch/alert_format", content=dict(custom_alert=custom_alert), where=f"data['discord_channel_id'] == '{message.channel.id}'", limit=1)
+			return await BASE.discord.send_message(message.channel, ':white_check_mark: Custom alert updated')
+		else:
+			BASE.PhaazeDB.insert(into="twitch/alert_format", content=dict(custom_alert=custom_alert, discord_channel_id=message.channel.id))
+			return await BASE.discord.send_message(message.channel, ':white_check_mark: Custom alert set')
 

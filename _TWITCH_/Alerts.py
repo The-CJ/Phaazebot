@@ -76,6 +76,7 @@ class Init_Main(object):
 			insert_['live'] = False
 			insert_['game'] = None
 			insert_['discord_channel'] = []
+			insert_['discord_format'] = {}
 
 			if not prevent_new: self.BASE.PhaazeDB.insert(into="twitch/alerts", content=insert_)
 			return insert_
@@ -143,9 +144,13 @@ class Init_Main(object):
 			emb.set_image(url=logo)
 
 			for channel_id in discord_channel:
+				#check for custom format
+				alert_format = None
+
+
 				chan = discord.Object(id=channel_id)
 				asyncio.ensure_future(
-					self.BASE.discord.send_message(chan, embed=emb),
+					self.BASE.discord.send_message(chan, content=alert_format, embed=emb),
 					loop=self.BASE.Discord_loop
 				)
 
