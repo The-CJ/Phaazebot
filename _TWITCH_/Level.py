@@ -8,7 +8,7 @@ async def Base(BASE, message, **kwargs):
 	channel_settings = kwargs.get('channel_settings', {})
 
 	#only if channel is live
-	if not message.channel_id in BASE.twitch.live and False: # DEBUG: testing
+	if not message.channel_id in BASE.twitch.live:
 		return
 
 	#get levels
@@ -82,7 +82,7 @@ async def stats(BASE, message, kwargs):
 			return await BASE.twitch.send_message(message.channel_name, f"@{message.display_name}, no stats found for: {search_user}.")
 		elif u == 0:
 			return await BASE.twitch.send_message(message.channel_name, f"@{message.display_name}, sorry but you don't have stats yet.")
-	
+
 	user = user['data'][0]
 
 	#owner
@@ -104,7 +104,7 @@ async def stats(BASE, message, kwargs):
 		resp = f"@{message.display_name}, Credits: {currency} | Level: {current_level} ({hours}h/{time_to_next}h)"
 	elif u == 1:
 		resp = f"Stats for: {search_user}, Credits: {currency} | Level: {current_level} ({hours}h/{time_to_next}h)"
-		
+
 	return await BASE.twitch.send_message(message.channel_name, resp)
 
 async def leaderboard(BASE, message, package, art="time"):
