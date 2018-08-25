@@ -30,9 +30,12 @@ class Quote(object):
 			r = f"Error! > !delquote [ID]"
 			return await BASE.twitch.send_message(message.channel_name, r)
 
-		_id_ = m[1]
+		_id_ = m[1] if m[1].isdigit() else None
 
-		dele = BASE.PhaazeDB.delete(of=f"twitch/quotes/quotes_{message.channel_id}", where=f"str(data['id']) == str('{_id_}')")
+		if _id_ == None:
+			return await BASE.twitch.send_message(message.channel_name, f'"{str(_id_)}" is not a valid quote id')
+
+		dele = BASE.PhaazeDB.delete(of=f"twitch/quotes/quotes_{message.channel_id}", where=f"str(data['id']) == str('{str(_id_)}')")
 		h = dele.get('hits', 0)
 		if h == 1:
 			return await BASE.twitch.send_message(message.channel_name, f'Quote "{str(_id_)}" successfull deleted')
