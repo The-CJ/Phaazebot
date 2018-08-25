@@ -3,7 +3,14 @@
 import asyncio, random
 
 class Quote(object):
+
+	custom_quote_cooldown = []
+
 	async def Base(BASE, message, kwargs):
+		#channel still in cooldown
+		if message.channel_id in Quote.custom_quote_cooldown: return
+		asyncio.ensure_future(Quote.cooldown(message.channel_id))
+
 		channel_settings = kwargs.get('channel_settings', None)
 		if channel_settings == None:
 			channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
@@ -36,3 +43,9 @@ class Quote(object):
 			return await BASE.twitch.send_message(message.channel_name, f"Quote '{str(index)}' was not found")
 
 		return await BASE.twitch.send_message(message.channel_name, quote + f" [ID: {str(index)}]")
+
+	async def cooldown(channel_id, cooldown=10):
+		Quote.custom_quote_cooldown.append(channel_id)
+		await asyncio.sleep(cooldown)
+		Quote.custom_quote_cooldown.remove(channel_id)
+
