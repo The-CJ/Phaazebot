@@ -18,10 +18,9 @@ async def get(BASE, message, **kwargs):
 
 	for cmd in channel_commands:
 		if cmd.get("trigger", None) == m[0]:
-			chann_cmd_hash = hash(message.channel_id+cmd.get("trigger", None))
 
-			#command is in cooldown
-			if chann_cmd_hash in custom_command_cooldown: return
+			#channel is in cooldown
+			if message.channel_id in custom_command_cooldown: return
 
 			#add a use
 			cmd["uses"] = cmd.get("uses", 0) + 1
@@ -43,7 +42,7 @@ async def get(BASE, message, **kwargs):
 			cool = cmd.get("cooldown", 10)
 			if await BASE.modules._Twitch_.Utils.is_Mod(BASE, message):
 				cool = 0.01
-			asyncio.ensure_future(cooldown( chann_cmd_hash, cool ))
+			asyncio.ensure_future(cooldown( message.channel_id, cool ))
 			break
 
 async def add(BASE, message, kwargs):
@@ -118,8 +117,8 @@ async def rem(BASE, message, kwargs):
 
 	return await BASE.twitch.send_message(message.channel_name, f'The command: "{m[1].lower()}" has been removed!')
 
-async def cooldown(cidcmd_hash, timeout):
+async def cooldown(channel_id, timeout):
 	# cooldown a command, so it can't be spammed
-	custom_command_cooldown.append(cidcmd_hash)
+	custom_command_cooldown.append(channel_id)
 	await asyncio.sleep(timeout)
-	custom_command_cooldown.remove(cidcmd_hash)
+	custom_command_cooldown.remove(channel_id)
