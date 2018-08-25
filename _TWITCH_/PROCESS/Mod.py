@@ -26,7 +26,15 @@ class Quote(object):
 	async def rem(BASE, message, kwargs):
 		m = message.content.split(" ")
 
-		if len(m) <= 2:
+		if len(m) <= 1:
 			r = f"Error! > !delquote [ID]"
 			return await BASE.twitch.send_message(message.channel_name, r)
 
+		_id_ = m[1]
+
+		dele = BASE.PhaazeDB.delete(of=f"twitch/quotes/quotes_{message.channel_id}", where=f"str(data['id']) == str('{_id_}')")
+		h = dele.get('hits', 0)
+		if h == 1:
+			return await BASE.twitch.send_message(message.channel_name, f'Quote "{str(_id_)}" successfull deleted')
+		else:
+			return await BASE.twitch.send_message(message.channel_name, f' There is not quote with index "{str(_id_)}"')
