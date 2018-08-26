@@ -11,7 +11,7 @@ def get_navbar(active=''):
 
         ac = re.finditer(r'\{selected_(.+)\}', navbar)
         for c in ac:
-            if c.group(0) == active:
+            if c.group(1) == active:
                 navbar = navbar.replace(c.group(0), 'active')
             else:
                 navbar = navbar.replace(c.group(0), '')
