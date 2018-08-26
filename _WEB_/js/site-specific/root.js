@@ -1,5 +1,5 @@
 function logo_rotate() {
-  let ml = $('#main_logo');
+  var ml = $('#main_logo');
   ml.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
     ml.removeClass('rotateIn');
     ml.addClass('animation-spin');
