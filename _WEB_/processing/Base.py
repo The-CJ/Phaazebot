@@ -6,9 +6,12 @@ async def main(self, request):
 	site = self.root.html_root
 
 	# user = await self.root.get_user_info(request)
-	current_navbar = self.root.BASE.modules._Web_.Utils.get_navbar(active='')
+	current_navbar = self.root.html_header()
 
-	site = self.root.format_html(site, header=current_navbar)
+	site = self.root.format_html(site,
+		header=current_navbar,
+		title="Phaaze"
+	)
 
 	return self.root.response(
 		body=site,

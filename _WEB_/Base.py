@@ -11,6 +11,7 @@ class root(object):
 		self.response = web.Response
 		self.format_html_regex = re.compile(r"\|>>>\((.+)\)<<<\|")
 		self.html_root = open('_WEB_/content/root.html','r').read()
+		self.html_header = BASE.modules._Web_.Utils.get_navbar
 
 		self.web = self.init_web(self)
 		self.api = self.init_api(self)
