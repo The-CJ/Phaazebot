@@ -1,87 +1,91 @@
-<!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-dark indigo sticky-top scrolling-navbar">
+<header>
 
-    <!-- Navbar brand -->
-    <a class="navbar-brand" href="/">
-      <span>Phaaze</span>
-      <img src="/favicon.ico" alt="Logo" height="50">
-    </a>
-    <!-- Collapse button -->
-    <button class="navbar-toggler" type="button" onclick="$('#navbar_content_main').collapse('toggle')">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  <!--Navbar-->
+  <nav class="navbar navbar-expand-lg navbar-dark indigo sticky-top scrolling-navbar">
 
-    <!-- content -->
-    <div class="collapse navbar-collapse" id="navbar_content_main">
+      <!-- Navbar brand -->
+      <a class="navbar-brand" href="/">
+        <span>Phaaze</span>
+        <img src="/favicon.ico" alt="Logo" height="50">
+      </a>
+      <!-- Collapse button -->
+      <button class="navbar-toggler" type="button" onclick="$('#navbar_content_main').collapse('toggle')">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <!-- left -->
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item {selected_discord}">
-                <a class="nav-link" href="/discord">Discord</a>
+      <!-- content -->
+      <div class="collapse navbar-collapse" id="navbar_content_main">
+
+          <!-- left -->
+          <ul class="navbar-nav mr-auto">
+              <li class="nav-item {selected_discord}">
+                  <a class="nav-link" href="/discord">Discord</a>
+              </li>
+              <li class="nav-item {selected_twitch}">
+                  <a class="nav-link" href="/twitch">Twitch</a>
+              </li>
+              <li class="nav-item {selected_osu}">
+                  <a class="nav-link" href="/osu">Osu</a>
+              </li>
+              <li class="nav-item {selected_twitter}">
+                  <a class="nav-link" href="/twitter">Twitter</a>
+              </li>
+              <li class="nav-item {selected_wiki}">
+                <a class="nav-link" href="/wiki">Wiki</a>
+              </li>
+          </ul>
+
+          <!-- right -->
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="https://discord.gg/ZymrebS">
+                <img class="" height="25" src="https://discordapp.com/assets/28174a34e77bb5e5310ced9f95cb480b.png" alt="Discord_Logo_small">
+              </a>
             </li>
-            <li class="nav-item {selected_twitch}">
-                <a class="nav-link" href="/twitch">Twitch</a>
+            <li class="nav-item">
+              <a class="nav-link" href="mailto:admin@phaaze.net">
+                <span class=" material-icons">mail_outline</span>
+              </a>
             </li>
-            <li class="nav-item {selected_osu}">
-                <a class="nav-link" href="/osu">Osu</a>
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/The-CJ/Phaazebot">
+                <span class="material-icons">code</span>
+              </a>
             </li>
-            <li class="nav-item {selected_twitter}">
-                <a class="nav-link" href="/twitter">Twitter</a>
+            <li class="nav-item">
+              <a class="nav-link" href="https://www.patreon.com/the_cj">
+                <img  height="25" src="/img/patreon_logo.png" alt="Patreon_Logo_small">
+              </a>
             </li>
-            <li class="nav-item {selected_wiki}">
-              <a class="nav-link" href="/wiki">Wiki</a>
+            <li class="nav-item">
+              <a class="nav-link" href="/bug">
+                <span class="material-icons">bug_report</span>
+              </a>
             </li>
-        </ul>
+            <li class="nav-item">
+                <a class="nav-link" href="/wiki/about">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/wiki/api">API</a>
+            </li>
 
-        <!-- right -->
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="https://discord.gg/ZymrebS">
-              <img class="" height="25" src="https://discordapp.com/assets/28174a34e77bb5e5310ced9f95cb480b.png" alt="Discord_Logo_small">
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="mailto:admin@phaaze.net">
-              <span class=" material-icons">mail_outline</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="https://github.com/The-CJ/Phaazebot">
-              <span class="material-icons">code</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="https://www.patreon.com/the_cj">
-              <img  height="25" src="/img/patreon_logo.png" alt="Patreon_Logo_small">
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/bug">
-              <span class="material-icons">bug_report</span>
-            </a>
-          </li>
-          <li class="nav-item">
-              <a class="nav-link" href="/wiki/about">About</a>
-          </li>
-          <li class="nav-item">
-              <a class="nav-link" href="/wiki/api">API</a>
-          </li>
+            <li class="nav-item">
+              |>>>(navbar_login)<<<|
+            </li>
+          </ul>
 
-          <li class="nav-item">
-            |>>>self.BASE.modules._Web_.Utils.get_login_btn(self.BASE, user=values.get('user', None))<<<|
-          </li>
-        </ul>
+      </div>
+      <!-- content -->
 
-    </div>
-    <!-- content -->
+  </nav>
+  <!--/.Navbar-->
 
-</nav>
+  <div id="_message_field"></div>
 
-<div class="col text-center orange">
-  <h1>Dev. Version</h1>
-  <h3>This website is currently under Development, please don't expect stuff to show up here.<br>If you want, you can checkout the progress <a href="https://github.com/The-CJ/Phaazebot">here</a> or even help me</h3>
-</div>
+  <div class="col text-center orange">
+    <h1>Dev. Version</h1>
+    <h3>This website is currently under Development, please don't expect stuff to show up here.<br>If you want, you can checkout the progress <a href="https://github.com/The-CJ/Phaazebot">here</a> or even help me</h3>
+  </div>
 
-<div id="_message_field"></div>
+</header>
 
-<!--/.Navbar-->

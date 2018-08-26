@@ -5,12 +5,13 @@ import asyncio
 async def main(self, request):
 	site = self.root.html_root
 
-	# user = await self.root.get_user_info(request)
-	current_navbar = self.root.html_header()
+	current_navbar = self.root.html_header(self.root.BASE)
+	main_site = open('_WEB_/content/main.html','r').read()
 
 	site = self.root.format_html(site,
+		title="Phaaze",
 		header=current_navbar,
-		title="Phaaze"
+		main=main_site
 	)
 
 	return self.root.response(

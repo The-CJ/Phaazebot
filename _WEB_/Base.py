@@ -8,13 +8,21 @@ class root(object):
 
 	def __init__(self, BASE):
 		self.BASE = BASE
-		self.response = web.Response
+		self.response = self.send_Response
 		self.format_html_regex = re.compile(r"\|>>>\((.+)\)<<<\|")
 		self.html_root = open('_WEB_/content/root.html','r').read()
 		self.html_header = BASE.modules._Web_.Utils.get_navbar
 
 		self.web = self.init_web(self)
 		self.api = self.init_api(self)
+
+	def send_Response(self, **kwargs):
+		already_set_header = kwargs.get('headers', dict())
+		kwargs['headers'] = already_set_header
+		kwargs['headers']['server'] =f"PhaazeOS v{self.BASE.version}"
+
+		return web.Response(**kwargs)
+
 
 	# Utility functions that are needed everywhere
 	from _WEB_.Utils import format_html as format_html
