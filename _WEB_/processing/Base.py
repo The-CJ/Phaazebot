@@ -1,16 +1,14 @@
 #BASE.modules._Web_.Base.root.web.Base
 
-from importlib import reload
-import traceback
-import asyncio, os
+import asyncio
 
 async def main(self, request):
-	site = open('_WEB_/content/main.html', 'r').read()
+	site = self.root.html_root
 
-	user = await self.root.get_user_info(request)
-	current_navbar = self.root.format_html(self.root.BASE.modules._Web_.Utils.get_navbar(active=''))
+	# user = await self.root.get_user_info(request)
+	current_navbar = self.root.BASE.modules._Web_.Utils.get_navbar(active='')
 
-	site = self.root.format_html(site, navbar=current_navbar, user=user)
+	site = self.root.format_html(site, header=current_navbar)
 
 	return self.root.response(
 		body=site,

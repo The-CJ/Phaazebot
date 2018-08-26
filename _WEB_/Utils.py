@@ -1,8 +1,7 @@
 import re
 
 def get_navbar(active=''):
-    root = open('_WEB_/content/_navbar/navbar_content.html', 'r').read()
-    navbar = root
+    navbar = open('_WEB_/content/_navbar/navbar_content.html', 'r').read()
     if active != '':
         try:
             addition = open(f'_WEB_/content/_navbar/navbar_content_{active}.html', 'r').read()
@@ -20,22 +19,19 @@ def get_navbar(active=''):
     return navbar
 
 
-def format_html_functions(self, html_string, **values):
+def format_html(self, html_string, **values):
     """
     This function will take all
-    |>>>func()<<<|
-    in the .html,
-    execute them and insert the return vaule as string.
+    |>>>(kwarg)<<<|
+    in the .html, and replace kwarg with the right key match from **values
 
     returns formated html
     """
     search_results = re.finditer(self.format_html_regex, html_string)
     for hit in search_results:
-        try:
-            calc_ = eval(hit.group(1))
-            html_string = html_string.replace(hit.group(0), calc_)
-        except:
-            html_string = html_string.replace(hit.group(0), '')
+        rep = values.get(hit.group(1), None)
+        if rep == None: continue
+        html_string = html_string.replace(hit.group(0), rep)
 
     return html_string
 

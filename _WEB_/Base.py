@@ -1,4 +1,4 @@
-#BASE.modules._Web_.Base
+#BASE-modules._Web_.Base
 
 import re
 import ssl
@@ -9,13 +9,14 @@ class root(object):
 	def __init__(self, BASE):
 		self.BASE = BASE
 		self.response = web.Response
-		self.format_html_regex = re.compile(r"\|>>>(.+)<<<\|")
+		self.format_html_regex = re.compile(r"\|>>>\((.+)\)<<<\|")
+		self.html_root = open('_WEB_/content/root.html','r').read()
 
 		self.web = self.init_web(self)
 		self.api = self.init_api(self)
 
 	# Utility functions that are needed everywhere
-	from _WEB_.Utils import format_html_functions as format_html
+	from _WEB_.Utils import format_html as format_html
 	from _API_.Utils import get_user_informations as get_user_info
 	from _API_.Utils import password as password
 	from _API_.Utils import make_session_key as make_session_key
@@ -97,4 +98,5 @@ def webserver(BASE):
 
 	SSL = ssl.SSLContext()
 	SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
-	web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
+	# web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
+	web.run_app(server, handle_signals=False, port=900, print=False)
