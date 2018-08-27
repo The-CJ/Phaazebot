@@ -23,10 +23,10 @@ async def login(self, request, **kwargs):
 			content_type="application/json"
 			)
 
-	new_session = self.root.BASE.modules._Web_.Base.root.make_session_key()
+	new_session = self.root.make_session_key()
 
 	entry = dict(session = new_session, user_id=auth_user['id'])
-	self.BASE.PhaazeDB.insert(into="session/phaaze", content=entry)
+	self.root.BASE.PhaazeDB.insert(into="session/phaaze", content=entry)
 
 	return self.root.response(
 		text=json.dumps( dict(phaaze_session=new_session,status=200) ),
@@ -46,7 +46,7 @@ async def logout(self, request, **kwargs):
 			status=400
 		)
 
-	res = BASE.PhaazeDB.delete(of="session/phaaze", where=f"data['session'] == '{session_key}'")
+	res = self.root.BASE.PhaazeDB.delete(of="session/phaaze", where=f"data['session'] == '{session_key}'")
 
 	if res['hits'] == 1:
 		return self.response(

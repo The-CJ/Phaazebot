@@ -55,6 +55,11 @@ class root(object):
 		from _WEB_.processing.Base import cert as cert										#/.well-known/acme-challenge/
 		from _WEB_.processing.page_not_found import main as page_not_found					#<404>
 		from _WEB_.processing.action_not_allowed import main as action_not_allowed			#<400/401/402>
+																							#
+		from _WEB_.processing.account.main import login as login							#/login
+		from _WEB_.processing.account.main import account as account						#/account
+		from _WEB_.processing.account.create import create as account_create				#/account/create
+
 
 	# class discord(object):																#
 	# 	import _WEB_.processing.discord.main as main										#/discord
@@ -71,9 +76,6 @@ class root(object):
 	# class admin(object):																	#
 	# 	import _WEB_.processing.admin.admin as admin										#/admin
 	# 																						#
-	# class account(object):																#
-	# 	import _WEB_.processing.account.main as account										#/account
-
 def webserver(BASE):
 	server = web.Application()
 	root = BASE.modules._Web_.Base.root(BASE)
@@ -81,9 +83,12 @@ def webserver(BASE):
 
 	server.router.add_route('GET', '/.well-known/acme-challenge/{cert_file:.+}', root.web.cert)
 
-	# main
+	# /
 	server.router.add_route('GET', '/', root.web.main)
 	server.router.add_route('GET', '/favicon.ico', root.web.favicon)
+	server.router.add_route('GET', '/login', root.web.login)
+	server.router.add_route('GET', '/account', root.web.account)
+	server.router.add_route('GET', '/account/create', root.web.account_create)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
@@ -103,5 +108,5 @@ def webserver(BASE):
 
 	SSL = ssl.SSLContext()
 	SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
-	web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
-	# web.run_app(server, handle_signals=False, port=900, print=False)
+	# web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
+	web.run_app(server, handle_signals=False, port=900, print=False)

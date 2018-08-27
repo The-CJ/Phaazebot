@@ -1,35 +1,26 @@
 #BASE.modules._Web_.Base.root.account.main
 
-def main(BASE, info):
+# /login
+async def login(self, request):
+	current_navbar = self.root.html_header(self.root.BASE)
 
-	#no session -> login
-	if info.get('user', None) == None:
-		return account_login(BASE, info)
-	else:
-		return account_main(BASE, info)
+	main = open('_WEB_/content/account/account_login.html', 'r').read()
 
-def account_login(BASE, info):
-	return_header = [('Content-Type','text/html')]
-	site = open('_WEB_/content/account/account_login.html', 'r').read()
+	site = self.root.html_root
+	site = self.root.format_html( site, title="Phaaze | Account - Login", header=current_navbar, main=main )
 
-	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site)
+	return self.root.response(
+		body=site,
+		status=200,
+		content_type='text/html'
+	)
 
-	class r (object):
-		content = site.encode("UTF-8")
-		response = 200
-		header = return_header
-	return r
+# /account
+async def account(self, request):
+	user = await self.root.get_user_info(request)
 
-def account_main(BASE, info):
-	return_header = [('Content-Type','text/html')]
-	site = open('_WEB_/content/account/account_main.html', 'r').read()
-	site = "<h1>Nope</h1>"
+	self.root.BASE.modules.Console.DEBUG(str(user))
 
-	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site)
-
-	class r (object):
-		content = site.encode("UTF-8")
-		response = 200
-		header = return_header
-	return r
-
+	# need to login
+	if user == None:
+		return await self.root.web.login(request)
