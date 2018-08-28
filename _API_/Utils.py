@@ -17,7 +17,7 @@ async def login(self, request, **kwargs):
 		)
 
 	if auth_user == None:
-		return self.response(
+		return self.root.response(
 			status=404,
 			text=json.dumps( dict(error="wrong_data", status=404, message="'password' or 'phaaze_username' could not be found") ),
 			content_type="application/json"
