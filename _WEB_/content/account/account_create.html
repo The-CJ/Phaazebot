@@ -6,14 +6,24 @@
 		</div>
 	</div>
 
-	<div class="row ">
-		<div class="col-6 text-center" style="margin:auto;margin-top:2em;">
-			<form class="" action="javascript:phaaze_login();" style="font-size:2em;" autocomplete="no">
-				<input type="text" id="phaaze_loginname" placeholder="Loginname" class="black-text text-center white" style="margin-top:1em;" autofocus>
-				<input type="password" id="phaaze_password" placeholder="Password" class="black-text text-center white" style="margin-top:1em;">
-				<button type="submit" id="sub_button" class="btn btn-blue-grey" style="margin-top:1em;width:auto;">Submit</button>
-			</form>
+	<form class="" action="event.preventDefault();create_account()" method="post">
+		<!-- /api/account/create -->
+		<div class="center-item-row white-text">
+			<i class="material-icons">account_box</i>
+			<input type="text" name="username" placeholder="Username" class="" required>
 		</div>
-	</div>
+
+		<div class="center-item-row white-text">
+			<i class="material-icons">email</i>
+			<input type="email" name="email" placeholder="E-Mail" class="" required>
+		</div>
+
+		<div class="center-item-row white-text">
+			<i class="material-icons">vpn_key</i>
+			<input type="text" name="password" placeholder="Password" class="" required>
+			<input type="text" name="password2" placeholder="Retype Password" class="" required>
+		</div>
+
+	</form>
 
 </div>
