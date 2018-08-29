@@ -17,7 +17,7 @@ function phaaze_login() {
   r["phaaze_username"] = login;
   r["password"] = password;
 
-  $.post("/api/login", JSON.stringify(r))
+  $.post("/api/login", r)
   .done(
     function (data) {
       $('#phaaze_loginname').addClass("animated bounceOutLeft");
@@ -55,10 +55,18 @@ function phaaze_login() {
   );
 }
 
-function escapeHtml (string) {
-  return String(string).replace(/[&<>"'`=\/]/g, function (s) {
-    return entityMap[s];
-  });
+//
+
+function extract_data(query_obj) {
+  let d = {};
+  for (field of query_obj.find('[name]')) {
+    field = $(field);
+    let name = field.attr('name');
+    let value = field.val();
+
+    d[name] = value;
+  }
+  return d;
 }
 
 function getCookie(cname) {

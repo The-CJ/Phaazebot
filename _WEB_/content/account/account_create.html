@@ -1,0 +1,34 @@
+<div class="container">
+
+	<div class="row">
+		<div class="col text-center vertical-middle" style="font-size:80px;">
+			<p class="inline vertical-middle">Make a Phaaze account</p>
+		</div>
+	</div>
+
+	<form class="stylish-color-dark" action="javascript:create_account()" method="post" id="register_space">
+		<!-- /api/account/create -->
+		<div class="center-item-row white-text">
+			<i class="material-icons">account_box</i>
+			<input type="text" name="username" placeholder="Username" class="white-text text-center" required>
+		</div>
+
+		<div class="center-item-row white-text">
+			<i class="material-icons">email</i>
+			<input type="email" name="email" placeholder="E-Mail" class="white-text text-center" required>
+		</div>
+
+		<div class="center-item-row white-text">
+			<i class="material-icons">vpn_key</i>
+			<input type="password" name="password" placeholder="Password" class="white-text text-center" required>
+			<input type="password" name="password2" placeholder="Retype Password" class="white-text text-center" required>
+		</div>
+
+		<button type="submit" class="btn btn-block indigo">Submit</button>
+
+	</form>
+
+</div>
+
+<link rel="stylesheet" href="/css/site-specific/account/create.css">
+<script src="/js/site-specific/account/create.js" charset="utf-8"></script>

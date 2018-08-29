@@ -9,7 +9,7 @@ async def login(self, request, **kwargs):
 	auth_user = await self.root.get_user_info(request)
 
 	_POST = await request.post()
-	if auth_user == None and (_POST.get('phaaze_username', None) == None or _POST.get('password', None) == None):
+	if auth_user == None and (_POST.get('phaaze_username', None) in [None, ""] or _POST.get('password', None) in [None, ""]):
 		return self.root.response(
 			status=400,
 			text=json.dumps( dict(error="missing_data", status=400, message="fields 'password' and 'phaaze_username' must be defined") ),
@@ -17,16 +17,16 @@ async def login(self, request, **kwargs):
 		)
 
 	if auth_user == None:
-		return self.response(
+		return self.root.response(
 			status=404,
 			text=json.dumps( dict(error="wrong_data", status=404, message="'password' or 'phaaze_username' could not be found") ),
 			content_type="application/json"
 			)
 
-	new_session = self.root.BASE.modules._Web_.Base.root.make_session_key()
+	new_session = self.root.make_session_key()
 
 	entry = dict(session = new_session, user_id=auth_user['id'])
-	self.BASE.PhaazeDB.insert(into="session/phaaze", content=entry)
+	self.root.BASE.PhaazeDB.insert(into="session/phaaze", content=entry)
 
 	return self.root.response(
 		text=json.dumps( dict(phaaze_session=new_session,status=200) ),
@@ -46,7 +46,7 @@ async def logout(self, request, **kwargs):
 			status=400
 		)
 
-	res = BASE.PhaazeDB.delete(of="session/phaaze", where=f"data['session'] == '{session_key}'")
+	res = self.root.BASE.PhaazeDB.delete(of="session/phaaze", where=f"data['session'] == '{session_key}'")
 
 	if res['hits'] == 1:
 		return self.response(

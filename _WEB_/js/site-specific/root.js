@@ -1,6 +1,6 @@
 function logo_rotate() {
-  let ml = $('#main_logo');
-    ml.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+  var ml = $('#main_logo');
+  ml.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
     ml.removeClass('rotateIn');
     ml.addClass('animation-spin');
   });
@@ -10,4 +10,6 @@ function logo_rotate() {
   });
 }
 
-$('document').ready(logo_rotate);
+$('document').ready(function () {
+  logo_rotate();
+});

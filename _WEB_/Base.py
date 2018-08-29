@@ -1,4 +1,4 @@
-#BASE.modules._Web_.Base
+#BASE-modules._Web_.Base
 
 import re
 import ssl
@@ -8,14 +8,24 @@ class root(object):
 
 	def __init__(self, BASE):
 		self.BASE = BASE
-		self.response = web.Response
-		self.format_html_regex = re.compile(r"\|>>>(.+)<<<\|")
+		self.response = self.send_Response
+		self.format_html_regex = re.compile(r"\|>>>\((.+)\)<<<\|")
+		self.html_root = open('_WEB_/content/root.html','r').read()
+		self.html_header = BASE.modules._Web_.Utils.get_navbar
 
 		self.web = self.init_web(self)
 		self.api = self.init_api(self)
 
+	def send_Response(self, **kwargs):
+		already_set_header = kwargs.get('headers', dict())
+		kwargs['headers'] = already_set_header
+		kwargs['headers']['server'] =f"PhaazeOS v{self.BASE.version}"
+
+		return web.Response(**kwargs)
+
+
 	# Utility functions that are needed everywhere
-	from _WEB_.Utils import format_html_functions as format_html
+	from _WEB_.Utils import format_html as format_html
 	from _API_.Utils import get_user_informations as get_user_info
 	from _API_.Utils import password as password
 	from _API_.Utils import make_session_key as make_session_key
@@ -31,9 +41,6 @@ class root(object):
 		from _API_.Utils import login as login												#/api/login
 		from _API_.Utils import logout as logout											#/api/logout
 																							#
-		#only temoraly?																		#
-		from _API_.Base import games_webosu as games_webosu									#/api/games/webosu
-
 	# / ...
 	class init_web(object):																	#
 		def __init__(self, root):															#
@@ -48,6 +55,11 @@ class root(object):
 		from _WEB_.processing.Base import cert as cert										#/.well-known/acme-challenge/
 		from _WEB_.processing.page_not_found import main as page_not_found					#<404>
 		from _WEB_.processing.action_not_allowed import main as action_not_allowed			#<400/401/402>
+																							#
+		from _WEB_.processing.account.main import login as login							#/login
+		from _WEB_.processing.account.main import account as account						#/account
+		from _WEB_.processing.account.create import create as account_create				#/account/create
+
 
 	# class discord(object):																#
 	# 	import _WEB_.processing.discord.main as main										#/discord
@@ -64,9 +76,6 @@ class root(object):
 	# class admin(object):																	#
 	# 	import _WEB_.processing.admin.admin as admin										#/admin
 	# 																						#
-	# class account(object):																#
-	# 	import _WEB_.processing.account.main as account										#/account
-
 def webserver(BASE):
 	server = web.Application()
 	root = BASE.modules._Web_.Base.root(BASE)
@@ -74,13 +83,15 @@ def webserver(BASE):
 
 	server.router.add_route('GET', '/.well-known/acme-challenge/{cert_file:.+}', root.web.cert)
 
-	# main
+	# /
 	server.router.add_route('GET', '/', root.web.main)
 	server.router.add_route('GET', '/favicon.ico', root.web.favicon)
+	server.router.add_route('GET', '/login', root.web.login)
+	server.router.add_route('GET', '/account', root.web.account)
+	server.router.add_route('GET', '/account/create', root.web.account_create)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
-	server.router.add_route('*',   '/api/games/webosu', root.api.games_webosu)
 	server.router.add_route('*',   '/api/login', root.api.login)
 	server.router.add_route('*',   '/api/logout', root.api.logout)
 	server.router.add_route('GET', '/api/{path:.*}', root.api.unknown)
@@ -98,3 +109,4 @@ def webserver(BASE):
 	SSL = ssl.SSLContext()
 	SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
 	web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
+	# web.run_app(server, handle_signals=False, port=900, print=False)

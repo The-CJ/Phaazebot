@@ -12,9 +12,22 @@ pre {
 	color: white;
 }
 
-/*id styles*/
-
 /*class styles*/
+.center-item-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+.center-item-col {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.center-item-row *,.center-item-col * {
+	white-space: nowrap;
+}
+
+
 .centered {
 	position: absolute;
 	top: 50%;

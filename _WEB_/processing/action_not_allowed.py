@@ -2,16 +2,29 @@
 
 import html
 
-async def main(BASE, info, root):
-	page = open('_WEB_/content/action_not_allowed.html', 'r').read()
+async def main(self, request, msg=""):
 
-	page = BASE.modules._Web_.Utils.format_html_functions(BASE, page, infos = info)
+	req_str = html.escape("Path: "+request.path)
 
-	save_str = html.escape(info['raw_path'])
-	page = page.replace("<!-- path -->", save_str)
+	site = self.root.html_root
+	current_navbar = self.root.html_header(self.root.BASE)
+	page_na = open('_WEB_/content/action_not_allowed.html', 'r').read()
 
-	class r (object):
-		content = page.encode('utf-8')
-		response = 403
-		header = [('Content-Type','text/html')]
-	return r
+	self.root.BASE.modules.Console.DEBUG(request.path)
+
+	page_nf = self.root.format_html(page_na,
+		path=req_str,
+		msg=msg
+	)
+
+	site = self.root.format_html(site,
+		title="Phaaze | Not allowed",
+		header=current_navbar,
+		main=page_nf
+	)
+
+	return self.root.response(
+		body=site,
+		status=404,
+		content_type='text/html'
+	)
