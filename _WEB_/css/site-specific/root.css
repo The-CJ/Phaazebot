@@ -21,3 +21,13 @@
 .root-logo {
   width: 100%;
 }
+#phaazegirl {
+  position: fixed;
+  bottom: 0;
+  right: -10%;
+  height: 75vh;
+  z-index: -1;
+}
+@media (max-width: 600px) {
+  #phaazegirl {height: 50vh}
+}
