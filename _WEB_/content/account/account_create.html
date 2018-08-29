@@ -6,24 +6,29 @@
 		</div>
 	</div>
 
-	<form class="" action="event.preventDefault();create_account()" method="post">
+	<form class="stylish-color-dark" action="javascript:create_account()" method="post" id="register_space">
 		<!-- /api/account/create -->
 		<div class="center-item-row white-text">
 			<i class="material-icons">account_box</i>
-			<input type="text" name="username" placeholder="Username" class="" required>
+			<input type="text" name="username" placeholder="Username" class="white-text text-center" required>
 		</div>
 
 		<div class="center-item-row white-text">
 			<i class="material-icons">email</i>
-			<input type="email" name="email" placeholder="E-Mail" class="" required>
+			<input type="email" name="email" placeholder="E-Mail" class="white-text text-center" required>
 		</div>
 
 		<div class="center-item-row white-text">
 			<i class="material-icons">vpn_key</i>
-			<input type="text" name="password" placeholder="Password" class="" required>
-			<input type="text" name="password2" placeholder="Retype Password" class="" required>
+			<input type="password" name="password" placeholder="Password" class="white-text text-center" required>
+			<input type="password" name="password2" placeholder="Retype Password" class="white-text text-center" required>
 		</div>
+
+		<button type="submit" class="btn btn-block indigo">Submit</button>
 
 	</form>
 
 </div>
+
+<link rel="stylesheet" href="/css/site-specific/account/create.css">
+<script src="/js/site-specific/account/create.js" charset="utf-8"></script>

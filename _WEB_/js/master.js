@@ -55,6 +55,20 @@ function phaaze_login() {
   );
 }
 
+//
+
+function extract_data(query_obj) {
+  let d = {};
+  for (field of query_obj.find('[name]')) {
+    field = $(field);
+    let name = field.attr('name');
+    let value = field.val();
+
+    d[name] = value;
+  }
+  return d;
+}
+
 function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
