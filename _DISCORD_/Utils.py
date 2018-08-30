@@ -146,6 +146,27 @@ async def make_get_server_quotes(BASE, id):
 
 	return []
 
+#addrolelist
+async def get_server_addrolelist(BASE, id, prevent_new=False):
+	#get
+	file = BASE.PhaazeDB.select(of="discord/addrole/addrole_"+str(id))
+
+	if file['status'] == "error":
+		#didn't find entry -> make new
+		if prevent_new:
+			return None
+		else:
+			return await make_server_addrolelist(BASE, id)
+	else:
+		return file['data']
+
+async def make_server_addrolelist(BASE, id):
+
+	BASE.PhaazeDB.create(name="discord/addrole/addrole_"+str(id))
+	BASE.modules.Console.INFO("New Discord Server Quote DB-Container created")
+
+	return []
+
 #stuff
 class Phaaze_info(object):
 	async def Info(BASE, message, kwargs):

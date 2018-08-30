@@ -612,6 +612,48 @@ class Osu(object):
 
 		return str_, t
 
+class Giverole(object):
+
+	async def Base(BASE, message, kwargs):
+		m = message.content.split(" ")
+
+		if len(m) == 1:
+			return await BASE.discord.send_message(message.channel, ":warning: Please add a key for the role you want")
+
+		trigger = m[1]
+
+		me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
+
+		if not me.server_permissions.manage_roles:
+			return await BASE.discord.send_message(
+				message.channel,
+				":no_entry_sign: Phaaze don't has a role with the `Manage Roles` Permission."
+			)
+
+		r_id = None
+		add_rolelist = await BASE.modules._Discord_.Utils.get_server_addrolelist(BASE, message.server.id)
+		for role in add_rolelist:
+			if role.get('trigger', '').lower() == trigger.lower():
+				r_id = role.get('role_id', None)
+				break
+
+		server_role = discord.utils.get(message.server.roles, id=r_id)
+
+		if server_role == None:
+			return await BASE.discord.send_message(message.channel, f":warning: No giverole found with trigger: {trigger}")
+
+		if me.top_role < server_role:
+			return await BASE.discord.send_message(
+				message.channel,
+				":no_entry_sign: The Role: `{0}` is to high. Phaaze highest role has to be higher in hierarchy then: `{0}`".format(role.name.replace("`","´")))
+
+		if server_role not in message.author.roles: #add
+			await BASE.discord.add_roles(message.author, server_role)
+			return await BASE.discord.send_message(message.channel, f":white_check_mark: successfull added you the role: '{server_role.name}'")
+		else:
+			await BASE.discord.remove_roles(message.author, server_role)
+			return await BASE.discord.send_message(message.channel, f":white_check_mark: successfull removed '{server_role.name}' from you.")
+
 #Currently unusable D:
 class Doujin(object):
 

@@ -2,6 +2,8 @@
 
 import asyncio, discord, tabulate
 
+MAX_ADDROLE_ENTRYS = 100
+
 class Settings(object):
 	async def Base(BASE, message, kwargs):
 		available = ["nsfw", "custom", "level", "quotes", "ai", "nonmod", "game"]
@@ -640,6 +642,110 @@ class Level(object):
 		else:
 			return await BASE.discord.send_message(message.channel, f':warning: Please use a valid method.')
 
+class Giverole(object):
+
+	async def Base(BASE, message, kwargs):
+		m = message.content.split(" ")
+
+		if len(m) <= 2:
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}Giverole [add/rem] [Trigger] [Role]`\n\n"\
+				f"`add/rem` - add a new rule or remove it \n"\
+				f"`Trigger` - a key to identify what role sould be added/removed\n"\
+				f"`Role` - a role mention, role ID or full Role name"
+			return await BASE.discord.send_message(message.channel, r)
+
+		if m[1].lower() == "add":
+			return await Giverole._add_(BASE, message, kwargs)
+
+		elif m[1].lower() == "rem":
+			return await Giverole._rem_(BASE, message, kwargs)
+
+		else:
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 2}iam`")
+
+	async def _add_(BASE, message, kwargs):
+		m = message.content.split(" ")
+
+		me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
+
+		if not me.server_permissions.manage_roles:
+			return await BASE.discord.send_message(
+				message.channel,
+				":no_entry_sign: Phaaze don't has a role with the `Manage Roles` Permission."
+			)
+
+		if len(m) == 3:
+			return await BASE.discord.send_message(
+				message.channel,
+				":warning: You need to define a role to set, you can do this via a role mention, role ID or full Role name.")
+
+		#by role mention
+		if len(message.role_mentions) == 1:
+			role = message.role_mentions[0]
+
+		#by id
+		elif m[3].isdigit() and len(m) <= 4:
+			role = discord.utils.get(message.server.roles, id=m[3])
+			if role == None:
+				return await BASE.discord.send_message(
+					message.channel,
+					f":warning: No Role with the ID: `{m[3]}` found"
+				)
+
+		#by name
+		else:
+			r_n = " ".join(d for d in m[3:])
+			role = discord.utils.get(message.server.roles, name=r_n)
+			if role == None:
+				return await BASE.discord.send_message(
+					message.channel,
+					f":warning: No Role with the Name: `{r_n}` found."
+				)
+
+		if me.top_role < role:
+			return await BASE.discord.send_message(
+				message.channel,
+				":no_entry_sign: The Role: `{0}` is to high. Phaaze highest role has to be higher in hierarchy then: `{0}`".format(role.name.replace("`","´")))
+
+		add_rolelist = await BASE.modules._Discord_.Utils.get_server_addrolelist(BASE, message.server.id)
+
+		if len(add_rolelist) >= MAX_ADDROLE_ENTRYS:
+			return await BASE.discord.send_message(message.channel, f":no_entry_sigh: The server already reached the limit of {str(MAX_ADDROLE_ENTRYS)} addroles")
+
+		check_role = None
+		for check_role_lit in add_rolelist:
+			if check_role_lit.get('trigger', None) == m[2].lower():
+				check_role = check_role_lit
+
+		if check_role != None:
+			ac = dict(role_id=role.id)
+			BASE.PhaazeDB.update(of=f'discord/addrole/addrole_{message.server.id}', content=ac, where=f"data['trigger'] == '{m[2].lower()}'")
+			return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull updated Giverole `{m[2]}` with role: `{role.name}`")
+
+		else:
+			ac = dict(role_id=role.id, trigger=m[2].lower())
+			BASE.PhaazeDB.insert(into=f'discord/addrole/addrole_{message.server.id}', content=ac)
+			return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull added Giverole `{m[2]}` with role: `{role.name}`")
+
+	async def _rem_(BASE, message, kwargs):
+		m = message.content.split(" ")
+
+		trigger = m[2]
+
+		add_rolelist = await BASE.modules._Discord_.Utils.get_server_addrolelist(BASE, message.server.id)
+
+		r = None
+		for role in add_rolelist:
+			if role.get('trigger', None) == trigger.lower():
+				r = role['trigger']
+				break
+
+		if r == None:
+			return await BASE.discord.send_message(message.channel, f":warning: There is not Giverole trigger: `{trigger}`")
+
+		BASE.PhaazeDB.delete(of=f'discord/addrole/addrole_{message.server.id}', where=f"data['trigger'] == '{r}'")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull deleted Giverole `{r}`")
+
 class Utils(object):
 
 	async def serverinfo(BASE, message, kwargs):
@@ -682,22 +788,19 @@ class Utils(object):
 				else:
 					managed.append(emo)
 
-			if len(normal) != 1: plural = "'s"
-			else: plural = ""
-
 			if len(managed) > 0:
 				man = f" (+ {str(len(managed))} managed by Twitch)"
 			else: man = ""
 
-			return f"{str(len(normal))}{plural}{man}"
+			return f"{str(len(normal))}{man}"
 
 		created_at = server.created_at.strftime("%d,%m,%y (%H:%M:%S)")
 
 		main = 	f"Server ID: {server.id}\n"\
 				f"Region: {str(server.region)}\n"\
 				f"Members: {str(server.member_count)}\n"\
-				f"Channels: {3}\n"\
-				f"Emotes: {4}\n"\
+				f"Channels: {channel_in_format()}\n"\
+				f"Emotes: {formated_emotes()}\n"\
 				f"Owner: {server.owner.name}\n"\
 				f"Verification Level: {str(server.verification_level)}\n"\
 				f"Created at: {created_at}"
@@ -720,7 +823,7 @@ class Utils(object):
 
 		return await BASE.discord.send_message(message.channel, embed=tem)
 
-	async def getroles(BASE, message, kwargs):
+	async def listrole(BASE, message, kwargs):
 		r = message.server.role_hierarchy
 
 		if len(r) == 0:
