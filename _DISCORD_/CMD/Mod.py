@@ -57,3 +57,6 @@ async def Base(BASE, message, **kwargs):
 
 	if check.startswith("listrole"):
 		return await BASE.modules._Discord_.PROCESS.Mod.Utils.listrole(BASE, message, kwargs)
+
+	if check.startswith("addrole"):
+		return await BASE.modules._Discord_.PROCESS.Mod.Addrole.Base(BASE, message, kwargs)
