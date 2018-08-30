@@ -612,6 +612,11 @@ class Osu(object):
 
 		return str_, t
 
+class IAm(object):
+	async def Base(BASE, message, kwargs):
+
+		m = message.content.lower().split(" ")
+
 #Currently unusable D:
 class Doujin(object):
 
