@@ -682,22 +682,19 @@ class Utils(object):
 				else:
 					managed.append(emo)
 
-			if len(normal) != 1: plural = "'s"
-			else: plural = ""
-
 			if len(managed) > 0:
 				man = f" (+ {str(len(managed))} managed by Twitch)"
 			else: man = ""
 
-			return f"{str(len(normal))}{plural}{man}"
+			return f"{str(len(normal))}{man}"
 
 		created_at = server.created_at.strftime("%d,%m,%y (%H:%M:%S)")
 
 		main = 	f"Server ID: {server.id}\n"\
 				f"Region: {str(server.region)}\n"\
 				f"Members: {str(server.member_count)}\n"\
-				f"Channels: {3}\n"\
-				f"Emotes: {4}\n"\
+				f"Channels: {channel_in_format()}\n"\
+				f"Emotes: {formated_emotes()}\n"\
 				f"Owner: {server.owner.name}\n"\
 				f"Verification Level: {str(server.verification_level)}\n"\
 				f"Created at: {created_at}"

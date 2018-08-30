@@ -2,7 +2,7 @@
 
 import asyncio
 
-CMDs = ['setting', 'addcom', 'delcom', 'blacklist', 'quote', 'prune', 'level', 'serverinfo', 'getrole']
+CMDs = ['setting', 'addcom', 'delcom', 'blacklist', 'quote', 'prune', 'level', 'serverinfo', 'getrole', ]
 
 class Forbidden(object):
 	async def no_mod(BASE, message, kwargs):
