@@ -717,7 +717,7 @@ class Utils(object):
 
 		return await BASE.discord.send_message(message.channel, embed=tem)
 
-	async def getroles(BASE, message, kwargs):
+	async def listrole(BASE, message, kwargs):
 		r = message.server.role_hierarchy
 
 		if len(r) == 0:
