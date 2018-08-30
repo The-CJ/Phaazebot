@@ -710,12 +710,22 @@ class Giverole(object):
 		add_rolelist = await BASE.modules._Discord_.Utils.get_server_addrolelist(BASE, message.server.id)
 
 		if len(add_rolelist) >= MAX_ADDROLE_ENTRYS:
-			return await BASE.discord.send_message(message.channel, f":no_entry_sigh: the server already reached the limit of {str(MAX_ADDROLE_ENTRYS)} addroles`")
+			return await BASE.discord.send_message(message.channel, f":no_entry_sigh: The server already reached the limit of {str(MAX_ADDROLE_ENTRYS)} addroles")
 
-		ac = dict(role_id=role.id, trigger=m[2].lower())
-		BASE.PhaazeDB.insert(into=f'discord/addrole/addrole_{message.server.id}', content=ac)
+		check_role = None
+		for check_role_lit in add_rolelist:
+			if check_role_lit.get('trigger', None) == m[2].lower():
+				check_role = check_role_lit
 
-		return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull added Giverole `{m[2]}` with role: `{role.name}`")
+		if check_role != None:
+			ac = dict(role_id=role.id)
+			BASE.PhaazeDB.update(of=f'discord/addrole/addrole_{message.server.id}', content=ac, where=f"data['trigger'] == '{m[2].lower()}'")
+			return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull updated Giverole `{m[2]}` with role: `{role.name}`")
+
+		else:
+			ac = dict(role_id=role.id, trigger=m[2].lower())
+			BASE.PhaazeDB.insert(into=f'discord/addrole/addrole_{message.server.id}', content=ac)
+			return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull added Giverole `{m[2]}` with role: `{role.name}`")
 
 	async def _rem_(BASE, message, kwargs):
 		m = message.content.split(" ")
@@ -726,7 +736,7 @@ class Giverole(object):
 
 		r = None
 		for role in add_rolelist:
-			if role.get('trigger', None) == trigger:
+			if role.get('trigger', None) == trigger.lower():
 				r = role['trigger']
 				break
 
