@@ -313,7 +313,7 @@ class Quote(object):
 		)
 
 		em = discord.Embed(description=quote, colour=0x11EE11)
-		i = str(i['content']['id'])
+		i = str(i['data']['id'])
 		em.set_footer(text=f'ID: {i}')
 		await BASE.modules._Discord_.Discord_Events.Phaaze.quote(BASE, message, "add")
 		return await BASE.discord.send_message(message.channel, content=":white_check_mark: Quote added", embed=em)
