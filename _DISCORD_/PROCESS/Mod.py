@@ -2,8 +2,6 @@
 
 import asyncio, discord, tabulate
 
-MAX_ADDROLE_ENTRYS = 100
-
 class Settings(object):
 	async def Base(BASE, message, kwargs):
 		available = ["nsfw", "custom", "level", "quotes", "ai", "nonmod", "game"]
@@ -38,6 +36,8 @@ class Settings(object):
 		else:
 			av = ", ".join("`"+l+"`" for l in available)
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
+
+	# # #
 
 	async def nsfw(BASE, message, kwargs):
 		m = message.content.lower().split()
@@ -271,7 +271,7 @@ class Settings(object):
 
 class Quote(object):
 
-	quote_limit = 100
+	MAX_QUOTE_ENTRY = 100
 
 	async def Base(BASE, message, kwargs):
 		m = message.content.split(" ")
@@ -304,8 +304,8 @@ class Quote(object):
 		quote = " ".join(x for x in m[2:])
 		server_quotes = kwargs.get('server_quotes', {})
 
-		if len(server_quotes) >= Quote.quote_limit:
-			return await BASE.discord.send_message(message.channel, f":no_entry_sign: This server hit the quote limit of {Quote.quote_limit}, please remove some first.")
+		if len(server_quotes) >= Quote.MAX_QUOTE_ENTRY:
+			return await BASE.discord.send_message(message.channel, f":no_entry_sign: This server hit the quote limit of {Quote.MAX_QUOTE_ENTRY}, please remove some first.")
 
 		i = BASE.PhaazeDB.insert(
 			into=f"discord/quotes/quotes_{message.server.id}",
@@ -644,11 +644,13 @@ class Level(object):
 
 class Giverole(object):
 
+	MAX_ADDROLE_ENTRYS = 100
+
 	async def Base(BASE, message, kwargs):
 		m = message.content.split(" ")
 
 		if len(m) <= 2:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}Giverole [add/rem] [Trigger] [Role]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}giverole [add/rem] [Trigger] [Role]`\n\n"\
 				f"`add/rem` - add a new rule or remove it \n"\
 				f"`Trigger` - a key to identify what role sould be added/removed\n"\
 				f"`Role` - a role mention, role ID or full Role name"
@@ -661,7 +663,7 @@ class Giverole(object):
 			return await Giverole._rem_(BASE, message, kwargs)
 
 		else:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 2}iam`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 2}giverole`")
 
 	async def _add_(BASE, message, kwargs):
 		m = message.content.split(" ")
@@ -709,8 +711,8 @@ class Giverole(object):
 
 		add_rolelist = await BASE.modules._Discord_.Utils.get_server_addrolelist(BASE, message.server.id)
 
-		if len(add_rolelist) >= MAX_ADDROLE_ENTRYS:
-			return await BASE.discord.send_message(message.channel, f":no_entry_sigh: The server already reached the limit of {str(MAX_ADDROLE_ENTRYS)} addroles")
+		if len(add_rolelist) >= Giverole.MAX_ADDROLE_ENTRYS:
+			return await BASE.discord.send_message(message.channel, f":no_entry_sigh: The server already reached the limit of {str(Giverole.MAX_ADDROLE_ENTRYS)} add/take -roles")
 
 		check_role = None
 		for check_role_lit in add_rolelist:
@@ -744,7 +746,7 @@ class Giverole(object):
 			return await BASE.discord.send_message(message.channel, f":warning: There is not Giverole trigger: `{trigger}`")
 
 		BASE.PhaazeDB.delete(of=f'discord/addrole/addrole_{message.server.id}', where=f"data['trigger'] == '{r}'")
-		return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull deleted Giverole `{r}`")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull deleted Give/Take -role `{r}`")
 
 class Utils(object):
 

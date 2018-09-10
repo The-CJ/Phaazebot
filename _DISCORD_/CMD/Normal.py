@@ -4,7 +4,7 @@ import asyncio
 
 CMDs = ['custom', 'doujin', 'help', 'phaaze', 'command',
 		'quote', 'define', 'wiki', 'whois', 'level',
-		'leaderboard', 'emotes', 'osu', 'choice', 'giverole']
+		'leaderboard', 'emotes', 'osu', 'choice', 'giverole', 'takerole']
 
 class Forbidden(object):
 	async def disable_chan_normal(BASE, message, kwargs):
@@ -78,7 +78,7 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("osu"):
 		return await BASE.modules._Discord_.PROCESS.Normal.Osu.Base(BASE, message, kwargs)
 
-	if check.startswith("giverole"):
+	if check.startswith("giverole") or check.startswith("takerole"):
 		return await BASE.modules._Discord_.PROCESS.Normal.Giverole.Base(BASE, message, kwargs)
 
 	return	#Soon TM

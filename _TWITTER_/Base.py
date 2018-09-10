@@ -15,4 +15,4 @@ async def ensure_connection(BASE):
 
 async def send_tweet(BASE, tweet):
 	api = await ensure_connection(BASE)
-	api.statuses.update(status=tweet[:140])
+	api.statuses.update(status=tweet[:250])

@@ -2,7 +2,7 @@
 
 import asyncio
 
-CMDs = ['setting', 'addcom', 'delcom', 'blacklist', 'quote', 'prune', 'level', 'serverinfo', 'listrole', 'giverole']
+CMDs = ['setting', 'addcom', 'delcom', 'blacklist', 'quote', 'prune', 'level', 'serverinfo', 'listrole', 'giverole', 'takerole']
 
 class Forbidden(object):
 	async def no_mod(BASE, message, kwargs):
@@ -58,5 +58,5 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("listrole"):
 		return await BASE.modules._Discord_.PROCESS.Mod.Utils.listrole(BASE, message, kwargs)
 
-	if check.startswith("giverole"):
+	if  check.startswith("giverole") or check.startswith("takerole"):
 		return await BASE.modules._Discord_.PROCESS.Mod.Giverole.Base(BASE, message, kwargs)
