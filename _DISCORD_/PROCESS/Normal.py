@@ -617,6 +617,9 @@ class Giverole(object):
 	async def Base(BASE, message, kwargs):
 		m = message.content.split(" ")
 
+		if m[0].lower().endswith('-list'):
+			return await Giverole.list_entrys(BASE, message, kwargs)
+
 		if len(m) == 1:
 			return await BASE.discord.send_message(message.channel, ":warning: Please add a key for the role you want")
 
@@ -653,6 +656,24 @@ class Giverole(object):
 		else:
 			await BASE.discord.remove_roles(message.author, server_role)
 			return await BASE.discord.send_message(message.channel, f":white_check_mark: successfull removed '{server_role.name}' from you.")
+
+	async def list_entrys(BASE, message, kwargs):
+		addrolelist = await BASE.modules._Discord_.Utils.get_server_addrolelist(BASE, message.server.id, prevent_new=True)
+		role_list = [ ['Trigger', 'linked with:'], ['',''] ]
+
+		for r in addrolelist:
+			role = discord.utils.get(message.server.roles, id=r.get('role_id', '0'))
+			if role == None:
+				role_name = "[DELETED ROLE]"
+			else:
+				role_name = role.name
+			l = [r.get('trigger', '[N/A]'), role_name]
+
+			role_list.append(l)
+
+		table = tabulate(role_list, tablefmt="plain")
+
+		return await BASE.discord.send_message(message.channel, f"All Give/Take -roles: \n\n```{table}```")
 
 #Currently unusable D:
 class Doujin(object):
