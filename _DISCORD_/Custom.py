@@ -2,12 +2,14 @@
 
 import asyncio
 
-custom_command_limit = 150
+MAX_CUSTOM_COMMANDS = 150
+CUSTOM_COMMAND_COOLDOWN = []
 
 async def get(BASE, message, server_setting, server_commands):
 	m = message.content.lower().split(" ")
 
-	if message.author.id in BASE.cooldown.Custom_CD: return
+	if message.author.id in CUSTOM_COMMAND_COOLDOWN: return
+	asyncio.ensure_future(cooldown(message))
 
 	#are custom commands disabled?
 	if message.channel.id in server_setting.get("disable_chan_custom",[]): return
@@ -34,7 +36,6 @@ async def get(BASE, message, server_setting, server_commands):
 				content=dict(uses = cmd["uses"]),
 				where="data['trigger'] == '{}'".format( str(cmd['trigger']) )
 			)
-			asyncio.ensure_future(BASE.cooldown.CD_Custom(message))
 			break
 
 async def add(BASE, message, kwargs):
@@ -83,8 +84,8 @@ async def add(BASE, message, kwargs):
 
 	#new
 	else:
-		if len(server_commands) >= custom_command_limit:
-			return await BASE.discord.send_message(message.channel, f":no_entry_sign: The limit of {custom_command_limit} custom commands is reached, delete some first.")
+		if len(server_commands) >= MAX_CUSTOM_COMMANDS:
+			return await BASE.discord.send_message(message.channel, f":no_entry_sign: The limit of {MAX_CUSTOM_COMMANDS} custom commands is reached, delete some first.")
 
 		content = " ".join(f for f in m[2:])
 		BASE.PhaazeDB.insert(
@@ -149,4 +150,11 @@ async def get_all(BASE, message, kwargs):
 
 	return await BASE.discord.send_message(message.channel, content)
 
+async def cooldown(m):
+	CUSTOM_COMMAND_COOLDOWN.append(m.author.id)
+	await asyncio.sleep(4)
+	try:
+		CUSTOM_COMMAND_COOLDOWN.remove(m.author.id)
+	except:
+		pass
 
