@@ -3,7 +3,6 @@ ACCESS_DATA
 UTILS/twitch_streams
 UTILS/server_channel_id_for_new.json
 UTILS/*.txt
-Phaaze_main.py
 _TWITCH_/Channel*
 _TWITCH_/_achtive_channels.json
 server_channel_id_for_news*
