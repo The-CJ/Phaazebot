@@ -1,4 +1,4 @@
-import time
+import time, json
 import asyncio
 import threading
 import traceback
@@ -74,9 +74,7 @@ class BASE(object):
 			self.Twitch_API_Token = config.get('Twitch_API_Token', '')
 			self.Twitch_IRC_Token = config.get('Twitch_IRC_Token', '')
 
-			self.Discord_Phaaze = config.get('Discord_Phaaze', '')
-			self.Discord_Pheeze = config.get('Discord_Pheeze', '')
-			self.Discord_Phaaze_secret = config.get('Discord_Phaaze_secret', '')
+			self.Discord = config.get('Discord', '')
 
 			self.Osu_API_Token = config.get('Osu_API_Token', '')
 			self.Osu_IRC_Token = config.get('Osu_IRC_Token', '')
@@ -87,11 +85,10 @@ class BASE(object):
 
 			self.PhaazeDB_token = config.get('PhaazeDB_token', '')
 
-		class Twitter(object): #FIXME: <- i fucked up RREEEEEEEEEE
-			api_token = open("ACCESS_DATA/twitter_api_token.txt", "r").read().replace("\n","")
-			api_token_key = open("ACCESS_DATA/twitter_api_token_key.txt", "r").read().replace("\n","")
-			consumer_key = open("ACCESS_DATA/twitter_consumer_key.txt", "r").read().replace("\n","")
-			consumer_secret = open("ACCESS_DATA/twitter_consumer_secret.txt", "r").read().replace("\n","")
+			self.twitter_token = config.get('twitter_token','')
+			self.twitter_token_key = config.get('twitter_token_key','')
+			self.twitter_consumer_key = config.get('twitter_consumer_key','')
+			self.twitter_consumer_secret = config.get('twitter_consumer_secret','')
 
 	class MODULES(object): #BASE.modules
 		def __init__(self):
@@ -225,9 +222,27 @@ class BASE(object):
 		print("PhaazeOS will be shutdown as soon as possible.")
 
 #get config
-#TODO:
-configuration=dict(access=dict(),active=dict(web=True),vars=dict())
 
+try:
+	file_ = open("config.json").read()
+	structure = json.loads(file_)
+
+except json.decoder.JSONDecodeError:
+	print('config.js could not be loaded, invalid json')
+	structure=None
+
+except FileNotFoundError:
+	print('config.js could not be read, no file found')
+	structure=None
+
+except Exception as e:
+	print('unknown error')
+	print(str(e))
+	structure=None
+
+finally:
+	if structure == None: exit("PhaazeOS not started -> missing configuration")
+	configuration = structure
 
 #load it up
 BASE = BASE(config=configuration)
