@@ -1,11 +1,4 @@
 __pycache__
-ACCESS_DATA
-UTILS/twitch_streams
-UTILS/server_channel_id_for_new.json
-UTILS/*.txt
-_TWITCH_/Channel*
-_TWITCH_/_achtive_channels.json
-server_channel_id_for_news*
 config.json
 .ropeproject
 _WEB_/css/bootstrap.css
