@@ -15,7 +15,7 @@ class Quote(object):
 		if channel_settings == None:
 			channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
 
-		if channel_settings.get('active_quotes', False): return
+		if not channel_settings.get('active_quotes', False): return
 
 		channel_quotes = kwargs.get('channel_quotes', None)
 		if channel_quotes == None:

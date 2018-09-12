@@ -1,6 +1,6 @@
 #BASE.modules._Discord_.Utils
 
-import asyncio, Console, discord, tabulate, time
+import asyncio, discord, tabulate, time
 
 async def return_real_me(BASE, message):
 	return discord.utils.get(message.server.members, id=BASE.discord.user.id)

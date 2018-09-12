@@ -2,7 +2,7 @@
 
 import asyncio, discord, tabulate, math
 
-Medalls = {}
+LEVEL_COOLDOWN = []
 
 class Calc(object):
 	LEVEL_DEFAULT_EXP = 65
@@ -49,7 +49,7 @@ class Utils(object):
 
 async def Base(BASE, message, server_setting, server_levels):
 	#still in cooldown
-	if message.author.id in BASE.cooldown.Level_CD: return
+	if message.author.id in LEVEL_COOLDOWN: return
 
 	#is a command
 	if message.content.startswith(BASE.vars.PT): return
@@ -74,7 +74,7 @@ async def Base(BASE, message, server_setting, server_levels):
 	)
 
 	#add cooldown
-	asyncio.ensure_future(BASE.cooldown.CD_Level(message))
+	asyncio.ensure_future(cooldown(message))
 
 	await Utils.check_level(BASE, message, user)
 
@@ -189,3 +189,12 @@ async def leaderboard(BASE, message, kwargs):
 	return_message = f"**Top {str(count)} leaderboard** Wanna watch all? :link: https://phaaze.net/discord/level/{message.server.id} ```{table}```"
 
 	return await BASE.discord.send_message(message.channel, return_message)
+
+async def cooldown(m):
+	LEVEL_COOLDOWN.append(m.author.id)
+	await asyncio.sleep(4)
+	try:
+		LEVEL_COOLDOWN.remove(m.author.id)
+	except:
+		pass
+

@@ -1,0 +1,36 @@
+{
+  "active":{
+    "main":false,
+
+    "api":false,
+    "web":false,
+
+    "discord":false,
+
+    "twitch_irc":false,
+    "twitch_alert":false,
+
+    "osu_irc":false,
+
+    "twitter":false,
+    "youtube":false
+  },
+  "vars":{
+    "trigger":"",
+    "developer":[]
+  },
+  "access":{
+    "Twitch_Admin_Token":"",
+    "Twitch_API_Token":"",
+    "Twitch_IRC_Token":"",
+
+    "Discord":"",
+
+    "Osu_API_Token":"",
+    "Osu_IRC_Token":"",
+
+    "Cleverbot_Token":"",
+    "Mashape":"",
+    "PhaazeDB_token":""
+  }
+}

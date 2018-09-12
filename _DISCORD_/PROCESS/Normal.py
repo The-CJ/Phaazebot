@@ -235,10 +235,11 @@ class Wiki(object):
 
 	SEARCH = "https://{}.wikipedia.org/w/api.php?action=opensearch&limit=7&search="
 	SUMMARY = "https://{}.wikipedia.org/api/rest_v1/page/summary/"
+	WIKI_SEARCH_COOLDOWN = []
 
 	async def Base(BASE, message, kwargs):
-		if message.author.id not in BASE.cooldown.Owner_CD:
-			asyncio.ensure_future(BASE.cooldown.CD_Wikipedia(message))
+		if message.author.id not in Wiki.WIKI_SEARCH_COOLDOWN:
+			asyncio.ensure_future(Wiki.cooldown(message))
 		else: return
 
 		m = message.content.split()
@@ -340,6 +341,15 @@ class Wiki(object):
 		except: pass
 
 		return r
+
+	async def cooldown(m):
+		Wiki.WIKI_SEARCH_COOLDOWN.append(m.author.id)
+		await asyncio.sleep(15)
+		try:
+			Wiki.WIKI_SEARCH_COOLDOWN.remove(m.author.id)
+		except:
+			pass
+
 
 class Osu(object):
 	async def Base(BASE, message, kwargs):

@@ -43,62 +43,6 @@ async def on_message(BASE, message):
 		#normal
 		await BASE.modules._Twitch_.CMD.Normal.Base(BASE, message, channel_settings=channel_settings)
 
-class Commands(object):
-
-	async def check_commands(BASE, message):
-		m = message.content.lower().split(" ")
-		trigger = m[0][1:]
-
-		#if trigger.startswith("!!!!"):
-		#	if message.name != "the__cj": return
-		#	await BASE.modules._Twitch_.Utils.debug(BASE, message)
-
-		if trigger.startswith("setting"):
-			await BASE.modules._Twitch_.Base.Settings.Base(BASE, message)
-
-		elif trigger.startswith("battle"):
-			await BASE.modules._Twitch_.Games.battle(BASE, message)
-
-		elif trigger.startswith("mission"):
-			await BASE.modules._Twitch_.Games.mission(BASE, message)
-
-		#elif trigger.startswith("stats"):
-		#	await BASE.modules._Twitch_.Gold.stats(BASE, message)
-
-		elif trigger.startswith("toptime"):
-			await BASE.modules._Twitch_.Gold.leaderboard(BASE, message, locals(), art="time")
-
-		elif trigger.startswith("topmoney"):
-			await BASE.modules._Twitch_.Gold.leaderboard(BASE, message, locals(), art="money")
-
-		elif trigger.startswith("quote"):
-			await BASE.modules._Twitch_.CMD.Normal.Quote(BASE, message)
-
-		elif trigger.startswith("addquote"):
-			await BASE.modules._Twitch_.CMD.Mods.Quotes.add(BASE, message)
-
-		elif trigger.startswith("delquote"):
-			await BASE.modules._Twitch_.CMD.Mods.Quotes.rem(BASE, message)
-
-		#elif trigger.startswith("addcom"):
-		#	await BASE.modules._Twitch_.CMD.Mods.Coms.add(BASE, message)
-
-		#elif trigger.startswith("delcom"):
-		#	await BASE.modules._Twitch_.CMD.Mods.Coms.rem(BASE, message)
-
-		elif trigger.startswith("osuverify"):
-			await BASE.modules._Twitch_.CMD.Mods.verify(BASE, message)
-
-		elif trigger.startswith("osudisconnect"):
-			await BASE.modules._Twitch_.CMD.Mods.osu_disco(BASE, message)
-
-		#elif trigger.startswith("join"):
-		#	await BASE.modules._Twitch_.Base.Commands.join(BASE, message)
-
-		#elif trigger.startswith("leave"):
-		#	await BASE.modules._Twitch_.Base.Commands.leave(BASE, message)
-
-
 #async handler loop
 async def lurkers(BASE):
 	default_level_message = ">> {display_name} is now level {level}"
