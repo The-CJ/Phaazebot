@@ -224,7 +224,7 @@ class BASE(object):
 #get config
 
 try:
-	file_ = open("config.json").read()
+	file_ = open("config.json", "r").read()
 	structure = json.loads(file_)
 
 except json.decoder.JSONDecodeError:
@@ -290,7 +290,7 @@ class __DISCORD__(threading.Thread):
 
 			from _DISCORD_.Main_discord import Init_discord
 			BASE.discord = Init_discord(BASE)
-			BASE.discord.run(BASE.access.Discord_Pheeze)
+			BASE.discord.run(BASE.access.Discord)
 
 		except Exception as e:
 			BASE.modules.Console.ERROR("Discord crashed: "+str(e))
