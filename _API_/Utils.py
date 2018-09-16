@@ -1,60 +1,6 @@
 
 import asyncio
-import json, requests, hashlib, datetime, random, string
-
-# log in/out
-# /api/login
-async def login(self, request, **kwargs):
-
-	auth_user = await self.root.get_user_info(request)
-
-	_POST = await request.post()
-	if auth_user == None and (_POST.get('phaaze_username', None) in [None, ""] or _POST.get('password', None) in [None, ""]):
-		return self.root.response(
-			status=400,
-			text=json.dumps( dict(error="missing_data", status=400, message="fields 'password' and 'phaaze_username' must be defined") ),
-			content_type="application/json"
-		)
-
-	if auth_user == None:
-		return self.root.response(
-			status=404,
-			text=json.dumps( dict(error="wrong_data", status=404, message="'password' or 'phaaze_username' could not be found") ),
-			content_type="application/json"
-			)
-
-	new_session = self.root.make_session_key()
-
-	entry = dict(session = new_session, user_id=auth_user['id'])
-	self.root.BASE.PhaazeDB.insert(into="session/phaaze", content=entry)
-
-	return self.root.response(
-		text=json.dumps( dict(phaaze_session=new_session,status=200) ),
-		content_type="application/json",
-		status=200
-	)
-
-# /api/logout
-async def logout(self, request, **kwargs):
-
-	user = await self.root.get_user_info(request)
-
-	if user == None:
-		return self.response(
-			text=json.dumps( dict(error='missing_session_key', status=400) ),
-			content_type="application/json",
-			status=400
-		)
-
-	res = self.root.BASE.PhaazeDB.delete(of="session/phaaze", where=f"data['session'] == '{session_key}'")
-
-	if res['hits'] == 1:
-		return self.response(
-			text=json.dumps( dict(status=200) ),
-			content_type="application/json",
-			status=200
-		)
-
+import hashlib, datetime, random, string
 
 #get user infos
 async def get_user_informations(self, request, **kwargs):
@@ -145,12 +91,12 @@ async def get_user_informations(self, request, **kwargs):
 	return None
 
 #from string into password
-def password(passwd):
+def password(self, passwd):
 	password = hashlib.sha256(passwd.encode("UTF-8")).hexdigest()
 	return password
 
 #generate a new sesssion key
-def make_session_key():
+def make_session_key(self):
 	snonce = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(8))
 	stime = hashlib.sha1( str(datetime.datetime.now()).encode("UTF-8") + snonce ).hexdigest()
 
