@@ -29,14 +29,13 @@ def get_login_btn(BASE, **kwargs):
 	if kwargs.get('platform', None) != None:
 		pass
 
-	if kwargs.get('user', None) == None:
+	if kwargs.get('username', None) == None:
 		no_login = open('_WEB_/content/_buttons/no_login.html', 'r').read()
 		return no_login
 	else:
 		main_btn = open('_WEB_/content/_buttons/phaaze_login.html', 'r').read()
-		main_btn = main_btn.replace('{name}', kwargs.get('user', {}).get('phaaze_username', '[NAME N/A]'))
-		main_btn = main_btn.replace('{type}', kwargs.get('user', {}).get('type', '[TYPE N/A]'))
-		if kwargs.get('user', {}).get('img_path', None) != None:
+		main_btn = main_btn.replace('{name}', kwargs.get('username', '[NAME N/A]'))
+		if kwargs.get('img_path', None) != None:
 			img = 'HELLO'
 		else:
 			img = 'hidden'

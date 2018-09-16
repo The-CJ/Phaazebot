@@ -7,7 +7,8 @@ async def main(self, request, msg=""):
 	req_str = html.escape("Path: "+request.path)
 
 	site = self.root.html_root
-	current_navbar = self.root.html_header(self.root.BASE)
+	user_info = await self.root.get_user_info(request)
+	current_navbar = self.root.html_header(self.root.BASE, user_info=user_info)
 	page_na = open('_WEB_/content/action_not_allowed.html', 'r').read()
 
 	self.root.BASE.modules.Console.DEBUG(request.path)
