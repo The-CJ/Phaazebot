@@ -1,6 +1,6 @@
 import re
 
-def get_navbar(BASE, active=''):
+def get_navbar(BASE, active='', user_info = {}):
 	navbar = open('_WEB_/content/_navbar/navbar_content.html', 'r').read()
 	if active != '':
 		try:
@@ -17,7 +17,8 @@ def get_navbar(BASE, active=''):
 			else:
 				navbar = navbar.replace(c.group(0), '')
 
-	navbar_login = get_login_btn(BASE)
+	if user_info == None: user_info = {}
+	navbar_login = get_login_btn(BASE, **user_info)
 
 	navbar = navbar.replace('|>>>(navbar_login)<<<|', navbar_login)
 
@@ -27,17 +28,20 @@ def get_login_btn(BASE, **kwargs):
 	if kwargs.get('platform', None) != None:
 		pass
 
-	if kwargs.get('user', None) == None:
+	if kwargs.get('username', None) == None:
 		no_login = open('_WEB_/content/_buttons/no_login.html', 'r').read()
 		return no_login
 	else:
 		main_btn = open('_WEB_/content/_buttons/phaaze_login.html', 'r').read()
-		main_btn = main_btn.replace('{name}', kwargs.get('user', {}).get('phaaze_username', '[NAME N/A]'))
-		main_btn = main_btn.replace('{type}', kwargs.get('user', {}).get('type', '[TYPE N/A]'))
-		if kwargs.get('user', {}).get('img_path', None) != None:
-			img = 'HELLO'
+		main_btn = main_btn.replace('{name}', kwargs.get('username', '[N/A]'))
+		if kwargs.get('img_path', None) != None:
+			main_btn = main_btn.replace('{show_img}', "")
+			main_btn = main_btn.replace('{show_icon}', "hidden")
+			img = f"src={kwargs.get('img_path', '')}"
 		else:
-			img = 'hidden'
+			main_btn = main_btn.replace('{show_img}', "hidden")
+			main_btn = main_btn.replace('{show_icon}', "")
+			img = ''
 		main_btn = main_btn.replace('{img_path}', img)
 		return main_btn
 

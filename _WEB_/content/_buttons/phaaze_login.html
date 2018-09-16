@@ -1,8 +1,67 @@
-<div class="white" style="border-radius: 20px">
-  <img {img_path} style="border-radius: 50%" height="40" alt="IMG">
-  <span style="padding-left: .5em">({type}) {name}</span>
-  <button type="button" class="btn-danger btn expandable-btn" style="margin:0;padding:.5em;border-radius: 20px" onclick="phaaze_logout()">
-    <i class="material-icons" style="position: relative;top: 1px;left:2px;">exit_to_app</i>
-    <span style="position: relative;bottom: 6px;" class="expandable_content">Logout</span>
+<style media="screen">
+
+  .phaaze_btn {
+    height: 40px;
+    border-radius: 20px;
+    background: white;
+  }
+
+  .phaaze_btn_logout {
+    height: 40px;
+    border-radius: 20px;
+    padding: .5em;
+    margin: 0;
+  }
+
+  .phaaze_btn_logout span {
+    max-width: 0;
+  	transition: .5s;
+    position: relative;
+  	overflow: hidden;
+  }
+
+  .phaaze_btn_logout:hover span {
+    max-width: 30rem;
+  }
+
+  a:focus .phaaze_btn_logout span {
+    max-width: 30rem;
+  }
+
+  .phaaze_btn_user {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
+
+  .phaaze_btn_icon {
+    margin-left: 0.25em;
+  }
+
+  .phaaze_btn_imagespace {
+    position: relative;
+    background: rgb(240, 240, 240);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .phaaze_btn_imagespace img {
+    height: 40px;
+  }
+
+</style>
+
+<div class="center-item-row phaaze_btn">
+  <a href="/account" class="center-item-row" style="flex-direction: row-reverse;position: relative;height: 100%">
+    <span class="phaaze_btn_user">{name}</span>
+    <div {show_img} class="phaaze_btn_imagespace center-item-col">
+      <img {img_path} alt="IMG">
+    </div>
+    <i {show_icon} class="material-icons phaaze_btn_icon">account_circle</i>
+  </a>
+  <button type="button" class="center-item-row btn btn-danger phaaze_btn_logout" onclick="phaaze_logout()">
+    <i class="material-icons">exit_to_app</i>
+    <span>Logout</span>
   </button>
 </div>
