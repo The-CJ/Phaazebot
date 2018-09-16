@@ -182,7 +182,7 @@ async def leaderboard(BASE, message, kwargs):
 			user_name = "[N/A]"
 		else:
 			user_name = user_name.name
-		leaderboard_list.append( [ "#"+str(rank), "|", str(await Calc.get_lvl(member.get("exp", 0))), "|", str(member.get("exp", 0))+edited, "|", user_name ])
+		leaderboard_list.append( [ "#"+str(rank), "|", str(Calc.get_lvl(member.get("exp", 0))), "|", str(member.get("exp", 0))+edited, "|", user_name ])
 		rank = rank + 1
 
 	table = tabulate.tabulate(leaderboard_list,tablefmt="plain")
