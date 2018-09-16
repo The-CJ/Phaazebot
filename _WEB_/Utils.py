@@ -25,7 +25,6 @@ def get_navbar(BASE, active='', user_info = {}):
 	return navbar
 
 def get_login_btn(BASE, **kwargs):
-	print(kwargs)
 	if kwargs.get('platform', None) != None:
 		pass
 
@@ -34,7 +33,7 @@ def get_login_btn(BASE, **kwargs):
 		return no_login
 	else:
 		main_btn = open('_WEB_/content/_buttons/phaaze_login.html', 'r').read()
-		main_btn = main_btn.replace('{name}', kwargs.get('username', '[NAME N/A]'))
+		main_btn = main_btn.replace('{name}', kwargs.get('username', '[N/A]'))
 		if kwargs.get('img_path', None) != None:
 			main_btn = main_btn.replace('{show_img}', "")
 			main_btn = main_btn.replace('{show_icon}', "hidden")

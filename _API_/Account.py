@@ -1,4 +1,4 @@
-import asyncio, json
+import asyncio, json, datetime
 
 # log in/out
 # /api/login
@@ -25,6 +25,7 @@ async def login(self, request, **kwargs):
 
 	entry = dict(session = new_session, user_id=auth_user['id'])
 	self.root.BASE.PhaazeDB.insert(into="session/phaaze", content=entry)
+	self.root.BASE.PhaazeDB.update(of="user", content=dict(last_login=str(datetime.datetime.now())), where=f"int(data['id']) == int({entry.get('user_id', None)})")
 
 	return self.root.response(
 		text=json.dumps( dict(phaaze_session=new_session,status=200) ),
@@ -54,6 +55,7 @@ async def logout(self, request, **kwargs):
 			status=200
 		)
 
+# /api/create
 async def create(self, request, **kwargs):
 	auth_user = await self.root.get_user_info(request)
 	if auth_user != None:
@@ -109,7 +111,10 @@ async def create(self, request, **kwargs):
 		username=username,
 		password=passwd,
 		email=email,
-		verified=False
+		verified=False,
+		img_path=None,
+		last_login=None,
+		type=[]
 	)
 
 	#TODO: need to send email verification
