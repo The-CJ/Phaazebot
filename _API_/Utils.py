@@ -11,17 +11,17 @@ async def get_user_informations(self, request, **kwargs):
 
 	try:
 		_GET = request.query
-	except Exception as e:
+	except:
 		pass
 
 	try:
 		_POST = await request.post()
-	except Exception as e:
+	except:
 		pass
 
 	try:
 		_JSON = await request.json()
-	except Exception as e:
+	except:
 		pass
 
 	# All vars have the same Auth way: Systemcall var -> POST -> JSON Content -> GET
@@ -79,8 +79,9 @@ async def get_user_informations(self, request, **kwargs):
 		phaaze_username = _GET.get('phaaze_username', None)
 
 	if phaaze_username != None and phaaze_password != None:
-		phaaze_password = password(phaaze_password)
-		search_str = f"data['phaaze_username'] == '{phaaze_username}' and data['password'] == '{phaaze_password}'"
+		phaaze_password = self.password(phaaze_password)
+		phaaze_username = phaaze_username.replace("'", "\\'")
+		search_str = f"data['username'] == '{phaaze_username}' and data['password'] == '{phaaze_password}'"
 		res = self.BASE.PhaazeDB.select(of="user", where=search_str)
 		if len(res['data']) != 1:
 			return None
@@ -97,8 +98,5 @@ def password(self, passwd):
 
 #generate a new sesssion key
 def make_session_key(self):
-	snonce = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(8))
-	stime = hashlib.sha1( str(datetime.datetime.now()).encode("UTF-8") + snonce ).hexdigest()
-
-	key = str(stime)
+	key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
 	return key

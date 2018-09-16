@@ -111,6 +111,8 @@ async def create(self, request, **kwargs):
 		verified=False
 	)
 
+	#TODO: need to send email verification 
+
 	new_user = self.root.BASE.PhaazeDB.insert(into="user", content=cont)
 	_id_ = new_user.get('data', {}).get('id', '[N/A]')
 

@@ -2,7 +2,7 @@ function phaaze_logout() {
   var x = getCookie("phaaze_session");
   var r = {};
   r['phaaze_session'] = x;
-  $.post("/api/logout", JSON.stringify(r), function (data) {
+  $.post("/api/account/logout", JSON.stringify(r), function (data) {
     remCookie("phaaze_session");
     location.reload();
   })
@@ -17,7 +17,7 @@ function phaaze_login() {
   r["phaaze_username"] = login;
   r["password"] = password;
 
-  $.post("/api/login", r)
+  $.post("/api/account/login", r)
   .done(
     function (data) {
       $('#phaaze_loginname').addClass("animated bounceOutLeft");
