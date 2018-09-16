@@ -35,7 +35,7 @@ async def account(self, request):
 	main = open('_WEB_/content/account/account_main.html', 'r').read()
 
 	site = self.root.html_root
-	site = self.root.format_html( site, title="Phaaze | Account - Login", header=current_navbar, main=main )
+	site = self.root.format_html( site, title="Phaaze | Account", header=current_navbar, main=main )
 
 	return self.root.response(
 		body=site,
