@@ -36,9 +36,13 @@ def get_login_btn(BASE, **kwargs):
 		main_btn = open('_WEB_/content/_buttons/phaaze_login.html', 'r').read()
 		main_btn = main_btn.replace('{name}', kwargs.get('username', '[NAME N/A]'))
 		if kwargs.get('img_path', None) != None:
-			img = 'HELLO'
+			main_btn = main_btn.replace('{show_img}', "")
+			main_btn = main_btn.replace('{show_icon}', "hidden")
+			img = f"src={kwargs.get('img_path', '')}"
 		else:
-			img = 'hidden'
+			main_btn = main_btn.replace('{show_img}', "hidden")
+			main_btn = main_btn.replace('{show_icon}', "")
+			img = ''
 		main_btn = main_btn.replace('{img_path}', img)
 		return main_btn
 
