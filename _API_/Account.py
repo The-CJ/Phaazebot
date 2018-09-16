@@ -7,17 +7,17 @@ async def login(self, request, **kwargs):
 	auth_user = await self.root.get_user_info(request)
 
 	_POST = await request.post()
-	if auth_user == None and (_POST.get('phaaze_username', None) in [None, ""] or _POST.get('password', None) in [None, ""]):
+	if auth_user == None and (_POST.get('username', None) in [None, ""] or _POST.get('password', None) in [None, ""]):
 		return self.root.response(
 			status=400,
-			text=json.dumps( dict(error="missing_data", status=400, message="fields 'password' and 'phaaze_username' must be defined") ),
+			text=json.dumps( dict(error="missing_data", status=400, message="fields 'password' and 'username' must be defined") ),
 			content_type="application/json"
 		)
 
 	if auth_user == None:
 		return self.root.response(
 			status=404,
-			text=json.dumps( dict(error="wrong_data", status=404, message="'password' or 'phaaze_username' could not be found") ),
+			text=json.dumps( dict(error="wrong_data", status=404, message="'password' or 'username' could not be found") ),
 			content_type="application/json"
 			)
 
@@ -38,16 +38,17 @@ async def logout(self, request, **kwargs):
 	user = await self.root.get_user_info(request)
 
 	if user == None:
-		return self.response(
+		return self.root.response(
 			text=json.dumps( dict(error='missing_session_key', status=400) ),
 			content_type="application/json",
 			status=400
 		)
 
-	res = self.root.BASE.PhaazeDB.delete(of="session/phaaze", where=f"data['session'] == '{session_key}'")
+	us_id = user.get('id', '')
+	res = self.root.BASE.PhaazeDB.delete(of="session/phaaze", where=f"int(data['user_id']) == int({us_id})")
 
 	if res['hits'] == 1:
-		return self.response(
+		return self.root.response(
 			text=json.dumps( dict(status=200) ),
 			content_type="application/json",
 			status=200
@@ -111,7 +112,7 @@ async def create(self, request, **kwargs):
 		verified=False
 	)
 
-	#TODO: need to send email verification 
+	#TODO: need to send email verification
 
 	new_user = self.root.BASE.PhaazeDB.insert(into="user", content=cont)
 	_id_ = new_user.get('data', {}).get('id', '[N/A]')

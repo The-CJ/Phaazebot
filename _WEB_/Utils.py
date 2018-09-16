@@ -1,6 +1,6 @@
 import re
 
-def get_navbar(BASE, active=''):
+def get_navbar(BASE, active='', user_info = {}):
 	navbar = open('_WEB_/content/_navbar/navbar_content.html', 'r').read()
 	if active != '':
 		try:
@@ -17,13 +17,15 @@ def get_navbar(BASE, active=''):
 			else:
 				navbar = navbar.replace(c.group(0), '')
 
-	navbar_login = get_login_btn(BASE)
+	if user_info == None: user_info = {}
+	navbar_login = get_login_btn(BASE, **user_info)
 
 	navbar = navbar.replace('|>>>(navbar_login)<<<|', navbar_login)
 
 	return navbar
 
 def get_login_btn(BASE, **kwargs):
+	print(kwargs)
 	if kwargs.get('platform', None) != None:
 		pass
 

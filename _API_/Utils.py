@@ -26,25 +26,23 @@ async def get_user_informations(self, request, **kwargs):
 
 	# All vars have the same Auth way: Systemcall var -> POST -> JSON Content -> GET
 
-	#via session
+	#via session from header
 	phaaze_session = request.headers.get('phaaze_session', None)
+	#or cookie
+	if phaaze_session == None:
+		phaaze_session = request.cookies.get('phaaze_session', None)
 	if phaaze_session != None:
-		search_str = f'data["session"] == "{phaaze_session}" '
+		phaaze_session = phaaze_session.replace("'","\\'")
+		search_str = f'data["session"] == "{phaaze_session}"'
 		res = self.BASE.PhaazeDB.select(of="session/phaaze", where=search_str)
-		if len(res['data']) != 1:
-			return None
-
-		else:
+		if len(res['data']) == 1:
 			user_session = res['data'][0]
 
-		uid = user_session.get('user_id',"0")
-		search_str = f'int(data["id"]) == int({uid}) '
-		res = self.BASE.PhaazeDB.select(of="user", where=search_str)
-		if len(res['data']) != 1:
-			return None
-
-		else:
-			return res['data'][0]
+			uid = user_session.get('user_id',"0")
+			search_str = f"int(data['id']) == int({uid})"
+			res = self.BASE.PhaazeDB.select(of="user", where=search_str)
+			if len(res['data']) == 1:
+				return res['data'][0]
 
 	#via api token
 	phaaze_token = kwargs.get('phaaze_token', None)
@@ -70,13 +68,13 @@ async def get_user_informations(self, request, **kwargs):
 	if phaaze_password == None:
 		phaaze_password = _GET.get('password', None)
 
-	phaaze_username = kwargs.get('phaaze_username', None)
+	phaaze_username = kwargs.get('username', None)
 	if phaaze_username == None:
-		phaaze_username = _POST.get('phaaze_username', None)
+		phaaze_username = _POST.get('username', None)
 	if phaaze_username == None:
-		phaaze_username = _JSON.get('phaaze_username', None)
+		phaaze_username = _JSON.get('username', None)
 	if phaaze_username == None:
-		phaaze_username = _GET.get('phaaze_username', None)
+		phaaze_username = _GET.get('username', None)
 
 	if phaaze_username != None and phaaze_password != None:
 		phaaze_password = self.password(phaaze_password)

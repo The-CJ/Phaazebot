@@ -14,7 +14,7 @@ function phaaze_login() {
 
   var r = {};
 
-  r["phaaze_username"] = login;
+  r["username"] = login;
   r["password"] = password;
 
   $.post("/api/account/login", r)
