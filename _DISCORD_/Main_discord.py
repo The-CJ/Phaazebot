@@ -83,5 +83,5 @@ class Init_discord(discord.Client):
 
 	#errors
 	async def on_error(self, event_method, *args, **kwargs):
-		self.BASE.modules.Console.ERROR('Ignoring exception in {}'.format(event_method))
-		traceback.print_exc()
+		tb = traceback.format_exc()
+		self.BASE.modules.Console.ERROR('Ignoring exception in {}\n{}'.format(event_method, tb))
