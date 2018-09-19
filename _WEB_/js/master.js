@@ -142,3 +142,7 @@ function _show_message(content, color, text_color, symbol, link, time) {
   }, time);
 
 }
+
+$('document').ready(function () {
+  Waves.attach('.btn', ['waves-effect', 'waves-light']);
+});
