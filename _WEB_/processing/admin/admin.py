@@ -1,57 +1,34 @@
 #BASE.modules._Web_.Base.root.admin.admin
 
-import  html, os
+import html, os
 
-def main(BASE, info, root):
+# /admin
+async def main(self, request):
 
-	#no session -> login
-	if info.get('user', None) == None:
-		return admin_login(BASE, info)
+	site = self.root.html_root
+	user_info = await self.root.get_user_info(request)
 
-	if "admin" not in info.get('user', {}).get("type", "").lower():
-		return admin_login(BASE, info, msg="Your Account is unauthoriesed to access.")
+	if user_info == None:
+		return await self.login(request, msg="Login required")
 
-	if len(info['path']) == 0:
-		return admin_main(BASE, info)
+	types = user_info.get("type", [])
+	if not "admin" in [t.lower() for t in types]:
+		return await self.action_not_allowed(request, msg="Admin rights reqired")
 
-	elif info['path'][0] == "view-files":
-		return view_page(BASE, info)
+	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info, active="admin")
+	main_site = open('_WEB_/content/admin/admin_main.html','r').read()
 
-	elif info['path'][0] == "edit-files":
-		return edit_page(BASE, info)
+	site = self.root.format_html(site,
+		title="Phaaze | Admin",
+		header=current_navbar,
+		main=main_site
+	)
 
-	else:
-		return root.page_not_found.page_not_found(BASE, info, root)
-
-def admin_main(BASE, info, msg=""):
-	return_header = [('Content-Type','text/html')]
-
-	site = open('_WEB_/content/admin/admin_main.html', 'r').read()
-
-	#Replace Parts
-	site = site.replace("<!-- msg -->", msg)
-
-	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
-
-	class r (object):
-		content = site.encode("UTF-8")
-		response = 200
-		header = return_header
-	return r
-
-def admin_login(BASE, info, msg=""):
-	return_header = [('Content-Type','text/html')]
-	site = open('_WEB_/content/admin/admin_login.html', 'r').read()
-	site = site.replace("<!-- msg -->", msg)
-
-	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
-
-	class r (object):
-		content = site.encode("UTF-8")
-		response = 200
-		header = return_header
-
-	return r
+	return self.root.response(
+		body=site,
+		status=200,
+		content_type='text/html'
+	)
 
 def view_page(BASE, info):
 	return_header = [('Content-Type','text/html')]

@@ -61,23 +61,9 @@ class root(object):
 		from _WEB_.processing.account.main import login as login							#/login
 		from _WEB_.processing.account.main import account as account						#/account
 		from _WEB_.processing.account.create import create as account_create				#/account/create
+																							#
+		from _WEB_.processing.admin.admin import main as admin_main							#/admin
 
-
-	# class discord(object):																#
-	# 	import _WEB_.processing.discord.main as main										#/discord
-	# 	import _WEB_.processing.discord.dashboard as dashboard								#/discord/dashboard
-	# 	import _WEB_.processing.discord.invite as invite									#/discord/invite
-	# 	import _WEB_.processing.discord.custom as custom									#/discord/custom
-	# 																						#
-	# class fileserver(object):																#
-	# 	import _WEB_.processing.fileserver.main as main										#/fileserver
-	# 																						#
-	# class wiki(object):																	#
-	# 	import _WEB_.processing.wiki.main as main											#/wiki
-	# 																						#
-	# class admin(object):																	#
-	# 	import _WEB_.processing.admin.admin as admin										#/admin
-	# 																						#
 
 def webserver(BASE):
 	server = web.Application()
@@ -92,6 +78,7 @@ def webserver(BASE):
 	server.router.add_route('GET', '/login', root.web.login)
 	server.router.add_route('GET', '/account', root.web.account)
 	server.router.add_route('GET', '/account/create', root.web.account_create)
+	server.router.add_route('GET', '/admin', root.web.admin_main)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
