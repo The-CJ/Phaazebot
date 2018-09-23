@@ -30,7 +30,17 @@ async def get(self, request):
 		w_type = w_type.replace("'", "\\'")
 		wl.append(f"'{w_type}' in data['type']")
 
-	all_user = self.root.BASE.PhaazeDB.select(of="user", where=" and ".join(wl), fields=["username", "id", "type"])
+	w_id = _GET.get('userid', '')
+	if w_id != "":
+		w_id = w_id.replace("'", "\\'")
+		wl.append(f"str(data['id']) == str('{w_id}')")
+
+	if bool(_GET.get("detail", 0)) == True:
+		fields = None # None == all
+	else:
+		fields = ["username", "id", "type"]
+
+	all_user = self.root.BASE.PhaazeDB.select(of="user", where=" and ".join(wl), fields=fields)
 	return self.root.response(
 		body=json.dumps(all_user),
 		status=200,

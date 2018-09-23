@@ -6,15 +6,20 @@
   <h2 class="text-center">User manager</h2>
   <hr>
 
+  <!-- filter btn -->
   <div class="row">
     <div class="col">
       <button type="button" class="btn indigo darken-2" onclick="$('#user_filter').collapse('toggle')">Filter</button>
     </div>
     <div class="col text-right">
       <button type="button" class="btn indigo darken-1">←</button>
+      <span id="from_user">0</span>
+      <span>-</span>
+      <span id="to_user">50</span>
       <button type="button" class="btn indigo darken-3">→</button>
     </div>
   </div>
+  <!-- filter -->
   <div class="row">
     <form class="col collapse" action="javascript:filter_user()" method="post" id="user_filter">
 
@@ -28,12 +33,18 @@
         <input type="text" name="type" class="white-text" placeholder="role in types">
       </div>
 
+      <div class="center-item-row">
+        <span>User-ID:&nbsp;</span>
+        <input type="text" name="userid" class="white-text" placeholder="user['id'] == x">
+      </div>
+
       <hr>
       <button type="submit" class="btn btn-block indigo">Search</button>
 
     </form>
   </div>
 
+  <!-- result -->
   <div class="row">
     <div class="col" id="result_space"></div>
   </div>
@@ -44,13 +55,47 @@
 <div hidden tpl>
 
   <div user>
-    <div class="user-entry center-item-row btn indigo darken-4" onclick="$(this).siblings().collapse('show')">
+    <!-- infos -->
+    <div class="user-entry center-item-row btn indigo darken-4" onclick="detail_user(this)" user-id="x">
       <span class="user-id col-1"></span>
       <span class="user-name col"></span>
       <span class="user-type col-4"></span>
     </div>
-    <div class="collapse">
-      ASDASDASD
+    <!-- details -->
+    <div class="collapse user-info">
+      <!-- buttons -->
+      <div class="text-right">
+        <button type="button" class="btn btn-success"><i class="material-icons">save</i></button>
+        <button type="button" class="btn btn-danger" onclick="$(this).closest('.collapse').collapse('hide')"><i class="material-icons">close</i></button>
+      </div>
+      <button type="button" class="btn btn-block btn-warning">Reset password</button>
+      <button type="button" class="btn btn-block btn-warning">Manage roles</button>
+      <!-- username -->
+      <div class="center-item-row">
+        <span class="col-2">ID:</span>
+        <input class="col white-text" type="number" name="id" readonly>
+      </div>
+      <!-- username -->
+      <div class="center-item-row">
+        <span class="col-2">Username:</span>
+        <input class="col white-text" type="text" name="username">
+      </div>
+      <!-- email -->
+      <div class="center-item-row">
+        <span class="col-2">E-Mail:</span>
+        <input class="col white-text" type="email" name="email">
+      </div>
+      <!-- last-login -->
+      <div class="center-item-row">
+        <span class="col-2">Last-login:</span>
+        <input class="col white-text" type="text" name="last_login" readonly>
+      </div>
+      <!-- verified -->
+      <div class="center-item-row">
+        <span class="col-2">Verified:</span>
+        <input class="col white-text" type="text" name="username">
+      </div>
+
     </div>
   </div>
 
