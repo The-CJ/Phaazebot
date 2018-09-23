@@ -43,7 +43,8 @@ class root(object):
 		from _API_.Account import logout as account_logout									#/api/account/logout
 		from _API_.Account import create as account_create									#/api/account/create
 																							#
-		from _API_.Admin import eval_command as admin_eval_command							#/api/account/create
+		from _API_.Admin import eval_command as admin_eval_command							#/admin/eval_command
+		from _API_._Admin_.manage_user import main as admin_manage_user						#/admin/manage-user
 																							#
 
 	# / ...
@@ -66,6 +67,7 @@ class root(object):
 		from _WEB_.processing.account.create import create as account_create				#/account/create
 																							#
 		from _WEB_.processing.admin.admin import main as admin_main							#/admin
+		from _WEB_.processing.admin.manage_user import main as admin_manage_user			#/admin/manage-user
 
 
 def webserver(BASE):
@@ -82,6 +84,7 @@ def webserver(BASE):
 	server.router.add_route('GET', '/account', root.web.account)
 	server.router.add_route('GET', '/account/create', root.web.account_create)
 	server.router.add_route('GET', '/admin', root.web.admin_main)
+	server.router.add_route('GET', '/admin/manage-user', root.web.admin_manage_user)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
@@ -89,6 +92,7 @@ def webserver(BASE):
 	server.router.add_route('*',   '/api/account/logout', root.api.account_logout)
 	server.router.add_route('*',   '/api/account/create', root.api.account_create)
 	server.router.add_route('*',   '/api/admin/eval_command', root.api.admin_eval_command)
+	server.router.add_route('*',   '/api/admin/manage-user/{method:.*}', root.api.admin_manage_user)
 	server.router.add_route('GET', '/api/{path:.*}', root.api.unknown)
 
 	# /js /img /css

@@ -1,0 +1,10 @@
+#result_space {
+  padding:0.5em;
+}
+
+.user-entry {
+  border-bottom: 1px solid black;
+}
+.user-type {
+  overflow: hidden;
+}

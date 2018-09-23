@@ -1,0 +1,57 @@
+<link rel="stylesheet" href="/css/site-specific/admin/manage-user.css">
+
+<div class="container white-text">
+
+  <hr>
+  <h2 class="text-center">User manager</h2>
+  <hr>
+
+  <div class="row">
+    <div class="col">
+      <button type="button" class="btn indigo darken-2" onclick="$('#user_filter').collapse('toggle')">Filter</button>
+    </div>
+    <div class="col text-right">
+      <button type="button" class="btn indigo darken-1">←</button>
+      <button type="button" class="btn indigo darken-3">→</button>
+    </div>
+  </div>
+  <div class="row">
+    <form class="col collapse" action="javascript:filter_user()" method="post" id="user_filter">
+
+      <div class="center-item-row">
+        <span>Name contains:&nbsp;</span>
+        <input type="text" name="username" class="white-text" placeholder="'str' in name">
+      </div>
+
+      <div class="center-item-row">
+        <span>Has role/type:&nbsp;</span>
+        <input type="text" name="type" class="white-text" placeholder="role in types">
+      </div>
+
+      <hr>
+      <button type="submit" class="btn btn-block indigo">Search</button>
+
+    </form>
+  </div>
+
+  <div class="row">
+    <div class="col" id="result_space"></div>
+  </div>
+
+<script src="/js/administration.js" charset="utf-8"></script>
+<script src="/js/site-specific/admin/manage-user.js" charset="utf-8"></script>
+
+<div hidden tpl>
+
+  <div user>
+    <div class="user-entry center-item-row btn indigo darken-4" onclick="$(this).siblings().collapse('show')">
+      <span class="user-id col-1"></span>
+      <span class="user-name col"></span>
+      <span class="user-type col-4"></span>
+    </div>
+    <div class="collapse">
+      ASDASDASD
+    </div>
+  </div>
+
+</div>

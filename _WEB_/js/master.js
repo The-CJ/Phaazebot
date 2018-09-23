@@ -145,4 +145,5 @@ function _show_message(content, color, text_color, symbol, link, time) {
 
 $('document').ready(function () {
   Waves.attach('.btn', ['waves-effect', 'waves-light']);
+  Waves.attach('.nav-link', ['waves-effect', 'waves-light']);
 });

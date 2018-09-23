@@ -2,9 +2,6 @@
 
 import json, asyncio
 
-from _API_._Admin import Files as files
-from _API_._Admin import Shutdown as shutdown
-
 def toggle_moduls(BASE, info={}, from_web=False, **kwargs):
 	"""toggle main Moduls status"""
 	session = info.get("cookies",{}).get("phaaze_session", None)
