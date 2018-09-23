@@ -62,9 +62,20 @@ function extract_data(query_obj) {
   for (field of query_obj.find('[name]')) {
     field = $(field);
     let name = field.attr('name');
-    let value = field.val();
 
-    d[name] = value;
+    if (field.attr("type") == "checkbox") {
+      if (field.is(":checked")) {
+        d[name] = 1;
+      }
+      else {
+        d[name] = 0;
+      }
+    }
+    else {
+      let value = field.val();
+      d[name] = value;
+    }
+
   }
   return d;
 }
@@ -83,6 +94,7 @@ function insert_data(query_obj, data) {
 }
 
 //
+
 function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);

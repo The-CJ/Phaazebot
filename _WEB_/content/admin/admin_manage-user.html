@@ -38,12 +38,26 @@
         <input type="text" name="userid" class="white-text" placeholder="user['id'] == x">
       </div>
 
+      <div class="center-item-row">
+        <span>Verified:&nbsp;</span>
+        <label class="bs-switch" style="margin:0; margin-left:2em;">
+          <input type="checkbox" name="verified">
+          <span class="slider"></span>
+        </label>
+      </div>
+
       <hr>
       <button type="submit" class="btn btn-block indigo">Search</button>
 
     </form>
   </div>
 
+  <!-- result_info -->
+  <div class="center-item-row text-center" style="padding: 0.81em 2.14em;margin: 0 0.375rem">
+    <span class="col-1">User-ID</span>
+    <span class="col">User-Name</span>
+    <span class="col-4">User-Roles</span>
+  </div>
   <!-- result -->
   <div class="row">
     <div class="col" id="result_space"></div>
@@ -68,8 +82,8 @@
         <button type="button" class="btn btn-success"><i class="material-icons">save</i></button>
         <button type="button" class="btn btn-danger" onclick="$(this).closest('.collapse').collapse('hide')"><i class="material-icons">close</i></button>
       </div>
-      <button type="button" class="btn btn-block btn-warning">Reset password</button>
-      <button type="button" class="btn btn-block btn-warning">Manage roles</button>
+      <button type="button" class="btn btn-block btn-warning" onclick="reset_password($(this))" style="margin:0;">Reset password</button>
+      <button type="button" class="btn btn-block btn-warning" onclick="manage_roles($(this))" style="margin:2px 0 0 0;">Manage roles</button>
       <!-- username -->
       <div class="center-item-row">
         <span class="col-2">ID:</span>
@@ -93,7 +107,10 @@
       <!-- verified -->
       <div class="center-item-row">
         <span class="col-2">Verified:</span>
-        <input class="col white-text" type="text" name="username">
+        <label class="bs-switch">
+          <input type="checkbox" name="verified">
+          <span class="slider"></span>
+        </label>
       </div>
 
     </div>

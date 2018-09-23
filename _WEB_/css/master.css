@@ -12,6 +12,19 @@ pre {
 	color: white;
 }
 
+input[type=text],input[type=email],input[type=number],input[type=password] {
+	background: transparent;
+	border: none;
+	margin: 0.25em;
+	width: 100%;
+	border-bottom: 1px solid #000;
+	height: 2.2em;
+	padding: 0 1em;
+}
+input[type=text]:focus,input[type=email]:focus,input[type=number]:focus,input[type=password]:focus {
+	border: none;
+}
+
 /*class styles*/
 .center-item-row {
 	display: flex;
