@@ -69,6 +69,20 @@ function extract_data(query_obj) {
   return d;
 }
 
+function insert_data(query_obj, data) {
+  if (query_obj == null) {
+    throw "insert_data() got 'null' query_obj"
+  }
+  if (data == null) {
+    throw "insert_data() got 'null' data for format"
+  }
+
+  for (var key in data) {
+    query_obj.find("[name="+key+"]").val(data[key]);
+  }
+}
+
+//
 function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
