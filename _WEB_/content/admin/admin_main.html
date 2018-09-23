@@ -4,9 +4,26 @@
   <h2 class="text-center">Administration Interface</h2>
   <hr>
 
+  <button type="button" class="btn btn-block red darken-3" onclick="$('#rootconsole').collapse('toggle')">Override console</button>
+  <div id="rootconsole" class="collapse" style="padding:1em 0;">
+
+    <form class="" action="javascript:evalCommand()" method="post">
+      <pre id="result_data"></pre>
+      <div class="center-item-row">
+        <span>root@phaazeos >&nbsp;</span>
+        <input type="text" placeholder="eval()" class="white-text" id="eval_command">
+        <button type="button" class="btn ml-auto grey" style="margin:0;padding:0.5em;" onclick="evalCommand()">→</button>
+      </div>
+    </form>
+
+  </div>
+
+  <hr>
   <div class="">
-    <button type="button" class="btn btn-block red">User manager</button>
+    <button type="button" class="btn btn-block indigo darken-2">User manager</button>
+    <button type="button" class="btn btn-block indigo darken-3">System status</button>
   </div>
 
 </div>
 
+<script src="/js/administration.js" charset="utf-8"></script>

@@ -3,22 +3,23 @@ function toggle_module(mo) {
     _show_message('Successfull toggled', 'background:#44FF44;')
   })
   .fail(function (data) {
-    _show_message('Unauthorized', 'background:white;');
+    _show_message('Unauthorized', 'red');
   })
 
 }
 
 function evalCommand(command) {
   if (command == null) {
-    command = $('#eval_command').val(); 
+    command = $('#eval_command').val();
   }
   var r = {};
   r['command'] = command;
-  $.post("/api/admin/eval_command", JSON.stringify(r), function (data) {
-    $('#result_data').html(data.result);
-  })
+  $.post("/api/admin/eval_command", r)
+    .done(function (data) {
+      $('#result_data').text(data.result);
+    })
     .fail(function (data) {
-      _show_message('Unauthorized', 'background:white;');
+      _show_message(data.responseJSON.msg, 'red');
     })
 
 }
@@ -28,7 +29,7 @@ function change_name() {
   r['name'] = $('#discord_bot_name').val();
   $.post("/api/discord/change_bot_name", JSON.stringify(r), function (data) {})
   .fail(function (data) {
-    _show_message('Unauthorized', 'background:white;');
+    _show_message('Unauthorized', 'red');
   })
 }
 
@@ -41,24 +42,13 @@ function change_picture() {
        url: "/api/discord/change_bot_picture",
        data: evt.target.result,
        success: function (data) { console.debug(data); },
-       fail: function (data) {_show_message('Unauthorized', 'background:white;')},
+       fail: function (data) {_show_message('Unauthorized', 'red')},
 
 	   processData: false,
 	   contentType: "application/octet-stream",
    });
  }
   reader.readAsArrayBuffer(r);
-}
-
-function update_source_file() {
-  var text = $('#textarea_field').val();
-  var name = $('#hidden_page_index').text();
-  $.post("/api/admin/files/edit?file="+name, text, function (data) {
-    _show_message('Successfull saved', 'background:#44FF44;')
-  })
-  .fail(function (data) {
-    _show_message('Unauthorized', 'background:white;');
-  })
 }
 
 function disableAPI() {
