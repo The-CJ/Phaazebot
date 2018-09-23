@@ -1,6 +1,6 @@
 #BASE-modules._Web_.Base
 
-import re
+import re, sys
 import ssl
 from aiohttp import web
 
@@ -110,7 +110,18 @@ def webserver(BASE):
 
 	###################################
 
-	SSL = ssl.SSLContext()
-	SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
-	web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
-	#web.run_app(server, handle_signals=False, port=900, print=False)
+	option_re = re.compile(r'^--(.+?)=(.*)$')
+	all_args = dict()
+	for arg in sys.argv[1:]:
+		d = option_re.match(arg)
+		if d != None:
+			all_args[d.group(1)] = d.group(2)
+
+	if all_args.get("http", "test") == "live":
+		SSL = ssl.SSLContext()
+		SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
+		BASE.modules.Console.INFO("Started web server (p433/live)")
+		web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
+	else:
+		BASE.modules.Console.INFO("Started web server (p900/test)")
+		web.run_app(server, handle_signals=False, port=900, print=False)
