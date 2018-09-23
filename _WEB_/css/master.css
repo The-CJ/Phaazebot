@@ -27,6 +27,9 @@ pre {
 	white-space: nowrap;
 }
 
+.btn {
+	text-transform: none;
+}
 
 .centered {
 	position: absolute;
