@@ -10,6 +10,7 @@
   <div class="row">
     <div class="col">
       <button type="button" class="btn indigo darken-2" onclick="$('#user_filter').collapse('toggle')">Filter</button>
+      <button type="button" class="btn btn-success" onclick="new_user()">New User</button>
     </div>
     <div class="col text-right">
       <button type="button" class="btn indigo darken-1">←</button>
@@ -53,7 +54,7 @@
   </div>
 
   <!-- result_info -->
-  <div class="center-item-row text-center" style="padding: 0.81em 2.14em;margin: 0 0.375rem">
+  <div class="center-item-row text-center" style="padding: 0.81em 2.14em;margin: 0 0.375rem;border-bottom: 2px solid black">
     <span class="col-1">User-ID</span>
     <span class="col">User-Name</span>
     <span class="col-4">User-Roles</span>
@@ -80,15 +81,12 @@
     <!-- details collapse -->
     <div class="collapse user-info">
       <!-- buttons -->
-      <div class="center-item-row">
+      <div class="center-item-row text-right user-controll">
+        <span class="col"></span>
         <button type="button" class="btn btn-warning" onclick="reset_password($(this))">Reset password</button>
         <button type="button" class="btn btn-warning" onclick="manage_roles($(this))">Manage roles</button>
-
-        <div class="text-right">
-          <button type="button" class="btn btn-success"><i class="material-icons">save</i></button>
-          <button type="button" class="btn btn-danger" onclick="$(this).closest('.collapse').collapse('hide')"><i class="material-icons">close</i></button>
-        </div>
-
+        <button type="button" class="btn btn-success"><i class="material-icons">save</i></button>
+        <button type="button" class="btn btn-danger" onclick="$(this).closest('.collapse').collapse('hide')"><i class="material-icons">close</i></button>
       </div>
       <!-- username -->
       <div class="center-item-row">

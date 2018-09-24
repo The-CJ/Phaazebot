@@ -9,16 +9,17 @@
 .user-type {
   overflow: hidden;
 }
-.user-id {}
-
+.user-controll button {
+  height: 3em;
+}
 .user-info {
   margin: 6px;
   margin-top: 0;
   border-bottom: 2px solid black;
   border-left: 2px solid black;
   border-right: 2px solid black;
-  border-bottom-left-radius: 0 5px;;
-  border-bottom-right-radius: 0 5px;;
+  border-bottom-left-radius: 5px;;
+  border-bottom-right-radius: 5px;;
 }
 .user-info .btn {
   padding: 5px;
