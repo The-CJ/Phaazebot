@@ -32,8 +32,18 @@ function filter_user() {
 //
 
 function detail_user(b) {
-  $("#result_space .collapse").collapse("hide");
+
   b = $(b);
+  let iso = b.attr("is-open");
+  if (iso == "1") {
+    b.siblings().collapse('hide');
+    b.attr("is-open", "0");
+    return;
+  }
+
+  $("#result_space .collapse").collapse("hide");
+  $("#result_space [is-open]").attr("is-open", "0");
+
   let user_id = b.attr("user-id");
   let r = {"userid":user_id, "detail":1};
   $.get("/api/admin/manage-user/get", r)
@@ -44,6 +54,7 @@ function detail_user(b) {
   .done(function (data) {
     let d = b.closest("[user]").find(".user-info");
     insert_data(d, data.data[0]);
+    b.attr("is-open", "1");
     b.siblings().collapse('show');
   })
 

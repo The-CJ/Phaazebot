@@ -60,7 +60,9 @@
   </div>
   <!-- result -->
   <div class="row">
-    <div class="col" id="result_space"></div>
+    <div class="col" id="result_space">
+      <!-- gets filled with [tpl]>[user] copys -->
+    </div>
   </div>
 
 <script src="/js/administration.js" charset="utf-8"></script>
@@ -69,21 +71,25 @@
 <div hidden tpl>
 
   <div user>
-    <!-- infos -->
-    <div class="user-entry center-item-row btn indigo darken-4" onclick="detail_user(this)" user-id="x">
+    <!-- infos btn -->
+    <div class="user-entry center-item-row btn indigo darken-4" onclick="detail_user(this)" user-id="x" is-open="0">
       <span class="user-id col-1"></span>
       <span class="user-name col"></span>
       <span class="user-type col-4"></span>
     </div>
-    <!-- details -->
+    <!-- details collapse -->
     <div class="collapse user-info">
       <!-- buttons -->
-      <div class="text-right">
-        <button type="button" class="btn btn-success"><i class="material-icons">save</i></button>
-        <button type="button" class="btn btn-danger" onclick="$(this).closest('.collapse').collapse('hide')"><i class="material-icons">close</i></button>
+      <div class="center-item-row">
+        <button type="button" class="btn btn-warning" onclick="reset_password($(this))">Reset password</button>
+        <button type="button" class="btn btn-warning" onclick="manage_roles($(this))">Manage roles</button>
+
+        <div class="text-right">
+          <button type="button" class="btn btn-success"><i class="material-icons">save</i></button>
+          <button type="button" class="btn btn-danger" onclick="$(this).closest('.collapse').collapse('hide')"><i class="material-icons">close</i></button>
+        </div>
+
       </div>
-      <button type="button" class="btn btn-block btn-warning" onclick="reset_password($(this))" style="margin:0;">Reset password</button>
-      <button type="button" class="btn btn-block btn-warning" onclick="manage_roles($(this))" style="margin:2px 0 0 0;">Manage roles</button>
       <!-- username -->
       <div class="center-item-row">
         <span class="col-2">ID:</span>
