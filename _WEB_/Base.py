@@ -45,6 +45,7 @@ class root(object):
 																							#
 		from _API_.Admin import eval_command as admin_eval_command							#/admin/eval_command
 		from _API_._Admin_.manage_user import main as admin_manage_user						#/admin/manage-user
+		from _API_._Admin_.manage_type import main as admin_manage_type						#/admin/manage-type
 																							#
 
 	# / ...
@@ -68,6 +69,7 @@ class root(object):
 																							#
 		from _WEB_.processing.admin.admin import main as admin_main							#/admin
 		from _WEB_.processing.admin.manage_user import main as admin_manage_user			#/admin/manage-user
+		from _WEB_.processing.admin.manage_type import main as admin_manage_type			#/admin/manage-type
 
 
 def webserver(BASE):
@@ -85,6 +87,7 @@ def webserver(BASE):
 	server.router.add_route('GET', '/account/create', root.web.account_create)
 	server.router.add_route('GET', '/admin', root.web.admin_main)
 	server.router.add_route('GET', '/admin/manage-user', root.web.admin_manage_user)
+	server.router.add_route('GET', '/admin/manage-type', root.web.admin_manage_type)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
@@ -92,7 +95,8 @@ def webserver(BASE):
 	server.router.add_route('*',   '/api/account/logout', root.api.account_logout)
 	server.router.add_route('*',   '/api/account/create', root.api.account_create)
 	server.router.add_route('*',   '/api/admin/eval_command', root.api.admin_eval_command)
-	server.router.add_route('*',   '/api/admin/manage-user/{method:.*}', root.api.admin_manage_user)
+	server.router.add_route('*',   '/api/admin/manage-user{x:/?}{method:.*}', root.api.admin_manage_user)
+	server.router.add_route('*',   '/api/admin/manage-type{x:/?}{method:.*}', root.api.admin_manage_type)
 	server.router.add_route('GET', '/api/{path:.*}', root.api.unknown)
 
 	# /js /img /css

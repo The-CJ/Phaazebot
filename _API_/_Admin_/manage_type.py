@@ -1,6 +1,6 @@
 import asyncio, json
 
-# /api/admin/manage-user
+# /api/admin/manage-type
 async def main(self, request):
     method = request.match_info.get('method', 'get')
 
