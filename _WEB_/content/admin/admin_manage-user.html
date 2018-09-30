@@ -1,0 +1,123 @@
+<link rel="stylesheet" href="/css/site-specific/admin/manage-user.css">
+
+<div class="container white-text">
+
+  <hr>
+  <h2 class="text-center">User manager</h2>
+  <hr>
+
+  <!-- filter btn -->
+  <div class="row">
+    <div class="col">
+      <button type="button" class="btn indigo darken-2" onclick="$('#user_filter').collapse('toggle')">Filter</button>
+      <button type="button" class="btn btn-success" onclick="new_user()">New User</button>
+    </div>
+    <div class="col text-right">
+      <button type="button" class="btn indigo darken-1">←</button>
+      <span id="from_user">0</span>
+      <span>-</span>
+      <span id="to_user">50</span>
+      <button type="button" class="btn indigo darken-3">→</button>
+    </div>
+  </div>
+  <!-- filter -->
+  <div class="row">
+    <form class="col collapse" action="javascript:filter_user()" method="post" id="user_filter">
+
+      <div class="center-item-row">
+        <span>Name contains:&nbsp;</span>
+        <input type="text" name="username" class="white-text" placeholder="'str' in name">
+      </div>
+
+      <div class="center-item-row">
+        <span>Has role/type:&nbsp;</span>
+        <input type="text" name="type" class="white-text" placeholder="role in types">
+      </div>
+
+      <div class="center-item-row">
+        <span>User-ID:&nbsp;</span>
+        <input type="text" name="userid" class="white-text" placeholder="user['id'] == x">
+      </div>
+
+      <div class="center-item-row">
+        <span>Verified:&nbsp;</span>
+        <label class="bs-switch" style="margin:0; margin-left:2em;">
+          <input type="checkbox" name="verified">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <hr>
+      <button type="submit" class="btn btn-block indigo">Search</button>
+
+    </form>
+  </div>
+
+  <!-- result_info -->
+  <div class="center-item-row text-center" style="padding: 0.81em 2.14em;margin: 0 0.375rem;border-bottom: 2px solid black">
+    <span class="col-1">User-ID</span>
+    <span class="col">User-Name</span>
+    <span class="col-4">User-Roles</span>
+  </div>
+  <!-- result -->
+  <div class="row">
+    <div class="col" id="result_space">
+      <!-- gets filled with [tpl]>[user] copys -->
+    </div>
+  </div>
+
+<script src="/js/administration.js" charset="utf-8"></script>
+<script src="/js/site-specific/admin/manage-user.js" charset="utf-8"></script>
+
+<div hidden tpl>
+
+  <div user>
+    <!-- infos btn -->
+    <div class="user-entry center-item-row btn indigo darken-4" onclick="detail_user(this)" user-id="x" is-open="0">
+      <span class="user-id col-1"></span>
+      <span class="user-name col"></span>
+      <span class="user-type col-4"></span>
+    </div>
+    <!-- details collapse -->
+    <div class="collapse user-info">
+      <!-- buttons -->
+      <div class="center-item-row text-right user-controll">
+        <span class="col"></span>
+        <button type="button" class="btn btn-warning" onclick="reset_password($(this))">Reset password</button>
+        <button type="button" class="btn btn-warning" onclick="manage_roles($(this))">Manage roles</button>
+        <button type="button" class="btn btn-success"><i class="material-icons">save</i></button>
+        <button type="button" class="btn btn-danger" onclick="$(this).closest('.collapse').collapse('hide')"><i class="material-icons">close</i></button>
+      </div>
+      <!-- username -->
+      <div class="center-item-row">
+        <span class="col-2">ID:</span>
+        <input class="col white-text" type="number" name="id" readonly>
+      </div>
+      <!-- username -->
+      <div class="center-item-row">
+        <span class="col-2">Username:</span>
+        <input class="col white-text" type="text" name="username">
+      </div>
+      <!-- email -->
+      <div class="center-item-row">
+        <span class="col-2">E-Mail:</span>
+        <input class="col white-text" type="email" name="email">
+      </div>
+      <!-- last-login -->
+      <div class="center-item-row">
+        <span class="col-2">Last-login:</span>
+        <input class="col white-text" type="text" name="last_login" readonly>
+      </div>
+      <!-- verified -->
+      <div class="center-item-row">
+        <span class="col-2">Verified:</span>
+        <label class="bs-switch">
+          <input type="checkbox" name="verified">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+</div>

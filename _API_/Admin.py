@@ -2,9 +2,6 @@
 
 import json, asyncio
 
-from _API_._Admin import Files as files
-from _API_._Admin import Shutdown as shutdown
-
 def toggle_moduls(BASE, info={}, from_web=False, **kwargs):
 	"""toggle main Moduls status"""
 	session = info.get("cookies",{}).get("phaaze_session", None)
@@ -35,25 +32,19 @@ def toggle_moduls(BASE, info={}, from_web=False, **kwargs):
 			header = [('Content-Type', 'application/json')]
 		return r
 
-def eval_command(BASE, info={}, from_web=False, **kwargs):
-	if not from_web: return
+async def eval_command(self, request):
+	user_info = await self.root.get_user_info(request)
 
-	#start auth
-	session = info.get("cookies",{}).get("phaaze_session", None)
-	admin = BASE.api.utils.get_phaaze_user(BASE, session=session)
-	if admin == None: admin = {}
+	if user_info == None:
+		return await self.login(request, msg="Login required")
 
-	#end auth
-
-	if admin.get('type', "").lower() != 'superadmin':
-		class r (object):
-			content = json.dumps(dict(status='error', msg='unauthorised')).encode("UTF-8")
-			response = 400
-			header = [('Content-Type', 'application/json')]
-		return r
+	types = user_info.get("type", [])
+	if not "superadmin" in [t.lower() for t in types]:
+		return await self.action_not_allowed(request, msg="Superadmin rights reqired")
 
 	#get command from content
-	command = json.loads(info.get('content', {})).get('command', 'Missing_Conent')
+	_POST = await request.post()
+	command = _POST.get('command', 'Missing_Conent')
 
 	try:
 		res = eval(command)
@@ -62,8 +53,9 @@ def eval_command(BASE, info={}, from_web=False, **kwargs):
 
 	res = str(res)
 
-	class r (object):
-		content = json.dumps(dict(status='success', result=res)).encode("UTF-8")
-		response = 200
-		header = [('Content-Type', 'application/json')]
-	return r
+	return self.root.response(
+		body=json.dumps(dict(result=res, status="200")),
+		status=200,
+		content_type='application/json'
+	)
+

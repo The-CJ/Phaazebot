@@ -1,7 +1,7 @@
 #BASE.modules._Web_.Base.root.account.main
 
 # /login
-async def login(self, request):
+async def login(self, request, msg=""):
 	user_info = await self.root.get_user_info(request)
 	# already is logged in
 	if user_info != None:
@@ -13,6 +13,7 @@ async def login(self, request):
 	current_navbar = self.root.html_header(self.root.BASE, user_info=user_info)
 
 	main = open('_WEB_/content/account/account_login.html', 'r').read()
+	main = self.root.format_html( main, msg=msg)
 
 	site = self.root.html_root
 	site = self.root.format_html( site, title="Phaaze | Account - Login", header=current_navbar, main=main )

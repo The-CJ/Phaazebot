@@ -12,6 +12,23 @@ pre {
 	color: white;
 }
 
+input[type=text],input[type=email],input[type=number],input[type=password] {
+	background: transparent;
+	outline: none;
+	margin: 0.25em;
+	width: 100%;
+	border: none;
+	border-bottom: 1px solid #000;
+	height: 2.2em;
+	padding: 0 1em;
+}
+input[type=text]:focus,input[type=email]:focus,input[type=number]:focus,input[type=password]:focus {
+	outline: 2px solid #85c4ff;
+}
+input[readonly] {
+	outline: none!important;
+}
+
 /*class styles*/
 .center-item-row {
 	display: flex;
@@ -27,6 +44,9 @@ pre {
 	white-space: nowrap;
 }
 
+.btn {
+	text-transform: none;
+}
 
 .centered {
 	position: absolute;

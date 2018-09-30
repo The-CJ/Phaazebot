@@ -13,7 +13,7 @@ async def main(self, request, msg=""):
 
 	self.root.BASE.modules.Console.DEBUG(request.path)
 
-	page_nf = self.root.format_html(page_na,
+	page_na = self.root.format_html(page_na,
 		path=req_str,
 		msg=msg
 	)
@@ -21,11 +21,11 @@ async def main(self, request, msg=""):
 	site = self.root.format_html(site,
 		title="Phaaze | Not allowed",
 		header=current_navbar,
-		main=page_nf
+		main=page_na
 	)
 
 	return self.root.response(
 		body=site,
-		status=404,
+		status=403,
 		content_type='text/html'
 	)

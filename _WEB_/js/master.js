@@ -62,12 +62,38 @@ function extract_data(query_obj) {
   for (field of query_obj.find('[name]')) {
     field = $(field);
     let name = field.attr('name');
-    let value = field.val();
 
-    d[name] = value;
+    if (field.attr("type") == "checkbox") {
+      if (field.is(":checked")) {
+        d[name] = 1;
+      }
+      else {
+        d[name] = 0;
+      }
+    }
+    else {
+      let value = field.val();
+      d[name] = value;
+    }
+
   }
   return d;
 }
+
+function insert_data(query_obj, data) {
+  if (query_obj == null) {
+    throw "insert_data() got 'null' query_obj"
+  }
+  if (data == null) {
+    throw "insert_data() got 'null' data for format"
+  }
+
+  for (var key in data) {
+    query_obj.find("[name="+key+"]").val(data[key]);
+  }
+}
+
+//
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -145,4 +171,5 @@ function _show_message(content, color, text_color, symbol, link, time) {
 
 $('document').ready(function () {
   Waves.attach('.btn', ['waves-effect', 'waves-light']);
+  Waves.attach('.nav-link', ['waves-effect', 'waves-light']);
 });

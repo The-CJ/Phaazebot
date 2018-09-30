@@ -1,6 +1,6 @@
 #BASE-modules._Web_.Base
 
-import re
+import re, sys
 import ssl
 from aiohttp import web
 
@@ -37,10 +37,15 @@ class root(object):
 
 		from _API_.Base import nothing as nothing											#/api
 		from _API_.Base import unknown as unknown											#/api/?
+		from _API_.Base import action_not_allowed as action_not_allowed						#<400><401><402>
 																							#
 		from _API_.Account import login as account_login									#/api/account/login
 		from _API_.Account import logout as account_logout									#/api/account/logout
 		from _API_.Account import create as account_create									#/api/account/create
+																							#
+		from _API_.Admin import eval_command as admin_eval_command							#/admin/eval_command
+		from _API_._Admin_.manage_user import main as admin_manage_user						#/admin/manage-user
+		from _API_._Admin_.manage_type import main as admin_manage_type						#/admin/manage-type
 																							#
 
 	# / ...
@@ -61,23 +66,11 @@ class root(object):
 		from _WEB_.processing.account.main import login as login							#/login
 		from _WEB_.processing.account.main import account as account						#/account
 		from _WEB_.processing.account.create import create as account_create				#/account/create
+																							#
+		from _WEB_.processing.admin.admin import main as admin_main							#/admin
+		from _WEB_.processing.admin.manage_user import main as admin_manage_user			#/admin/manage-user
+		from _WEB_.processing.admin.manage_type import main as admin_manage_type			#/admin/manage-type
 
-
-	# class discord(object):																#
-	# 	import _WEB_.processing.discord.main as main										#/discord
-	# 	import _WEB_.processing.discord.dashboard as dashboard								#/discord/dashboard
-	# 	import _WEB_.processing.discord.invite as invite									#/discord/invite
-	# 	import _WEB_.processing.discord.custom as custom									#/discord/custom
-	# 																						#
-	# class fileserver(object):																#
-	# 	import _WEB_.processing.fileserver.main as main										#/fileserver
-	# 																						#
-	# class wiki(object):																	#
-	# 	import _WEB_.processing.wiki.main as main											#/wiki
-	# 																						#
-	# class admin(object):																	#
-	# 	import _WEB_.processing.admin.admin as admin										#/admin
-	# 																						#
 
 def webserver(BASE):
 	server = web.Application()
@@ -92,12 +85,18 @@ def webserver(BASE):
 	server.router.add_route('GET', '/login', root.web.login)
 	server.router.add_route('GET', '/account', root.web.account)
 	server.router.add_route('GET', '/account/create', root.web.account_create)
+	server.router.add_route('GET', '/admin', root.web.admin_main)
+	server.router.add_route('GET', '/admin/manage-user', root.web.admin_manage_user)
+	server.router.add_route('GET', '/admin/manage-type', root.web.admin_manage_type)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
 	server.router.add_route('*',   '/api/account/login', root.api.account_login)
 	server.router.add_route('*',   '/api/account/logout', root.api.account_logout)
 	server.router.add_route('*',   '/api/account/create', root.api.account_create)
+	server.router.add_route('*',   '/api/admin/eval_command', root.api.admin_eval_command)
+	server.router.add_route('*',   '/api/admin/manage-user{x:/?}{method:.*}', root.api.admin_manage_user)
+	server.router.add_route('*',   '/api/admin/manage-type{x:/?}{method:.*}', root.api.admin_manage_type)
 	server.router.add_route('GET', '/api/{path:.*}', root.api.unknown)
 
 	# /js /img /css
@@ -110,7 +109,18 @@ def webserver(BASE):
 
 	###################################
 
-	SSL = ssl.SSLContext()
-	SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
-	web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
-	#web.run_app(server, handle_signals=False, port=900, print=False)
+	option_re = re.compile(r'^--(.+?)=(.*)$')
+	all_args = dict()
+	for arg in sys.argv[1:]:
+		d = option_re.match(arg)
+		if d != None:
+			all_args[d.group(1)] = d.group(2)
+
+	if all_args.get("http", "test") == "live":
+		SSL = ssl.SSLContext()
+		SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
+		BASE.modules.Console.INFO("Started web server (p433/live)")
+		web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
+	else:
+		BASE.modules.Console.INFO("Started web server (p900/test)")
+		web.run_app(server, handle_signals=False, port=900, print=False)

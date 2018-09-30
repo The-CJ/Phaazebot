@@ -1,87 +1,36 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Phaaze - Administration</title>
-		<meta charset="UTF-8">
-		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.css">
-		<link rel="stylesheet" href="/css/basic.css">
-		<link rel="stylesheet" href="/css/animations.css">
-		<link rel="stylesheet" href="/css/expandable.css">
-		<link rel="stylesheet" href="/css/switches.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/css/mdb.css">
-	</head>
+<div class="container white-text">
 
+  <hr>
+  <h2 class="text-center">Administration Interface</h2>
+  <hr>
 
-	<body class="stylish-color">
-		<!-- Navbar -->
-		|>>>BASE.modules._Web_.Utils.format_html_functions( BASE, BASE.modules._Web_.Utils.get_navbar(active='admin'), infos=infos )<<<|
+  <button type="button" class="btn btn-block red darken-3" onclick="$('#rootconsole').collapse('toggle')">Override console</button>
+  <div id="rootconsole" class="collapse" style="padding:1em 0;">
 
-		<div class="container white-text">
-			<div class="row" style="margin-top:1em;">
-				<div class="col">
-					<h2>System Override</h2>
-				</div>
-			</div>
-			<div class="row">
-				<span style="margin:auto 0;">root@phaazeos:&nbsp;</span>
-				<div class="col" style="padding-left:0;">
-					<input id="eval_command" type="text" class="input-alternate white" value="" placeholder="Execute eval() Command" style="margin-top:0.7em;">
-				</div>
-				<div class="col-1">
-					<button type="button" class="btn btn-primary" style="padding:1em;" onclick="javascript:evalCommand()">Submit</button>
-				</div>
-			</div>
-			<div class="row">
-				<pre class="col" id="result_data">> command output</pre>
-			</div>
+    <form class="" action="javascript:evalCommand()" method="post">
+      <pre id="result_data"></pre>
+      <div class="center-item-row">
+        <span>root@phaazeos >&nbsp;</span>
+        <input type="text" placeholder="eval()" class="white-text" id="eval_command">
+        <button type="button" class="btn ml-auto grey" style="margin:0;padding:0.5em;" onclick="evalCommand()">→</button>
+      </div>
+    </form>
 
-			<div class="row text-center">
-				<div class="col">
-					<a href="/admin/view-files">
-						<button type="button" class="btn" style="padding:2em;margin:2em;text-transform: none;background:#444444;">View / Edit<br>Files</button>
-					</a>
-				</div>
-				<div class="col">
-					<button type="button" class="btn" style="padding:2em;margin:2em;text-transform: none;background:#444444;"onclick="evalCommand('BASE.run_async(BASE.modules.Utils.reload_base(BASE))')">Reload System</button>
-				</div>
-				<div class="col">
-					<a href="#" onclick="window.location.port=2000">
-						<button type="button" class="btn" style="padding:2em;margin:2em;text-transform: none;background:#444444;">PhaazeDB Manager</button>
-					</a>
-				</div>
+  </div>
 
-			</div>
+  <hr>
+  <div class="">
+    <a href="/admin/manage-user">
+      <button type="button" class="btn btn-block indigo darken-2">User manager</button>
+    </a>
+    <a href="/admin/manage-type">
+      <button type="button" class="btn btn-block indigo darken-3">Role/Type manager</button>
+    </a>
+    <a href="/admin/manage-system">
+      <button type="button" class="btn btn-block indigo darken-2">System status</button>
+    </a>
+  </div>
 
-		</div>
+</div>
 
-		<div class="container">
-			<div class="row" style="margin-top:1em;">
-				<div class="col">
-					<h1 class="white-text"><!-- msg --></h1>
-					<h2 class="white-text">Main Modules</h2>
-				</div>
-			</div>
-
-			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/web.html', 'r').read())<<<|
-			<hr>
-			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/api.html', 'r').read())<<<|
-			<hr>
-			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/discord.html', 'r').read())<<<|
-			<hr>
-			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/twitch.html', 'r').read())<<<|
-			<hr>
-			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/twitch_alerts.html', 'r').read())<<<|
-			<hr>
-			|>>>BASE.modules._Web_.Utils.format_html_functions(BASE, open('_WEB_/content/admin/parts/osu.html', 'r').read())<<<|
-
-		</div>
-
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
-		<script src="/js/basic.js"></script>
-		<script src="/js/administration.js"></script>
-	</body>
-</html>
+<script src="/js/administration.js" charset="utf-8"></script>
