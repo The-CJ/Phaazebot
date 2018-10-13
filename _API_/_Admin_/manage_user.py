@@ -2,15 +2,6 @@ import asyncio, json
 
 # /api/admin/manage-user
 async def main(self, request):
-	user_info = await self.root.get_user_info(request)
-
-	if user_info == None:
-		return await self.action_not_allowed(request, msg="Login required")
-
-	types = user_info.get("type", [])
-	if not "superadmin" in [t.lower() for t in types]:
-		return await self.action_not_allowed(request, msg="Superadmin rights reqired")
-
 	method = request.match_info.get('method', 'get')
 
 	if method == "get":
@@ -30,18 +21,27 @@ async def main(self, request):
 		)
 
 async def get(self, request):
+	user_info = await self.root.get_user_info(request)
+
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
+
+	types = user_info.get("type", [])
+	if not "admin" in [t.lower() for t in types]:
+		return await self.action_not_allowed(request, msg="Admin rights reqired")
+
 	_GET = request.query
 	wl = []
 
 	w_username = _GET.get('username', '')
 	if w_username != "":
 		w_username = w_username.replace("'", "\\'")
-		wl.append( f"'{w_username}' in data['username']")
+		wl.append( f"'{w_username}'.lower() in data['username'].lower()")
 
 	w_type = _GET.get('type', '')
 	if w_type != "":
 		w_type = w_type.replace("'", "\\'")
-		wl.append(f"'{w_type}' in data['type']")
+		wl.append(f"'{w_type}'.lower() in data['type'].lower()")
 
 	w_id = _GET.get('userid', '')
 	if w_id != "":
