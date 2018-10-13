@@ -19,7 +19,8 @@ function evalCommand(command) {
       $('#result_data').text(data.result);
     })
     .fail(function (data) {
-      _show_message(data.responseJSON.msg, 'red');
+      let m = data.responseJSON ? data.responseJSON.msg : "unknown"
+      _show_message(m, 'red');
     })
 
 }

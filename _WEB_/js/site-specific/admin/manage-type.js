@@ -6,7 +6,7 @@ function load_role(r) {
 
   $.get("/api/admin/manage-type/get", r)
   .fail(function (data) {
-    m = data.responseJSON.msg ? data.responseJSON.msg != "" : "unknown"
+    m = data.responseJSON ? data.responseJSON.msg : "unknown"
     _show_message(m, "red");
   })
   .done(function (data) {
@@ -34,7 +34,7 @@ function submit_new_role() {
   data = extract_data( $("#new_role") );
   $.post("/api/admin/manage-type/create", data)
   .fail(function (data) {
-    m = data.responseJSON.msg ? data.responseJSON.msg != "" : "unknown"
+    m = data.responseJSON ? data.responseJSON.msg : "unknown"
     _show_message(m, "red");
   })
   .done(function (data) {
