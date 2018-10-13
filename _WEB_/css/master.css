@@ -28,7 +28,10 @@ input[type=text]:focus,input[type=email]:focus,input[type=number]:focus,input[ty
 input[readonly] {
 	outline: none!important;
 }
-
+textarea {
+	background: transparent;
+	padding: 0.75em;
+}
 /*class styles*/
 .center-item-row {
 	display: flex;
