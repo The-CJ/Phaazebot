@@ -33,7 +33,7 @@ async def is_admin(BASE, message):
 #channelfiles
 async def get_channel_settings(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="twitch/channel_settings", where="data['channel_id'] == '{}'".format(id))
+	file = BASE.PhaazeDB.select(of="twitch/channel_settings", where=f"data['channel_id'] == '{str(id)}'")
 
 	if len(file['data']) == 0:
 		#didn't find entry -> make new

@@ -1,0 +1,60 @@
+<link rel="stylesheet" href="/css/site-specific/admin/manage-type.css">
+
+<div class="container white-text">
+
+  <hr>
+  <h2 class="text-center">Role manager</h2>
+  <hr>
+
+  <div class="row">
+    <div class="col">
+      <button type="button" class="btn btn-success" onclick="new_role_modal()">New role</button>
+    </div>
+  </div>
+
+  <!-- result -->
+  <div class="row">
+    <div class="col" id="result_space">
+      <!-- gets filled with [tpl]>[role] copys -->
+    </div>
+  </div>
+
+  <div class="modal fade" id="new_role">
+    <form class="" onsubmit="event.preventDefault();submit_new_role()" method="post">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header green">
+            <h3>Create New Role</h3>
+          </div>
+          <div class="modal-body">
+            <input class="input_field" type="text" name="name" placeholder="New role name" required>
+            <textarea class="input_field" name="description" placeholder="Description"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" onclick="$('#new_role').modal('hide')">Cancle</button>
+            <button type="submit" class="btn btn-success">Submit</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+  </div>
+
+<script src="/js/administration.js" charset="utf-8"></script>
+<script src="/js/site-specific/admin/manage-type.js" charset="utf-8"></script>
+
+
+<div hidden tpl>
+
+  <div role>
+    <!-- infos btn -->
+    <div class="user-entry center-item-row btn indigo darken-4" onclick="$(this).closest('[role]').find('.collapse').collapse('toggle')" role-id="x">
+      <span class="role-name col"></span>
+    </div>
+    <div class="collapse" style="padding:0 1em;">
+      <textarea class="role-description" readonly></textarea>
+    </div>
+
+  </div>
+
+</div>

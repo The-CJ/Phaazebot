@@ -1,6 +1,6 @@
 ##BASE.modules._Twitch_.Custom
 
-import asyncio
+import asyncio, json
 
 custom_command_limit = 150
 custom_command_cooldown = []
@@ -37,7 +37,7 @@ async def get(BASE, message, **kwargs):
 			BASE.PhaazeDB.update(
 				of="twitch/commands/commands_"+message.channel_id,
 				content=dict(uses = cmd["uses"]),
-				where="data['trigger'] == '{}'".format( str(cmd['trigger']) )
+				where=f"data['trigger'] == {json.dumps(str(cmd['trigger']))}"
 			)
 			cool = cmd.get("cooldown", 10)
 			if await BASE.modules._Twitch_.Utils.is_Mod(BASE, message):
@@ -70,7 +70,7 @@ async def add(BASE, message, kwargs):
 		content = " ".join(f for f in m[2:])
 		BASE.PhaazeDB.update(
 			of=f"twitch/commands/commands_{message.channel_id}",
-			where=f"data['trigger'] == '{trigger}'",
+			where=f"data['trigger'] == {json.dumps(trigger)}",
 			content=dict(content=str(content))
 		)
 		return await BASE.twitch.send_message(message.channel_name, f'Command "{trigger}" has been updated!')
@@ -112,7 +112,7 @@ async def rem(BASE, message, kwargs):
 
 	BASE.PhaazeDB.delete(
 		of=f"twitch/commands/commands_{message.channel_id}",
-		where=f"data['trigger'] == '{found}'"
+		where=f"data['trigger'] == {json.dumps(found)}"
 		)
 
 	return await BASE.twitch.send_message(message.channel_name, f'The command: "{m[1].lower()}" has been removed!')

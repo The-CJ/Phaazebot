@@ -31,7 +31,7 @@ class BASE(object):
 		self.modules = self.MODULES()
 
 		#the key to memory, to important for BASE.modules
-		self.PhaazeDB = PhaazeDB.Connection(port=3000, token=self.access.PhaazeDB_token, exception_on_error=False)
+		self.PhaazeDB = PhaazeDB.Connection(port=3000, token=self.access.PhaazeDB_token, exception_on_error=True)
 
 	class is_ready(object):
 		#all start False, turn True when connected

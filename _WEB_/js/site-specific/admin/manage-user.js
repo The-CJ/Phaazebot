@@ -6,7 +6,7 @@ function load_user(r) {
 
   $.get("/api/admin/manage-user/get", r)
   .fail(function (data) {
-    m = data.responseJSON.msg ? data.responseJSON.msg != "" : "unknown"
+    m = data.responseJSON ? data.responseJSON.msg : "unknown"
     _show_message(m, "red");
   })
   .done(function (data) {
@@ -48,7 +48,7 @@ function detail_user(b) {
   let r = {"userid":user_id, "detail":1};
   $.get("/api/admin/manage-user/get", r)
   .fail(function (data) {
-    m = data.responseJSON.msg ? data.responseJSON.msg != "" : "unknown"
+    m = data.responseJSON ? data.responseJSON.msg : "unknown"
     _show_message(m, "red");
   })
   .done(function (data) {

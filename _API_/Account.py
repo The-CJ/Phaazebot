@@ -95,9 +95,7 @@ async def create(self, request, **kwargs):
 			status=400
 		)
 	#check if username is taken
-	S_username = username.replace("'", "\\'")
-	S_email = email.replace("'", "\\'")
-	check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['username'] == '{S_username}' or data['email'] == '{S_email}'")
+	check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['username'] == {json.dumps(username)} or data['email'] == {json.dumps(email)}")
 	if check_user.get('hits', 1) != 0:
 		return self.root.response(
 			text=json.dumps( dict(error="account_taken", status=400, message="username or email is taken") ),

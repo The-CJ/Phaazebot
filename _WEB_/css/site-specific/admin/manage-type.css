@@ -1,0 +1,17 @@
+#result_space {
+  padding:0.5em;
+}
+
+#new_role .input_field {
+  width: 100%;
+  margin: 5px 0;
+  resize: none;
+}
+
+.role-description {
+  border: 1px solid black;
+  border-top: none;
+  width: 100%;
+  color: white;
+  background: rgba(180, 180, 180, 0.25)
+}

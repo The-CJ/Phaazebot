@@ -1,6 +1,6 @@
 #BASE.modules._Discord_.PROCESS.Mod
 
-import asyncio, discord, tabulate
+import asyncio, discord, tabulate, json
 
 class Settings(object):
 	async def Base(BASE, message, kwargs):
@@ -359,34 +359,38 @@ class Prune(object):
 
 		m = message.content.split(" ")
 
-		#nothing
-		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel,
-												f":warning: Syntax Error!\n"\
-												f"Usage: `{BASE.vars.PT*2}prune [Option]`\n\n"\
-												"`[Option]` - has to be a:\n\n"\
-												"`number` - from 1 to 500\n"\
-												"`@mention` - of the user you wanna prune\n"\
-												"`exact name` - of the member **not nickname**\n"\
-												"`ID` - of the member")
+		try:
+			#nothing
+			if len(m) == 1:
+				return await BASE.discord.send_message(message.channel,
+													f":warning: Syntax Error!\n"\
+													f"Usage: `{BASE.vars.PT*2}prune [Option]`\n\n"\
+													"`[Option]` - has to be a:\n\n"\
+													"`number` - from 1 to 500\n"\
+													"`@mention` - of the user you wanna prune\n"\
+													"`exact name` - of the member **not nickname**\n"\
+													"`ID` - of the member")
 
-		#by mention
-		if len(message.mentions) >= 1:
-			if len(message.mentions) > 1:
-				return await BASE.discord.send_message(message.channel, ":warning: You can not mention multiple members, only 1")
+			#by mention
+			if len(message.mentions) >= 1:
+				if len(message.mentions) > 1:
+					return await BASE.discord.send_message(message.channel, ":warning: You can not mention multiple members, only 1")
 
-			return await Prune.by_mention(BASE, message, kwargs, message.mentions[0])
+				return await Prune.by_mention(BASE, message, kwargs, message.mentions[0])
 
-		#by id or ammount
-		elif m[1].isdigit() and len(m) == 2:
-			if len(m[1]) > 8:
-				return await Prune.by_id(BASE, message, kwargs, m[1])
+			#by id or ammount
+			elif m[1].isdigit() and len(m) == 2:
+				if len(m[1]) > 8:
+					return await Prune.by_id(BASE, message, kwargs, m[1])
+				else:
+					return await Prune.by_number(BASE, message, kwargs, m[1])
+
+			#by name
 			else:
-				return await Prune.by_number(BASE, message, kwargs, m[1])
+				return await Prune.by_name(BASE, message, kwargs, " ".join(f for f in m[1:]))
 
-		#by name
-		else:
-			return await Prune.by_name(BASE, message, kwargs, " ".join(f for f in m[1:]))
+		except:
+			return await BASE.discord.send_message(message.channel, ":no_entry_sign: Prune could not be executed, that most likley because you tryed delete messages older than 14 Days, Discord don't allow that.")
 
 	async def by_mention(BASE, message, kwargs, user):
 
@@ -721,7 +725,7 @@ class Giverole(object):
 
 		if check_role != None:
 			ac = dict(role_id=role.id)
-			BASE.PhaazeDB.update(of=f'discord/addrole/addrole_{message.server.id}', content=ac, where=f"data['trigger'] == '{m[2].lower()}'")
+			BASE.PhaazeDB.update(of=f'discord/addrole/addrole_{message.server.id}', content=ac, where=f"data['trigger'] == {json.dumps(m[2].lower())}")
 			return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull updated Giverole `{m[2]}` with role: `{role.name}`")
 
 		else:
@@ -745,7 +749,7 @@ class Giverole(object):
 		if r == None:
 			return await BASE.discord.send_message(message.channel, f":warning: There is not Giverole trigger: `{trigger}`")
 
-		BASE.PhaazeDB.delete(of=f'discord/addrole/addrole_{message.server.id}', where=f"data['trigger'] == '{r}'")
+		BASE.PhaazeDB.delete(of=f'discord/addrole/addrole_{message.server.id}', where=f"data['trigger'] == {json.dumps(r)}")
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull deleted Give/Take -role `{r}`")
 
 class Utils(object):

@@ -1,6 +1,6 @@
 # BASE.modules._Twitch_.PROCESS.Owner
 
-import asyncio
+import asyncio, json
 
 class Everything(object):
 
@@ -11,7 +11,7 @@ class Everything(object):
 			m = message.content.split(' ')
 			if len(m) > 1:
 				n = " ".join(f for f in m[1:])
-				check = BASE.PhaazeDB.select(of='setting/twitch_channel', where=f"str(data['twitch_name']) == str('{n.lower()}')")
+				check = BASE.PhaazeDB.select(of='setting/twitch_channel', where=f"str(data['twitch_name']) == str({json.dumps(n.lower())})")
 				data = check.get('data', [])
 
 				if data != []:

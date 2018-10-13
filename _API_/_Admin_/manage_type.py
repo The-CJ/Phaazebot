@@ -2,51 +2,82 @@ import asyncio, json
 
 # /api/admin/manage-type
 async def main(self, request):
-    method = request.match_info.get('method', 'get')
 
-    if method == "get":
-        return await get(self, request)
+	method = request.match_info.get('method', 'get')
 
-    elif method == "update":
-        return await update(self, request)
+	if method == "get":
+		return await get(self, request)
 
-    elif method == "delete":
-        return await delete(self, request)
+	elif method == "create":
+		return await create(self, request)
 
-    else:
-    	return self.root.response(
-    		body=json.dumps(dict(status=400, msg="missing method")),
-    		status=400,
-    		content_type='application/json'
-    	)
+	elif method == "update":
+		return await update(self, request)
+
+	elif method == "delete":
+		return await delete(self, request)
+
+	else:
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg="missing method")),
+			status=400,
+			content_type='application/json'
+		)
 
 async def get(self, request):
-	_GET = request.query
-	wl = []
 
-	w_username = _GET.get('username', '')
-	if w_username != "":
-		w_username = w_username.replace("'", "\\'")
-		wl.append( f"'{w_username}' in data['username']")
+	user_info = await self.root.get_user_info(request)
 
-	w_type = _GET.get('type', '')
-	if w_type != "":
-		w_type = w_type.replace("'", "\\'")
-		wl.append(f"'{w_type}' in data['type']")
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
 
-	w_id = _GET.get('userid', '')
-	if w_id != "":
-		w_id = w_id.replace("'", "\\'")
-		wl.append(f"str(data['id']) == str('{w_id}')")
+	types = user_info.get("type", [])
+	if not "admin" in [t.lower() for t in types]:
+		return await self.action_not_allowed(request, msg="Admin rights reqired")
 
-	if bool(_GET.get("detail", 0)) == True:
-		fields = None # None == all
-	else:
-		fields = ["username", "id", "type"]
-
-	all_user = self.root.BASE.PhaazeDB.select(of="user", where=" and ".join(wl), fields=fields)
+	all_user = self.root.BASE.PhaazeDB.select(of="role")
 	return self.root.response(
 		body=json.dumps(all_user),
+		status=200,
+		content_type='application/json'
+	)
+
+async def create(self, request):
+
+	user_info = await self.root.get_user_info(request)
+
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
+
+	types = user_info.get("type", [])
+	if not "admin" in [t.lower() for t in types]:
+		return await self.action_not_allowed(request, msg="Admin rights reqired")
+
+	_POST = await request.post()
+	name = _POST.get('name', None)
+
+	if name == None:
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg="missing 'name' field")),
+			status=400,
+			content_type='application/json'
+		)
+
+	s_where = f"data['name'].lower() == {json.dumps(name)}.lower()"
+	checkrole = self.root.BASE.PhaazeDB.select(of="role", where=s_where)
+	if name.lower() in [role.get("name", "[N/A]").lower() for role in checkrole["data"]]:
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg=f"role '{name}' already exists")),
+			status=400,
+			content_type='application/json'
+		)
+
+	# everything ok, create it
+	new_role = dict( name=name, description=_POST.get("description", "").strip("\n") )
+	self.root.BASE.PhaazeDB.insert(into="role", content=new_role)
+
+	return self.root.response(
+		body=json.dumps(dict(status=200, msg=f"role '{name}' successfull created")),
 		status=200,
 		content_type='application/json'
 	)

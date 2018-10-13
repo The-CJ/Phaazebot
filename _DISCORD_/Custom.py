@@ -1,6 +1,6 @@
 ##BASE.modules._Discord_.Custom
 
-import asyncio
+import asyncio, json
 
 MAX_CUSTOM_COMMANDS = 150
 CUSTOM_COMMAND_COOLDOWN = []
@@ -34,7 +34,7 @@ async def get(BASE, message, server_setting, server_commands):
 			BASE.PhaazeDB.update(
 				of="discord/commands/commands_"+message.server.id,
 				content=dict(uses = cmd["uses"]),
-				where="data['trigger'] == '{}'".format( str(cmd['trigger']) )
+				where=f"data['trigger'] == {json.dumps(str(cmd['trigger']))}"
 			)
 			break
 
@@ -76,7 +76,7 @@ async def add(BASE, message, kwargs):
 		content = " ".join(f for f in m[2:])
 		BASE.PhaazeDB.update(
 			of=f"discord/commands/commands_{message.server.id}",
-			where=f"data['trigger'] == '{trigger}'",
+			where=f"data['trigger'] == {json.dumps(trigger)}",
 			content=dict(content=str(content))
 		)
 		await BASE.modules._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "update", trigger=trigger)
@@ -131,7 +131,7 @@ async def rem(BASE, message, kwargs):
 
 	BASE.PhaazeDB.delete(
 		of=f"discord/commands/commands_{message.server.id}",
-		where=f"data['trigger'] == '{found}'"
+		where=f"data['trigger'] == {json.dumps(found)}"
 		)
 
 	await BASE.modules._Discord_.Discord_Events.Phaaze.custom(BASE, message.server.id, "remove", trigger=m[1])
