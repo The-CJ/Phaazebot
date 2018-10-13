@@ -2,23 +2,33 @@ import asyncio, json
 
 # /api/admin/manage-type
 async def main(self, request):
-    method = request.match_info.get('method', 'get')
 
-    if method == "get":
-        return await get(self, request)
+	user_info = await self.root.get_user_info(request)
 
-    elif method == "update":
-        return await update(self, request)
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
 
-    elif method == "delete":
-        return await delete(self, request)
+	types = user_info.get("type", [])
+	if not "superadmin" in [t.lower() for t in types]:
+		return await self.action_not_allowed(request, msg="Superadmin rights reqired")
 
-    else:
-    	return self.root.response(
-    		body=json.dumps(dict(status=400, msg="missing method")),
-    		status=400,
-    		content_type='application/json'
-    	)
+	method = request.match_info.get('method', 'get')
+
+	if method == "get":
+		return await get(self, request)
+
+	elif method == "update":
+		return await update(self, request)
+
+	elif method == "delete":
+		return await delete(self, request)
+
+	else:
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg="missing method")),
+			status=400,
+			content_type='application/json'
+		)
 
 async def get(self, request):
 	_GET = request.query
