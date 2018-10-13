@@ -10,7 +10,6 @@
   <div class="row">
     <div class="col">
       <button type="button" class="btn indigo darken-2" onclick="$('#user_filter').collapse('toggle')">Filter</button>
-      <button type="button" class="btn btn-success" onclick="new_user()">New User</button>
     </div>
     <div class="col text-right">
       <button type="button" class="btn indigo darken-1">←</button>
@@ -65,6 +64,27 @@
       <!-- gets filled with [tpl]>[user] copys -->
     </div>
   </div>
+
+</div>
+
+<div class="modal fade" id="role_manager">
+  <form class="" onsubmit="event.preventDefault();submit_managed_roles()" method="post">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header indigo white-text">
+          <h3 style="width: 100%; text-align: center;">Manage user roles</h3>
+        </div>
+        <div class="modal-body">
+          <!-- todo -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" onclick="$('#role_manager').modal('hide')">Cancle</button>
+          <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
 
 <script src="/js/administration.js" charset="utf-8"></script>
 <script src="/js/site-specific/admin/manage-user.js" charset="utf-8"></script>

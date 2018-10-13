@@ -31,6 +31,23 @@ function filter_user() {
 
 //
 
+function manage_roles(b) {
+  alert("TODO: manage_roles()");
+  $("#role_manager").modal("show");
+}
+
+function submit_managed_roles() {
+  alert("TODO: submit_managed_roles()");
+}
+
+function reset_password() {
+  alert("TODO: reset_password()");
+}
+
+function impersonate() {
+  alert("TODO: impersonate");
+}
+
 function detail_user(b) {
 
   b = $(b);
