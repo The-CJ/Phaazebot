@@ -32,11 +32,12 @@ def toggle_moduls(BASE, info={}, from_web=False, **kwargs):
 			header = [('Content-Type', 'application/json')]
 		return r
 
+# /api/admin/eval_command
 async def eval_command(self, request):
 	user_info = await self.root.get_user_info(request)
 
 	if user_info == None:
-		return await self.login(request, msg="Login required")
+		return await self.action_not_allowed(request, msg="Login required")
 
 	types = user_info.get("type", [])
 	if not "superadmin" in [t.lower() for t in types]:
