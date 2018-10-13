@@ -35,18 +35,15 @@ async def get(self, request):
 
 	w_username = _GET.get('username', '')
 	if w_username != "":
-		w_username = w_username.replace("'", "\\'")
-		wl.append( f"'{w_username}'.lower() in data['username'].lower()")
+		wl.append( f"{json.dumps(w_username)}.lower() in data['username'].lower()")
 
 	w_type = _GET.get('type', '')
 	if w_type != "":
-		w_type = w_type.replace("'", "\\'")
-		wl.append(f"'{w_type}'.lower() in data['type'].lower()")
+		wl.append(f"{json.dumps(w_type)}.lower() in data['type'].lower()")
 
 	w_id = _GET.get('userid', '')
 	if w_id != "":
-		w_id = w_id.replace("'", "\\'")
-		wl.append(f"str(data['id']) == str('{w_id}')")
+		wl.append(f"str(data['id']) == {json.dumps(w_id)}")
 
 	if bool(_GET.get("detail", 0)) == True:
 		fields = None # None == all

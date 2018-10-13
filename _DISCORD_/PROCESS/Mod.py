@@ -1,6 +1,6 @@
 #BASE.modules._Discord_.PROCESS.Mod
 
-import asyncio, discord, tabulate
+import asyncio, discord, tabulate, json
 
 class Settings(object):
 	async def Base(BASE, message, kwargs):
@@ -725,7 +725,7 @@ class Giverole(object):
 
 		if check_role != None:
 			ac = dict(role_id=role.id)
-			BASE.PhaazeDB.update(of=f'discord/addrole/addrole_{message.server.id}', content=ac, where=f"data['trigger'] == '{m[2].lower()}'")
+			BASE.PhaazeDB.update(of=f'discord/addrole/addrole_{message.server.id}', content=ac, where=f"data['trigger'] == {json.dumps(m[2].lower())}")
 			return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull updated Giverole `{m[2]}` with role: `{role.name}`")
 
 		else:
@@ -749,7 +749,7 @@ class Giverole(object):
 		if r == None:
 			return await BASE.discord.send_message(message.channel, f":warning: There is not Giverole trigger: `{trigger}`")
 
-		BASE.PhaazeDB.delete(of=f'discord/addrole/addrole_{message.server.id}', where=f"data['trigger'] == '{r}'")
+		BASE.PhaazeDB.delete(of=f'discord/addrole/addrole_{message.server.id}', where=f"data['trigger'] == {json.dumps(r)}")
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull deleted Give/Take -role `{r}`")
 
 class Utils(object):

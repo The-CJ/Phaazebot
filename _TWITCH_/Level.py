@@ -1,6 +1,6 @@
 #BASE.modules._Twitch_.Level
 
-import asyncio
+import asyncio, json
 
 cooldown_stats = []
 
@@ -73,8 +73,7 @@ async def stats(BASE, message, kwargs):
 
 	user = BASE.PhaazeDB.select(
 		of = f"twitch/level/level_{message.channel_id}",
-		where = f"data['user_name'] == '{str(search_user).lower()}'",
-	#	limit = 1
+		where = f"data['user_name'] == {json.dumps( str(search_user).lower() )}",
 	)
 
 	if user.get('data', []) == []:

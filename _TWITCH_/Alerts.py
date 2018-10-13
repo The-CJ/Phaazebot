@@ -1,6 +1,6 @@
 #BASE.modules._Twitch_.Alerts
 
-import asyncio, discord
+import asyncio, discord, json
 
 #BASE.modules._Twitch_.Alerts.Main
 class Init_Main(object):
@@ -62,10 +62,7 @@ class Init_Main(object):
 			game_update = ""
 			for game in sorted_games_id_list:
 				id_list = sorted_games_id_list[game]
-				game = game.replace("'", "\\'")
-				game_update += f"data['game'] = '{game}' if data['twitch_id'] in {str(id_list)} else data.get('game', None);"
-						
-			#self.BASE.modules.Console.DEBUG(str(game_update))
+				game_update += f"data['game'] = {json.dumps(game)} if data['twitch_id'] in {str(id_list)} else data.get('game', None);"
 
 			self.BASE.PhaazeDB.update(of="twitch/alerts", content=game_update)
 			await asyncio.sleep(20)
