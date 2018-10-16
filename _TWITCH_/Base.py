@@ -47,7 +47,6 @@ async def on_message(BASE, message):
 async def lurkers(BASE):
 	default_level_message = ">> {display_name} is now level {level}"
 	sleep_time = 60 * 5
-	already_announced_problem = False
 
 	while BASE.twitch.lurker_loop_running:
 		to_check = []
@@ -56,18 +55,12 @@ async def lurkers(BASE):
 			if channel.id != None:
 				to_check.append( channel.id )
 
-		try:
-			check = BASE.modules._Twitch_.Utils.get_streams(BASE, to_check)
-		except:
-			check = dict(status=500)
-		if check.get("status", 400) >= 400:
-			if not already_announced_problem:
-				BASE.modules.Console.ERROR("No Twitch API awnser")
-				already_announced_problem = True
-			await asyncio.sleep(10)
-			continue
+		check = BASE.modules._Twitch_.Utils.get_streams(BASE, to_check)
 
-		already_announced_problem = False
+		# we got nothing... mean API is down
+		if check == None:
+			await asyncio.sleep(30)
+			continue
 
 		live_streams = check.get('streams', [])
 		BASE.twitch.live = [str(stream.get('channel', {}).get('_id', None)) for stream in live_streams]
