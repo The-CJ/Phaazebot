@@ -128,9 +128,10 @@ class Init_Main(object):
 	def event_live(self, twitch_info=dict(), db_info=dict()):
 		if twitch_info.get('stream_type', None) != 'live': return
 
-		_id_ = twitch_info.get('_id', "")
+		_id_ = twitch_info.get('channel', {}).get('_id', None)
 		try:
-			self.BASE.PhaazeDB.update(of=f"twitch/level/level_{_id_}", content=dict(active=0))
+			if _id_ != None:
+				self.BASE.PhaazeDB.update(of=f"twitch/level/level_{_id_}", content=dict(active=0))
 		except:
 			self.BASE.modules.Console.ERROR(f'Resetting Live Event Twitch Lurker Stats for Channel {_id_} failed')
 

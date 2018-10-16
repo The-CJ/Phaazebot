@@ -57,11 +57,10 @@ async def lurkers(BASE):
 				to_check.append( channel.id )
 
 		try:
-			url = "https://api.twitch.tv/kraken/streams?channel=" + ",".join(f for f in to_check)
-			check = BASE.modules._Twitch_.Utils.API_call(BASE, url)
+			check = BASE.modules._Twitch_.Utils.get_streams(BASE, to_check)
 		except:
 			check = dict(status=500)
-		if check.get("status", 400) > 400:
+		if check.get("status", 400) >= 400:
 			if not already_announced_problem:
 				BASE.modules.Console.ERROR("No Twitch API awnser")
 				already_announced_problem = True
@@ -72,6 +71,9 @@ async def lurkers(BASE):
 
 		live_streams = check.get('streams', [])
 		BASE.twitch.live = [str(stream.get('channel', {}).get('_id', None)) for stream in live_streams]
+
+		bot_list_db = BASE.PhaazeDB.select(of="setting/known_twitch_bots")
+		bot_list = [bot.get[""] for bot in bot_list_db['data'] if bot.get("name", None) != None]
 
 		for channel_id in BASE.twitch.channels:
 			channel = BASE.twitch.channels[channel_id]
@@ -96,15 +98,17 @@ async def lurkers(BASE):
 				#check if user has level up
 				for user in channel_levels:
 
-					#NOTE: remove bot user from gain exp and time
+					#is a bot, skip it
+					if user.get("user_name", None) in bot_list: continue
 
+					#is currently viewing, add to gain time
 					if user.get("user_name", None) in viewers:
 						update_user_watch.append(user.get('user_id', None))
 					else:
 						continue
 
 					#no level alert for owner
-					if channel.name == user.get("user_name", None):
+					if channel.name.lower() == user.get("user_name", "").lower():
 						continue
 
 					now_level = Calc.get_lvl(user.get('amount_time', 0)+1)
