@@ -133,7 +133,7 @@ class Init_Main(object):
 			if _id_ != None:
 				self.BASE.PhaazeDB.update(of=f"twitch/level/level_{_id_}", content=dict(active=0))
 		except:
-			self.BASE.modules.Console.ERROR(f'Resetting Live Event Twitch Lurker Stats for Channel {_id_} failed')
+			self.BASE.modules.Console.ERROR(f'Resetting Live Event Twitch Lurker Stats for Channel: '+twitch_info.get("channel",{}).get("name","x"))
 
 		game = twitch_info.get('game', '[N/A]')
 		logo = twitch_info.get('channel', {}).get('logo', '[N/A]')

@@ -1,6 +1,6 @@
 #BASE.modules._Discord_.Discord_Events
 
-import discord, asyncio, datetime
+import discord, asyncio, datetime, Regex
 
 class Message(object):
 	prune_lock = []
@@ -70,6 +70,11 @@ class Message(object):
 
 class Member(object):
 	async def join(BASE, member):
+		# is a link in the member name?
+		link_in_name = False
+		if Regex.contains_link.search(member.name) != None:
+			link_in_name = True
+
 		try:
 			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
@@ -77,9 +82,10 @@ class Member(object):
 			if "Member.join".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
 				chan = discord.Object(id=server_settings.get("track_channel"))
 				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
+				link_warning = ":warning: Blocked announcements\n-> Link in name" if link_in_name else ""
 
 				emb = discord.Embed(
-					description=f"{member.name}\n{member.mention}\n{member.id}",
+					description=f"{member.name}\n{member.mention}\n{member.id}\n{link_warning}",
 					timestamp=datetime.datetime.now(),
 					color=0x00ff00
 				)
@@ -90,7 +96,7 @@ class Member(object):
 			pass
 
 		#welcome message
-		if server_settings.get("welcome_msg", None) != None:
+		if server_settings.get("welcome_msg", None) != None and not link_in_name:
 			try:
 				chan = discord.Object(id=server_settings.get("welcome_chan"))
 
@@ -123,7 +129,7 @@ class Member(object):
 				pass
 
 		#welcome private message
-		if server_settings.get("welcome_msg_priv", None) != None:
+		if server_settings.get("welcome_msg_priv", None) != None and not link_in_name:
 			try:
 				entry = server_settings.get("welcome_msg_priv", None)
 
@@ -143,7 +149,7 @@ class Member(object):
 				pass
 
 		#autorole
-		if server_settings.get("autorole", None) != None:
+		if server_settings.get("autorole", None) != None and not link_in_name:
 			try:
 				role = discord.utils.get(member.server.roles, id=server_settings.get("autorole", None))
 				if role == None:
@@ -173,6 +179,11 @@ class Member(object):
 					return await BASE.discord.send_message(member.server.owner, ":warning: Phaaze doesn't have permissions to give `{1}` the Autorole in `{0}`. Autorole has been reset.".format(member.server.name, member.name))
 
 	async def remove(BASE, member):
+		# is a link in the member name?
+		link_in_name = False
+		if Regex.contains_link.search(member.name) != None:
+			link_in_name = True
+
 		try:
 			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
@@ -180,9 +191,10 @@ class Member(object):
 			if "Member.remove".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
 				chan = discord.Object(id=server_settings.get("track_channel"))
 				avatar = member.avatar_url if "" != member.avatar_url != None else member.default_avatar_url
+				link_warning = ":warning: Blocked announcements\n-> Link in name" if link_in_name else ""
 
 				emb = discord.Embed(
-					description=f"{member.name}\n{member.mention}\n{member.id}",
+					description=f"{member.name}\n{member.mention}\n{member.id}\n{link_warning}",
 					timestamp=datetime.datetime.now(),
 					color=0xff0000
 				)
@@ -193,7 +205,7 @@ class Member(object):
 			pass
 
 		#welcome message
-		if server_settings.get("leave_msg", None) != None:
+		if server_settings.get("leave_msg", None) != None and not link_in_name:
 			try:
 				chan = discord.Object(id=server_settings.get("leave_chan"))
 
