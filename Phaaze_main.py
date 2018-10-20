@@ -3,7 +3,6 @@ import asyncio
 import threading
 import traceback
 import PhaazeDBC as PhaazeDB
-from importlib import reload
 
 class BASE(object):
 	""" contains everything, does everything, is everything -> can be found anywhere """
@@ -313,7 +312,7 @@ class __TWITCH_IRC__(threading.Thread):
 
 			from _TWITCH_.Main_twitch import Init_twitch
 			BASE.twitch = Init_twitch(BASE)
-			BASE.twitch.run(token=BASE.access.Twitch_IRC_Token, nickname="phaazebot")
+			BASE.twitch.run(token=BASE.access.Osu_IRC_Token, nickname="phaazebot")
 
 		except Exception as e:
 			BASE.modules.Console.ERROR("Twitch IRC crashed: "+ str(e))
@@ -334,8 +333,9 @@ class __OSU_IRC__(threading.Thread):
 		try:
 			asyncio.set_event_loop(self.loop)
 
-			O_IRC_ = BASE.modules._Osu_.IRC._IRC_(BASE)
-			self.loop.run_until_complete(O_IRC_.run())
+			from _OSU_.Main_osu import Init_osu
+			BASE.osu = Init_osu(BASE)
+			BASE.osu.run(token=BASE.access.Twitch_IRC_Token, nickname="phaazebot")
 
 		except Exception as e:
 			BASE.modules.Console.ERROR("Osu! IRC crashed: "+str(e))
