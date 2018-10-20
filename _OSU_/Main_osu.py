@@ -11,10 +11,6 @@ class Init_osu(osu.Client):
 
 	async def on_ready(self):
 		self.BASE.modules.Console.INFO("Osu IRC Connected")
-
-		#join own channel
-		await self.join_channel(self.nickname)
-
 		self.BASE.is_ready.osu = True
 
 	#message management

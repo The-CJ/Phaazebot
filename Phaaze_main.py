@@ -16,6 +16,7 @@ class BASE(object):
 		#all featured "superclasses" aka, stuff that makes calls to somewhere
 		self.discord = None
 		self.twitch = None
+		self.osu = None
 
 		#get the active/load class, aka, what sould get started
 		self.active = self.ACTIVE(self.config['active'])
@@ -131,8 +132,6 @@ class BASE(object):
 
 		class _Osu_(object):
 			import _OSU_.Base as Base
-
-			import _OSU_.Osu_IRC as IRC
 
 			import _OSU_.Utils as Utils
 
@@ -335,7 +334,7 @@ class __OSU_IRC__(threading.Thread):
 
 			from _OSU_.Main_osu import Init_osu
 			BASE.osu = Init_osu(BASE)
-			BASE.osu.run(token=BASE.access.Twitch_IRC_Token, nickname="phaazebot")
+			BASE.osu.run(token=BASE.access.Osu_IRC_Token, nickname="Phaazebot")
 
 		except Exception as e:
 			BASE.modules.Console.ERROR("Osu! IRC crashed: "+str(e))
@@ -427,7 +426,7 @@ async def thread_saving(_d_: __DISCORD__,
 			if BASE.active.osu_irc:
 				if not _o_.isAlive():
 					try:
-						BASE.modules.Console.INFO("INFO", "Booting Osu IRC...")
+						BASE.modules.Console.INFO("Booting Osu IRC...")
 						_o_ = __OSU_IRC__()
 						_o_.start()
 						BASE.Osu_loop = _o_.loop
@@ -460,6 +459,7 @@ async def thread_saving(_d_: __DISCORD__,
 			await asyncio.sleep(5)
 		except:
 			print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME")
+			await asyncio.sleep(3)
 
 	print("Thread saver stoped")
 
@@ -482,7 +482,7 @@ class secure_of_all_treads(threading.Thread):
 									_worker_
 									))
 			except:
-				print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME")
+				print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME SAVER")
 
 secure = secure_of_all_treads()
 secure.start()
