@@ -1,10 +1,10 @@
 #BASE.modules._Discord_.CMD.Dev
 
-import asyncio, discord, traceback, math, sys, threading, random, json
+import asyncio, discord, traceback, math, sys, threading, random, json #for quick debug eval, not needed by pure code
 
 async def Base(BASE, message, **kwargs):
 	m = message.content.split(" ")
-	check = m[0][5:]
+	check = m[0][(len(BASE.vars.TRIGGER_DISCORD)*5):]
 
 	if check.startswith("debug"):
 		await BASE.modules._Discord_.PROCESS.Dev.debug(BASE, message, kwargs)

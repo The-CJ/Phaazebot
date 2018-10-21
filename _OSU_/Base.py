@@ -8,6 +8,6 @@ async def on_message(BASE, message):
 	# NOTE: in theory i never join a channel, just to be sure
 	if message.type == "channel": return
 
-	if message.content.startswith("!"):
+	if message.content.startswith(BASE.vars.TRIGGER_OSU):
 		await BASE.modules._Osu_.CMD.Normal.Base(BASE, message)
 

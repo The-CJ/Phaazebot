@@ -68,7 +68,7 @@ async def Base(BASE, message, kwargs):
 	m = message.content.lower().split(" ")
 
 	if len(m) == 1:
-		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}blacklist [Option]`\n\n"\
+		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD}blacklist [Option]`\n\n"\
 			"`punishment` - Set the way Phaaze handles blacklisted words or links\n"\
 			"`get` - Get all words / phrase on the blacklist\n"\
 			"`add` - Add a word / phrase to the blacklist\n"\
@@ -115,7 +115,7 @@ async def punishment(BASE, message, kwargs, perms):
 
 	if len(m) == 2:
 		blacklist_punishment = kwargs.get('server_setting', {}).get("blacklist_punishment", "delete")
-		return await BASE.discord.send_message(message.channel, f":grey_exclamation: Current punishment level: `{blacklist_punishment}`\nType: `{BASE.vars.PT}blacklist punishment (delete/kick/ban)` to change")
+		return await BASE.discord.send_message(message.channel, f":grey_exclamation: Current punishment level: `{blacklist_punishment}`\nType: `{BASE.vars.TRIGGER_DISCORD}blacklist punishment (delete/kick/ban)` to change")
 
 	if m[2] == "delete":
 		BASE.PhaazeDB.update(

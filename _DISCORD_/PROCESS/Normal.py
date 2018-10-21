@@ -49,7 +49,7 @@ class Everything(object):
 		m = message.content.split(" ")
 
 		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel, f':warning: You need to define a word. `{BASE.vars.PT}define [thing]`')
+			return await BASE.discord.send_message(message.channel, f':warning: You need to define a word. `{BASE.vars.TRIGGER_DISCORD}define [thing]`')
 
 		thing = " ".join(g for g in m[1:])
 
@@ -245,8 +245,8 @@ class Wiki(object):
 		m = message.content.split()
 
 		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel, f":warning: You need to define something you wanna search for. `{BASE.vars.PT}wiki(/Language) [thing]"\
-			f"`\n\n`(/Language)` - (Optional) change the return language e.g. `{BASE.vars.PT}wiki/de YouTube` return German results | Default: en\n`[thing]` - whatever you wanna look up.")
+			return await BASE.discord.send_message(message.channel, f":warning: You need to define something you wanna search for. `{BASE.vars.TRIGGER_DISCORD}wiki(/Language) [thing]"\
+			f"`\n\n`(/Language)` - (Optional) change the return language e.g. `{BASE.vars.TRIGGER_DISCORD}wiki/de YouTube` return German results | Default: en\n`[thing]` - whatever you wanna look up.")
 
 		language = Wiki.get_language(m[0])
 		thing = " ".join(w for w in m[1:])
@@ -359,7 +359,7 @@ class Osu(object):
 		if len(m) == 1:
 			return await BASE.discord.send_message(
 				message.channel,
-				f":warning: Missing a option!  Usage: `{BASE.vars.PT}osu [Option]`\n\n"\
+				f":warning: Missing a option!  Usage: `{BASE.vars.TRIGGER_DISCORD}osu [Option]`\n\n"\
 				f"Available options: `stats`, `map`, `calc`")
 
 		elif len(m) >= 2:
@@ -370,7 +370,7 @@ class Osu(object):
 			elif m[1].startswith("map"):
 				# TODO: Fix map stats for new osu design
 				if len(m) == 2:
-					return await BASE.discord.send_message(message.channel, ":warning: Missing Map Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+					return await BASE.discord.send_message(message.channel, ":warning: Missing Map Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.TRIGGER_DISCORD))
 
 				#find mode and id
 				try:
@@ -388,12 +388,12 @@ class Osu(object):
 
 					else: 0/0
 				except:
-					return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+					return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.TRIGGER_DISCORD))
 
 				#get set/map/creator
 				stuff = await BASE.modules.osu.get_all_maps(BASE, ID=search_id, mode=mode)
-				if stuff == None and mode == "u": return await BASE.discord.send_message(message.channel, ":warning: The user does not exist or dosn't created any beatmaps".format(BASE.vars.PT))
-				if stuff == None: return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+				if stuff == None and mode == "u": return await BASE.discord.send_message(message.channel, ":warning: The user does not exist or dosn't created any beatmaps".format(BASE.vars.TRIGGER_DISCORD))
+				if stuff == None: return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.TRIGGER_DISCORD))
 
 				#one
 				if mode == "b" or mode == "s" and len(stuff.all_maps) == 1: #one map
@@ -435,8 +435,8 @@ class Osu(object):
 					pp_99 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=99.0)
 					pp_98 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=98.0)
 
-					osu_aw.add_field(name="PPcalc:",value="{pp_100}pp for 100% | {pp_99}pp for 99% | {pp_98}pp for 98%...\n`{PT}osu calc [maplink] (options)`".format	(
-																																										PT = BASE.vars.PT,
+					osu_aw.add_field(name="PPcalc:",value="{pp_100}pp for 100% | {pp_99}pp for 99% | {pp_98}pp for 98%...\n`{TRIGGER_DISCORD}osu calc [maplink] (options)`".format	(
+																																										TRIGGER_DISCORD = BASE.vars.TRIGGER_DISCORD,
 																																										pp_100 = str(round(float(pp_100.pp), 2)),
 																																										pp_99 = str(round(float(pp_99.pp), 2)),
 																																										pp_98 = str(round(float(pp_98.pp), 2))
@@ -535,7 +535,7 @@ class Osu(object):
 		if len(m) == 2:
 			return await BASE.discord.send_message(
 				message.channel,
-				f":warning: Missing User!\nUsage: `{BASE.vars.PT}osu stats(mode) [User]`\n"\
+				f":warning: Missing User!\nUsage: `{BASE.vars.TRIGGER_DISCORD}osu stats(mode) [User]`\n"\
 				f'`(mode)` - Optional: Can be empty, `/osu`, `/ctb`, `/mania` or `/taiko`\n'\
 				f'`[User]` - osu link, name or id')
 
@@ -970,7 +970,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"You need to define at least one option!\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)
@@ -987,7 +987,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** - *\"{2}\"* needs at least one value!\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD, short_, long_))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)
@@ -1004,7 +1004,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** - *\"{2}\"* only takes a value from 0-5\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD, short_, long_))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)
@@ -1021,7 +1021,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** - *\"{2}\"* only uses one value!\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD, short_, long_))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)
@@ -1038,7 +1038,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** - *\"{2}\"* awaits a `{3}` value\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_, type_))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD, short_, long_, type_))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)
@@ -1072,7 +1072,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** is a unknown option.\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, value))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD, value))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)

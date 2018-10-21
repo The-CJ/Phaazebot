@@ -63,9 +63,13 @@ class BASE(object):
 	class VARS(object): #BASE.vars
 		def __init__(self, config):
 			self.Logo = open("VARS/logo.txt", "r").read()
-			self.PT = config.get('trigger', '>')
+
+			self.TRIGGER_DISCORD = config.get('trigger_discord', '>')
+			self.TRIGGER_OSU = config.get('trigger_osu', '!')
+			self.TRIGGER_TWITCH = config.get('trigger_twitch', '!')
+
 			self.developer_id = config.get('developer', []) #override id's for discord #TODO: remove this
-			self.doujin_help = open("VARS/doujin_help.txt","r").read().format("<",self.PT) #TODO: remove this
+			self.doujin_help = open("VARS/doujin_help.txt","r").read().format("<",self.TRIGGER_DISCORD) #TODO: remove this
 			self.twitch_logo = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504" #TODO: remove this
 
 	class ACCESS(object): #BASE.access

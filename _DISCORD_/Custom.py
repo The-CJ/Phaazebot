@@ -42,7 +42,7 @@ async def add(BASE, message, kwargs):
 	m = message.content.split(" ")
 
 	if len(m) <= 2:
-		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}addcom [Trigger] [Content]`\n\n"\
+		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD}addcom [Trigger] [Content]`\n\n"\
 			"`[Trigger]` - The thing that makes the command appear (Case insensitive)\n"\
 			"`[Content]` - Whatever you want to show as the command content\n\n"\
 			"You can use tokens in your `[Content]` that will be replaced by infos:\n"\
@@ -103,7 +103,7 @@ async def rem(BASE, message, kwargs):
 	m = message.content.split(" ")
 
 	if len(m) <= 1:
-		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}delcom [trigger]` or `{BASE.vars.PT}delcom all`"
+		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD}delcom [trigger]` or `{BASE.vars.TRIGGER_DISCORD}delcom all`"
 		return await BASE.discord.send_message(message.channel, r)
 
 	found = False

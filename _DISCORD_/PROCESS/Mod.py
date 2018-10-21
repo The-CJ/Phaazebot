@@ -225,7 +225,7 @@ class Settings(object):
 		return await BASE.discord.send_message(
 			message.channel,
 			f":white_check_mark: Level system is now {state} in {message.channel.mention}\n"\
-			f"(affects member XP gain and the use of level commands like: {BASE.vars.PT}level, {BASE.vars.PT}leaderboard, etc.)"
+			f"(affects member XP gain and the use of level commands like: {BASE.vars.TRIGGER_DISCORD}level, {BASE.vars.TRIGGER_DISCORD}leaderboard, etc.)"
 		)
 
 	async def nonmod(BASE, message, kwargs):
@@ -277,10 +277,10 @@ class Quote(object):
 		m = message.content.split(" ")
 
 		if len(m) == 1:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}quote [Option]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}quote [Option]`\n\n"\
 				f"`get` - Get a link to all quotes\n"\
 				f"`add` - Add a new quote\n"\
-				f"`rem` - Remove a quote based on there id number: `{BASE.vars.PT}quote rem 69`\n"\
+				f"`rem` - Remove a quote based on there id number: `{BASE.vars.TRIGGER_DISCORD}quote rem 69`\n"\
 				f"`clear` - Remove all quotes"
 			return await BASE.discord.send_message(message.channel, r)
 
@@ -364,7 +364,7 @@ class Prune(object):
 			if len(m) == 1:
 				return await BASE.discord.send_message(message.channel,
 													f":warning: Syntax Error!\n"\
-													f"Usage: `{BASE.vars.PT*2}prune [Option]`\n\n"\
+													f"Usage: `{BASE.vars.TRIGGER_DISCORD*2}prune [Option]`\n\n"\
 													"`[Option]` - has to be a:\n\n"\
 													"`number` - from 1 to 500\n"\
 													"`@mention` - of the user you wanna prune\n"\
@@ -489,7 +489,7 @@ class Level(object):
 		m = message.content.split(" ")
 
 		if len(m) == 1:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level [Option]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level [Option]`\n\n"\
 				f"`exp` - Edit a users exp and level\n"\
 				f"`medal` - add/rem/clear a users medals"
 			return await BASE.discord.send_message(message.channel, r)
@@ -505,7 +505,7 @@ class Level(object):
 		m = message.content.split(" ")
 
 		if len(m) <= 3:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level exp [New Exp] [Member]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level exp [New Exp] [Member]`\n\n"\
 				f"`Member` - a @ mention/id/name of the member you want to edit\n"\
 				f"`New Exp` - the new exp amount\n\n"\
 				f":information_source: Editing the exp in any way marks the user with a `[EDITED]` mark,\n"\
@@ -556,7 +556,7 @@ class Level(object):
 
 
 		if len(m) <= 3:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level medal [Method] [@Member] [Medalname]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level medal [Method] [@Member] [Medalname]`\n\n"\
 				f"`Method` - Add/Rem/Clear\n"\
 				f"`@Member` - a @ mention of the member you want to edit\n"\
 				f"`Medalname` - The actuall medall name"
@@ -654,7 +654,7 @@ class Giverole(object):
 		m = message.content.split(" ")
 
 		if len(m) <= 2:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}giverole [add/rem] [Trigger] [Role]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}giverole [add/rem] [Trigger] [Role]`\n\n"\
 				f"`add/rem` - add a new rule or remove it \n"\
 				f"`Trigger` - a key to identify what role sould be added/removed\n"\
 				f"`Role` - a role mention, role ID or full Role name"
@@ -667,7 +667,7 @@ class Giverole(object):
 			return await Giverole._rem_(BASE, message, kwargs)
 
 		else:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 2}giverole`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not available, try `{BASE.vars.TRIGGER_DISCORD * 2}giverole`")
 
 	async def _add_(BASE, message, kwargs):
 		m = message.content.split(" ")
@@ -825,7 +825,7 @@ class Utils(object):
 
 		tem.set_author(name="{0}".format(server.name))
 		if server.icon_url != "": tem.set_image(url=server.icon_url)
-		tem.set_footer(text="To get all roles by id use ``{0}{0}getroles`".format(BASE.vars.PT))
+		tem.set_footer(text="To get all roles by id use ``{0}{0}getroles`".format(BASE.vars.TRIGGER_DISCORD))
 
 		return await BASE.discord.send_message(message.channel, embed=tem)
 

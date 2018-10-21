@@ -19,7 +19,7 @@ async def Base(BASE, message, kwargs):
 
 	elif m[1].lower() == "custom":
 		if len(m) <= 2:
-			return await BASE.discord.send_message(message.channel, f":warning: You need to add a custom format to the alert:\n`{BASE.vars.PT*3}twitch custom [Custom_message]`")
+			return await BASE.discord.send_message(message.channel, f":warning: You need to add a custom format to the alert:\n`{BASE.vars.TRIGGER_DISCORD*3}twitch custom [Custom_message]`")
 
 		return await custom(BASE, message, kwargs, " ".join(m[2:]))
 

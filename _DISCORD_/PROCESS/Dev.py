@@ -3,10 +3,10 @@
 import asyncio, discord, json
 
 async def debug(BASE, message, kwargs):
-	m = message.content.split(" ", 2).pop()
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*5):].split(" ", 1)
 
 	try:
-		f = eval(m)
+		f = eval(m[1])
 		await BASE.discord.send_message(message.channel, f)
 	except Exception as Fail:
 		await BASE.discord.send_message(message.channel, "ERROR:\n\n```"+str(Fail)+"```")

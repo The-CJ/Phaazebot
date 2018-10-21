@@ -52,7 +52,7 @@ async def Base(BASE, message, server_setting, server_levels):
 	if message.author.id in LEVEL_COOLDOWN: return
 
 	#is a command
-	if message.content.startswith(BASE.vars.PT): return
+	if message.content.startswith(BASE.vars.TRIGGER_DISCORD): return
 
 	#are levels disabled?
 	if message.channel.id in server_setting.get("disable_chan_level", []): return
@@ -84,7 +84,7 @@ async def get(BASE, message, kwargs):
 
 	m = message.content.split(" ")
 
-	if message.content.lower().startswith(f"{BASE.vars.PT}level calc "):
+	if message.content.lower().startswith(f"{BASE.vars.TRIGGER_DISCORD}level calc "):
 		if m[2].isdigit():
 			level = int(m[2])
 			if level != 0:
@@ -110,7 +110,7 @@ async def get(BASE, message, kwargs):
 			user = discord.utils.get(message.server.members, name="".join(s for s in m[1:]))
 
 	if user == None:
-		return await BASE.discord.send_message(message.channel, f":warning: Could not find a valid user.Try: `{BASE.vars.PT}level [Option]`\n`[Option]` can be empty, @ mention, ID or the full member name.")
+		return await BASE.discord.send_message(message.channel, f":warning: Could not find a valid user.Try: `{BASE.vars.TRIGGER_DISCORD}level [Option]`\n`[Option]` can be empty, @ mention, ID or the full member name.")
 
 	if user.bot:
 		return await BASE.discord.send_message(message.channel, f":no_entry_sign: Bots don't have a level.")
