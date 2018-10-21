@@ -2,8 +2,6 @@
 
 import asyncio
 
-CMDs = []
-
 async def Base(BASE, message, **kwargs):
 	m = message.content.lower().split(" ")
 	check = m[0][1:]

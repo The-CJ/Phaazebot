@@ -18,5 +18,7 @@ class Init_osu(osu.Client):
 		if message.name.lower() == self.nickname.lower(): return
 		if not self.BASE.is_ready.osu: return
 
+		await self.BASE.modules._Osu_.Base.on_message(self.BASE, message)
+
 	async def on_raw_data(self, r):
 		pass

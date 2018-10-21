@@ -3,21 +3,11 @@
 import asyncio
 
 async def on_message(BASE, message):
-	if message.content.lower().startswith("!verify"):
-		await BASE.modules._Osu_.Utils.verify(BASE, message)
 
-	elif message.content.startswith("ACTION is listening to"):
-		await np_response(BASE, message)
+	# i don't think i should phaaze listen to channels, so for now i only handle privmsg
+	# NOTE: in theory i never join a channel, just to be sure
+	if message.type == "channel": return
 
-	elif message.content.lower().startswith("!disconnect"):
-		await BASE.modules._Twitch_.Utils.delete_verify(BASE, message.name, platform="osu")
-		await BASE.Osu_IRC.send_message(message.name, "Disconnected!")
+	if message.content.startswith("!"):
+		await BASE.modules._Osu_.CMD.Normal.Base(BASE, message)
 
-async def np_response(BASE, message):
-	x = message.content.split("[")[1]
-	link = x.split(" ")[0]
-	_id = link.split("/b/")[1]
-
-	r = await BASE.modules.osu_utils.get_pp(_id)
-	response = "This with: FC - 100% would give: {0}pp (+-2%)".format(str(round(r.pp,1)))
-	await BASE.Osu_IRC.send_message(message.name, response)

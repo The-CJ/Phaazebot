@@ -135,6 +135,9 @@ class BASE(object):
 
 			import _OSU_.Utils as Utils
 
+			class CMD():
+				import _OSU_.CMD.Normal as Normal
+
 		class _Twitch_(object):
 			import _TWITCH_.Alerts as Alerts
 
