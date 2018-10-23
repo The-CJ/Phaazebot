@@ -16,8 +16,8 @@ class Forbidden(object):
 		await BASE.discord.delete_message(m)
 
 async def Base(BASE, message, **kwargs):
-	m = message.content.lower().split(" ")
-	check = m[0][(len(BASE.vars.TRIGGER_DISCORD)*2):]
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
+	check = m[0]
 
 	if not await BASE.modules._Discord_.Utils.is_Mod(BASE, message):
 		if any([True if check.startswith(cmd) else False for cmd in CMDs]):
