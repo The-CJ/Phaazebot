@@ -4,7 +4,7 @@ import asyncio, discord
 
 async def Base(BASE, message, kwargs):
 	AV = ["track", "get", "reset", "custom"]
-	m = message.content.split(" ")
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 
 	if len(m) == 1:
 		return await BASE.discord.send_message(
