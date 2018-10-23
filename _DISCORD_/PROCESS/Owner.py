@@ -571,19 +571,19 @@ class Logs(object):
 		]
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split()
 
 		enabled_l = ", ".join( f"`{o}`" for o in kwargs.get('server_setting',{}).get('track_options', []) )
 
-		if len(m) == 1 and not m[0].lower() == f"{BASE.vars.TRIGGER_DISCORD * 3}logs-chan":
-			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}logs(-chan) [Option] [State]`\n\n"\
+		if len(m) == 1 and m[0].lower() != "logs-chan":
+			return await BASE.discord.send_message(message.channel, f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}logs(-chan) [Option] [State]`\n\n"\
 																	f"`[Option]` - The Log Option you want to toggle/ or the channel mention when used `{BASE.vars.TRIGGER_DISCORD * 3}logs-chan`\n"\
 																	f"`[State]` - The new State, `on` or `off`\n\n"\
 																	f":link: PhaazeDiscord-Logs configuration is a lot easier on to the PhaazeWebsite\n"\
 																	f"{' '*7}Goto https://phaaze.net/discord/dashboard/{message.server.id}#logs and log-in to configure everything\n\n"\
 																	f"Currently enabled options: {enabled_l}")
 
-		if m[0].lower() == f"{BASE.vars.TRIGGER_DISCORD * 3}logs-chan":
+		if m[0].lower() == "logs-chan":
 			if len(m) == 1:
 				chan = message.channel
 
@@ -600,9 +600,10 @@ class Logs(object):
 			)
 
 			return await BASE.discord.send_message(message.channel, f":white_check_mark: Log channel has been set to {chan.mention} - all events will appear there.")
+
 		else:
 			if not m[1].lower() in Logs.AV:
-				return await BASE.discord.send_message(message.channel, f":warning: {m[1]} is not a valid option - available:\n\n"+'\n'.join(o for o in Logs.AV))
+				return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not a valid option - available:\n\n"+'\n'.join(o for o in Logs.AV))
 
 			if len(m) < 3 or not m[2].lower() in ['enable','on', 'off','disable']:
 				return await BASE.discord.send_message(message.channel, ":warning: Please use a valid state (`on` | `off`)")
