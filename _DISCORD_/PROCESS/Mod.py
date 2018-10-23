@@ -5,7 +5,7 @@ import asyncio, discord, tabulate, json
 class Settings(object):
 	async def Base(BASE, message, kwargs):
 		available = ["nsfw", "custom", "level", "quotes", "ai", "nonmod", "game"]
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 1:
 			return await BASE.discord.send_message(
@@ -40,7 +40,7 @@ class Settings(object):
 	# # #
 
 	async def nsfw(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -77,7 +77,7 @@ class Settings(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: NSFW Commands are now {state} in {message.channel.mention}")
 
 	async def ai(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -114,7 +114,7 @@ class Settings(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: AI Talks Commands are now {state} in {message.channel.mention}")
 
 	async def custom(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -151,7 +151,7 @@ class Settings(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: Custom commands are now {state} in {message.channel.mention}")
 
 	async def quotes(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -188,7 +188,7 @@ class Settings(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: Quote commands are now {state} in {message.channel.mention}")
 
 	async def level(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -229,7 +229,7 @@ class Settings(object):
 		)
 
 	async def nonmod(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -274,7 +274,7 @@ class Quote(object):
 	MAX_QUOTE_ENTRY = 100
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		if len(m) == 1:
 			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}quote [Option]`\n\n"\
@@ -296,7 +296,7 @@ class Quote(object):
 			return await BASE.discord.send_message(message.channel, f":warning: That's not an option.")
 
 	async def add(BASE, message, kwargs):
-		m = message.content.split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: You need to define a quote to add.")
@@ -319,7 +319,7 @@ class Quote(object):
 		return await BASE.discord.send_message(message.channel, content=":white_check_mark: Quote added", embed=em)
 
 	async def rem(BASE, message, kwargs):
-		m = message.content.split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: You need to define a quote ID to remove.")
