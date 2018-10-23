@@ -15,7 +15,7 @@ async def Base(BASE, message, kwargs):
 		if len(m) <= 2:
 			return await BASE.discord.send_message(message.channel, ":warning: You need to add a Twitch channel name to enable/disable alerts")
 
-		return await track(BASE, message, kwargs, m[2])
+		return await track(BASE, message, kwargs, " ".join(m[2:]))
 
 	elif m[1].lower() == "custom":
 		if len(m) <= 2:
@@ -92,6 +92,7 @@ async def reset(BASE, message, kwargs):
 
 	for match in res:
 		twitch_id = match.get('twitch_id', None)
+		if twitch_id == None: continue
 		search.append(twitch_id)
 		match['discord_channel'].remove(message.channel.id)
 
