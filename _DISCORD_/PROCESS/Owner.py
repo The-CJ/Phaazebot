@@ -459,7 +459,7 @@ class Leave(object):
 class Autorole(object):
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		if len(m) == 1:
 			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}autorole [Option]`\n\n"\
 																	"`get` - The current autorole\n"\
@@ -494,7 +494,7 @@ class Autorole(object):
 			return await BASE.discord.send_message(message.channel, f":exclamation: Current autorole is : `{role.name}`")
 
 	async def _set_(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
 		if not me.server_permissions.manage_roles:
