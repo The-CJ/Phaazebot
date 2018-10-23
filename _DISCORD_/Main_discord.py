@@ -9,7 +9,7 @@ class Init_discord(discord.Client):
 		try:
 			await self.BASE.discord.change_presence( game=discord.Game	(
 																		type=0,
-																		name=f"{self.BASE.vars.TRIGGER_DISCORD} | v{self.BASE.version}"
+																		name=f"{self.BASE.vars.TRIGGER_DISCORD}help | v{self.BASE.version}"
 																		),
 													status=discord.Status.online)
 			setattr(self.BASE.vars, "app", await self.BASE.discord.application_info() )

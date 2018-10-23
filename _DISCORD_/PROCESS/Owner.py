@@ -5,7 +5,7 @@ import asyncio, discord
 class Master(object):
 	async def Base(BASE, message, kwargs):
 		available = ['normal', 'mod', 'level', 'custom']
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 1:
 			return await BASE.discord.send_message(message.channel, ":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
@@ -27,7 +27,7 @@ class Master(object):
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
 
 	async def normal(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -50,7 +50,7 @@ class Master(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: All Normal Commands are now Serverwide {state}")
 
 	async def mod(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -73,7 +73,7 @@ class Master(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: All Mod Commands are now Serverwide {state}")
 
 	async def level(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -96,7 +96,7 @@ class Master(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: Levels are now Serverwide {state}")
 
 	async def custom(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -121,7 +121,7 @@ class Master(object):
 class Welcome(object):
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 
 		#nothing
 		if len(m) == 1:
@@ -164,10 +164,10 @@ class Welcome(object):
 			await Welcome.clearpriv(BASE, message, kwargs)
 
 		else:
-			return await BASE.discord.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.TRIGGER_DISCORD * 3}welcome`")
+			return await BASE.discord.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try just `{BASE.vars.TRIGGER_DISCORD * 3}welcome`")
 
 	async def set_welcome(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*3}welcome set [Stuff]`\n\n"\
 																	"`[Stuff]` - The Text that appears in your set channel if a new member join\n\n"\
@@ -203,7 +203,7 @@ class Welcome(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: New welcome message set! [In {chan}]\nExample with Phaaze:\n\n{entry}")
 
 	async def set_welcome_chan(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 
 		if len(m) == 2:
 			chan = message.channel.id
@@ -240,8 +240,8 @@ class Welcome(object):
 		else:
 			entry = "\n```"+entry+"```"
 
-		chan = kwargs['server_setting'].get('welcome_chan', "1337")
-		chan = f"<#{chan}>"
+		chan = kwargs['server_setting'].get('welcome_chan', None)
+		chan = f"<#{chan}>" if chan != None else message.channel.mention
 
 		return await BASE.discord.send_message(
 			message.channel,
@@ -286,7 +286,7 @@ class Welcome(object):
 			)
 
 	async def priv_welcome(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*3}welcome set-priv [Stuff]`\n\n"\
 																	"`[Stuff]` - The Text will send to a new member on join\n\n"\
@@ -332,7 +332,7 @@ class Welcome(object):
 class Leave(object):
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 
 		#nothing
 		if len(m) == 1:
@@ -364,7 +364,7 @@ class Leave(object):
 			return await BASE.discord.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.TRIGGER_DISCORD * 3}leave`")
 
 	async def set_leave(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*3}welcome set [Stuff]`\n\n"\
 																	"`[Stuff]` - The Text that appears in your set channel if a new member join\n\n"\

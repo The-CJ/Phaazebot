@@ -82,7 +82,7 @@ async def get(BASE, message, kwargs):
 	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message): return
 	if message.channel.id in kwargs.get('server_setting', {}).get('disable_chan_level', []) and not await BASE.modules._Discord_.Utils.is_Mod(BASE, message): return
 
-	m = message.content.split(" ")
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 
 	if message.content.lower().startswith(f"{BASE.vars.TRIGGER_DISCORD}level calc "):
 		if m[2].isdigit():

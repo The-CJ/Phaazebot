@@ -19,7 +19,7 @@ class Forbidden(object):
 
 async def Base(BASE, message, **kwargs):
 	m = message.content.lower().split(" ")
-	check = m[0][1:]
+	check = m[0][(len(BASE.vars.TRIGGER_DISCORD)):]
 
 	if kwargs.get('server_setting', {}).get('owner_disable_normal', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message):
 		if any([True if check.startswith(cmd) else False for cmd in CMDs]):

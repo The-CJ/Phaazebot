@@ -6,14 +6,14 @@ MAX_CUSTOM_COMMANDS = 150
 CUSTOM_COMMAND_COOLDOWN = []
 
 async def get(BASE, message, server_setting, server_commands):
-	m = message.content.lower().split(" ")
-
 	if message.author.id in CUSTOM_COMMAND_COOLDOWN: return
 	asyncio.ensure_future(cooldown(message))
 
 	#are custom commands disabled?
 	if message.channel.id in server_setting.get("disable_chan_custom",[]): return
 	if server_setting.get("owner_disable_custom", False): return
+
+	m = message.content.lower().split(" ")
 
 	for cmd in server_commands:
 		if cmd.get("trigger", None) == m[0]:

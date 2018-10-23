@@ -17,7 +17,7 @@ class Forbidden(object):
 
 async def Base(BASE, message, **kwargs):
 	m = message.content.lower().split(" ")
-	check = m[0][2:]
+	check = m[0][(len(BASE.vars.TRIGGER_DISCORD)*2):]
 
 	if not await BASE.modules._Discord_.Utils.is_Mod(BASE, message):
 		if any([True if check.startswith(cmd) else False for cmd in CMDs]):
