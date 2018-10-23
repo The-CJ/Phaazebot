@@ -9,7 +9,6 @@ class BASE(object):
 	def __init__(self, config=dict()):
 		self.config = config
 		self.version = config.get('version', '[N/A]')
-		self.version_nr = ">help | v" + self.version
 		self.uptime_var_1 = time.time() # together with now(), used to know how long phaaze is running
 		self.RELOAD = False # yeah... that thing, i maybe remove it, its the indicator to reload modules
 

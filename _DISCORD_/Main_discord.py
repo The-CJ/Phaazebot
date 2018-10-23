@@ -7,8 +7,10 @@ class Init_discord(discord.Client):
 
 	async def on_ready(self):
 		try:
-			await self.BASE.discord.change_presence(	game=discord.Game(	type=0,
-																		name=self.BASE.version_nr),
+			await self.BASE.discord.change_presence( game=discord.Game	(
+																		type=0,
+																		name=f"{self.BASE.vars.TRIGGER_DISCORD} | v{self.BASE.version}"
+																		),
 													status=discord.Status.online)
 			setattr(self.BASE.vars, "app", await self.BASE.discord.application_info() )
 			self.BASE.modules.Console.INFO("Discord Connected")

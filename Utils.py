@@ -47,7 +47,7 @@ async def reload_base(BASE):
 	setattr(BASE.vars, "app", BASE.run_async(BASE.discord.application_info(), exc_loop=BASE.Discord_loop) )
 	BASE.modules.Console.INFO("Refreshed Discord App Info")
 
-	BASE.run_async(BASE.discord.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online), exc_loop=BASE.Discord_loop)
+	BASE.run_async(BASE.discord.change_presence(game=discord.Game(type=0, name=f"{BASE.vars.TRIGGER_DISCORD} | v{BASE.version}"), status=discord.Status.online), exc_loop=BASE.Discord_loop)
 	BASE.modules.Console.INFO("Refreshed Discord Status")
 
 	BASE.modules._Twitch_.Alerts.Init_Main(BASE)
