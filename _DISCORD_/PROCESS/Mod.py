@@ -357,7 +357,7 @@ class Prune(object):
 		if not phaaze_perms.manage_messages:
 			return await BASE.discord.send_message(message.channel, ":no_entry_sign: Phaaze need the `Manage messages` permissions to execute prune")
 
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		try:
 			#nothing
@@ -486,7 +486,7 @@ class Prune(object):
 
 class Level(object):
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		if len(m) == 1:
 			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level [Option]`\n\n"\
@@ -502,7 +502,7 @@ class Level(object):
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not an option.")
 
 	async def exp(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		if len(m) <= 3:
 			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level exp [New Exp] [Member]`\n\n"\
@@ -552,7 +552,7 @@ class Level(object):
 			f':white_check_mark: `{user.name}` exp has been set to **{str(exp)}**{ed}')
 
 	async def medal(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 
 		if len(m) <= 3:
@@ -651,7 +651,7 @@ class Giverole(object):
 	MAX_ADDROLE_ENTRYS = 100
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		if len(m) <= 2:
 			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}giverole [add/rem] [Trigger] [Role]`\n\n"\
@@ -670,7 +670,7 @@ class Giverole(object):
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not available, try `{BASE.vars.TRIGGER_DISCORD * 2}giverole`")
 
 	async def _add_(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
@@ -734,7 +734,7 @@ class Giverole(object):
 			return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull added Giverole `{m[2]}` with role: `{role.name}`")
 
 	async def _rem_(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		trigger = m[2]
 
