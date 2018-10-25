@@ -46,7 +46,7 @@ class Everything(object):
 		TERM = "?term="
 		Header = {'X-Mashape-Key': BASE.access.Mashape}
 
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 
 		if len(m) == 1:
 			return await BASE.discord.send_message(message.channel, f':warning: You need to define a word. `{BASE.vars.TRIGGER_DISCORD}define [thing]`')
@@ -54,6 +54,7 @@ class Everything(object):
 		thing = " ".join(g for g in m[1:])
 
 		if "phaaze" in message.content.lower() or "phaazebot" in message.content.lower():
+			# REEEEEEE
 			return await BASE.discord.send_message(message.channel, "Thats me :D")
 
 		#request or end
@@ -78,11 +79,11 @@ class Everything(object):
 		return await BASE.discord.send_message(message.channel, embed=emb)
 
 	async def choice(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 		if len(m) == 1:
 			return await BASE.discord.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
 
-		M = message.content.split(" ", 1)[1].split(";")
+		M = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ", 1)[1].split(";")
 
 		for item in M:
 			item.replace(" ","")
@@ -108,7 +109,7 @@ class Everything(object):
 class Whois(object):
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 
 		#by_myself
 		if len(m) == 1:
