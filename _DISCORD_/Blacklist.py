@@ -262,7 +262,7 @@ class Link(object):
 			return await BASE.discord.send_message(message.channel, f"A list of all whitelisted links on the server.\n\n```{l}```")
 
 	async def add(BASE, message, kwargs):
-		m = message.content.lower().split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, ":warning: You need to define a link regex exception to whitelist.\nWhat is regex? : https://regexr.com/ : https://regex101.com/")
@@ -285,7 +285,7 @@ class Link(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: The link exception `{word}` has been added to the whitelist.")
 
 	async def rem(BASE, message, kwargs):
-		m = message.content.lower().split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, ":warning: You need to define a link exception you wanna remove from the whitelist.")
@@ -308,7 +308,7 @@ class Link(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: The link `{word}` has been removed from the whitelist.")
 
 	async def allow(BASE, message, kwargs):
-		m = message.content.lower().split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, ":warning: You need to define a role you wanna add to link permits.")
@@ -352,7 +352,7 @@ class Link(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: The role `{role.name}` has been permited to post links.")
 
 	async def disallow(BASE, message, kwargs):
-		m = message.content.lower().split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, ":warning: You need to define a role you wanna remove the link permits.")
