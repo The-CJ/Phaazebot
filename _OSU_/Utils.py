@@ -75,12 +75,12 @@ async def get_user(BASE, u=None, m="0", t=None):
 
 	return result[0]
 
-async def get_all_maps(BASE, ID=None, mode="b"):
+async def get_maps(BASE, ID=None, mode="b"):
 	KEY = "?k={0}".format(BASE.access.Osu_API_Token)
 
 	if ID == None: return None
 
-	#request stuff
+	#request maps
 	r_str = MAIN + MAP + KEY + "&{0}={1}".format(mode, ID)
 	r = requests.get(r_str)
 	r = r.json()
@@ -104,82 +104,22 @@ async def get_all_maps(BASE, ID=None, mode="b"):
 
 		return set_result
 
-	class map_object(object):
-		def __init__(self, info):
-			#4 = loved, 3 = qualified, 2 = approved, 1 = ranked, 0 = pending, -1 = WIP, -2 = graveyard
-			if info["approved"] == "-2":
-				self.approved = "-2"
-				self.approved_name = "Graveyard"
-			elif info["approved"] == "-1":
-				self.approved = "-1"
-				self.approved_name = "WIP"
-			elif info["approved"] == "0":
-				self.approved = "0"
-				self.approved_name = "Pending"
-			elif info["approved"] == "1":
-				self.approved = "1"
-				self.approved_name = "Ranked"
-			elif info["approved"] == "2":
-				self.approved = "2"
-				self.approved_name = "Approved"
-			elif info["approved"] == "3":
-				self.approved = "3"
-				self.approved_name = "Qualified"
-			elif info["approved"] == "4":
-				self.approved = "4"
-				self.approved_name = "Loved"
-			else:
-				self.approved = None
-				self.approved_name = None
-
-			#meta
-			self.Set_ID = info["beatmapset_id"]
-			self.Map_ID = info["beatmap_id"]
-			self.favos = info["favourite_count"]
-			self.tags = info["tags"].split(" ")
-
-			#infos
-			self.version = info["version"]
-			self.artist = info["artist"]
-			self.title = info["title"]
-			self.creator = info["creator"]
-			self.source = info["source"]
-
-			#diff
-			self.diff = float(info["difficultyrating"])
-			self.cs = float(info["diff_size"])
-			self.od = float(info["diff_overall"])
-			self.ar = float(info["diff_approach"])
-			self.hp = float(info["diff_drain"])
-			self.bpm = float(info["bpm"])
-
-			#time
-			F_minutes, F_seconds = divmod(int(info["total_length"]), 60)
-			D_minutes, D_seconds = divmod(int(info["hit_length"]), 60)
-			self.lenght = str(F_minutes) + "," + str(F_seconds if F_seconds >= 10 else "0" + str(F_seconds))
-			self.drain = str(D_minutes) + "," + str(D_seconds if D_seconds >= 10 else "0" + str(D_seconds))
-
-			#stuff
-			self.playcount = info["playcount"]
-			self.passcount = info["passcount"]
-
-	class resullts(object):
-		def __init__(self, resp):
+	class Results(object):
+		def __init__(self, response, mode):
 
 			if mode == "b": mode_name = "Single_map"
 			if mode == "s": mode_name = "Beatmap_set"
 			if mode == "u": mode_name = "User_maps"
 
-			self.result = resp
+			self.result = response
 			self.mode = mode
 			self.mode_name = mode_name
 
 			#convert all things into objects
-			self.all_maps = [map_object(map_) for map_ in resp]
+			self.all_maps = [Map_Object(map_dict) for map_dict in response]
 			self.map_sets = sort_in_mapsets(self.all_maps)
 
-
-	return resullts(r)
+	return Results(r, mode)
 
 async def pp_calc_for_maps(BASE, message):
 	m = message.content.split(" ")
@@ -293,7 +233,7 @@ async def twitch_osu(BASE, message):
 	osu_user = await BASE.modules._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.room_id, platform="twitch")
 	if osu_user == None: return
 
-	osu_maps = await get_all_maps(BASE, ID=search_id, mode=mode)
+	osu_maps = await get_maps(BASE, ID=search_id, mode=mode)
 	if osu_maps == None: return
 	osu_map = osu_maps.all_maps[0]
 
@@ -319,6 +259,123 @@ async def twitch_osu(BASE, message):
 
 	await BASE.Twitch_IRC_connection.send_message(message.channel, twitch_info_format)
 	await BASE.Osu_IRC.send_message(osu_user["osu"]["name"], osu_info_format)
+
+class Map_Object(object):
+	def __init__(self, info):
+		self.info = info
+
+		#meta
+		self.approved = None
+		self.approved_symbol = None
+		self.approved_name = None
+		self.set_id = None
+		self.map_id = None
+		self.favourite_count = None
+		self.tags = None
+
+		#infos
+		self.version = None
+		self.artist = None
+		self.title = None
+		self.creator = None
+		self.source = None
+
+		#diff
+		self.diff = None
+		self.cs = None
+		self.od = None
+		self.ar = None
+		self.hp = None
+		self.bpm = None
+
+		#time
+		self.lenght = None
+		self.drain = None
+
+		#stuff
+		self.playcount = None
+		self.passcount = None
+
+		self.process()
+
+		del self.info
+
+	def process(self):
+		#4 = loved, 3 = qualified, 2 = approved, 1 = ranked, 0 = pending, -1 = WIP, -2 = graveyard
+		if self.info["approved"] == "-2":
+			self.approved = "-2"
+			self.approved_name = "Graveyard"
+		elif self.info["approved"] == "-1":
+			self.approved = "-1"
+			self.approved_name = "WIP"
+		elif self.info["approved"] == "0":
+			self.approved = "0"
+			self.approved_name = "Pending"
+		elif self.info["approved"] == "1":
+			self.approved = "1"
+			self.approved_name = "Ranked"
+		elif self.info["approved"] == "2":
+			self.approved = "2"
+			self.approved_name = "Approved"
+		elif self.info["approved"] == "3":
+			self.approved = "3"
+			self.approved_name = "Qualified"
+		elif self.info["approved"] == "4":
+			self.approved = "4"
+			self.approved_name = "Loved"
+		else:
+			self.approved = None
+			self.approved_name = None
+		self.approved_symbol = self.get_osu_status_symbol()
+
+		#meta
+		self.set_id = self.info["beatmapset_id"]
+		self.map_id = self.info["beatmap_id"]
+		self.favos = self.info["favourite_count"]
+		self.tags = self.info["tags"].split(" ")
+
+		#infos
+		self.version = self.info["version"]
+		self.artist = self.info["artist"]
+		self.title = self.info["title"]
+		self.creator = self.info["creator"]
+		self.source = self.info["source"]
+
+		#diff
+		self.diff = float(self.info["difficultyrating"])
+		self.cs = float(self.info["diff_size"])
+		self.od = float(self.info["diff_overall"])
+		self.ar = float(self.info["diff_approach"])
+		self.hp = float(self.info["diff_drain"])
+		self.bpm = float(self.info["bpm"])
+
+		#time
+		F_minutes, F_seconds = divmod(int(self.info["total_length"]), 60)
+		D_minutes, D_seconds = divmod(int(self.info["hit_length"]), 60)
+		self.lenght = str(F_minutes) + "," + str(F_seconds if F_seconds >= 10 else "0" + str(F_seconds))
+		self.drain = str(D_minutes) + "," + str(D_seconds if D_seconds >= 10 else "0" + str(D_seconds))
+
+		#stuff
+		self.playcount = self.info["playcount"]
+		self.passcount = self.info["passcount"]
+
+	def get_osu_status_symbol(self):
+		#4 = loved, 3 = qualified, 2 = approved, 1 = ranked, 0 = pending, -1 = WIP, -2 = graveyard
+		if self.approved == "-2":
+			return ":cross:"
+		elif self.approved == "-1":
+			return ":tools:"
+		elif self.approved == "0":
+			return ":clock1:"
+		elif self.approved == "1":
+			return ":large_blue_diamond:"
+		elif self.approved == "2":
+			return ":fire:"
+		elif self.approved == "3":
+			return ":sweat_drops:"
+		elif self.approved == "4":
+			return ":heart:"
+		else: return ":question:"
 
 class pairing_object(object):
 	def __init__(self, BASE, osu_name=None, twitch_name=None, twitch_id=None):
