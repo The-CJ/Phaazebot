@@ -207,7 +207,7 @@ class Quotes(object):
 			asyncio.ensure_future(Forbidden.disable_chan_quote(BASE, message, kwargs))
 			return
 
-		m = message.content.split(' ')
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(' ')
 		server_quotes = kwargs.get('server_quotes', {})
 
 		if not server_quotes:
@@ -243,7 +243,7 @@ class Wiki(object):
 			asyncio.ensure_future(Wiki.cooldown(message))
 		else: return
 
-		m = message.content.split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split()
 
 		if len(m) == 1:
 			return await BASE.discord.send_message(message.channel, f":warning: You need to define something you wanna search for. `{BASE.vars.TRIGGER_DISCORD}wiki(/Language) [thing]"\
@@ -351,11 +351,10 @@ class Wiki(object):
 		except:
 			pass
 
-
 class Osu(object):
 	async def Base(BASE, message, kwargs):
 
-		m = message.content.lower().split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].lower().split(" ")
 
 		if len(m) == 1:
 			return await BASE.discord.send_message(
@@ -521,8 +520,8 @@ class Osu(object):
 					except: pass
 					return
 
-			elif m[1].startswith("track"):
-				return await BASE.discord.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
+			#elif m[1].startswith("track"):
+			#	return await BASE.discord.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
 
 			elif m[1].startswith("calc"):
 				await BASE.modules.osu.pp_calc_for_maps(BASE, message)
@@ -531,7 +530,7 @@ class Osu(object):
 				return await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
 
 	async def stats(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(
@@ -626,7 +625,7 @@ class Osu(object):
 class Giverole(object):
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 
 		if m[0].lower().endswith('-list'):
 			return await Giverole.list_entrys(BASE, message, kwargs)
