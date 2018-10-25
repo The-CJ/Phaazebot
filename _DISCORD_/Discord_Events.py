@@ -70,13 +70,15 @@ class Message(object):
 
 class Member(object):
 	async def join(BASE, member):
+		
 		# is a link in the member name?
 		link_in_name = False
 		if Regex.contains_link.search(member.name) != None:
 			link_in_name = True
 
+		server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, member.server.id)
+		
 		try:
-			server_settings = await BASE.modules._Discord_.Utils.get_server_setting(BASE, member.server.id)
 
 			#track: Member.join
 			if "Member.join".lower() in server_settings.get('track_options',[]) and server_settings.get('track_channel',None) != None:
