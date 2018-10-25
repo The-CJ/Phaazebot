@@ -4,13 +4,13 @@ import asyncio, discord, tabulate, json
 
 class Settings(object):
 	async def Base(BASE, message, kwargs):
-		available = ["nsfw", "custom", "level", "quotes", "ai", "nonmod", "game"]
+		AVAILABLE = ["nsfw", "custom", "level", "quotes", "ai", "nonmod", "game"]
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 1:
 			return await BASE.discord.send_message(
 				message.channel,
-				":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
+				":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in AVAILABLE)))
 
 		elif m[1] == "ai":
 			await Settings.ai(BASE, message, kwargs)
@@ -34,7 +34,7 @@ class Settings(object):
 			await Settings.quotes(BASE, message, kwargs)
 
 		else:
-			av = ", ".join("`"+l+"`" for l in available)
+			av = ", ".join("`"+l+"`" for l in AVAILABLE)
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
 
 	# # #
