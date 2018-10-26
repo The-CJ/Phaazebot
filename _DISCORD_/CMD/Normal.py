@@ -18,8 +18,8 @@ class Forbidden(object):
 		await BASE.discord.delete_message(m)
 
 async def Base(BASE, message, **kwargs):
-	m = message.content.lower().split(" ")
-	check = m[0][1:]
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].lower().split(" ")
+	check = m[0]
 
 	if kwargs.get('server_setting', {}).get('owner_disable_normal', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message):
 		if any([True if check.startswith(cmd) else False for cmd in CMDs]):

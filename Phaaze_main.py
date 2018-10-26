@@ -3,20 +3,19 @@ import asyncio
 import threading
 import traceback
 import PhaazeDBC as PhaazeDB
-from importlib import reload
 
 class BASE(object):
 	""" contains everything, does everything, is everything -> can be found anywhere """
 	def __init__(self, config=dict()):
 		self.config = config
 		self.version = config.get('version', '[N/A]')
-		self.version_nr = ">help | v" + self.version
 		self.uptime_var_1 = time.time() # together with now(), used to know how long phaaze is running
 		self.RELOAD = False # yeah... that thing, i maybe remove it, its the indicator to reload modules
 
 		#all featured "superclasses" aka, stuff that makes calls to somewhere
 		self.discord = None
 		self.twitch = None
+		self.osu = None
 
 		#get the active/load class, aka, what sould get started
 		self.active = self.ACTIVE(self.config['active'])
@@ -63,9 +62,13 @@ class BASE(object):
 	class VARS(object): #BASE.vars
 		def __init__(self, config):
 			self.Logo = open("VARS/logo.txt", "r").read()
-			self.PT = config.get('trigger', '>')
+
+			self.TRIGGER_DISCORD = config.get('trigger_discord', '>')
+			self.TRIGGER_OSU = config.get('trigger_osu', '!')
+			self.TRIGGER_TWITCH = config.get('trigger_twitch', '!')
+
 			self.developer_id = config.get('developer', []) #override id's for discord #TODO: remove this
-			self.doujin_help = open("VARS/doujin_help.txt","r").read().format("<",self.PT) #TODO: remove this
+			self.doujin_help = open("VARS/doujin_help.txt","r").read().format("<",self.TRIGGER_DISCORD) #TODO: remove this
 			self.twitch_logo = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504" #TODO: remove this
 
 	class ACCESS(object): #BASE.access
@@ -133,9 +136,10 @@ class BASE(object):
 		class _Osu_(object):
 			import _OSU_.Base as Base
 
-			import _OSU_.Osu_IRC as IRC
-
 			import _OSU_.Utils as Utils
+
+			class CMD():
+				import _OSU_.CMD.Normal as Normal
 
 		class _Twitch_(object):
 			import _TWITCH_.Alerts as Alerts
@@ -313,7 +317,7 @@ class __TWITCH_IRC__(threading.Thread):
 
 			from _TWITCH_.Main_twitch import Init_twitch
 			BASE.twitch = Init_twitch(BASE)
-			BASE.twitch.run(token=BASE.access.Twitch_IRC_Token, nickname="phaazebot")
+			BASE.twitch.run(token=BASE.access.Osu_IRC_Token, nickname="phaazebot")
 
 		except Exception as e:
 			BASE.modules.Console.ERROR("Twitch IRC crashed: "+ str(e))
@@ -334,8 +338,9 @@ class __OSU_IRC__(threading.Thread):
 		try:
 			asyncio.set_event_loop(self.loop)
 
-			O_IRC_ = BASE.modules._Osu_.IRC._IRC_(BASE)
-			self.loop.run_until_complete(O_IRC_.run())
+			from _OSU_.Main_osu import Init_osu
+			BASE.osu = Init_osu(BASE)
+			BASE.osu.run(token=BASE.access.Osu_IRC_Token, nickname="Phaazebot")
 
 		except Exception as e:
 			BASE.modules.Console.ERROR("Osu! IRC crashed: "+str(e))
@@ -427,7 +432,7 @@ async def thread_saving(_d_: __DISCORD__,
 			if BASE.active.osu_irc:
 				if not _o_.isAlive():
 					try:
-						BASE.modules.Console.INFO("INFO", "Booting Osu IRC...")
+						BASE.modules.Console.INFO("Booting Osu IRC...")
 						_o_ = __OSU_IRC__()
 						_o_.start()
 						BASE.Osu_loop = _o_.loop
@@ -460,6 +465,7 @@ async def thread_saving(_d_: __DISCORD__,
 			await asyncio.sleep(5)
 		except:
 			print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME")
+			await asyncio.sleep(3)
 
 	print("Thread saver stoped")
 
@@ -482,7 +488,7 @@ class secure_of_all_treads(threading.Thread):
 									_worker_
 									))
 			except:
-				print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME")
+				print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME SAVER")
 
 secure = secure_of_all_treads()
 secure.start()

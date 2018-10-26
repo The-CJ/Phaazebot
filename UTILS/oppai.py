@@ -15,11 +15,8 @@ class oppai_result(object):
 
 # Diese methode mussu aufrufen, dan kriste das result object zurück
 def calc(file, c100=0, c50=0, misses=0, sv=1, acc=0.0, combo=0, mod_s=""):
-    feature = False
 
-    ggg = open(file, "r", encoding="UTF-8")
-
-    map = Beatmap(ggg)
+    map = Beatmap(file)
     if combo == 0 or combo > map.max_combo:
         combo = map.max_combo
 
@@ -128,8 +125,6 @@ def calc(file, c100=0, c50=0, misses=0, sv=1, acc=0.0, combo=0, mod_s=""):
 
 
 import math
-import sys
-
 
 class Beatmap:
     def __init__(self, file):

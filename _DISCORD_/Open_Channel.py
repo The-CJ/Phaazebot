@@ -36,24 +36,24 @@ async def base(BASE, message):
 
 	"""Phaaze Commands"""
 	#dev
-	if message.content.startswith(BASE.vars.PT * 5):
+	if message.content.startswith(BASE.vars.TRIGGER_DISCORD * 5):
 		if message.author.id in BASE.vars.developer_id:
 			await BASE.modules._Discord_.CMD.Dev.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#owner
-	elif message.content.startswith(BASE.vars.PT * 3):
+	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD * 3):
 		if message.author.id not in COOLDOWN_OWNER:
 			asyncio.ensure_future(cooldown_Owner(message))
 			await BASE.modules._Discord_.CMD.Owner.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#mod
-	elif message.content.startswith(BASE.vars.PT * 2):
+	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD * 2):
 		if message.author.id not in COOLDOWN_MOD:
 			asyncio.ensure_future(cooldown_Mod(message))
 			await BASE.modules._Discord_.CMD.Mod.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#normal
-	elif message.content.startswith(BASE.vars.PT):
+	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD):
 		if message.author.id not in COOLDOWN_NORMAL:
 			asyncio.ensure_future(cooldown_Normal(message))
 			await BASE.modules._Discord_.CMD.Normal.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)

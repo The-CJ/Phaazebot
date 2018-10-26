@@ -1,10 +1,10 @@
 #BASE.modules._Discord_.CMD.Dev
 
-import asyncio, discord, traceback, math, sys, threading, random, json
+import asyncio, discord, traceback, math, sys, threading, random, json #for quick debug eval, not needed by pure code
 
 async def Base(BASE, message, **kwargs):
-	m = message.content.split(" ")
-	check = m[0][5:]
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*5):].split(" ")
+	check = m[0]
 
 	if check.startswith("debug"):
 		await BASE.modules._Discord_.PROCESS.Dev.debug(BASE, message, kwargs)
@@ -14,12 +14,15 @@ async def Base(BASE, message, **kwargs):
 		asyncio.ensure_future(BASE.modules.Utils.reload_base(BASE), loop=BASE.Worker_loop)
 
 	elif check.startswith("global"):
+		#TODO: fix or remove
 		await BASE.modules._Discord_.PROCESS.Dev.global_message(BASE, message, kwargs)
 
 	elif check.startswith("news"):
+		#TODO: fix or remove
 		await BASE.modules._Discord_.PROCESS.Dev.news(BASE, message, kwargs)
 
 	elif check.startswith("shutdown"):
+		#TODO: fix or remove
 		try: await BASE.discord.send_message(message.channel, "PhaazeOS will now shutdown savely.")
 		except: pass
 

@@ -4,7 +4,7 @@ import asyncio, discord
 
 async def Base(BASE, message, kwargs):
 	AV = ["track", "get", "reset", "custom"]
-	m = message.content.split(" ")
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 
 	if len(m) == 1:
 		return await BASE.discord.send_message(
@@ -15,11 +15,11 @@ async def Base(BASE, message, kwargs):
 		if len(m) <= 2:
 			return await BASE.discord.send_message(message.channel, ":warning: You need to add a Twitch channel name to enable/disable alerts")
 
-		return await track(BASE, message, kwargs, m[2])
+		return await track(BASE, message, kwargs, " ".join(m[2:]))
 
 	elif m[1].lower() == "custom":
 		if len(m) <= 2:
-			return await BASE.discord.send_message(message.channel, f":warning: You need to add a custom format to the alert:\n`{BASE.vars.PT*3}twitch custom [Custom_message]`")
+			return await BASE.discord.send_message(message.channel, f":warning: You need to add a custom format to the alert:\n`{BASE.vars.TRIGGER_DISCORD*3}twitch custom [Custom_message]`")
 
 		return await custom(BASE, message, kwargs, " ".join(m[2:]))
 
@@ -92,6 +92,7 @@ async def reset(BASE, message, kwargs):
 
 	for match in res:
 		twitch_id = match.get('twitch_id', None)
+		if twitch_id == None: continue
 		search.append(twitch_id)
 		match['discord_channel'].remove(message.channel.id)
 

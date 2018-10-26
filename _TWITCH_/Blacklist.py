@@ -1,8 +1,6 @@
 ##BASE.modules._Twitch_.Blacklist
 
-import asyncio, re
-
-link_regex = re.compile(r'(https?:\/\/)?(\.?[a-zA-Z0-9]+)+\.[a-zA-Z0-9]{2,8}(\/[^ \n]+)*')
+import asyncio, re, Regex
 
 async def check(BASE, message, channel_settings):
 	#ignore mods
@@ -19,7 +17,7 @@ async def check(BASE, message, channel_settings):
 			return await punish(BASE, message, channel_settings, reason="word")
 
 	if ban_links:
-		found_links = re.finditer(link_regex, message.content)
+		found_links = re.finditer(Regex.contains_link, message.content)
 		if found_links != None:
 
 			for hit in found_links:
