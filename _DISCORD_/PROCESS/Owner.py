@@ -5,7 +5,7 @@ import asyncio, discord
 class Master(object):
 	async def Base(BASE, message, kwargs):
 		available = ['normal', 'mod', 'level', 'custom']
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 1:
 			return await BASE.discord.send_message(message.channel, ":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
@@ -27,7 +27,7 @@ class Master(object):
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
 
 	async def normal(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -50,7 +50,7 @@ class Master(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: All Normal Commands are now Serverwide {state}")
 
 	async def mod(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -73,7 +73,7 @@ class Master(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: All Mod Commands are now Serverwide {state}")
 
 	async def level(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -96,7 +96,7 @@ class Master(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: Levels are now Serverwide {state}")
 
 	async def custom(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -121,11 +121,11 @@ class Master(object):
 class Welcome(object):
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 
 		#nothing
 		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT * 3}welcome [Option]`\n\n"\
+			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}welcome [Option]`\n\n"\
 																	"`get` - The current welcome message + channel\n"\
 																	"`get-priv` - The current private welcome message\n"\
 																	"`get-raw` - The current unformated welcome message + channel\n"\
@@ -164,12 +164,12 @@ class Welcome(object):
 			await Welcome.clearpriv(BASE, message, kwargs)
 
 		else:
-			return await BASE.discord.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 3}welcome`")
+			return await BASE.discord.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try just `{BASE.vars.TRIGGER_DISCORD * 3}welcome`")
 
 	async def set_welcome(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		if len(m) == 2:
-			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*3}welcome set [Stuff]`\n\n"\
+			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*3}welcome set [Stuff]`\n\n"\
 																	"`[Stuff]` - The Text that appears in your set channel if a new member join\n\n"\
 																	"You can use tokens in your `[Stuff]` that will be replaced by infos:\n"\
 																	"`[name]` - The name of the new member\n"\
@@ -203,7 +203,7 @@ class Welcome(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: New welcome message set! [In {chan}]\nExample with Phaaze:\n\n{entry}")
 
 	async def set_welcome_chan(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 
 		if len(m) == 2:
 			chan = message.channel.id
@@ -240,8 +240,8 @@ class Welcome(object):
 		else:
 			entry = "\n```"+entry+"```"
 
-		chan = kwargs['server_setting'].get('welcome_chan', "1337")
-		chan = f"<#{chan}>"
+		chan = kwargs['server_setting'].get('welcome_chan', None)
+		chan = f"<#{chan}>" if chan != None else message.channel.mention
 
 		return await BASE.discord.send_message(
 			message.channel,
@@ -286,9 +286,9 @@ class Welcome(object):
 			)
 
 	async def priv_welcome(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		if len(m) == 2:
-			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*3}welcome set-priv [Stuff]`\n\n"\
+			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*3}welcome set-priv [Stuff]`\n\n"\
 																	"`[Stuff]` - The Text will send to a new member on join\n\n"\
 																	"You can use tokens in your `[Stuff]` that will be replaced by infos:\n"\
 																	"`[name]` - The name of the new member\n"\
@@ -332,11 +332,11 @@ class Welcome(object):
 class Leave(object):
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 
 		#nothing
 		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT * 3}leave [Option]`\n\n"\
+			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}leave [Option]`\n\n"\
 																	"`get` - The current leave message + channel\n"\
 																	"`get-raw` - The current unformated leave message + channel\n"\
 																	"`set` - Set the current leave message\n"\
@@ -361,12 +361,12 @@ class Leave(object):
 			await Leave.clear_leave(BASE, message, kwargs)
 
 		else:
-			return await BASE.discord.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 3}leave`")
+			return await BASE.discord.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.TRIGGER_DISCORD * 3}leave`")
 
 	async def set_leave(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		if len(m) == 2:
-			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*3}welcome set [Stuff]`\n\n"\
+			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*3}welcome set [Stuff]`\n\n"\
 																	"`[Stuff]` - The Text that appears in your set channel if a new member join\n\n"\
 																	"You can use tokens in your `[Stuff]` that will be replaced by infos:\n"\
 																	"`[name]` - The name of the new member\n"\
@@ -459,9 +459,9 @@ class Leave(object):
 class Autorole(object):
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT * 3}autorole [Option]`\n\n"\
+			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}autorole [Option]`\n\n"\
 																	"`get` - The current autorole\n"\
 																	"`set` - Set new autorole\n"\
 																	"`clear` - Removes the autorole\n"\
@@ -477,24 +477,24 @@ class Autorole(object):
 			await Autorole._clear_(BASE, message, kwargs)
 
 		else:
-			return await BASE.discord.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 3}autorole`")
+			return await BASE.discord.send_message(message.channel, 	f":warning: `{m[1]}` is not available, try `{BASE.vars.TRIGGER_DISCORD * 3}autorole`")
 
 	async def _get_(BASE, message, kwargs):
 		current = kwargs.get('server_setting', {}).get('autorole', None)
 		if current == None:
-			return await BASE.discord.send_message(message.channel, f":exclamation: This server don't have a autorole set. \n 	Use `{BASE.vars.PT*3}autorole set [role]` to set one.")
+			return await BASE.discord.send_message(message.channel, f":exclamation: This server don't have a autorole set. \n 	Use `{BASE.vars.TRIGGER_DISCORD*3}autorole set [role]` to set one.")
 
 		role = discord.utils.get(message.server.roles, id=current)
 
 		if role == None:
-			return await BASE.discord.send_message(message.channel, f":grey_question: Strange, it seems like there was a autorole set, but it could not be found. \n 	Use `{BASE.vars.PT*3}autorole set [role]` to set a new one.")
+			return await BASE.discord.send_message(message.channel, f":grey_question: Strange, it seems like there was a autorole set, but it could not be found. \n 	Use `{BASE.vars.TRIGGER_DISCORD*3}autorole set [role]` to set a new one.")
 
 		else:
 			if role.name.lower() == "@everyone": role.name = "[everyone]"
 			return await BASE.discord.send_message(message.channel, f":exclamation: Current autorole is : `{role.name}`")
 
 	async def _set_(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
 		if not me.server_permissions.manage_roles:
@@ -571,19 +571,19 @@ class Logs(object):
 		]
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split()
 
 		enabled_l = ", ".join( f"`{o}`" for o in kwargs.get('server_setting',{}).get('track_options', []) )
 
-		if len(m) == 1 and not m[0].lower() == f"{BASE.vars.PT * 3}logs-chan":
-			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.PT * 3}logs(-chan) [Option] [State]`\n\n"\
-																	f"`[Option]` - The Log Option you want to toggle/ or the channel mention when used `{BASE.vars.PT * 3}logs-chan`\n"\
+		if len(m) == 1 and m[0].lower() != "logs-chan":
+			return await BASE.discord.send_message(message.channel, f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}logs(-chan) [Option] [State]`\n\n"\
+																	f"`[Option]` - The Log Option you want to toggle/ or the channel mention when used `{BASE.vars.TRIGGER_DISCORD * 3}logs-chan`\n"\
 																	f"`[State]` - The new State, `on` or `off`\n\n"\
 																	f":link: PhaazeDiscord-Logs configuration is a lot easier on to the PhaazeWebsite\n"\
 																	f"{' '*7}Goto https://phaaze.net/discord/dashboard/{message.server.id}#logs and log-in to configure everything\n\n"\
 																	f"Currently enabled options: {enabled_l}")
 
-		if m[0].lower() == f"{BASE.vars.PT * 3}logs-chan":
+		if m[0].lower() == "logs-chan":
 			if len(m) == 1:
 				chan = message.channel
 
@@ -600,9 +600,10 @@ class Logs(object):
 			)
 
 			return await BASE.discord.send_message(message.channel, f":white_check_mark: Log channel has been set to {chan.mention} - all events will appear there.")
+
 		else:
 			if not m[1].lower() in Logs.AV:
-				return await BASE.discord.send_message(message.channel, f":warning: {m[1]} is not a valid option - available:\n\n"+'\n'.join(o for o in Logs.AV))
+				return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not a valid option - available:\n\n"+'\n'.join(o for o in Logs.AV))
 
 			if len(m) < 3 or not m[2].lower() in ['enable','on', 'off','disable']:
 				return await BASE.discord.send_message(message.channel, ":warning: Please use a valid state (`on` | `off`)")

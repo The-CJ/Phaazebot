@@ -8,7 +8,7 @@ class Everything(object):
 
 		#admin override
 		if await BASE.modules._Twitch_.Utils.is_admin(BASE, message):
-			m = message.content.split(' ')
+			m = message.content[(BASE.vars.TRIGGER_TWITCH):].split(' ')
 			if len(m) > 1:
 				n = " ".join(f for f in m[1:])
 				check = BASE.PhaazeDB.select(of='setting/twitch_channel', where=f"str(data['twitch_name']) == str({json.dumps(n.lower())})")

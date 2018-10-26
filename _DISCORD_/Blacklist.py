@@ -1,8 +1,6 @@
 ##BASE.modules._Discord_.Blacklist
 
-import asyncio, discord, re
-
-link_regex = re.compile(r'(https?:\/\/)?(\.?[a-zA-Z0-9]+)+\.[a-zA-Z0-9]{2,8}(\/[^ \n]+)*')
+import asyncio, discord, re, Regex
 
 async def check(BASE, message, server_setting):
 	me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
@@ -26,18 +24,22 @@ async def check(BASE, message, server_setting):
 		#has not a role that allows links
 		if not any([True if role.id in allow_link_role else False for role in message.author.roles]):
 
-			found_links = re.finditer(link_regex, message.content)
+			found_links = re.finditer(Regex.contains_link, message.content)
+			# found links to check
 			if found_links != None:
 
 				for hit in found_links:
+					# by default every link is punish
 					p = True
 
 					for white_link in link_whitelist:
 						if re.search(white_link, hit.group(0)) != None:
+							# unpunish the link
 							p = False
 							break
 
 					if p:
+						# at least one link is not white listed
 						punish = True
 						break
 
@@ -67,10 +69,10 @@ async def Base(BASE, message, kwargs):
 	if not phaaze_perms.manage_messages:
 		return await BASE.discord.send_message(message.channel, ":no_entry_sign: Phaaze need the `Manage messages` permission to execute Blacklist commands.")
 
-	m = message.content.lower().split(" ")
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 	if len(m) == 1:
-		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}blacklist [Option]`\n\n"\
+		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}blacklist [Option]`\n\n"\
 			"`punishment` - Set the way Phaaze handles blacklisted words or links\n"\
 			"`get` - Get all words / phrase on the blacklist\n"\
 			"`add` - Add a word / phrase to the blacklist\n"\
@@ -113,11 +115,11 @@ async def Base(BASE, message, kwargs):
 		return await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a option.".format(m[1]))
 
 async def punishment(BASE, message, kwargs, perms):
-	m = message.content.lower().split(" ")
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 	if len(m) == 2:
 		blacklist_punishment = kwargs.get('server_setting', {}).get("blacklist_punishment", "delete")
-		return await BASE.discord.send_message(message.channel, f":grey_exclamation: Current punishment level: `{blacklist_punishment}`\nType: `{BASE.vars.PT}blacklist punishment (delete/kick/ban)` to change")
+		return await BASE.discord.send_message(message.channel, f":grey_exclamation: Current punishment level: `{blacklist_punishment}`\nType: `{BASE.vars.TRIGGER_DISCORD*2}blacklist punishment (delete/kick/ban)` to change")
 
 	if m[2] == "delete":
 		BASE.PhaazeDB.update(
@@ -161,7 +163,7 @@ async def get(BASE, message, kwargs):
 		return await BASE.discord.send_message(message.channel, f"A list of all banned words and phrases on the server.\n\n```{l}```")
 
 async def add(BASE, message, kwargs):
-	m = message.content.lower().split(" ")
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 	if len(m) == 2:
 		return await BASE.discord.send_message(message.channel, ":warning: You need to define a word or a phrase to add.")
@@ -189,7 +191,7 @@ async def add(BASE, message, kwargs):
 	return await BASE.discord.send_message(message.channel, f":white_check_mark: The {type_}: `{word}` has been added to the blacklist.")
 
 async def rem(BASE, message, kwargs):
-	m = message.content.lower().split(" ")
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 	if len(m) == 2:
 		return await BASE.discord.send_message(message.channel, ":warning: You need to define a word or a phrase you wanna remove.")
@@ -260,7 +262,7 @@ class Link(object):
 			return await BASE.discord.send_message(message.channel, f"A list of all whitelisted links on the server.\n\n```{l}```")
 
 	async def add(BASE, message, kwargs):
-		m = message.content.lower().split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, ":warning: You need to define a link regex exception to whitelist.\nWhat is regex? : https://regexr.com/ : https://regex101.com/")
@@ -283,7 +285,7 @@ class Link(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: The link exception `{word}` has been added to the whitelist.")
 
 	async def rem(BASE, message, kwargs):
-		m = message.content.lower().split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, ":warning: You need to define a link exception you wanna remove from the whitelist.")
@@ -306,7 +308,7 @@ class Link(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: The link `{word}` has been removed from the whitelist.")
 
 	async def allow(BASE, message, kwargs):
-		m = message.content.lower().split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, ":warning: You need to define a role you wanna add to link permits.")
@@ -350,7 +352,7 @@ class Link(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: The role `{role.name}` has been permited to post links.")
 
 	async def disallow(BASE, message, kwargs):
-		m = message.content.lower().split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split(" ")
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, ":warning: You need to define a role you wanna remove the link permits.")

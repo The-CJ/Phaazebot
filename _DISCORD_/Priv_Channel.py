@@ -6,10 +6,10 @@ PRIVATE_COOLDOWN = []
 
 async def base(BASE, message):
 #invite to dev
-	if message.content.lower().startswith(BASE.vars.PT + "server"):
+	if message.content.lower().startswith(BASE.vars.TRIGGER_DISCORD + "server"):
 		await invite(BASE, message)
 #join
-	elif message.content.lower().startswith(BASE.vars.PT + "join"):
+	elif message.content.lower().startswith(BASE.vars.TRIGGER_DISCORD + "join"):
 		await join(BASE, message)
 #nischt
 	else:

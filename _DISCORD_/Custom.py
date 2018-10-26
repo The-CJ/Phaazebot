@@ -6,14 +6,14 @@ MAX_CUSTOM_COMMANDS = 150
 CUSTOM_COMMAND_COOLDOWN = []
 
 async def get(BASE, message, server_setting, server_commands):
-	m = message.content.lower().split(" ")
-
 	if message.author.id in CUSTOM_COMMAND_COOLDOWN: return
 	asyncio.ensure_future(cooldown(message))
 
 	#are custom commands disabled?
 	if message.channel.id in server_setting.get("disable_chan_custom",[]): return
 	if server_setting.get("owner_disable_custom", False): return
+
+	m = message.content.lower().split(" ")
 
 	for cmd in server_commands:
 		if cmd.get("trigger", None) == m[0]:
@@ -39,10 +39,10 @@ async def get(BASE, message, server_setting, server_commands):
 			break
 
 async def add(BASE, message, kwargs):
-	m = message.content.split(" ")
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 	if len(m) <= 2:
-		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}addcom [Trigger] [Content]`\n\n"\
+		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}addcom [Trigger] [Content]`\n\n"\
 			"`[Trigger]` - The thing that makes the command appear (Case insensitive)\n"\
 			"`[Content]` - Whatever you want to show as the command content\n\n"\
 			"You can use tokens in your `[Content]` that will be replaced by infos:\n"\
@@ -100,10 +100,10 @@ async def add(BASE, message, kwargs):
 		return await BASE.discord.send_message(message.channel, f':white_check_mark: Command "`{trigger}`" has been **created!**')
 
 async def rem(BASE, message, kwargs):
-	m = message.content.split(" ")
+	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 	if len(m) <= 1:
-		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT}delcom [trigger]` or `{BASE.vars.PT}delcom all`"
+		r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}delcom [trigger]` or `{BASE.vars.TRIGGER_DISCORD*2}delcom all`"
 		return await BASE.discord.send_message(message.channel, r)
 
 	found = False
@@ -116,7 +116,7 @@ async def rem(BASE, message, kwargs):
 
 		del_ = BASE.PhaazeDB.delete(of=f"discord/commands/commands_{message.server.id}")
 		x = str( del_.get('hits', 'N/A') )
-		return await BASE.discord.send_message(message.channel, f':white_check_mark: All {x} commands removed.')
+		return await BASE.discord.send_message(message.channel, f':white_check_mark: All {x} command(s) removed.')
 
 	server_commands = kwargs.get('server_commands', [])
 	found = False

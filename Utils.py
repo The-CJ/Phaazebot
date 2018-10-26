@@ -15,24 +15,6 @@ def list_XOR(list_1, list_2):
 
 	return diffr_list
 
-def get_osu_status_symbol(state):
-	#4 = loved, 3 = qualified, 2 = approved, 1 = ranked, 0 = pending, -1 = WIP, -2 = graveyard
-	if state == "-2":
-		return ":cross:"
-	elif state == "-1":
-		return ":tools:"
-	elif state == "0":
-		return ":clock1:"
-	elif state == "1":
-		return ":large_blue_diamond:"
-	elif state == "2":
-		return ":fire:"
-	elif state == "3":
-		return ":sweat_drops:"
-	elif state == "4":
-		return ":heart:"
-	else: return ":question:"
-
 #OS controll
 async def reload_base(BASE):
 	BASE.RELOAD = True
@@ -47,7 +29,7 @@ async def reload_base(BASE):
 	setattr(BASE.vars, "app", BASE.run_async(BASE.discord.application_info(), exc_loop=BASE.Discord_loop) )
 	BASE.modules.Console.INFO("Refreshed Discord App Info")
 
-	BASE.run_async(BASE.discord.change_presence(game=discord.Game(type=0, name=BASE.version_nr), status=discord.Status.online), exc_loop=BASE.Discord_loop)
+	BASE.run_async(BASE.discord.change_presence(game=discord.Game(type=0, name=f"{BASE.vars.TRIGGER_DISCORD} | v{BASE.version}"), status=discord.Status.online), exc_loop=BASE.Discord_loop)
 	BASE.modules.Console.INFO("Refreshed Discord Status")
 
 	BASE.modules._Twitch_.Alerts.Init_Main(BASE)

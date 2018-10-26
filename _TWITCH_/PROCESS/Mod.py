@@ -4,10 +4,10 @@ import asyncio
 
 class Quote(object):
 
-	custom_quote_limit = 150
+	CUSTOM_QUOTE_LIMIT = 150
 
 	async def add(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(BASE.vars.TRIGGER_TWITCH):].split(" ")
 
 		if len(m) <= 1:
 			r = f"Error! > !addquote [Content]"
@@ -15,8 +15,8 @@ class Quote(object):
 
 		channel_quotes = await BASE.modules._Twitch_.Utils.get_channel_quotes(BASE, message.channel_id)
 
-		if len(channel_quotes) >= Quote.custom_quote_limit:
-			return await BASE.twitch.send_message(message.channel_name, f"Error: There are allready {str(Quote.custom_quote_limit)} quotes, delete some first")
+		if len(channel_quotes) >= Quote.CUSTOM_QUOTE_LIMIT:
+			return await BASE.twitch.send_message(message.channel_name, f"Error: There are allready {str(Quote.CUSTOM_QUOTE_LIMIT)} quotes, delete some first")
 
 		quote_content = " ".join(m[1:])
 
@@ -27,7 +27,7 @@ class Quote(object):
 		return await BASE.twitch.send_message(message.channel_name, f'Quote successfull added, ID: "{str(_id_)}"')
 
 	async def rem(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(BASE.vars.TRIGGER_TWITCH):].split(" ")
 
 		if len(m) <= 1:
 			r = f"Error! > !delquote [ID]"

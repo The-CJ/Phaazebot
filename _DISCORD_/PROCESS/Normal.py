@@ -1,6 +1,6 @@
 #BASE.modules._Discord_.PROCESS.Normal
 
-import asyncio, requests, discord, random, re, datetime
+import asyncio, requests, discord, random, re, datetime, Regex
 from tabulate import tabulate
 
 class Forbidden(object):
@@ -46,14 +46,15 @@ class Everything(object):
 		TERM = "?term="
 		Header = {'X-Mashape-Key': BASE.access.Mashape}
 
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 
 		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel, f':warning: You need to define a word. `{BASE.vars.PT}define [thing]`')
+			return await BASE.discord.send_message(message.channel, f':warning: You need to define a word. `{BASE.vars.TRIGGER_DISCORD}define [thing]`')
 
 		thing = " ".join(g for g in m[1:])
 
 		if "phaaze" in message.content.lower() or "phaazebot" in message.content.lower():
+			# REEEEEEE
 			return await BASE.discord.send_message(message.channel, "Thats me :D")
 
 		#request or end
@@ -78,11 +79,11 @@ class Everything(object):
 		return await BASE.discord.send_message(message.channel, embed=emb)
 
 	async def choice(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 		if len(m) == 1:
 			return await BASE.discord.send_message(message.channel, ":warning: Missing arguments, at least 2 options separated by \";\" are needed")
 
-		M = message.content.split(" ", 1)[1].split(";")
+		M = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ", 1)[1].split(";")
 
 		for item in M:
 			item.replace(" ","")
@@ -108,7 +109,7 @@ class Everything(object):
 class Whois(object):
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 
 		#by_myself
 		if len(m) == 1:
@@ -206,7 +207,7 @@ class Quotes(object):
 			asyncio.ensure_future(Forbidden.disable_chan_quote(BASE, message, kwargs))
 			return
 
-		m = message.content.split(' ')
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(' ')
 		server_quotes = kwargs.get('server_quotes', {})
 
 		if not server_quotes:
@@ -242,11 +243,11 @@ class Wiki(object):
 			asyncio.ensure_future(Wiki.cooldown(message))
 		else: return
 
-		m = message.content.split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split()
 
 		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel, f":warning: You need to define something you wanna search for. `{BASE.vars.PT}wiki(/Language) [thing]"\
-			f"`\n\n`(/Language)` - (Optional) change the return language e.g. `{BASE.vars.PT}wiki/de YouTube` return German results | Default: en\n`[thing]` - whatever you wanna look up.")
+			return await BASE.discord.send_message(message.channel, f":warning: You need to define something you wanna search for. `{BASE.vars.TRIGGER_DISCORD}wiki(/Language) [thing]"\
+			f"`\n\n`(/Language)` - (Optional) change the return language e.g. `{BASE.vars.TRIGGER_DISCORD}wiki/de YouTube` return German results | Default: en\n`[thing]` - whatever you wanna look up.")
 
 		language = Wiki.get_language(m[0])
 		thing = " ".join(w for w in m[1:])
@@ -350,192 +351,39 @@ class Wiki(object):
 		except:
 			pass
 
-
 class Osu(object):
 	async def Base(BASE, message, kwargs):
 
-		m = message.content.lower().split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].lower().split(" ")
 
 		if len(m) == 1:
 			return await BASE.discord.send_message(
 				message.channel,
-				f":warning: Missing a option!  Usage: `{BASE.vars.PT}osu [Option]`\n\n"\
+				f":warning: Missing a option!  Usage: `{BASE.vars.TRIGGER_DISCORD}osu [Option]`\n\n"\
 				f"Available options: `stats`, `map`, `calc`")
 
-		elif len(m) >= 2:
+		if m[1].startswith("stats"):
+			return await Osu.stats(BASE, message, kwargs)
 
-			if m[1].startswith("stats"):
-				return await Osu.stats(BASE, message, kwargs)
+		elif m[1].startswith("map"):
+			return await Osu.Map_Info.Base(BASE, message, kwargs)
 
-			elif m[1].startswith("map"):
-				# TODO: Fix map stats for new osu design
-				if len(m) == 2:
-					return await BASE.discord.send_message(message.channel, ":warning: Missing Map Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
+		elif m[1].startswith("track"):
+			return await BASE.discord.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
 
-				#find mode and id
-				try:
-					if "osu.ppy.sh/s/" in m[2]:
-						search_id = m[2].split("/s/")[1]
-						mode = "s"
+		elif m[1].startswith("calc"):
+			await BASE.modules.osu.pp_calc_for_maps(BASE, message)
 
-					elif "osu.ppy.sh/b/" in m[2]:
-						search_id = m[2].split("/b/")[1]
-						mode = "b"
-
-					elif "osu.ppy.sh/u/" in m[2]:
-						search_id = m[2].split("/u/")[1]
-						mode = "u"
-
-					else: 0/0
-				except:
-					return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
-
-				#get set/map/creator
-				stuff = await BASE.modules.osu.get_all_maps(BASE, ID=search_id, mode=mode)
-				if stuff == None and mode == "u": return await BASE.discord.send_message(message.channel, ":warning: The user does not exist or dosn't created any beatmaps".format(BASE.vars.PT))
-				if stuff == None: return await BASE.discord.send_message(message.channel, ":warning: Invalid or missing Link!  Usage: `{0}osu map [map/mapset/mapcreator - LINK]`".format(BASE.vars.PT))
-
-				#one
-				if mode == "b" or mode == "s" and len(stuff.all_maps) == 1: #one map
-					beatmap = stuff.all_maps[0]
-					meep = 	"mapped by {creator}\n\n"\
-							"{symbol} **{approved_name}** | :green_heart: Favourite: **{favo}** {source}\n"\
-							":star:: **{diff}** | :notes: BPM: **{bpm}** | :stopwatch: Lenght: **{full}** *(Drain: {drain})*\n"\
-							":small_red_triangle:CS: {cs} | :small_red_triangle:AR: {ar} | :small_red_triangle:OD: {od} | :small_red_triangle:HP: {hp}\n"\
-							"*MapID: {mID} | SetID: {sID}*".format	(
-										symbol = await BASE.modules.Utils.get_osu_status_symbol(beatmap.approved),
-										approved_name = beatmap.approved_name,
-										creator = beatmap.creator,
-										diff = str(round(beatmap.diff, 2)),
-										bpm = str(round(beatmap.bpm)),
-										cs = str(beatmap.cs),
-										ar = str(beatmap.ar),
-										od = str(beatmap.od),
-										hp = str(beatmap.hp),
-										full = str(beatmap.lenght),
-										drain = str(beatmap.drain),
-										source = "| :triangular_flag_on_post: Source: **" + beatmap.source + "**" if beatmap.source != "" else "",
-										favo = beatmap.favos,
-										mID = beatmap.Map_ID,
-										sID = beatmap.Set_ID
-											)
-
-					osu_aw = discord.Embed	(
-									color=int(0xFF69B4),
-									title=beatmap.version,
-									url="https://osu.ppy.sh/b/{0}".format(beatmap.Map_ID),
-									description=meep
-											)
-
-					osu_aw.set_author(url="https://osu.ppy.sh/b/{0}".format(beatmap.Map_ID) ,name="{0} - {1}".format(beatmap.artist, beatmap.title))
-					osu_aw.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
-					osu_aw.set_thumbnail(url="https://b.ppy.sh/thumb/{0}l.jpg".format(beatmap.Set_ID))
-
-					pp_100 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=100.0)
-					pp_99 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=99.0)
-					pp_98 = await BASE.modules.osu_utils.get_pp(beatmap.Map_ID, acc=98.0)
-
-					osu_aw.add_field(name="PPcalc:",value="{pp_100}pp for 100% | {pp_99}pp for 99% | {pp_98}pp for 98%...\n`{PT}osu calc [maplink] (options)`".format	(
-																																										PT = BASE.vars.PT,
-																																										pp_100 = str(round(float(pp_100.pp), 2)),
-																																										pp_99 = str(round(float(pp_99.pp), 2)),
-																																										pp_98 = str(round(float(pp_98.pp), 2))
-
-																																											), inline=True)
-
-					if not beatmap.tags == []:
-						osu_aw.add_field(name="Tags:",value=", ".join(tag for tag in beatmap.tags), inline=True)
-
-					return await BASE.discord.send_message(message.channel, embed=osu_aw)
-
-
-				#set
-				elif mode == "s":
-					base_infos = stuff.map_sets[0][0]
-
-					listi = []
-					for map_ in sorted(stuff.map_sets[0], key=lambda map__: map__.diff):
-						diff = "★ " + str(round(map_.diff, 2))
-						cs = "CS: " + str(round(map_.cs, 2))
-						ar = "AR: " + str(round(map_.ar, 2))
-						hp = "HP: " + str(round(map_.hp, 2))
-						od = "OD: " + str(round(map_.od, 2))
-						_id = "ID: " + str(map_.Map_ID)
-						listi.append([map_.version, "|", cs, "|", ar, "|", hp, "|", od, "|", diff, "|", _id])
-
-					fff = 	"**{artist} - {title}**\n"\
-							"Mapset by: **{creator}** | {symbol} **{approved_name}** - BPM: **{bpm}**\n"\
-							"```{diff_list}```".format	(
-												creator = base_infos.creator,
-												symbol = await BASE.modules.Utils.get_osu_status_symbol(base_infos.approved),
-												approved_name = base_infos.approved_name,
-												artist = base_infos.artist,
-												title = base_infos.title,
-												diff_list = tabulate(listi, tablefmt="plain"),
-												bpm = str(round(base_infos.bpm)))
-
-					ggt = discord.Embed(title="Check it out", url="https://osu.ppy.sh/s/{0}".format(base_infos.Set_ID), color=int(0xFF69B4))
-
-					if len(fff) > 1997: fff = ":no_entry_sign: Seems like this Mapset has to many diffs, its to much for the Discord message limit, sorry."
-
-					return await BASE.discord.send_message(message.channel, content=fff, embed=ggt)
-
-
-				#creator
-				elif mode == "u":
-					base_infos = stuff.map_sets[0][0]
-					base_res = "All Maps by **{0}**\n\n".format(base_infos.creator)
-
-					for _set in stuff.map_sets:
-
-						listi = []
-
-						for map_ in sorted(_set, key=lambda map__: map__.diff):
-							diff = "★ " + str(round(map_.diff, 2))
-							cs = "CS: " + str(round(map_.cs, 2))
-							ar = "AR: " + str(round(map_.ar, 2))
-							hp = "HP: " + str(round(map_.hp, 2))
-							od = "OD: " + str(round(map_.od, 2))
-							_id = "ID: " + str(map_.Map_ID)
-							listi.append([map_.version, "|", diff])
-
-						base_res  = base_res + "**{artist} - {title}** | https://osu.ppy.sh/s/{IDD}\n{symbol} **{approved_name}** - BPM: **{bpm}**\n```{diff_list}```\n".format	(
-																														artist = _set[0].artist,
-																														title = _set[0].title,
-																														symbol = await BASE.modules.Utils.get_osu_status_symbol(_set[0].approved),
-																														approved_name = _set[0].approved_name,
-																														bpm = str(round(_set[0].bpm)),
-																														diff_list = tabulate(listi, tablefmt="plain"),
-																														IDD = _set[0].Set_ID
-																																)
-					ebb = discord.Embed(
-							color=int(0xFF69B4),
-							title="See them all",
-							url="https://osu.ppy.sh/u/{0}".format(base_infos.creator))
-
-					if len(base_res) > 1997: base_res = ":no_entry_sign: Seems like **{0}** made to many Maps, its to much for the Discord message limit, sorry.".format(base_infos.creator)
-
-					await BASE.discord.send_message(message.channel, content=base_res, embed=ebb)
-					try: await BASE.discord.delete_message(message)
-					except: pass
-					return
-
-			elif m[1].startswith("track"):
-				return await BASE.discord.send_message(message.channel, ':cold_sweat: Sorry but the "track" modul is under construction! SOON:tm:')
-
-			elif m[1].startswith("calc"):
-				await BASE.modules.osu.pp_calc_for_maps(BASE, message)
-
-			else:
-				return await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
+		else:
+			return await BASE.discord.send_message(message.channel, ":warning: `{0}` is not a option!  Available options: `stats`,`map` and `track`".format(m[1]))
 
 	async def stats(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(
 				message.channel,
-				f":warning: Missing User!\nUsage: `{BASE.vars.PT}osu stats(mode) [User]`\n"\
+				f":warning: Missing User!\nUsage: `{BASE.vars.TRIGGER_DISCORD}osu stats(mode) [User]`\n"\
 				f'`(mode)` - Optional: Can be empty, `/osu`, `/ctb`, `/mania` or `/taiko`\n'\
 				f'`[User]` - osu link, name or id')
 
@@ -606,26 +454,165 @@ class Osu(object):
 
 		return await BASE.discord.send_message(message.channel, embed=EMB)
 
-	def extract_user(str_):
-		#link
-		u = re.match(r'https://osu\.ppy\.sh/(users|u)/(.+)', str_)
-		t = "string"
-		if u != None:
-			u = u.group(2)
-			if u.isdigit():
-				t = "id"
+	class Map_Info(object):
 
-			return u , t
+		async def Base(BASE, message, kwargs):
+			m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 
-		if str_.isdigit():
-			t = "id"
+			if len(m) == 2:
+				return await BASE.discord.send_message(message.channel, f":warning: Missing Map Link!  Usage: `{BASE.vars.TRIGGER_DISCORD}osu map [map/mapset/mapcreator - LINK]`")
 
-		return str_, t
+			mode = None
+			search_id = None
+
+			search_link = re.match(Regex.Osu.maplink, m[2])
+
+			#is a map link
+			if search_link != None:
+				if search_link.group('id2') != None:
+					mode = "b"
+					search_id = search_link.group('id2')
+				else:
+					mode = "s"
+					search_id = search_link.group('id1')
+
+			else:
+				# is it a user?
+				search_link = re.match(Regex.Osu.userlink, m[2])
+				if search_link != None:
+					mode = "u"
+					search_id = search_link.group('id')
+
+			if search_link == None:
+				return await BASE.discord.send_message(message.channel, f":warning: Invalid or missing Link!  Usage: `{BASE.vars.TRIGGER_DISCORD}osu map [map/mapset/mapcreator - LINK]`")
+
+			#get set/map/creator
+			result = await BASE.modules._Osu_.Utils.get_maps(BASE, ID=search_id, mode=mode)
+
+			if result == None and mode == "u":
+				return await BASE.discord.send_message(message.channel, ":warning: The user does not exist or doesn't created any beatmaps")
+
+			if result == None:
+				return await BASE.discord.send_message(message.channel, ":warning: The Link didn't give any results")
+
+			#one map
+			if mode == "b" or mode == "s" and len(result.all_maps) == 1:
+				return await Osu.Map_Info.process_b(BASE, message, result)
+
+			#set
+			elif mode == "s":
+				return await Osu.Map_Info.process_s(BASE, message, result)
+
+			#creator
+			elif mode == "u":
+				return await Osu.Map_Info.process_u(BASE, message, result)
+
+		async def process_b(BASE, message, result_object):
+			# get called with one map as result
+			beatmap = result_object.all_maps[0]
+			source = ':triangular_flag_on_post: '+ beatmap.source if  beatmap.source else ""
+			emb_description = ""\
+				f"mapped by {beatmap.creator}\n\n"\
+				f"{beatmap.approved_symbol} **{beatmap.approved_name}** | :green_heart: Favourite: **{beatmap.favourite_count}**\n"\
+				f"{source}"\
+				f":star:: **{round(beatmap.diff, 2)}** | :notes: BPM: **{beatmap.bpm}** | :stopwatch: Lenght: **{beatmap.lenght}** *(Drain: {beatmap.drain})*\n"\
+				f":small_red_triangle:CS: {beatmap.cs} | :small_red_triangle:AR: {beatmap.ar} | :small_red_triangle:OD: {beatmap.od} | :small_red_triangle:HP: {beatmap.hp}\n"\
+				f"*MapID: {beatmap.map_id} | SetID: {beatmap.set_id}*"
+
+			osu_aw = discord.Embed	(
+							color=int(0xFF69B4),
+							title=beatmap.version,
+							url="https://osu.ppy.sh/b/{0}".format(beatmap.map_id),
+							description=emb_description
+									)
+
+			osu_aw.set_author(url="https://osu.ppy.sh/b/{0}".format(beatmap.map_id) ,name=f"{beatmap.artist} - {beatmap.title}")
+			osu_aw.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png") #TODO: replace with valid pic
+			osu_aw.set_thumbnail(url=f"https://b.ppy.sh/thumb/{beatmap.set_id}l.jpg")
+
+			pp_100 = "[PPCalcError]"
+			pp_99 = "[PPCalcError]"
+			pp_98 = "[PPCalcError]"
+
+			try:
+				0/0 # need to fix osu oppai at some point
+				#get pp calc
+				raw_map = await BASE.modules._Osu_.Utils.download_map(beatmap.map_id)
+				raw_map = bytes(raw_map, "UTF-8")
+				pp_100 = await BASE.modules._Osu_.Utils.get_pp(raw_map, acc=100.0)
+				pp_99 = await BASE.modules._Osu_.Utils.get_pp(raw_map, acc=99.0)
+				pp_98 = await BASE.modules._Osu_.Utils.get_pp(raw_map, acc=98.0)
+			except:
+				pass
+
+
+			osu_aw.add_field(
+				name="PPcalc:",
+				value=f"{pp_100}pp for 100% | {pp_99}pp for 99% | {pp_98}pp for 98%...\n`{BASE.vars.TRIGGER_DISCORD}osu calc [maplink] (options)`",
+				inline=True
+			)
+
+			if not beatmap.tags == None:
+				osu_aw.add_field(name="Tags:",value=", ".join(tag for tag in beatmap.tags), inline=True)
+
+			return await BASE.discord.send_message(message.channel, embed=osu_aw)
+
+		async def process_s(BASE, message, result_object):
+			base_infos = result_object.all_maps[0]
+
+			row = [ ["Version", "CS", "AR", "HP", "OD", "★", "ID"] ]
+			for map_ in sorted(result_object.all_maps, key=lambda m : m.diff):
+				row.append([
+					map_.version,
+					str(round(map_.cs, 2)),
+					str(round(map_.ar, 2)),
+					str(round(map_.hp, 2)),
+					str(round(map_.od, 2)),
+					str(round(map_.diff, 2)),
+					str(map_.map_id)
+				])
+
+			restponse = f""\
+				f"**{base_infos.artist} - {base_infos.title}**\n"\
+				f"Mapset by: **{base_infos.creator}** | {base_infos.approved_symbol} **{base_infos.approved_name}** - BPM: **{str(round(base_infos.bpm))}**\n"\
+				f"```{tabulate(row,tablefmt='plain')}```"
+
+			emb = discord.Embed(title="Check it out", url=f"https://osu.ppy.sh/beatmapsets/{base_infos.set_id}", color=int(0xFF69B4))
+
+			if len(restponse) > 1997: restponse = ":no_entry_sign: Seems like this Mapset has to many diffs, its to much for the Discord message limit, sorry."
+
+			return await BASE.discord.send_message(message.channel, content=restponse, embed=emb)
+
+		async def process_u(BASE, message, result_object):
+			base_infos = result_object.all_maps[0]
+			response = f"All Maps by **{base_infos.creator}**\n\n"
+
+			for set_id in result_object.map_sets:
+				set_maps = result_object.map_sets[set_id]
+
+				listi = []
+
+				for map_ in sorted(set_maps, key=lambda m : m.diff):
+					listi.append([map_.version, "|", "★"+str(round(map_.diff, 2))])
+
+				response = response + ""\
+					f"**{map_.artist} - {map_.title}** | https://osu.ppy.sh/beatmapsets/{map_.set_id}\n"\
+					f"{map_.approved_symbol} **{map_.approved_name}** - BPM: **{str(round(map_.bpm))}**\n"\
+					f"```{tabulate(listi,tablefmt='plain')}```\n"
+
+			embed = discord.Embed(
+					color=int(0xFF69B4),
+					title="See them all",
+					url=f"https://osu.ppy.sh/u/{base_infos.creator}")
+
+			if len(response) > 1997: response = f":no_entry_sign: Seems like **{base_infos.creator}** made to many Maps, its to much for the Discord message limit, sorry."
+
+			return await BASE.discord.send_message(message.channel, content=response, embed=embed)
 
 class Giverole(object):
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(" ")
 
 		if m[0].lower().endswith('-list'):
 			return await Giverole.list_entrys(BASE, message, kwargs)
@@ -970,7 +957,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"You need to define at least one option!\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)
@@ -987,7 +974,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** - *\"{2}\"* needs at least one value!\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD, short_, long_))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)
@@ -1004,7 +991,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** - *\"{2}\"* only takes a value from 0-5\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD, short_, long_))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)
@@ -1021,7 +1008,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** - *\"{2}\"* only uses one value!\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD, short_, long_))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)
@@ -1038,7 +1025,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** - *\"{2}\"* awaits a `{3}` value\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, short_, long_, type_))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD, short_, long_, type_))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)
@@ -1072,7 +1059,7 @@ class Doujin(object):
 						color=int(0xFF0000),
 						description=
 							"**{1}** is a unknown option.\n"\
-							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.PT, value))
+							"Use `{0}doujin help` for a list of all options.".format(self.BASE.vars.TRIGGER_DISCORD, value))
 					)
 				await asyncio.sleep(15)
 				await self.BASE.discord.delete_message(I)

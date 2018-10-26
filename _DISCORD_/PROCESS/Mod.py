@@ -4,13 +4,13 @@ import asyncio, discord, tabulate, json
 
 class Settings(object):
 	async def Base(BASE, message, kwargs):
-		available = ["nsfw", "custom", "level", "quotes", "ai", "nonmod", "game"]
-		m = message.content.lower().split()
+		AVAILABLE = ["nsfw", "custom", "level", "quotes", "ai", "nonmod", "game"]
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 1:
 			return await BASE.discord.send_message(
 				message.channel,
-				":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
+				":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in AVAILABLE)))
 
 		elif m[1] == "ai":
 			await Settings.ai(BASE, message, kwargs)
@@ -34,13 +34,13 @@ class Settings(object):
 			await Settings.quotes(BASE, message, kwargs)
 
 		else:
-			av = ", ".join("`"+l+"`" for l in available)
+			av = ", ".join("`"+l+"`" for l in AVAILABLE)
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
 
 	# # #
 
 	async def nsfw(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -77,7 +77,7 @@ class Settings(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: NSFW Commands are now {state} in {message.channel.mention}")
 
 	async def ai(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -114,7 +114,7 @@ class Settings(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: AI Talks Commands are now {state} in {message.channel.mention}")
 
 	async def custom(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -151,7 +151,7 @@ class Settings(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: Custom commands are now {state} in {message.channel.mention}")
 
 	async def quotes(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -188,7 +188,7 @@ class Settings(object):
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: Quote commands are now {state} in {message.channel.mention}")
 
 	async def level(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -225,11 +225,11 @@ class Settings(object):
 		return await BASE.discord.send_message(
 			message.channel,
 			f":white_check_mark: Level system is now {state} in {message.channel.mention}\n"\
-			f"(affects member XP gain and the use of level commands like: {BASE.vars.PT}level, {BASE.vars.PT}leaderboard, etc.)"
+			f"(affects member XP gain and the use of level commands like: {BASE.vars.TRIGGER_DISCORD}level, {BASE.vars.TRIGGER_DISCORD}leaderboard, etc.)"
 		)
 
 	async def nonmod(BASE, message, kwargs):
-		m = message.content.lower().split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
@@ -274,13 +274,13 @@ class Quote(object):
 	MAX_QUOTE_ENTRY = 100
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		if len(m) == 1:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}quote [Option]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}quote [Option]`\n\n"\
 				f"`get` - Get a link to all quotes\n"\
 				f"`add` - Add a new quote\n"\
-				f"`rem` - Remove a quote based on there id number: `{BASE.vars.PT}quote rem 69`\n"\
+				f"`rem` - Remove a quote based on there id number: `{BASE.vars.TRIGGER_DISCORD}quote rem 69`\n"\
 				f"`clear` - Remove all quotes"
 			return await BASE.discord.send_message(message.channel, r)
 
@@ -296,7 +296,7 @@ class Quote(object):
 			return await BASE.discord.send_message(message.channel, f":warning: That's not an option.")
 
 	async def add(BASE, message, kwargs):
-		m = message.content.split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: You need to define a quote to add.")
@@ -319,7 +319,7 @@ class Quote(object):
 		return await BASE.discord.send_message(message.channel, content=":white_check_mark: Quote added", embed=em)
 
 	async def rem(BASE, message, kwargs):
-		m = message.content.split()
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: You need to define a quote ID to remove.")
@@ -357,14 +357,14 @@ class Prune(object):
 		if not phaaze_perms.manage_messages:
 			return await BASE.discord.send_message(message.channel, ":no_entry_sign: Phaaze need the `Manage messages` permissions to execute prune")
 
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		try:
 			#nothing
 			if len(m) == 1:
 				return await BASE.discord.send_message(message.channel,
 													f":warning: Syntax Error!\n"\
-													f"Usage: `{BASE.vars.PT*2}prune [Option]`\n\n"\
+													f"Usage: `{BASE.vars.TRIGGER_DISCORD*2}prune [Option]`\n\n"\
 													"`[Option]` - has to be a:\n\n"\
 													"`number` - from 1 to 500\n"\
 													"`@mention` - of the user you wanna prune\n"\
@@ -486,10 +486,10 @@ class Prune(object):
 
 class Level(object):
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		if len(m) == 1:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level [Option]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level [Option]`\n\n"\
 				f"`exp` - Edit a users exp and level\n"\
 				f"`medal` - add/rem/clear a users medals"
 			return await BASE.discord.send_message(message.channel, r)
@@ -502,10 +502,10 @@ class Level(object):
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not an option.")
 
 	async def exp(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		if len(m) <= 3:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level exp [New Exp] [Member]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level exp [New Exp] [Member]`\n\n"\
 				f"`Member` - a @ mention/id/name of the member you want to edit\n"\
 				f"`New Exp` - the new exp amount\n\n"\
 				f":information_source: Editing the exp in any way marks the user with a `[EDITED]` mark,\n"\
@@ -552,11 +552,11 @@ class Level(object):
 			f':white_check_mark: `{user.name}` exp has been set to **{str(exp)}**{ed}')
 
 	async def medal(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 
 		if len(m) <= 3:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}level medal [Method] [@Member] [Medalname]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level medal [Method] [@Member] [Medalname]`\n\n"\
 				f"`Method` - Add/Rem/Clear\n"\
 				f"`@Member` - a @ mention of the member you want to edit\n"\
 				f"`Medalname` - The actuall medall name"
@@ -651,10 +651,10 @@ class Giverole(object):
 	MAX_ADDROLE_ENTRYS = 100
 
 	async def Base(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		if len(m) <= 2:
-			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.PT*2}giverole [add/rem] [Trigger] [Role]`\n\n"\
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}giverole [add/rem] [Trigger] [Role]`\n\n"\
 				f"`add/rem` - add a new rule or remove it \n"\
 				f"`Trigger` - a key to identify what role sould be added/removed\n"\
 				f"`Role` - a role mention, role ID or full Role name"
@@ -667,10 +667,10 @@ class Giverole(object):
 			return await Giverole._rem_(BASE, message, kwargs)
 
 		else:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not available, try `{BASE.vars.PT * 2}giverole`")
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not available, try `{BASE.vars.TRIGGER_DISCORD * 2}giverole`")
 
 	async def _add_(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		me = await BASE.modules._Discord_.Utils.return_real_me(BASE, message)
 
@@ -734,7 +734,7 @@ class Giverole(object):
 			return await BASE.discord.send_message(message.channel, f":white_check_mark: Successfull added Giverole `{m[2]}` with role: `{role.name}`")
 
 	async def _rem_(BASE, message, kwargs):
-		m = message.content.split(" ")
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
 		trigger = m[2]
 
@@ -825,7 +825,7 @@ class Utils(object):
 
 		tem.set_author(name="{0}".format(server.name))
 		if server.icon_url != "": tem.set_image(url=server.icon_url)
-		tem.set_footer(text="To get all roles by id use ``{0}{0}getroles`".format(BASE.vars.PT))
+		tem.set_footer(text="To get all roles by id use ``{0}{0}getroles`".format(BASE.vars.TRIGGER_DISCORD))
 
 		return await BASE.discord.send_message(message.channel, embed=tem)
 
