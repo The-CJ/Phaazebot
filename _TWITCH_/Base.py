@@ -27,7 +27,7 @@ async def on_message(BASE, message):
 		await BASE.modules._Twitch_.Level.Base(BASE, message, channel_settings=channel_settings)
 
 	#Phaaze Commands
-	if message.content.startswith('!'):
+	if message.content.startswith(BASE.vars.TRIGGER_TWITCH):
 		if message.channel_name.lower() == BASE.twitch.nickname.lower():
 		#phaaze channel only
 			await BASE.modules._Twitch_.CMD.Normal.Main_channel(BASE, message, channel_settings=channel_settings)

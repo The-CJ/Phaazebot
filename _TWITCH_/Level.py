@@ -63,7 +63,7 @@ async def stats(BASE, message, kwargs):
 	if not channel_settings.get("active_level", False):
 		return
 
-	m = message.content.split(" ")
+	m = message.content[(BASE.vars.TRIGGER_TWITCH):].split(" ")
 	if len(m) == 1:
 		u = 0
 		search_user = message.name
@@ -85,15 +85,15 @@ async def stats(BASE, message, kwargs):
 	user = user['data'][0]
 
 	#owner
-	if message.channel_name == message.name:
+	if message.channel_name == user.get('user_name', None):
 		currency = str( user.get("amount_currency", 0) )
-		return await BASE.twitch.send_message(message.channel_name, f"@{message.display_name}, Credits: {currency} | Level: ∞ (Channel Owner)")
+		display_name = user.get('display_name', None)
+		return await BASE.twitch.send_message(message.channel_name, f"{display_name}, Credits: {currency} | Level: ∞ (Channel Owner)")
 
 
 	currency = str(user.get("amount_currency", 0))
 	time = user.get("amount_time", 1) * 5
 	hours = str(round(time / 60, 1))
-
 
 	current_level = str( BASE.modules._Twitch_.Base.Calc.get_lvl(time/5))
 	current_exp = BASE.modules._Twitch_.Base.Calc.get_exp(int(current_level))
