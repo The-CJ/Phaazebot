@@ -454,22 +454,6 @@ class Osu(object):
 
 		return await BASE.discord.send_message(message.channel, embed=EMB)
 
-	def extract_user(str_): #TODO: replace
-		#link
-		u = re.match(r'https://osu\.ppy\.sh/(users|u)/(.+)', str_)
-		t = "string"
-		if u != None:
-			u = u.group(2)
-			if u.isdigit():
-				t = "id"
-
-			return u , t
-
-		if str_.isdigit():
-			t = "id"
-
-		return str_, t
-
 	class Map_Info(object):
 
 		async def Base(BASE, message, kwargs):
@@ -546,9 +530,21 @@ class Osu(object):
 			osu_aw.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png") #TODO: replace with valid pic
 			osu_aw.set_thumbnail(url=f"https://b.ppy.sh/thumb/{beatmap.set_id}l.jpg")
 
-			pp_100 = "Soon" #await BASE.modules.osu_utils.get_pp(beatmap.map_id, acc=100.0) #TODO: fix calc
-			pp_99 = "Soon" #await BASE.modules.osu_utils.get_pp(beatmap.map_id, acc=99.0)
-			pp_98 = "Soon" #await BASE.modules.osu_utils.get_pp(beatmap.map_id, acc=98.0)
+			pp_100 = "[PPCalcError]"
+			pp_99 = "[PPCalcError]"
+			pp_98 = "[PPCalcError]"
+
+			try:
+				0/0 # need to fix osu oppai at some point
+				#get pp calc
+				raw_map = await BASE.modules._Osu_.Utils.download_map(beatmap.map_id)
+				raw_map = bytes(raw_map, "UTF-8")
+				pp_100 = await BASE.modules._Osu_.Utils.get_pp(raw_map, acc=100.0)
+				pp_99 = await BASE.modules._Osu_.Utils.get_pp(raw_map, acc=99.0)
+				pp_98 = await BASE.modules._Osu_.Utils.get_pp(raw_map, acc=98.0)
+			except:
+				pass
+
 
 			osu_aw.add_field(
 				name="PPcalc:",
