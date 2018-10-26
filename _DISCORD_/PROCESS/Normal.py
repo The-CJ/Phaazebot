@@ -517,81 +517,20 @@ class Osu(object):
 
 			#set
 			elif mode == "s":
-				base_infos = result.map_sets[0][0]
-
-				listi = []
-				for map_ in sorted(result.map_sets[0], key=lambda map__: map__.diff):
-					diff = "★ " + str(round(map_.diff, 2))
-					cs = "CS: " + str(round(map_.cs, 2))
-					ar = "AR: " + str(round(map_.ar, 2))
-					hp = "HP: " + str(round(map_.hp, 2))
-					od = "OD: " + str(round(map_.od, 2))
-					_id = "ID: " + str(map_.Map_ID)
-					listi.append([map_.version, "|", cs, "|", ar, "|", hp, "|", od, "|", diff, "|", _id])
-
-				fff = 	"**{artist} - {title}**\n"\
-						"Mapset by: **{creator}** | {symbol} **{approved_name}** - BPM: **{bpm}**\n"\
-						"```{diff_list}```".format	(
-											creator = base_infos.creator,
-											symbol = await BASE.modules.Utils.get_osu_status_symbol(base_infos.approved),
-											approved_name = base_infos.approved_name,
-											artist = base_infos.artist,
-											title = base_infos.title,
-											diff_list = tabulate(listi, tablefmt="plain"),
-											bpm = str(round(base_infos.bpm)))
-
-				ggt = discord.Embed(title="Check it out", url="https://osu.ppy.sh/s/{0}".format(base_infos.Set_ID), color=int(0xFF69B4))
-
-				if len(fff) > 1997: fff = ":no_entry_sign: Seems like this Mapset has to many diffs, its to much for the Discord message limit, sorry."
-
-				return await BASE.discord.send_message(message.channel, content=fff, embed=ggt)
-
+				return await Osu.Map_Info.process_s(BASE, message, result)
 
 			#creator
 			elif mode == "u":
-				base_infos = result.map_sets[0][0]
-				base_res = "All Maps by **{0}**\n\n".format(base_infos.creator)
-
-				for _set in result.map_sets:
-
-					listi = []
-
-					for map_ in sorted(_set, key=lambda map__: map__.diff):
-						diff = "★ " + str(round(map_.diff, 2))
-						cs = "CS: " + str(round(map_.cs, 2))
-						ar = "AR: " + str(round(map_.ar, 2))
-						hp = "HP: " + str(round(map_.hp, 2))
-						od = "OD: " + str(round(map_.od, 2))
-						_id = "ID: " + str(map_.Map_ID)
-						listi.append([map_.version, "|", diff])
-
-					base_res  = base_res + "**{artist} - {title}** | https://osu.ppy.sh/s/{IDD}\n{symbol} **{approved_name}** - BPM: **{bpm}**\n```{diff_list}```\n".format	(
-																													artist = _set[0].artist,
-																													title = _set[0].title,
-																													symbol = await BASE.modules.Utils.get_osu_status_symbol(_set[0].approved),
-																													approved_name = _set[0].approved_name,
-																													bpm = str(round(_set[0].bpm)),
-																													diff_list = tabulate(listi, tablefmt="plain"),
-																													IDD = _set[0].Set_ID
-																															)
-				ebb = discord.Embed(
-						color=int(0xFF69B4),
-						title="See them all",
-						url="https://osu.ppy.sh/u/{0}".format(base_infos.creator))
-
-				if len(base_res) > 1997: base_res = ":no_entry_sign: Seems like **{0}** made to many Maps, its to much for the Discord message limit, sorry.".format(base_infos.creator)
-
-				await BASE.discord.send_message(message.channel, content=base_res, embed=ebb)
-				try: await BASE.discord.delete_message(message)
-				except: pass
-				return
+				return await Osu.Map_Info.process_u(BASE, message, result)
 
 		async def process_b(BASE, message, result_object):
 			# get called with one map as result
 			beatmap = result_object.all_maps[0]
+			source = ':triangular_flag_on_post: '+ beatmap.source if  beatmap.source else ""
 			emb_description = ""\
 				f"mapped by {beatmap.creator}\n\n"\
-				f"{beatmap.approved_symbol} **{beatmap.approved_name}** | :green_heart: Favourite: **{beatmap.favourite_count}** {beatmap.source}\n"\
+				f"{beatmap.approved_symbol} **{beatmap.approved_name}** | :green_heart: Favourite: **{beatmap.favourite_count}**\n"\
+				f"{source}"\
 				f":star:: **{round(beatmap.diff, 2)}** | :notes: BPM: **{beatmap.bpm}** | :stopwatch: Lenght: **{beatmap.lenght}** *(Drain: {beatmap.drain})*\n"\
 				f":small_red_triangle:CS: {beatmap.cs} | :small_red_triangle:AR: {beatmap.ar} | :small_red_triangle:OD: {beatmap.od} | :small_red_triangle:HP: {beatmap.hp}\n"\
 				f"*MapID: {beatmap.map_id} | SetID: {beatmap.set_id}*"
@@ -604,7 +543,7 @@ class Osu(object):
 									)
 
 			osu_aw.set_author(url="https://osu.ppy.sh/b/{0}".format(beatmap.map_id) ,name=f"{beatmap.artist} - {beatmap.title}")
-			osu_aw.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png") #TODO: replace with valid
+			osu_aw.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png") #TODO: replace with valid pic
 			osu_aw.set_thumbnail(url=f"https://b.ppy.sh/thumb/{beatmap.set_id}l.jpg")
 
 			pp_100 = "Soon" #await BASE.modules.osu_utils.get_pp(beatmap.map_id, acc=100.0) #TODO: fix calc
@@ -621,6 +560,58 @@ class Osu(object):
 				osu_aw.add_field(name="Tags:",value=", ".join(tag for tag in beatmap.tags), inline=True)
 
 			return await BASE.discord.send_message(message.channel, embed=osu_aw)
+
+		async def process_s(BASE, message, result_object):
+			base_infos = result_object.all_maps[0]
+
+			row = [ ["Version", "CS", "AR", "HP", "OD", "★", "ID"] ]
+			for map_ in sorted(result_object.all_maps, key=lambda m : m.diff):
+				row.append([
+					map_.version,
+					str(round(map_.cs, 2)),
+					str(round(map_.ar, 2)),
+					str(round(map_.hp, 2)),
+					str(round(map_.od, 2)),
+					str(round(map_.diff, 2)),
+					str(map_.map_id)
+				])
+
+			restponse = f""\
+				f"**{base_infos.artist} - {base_infos.title}**\n"\
+				f"Mapset by: **{base_infos.creator}** | {base_infos.approved_symbol} **{base_infos.approved_name}** - BPM: **{str(round(base_infos.bpm))}**\n"\
+				f"```{tabulate(row,tablefmt='plain')}```"
+
+			emb = discord.Embed(title="Check it out", url=f"https://osu.ppy.sh/beatmapsets/{base_infos.set_id}", color=int(0xFF69B4))
+
+			if len(restponse) > 1997: restponse = ":no_entry_sign: Seems like this Mapset has to many diffs, its to much for the Discord message limit, sorry."
+
+			return await BASE.discord.send_message(message.channel, content=restponse, embed=emb)
+
+		async def process_u(BASE, message, result_object):
+			base_infos = result_object.all_maps[0]
+			response = f"All Maps by **{base_infos.creator}**\n\n"
+
+			for set_id in result_object.map_sets:
+				set_maps = result_object.map_sets[set_id]
+
+				listi = []
+
+				for map_ in sorted(set_maps, key=lambda m : m.diff):
+					listi.append([map_.version, "|", "★"+str(round(map_.diff, 2))])
+
+				response = response + ""\
+					f"**{map_.artist} - {map_.title}** | https://osu.ppy.sh/beatmapsets/{map_.set_id}\n"\
+					f"{map_.approved_symbol} **{map_.approved_name}** - BPM: **{str(round(map_.bpm))}**\n"\
+					f"```{tabulate(listi,tablefmt='plain')}```\n"
+
+			embed = discord.Embed(
+					color=int(0xFF69B4),
+					title="See them all",
+					url=f"https://osu.ppy.sh/u/{base_infos.creator}")
+
+			if len(response) > 1997: response = f":no_entry_sign: Seems like **{base_infos.creator}** made to many Maps, its to much for the Discord message limit, sorry."
+
+			return await BASE.discord.send_message(message.channel, content=response, embed=embed)
 
 class Giverole(object):
 

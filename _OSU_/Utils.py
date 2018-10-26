@@ -89,20 +89,14 @@ async def get_maps(BASE, ID=None, mode="b"):
 	if r == []: return None
 
 	def sort_in_mapsets(maps):
-		if len(maps) == 1:
-			return maps
+		result_dict = dict()
 
-		set_result = []
+		for osu_map in maps:
+			map_set = result_dict.get(osu_map.set_id, [])
+			map_set.append(osu_map)
+			result_dict[str(osu_map.set_id)] = map_set
 
-		Set_exist = []
-		for map_ in maps:
-			if not map_.Set_ID in Set_exist:
-				Set_exist.append(map_.Set_ID)
-				set_result.append([m for m in maps if m.Set_ID == map_.Set_ID])
-
-			else: pass
-
-		return set_result
+		return result_dict
 
 	class Results(object):
 		def __init__(self, response, mode):
@@ -331,7 +325,7 @@ class Map_Object(object):
 		#meta
 		self.set_id = self.info["beatmapset_id"]
 		self.map_id = self.info["beatmap_id"]
-		self.favos = self.info["favourite_count"]
+		self.favourite_count = self.info["favourite_count"]
 		self.tags = self.info["tags"].split(" ")
 
 		#infos
