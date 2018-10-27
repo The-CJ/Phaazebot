@@ -32,7 +32,7 @@ class Init_discord(discord.Client):
 			except: pass
 
 		if message.channel.is_private:
-			await self.BASE.modules._Discord_.Priv.base(self.BASE, message)
+			await self.BASE.modules._Discord_.Priv.Base(self.BASE, message)
 		else:
 			await self.BASE.modules._Discord_.Open.Base(self.BASE, message)
 
@@ -47,7 +47,7 @@ class Init_discord(discord.Client):
 		if after.author.bot: return
 
 		if after.channel.is_private:
-			await self.BASE.modules._Discord_.Priv.base(self.BASE, after)
+			await self.BASE.modules._Discord_.Priv.Base(self.BASE, after)
 		else:
 			await self.BASE.modules._Discord_.Open.Base(self.BASE, after)
 
