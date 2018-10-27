@@ -66,7 +66,7 @@ async def lurkers(BASE):
 		BASE.twitch.live = [str(stream.get('channel', {}).get('_id', None)) for stream in live_streams]
 
 		bot_list_db = BASE.PhaazeDB.select(of="setting/known_twitch_bots")
-		bot_list = [bot.get[""] for bot in bot_list_db['data'] if bot.get("name", None) != None]
+		bot_list = [bot.get["name"].lower() for bot in bot_list_db['data'] if bot.get("name", None) != None]
 
 		for channel_id in BASE.twitch.channels:
 			channel = BASE.twitch.channels[channel_id]
@@ -92,7 +92,7 @@ async def lurkers(BASE):
 				for user in channel_levels:
 
 					#is a bot, skip it
-					if user.get("user_name", None) in bot_list: continue
+					if user.get("user_name", "").lower() in bot_list: continue
 
 					#is currently viewing, add to gain time
 					if user.get("user_name", None) in viewers:
