@@ -1,6 +1,6 @@
 #BASE.modules._TWITCH_.CMD.Mod
 
-import asyncio, random, json
+import asyncio
 
 async def Base(BASE, message, **kwargs):
 	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].lower().split(" ")

@@ -48,7 +48,7 @@ async def add(BASE, message, kwargs):
 	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
 
 	if len(m) <= 2:
-		r = f"Error! > !addcom [Trigger] [Content]"
+		r = f"Error! > {BASE.vars.TRIGGER_TWITCH}addcom [Trigger] [Content]"
 		return await BASE.twitch.send_message(message.channel_name, r)
 
 	trigger = m[1].lower()
@@ -95,7 +95,7 @@ async def rem(BASE, message, kwargs):
 	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
 
 	if len(m) <= 1:
-		r = f"Error! > !delcom [trigger]"
+		r = f"Error! > {BASE.vars.TRIGGER_TWITCH}delcom [trigger]"
 		return await BASE.twitch.send_message(message.channel_name, r)
 
 	channel_commands = await BASE.modules._Twitch_.Utils.get_channel_commands(BASE, message.channel_id)

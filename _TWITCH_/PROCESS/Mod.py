@@ -8,7 +8,7 @@ class Quote(object):
 		m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
 
 		if len(m) <= 1:
-			r = f"Error! > !addquote [Content]"
+			r = f"Error! > {BASE.vars.TRIGGER_TWITCH}addquote [Content]"
 			return await BASE.twitch.send_message(message.channel_name, r)
 
 		channel_quotes = await BASE.modules._Twitch_.Utils.get_channel_quotes(BASE, message.channel_id)
@@ -28,7 +28,7 @@ class Quote(object):
 		m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
 
 		if len(m) <= 1:
-			r = f"Error! > !delquote [ID]"
+			r = f"Error! > {BASE.vars.TRIGGER_TWITCH}delquote [ID]"
 			return await BASE.twitch.send_message(message.channel_name, r)
 
 		_id_ = m[1] if m[1].isdigit() else None
