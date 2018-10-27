@@ -1,6 +1,6 @@
 #BASE.modules._Twitch_.Base
 
-import asyncio
+import asyncio, math
 
 async def on_message(BASE, message):
 
@@ -145,4 +145,3 @@ class Calc(object):
 		while Calc.get_exp(lvl) < exp:
 			lvl += 1
 		return lvl
-

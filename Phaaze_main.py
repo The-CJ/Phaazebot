@@ -110,6 +110,7 @@ class BASE(object):
 			self.TWITCH_TIMEOUT_MESSAGE_COOLDOWN = config.get("twitch_timeout_message_cooldown", 20)
 			self.TWITCH_BLACKLIST_REMEMBER_TIME = config.get("twitch_blacklist_remember_time", 180)
 			self.TWITCH_CUSTOM_COMMAND_AMOUNT = config.get("twitch_custom_command_amount", 100)
+			self.TWITCH_QUOTE_AMOUNT = config.get("twitch_quote_amount", 100)
 			self.TWITCH_STATS_COOLDOWN = config.get("twitch_stats_cooldown", 5)
 
 	class MODULES(object): #BASE.modules

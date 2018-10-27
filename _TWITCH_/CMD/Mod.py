@@ -3,7 +3,7 @@
 import asyncio, random, json
 
 async def Base(BASE, message, **kwargs):
-	m = message.content[(BASE.vars.TRIGGER_TWITCH):].lower().split(" ")
+	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].lower().split(" ")
 	check = m[0]
 
 	if check.startswith("addcom"):

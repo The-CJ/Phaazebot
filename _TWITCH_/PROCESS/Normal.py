@@ -25,7 +25,7 @@ class Quote(object):
 			return await BASE.twitch.send_message(message.channel_name, 'This channel has no quotes.')
 
 		index = None
-		m = message.content[(BASE.vars.TRIGGER_TWITCH):].split(" ")
+		m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
 		if len(m) > 1:
 			if m[1].isdigit():
 				index = int(m[1])

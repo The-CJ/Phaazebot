@@ -63,7 +63,7 @@ async def stats(BASE, message, kwargs):
 	if not channel_settings.get("active_level", False):
 		return
 
-	m = message.content[(BASE.vars.TRIGGER_TWITCH):].split(" ")
+	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
 	if len(m) == 1:
 		u = 0
 		search_user = message.name
