@@ -336,7 +336,7 @@ class Leave(object):
 
 		#nothing
 		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}leave [Option]`\n\n"\
+			return await BASE.discord.send_message(message.channel, f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}leave [Option]`\n\n"\
 																	"`get` - The current leave message + channel\n"\
 																	"`get-raw` - The current unformated leave message + channel\n"\
 																	"`set` - Set the current leave message\n"\
@@ -461,7 +461,7 @@ class Autorole(object):
 	async def Base(BASE, message, kwargs):
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel, 	f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}autorole [Option]`\n\n"\
+			return await BASE.discord.send_message(message.channel, f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD * 3}autorole [Option]`\n\n"\
 																	"`get` - The current autorole\n"\
 																	"`set` - Set new autorole\n"\
 																	"`clear` - Removes the autorole\n"\

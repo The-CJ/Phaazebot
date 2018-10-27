@@ -271,8 +271,6 @@ class Settings(object):
 
 class Quote(object):
 
-	MAX_QUOTE_ENTRY = 100
-
 	async def Base(BASE, message, kwargs):
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
@@ -304,8 +302,8 @@ class Quote(object):
 		quote = " ".join(x for x in m[2:])
 		server_quotes = kwargs.get('server_quotes', {})
 
-		if len(server_quotes) >= Quote.MAX_QUOTE_ENTRY:
-			return await BASE.discord.send_message(message.channel, f":no_entry_sign: This server hit the quote limit of {Quote.MAX_QUOTE_ENTRY}, please remove some first.")
+		if len(server_quotes) >= BASE.limit.DISCORD_QUOTES_AMOUNT:
+			return await BASE.discord.send_message(message.channel, f":no_entry_sign: This server hit the quote limit of {BASE.limit.DISCORD_QUOTES_AMOUNT}, please remove some first.")
 
 		i = BASE.PhaazeDB.insert(
 			into=f"discord/quotes/quotes_{message.server.id}",
@@ -648,8 +646,6 @@ class Level(object):
 
 class Giverole(object):
 
-	MAX_ADDROLE_ENTRYS = 100
-
 	async def Base(BASE, message, kwargs):
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
@@ -715,8 +711,8 @@ class Giverole(object):
 
 		add_rolelist = await BASE.modules._Discord_.Utils.get_server_addrolelist(BASE, message.server.id)
 
-		if len(add_rolelist) >= Giverole.MAX_ADDROLE_ENTRYS:
-			return await BASE.discord.send_message(message.channel, f":no_entry_sigh: The server already reached the limit of {str(Giverole.MAX_ADDROLE_ENTRYS)} add/take -roles")
+		if len(add_rolelist) >= BASE.limit.DISCORD_ADDROLE_AMOUNT:
+			return await BASE.discord.send_message(message.channel, f":no_entry_sigh: The server already reached the limit of {BASE.limit.DISCORD_ADDROLE_AMOUNT} add/take -roles")
 
 		check_role = None
 		for check_role_lit in add_rolelist:

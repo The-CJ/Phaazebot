@@ -2,12 +2,12 @@
 
 import asyncio, json
 
-MAX_CUSTOM_COMMANDS = 150
-CUSTOM_COMMAND_COOLDOWN = []
+# store list of timeouted channels, so user cant spam
+custom_command_cooldown = []
 
 async def get(BASE, message, server_setting, server_commands):
-	if message.author.id in CUSTOM_COMMAND_COOLDOWN: return
-	asyncio.ensure_future(cooldown(message))
+	if message.channel.id in custom_command_cooldown: return
+	asyncio.ensure_future(cooldown(BASE, message))
 
 	#are custom commands disabled?
 	if message.channel.id in server_setting.get("disable_chan_custom",[]): return
@@ -84,8 +84,8 @@ async def add(BASE, message, kwargs):
 
 	#new
 	else:
-		if len(server_commands) >= MAX_CUSTOM_COMMANDS:
-			return await BASE.discord.send_message(message.channel, f":no_entry_sign: The limit of {MAX_CUSTOM_COMMANDS} custom commands is reached, delete some first.")
+		if len(server_commands) >= BASE.limit.DISCORD_CUSTOM_COMAMNDS_AMOUNT:
+			return await BASE.discord.send_message(message.channel, f":no_entry_sign: The limit of {BASE.limit.DISCORD_CUSTOM_COMAMNDS_AMOUNT} custom commands is reached, delete some first.")
 
 		content = " ".join(f for f in m[2:])
 		BASE.PhaazeDB.insert(
@@ -150,11 +150,11 @@ async def get_all(BASE, message, kwargs):
 
 	return await BASE.discord.send_message(message.channel, content)
 
-async def cooldown(m):
-	CUSTOM_COMMAND_COOLDOWN.append(m.author.id)
-	await asyncio.sleep(4)
+async def cooldown(BASE, m):
+	custom_command_cooldown.append(m.channel.id)
+	await asyncio.sleep(BASE.limit.DISCORD_CUSTOM_COMMANDS_COOLDOWN)
 	try:
-		CUSTOM_COMMAND_COOLDOWN.remove(m.author.id)
+		custom_command_cooldown.remove(m.channel.id)
 	except:
 		pass
 

@@ -34,7 +34,7 @@ class Init_discord(discord.Client):
 		if message.channel.is_private:
 			await self.BASE.modules._Discord_.Priv.base(self.BASE, message)
 		else:
-			await self.BASE.modules._Discord_.Open.base(self.BASE, message)
+			await self.BASE.modules._Discord_.Open.Base(self.BASE, message)
 
 	async def on_message_delete(self, message):
 		await self.BASE.modules._Discord_.Discord_Events.Message.delete(self.BASE, message)

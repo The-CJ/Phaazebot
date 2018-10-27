@@ -2,11 +2,11 @@
 
 import asyncio, discord
 
-COOLDOWN_NORMAL = []
-COOLDOWN_MOD = []
-COOLDOWN_OWNER = []
+cooldown_normal = []
+cooldown_mod = []
+cooldown_owner = []
 
-async def base(BASE, message):
+async def Base(BASE, message):
 	#R.o.D. Sys Overr.
 	if len(message.author.roles) == 1 and message.server.id == "117801129496150019":
 		role = discord.utils.get(message.server.roles, id="117808048919019527")
@@ -42,20 +42,20 @@ async def base(BASE, message):
 
 	#owner
 	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD * 3):
-		if message.author.id not in COOLDOWN_OWNER:
-			asyncio.ensure_future(cooldown_Owner(message))
+		if message.author.id not in cooldown_owner:
+			asyncio.ensure_future(cooldown_Owner(BASE, message))
 			await BASE.modules._Discord_.CMD.Owner.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#mod
 	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD * 2):
-		if message.author.id not in COOLDOWN_MOD:
-			asyncio.ensure_future(cooldown_Mod(message))
+		if message.author.id not in cooldown_mod:
+			asyncio.ensure_future(cooldown_Mod(BASE, message))
 			await BASE.modules._Discord_.CMD.Mod.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#normal
 	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD):
-		if message.author.id not in COOLDOWN_NORMAL:
-			asyncio.ensure_future(cooldown_Normal(message))
+		if message.author.id not in cooldown_normal:
+			asyncio.ensure_future(cooldown_Normal(BASE, message))
 			await BASE.modules._Discord_.CMD.Normal.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
 
 	#@phaazebot ai call
@@ -67,26 +67,26 @@ async def base(BASE, message):
 			if check == BASE.discord.user.mention:
 				return await BASE.discord.send_message(message.channel, ":no_entry_sign: Phaaze AI Moduls not avalible for now.")
 
-async def cooldown_Normal(m):
-	COOLDOWN_NORMAL.append(m.author.id)
-	await asyncio.sleep(1)
+async def cooldown_Normal(BASE, m):
+	cooldown_normal.append(m.author.id)
+	await asyncio.sleep(BASE.vars.DISCORD_NORMAL_COOLDOWN)
 	try:
-		COOLDOWN_NORMAL.remove(m.author.id)
+		cooldown_normal.remove(m.author.id)
 	except:
 		pass
 
-async def cooldown_Mod(m):
-	COOLDOWN_MOD.append(m.author.id)
-	await asyncio.sleep(3)
+async def cooldown_Mod(BASE, m):
+	cooldown_mod.append(m.author.id)
+	await asyncio.sleep(BASE.vars.DISCORD_MOD_COOLDOWN)
 	try:
-		COOLDOWN_MOD.remove(m.author.id)
+		cooldown_mod.remove(m.author.id)
 	except:
 		pass
 
-async def cooldown_Owner(m):
-	COOLDOWN_OWNER.append(m.author.id)
-	await asyncio.sleep(5)
+async def cooldown_Owner(BASE, m):
+	cooldown_owner.append(m.author.id)
+	await asyncio.sleep(BASE.vars.DISCORD_OWNER_COOLDOWN)
 	try:
-		COOLDOWN_OWNER.remove(m.author.id)
+		cooldown_owner.remove(m.author.id)
 	except:
 		pass

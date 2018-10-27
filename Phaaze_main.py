@@ -6,7 +6,7 @@ import PhaazeDBC as PhaazeDB
 
 class BASE(object):
 	""" contains everything, does everything, is everything -> can be found anywhere """
-	def __init__(self, config=dict()):
+	def __init__(self, config = dict()):
 		self.config = config
 		self.version = config.get('version', '[N/A]')
 		self.uptime_var_1 = time.time() # together with now(), used to know how long phaaze is running
@@ -18,13 +18,16 @@ class BASE(object):
 		self.osu = None
 
 		#get the active/load class, aka, what sould get started
-		self.active = self.ACTIVE(self.config['active'])
+		self.active = self.ACTIVE( self.config.get('active', dict()) )
 
 		#a class filled with permanent vars, mainly from external sources or whatever
-		self.vars = self.VARS(self.config['vars'])
+		self.vars = self.VARS( self.config.get('vars', dict()) )
 
 		#the key to... whatever, that will be needed to connect to everything thats not ourself
-		self.access = self.ACCESS(self.config['access'])
+		self.access = self.ACCESS( self.config.get('access', dict()) )
+
+		#contains user limits for all addeble things, like custom command amount
+		self.limit = self.LIMIT( self.config.get('limit', dict()) )
 
 		#that contains pretty much everything
 		self.modules = self.MODULES()
@@ -73,7 +76,7 @@ class BASE(object):
 
 	class ACCESS(object): #BASE.access
 		def __init__(self, config):
-			self.Twitch_Admin_Token =  config.get('Twitch_Admin_Token', '')
+			self.Twitch_Admin_Token = config.get('Twitch_Admin_Token', '')
 			self.Twitch_API_Token = config.get('Twitch_API_Token', '')
 			self.Twitch_IRC_Token = config.get('Twitch_IRC_Token', '')
 
@@ -92,6 +95,20 @@ class BASE(object):
 			self.twitter_token_key = config.get('twitter_token_key','')
 			self.twitter_consumer_key = config.get('twitter_consumer_key','')
 			self.twitter_consumer_secret = config.get('twitter_consumer_secret','')
+
+	class LIMIT(object): #BASE.limit
+		def __init__(self, config):
+			self.DISCORD_NORMAL_COOLDOWN = config.get("discord_normal_cooldown", 1)
+			self.DISCORD_MOD_COOLDOWN = config.get("discord_mod_cooldown", 3)
+			self.DISCORD_OWNER_COOLDOWN = config.get("discord_owner_cooldown", 5)
+			self.DISCORD_CUSTOM_COMAMNDS_AMOUNT = config.get("discord_custom_comamnds_amount", 100)
+			self.DISCORD_CUSTOM_COMMANDS_COOLDOWN = config.get("discord_custom_commands_cooldown", 3)
+			self.DISCORD_LEVEL_COOLDOWN = config.get("discord_level_cooldown", 3)
+			self.DISCORD_QUOTES_AMOUNT = config.get("discord_quotes_amount", 100)
+			self.DISCORD_ADDROLE_AMOUNT = config.get("discord_quotes_amount", 25)
+
+
+
 
 	class MODULES(object): #BASE.modules
 		def __init__(self):
@@ -382,7 +399,7 @@ class __WEB__(threading.Thread):
 _web_ = __WEB__()
 ################################################################################
 
-async def thread_saving(_d_: __DISCORD__,
+async def MAINFRAME_LOOP(_d_: __DISCORD__,
 						_t_: __TWITCH_IRC__,
 						_ta_: __TWITCH_ALERTS__,
 						_o_: __OSU_IRC__,
@@ -464,31 +481,35 @@ async def thread_saving(_d_: __DISCORD__,
 
 			await asyncio.sleep(5)
 		except:
-			print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME")
+			print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME LOOP")
 			await asyncio.sleep(3)
 
 	print("Thread saver stoped")
 
-class secure_of_all_treads(threading.Thread):
+class MAINFRAME(threading.Thread):
 	def __init__(self):
-		super(secure_of_all_treads, self).__init__()
-		self.name = "Saving"
-		self.xloop = asyncio.new_event_loop()
+		super(MAINFRAME, self).__init__()
+		self.name = "Mainframe"
+		self.loop = asyncio.new_event_loop()
 
 	def run(self):
-		asyncio.set_event_loop(self.xloop)
+		asyncio.set_event_loop(self.loop)
 		while BASE.active.main:
 			try:
-				self.xloop.run_until_complete(thread_saving(
-									_discord_,
-									_twitch_irc_,
-									_twitch_alerts_,
-									_osu_irc_,
-									_web_,
-									_worker_
-									))
-			except:
-				print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME SAVER")
+				self.loop.run_until_complete(
+					MAINFRAME_LOOP(
+						_discord_,
+						_twitch_irc_,
+						_twitch_alerts_,
+						_osu_irc_,
+						_web_,
+						_worker_
+					)
+				)
 
-secure = secure_of_all_treads()
-secure.start()
+			except:
+				print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME")
+
+MAIN = MAINFRAME()
+if __name__ == '__main__':
+	MAIN.start()

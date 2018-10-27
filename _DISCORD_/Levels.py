@@ -2,9 +2,13 @@
 
 import asyncio, discord, tabulate, math
 
-LEVEL_COOLDOWN = []
+level_cooldown = []
 
 class Calc(object):
+	# calculation data and functions
+	# since its hardcodes and only for discord
+	# there are not controlles in BASE.limit
+	
 	LEVEL_DEFAULT_EXP = 65
 	LEVEL_MULTIPLIER = 0.15
 
@@ -49,7 +53,10 @@ class Utils(object):
 
 async def Base(BASE, message, server_setting, server_levels):
 	#still in cooldown
-	if message.author.id in LEVEL_COOLDOWN: return
+	if message.author.id in level_cooldown: return
+
+	#add cooldown
+	asyncio.ensure_future(cooldown(BASE, message))
 
 	#is a command
 	if message.content.startswith(BASE.vars.TRIGGER_DISCORD): return
@@ -72,9 +79,6 @@ async def Base(BASE, message, server_setting, server_levels):
 		where=f"data['member_id'] == '{user['member_id']}'",
 		content=dict(exp=user['exp'])
 	)
-
-	#add cooldown
-	asyncio.ensure_future(cooldown(message))
 
 	await Utils.check_level(BASE, message, user)
 
@@ -190,11 +194,11 @@ async def leaderboard(BASE, message, kwargs):
 
 	return await BASE.discord.send_message(message.channel, return_message)
 
-async def cooldown(m):
-	LEVEL_COOLDOWN.append(m.author.id)
-	await asyncio.sleep(4)
+async def cooldown(BASE, m):
+	level_cooldown.append(m.author.id)
+	await asyncio.sleep(BASE.limit.DISCORD_LEVEL_COOLDOWN)
 	try:
-		LEVEL_COOLDOWN.remove(m.author.id)
+		level_cooldown.remove(m.author.id)
 	except:
 		pass
 

@@ -14,6 +14,9 @@ async def is_Mod(BASE, message):
 			c = True
 		if "bot commander" in role.name.lower():
 			c = True
+
+		if c: break
+		
 	if message.author == message.server.owner:
 		c = True
 
