@@ -69,7 +69,7 @@ async def Base(BASE, message):
 
 async def cooldown_Normal(BASE, m):
 	cooldown_normal.append(m.author.id)
-	await asyncio.sleep(BASE.vars.DISCORD_NORMAL_COOLDOWN)
+	await asyncio.sleep(BASE.limit.DISCORD_NORMAL_COOLDOWN)
 	try:
 		cooldown_normal.remove(m.author.id)
 	except:
@@ -77,7 +77,7 @@ async def cooldown_Normal(BASE, m):
 
 async def cooldown_Mod(BASE, m):
 	cooldown_mod.append(m.author.id)
-	await asyncio.sleep(BASE.vars.DISCORD_MOD_COOLDOWN)
+	await asyncio.sleep(BASE.limit.DISCORD_MOD_COOLDOWN)
 	try:
 		cooldown_mod.remove(m.author.id)
 	except:
@@ -85,7 +85,7 @@ async def cooldown_Mod(BASE, m):
 
 async def cooldown_Owner(BASE, m):
 	cooldown_owner.append(m.author.id)
-	await asyncio.sleep(BASE.vars.DISCORD_OWNER_COOLDOWN)
+	await asyncio.sleep(BASE.limit.DISCORD_OWNER_COOLDOWN)
 	try:
 		cooldown_owner.remove(m.author.id)
 	except:

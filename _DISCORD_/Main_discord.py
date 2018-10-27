@@ -49,7 +49,7 @@ class Init_discord(discord.Client):
 		if after.channel.is_private:
 			await self.BASE.modules._Discord_.Priv.base(self.BASE, after)
 		else:
-			await self.BASE.modules._Discord_.Open.base(self.BASE, after)
+			await self.BASE.modules._Discord_.Open.Base(self.BASE, after)
 
 	#member management
 	async def on_member_join(self, member):

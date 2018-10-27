@@ -8,7 +8,7 @@ class Calc(object):
 	# calculation data and functions
 	# since its hardcodes and only for discord
 	# there are not controlles in BASE.limit
-	
+
 	LEVEL_DEFAULT_EXP = 65
 	LEVEL_MULTIPLIER = 0.15
 
