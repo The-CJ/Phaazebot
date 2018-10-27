@@ -336,7 +336,7 @@ class __TWITCH_IRC__(threading.Thread):
 
 			from _TWITCH_.Main_twitch import Init_twitch
 			BASE.twitch = Init_twitch(BASE)
-			BASE.twitch.run(token=BASE.access.Osu_IRC_Token, nickname="phaazebot")
+			BASE.twitch.run(token=BASE.access.Twitch_IRC_Token, nickname="phaazebot")
 
 		except Exception as e:
 			BASE.modules.Console.ERROR("Twitch IRC crashed: "+ str(e))
