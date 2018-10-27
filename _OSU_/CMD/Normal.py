@@ -4,6 +4,6 @@ import asyncio
 
 async def Base(BASE, message):
 
-	m = message.content.lower().split(" ")
-	check = m[0][1:]
+	m = message.content[BASE.vars.TRIGGER_OSU].lower().split(" ")
+	check = m[0]
 

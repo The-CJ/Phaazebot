@@ -1,20 +1,20 @@
 #BASE.modules._Osu_.Utils
 
-import asyncio, random, json,requests, os, discord, re
+import asyncio, random, json,requests, discord, re
 from UTILS import oppai as oppai
 
-already_in_pairing_proccess = []
+already_in_pairing_proccess = [] # TODO: Remove
 
 MAIN = "https://osu.ppy.sh/api/"
 USER = "get_user"
 MAP = "get_beatmaps"
 
-class default_format(object):
+class default_format(object): # TODO: Remove
 	osu = "[[osu_link] [titel] [[version]]] ★ [stars] | Lenght: [lenght]min | BPM: [bpm] >> [requester]"
 	osu_link_format = "http://osu.ppy.sh/b/[id]"
 	twitch = "[titel] [[version]] by [creator] | ★ [stars] | Lenght: [lenght]min | BPM: [bpm]"
 
-async def verify(BASE, message):
+async def verify(BASE, message): # TODO: Remove
 	m = message.content.split(" ")
 
 	if len(m) == 1:
@@ -110,7 +110,7 @@ async def get_maps(BASE, ID=None, mode="b"):
 
 	return Results(r, mode)
 
-async def pp_calc_for_maps(BASE, message):
+async def pp_calc_for_maps(BASE, message): # TODO: Remove
 	m = message.content.split(" ")
 
 	if len(m) == 2:
@@ -192,7 +192,7 @@ async def pp_calc_for_maps(BASE, message):
 
 	return await BASE.discord.send_message(message.channel, embed=osu_aw)
 
-async def twitch_osu(BASE, message):
+async def twitch_osu(BASE, message): # TODO: Remove
 	def get_link_out_of_content(content):
 		m = content.lower()
 		match = re.match(r'.+osu\.ppy\.sh\/(b|s|beatmapsets)\/(\d+)(/?#(\w+)?\/?(\d+)|)', m)
@@ -366,7 +366,7 @@ class Map_Object(object):
 			return ":heart:"
 		else: return ":question:"
 
-class pairing_object(object):
+class pairing_object(object): # TODO: Remove
 	def __init__(self, BASE, osu_name=None, twitch_name=None, twitch_id=None):
 		self.BASE = BASE
 		self.osu_name = osu_name
