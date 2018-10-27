@@ -87,7 +87,7 @@ async def stats(BASE, message, kwargs):
 	#owner
 	if message.channel_name == user.get('user_name', None):
 		currency = str( user.get("amount_currency", 0) )
-		display_name = user.get('display_name', None)
+		display_name = user.get('user_display_name', None)
 		return await BASE.twitch.send_message(message.channel_name, f"{display_name}, Credits: {currency} | Level: ∞ (Channel Owner)")
 
 

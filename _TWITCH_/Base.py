@@ -136,12 +136,17 @@ async def lurkers(BASE):
 		await asyncio.sleep( sleep_time )
 
 class Calc(object):
+	# calculation data and functions
+	# there are not controlles in BASE.limit
 
-	def get_exp(lvl):
-		return round( 4 + ((lvl * 3) + (lvl * (lvl * 3) * 2)) )
+	LEVEL_DEFAULT_EXP = 65
+	LEVEL_MULTIPLIER = 0.15
 
-	def get_lvl(exp):
-		lvl = 0
-		while Calc.get_exp(lvl) < exp:
-			lvl += 1
-		return lvl
+	def get_lvl(xp: int):
+		l = (-Calc.LEVEL_DEFAULT_EXP + (Calc.LEVEL_DEFAULT_EXP ** 2 - 4 * (Calc.LEVEL_DEFAULT_EXP * Calc.LEVEL_MULTIPLIER) * (-xp)) ** 0.5) / (2 * (Calc.LEVEL_DEFAULT_EXP * Calc.LEVEL_MULTIPLIER))
+		return math.floor(l)
+
+	def get_exp(lvl: int):
+		l = (lvl * Calc.LEVEL_DEFAULT_EXP) + ( (Calc.LEVEL_MULTIPLIER * lvl) * (lvl * Calc.LEVEL_DEFAULT_EXP) )
+		return math.floor(l)
+
