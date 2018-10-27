@@ -107,8 +107,10 @@ class BASE(object):
 			self.DISCORD_QUOTES_AMOUNT = config.get("discord_quotes_amount", 100)
 			self.DISCORD_ADDROLE_AMOUNT = config.get("discord_quotes_amount", 25)
 
-
-
+			self.TWITCH_TIMEOUT_MESSAGE_COOLDOWN = config.get("twitch_timeout_message_cooldown", 20)
+			self.TWITCH_BLACKLIST_REMEMBER_TIME = config.get("twitch_blacklist_remember_time", 180)
+			self.TWITCH_CUSTOM_COMMAND_AMOUNT = config.get("twitch_custom_command_amount", 100)
+			self.TWITCH_STATS_COOLDOWN = config.get("twitch_stats_cooldown", 100)
 
 	class MODULES(object): #BASE.modules
 		def __init__(self):

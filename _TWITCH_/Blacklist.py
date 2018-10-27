@@ -2,11 +2,13 @@
 
 import asyncio, re, Regex
 
+blacklist_channel_cooldown = []
+already_known_incidents_L1 = []
+already_known_incidents_L2 = []
+
 async def check(BASE, message, channel_settings):
 	#ignore mods
 	if await BASE.modules._Twitch_.Utils.is_Mod(BASE, message):	return
-
-	# TODO: Get own permissons
 
 	blacklist = channel_settings.get("blacklist", [])
 	ban_links = channel_settings.get("ban_links", False)
@@ -30,9 +32,6 @@ async def check(BASE, message, channel_settings):
 
 				if p:
 					return await punish(BASE, message, channel_settings, reason="link")
-
-already_known_incidents_L1 = []
-already_known_incidents_L2 = []
 
 async def punish(BASE, message, channel_settings, reason="word"):
 	punishment_level = channel_settings.get("blacklist_punishment", 0)
@@ -63,20 +62,20 @@ async def punish(BASE, message, channel_settings, reason="word"):
 
 	elif uid in already_known_incidents_L1:
 		already_known_incidents_L2.append(uid)
-		asyncio.ensure_future(remove_from_known_incidents_L2(uid), loop=BASE.Worker_loop)
+		asyncio.ensure_future(remove_from_known_incidents_L2(uid, BASE.limit.TWITCH_BLACKLIST_REMEMBER_TIME), loop=BASE.Worker_loop)
 		warn_level = 2
 		m = m + " [Last Warning]"
 
 	else:
 		already_known_incidents_L1.append(uid)
-		asyncio.ensure_future(remove_from_known_incidents_L1(uid), loop=BASE.Worker_loop)
+		asyncio.ensure_future(remove_from_known_incidents_L1(uid. BASE.limit.TWITCH_BLACKLIST_REMEMBER_TIME), loop=BASE.Worker_loop)
 		warn_level = 1
 		m = m + " [Warning]"
 
 	#send a message to warn the user, but dont spam it
-	if not message.channel_id in channel_cooldown and channel_settings.get("blacklist_notify", False):
+	if not message.channel_id in blacklist_channel_cooldown and channel_settings.get("blacklist_notify", False):
 		try:
-			asyncio.ensure_future(cooldown(message.channel_id))
+			asyncio.ensure_future(blacklist_cooldown(BASE, message.channel_id))
 			await BASE.twitch.send_message(message.channel_name, m)
 		except:
 			pass
@@ -91,20 +90,17 @@ async def punish(BASE, message, channel_settings, reason="word"):
 	else:
 		return await BASE.twitch.send_message(message.channel_name, f"/timeout {message.name} {punishment_level}")
 
-channel_cooldown = []
-async def cooldown(channel_id):
-	#updated the channel cooldown list
-	#its filled with string
-	#format: <channel ID>_<user IS>
-	channel_cooldown.append(channel_id)
-	await asyncio.sleep(10)
-	channel_cooldown.remove(channel_id)
+async def blacklist_cooldown(BASE, channel_id):
+	#gets called after a channel got a ban/timeout message,
+	#so phaaze won't spam a channel but timeouts user
+	blacklist_channel_cooldown.append(channel_id)
+	await asyncio.sleep(BASE.limit.TWITCH_TIMEOUT_MESSAGE_COOLDOWN)
+	blacklist_channel_cooldown.remove(channel_id)
 
-remember = 60*3 # 3 min blackbox
-async def remove_from_known_incidents_L1(uid):
+async def remove_from_known_incidents_L1(uid, remember):
 	await asyncio.sleep(remember)
 	already_known_incidents_L1.remove(uid)
 
-async def remove_from_known_incidents_L2(uid):
+async def remove_from_known_incidents_L2(uid, remember):
 	await asyncio.sleep(remember)
 	already_known_incidents_L2.remove(uid)

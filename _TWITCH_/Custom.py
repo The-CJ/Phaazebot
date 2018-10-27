@@ -2,7 +2,6 @@
 
 import asyncio, json
 
-custom_command_limit = 150
 custom_command_cooldown = []
 
 async def get(BASE, message, **kwargs):
@@ -77,8 +76,8 @@ async def add(BASE, message, kwargs):
 
 	#new
 	else:
-		if len(channel_commands) >= custom_command_limit:
-			return await BASE.twitch.send_message(message.channel_name, f"Error: The limit of {custom_command_limit} custom commands is reached, delete some first.")
+		if len(channel_commands) >= BASE.limit.TWITCH_CUSTOM_COMMAND_AMOUNT:
+			return await BASE.twitch.send_message(message.channel_name, f"Error: The limit of {BASE.limit.TWITCH_CUSTOM_COMMAND_AMOUNT} custom commands is reached, delete some first.")
 
 		content = " ".join(f for f in m[2:])
 		BASE.PhaazeDB.insert(

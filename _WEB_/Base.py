@@ -71,7 +71,6 @@ class root(object):
 		from _WEB_.processing.admin.manage_user import main as admin_manage_user			#/admin/manage-user
 		from _WEB_.processing.admin.manage_type import main as admin_manage_type			#/admin/manage-type
 
-
 def webserver(BASE):
 	server = web.Application()
 	root = BASE.modules._Web_.Base.root(BASE)

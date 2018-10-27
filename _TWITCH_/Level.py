@@ -55,7 +55,7 @@ async def stats(BASE, message, kwargs):
 	if message.channel_id in cooldown_stats: return
 
 	#timeout this channel
-	asyncio.ensure_future(timeout_stats(message.channel_id))
+	asyncio.ensure_future(timeout_stats(BASE, message.channel_id))
 
 	channel_settings = kwargs.get('channel_settings', None)
 
@@ -157,8 +157,8 @@ async def leaderboard(BASE, message, package, art="time"):
 
 	return await BASE.Twitch_IRC_connection.send_message(message.channel, " | ".join(x for x in end_list))
 
-async def timeout_stats(room_id, timeout=5):
+async def timeout_stats(BASE, room_id):
 	cooldown_stats.append(room_id)
-	await asyncio.sleep(timeout)
+	await asyncio.sleep(BASE.limit.TWITCH_STATS_COOLDOWN)
 	cooldown_stats.remove(room_id)
 
