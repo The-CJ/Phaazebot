@@ -1,6 +1,6 @@
 #BASE.modules._Discord_.PROCESS.Mod
 
-import asyncio, discord, tabulate, json
+import asyncio, discord, tabulate, json, datetime
 
 class Settings(object):
 	async def Base(BASE, message, kwargs):
@@ -357,8 +357,8 @@ class Prune(object):
 
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
-		try:
-			#nothing
+		if ""=="":#try:
+			#nothing -> cancle
 			if len(m) == 1:
 				return await BASE.discord.send_message(message.channel,
 													f":warning: Syntax Error!\n"\
@@ -374,113 +374,117 @@ class Prune(object):
 				if len(message.mentions) > 1:
 					return await BASE.discord.send_message(message.channel, ":warning: You can not mention multiple members, only 1")
 
-				return await Prune.by_mention(BASE, message, kwargs, message.mentions[0])
+				return await Prune.execute(BASE, message, kwargs, method="mention", arg=message.mentions[0])
 
 			#by id or ammount
 			elif m[1].isdigit() and len(m) == 2:
 				if len(m[1]) > 8:
-					return await Prune.by_id(BASE, message, kwargs, m[1])
+					return await Prune.execute(BASE, message, kwargs, method="id", arg=m[1])
 				else:
-					return await Prune.by_number(BASE, message, kwargs, m[1])
+					return await Prune.execute(BASE, message, kwargs, method="number", arg=m[1])
 
 			#by name
 			else:
-				return await Prune.by_name(BASE, message, kwargs, " ".join(f for f in m[1:]))
+				name = " ".join(f for f in m[1:])
+				return await Prune.execute(BASE, message, kwargs, method="name", arg=name)
 
-		except:
-			return await BASE.discord.send_message(message.channel, ":no_entry_sign: Prune could not be executed, that most likley because you tryed delete messages older than 14 Days, Discord don't allow that.")
+		# except:
+		# 	return await BASE.discord.send_message(
+		# 		message.channel,
+		# 		":no_entry_sign: Prune could not be executed, something went wrong, sorry")
 
-	async def by_mention(BASE, message, kwargs, user):
+	class Prune_Check(object):
+		def __init__(self, mod_message, method, arg):
+			self.mod_message = mod_message
+			self.method = method
+			self.arg = arg
+			self.prune_date_limit = datetime.timedelta(weeks=2)
+			self.message_to_old = 0
 
-		def need_delete(check_message):
-			del_ = False
-			#remove all from mentiond user
-			if check_message.author.id == user.id:
-				del_ = True
-			#and command writer
-			if check_message.id == message.id:
-				del_ = True
+		def check(self, check_message):
 
-			return del_
+			# also delete mod author message
+			if check_message.id == self.mod_message.id:
+				return True
 
-		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
-		delete = await BASE.discord.purge_from(message.channel, limit=300, check=need_delete)
+			# check mention
+			if self.method == "mention":
+				if check_message.author.id != self.arg.id:
+					return False
 
-		await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
-		confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages form `{1}` :pencil2:".format(str(len(delete)),user.name))
-		await asyncio.sleep(5)
+			# check id
+			if self.method == "id":
+				if check_message.author.id != self.arg:
+					return False
+
+			# check name
+			if self.method == "name":
+				if check_message.author.name != self.arg:
+					return False
+
+			# check date
+			now = datetime.datetime.now()
+			max_time_back = now - self.prune_date_limit
+			if check_message.timestamp < max_time_back: # <- older 14 days from now
+				self.message_to_old += 1
+				return False
+
+			return True
+
+
+	async def execute(BASE, message, kwargs, method=None, arg=None):
+		if method not in ["mention", "id", "number", "name"]: raise AttributeError("prune got no method")
+		if arg == None: raise AttributeError("prune got no arg")
+
+		limit = 300
+
+		# limit
+		if method == "number" and arg.isdigit():
+			arg = int(arg)
+
+			#secure ask
+			if arg >= 100:
+				await BASE.discord.send_message(
+					message.channel,
+					f":question: **{arg}** are a lot, are you sure you wanna delete all of them?\n\ny/n"
+				)
+
+				ans = await BASE.discord.wait_for_message(timeout=30, author=message.author, channel=message.channel)
+				if ans.content.lower() != "y":
+					return await BASE.discord.send_message(message.channel, ":warning: Prune canceled.")
+
+			#over
+			if arg > 500:
+				return await BASE.discord.send_message(message.channel, f":no_entry_sign: **{arg}** messages are to much in one. Try making 2 small request, instead of one big.")
+
+			limit = arg + 1 #+1 because the message of the moderator to prune the channel
+
+		P = Prune.Prune_Check(message, method, arg)
+
+		#the actuall prune
+		delete_amount = await BASE.discord.purge_from(message.channel, limit=limit, check=P.check)
+
+		addition_prune = ""
+
+		if method == "name":
+			addition_prune = f"\nfrom: {arg}"
+
+		elif method == "id":
+			addition_prune = f"\nfrom User with ID: {arg}"
+
+		elif method == "mention":
+			addition_prune = f"\nfrom: {arg.name}"
+
+		if P.message_to_old > 0:
+			addition_prune = addition_prune + f"\n({P.message_to_old} could not be deleted, because there are older than 14 days)"
+
+		confirm_delete = await BASE.discord.send_message(
+			message.channel,
+			f":wastebasket: Deleted the last **{len(delete_amount)-1}** messages :pencil2:"\
+			f"{addition_prune}"
+		)
+		await asyncio.sleep(10)
 		return await BASE.discord.delete_message(confirm_delete)
-
-	async def by_number(BASE, message, kwargs, number):
-		c = int(number)
-
-		if c == 0:
-			return await BASE.discord.send_message(message.channel, ":white_check_mark: **0** messages got deleted. Good job you genius, you deleted nothing.")
-		if c > 500:
-			return await BASE.discord.send_message(message.channel, ":no_entry_sign: **{0}** messages are to much in one. Try making 2 small request, instead of 1 big.".format(str(c)))
-		if c >= 100:
-			await BASE.discord.send_message(message.channel, ":question: **{0}** are a lot, are you sure you wanna delete all of them?\n\ny/n".format(str(c)))
-
-			r = await BASE.discord.wait_for_message(timeout=30, author=message.author, channel=message.channel)
-			if r.content.lower() != "y":
-				return await BASE.discord.send_message(message.channel, ":warning: Prune canceled.")
-
-		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
-		delete = await BASE.discord.purge_from(message.channel, limit=c+1)
-
-		await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
-		confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages :pencil2:".format(str(len(delete)-1)))
-		await asyncio.sleep(5)
-		return await BASE.discord.delete_message(confirm_delete)
-
-	async def by_id(BASE, message, kwargs, id_):
-
-		def need_delete(check_message):
-			del_ = False
-			#remove all from user id
-			if check_message.author.id == id_:
-				del_ = True
-			#and command writer
-			if check_message.id == message.id:
-				del_ = True
-
-			return del_
-
-		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
-		delete = await BASE.discord.purge_from(message.channel, limit=300, check=need_delete)
-
-		if len(delete) == 0:
-			return await BASE.discord.send_message(message.channel, ":warning: No messages are deleted, make sure the ID is from a member that typed something in the near past")
-
-		else:
-			await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
-			confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages, that are matching the ID :pencil2:".format(str(len(delete))))
-			await asyncio.sleep(5)
-			return await BASE.discord.delete_message(confirm_delete)
-
-	async def by_name(BASE, message, kwargs, name):
-
-		def need_delete(check_message):
-			del_ = False
-			#remove all from user id
-			if check_message.author.name == name:
-				del_ = True
-			#and command writer
-			if check_message.id == message.id:
-				del_ = True
-
-			return del_
-
-		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
-		delete = await BASE.discord.purge_from(message.channel, limit=300, check=need_delete)
-
-		if len(delete) == 0:
-			return await BASE.discord.send_message(message.channel, ":warning: No messages are deleted, make sure the name is correct.")
-		else:
-			await BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, str(len(delete)))
-			confirm_delete = await BASE.discord.send_message(message.channel, ":wastebasket: Deleted the last **{0}** messages from `{1}` :pencil2:".format(str(len(delete)), name))
-			await asyncio.sleep(5)
-			return await BASE.discord.delete_message(confirm_delete)
 
 class Level(object):
 	async def Base(BASE, message, kwargs):
