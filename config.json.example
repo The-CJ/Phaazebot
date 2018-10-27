@@ -32,5 +32,10 @@
     "Cleverbot_Token":"",
     "Mashape":"",
     "PhaazeDB_token":""
+  },
+  "limit":{
+    "discord_normal_cooldown":"",
+    "discord_quotes_amount":"",
+    "twitch_custom_command_amount":""
   }
 }
