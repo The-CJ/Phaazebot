@@ -104,8 +104,8 @@ async def lurkers(BASE):
 					if channel.name.lower() == user.get("user_name", "").lower():
 						continue
 
-					now_level = Calc.get_lvl(user.get('amount_time', 0)+1)
-					exp_to_next = Calc.get_exp(now_level)
+					now_level = Calc.get_lvl(user.get('amount_time', 0))
+					exp_to_next = Calc.get_exp(now_level+1)
 
 					#has a new level
 					if exp_to_next == user.get('amount_time', 0)+1 and user.get("active", 0) != 0:
@@ -139,8 +139,8 @@ class Calc(object):
 	# calculation data and functions
 	# there are not controlles in BASE.limit
 
-	LEVEL_DEFAULT_EXP = 65
-	LEVEL_MULTIPLIER = 0.15
+	LEVEL_DEFAULT_EXP = 2
+	LEVEL_MULTIPLIER = 1.2
 
 	def get_lvl(xp: int):
 		l = (-Calc.LEVEL_DEFAULT_EXP + (Calc.LEVEL_DEFAULT_EXP ** 2 - 4 * (Calc.LEVEL_DEFAULT_EXP * Calc.LEVEL_MULTIPLIER) * (-xp)) ** 0.5) / (2 * (Calc.LEVEL_DEFAULT_EXP * Calc.LEVEL_MULTIPLIER))

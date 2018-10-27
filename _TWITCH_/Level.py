@@ -64,6 +64,16 @@ async def stats(BASE, message, kwargs):
 		return
 
 	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
+
+	if len(m) == 3:
+		if m[1].lower() == "calc":
+			if m[2].isdigit():
+				needed_time = BASE.modules._Twitch_.Base.Calc.get_exp(int(m[2]))
+				hours = str(round((needed_time*5) / 60, 1))
+				resp = f"Level {m[2]} = {hours}h+"
+
+				return await BASE.twitch.send_message(message.channel_name, resp)
+
 	if len(m) == 1:
 		u = 0
 		search_user = message.name
@@ -95,9 +105,9 @@ async def stats(BASE, message, kwargs):
 	time = user.get("amount_time", 1) * 5
 	hours = str(round(time / 60, 1))
 
-	current_level = str( BASE.modules._Twitch_.Base.Calc.get_lvl(time/5))
-	current_exp = BASE.modules._Twitch_.Base.Calc.get_exp(int(current_level))
-	time_to_next = str(round((current_exp * 5) / 60, 1))
+	current_level = BASE.modules._Twitch_.Base.Calc.get_lvl(time/5)
+	time_to_next = BASE.modules._Twitch_.Base.Calc.get_exp(current_level+1)
+	time_to_next = str(round((time_to_next * 5) / 60, 1))
 
 	if u == 0:
 		resp = f"@{message.display_name}, Credits: {currency} | Level: {current_level} ({hours}h/{time_to_next}h)"
