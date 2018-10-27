@@ -57,7 +57,7 @@ async def lurkers(BASE):
 
 		check = BASE.modules._Twitch_.Utils.get_streams(BASE, to_check)
 
-		# we got nothing... mean API is down
+		# we got nothing... means API is down
 		if check == None:
 			await asyncio.sleep(30)
 			continue
