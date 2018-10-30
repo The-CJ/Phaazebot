@@ -125,7 +125,7 @@ class OsuLink(object):
 		elif len(m) == 1 and linked_osu_account != None:
 			return await BASE.twitch.send_message(
 				message.channel_name,
-				f"Your Twitch channel is currently linked with the osu! account: {linked_osu_account}, you can type: '{BASE.vars.TRIGGER_TWITCH}osulink unlink' to remove it")
+				f"Your Twitch channel is currently linked with the osu! account: {linked_osu_account.lower()}, you can type: '{BASE.vars.TRIGGER_TWITCH}osulink unlink' to remove it")
 
 		#start new link
 		elif len(m) >= 2 and linked_osu_account == None:
@@ -133,11 +133,15 @@ class OsuLink(object):
 			return await OsuLink.startlink(BASE, message, kwargs, osu_name)
 
 		#unlink
-		elif linked_osu_account != None and m[3].lower() == "unlink":
+		elif linked_osu_account != None and m[1].lower() == "unlink":
 			return await OsuLink.unlink(BASE, message, kwargs)
 
-		else:
-			pass
+		else: # m[1] != "unlinked" and linked_osu_account
+			return await BASE.twitch.send_message(
+				message.channel_name,
+				f"You are already linked with '{linked_osu_account.lower()}', you cannot link your twitch account with another osu account. Use '{BASE.vars.TRIGGER_TWITCH}osulink unlink' first"
+			)
+
 
 	async def startlink(BASE, message, kwargs, osu_account):
 
