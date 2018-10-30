@@ -162,6 +162,9 @@ class BASE(object):
 			class CMD():
 				import _OSU_.CMD.Normal as Normal
 
+			class PROCESS():
+				import _OSU_.PROCESS.Normal as Normal
+
 		class _Twitch_(object):
 			import _TWITCH_.Alerts as Alerts
 

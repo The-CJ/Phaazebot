@@ -70,22 +70,38 @@ class OsuLink(object):
 	in_linking_process = []
 
 	class Linking_Object(object):
-		def __init__(self, BASE, tw_id, osu_acc):
+		def __init__(self, BASE, tw_id, tw_name, osu_acc):
 			self.BASE = BASE
 			self.twitch_id = tw_id
+			self.twitch_name = tw_name
 			self.osu_name = osu_acc
 			self.pairing_code = BASE.modules.Utils.random_string(size=6)
 			self.time_left = 300
+			self.success = False
 
 		def activate(self):
-			pass
+			if self.success: return
+
+			tw_m = self.BASE.twitch.send_message(self.twitch_name, f"Link complete! You linked the osu! account '{self.osu_name.lower()}'")
+			osu_m = self.BASE.osu.send_pm(self.osu_name, f"Link complete! You linked the twitch channel '{self.twitch_name.lower()}'")
+
+			asyncio.ensure_future( tw_m, loop=self.BASE.Twitch_loop )
+			asyncio.ensure_future( osu_m, loop=self.BASE.Osu_loop )
+
+			self.BASE.PhaazeDB.update(
+				of="twitch/channel_settings",
+				content=dict(linked_osu_account=self.osu_name),
+				where=f"data['channel_id'] == {json.dumps(self.twitch_id)}"
+			)
+
+			self.success = True
 
 		async def start_timer(self):
 			OsuLink.in_linking_process.append(self)
 			while True:
 				await asyncio.sleep(1)
 				self.time_left -= 1
-				if self.time_left <= 0:
+				if self.time_left <= 0 or self.success:
 					break
 			OsuLink.in_linking_process.remove(self) # no time left, remove pair object
 
@@ -133,7 +149,7 @@ class OsuLink(object):
 					f"You are already in a pairing process, you have {Link_O.time_left}s left to send a ingame message to 'Phaazebot': '{BASE.vars.TRIGGER_OSU}twitchverify {Link_O.pairing_code}'"
 				)
 
-		Pair_Object = OsuLink.Linking_Object(BASE, message.channel_id, osu_account)
+		Pair_Object = OsuLink.Linking_Object(BASE, message.channel_id, message.channel_name, osu_account)
 		asyncio.ensure_future(Pair_Object.start_timer(), loop=BASE.Worker_loop)
 
 		return await BASE.twitch.send_message(

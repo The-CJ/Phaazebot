@@ -8,4 +8,5 @@ async def Base(BASE, message):
 	check = m[0]
 
 	if check.startswith("twitchverify"):
-		pass
+		return await BASE.modules._Osu_.PROCESS.Normal.TwitchVerify.Base(BASE, message)
+
