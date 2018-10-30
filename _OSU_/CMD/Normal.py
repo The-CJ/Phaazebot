@@ -4,6 +4,8 @@ import asyncio
 
 async def Base(BASE, message):
 
-	m = message.content[BASE.vars.TRIGGER_OSU].lower().split(" ")
+	m = message.content[len(BASE.vars.TRIGGER_OSU):].lower().split(" ")
 	check = m[0]
 
+	if check.startswith("twitchverify"):
+		pass

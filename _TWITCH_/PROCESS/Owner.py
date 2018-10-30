@@ -48,7 +48,6 @@ class Everything(object):
 			await BASE.twitch.join_channel(message.name)
 			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfull joined your channel!')
 
-
 	async def leave(BASE, message, kwargs):
 		#check if in
 		check = BASE.PhaazeDB.select(of='setting/twitch_channel', where=f"str(data['twitch_id']) == str('{message.user_id}')")
@@ -65,5 +64,92 @@ class Everything(object):
 				)
 			await BASE.twitch.part_channel(message.name)
 			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfully left your channel!')
+
+class OsuLink(object):
+
+	in_linking_process = []
+
+	class Linking_Object(object):
+		def __init__(self, BASE, tw_id, osu_acc):
+			self.BASE = BASE
+			self.twitch_id = tw_id
+			self.osu_name = osu_acc
+			self.pairing_code = BASE.modules.Utils.random_string(size=6)
+			self.time_left = 300
+
+		def activate(self):
+			pass
+
+		async def start_timer(self):
+			OsuLink.in_linking_process.append(self)
+			while True:
+				await asyncio.sleep(1)
+				self.time_left -= 1
+				if self.time_left <= 0:
+					break
+			OsuLink.in_linking_process.remove(self) # no time left, remove pair object
+
+	async def Base(BASE, message, kwargs):
+		m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(' ')
+
+		channel_settings = kwargs.get('channel_settings', None)
+		if channel_settings == None:
+			channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+
+		linked_osu_account = channel_settings.get('linked_osu_account', None)
+
+		#give instructions
+		if len(m) == 1 and linked_osu_account == None:
+			return await BASE.twitch.send_message(
+				message.channel_name,
+				f"To link your Twitch channel with a osu! account, type: {BASE.vars.TRIGGER_TWITCH}osulink [Your osu! account name]"
+			)
+
+		#get current info
+		elif len(m) == 1 and linked_osu_account != None:
+			return await BASE.twitch.send_message(
+				message.channel_name,
+				f"Your Twitch channel is currently linked with the osu! account: {linked_osu_account}, you can type: '{BASE.vars.TRIGGER_TWITCH}osulink unlink' to remove it")
+
+		#start new link
+		elif len(m) >= 2 and linked_osu_account == None:
+			osu_name = " ".join(m[1:])
+			return await OsuLink.startlink(BASE, message, kwargs, osu_name)
+
+		#unlink
+		elif linked_osu_account != None and m[3].lower() == "unlink":
+			return await OsuLink.unlink(BASE, message, kwargs)
+
+		else:
+			pass
+
+	async def startlink(BASE, message, kwargs, osu_account):
+
+		# check if allready in progress
+		for Link_O in OsuLink.in_linking_process:
+			if message.channel_id == Link_O.twitch_id:
+				return await BASE.twitch.send_message(
+					message.channel_name,
+					f"You are already in a pairing process, you have {Link_O.time_left}s left to send a ingame message to 'Phaazebot': '{BASE.vars.TRIGGER_OSU}twitchverify {Link_O.pairing_code}'"
+				)
+
+		Pair_Object = OsuLink.Linking_Object(BASE, message.channel_id, osu_account)
+		asyncio.ensure_future(Pair_Object.start_timer(), loop=BASE.Worker_loop)
+
+		return await BASE.twitch.send_message(
+			message.channel_name,
+			f"Link Pending! Go to your osu! ingame chat and write a message to 'Phaazebot'. You have 5min to say '{BASE.vars.TRIGGER_OSU}twitchverify {Pair_Object.pairing_code}'"
+		)
+
+	async def unlink(BASE, message, kwargs):
+		BASE.PhaazeDB.update(
+			of="twitch/channel_settings",
+			content=dict( linked_osu_account=None ),
+			where=f"data['channel_id'] == {json.dumps(message.channel_id)}"
+		)
+		return await BASE.twitch.send_message(
+			message.channel_name,
+			f"Your osu! account got successfull unlinked."
+		)
 
 
