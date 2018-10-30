@@ -28,7 +28,7 @@ async def is_admin(BASE, message):
 	if message.user_type.lower() == "admin": return True
 	if message.user_type.lower() == "staff": return True
 
-	return True#False
+	return False
 
 #channelfiles
 async def get_channel_settings(BASE, id, prevent_new=False):
