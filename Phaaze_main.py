@@ -511,9 +511,13 @@ class MAINFRAME(threading.Thread):
 					)
 				)
 
+			except KeyboardInterrupt:
+				break
+
 			except:
 				print("WARNING: FATAL ERROR IN PHAAZE-MAINFRAME")
 
 MAIN = MAINFRAME()
+
 if __name__ == '__main__':
 	MAIN.start()

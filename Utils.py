@@ -1,19 +1,10 @@
 #BASE.modules.Utils
 
-import asyncio, discord
+import asyncio, discord, string, random
 
-def list_XOR(list_1, list_2):
-	list_1 = [hash(o) for o in list_1]
-	list_2 = [hash(o) for o in list_2]
-
-	check_list = list_1 + list_2
-	diffr_list = []
-
-	for obj in check_list:
-		if (hash(obj) in list_1 or hash(obj) in list_2) and not (hash(obj) in list_1 and hash(obj) in list_2):
-			diffr_list.append(obj)
-
-	return diffr_list
+def random_string(size=10):
+	s = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(size))
+	return s
 
 #OS controll
 async def reload_base(BASE):
