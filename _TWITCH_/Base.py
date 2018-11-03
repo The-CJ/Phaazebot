@@ -26,6 +26,10 @@ async def on_message(BASE, message):
 	if channel_settings.get('active_level', False):
 		await BASE.modules._Twitch_.Level.Base(BASE, message, channel_settings=channel_settings)
 
+	#osu link
+	if channel_settings.get('linked_osu_account', None) != None:
+		await BASE.modules._Twitch_.PROCESS.Normal.OsuRequests.Base(BASE, message, channel_settings=channel_settings)
+
 	#Phaaze Commands
 	if message.content.startswith(BASE.vars.TRIGGER_TWITCH):
 		if message.channel_name.lower() == BASE.twitch.nickname.lower():

@@ -3,45 +3,9 @@
 import asyncio, random, json,requests, discord, re
 from UTILS import oppai as oppai
 
-already_in_pairing_proccess = [] # TODO: Remove
-
 MAIN = "https://osu.ppy.sh/api/"
 USER = "get_user"
 MAP = "get_beatmaps"
-
-class default_format(object): # TODO: Remove
-	osu = "[[osu_link] [titel] [[version]]] ★ [stars] | Lenght: [lenght]min | BPM: [bpm] >> [requester]"
-	osu_link_format = "http://osu.ppy.sh/b/[id]"
-	twitch = "[titel] [[version]] by [creator] | ★ [stars] | Lenght: [lenght]min | BPM: [bpm]"
-
-async def verify(BASE, message): # TODO: Remove
-	m = message.content.split(" ")
-
-	if len(m) == 1:
-		confirm = await BASE.modules._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.name, platform="osu")
-		if confirm == None:
-			if message.name in already_in_pairing_proccess:
-				return await BASE.Osu_IRC.send_message(message.name, "You are already in a verify proccess. if you forgot your Number wait 5min and try it again.")
-			pair_number = str(pairing_object(BASE, osu_name=message.name).verify)
-			await BASE.Osu_IRC.send_message(message.name, "Your account is not paired to a Twitch.tv Channel | Enter '!osuverify {0}' in your Twitch channel to pair it. (you have 5min)".format(pair_number))
-			already_in_pairing_proccess.append(message.name)
-
-		else:
-			await BASE.Osu_IRC.send_message(message.name, "Your account is paired! Twitch channel: {0} | Osu Account: {1}".format(confirm["twitch"]["name"], confirm["osu"]["name"]))
-			await BASE.Osu_IRC.send_message(message.name, "Wanna break your connection? --> '!disconnect'")
-
-	elif len(m) == 2:
-		a_o = None
-		for aouth_o in BASE.queue.twitch_osu_verify:
-			if str(aouth_o.verify) == m[1]:
-				a_o = aouth_o
-
-		if a_o == None:
-			await BASE.Osu_IRC.send_message(message.name, "{0} is not awaited for verify, be sure to don't make typos. (like i do all the time LUL)".format(m[1]))
-
-		else:
-			aouth_o.osu_name = message.name
-			await BASE.Osu_IRC.send_message(message.name, "Your Osu name has been set. If everything is completed you will recive a message soon.")
 
 async def download_map(ID):
 	link = "https://osu.ppy.sh/osu/" + ID
@@ -192,63 +156,6 @@ async def pp_calc_for_maps(BASE, message): # TODO: Remove
 
 	return await BASE.discord.send_message(message.channel, embed=osu_aw)
 
-async def twitch_osu(BASE, message): # TODO: Remove
-	def get_link_out_of_content(content):
-		m = content.lower()
-		match = re.match(r'.+osu\.ppy\.sh\/(b|s|beatmapsets)\/(\d+)(/?#(\w+)?\/?(\d+)|)', m)
-
-		r = {}
-		r['set_'] = match.group(1)
-		r['set_id_'] = match.group(2)
-		r['mode_'] = match.group(4)
-		r['map_id_'] = match.group(5)
-
-		if r['map_id_'] == None:
-			R_mode='s'
-			r['map_id_'] = r['set_id_']
-		else:
-			R_mode='b'
-
-		if r['mode_'] == "#osu": R_play = "0"
-		elif r['mode_'] == "#taiko": R_play = "1"
-		elif r['mode_'] == "#fruits": R_play = "2"
-		elif r['mode_'] == "#mania": R_play = "3"
-		else: R_play = "0"
-
-		return r['map_id_']+"&m="+R_play, R_mode
-
-	search_id, mode = get_link_out_of_content(message.content)
-
-	osu_user = await BASE.modules._Twitch_.Utils.get_opposite_osu_twitch(BASE, message.room_id, platform="twitch")
-	if osu_user == None: return
-
-	osu_maps = await get_maps(BASE, ID=search_id, mode=mode)
-	if osu_maps == None: return
-	osu_map = osu_maps.all_maps[0]
-
-	twitch_info_format = osu_user["twitch"].get("info_format", default_format.twitch)
-	osu_info_format = osu_user["osu"].get("info_format", default_format.osu)
-
-	#replace everything - Twitch
-	twitch_info_format = twitch_info_format.replace("[titel]", str(osu_map.title))
-	twitch_info_format = twitch_info_format.replace("[version]", str(osu_map.version))
-	twitch_info_format = twitch_info_format.replace("[stars]", str(round(osu_map.diff,2)))
-	twitch_info_format = twitch_info_format.replace("[lenght]", str(osu_map.lenght).replace(",",":"))
-	twitch_info_format = twitch_info_format.replace("[bpm]", str(round(osu_map.bpm)))
-	twitch_info_format = twitch_info_format.replace("[requester]", message.save_name)
-	twitch_info_format = twitch_info_format.replace("[creator]", str(osu_map.creator))
-	#replace everything - Osu
-	osu_info_format = osu_info_format.replace("[titel]", str(osu_map.title))
-	osu_info_format = osu_info_format.replace("[version]", str(osu_map.version))
-	osu_info_format = osu_info_format.replace("[stars]", str(round(osu_map.diff,2)))
-	osu_info_format = osu_info_format.replace("[lenght]", str(osu_map.lenght).replace(",",":"))
-	osu_info_format = osu_info_format.replace("[bpm]", str(round(osu_map.bpm)))
-	osu_info_format = osu_info_format.replace("[requester]", message.save_name)
-	osu_info_format = osu_info_format.replace("[osu_link]", default_format.osu_link_format.replace("[id]", osu_map.Map_ID))
-
-	await BASE.Twitch_IRC_connection.send_message(message.channel, twitch_info_format)
-	await BASE.Osu_IRC.send_message(osu_user["osu"]["name"], osu_info_format)
-
 class Map_Object(object):
 	def __init__(self, info):
 		self.info = info
@@ -365,54 +272,3 @@ class Map_Object(object):
 		elif self.approved == "4":
 			return ":heart:"
 		else: return ":question:"
-
-class pairing_object(object): # TODO: Remove
-	def __init__(self, BASE, osu_name=None, twitch_name=None, twitch_id=None):
-		self.BASE = BASE
-		self.osu_name = osu_name
-		self.twitch_name = twitch_name
-		self.twitch_id = twitch_id
-		self.time = 300
-
-		self.verify = random.randint(20000, 80000)
-		self.BASE.queue.twitch_osu_verify.append(self)
-		asyncio.ensure_future(self.time_left())
-
-		async def time_left(self):
-			while self.time != 0:
-				self.time -= 5
-				if self.osu_name != None and\
-					self.twitch_name != None and\
-					self.twitch_id != None:
-
-					return await self.complete()
-
-				await asyncio.sleep(5)
-
-				await self.end()
-
-				async def end(self):
-					if self.twitch_id != None:
-						self.BASE.modules._Twitch_.CMD.Mods.already_in_pairing_proccess.remove(self.twitch_id)
-
-						if self.osu_name != None:
-							self.BASE.modules._Osu_.Utils.already_in_pairing_proccess.remove(self.osu_name)
-
-							self.BASE.queue.twitch_osu_verify.remove(self)
-
-							async def complete(self):
-								obj = dict()
-								obj["osu"] = {}
-								obj["twitch"] = {}
-
-								obj["osu"]["name"] = self.osu_name
-								obj["twitch"]["name"] = self.twitch_name
-								obj["twitch"]["id"] = self.twitch_id
-
-								file = json.loads(open("DATABASE/osu_twitch.json", "r").read())
-								file["objects"].append(obj)
-								with open("DATABASE/osu_twitch.json", "w") as save:
-									self.BASE.queue.TO_OSU_T.put_nowait(self.BASE.Osu_IRC.send_message(self.osu_name, "Your account is now paired with Twitch acc: " + self.twitch_name))
-									self.BASE.queue.TO_TWITCH_T.put_nowait(self.BASE.Twitch_IRC_connection.send_message(self.twitch_name, "Your account is now paired with Osu! acc: " + self.osu_name))
-									json.dump(file, save)
-									self.BASE.queue.twitch_osu_verify.remove(self)
