@@ -1,4 +1,4 @@
-#BASE.modules._TWITCH_.CMD.Normal
+#BASE.molinked_osu_accountdules._TWITCH_.CMD.Normal
 
 import asyncio
 
