@@ -16,7 +16,7 @@ async def is_Mod(BASE, message):
 			c = True
 
 		if c: break
-		
+
 	if message.author == message.server.owner:
 		c = True
 
@@ -32,16 +32,16 @@ async def is_Owner(BASE, message):
 #serverfiles
 async def get_server_setting(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="discord/server_setting", where="data['server_id'] == '{}'".format(id))
+	data = BASE.PhaazeDB.select(of="discord/server_setting", where="data['server_id'] == '{}'".format(id))
 
-	if len(file['data']) == 0:
+	if len(data['data']) == 0:
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
 		else:
 			return await make_server_file(BASE, id)
 	else:
-		return file['data'][0]
+		return data['data'][0]
 
 async def make_server_file(BASE, id):
 	insert_ = dict()
@@ -89,16 +89,19 @@ async def make_server_file(BASE, id):
 #levelfiles
 async def get_server_level(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="discord/level/level_"+str(id))
+	try:
+		data = BASE.PhaazeDB.select(of="discord/level/level_"+str(id))
+	except:
+		data = dict()
 
-	if file['status'] == "error":
+	if data.get('status', 'error') == "error":
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
 		else:
 			return await make_server_level_file(BASE, id)
 	else:
-		return file['data']
+		return data['data']
 
 async def make_server_level_file(BASE, id):
 
@@ -110,16 +113,19 @@ async def make_server_level_file(BASE, id):
 #customfiles
 async def get_server_commands(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="discord/commands/commands_"+str(id))
+	try:
+		data = BASE.PhaazeDB.select(of="discord/commands/commands_"+str(id))
+	except:
+		data = dict()
 
-	if file['status'] == "error":
+	if data.get('status', 'error') == "error":
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
 		else:
 			return await make_get_server_commands(BASE, id)
 	else:
-		return file['data']
+		return data['data']
 
 async def make_get_server_commands(BASE, id):
 
@@ -131,16 +137,19 @@ async def make_get_server_commands(BASE, id):
 #customquotes
 async def get_server_quotes(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="discord/quotes/quotes_"+str(id))
+	try:
+		data = BASE.PhaazeDB.select(of="discord/quotes/quotes_"+str(id))
+	except:
+		data = dict()
 
-	if file['status'] == "error":
+	if data('status', 'error') == "error":
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
 		else:
 			return await make_get_server_quotes(BASE, id)
 	else:
-		return file['data']
+		return data['data']
 
 async def make_get_server_quotes(BASE, id):
 
@@ -152,16 +161,19 @@ async def make_get_server_quotes(BASE, id):
 #addrolelist
 async def get_server_addrolelist(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="discord/addrole/addrole_"+str(id))
+	try:
+		data = BASE.PhaazeDB.select(of="discord/addrole/addrole_"+str(id))
+	except:
+		data = dict()
 
-	if file['status'] == "error":
+	if data.get('status', 'error') == "error":
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
 		else:
 			return await make_server_addrolelist(BASE, id)
 	else:
-		return file['data']
+		return data['data']
 
 async def make_server_addrolelist(BASE, id):
 
