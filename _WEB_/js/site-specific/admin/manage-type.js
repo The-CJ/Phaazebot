@@ -54,6 +54,7 @@ function delete_role(btn) {
   })
   .done(function (data) {
     _show_message(data.msg, "green");
+    load_role();
   })
 }
 
