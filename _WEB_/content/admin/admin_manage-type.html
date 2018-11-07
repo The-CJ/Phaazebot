@@ -48,11 +48,12 @@
 
   <div role>
     <!-- infos btn -->
-    <div class="user-entry center-item-row btn indigo darken-4" onclick="$(this).closest('[role]').find('.collapse').collapse('toggle')" role-id="x">
+    <div class="role-entry center-item-row btn indigo darken-4 center-item-row" onclick="$(this).closest('[role]').find('.collapse').collapse('toggle')" role-id="x">
       <span class="role-name col"></span>
     </div>
     <div class="collapse" style="padding:0 1em;">
       <textarea class="role-description" readonly></textarea>
+      <button type="button" class="btn btn-block btn-danger" onclick="delete_role(this)">Delete</button>
     </div>
 
   </div>

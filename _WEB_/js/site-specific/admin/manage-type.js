@@ -12,7 +12,7 @@ function load_role(r) {
   .done(function (data) {
     let r = $("#result_space").html("");
     roles = data.data
-    console.log(roles);
+    // console.log(roles);
     for (role of roles) {
       let t = $("[tpl] > [role]").clone();
       t.find("[role-id]").attr("role-id", role.id);
@@ -41,6 +41,19 @@ function submit_new_role() {
     _show_message(data.msg, "green");
     $("#new_role").modal("hide");
     load_role();
+  })
+}
+
+function delete_role(btn) {
+  let id = $(btn).closest('[role]').find('.role-entry').attr('role-id');
+
+  $.post("/api/admin/manage-type/delete", {"role_id":id})
+  .fail(function (data) {
+    m = data.responseJSON ? data.responseJSON.msg : "unknown"
+    _show_message(m, "red");
+  })
+  .done(function (data) {
+    _show_message(data.msg, "green");
   })
 }
 
