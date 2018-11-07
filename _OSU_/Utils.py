@@ -1,6 +1,6 @@
 #BASE.modules._Osu_.Utils
 
-import asyncio, random, json,requests, discord, re
+import asyncio, requests, discord
 from UTILS import oppai as oppai
 
 MAIN = "https://osu.ppy.sh/api/"
