@@ -18,6 +18,9 @@ function load_role(r) {
       t.find("[role-id]").attr("role-id", role.id);
       t.find(".role-name").text(role.name);
       t.find(".role-description").text(role.description);
+      if (!role.can_be_removed) {
+        t.find('.role-icon').addClass('cannot-removed');
+      }
       r.append(t);
     }
   })
