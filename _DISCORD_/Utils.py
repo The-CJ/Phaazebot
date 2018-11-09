@@ -142,7 +142,7 @@ async def get_server_quotes(BASE, id, prevent_new=False):
 	except:
 		data = dict()
 
-	if data('status', 'error') == "error":
+	if data.get('status', 'error') == "error":
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
