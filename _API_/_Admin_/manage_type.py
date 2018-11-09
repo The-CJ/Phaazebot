@@ -11,9 +11,6 @@ async def main(self, request):
 	elif method == "create":
 		return await create(self, request)
 
-	elif method == "update":
-		return await update(self, request)
-
 	elif method == "delete":
 		return await delete(self, request)
 
@@ -35,7 +32,7 @@ async def get(self, request):
 	if not "admin" in [t.lower() for t in types]:
 		return await self.action_not_allowed(request, msg="Admin rights reqired")
 
-	all_user = self.root.BASE.PhaazeDB.select(of="role")
+	all_user = self.root.BASE.PhaazeDB.select(of="role", fields=["id", "name", "description", "can_be_removed"])
 	return self.root.response(
 		body=json.dumps(all_user),
 		status=200,
@@ -73,7 +70,7 @@ async def create(self, request):
 		)
 
 	# everything ok, create it
-	new_role = dict( name=name, description=_POST.get("description", "").strip("\n") )
+	new_role = dict( name=name, description=_POST.get("description", "").strip("\n"), can_be_removed=True )
 	self.root.BASE.PhaazeDB.insert(into="role", content=new_role)
 
 	return self.root.response(
@@ -82,8 +79,50 @@ async def create(self, request):
 		content_type='application/json'
 	)
 
-async def update(self, request):
-	pass
-
 async def delete(self, request):
-	pass
+
+	user_info = await self.root.get_user_info(request)
+
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
+
+	types = user_info.get("type", [])
+	if not "admin" in [t.lower() for t in types]:
+		return await self.action_not_allowed(request, msg="Admin rights reqired")
+
+	_POST = await request.post()
+	role_id = _POST.get('role_id', "")
+
+	if role_id == "" or not role_id.isdigit():
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg="missing 'role_id' field")),
+			status=400,
+			content_type='application/json'
+		)
+
+	r = self.root.BASE.PhaazeDB.select(of="role", where=f"int(data['id']) == int({json.dumps(role_id)})")
+	if not r.get('data', []):
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg=f"could not found role ID: {role_id}")),
+			status=400,
+			content_type='application/json'
+		)
+
+	role = r['data'][0]
+
+	if role.get("can_be_removed", False) == False:
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg=f"'{role.get('name', 'N/A')}' is marked as non-removable")),
+			status=400,
+			content_type='application/json'
+		)
+
+	self.root.BASE.PhaazeDB.delete(of="role", where=f"int(data['id']) == int({json.dumps(role.get('id', None))})")
+
+	return self.root.response(
+		body=json.dumps(dict(status=200, msg=f"successfull deleted role '{role.get('name', 'N/A')}'")),
+		status=200,
+		content_type='application/json'
+	)
+
+
