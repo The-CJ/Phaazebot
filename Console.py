@@ -11,7 +11,23 @@ for arg in sys.argv[1:]:
 LOG = logging.getLogger('PhaazeOS')
 LOG.setLevel(logging.DEBUG)
 
-SHF = logging.Formatter("[%(levelname)s] %(message)s")
+class ColoredLogger(logging.Formatter):
+	default_color = "\033[00m"
+	colors = dict(
+		DEBUG = "\033[90m",
+		INFO = "\033[36m",
+		WARNING = "\033[93m",
+		ERROR = "\033[33m",
+		CRITICAL = "\033[31m",
+	)
+
+	def formatMessage(self, record):
+		rln = record.levelname
+		record.levelname = f"{ColoredLogger.colors.get(rln, ColoredLogger.default_color)}{rln}{ColoredLogger.default_color}"
+		r = self._style.format(record)
+		return r
+
+SHF = ColoredLogger("[%(levelname)s] %(message)s")
 
 if all_args.get('logging', 'console') == "systemd":
 	JH = JournalHandler()
