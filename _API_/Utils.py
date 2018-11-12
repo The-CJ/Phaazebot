@@ -1,5 +1,5 @@
 
-import asyncio
+import asyncio, json
 import hashlib, datetime, random, string
 
 #get user infos
@@ -32,8 +32,7 @@ async def get_user_informations(self, request, **kwargs):
 	if phaaze_session == None:
 		phaaze_session = request.cookies.get('phaaze_session', None)
 	if phaaze_session != None:
-		phaaze_session = phaaze_session.replace("'","\\'")
-		search_str = f'data["session"] == "{phaaze_session}"'
+		search_str = f'data["session"] == {json.dumps(phaaze_session)}'
 		res = self.BASE.PhaazeDB.select(of="session/phaaze", where=search_str)
 		if len(res['data']) == 1:
 			user_session = res['data'][0]
@@ -78,8 +77,7 @@ async def get_user_informations(self, request, **kwargs):
 
 	if phaaze_username != None and phaaze_password != None:
 		phaaze_password = self.password(phaaze_password)
-		phaaze_username = phaaze_username.replace("'", "\\'")
-		search_str = f"data['username'] == '{phaaze_username}' and data['password'] == '{phaaze_password}'"
+		search_str = f"data['username'] == {json.dumps(phaaze_username)} and data['password'] == {json.dumps(phaaze_password)}"
 		res = self.BASE.PhaazeDB.select(of="user", where=search_str)
 		if len(res['data']) != 1:
 			return None
