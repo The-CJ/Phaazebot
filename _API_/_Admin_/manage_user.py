@@ -37,10 +37,6 @@ async def get(self, request):
 	if w_username != "":
 		wl.append( f"{json.dumps(w_username)}.lower() in data['username'].lower()")
 
-	w_type = _GET.get('type', '')
-	if w_type != "":
-		wl.append(f"{json.dumps(w_type)}.lower() in data['type'].lower()")
-
 	w_id = _GET.get('userid', '')
 	if w_id != "":
 		wl.append(f"str(data['id']) == {json.dumps(w_id)}")
@@ -49,6 +45,11 @@ async def get(self, request):
 		fields = None # None == all
 	else:
 		fields = ["username", "id", "type"]
+
+	if _GET.get("verified", "0") == "1":
+		wl.append("data['verified'] == True")
+	else:
+		wl.append("data['verified'] == False")
 
 	all_user = self.root.BASE.PhaazeDB.select(of="user", where=" and ".join(wl), fields=fields)
 	return self.root.response(
