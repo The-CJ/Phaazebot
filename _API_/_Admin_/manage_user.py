@@ -13,6 +13,9 @@ async def main(self, request):
 	elif method == "delete":
 		return await delete(self, request)
 
+	elif method == "impersonate":
+		return await impersonate(self, request)
+
 	else:
 		return self.root.response(
 			body=json.dumps(dict(status=400, msg="missing method")),
@@ -63,3 +66,32 @@ async def update(self, request):
 
 async def delete(self, request):
 	pass
+
+async def impersonate(self, request):
+	user_info = await self.root.get_user_info(request)
+
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
+
+	types = user_info.get("type", [])
+	if not "superadmin" in [t.lower() for t in types]:
+		return await self.action_not_allowed(request, msg="Superadmin rights reqired")
+
+	_POST = await request.post()
+	i = _POST.get('user_id', None)
+
+	current_session = request.headers.get('phaaze_session', None)
+	if current_session == None:
+		current_session = request.cookies.get('phaaze_session', None)
+
+	c = dict(user_id=int(i))
+	w = f"data['session'] == {json.dumps(current_session)}"
+	res = self.root.BASE.PhaazeDB.update(of="session/phaaze", where=w, content=c)
+
+	return self.root.response(
+		body=json.dumps(dict(status=200, msg="changed user", d=res)),
+		status=200,
+		content_type='application/json'
+	)
+
+

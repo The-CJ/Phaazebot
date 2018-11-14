@@ -44,8 +44,12 @@ function reset_password() {
   alert("TODO: reset_password()");
 }
 
-function impersonate() {
-  alert("TODO: impersonate");
+function impersonate(b) {
+  b = $(b).closest("[user]").find(".user-entry");
+  let user_id = b.attr("user-id");
+  $.post("/api/admin/manage-user/impersonate", {'user_id': user_id}).then(function (data) {
+    console.log(data);
+  })
 }
 
 function detail_user(b) {
