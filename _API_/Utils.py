@@ -41,7 +41,17 @@ async def get_user_informations(self, request, **kwargs):
 			search_str = f"int(data['id']) == int({uid})"
 			res = self.BASE.PhaazeDB.select(of="user", where=search_str)
 			if len(res['data']) == 1:
-				return res['data'][0]
+				return_user = res['data'][0]
+
+				search_str = f"int(data['id']) in {str(return_user.get('type',[]))}"
+				res = self.BASE.PhaazeDB.select(of="role", where=search_str)
+
+				rl = []
+				for role in res['data']:
+					rl.append(role['name'])
+
+				return_user['type'] = rl
+				return return_user
 
 	#via api token
 	phaaze_token = kwargs.get('phaaze_token', None)
@@ -83,7 +93,15 @@ async def get_user_informations(self, request, **kwargs):
 			return None
 
 		else:
-			return res['data'][0]
+			u = res['data'][0]
+			res = self.BASE.PhaazeDB.select(of="role", where=f"int(data['id']) in {str(u.get('type', []))}")
+
+			rl = []
+			for role in res['data']:
+				rl.append(role['name'])
+
+			u['type'] = rl
+			return u
 
 	return None
 

@@ -23,7 +23,6 @@ class root(object):
 
 		return web.Response(**kwargs)
 
-
 	# Utility functions that are needed everywhere
 	from _WEB_.Utils import format_html as format_html
 	from _API_.Utils import get_user_informations as get_user_info
