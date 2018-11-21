@@ -89,7 +89,11 @@ function insert_data(query_obj, data) {
   }
 
   for (var key in data) {
-    query_obj.find("[name="+key+"]").val(data[key]);
+    try {
+      query_obj.find("[name="+key+"]").val(data[key]);
+    } catch (e) {
+      continue
+    }
   }
 }
 
@@ -134,7 +138,7 @@ function _show_message(content, color, text_color, symbol, link, time) {
   // The display field is located in the main navbar, so its everywere.
   var message_field = $('#_message_field');
 
-  var message = $('<div class="_message"><h1></h1></div>');
+  var message = $('<div class="_message" onclick="$(this).remove()"><h1></h1></div>');
   var message_bar_raw = $('<div class="_message_bar_raw"></div>')
   var message_bar_time = $('<div class="_message_bar_left"></div>')
 

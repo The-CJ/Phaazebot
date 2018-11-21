@@ -62,11 +62,11 @@
 </div>
 
 <div class="modal fade" id="role_manager">
-  <div role-tpl hidden class="manage-role-entry center-item-row">
+  <div role-tpl hidden class="manage-role-entry center-item-row" role-id="0">
     <div class="col-3 role-name">
       <!-- name -->
     </div>
-    <div class="col role-description">
+    <div class="col role-description" title="">
       <!-- desc -->
     </div>
     <div class="col-1">
@@ -83,7 +83,7 @@
           <h3 style="width: 100%; text-align: center;">Manage user roles: <span class="role-user">[N/A]</span></h3>
           <input type="hidden" name="user-id" value="">
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="max-height: 75vh;overflow-y: auto">
           <!-- todo -->
         </div>
         <div class="modal-footer">
@@ -105,7 +105,6 @@
     <div class="user-entry center-item-row btn indigo darken-4" onclick="detail_user(this)" user-id="x" is-open="0">
       <span class="user-id col-1"></span>
       <span class="user-name col"></span>
-      <!-- <span class="user-type col-4"></span> -->
     </div>
     <!-- details collapse -->
     <div class="collapse user-info">

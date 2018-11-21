@@ -55,13 +55,13 @@ function manage_roles(b) {
       for (r of role) {
         var role_tpl = $('#role_manager > [role-tpl]').clone().attr('hidden', false);
 
+        role_tpl.attr("role-id" ,r.id);
         role_tpl.find(".role-name").text(r.name);
         role_tpl.find(".role-description").text(r.description);
+        role_tpl.find(".role-description").attr("title", r.description);
         if (user.role.indexOf(r.id) > -1) {
-          console.log(role_tpl.find(".role-active"));
           role_tpl.find(".role-active").prop('checked', true);
         }
-
         modal_body.append(role_tpl);
       }
 
@@ -76,7 +76,27 @@ function manage_roles(b) {
 }
 
 function submit_managed_roles() {
-  alert("TODO: submit_managed_roles()");
+  var new_roles = [];
+  let rs = $("#role_manager .modal-body > .manage-role-entry");
+  for (check_role of rs) {
+    check_role = $(check_role);
+    let rid = check_role.attr("role-id");
+    let status = check_role.find('[name=active]');
+    if (status.prop('checked')) {
+        new_roles.push(parseInt(rid));
+    }
+  }
+
+  var user_id = $("#role_manager [name=user-id]").val();
+  var r = {"user_id": user_id, "role": new_roles};
+  $.post("/api/admin/manage-user/update", JSON.stringify(r))
+  .fail(function (data) {
+    m = data.responseJSON ? data.responseJSON.msg : "unknown"
+    _show_message(m, "red");
+  })
+  .done(function (data) {
+    _show_message("User successfull updated", "green");
+  })
 }
 
 function reset_password() {

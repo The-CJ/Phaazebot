@@ -61,7 +61,38 @@ async def get(self, request):
 	)
 
 async def update(self, request):
-	pass
+	user_info = await self.root.get_user_info(request)
+
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
+
+	if not self.root.check_role(user_info, 'admin'):
+		return await self.action_not_allowed(request, msg="Admin rights reqired")
+
+	_JSON = await request.json()
+	user_id = _JSON.get('user_id', None)
+
+	if user_id == None:
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg="missing field 'user_id'")),
+			status=400,
+			content_type='application/json'
+		)
+
+	c = dict()
+
+	for x in _JSON:
+		if x == "user_id": continue
+		c[x] = _JSON[x]
+
+	res = self.root.BASE.PhaazeDB.update(of="user", where=f"int(data['id']) == int({json.dumps(user_id)})", content=c)
+
+	if res['hits'] == 1:
+		return self.root.response(
+			body=json.dumps(dict(status=200, msg="Successfully updated user")),
+			status=200,
+			content_type='application/json'
+		)
 
 async def delete(self, request):
 	pass
