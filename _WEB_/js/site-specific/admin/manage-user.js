@@ -16,7 +16,6 @@ function load_user(r) {
       let t = $("[tpl] > [user]").clone();
       t.find("[user-id]").attr("user-id", user.id);
       t.find(".user-name").text(user.username);
-      t.find(".user-type").text(user.type.join(", "));
       t.find(".user-id").text(user.id);
       r.append(t);
     }

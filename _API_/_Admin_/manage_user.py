@@ -29,8 +29,7 @@ async def get(self, request):
 	if user_info == None:
 		return await self.action_not_allowed(request, msg="Login required")
 
-	types = user_info.get("type", [])
-	if not "admin" in [t.lower() for t in types]:
+	if not self.root.check_role(user_info, 'admin'):
 		return await self.action_not_allowed(request, msg="Admin rights reqired")
 
 	_GET = request.query
@@ -73,9 +72,8 @@ async def impersonate(self, request):
 	if user_info == None:
 		return await self.action_not_allowed(request, msg="Login required")
 
-	types = user_info.get("type", [])
-	if not "superadmin" in [t.lower() for t in types]:
-		return await self.action_not_allowed(request, msg="Superadmin rights reqired")
+	if not self.root.check_role(user_info, 'superadmin'):
+		return await self.action_not_allowed(request, msg="Superdmin rights reqired")
 
 	_POST = await request.post()
 	i = _POST.get('user_id', None)

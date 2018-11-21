@@ -28,8 +28,7 @@ async def get(self, request):
 	if user_info == None:
 		return await self.action_not_allowed(request, msg="Login required")
 
-	types = user_info.get("type", [])
-	if not "admin" in [t.lower() for t in types]:
+	if not self.root.check_role(user_info, 'admin'):
 		return await self.action_not_allowed(request, msg="Admin rights reqired")
 
 	all_user = self.root.BASE.PhaazeDB.select(of="role", fields=["id", "name", "description", "can_be_removed"])
@@ -46,8 +45,7 @@ async def create(self, request):
 	if user_info == None:
 		return await self.action_not_allowed(request, msg="Login required")
 
-	types = user_info.get("type", [])
-	if not "admin" in [t.lower() for t in types]:
+	if not self.root.check_role(user_info, 'admin'):
 		return await self.action_not_allowed(request, msg="Admin rights reqired")
 
 	_POST = await request.post()
@@ -86,8 +84,7 @@ async def delete(self, request):
 	if user_info == None:
 		return await self.action_not_allowed(request, msg="Login required")
 
-	types = user_info.get("type", [])
-	if not "admin" in [t.lower() for t in types]:
+	if not self.root.check_role(user_info, 'admin'):
 		return await self.action_not_allowed(request, msg="Admin rights reqired")
 
 	_POST = await request.post()

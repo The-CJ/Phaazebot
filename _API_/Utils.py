@@ -1,6 +1,6 @@
 
 import asyncio, json
-import hashlib, datetime, random, string
+import hashlib, random, string
 
 #get user infos
 async def get_user_informations(self, request, **kwargs):

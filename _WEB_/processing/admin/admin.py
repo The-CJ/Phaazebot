@@ -11,8 +11,7 @@ async def main(self, request):
 	if user_info == None:
 		return await self.login(request, msg="Login required")
 
-	types = user_info.get("type", [])
-	if not "admin" in [t.lower() for t in types]:
+	if not self.root.check_role(user_info, 'admin'):
 		return await self.action_not_allowed(request, msg="Admin rights reqired")
 
 	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info, active="admin")
@@ -30,6 +29,7 @@ async def main(self, request):
 		content_type='text/html'
 	)
 
+# TODO: renew
 def view_page(BASE, info):
 	return_header = [('Content-Type','text/html')]
 
@@ -68,6 +68,7 @@ def view_page(BASE, info):
 
 	return r
 
+# TODO: renew
 def edit_page(BASE, info):
 	return_header = [('Content-Type','text/html')]
 

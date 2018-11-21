@@ -2,6 +2,7 @@
 
 import json, asyncio
 
+# TODO: renew
 def toggle_moduls(BASE, info={}, from_web=False, **kwargs):
 	"""toggle main Moduls status"""
 	session = info.get("cookies",{}).get("phaaze_session", None)
