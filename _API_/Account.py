@@ -48,7 +48,7 @@ async def logout(self, request, **kwargs):
 	us_id = user.get('id', '')
 	res = self.root.BASE.PhaazeDB.delete(of="session/phaaze", where=f"int(data['user_id']) == int({us_id})")
 
-	if res['hits'] == 1:
+	if res['hits'] >= 1:
 		return self.root.response(
 			text=json.dumps( dict(status=200) ),
 			content_type="application/json",

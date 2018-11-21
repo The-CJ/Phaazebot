@@ -11,9 +11,7 @@ function load_role(r) {
   })
   .done(function (data) {
     let r = $("#result_space").html("");
-    roles = data.data
-    // console.log(roles);
-    for (role of roles) {
+    for (role of data) {
       let t = $("[tpl] > [role]").clone();
       t.find("[role-id]").attr("role-id", role.id);
       t.find(".role-name").text(role.name);
