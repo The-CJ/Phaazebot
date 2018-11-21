@@ -32,26 +32,18 @@ async def get_user_informations(self, request, **kwargs):
 	if phaaze_session == None:
 		phaaze_session = request.cookies.get('phaaze_session', None)
 	if phaaze_session != None:
-		search_str = f'data["session"] == {json.dumps(phaaze_session)}'
-		res = self.BASE.PhaazeDB.select(of="session/phaaze", where=search_str)
-		if len(res['data']) == 1:
-			user_session = res['data'][0]
+		join_user_roles = dict(of="role", store="role", where="role['id'] in user['role']", fields=["name"])
+		join_user = dict(of="user", store="user", where="session['user_id'] == user['id']", join=join_user_roles)
+		res = self.BASE.PhaazeDB.select(of="session/phaaze", where=f'session["session"] == {json.dumps(phaaze_session)}', store="session", join=join_user)
 
-			uid = user_session.get('user_id',"0")
-			search_str = f"int(data['id']) == int({uid})"
-			res = self.BASE.PhaazeDB.select(of="user", where=search_str)
-			if len(res['data']) == 1:
-				return_user = res['data'][0]
-
-				search_str = f"int(data['id']) in {str(return_user.get('type',[]))}"
-				res = self.BASE.PhaazeDB.select(of="role", where=search_str)
-
-				rl = []
-				for role in res['data']:
-					rl.append(role['name'])
-
-				return_user['type'] = rl
-				return return_user
+		sess = res.get('data', [])
+		if len(sess) == 1:
+			s = sess[0]
+			all_user = s.get('user', [])
+			if len(all_user) == 1:
+				user = all_user[0]
+				user['role'] = [r['name'] for r in user.get('role', []) if r.get('name', False)]
+				return user
 
 	#via api token
 	phaaze_token = kwargs.get('phaaze_token', None)
