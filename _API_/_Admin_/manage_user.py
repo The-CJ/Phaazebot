@@ -55,7 +55,7 @@ async def get(self, request):
 
 	all_user = self.root.BASE.PhaazeDB.select(of="user", where=" and ".join(wl), fields=fields)
 	return self.root.response(
-		body=json.dumps(all_user),
+		body=json.dumps(all_user.get('data', [])),
 		status=200,
 		content_type='application/json'
 	)

@@ -62,11 +62,26 @@
 </div>
 
 <div class="modal fade" id="role_manager">
+  <div role-tpl hidden class="manage-role-entry center-item-row">
+    <div class="col-3 role-name">
+      <!-- name -->
+    </div>
+    <div class="col role-description">
+      <!-- desc -->
+    </div>
+    <div class="col-1">
+      <label class="bs-switch">
+        <input type="checkbox" name="active" class="role-active">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
   <form class="" onsubmit="event.preventDefault();submit_managed_roles()" method="post">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header indigo white-text">
-          <h3 style="width: 100%; text-align: center;">Manage user roles</h3>
+          <h3 style="width: 100%; text-align: center;">Manage user roles: <span class="role-user">[N/A]</span></h3>
+          <input type="hidden" name="user-id" value="">
         </div>
         <div class="modal-body">
           <!-- todo -->
