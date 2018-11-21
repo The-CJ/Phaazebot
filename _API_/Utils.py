@@ -106,3 +106,17 @@ def password(self, passwd):
 def make_session_key(self):
 	key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
 	return key
+
+#check throw all roles and verify
+def check_role(self, user_info, role):
+	if type(role) != list:
+		role = [role]
+
+	user_roles = user_info.get("role", [])
+	user_roles = [u.lower() for u in user_roles]
+	allowed_roles = [r.lower() for r in role]
+
+	for ar in allowed_roles:
+		if ar in user_roles: return True
+
+	return False

@@ -39,13 +39,12 @@ async def eval_command(self, request):
 	if user_info == None:
 		return await self.action_not_allowed(request, msg="Login required")
 
-	types = user_info.get("type", [])
-	if not "superadmin" in [t.lower() for t in types]:
+	if not self.root.check_role(user_info, 'superadmin'):
 		return await self.action_not_allowed(request, msg="Superadmin rights reqired")
 
 	#get command from content
 	_POST = await request.post()
-	command = _POST.get('command', 'Missing_Conent')
+	command = _POST.get('command', 'Missing_Content')
 
 	try:
 		res = eval(command)

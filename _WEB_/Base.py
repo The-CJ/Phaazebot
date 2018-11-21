@@ -25,6 +25,7 @@ class root(object):
 
 	# Utility functions that are needed everywhere
 	from _WEB_.Utils import format_html as format_html
+	from _API_.Utils import check_role as check_role
 	from _API_.Utils import get_user_informations as get_user_info
 	from _API_.Utils import password as password
 	from _API_.Utils import make_session_key as make_session_key
