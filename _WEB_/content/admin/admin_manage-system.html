@@ -6,13 +6,98 @@
   <h2 class="text-center">System manager</h2>
   <hr>
 
-  <div class="row">
+  <!-- uptime -->
+  <div class="center-item-row">
     <div class="col text-center">
       <h3>System Uptime</h3>
     </div>
     <div class="col text-center">
       <h3 id="uptime">[N/A]</h3>
     </div>
+    <div class="" style="position: absolute;">
+      <button type="button" class="btn btn-info" onclick="load_status()">Reload</button>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- module status -->
+  <div class="status-field">
+    <h2 class="text-center">Module Status</h2>
+    <hr>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Main</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_main">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Web</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_web">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>API</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_api">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Discord</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_discord">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Twitch IRC</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_twitch_irc">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Twitch Alerts</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_twitch_alert">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Twitter</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_twitter">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Osu! IRC</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_osu_irc">[N/A]</button>
+      </div>
+    </div>
+
   </div>
 
 </div>

@@ -1,6 +1,6 @@
 #/api/admin/
 
-import json, asyncio
+import json, asyncio, time
 
 # TODO: renew
 def toggle_moduls(BASE, info={}, from_web=False, **kwargs):
@@ -53,6 +53,47 @@ async def eval_command(self, request):
 		res = Fail
 
 	res = str(res)
+
+	return self.root.response(
+		body=json.dumps(dict(result=res, status="200")),
+		status=200,
+		content_type='application/json'
+	)
+
+# /api/admin/status
+async def status(self, request):
+
+	user_info = await self.root.get_user_info(request)
+
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
+
+	if not self.root.check_role(user_info, 'admin'):
+		return await self.action_not_allowed(request, msg="Admin rights reqired")
+
+	res = dict()
+
+	BASE = self.root.BASE
+
+	#uptime
+	res['uptime'] = time.time() - BASE.uptime_var_1
+
+	#module status
+	res['module_status'] = dict()
+	for module_status in [m for m in dir(BASE.active) if not m.startswith("__")]:
+		res['module_status'][module_status] = getattr(BASE.active, module_status)
+
+	# discord
+	if BASE.discord == None:
+		res['discord'] = None
+	else:
+		res['discord'] = dict(
+			servers = len(BASE.discord.servers),
+			user=BASE.modules._Discord_.Utils.get_unique_members(BASE),
+			bot_id=BASE.discord.user.id,
+			bot_name=BASE.discord.user.name,
+			bot_discriminator=BASE.discord.user.discriminator
+		)
 
 	return self.root.response(
 		body=json.dumps(dict(result=res, status="200")),
