@@ -426,8 +426,6 @@ async def MAINFRAME_LOOP(_d_: __DISCORD__,
 						BASE.Twitch_Alerts_loop = _ta_.loop
 					except:
 						BASE.modules.Console.CRITICAL("Restarting Twitch Alerts Thread failed.")
-			else:
-				pass
 
 			if BASE.active.discord:
 				if not _d_.isAlive():
@@ -438,8 +436,6 @@ async def MAINFRAME_LOOP(_d_: __DISCORD__,
 						BASE.Discord_loop = _d_.loop
 					except:
 						BASE.modules.Console.CRITICAL("Restarting Discord Thread failed.")
-			else:
-				pass
 
 			if BASE.active.twitch_irc:
 				if not _t_.isAlive():
@@ -450,8 +446,6 @@ async def MAINFRAME_LOOP(_d_: __DISCORD__,
 						BASE.Twitch_loop = _t_.loop
 					except:
 						BASE.modules.Console.CRITICAL("Restarting Twitch IRC Thread failed.")
-			else:
-				pass
 
 			if BASE.active.osu_irc:
 				if not _o_.isAlive():
@@ -462,8 +456,6 @@ async def MAINFRAME_LOOP(_d_: __DISCORD__,
 						BASE.Osu_loop = _o_.loop
 					except:
 						BASE.modules.Console.CRITICAL("Restarting Osu IRC Thread failed.")
-			else:
-				pass
 
 			if BASE.active.web:
 				if not _web_.isAlive():
@@ -474,8 +466,6 @@ async def MAINFRAME_LOOP(_d_: __DISCORD__,
 						BASE.Web_loop = _web_.loop
 					except:
 						BASE.modules.Console.CRITICAL("Restarting PhaazeWeb Thread failed.")
-			else:
-				pass
 
 			if not _worker_.isAlive():
 				try:

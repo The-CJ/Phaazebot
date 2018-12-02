@@ -67,7 +67,7 @@ async def update(self, request):
 		return await self.action_not_allowed(request, msg="Login required")
 
 	if not self.root.check_role(user_info, 'admin'):
-		return await self.action_not_allowed(request, msg="Admin rights reqired")
+		return await self.action_not_allowed(request, msg="Admin rights required")
 
 	_JSON = await request.json()
 	user_id = _JSON.get('user_id', None)

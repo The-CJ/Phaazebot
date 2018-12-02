@@ -27,7 +27,7 @@ class ColoredLogger(logging.Formatter):
 		r = self._style.format(record)
 		return r
 
-SHF = ColoredLogger("[%(levelname)s] %(message)s")
+SHF = ColoredLogger("\033[00m[%(levelname)s] %(message)s\033[00m")
 
 if all_args.get('logging', 'console') == "systemd":
 	JH = JournalHandler()
