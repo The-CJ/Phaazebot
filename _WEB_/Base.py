@@ -70,6 +70,7 @@ class root(object):
 		from _WEB_.processing.admin.admin import main as admin_main							#/admin
 		from _WEB_.processing.admin.manage_user import main as admin_manage_user			#/admin/manage-user
 		from _WEB_.processing.admin.manage_type import main as admin_manage_type			#/admin/manage-type
+		from _WEB_.processing.admin.manage_system import main as admin_manage_system		#/admin/manage-system
 
 def webserver(BASE):
 	server = web.Application()
@@ -87,6 +88,7 @@ def webserver(BASE):
 	server.router.add_route('GET', '/admin', root.web.admin_main)
 	server.router.add_route('GET', '/admin/manage-user', root.web.admin_manage_user)
 	server.router.add_route('GET', '/admin/manage-type', root.web.admin_manage_type)
+	server.router.add_route('GET', '/admin/manage-system', root.web.admin_manage_system)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
