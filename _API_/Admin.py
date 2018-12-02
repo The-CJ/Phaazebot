@@ -89,15 +89,60 @@ async def status(self, request):
 	else:
 		res['discord'] = dict(
 			servers = len(BASE.discord.servers),
-			user=BASE.modules._Discord_.Utils.get_unique_members(BASE),
+			user=get_unique_discord_members(BASE.discord.servers),
 			bot_id=BASE.discord.user.id,
 			bot_name=BASE.discord.user.name,
-			bot_discriminator=BASE.discord.user.discriminator
+			bot_discriminator=BASE.discord.user.discriminator,
+			bot_avatar=BASE.discord.user.avatar_url
 		)
 
 	return self.root.response(
-		body=json.dumps(dict(result=res, status="200")),
+		body=json.dumps(dict(result=res, status=200)),
 		status=200,
 		content_type='application/json'
 	)
+
+async def controll(self, request):
+	user_info = await self.root.get_user_info(request)
+
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
+
+	if not self.root.check_role(user_info, 'admin'):
+		return await self.action_not_allowed(request, msg="Admin rights reqired")
+
+	try:
+		_POST = await request.json()
+	except:
+		_POST = await request.post()
+
+	# module switch
+	module = _POST.get('module', None)
+	if module != None:
+		state = _POST.get("state", None)
+		if state == None:
+			return self.root.response(
+				body=json.dumps(dict(error="module state switch requires a 'module' field and a 'state'.", status=400)),
+				status=400,
+				content_type='application/json'
+			)
+		setattr(self.root.BASE.active, module.lower(), state)
+		return self.root.response(
+			body=json.dumps(dict(msg=f"module {module} now: {state}", status=200)),
+			status=200,
+			content_type='application/json'
+		)
+
+
+
+
+
+def get_unique_discord_members(servers):
+	a = []
+
+	for server in servers:
+		for member in server.members:
+			if member.id not in a: a.append(member.id)
+
+	return len(a)
 

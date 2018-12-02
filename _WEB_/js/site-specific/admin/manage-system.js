@@ -34,7 +34,7 @@ function load_status() {
         s=true;
       }
       b.click(function () {
-        $.post("/api/admin/controll", {"module":name,"state":s}).done(location.reload)
+        $.post("/api/admin/controll", JSON.stringify({"module":name,"state":s})).done(location.reload())
       });
     }
 

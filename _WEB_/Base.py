@@ -45,6 +45,7 @@ class root(object):
 																							#
 		from _API_.Admin import eval_command as admin_eval_command							#/admin/eval_command
 		from _API_.Admin import status as admin_status										#/admin/status
+		from _API_.Admin import controll as admin_controll									#/admin/controll
 		from _API_._Admin_.manage_user import main as admin_manage_user						#/admin/manage-user
 		from _API_._Admin_.manage_type import main as admin_manage_type						#/admin/manage-type
 
@@ -97,6 +98,7 @@ def webserver(BASE):
 	server.router.add_route('*',   '/api/account/create', root.api.account_create)
 	server.router.add_route('*',   '/api/admin/eval_command', root.api.admin_eval_command)
 	server.router.add_route('*',   '/api/admin/status', root.api.admin_status)
+	server.router.add_route('*',   '/api/admin/controll', root.api.admin_controll)
 	server.router.add_route('*',   '/api/admin/manage-user{x:/?}{method:.*}', root.api.admin_manage_user)
 	server.router.add_route('*',   '/api/admin/manage-type{x:/?}{method:.*}', root.api.admin_manage_type)
 	server.router.add_route('*',   '/api/{path:.*}', root.api.unknown)
