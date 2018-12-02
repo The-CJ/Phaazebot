@@ -60,7 +60,7 @@ async def create(self, request, **kwargs):
 	auth_user = await self.root.get_user_info(request)
 	if auth_user != None:
 		return self.root.response(
-			text=json.dumps( dict(error="aleady_logged_in", status=400, message="no registion needed, already logged in") ),
+			text=json.dumps( dict(error="aleady_logged_in", status=400, msg="no registion needed, already logged in") ),
 			content_type="application/json",
 			status=400
 		)
@@ -77,20 +77,20 @@ async def create(self, request, **kwargs):
 	#password
 	if password != password2:
 		return self.root.response(
-			text=json.dumps( dict(error="unequal_passwords", status=400, message="the passwords are not the same") ),
+			text=json.dumps( dict(error="unequal_passwords", status=400, msg="the passwords are not the same") ),
 			content_type="application/json",
 			status=400
 		)
 	if len(password) < 8:
 		return self.root.response(
-			text=json.dumps( dict(error="invalid_password", status=400, message="the password must be at least 8 chars long") ),
+			text=json.dumps( dict(error="invalid_password", status=400, msg="the password must be at least 8 chars long") ),
 			content_type="application/json",
 			status=400
 		)
 	#email
 	if len(email) < 5:
 		return self.root.response(
-			text=json.dumps( dict(error="invalid_email", status=400, message="email looks false") ),
+			text=json.dumps( dict(error="invalid_email", status=400, msg="email looks false") ),
 			content_type="application/json",
 			status=400
 		)
@@ -98,7 +98,7 @@ async def create(self, request, **kwargs):
 	check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['username'] == {json.dumps(username)} or data['email'] == {json.dumps(email)}")
 	if check_user.get('hits', 1) != 0:
 		return self.root.response(
-			text=json.dumps( dict(error="account_taken", status=400, message="username or email is taken") ),
+			text=json.dumps( dict(error="account_taken", status=400, msg="username or email is taken") ),
 			content_type="application/json",
 			status=400
 		)

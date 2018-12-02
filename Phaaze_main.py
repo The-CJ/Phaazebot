@@ -202,6 +202,8 @@ class BASE(object):
 
 			import _WEB_.Utils as Utils
 
+			import _WEB_.Mail as Mail
+
 		class _YouTube_(object):
 			pass
 

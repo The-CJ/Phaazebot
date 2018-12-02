@@ -39,6 +39,10 @@ async def get(self, request):
 	if w_username != "":
 		wl.append( f"{json.dumps(w_username)}.lower() in data['username'].lower()")
 
+	w_email = _GET.get('email', '')
+	if w_email != "":
+		wl.append( f"{json.dumps(w_email)}.lower() in data['email'].lower()")
+
 	w_id = _GET.get('userid', '')
 	if w_id != "":
 		wl.append(f"str(data['id']) == {json.dumps(w_id)}")
