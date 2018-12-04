@@ -215,8 +215,11 @@ class BASE(object):
 		if async_function == None:
 			raise AttributeError("Async Func. can't be 'None'")
 		async def _call_from_async_executer(future, func):
-			result = await func
-			future.set_result(result)
+			try:
+				result = await func
+				future.set_result(result)
+			except Exception as e:
+				future.set_result(e)
 
 		future = asyncio.Future()
 		if exc_loop == None:
