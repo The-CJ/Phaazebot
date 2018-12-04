@@ -10,6 +10,9 @@ function load_status() {
     _show_message(m, "red");
   })
   .done(function (data) {
+    // version
+    $("#version").text(data.result.version);
+
     // uptime
     let minutes = data.result.uptime / 60;
     let seconds = data.result.uptime % 60
@@ -56,4 +59,21 @@ function load_status() {
     console.log(data);
   })
 
+}
+
+function upload_avatar() {
+  var f = $('#new_avatar');
+  var u = {
+    "action": "discord_avatar",
+    "file": f[0].files[0],
+  };
+  var p = "/api/admin/controll";
+  function s(data) {
+    _show_message(data.msg, "green");
+  }
+  function fa(data) {
+    _show_message(data.msg, "red");
+  }
+  _show_message("Uploading...", "yellow", "black");  
+  upload_file(u, p, s, fa);
 }

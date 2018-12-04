@@ -3,7 +3,7 @@
 <div class="container white-text">
 
   <hr>
-  <h2 class="text-center">System manager</h2>
+  <h2 class="text-center">System manager: v<span id="version">(0)</span></h2>
   <hr>
 
   <!-- uptime -->
@@ -113,6 +113,8 @@
         <h4>Discriminator: <span name="discord_bot_discriminator">[N/A]</span></h4>
         <h4>Active servers: <span name="discord_servers">[N/A]</span></h4>
         <h4>Unique users: <span name="discord_user">[N/A]</span></h4>
+        <input type="file" id="new_avatar" class="btn btn-block"><br>
+        <button type="button" class="btn btn-block btn-primary" onclick="upload_avatar()">Upload new</button>
       </div>
       <div class="col text-center">
         <div style="width:256px;height:256px;background:grey;margin:auto;">
