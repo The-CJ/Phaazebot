@@ -84,7 +84,7 @@ async def status(self, request):
 		res['module_status'][module_status] = getattr(BASE.active, module_status)
 
 	# discord
-	if BASE.discord == None:
+	if BASE.discord == None or not BASE.is_ready.discord:
 		res['discord'] = None
 	else:
 		res['discord'] = dict(
@@ -116,9 +116,11 @@ async def controll(self, request):
 	except:
 		_POST = await request.post()
 
+	action = _POST.get("action", None)
+
 	# module switch
-	module = _POST.get('module', None)
-	if module != None:
+	if action == "module":
+		module = _POST.get('module', None)
 		state = _POST.get("state", None)
 		if state == None:
 			return self.root.response(
@@ -133,6 +135,12 @@ async def controll(self, request):
 			content_type='application/json'
 		)
 
+	else:
+		return self.root.response(
+			body=json.dumps(dict(error="no usable 'action' field.", status=400)),
+			status=400,
+			content_type='application/json'
+		)
 
 
 

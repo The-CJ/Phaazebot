@@ -25,17 +25,31 @@ function load_status() {
       let name = mstat;
       let s = false;
       if (cur_s) {
-        b.addClass("btn-success");
+        b.addClass("btn-success").removeClass("btn-danger");
         b.text("Active");
         s=false;
       } else {
-        b.addClass("btn-danger");
+        b.addClass("btn-danger").removeClass("btn-success");
         b.text("Inactive");
         s=true;
       }
       b.click(function () {
-        $.post("/api/admin/controll", JSON.stringify({"module":name,"state":s})).done(location.reload())
+        $.post("/api/admin/controll", JSON.stringify({"action":"module", "module":name,"state":s})).done(location.reload())
       });
+    }
+
+    // Discord
+    if (data.result.discord) {
+      for (var variable in data.result.discord) {
+        if (variable == "bot_avatar") {
+          $("[name=discord_"+variable+"]").attr("src", data.result.discord[variable]);
+          continue;
+        }
+        $("[name=discord_"+variable+"]").text(data.result.discord[variable]);
+      }
+    } else {
+      let b = $("[name^=discord]").text("[N/A]");
+      $("[name=discord_bot_avatar]").attr("src",null);
     }
 
 
