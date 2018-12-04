@@ -134,6 +134,20 @@ function copy_data_fields(from, to) {
   $('#'+to).val(from_val);
 }
 
+function upload_file(args, url, success_function, fail_function) {
+  if (!(url && args && success_function)) {return false;}
+
+  var formData = new FormData();
+  for (var upl in args) {
+    formData.append(upl, args[upl]);
+  }
+  var request = new XMLHttpRequest();
+  request.onload = success_function;
+  request.onerror = fail_function;
+  request.open("POST", url);
+  request.send(formData);
+}
+
 function _show_message(content, color, text_color, symbol, link, time) {
   // The display field is located in the main navbar, so its everywere.
   var message_field = $('#_message_field');
