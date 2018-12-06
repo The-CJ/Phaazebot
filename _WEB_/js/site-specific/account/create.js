@@ -4,6 +4,6 @@ function create_account() {
     window.location = "/login?new";
   }).fail(function (data) {
     data = data.responseJSON ? data.responseJSON.msg : "unknown";
-    _show_message(data);
+    _show_message(data, "orange");
   })
 }

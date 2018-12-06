@@ -44,9 +44,10 @@ class root(object):
 		from _API_.Account import create as account_create									#/api/account/create
 																							#
 		from _API_.Admin import eval_command as admin_eval_command							#/admin/eval_command
+		from _API_.Admin import status as admin_status										#/admin/status
+		from _API_.Admin import controll as admin_controll									#/admin/controll
 		from _API_._Admin_.manage_user import main as admin_manage_user						#/admin/manage-user
 		from _API_._Admin_.manage_type import main as admin_manage_type						#/admin/manage-type
-																							#
 
 	# / ...
 	class init_web(object):																	#
@@ -70,6 +71,7 @@ class root(object):
 		from _WEB_.processing.admin.admin import main as admin_main							#/admin
 		from _WEB_.processing.admin.manage_user import main as admin_manage_user			#/admin/manage-user
 		from _WEB_.processing.admin.manage_type import main as admin_manage_type			#/admin/manage-type
+		from _WEB_.processing.admin.manage_system import main as admin_manage_system		#/admin/manage-system
 
 def webserver(BASE):
 	server = web.Application()
@@ -87,6 +89,7 @@ def webserver(BASE):
 	server.router.add_route('GET', '/admin', root.web.admin_main)
 	server.router.add_route('GET', '/admin/manage-user', root.web.admin_manage_user)
 	server.router.add_route('GET', '/admin/manage-type', root.web.admin_manage_type)
+	server.router.add_route('GET', '/admin/manage-system', root.web.admin_manage_system)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
@@ -94,9 +97,11 @@ def webserver(BASE):
 	server.router.add_route('*',   '/api/account/logout', root.api.account_logout)
 	server.router.add_route('*',   '/api/account/create', root.api.account_create)
 	server.router.add_route('*',   '/api/admin/eval_command', root.api.admin_eval_command)
+	server.router.add_route('*',   '/api/admin/status', root.api.admin_status)
+	server.router.add_route('*',   '/api/admin/controll', root.api.admin_controll)
 	server.router.add_route('*',   '/api/admin/manage-user{x:/?}{method:.*}', root.api.admin_manage_user)
 	server.router.add_route('*',   '/api/admin/manage-type{x:/?}{method:.*}', root.api.admin_manage_type)
-	server.router.add_route('GET', '/api/{path:.*}', root.api.unknown)
+	server.router.add_route('*',   '/api/{path:.*}', root.api.unknown)
 
 	# /js /img /css
 	server.router.add_route('GET', '/img{file:.*}', root.web.img)

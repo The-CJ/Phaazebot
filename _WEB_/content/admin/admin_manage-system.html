@@ -1,0 +1,130 @@
+<link rel="stylesheet" href="/css/site-specific/admin/manage-system.css">
+
+<div class="container white-text">
+
+  <hr>
+  <h2 class="text-center">System manager: v<span id="version">(0)</span></h2>
+  <hr>
+
+  <!-- uptime -->
+  <div class="center-item-row">
+    <div class="col text-center">
+      <h3>System Uptime</h3>
+    </div>
+    <div class="col text-center">
+      <h3 id="uptime">[N/A]</h3>
+    </div>
+    <div class="" style="position: absolute;">
+      <button type="button" class="btn btn-info" onclick="load_status()">Reload</button>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- module status -->
+  <div class="status-field">
+    <h2 class="text-center">Module Status</h2>
+    <hr>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Main</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_main">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Web</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_web">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>API</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_api">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Discord</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_discord">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Twitch IRC</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_twitch_irc">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Twitch Alerts</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_twitch_alert">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Twitter</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_twitter">[N/A]</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col text-center">
+        <h3>Osu! IRC</h3>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn" id="status_osu_irc">[N/A]</button>
+      </div>
+    </div>
+
+  </div>
+
+  <hr>
+
+  <!-- discord info -->
+  <div class="status-field">
+    <h2 class="text-center">Discord Status</h2>
+    <hr>
+    <div class="row">
+      <div class="col text-center">
+        <h4>Name: <span name="discord_bot_name">[N/A]</span></h4>
+        <h4>ID: <span name="discord_bot_id">[N/A]</span></h4>
+        <h4>Discriminator: <span name="discord_bot_discriminator">[N/A]</span></h4>
+        <h4>Active servers: <span name="discord_servers">[N/A]</span></h4>
+        <h4>Unique users: <span name="discord_user">[N/A]</span></h4>
+        <input type="file" id="new_avatar" class="btn btn-block"><br>
+        <button type="button" class="btn btn-block btn-primary" onclick="upload_avatar()">Upload new</button>
+      </div>
+      <div class="col text-center">
+        <div style="width:256px;height:256px;background:grey;margin:auto;">
+          <img src="" alt="[N/A]" name="discord_bot_avatar" style="width:100%;height:100%;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/js/administration.js" charset="utf-8"></script>
+<script src="/js/site-specific/admin/manage-system.js" charset="utf-8"></script>

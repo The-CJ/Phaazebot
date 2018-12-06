@@ -1,6 +1,6 @@
 import asyncio
 
-# /admin/manage-user
+# /admin/manage-system
 async def main(self, request):
 	user_info = await self.root.get_user_info(request)
 
@@ -12,10 +12,10 @@ async def main(self, request):
 
 	site = self.root.html_root
 	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info, active="admin")
-	main_site = open('_WEB_/content/admin/admin_manage-user.html','r').read()
+	main_site = open('_WEB_/content/admin/admin_manage-system.html','r').read()
 
 	site = self.root.format_html(site,
-		title="Phaaze | Admin - User manager",
+		title="Phaaze | Admin - Systen manager",
 		header=current_navbar,
 		main=main_site
 	)

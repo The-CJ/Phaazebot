@@ -39,6 +39,10 @@ async def get(self, request):
 	if w_username != "":
 		wl.append( f"{json.dumps(w_username)}.lower() in data['username'].lower()")
 
+	w_email = _GET.get('email', '')
+	if w_email != "":
+		wl.append( f"{json.dumps(w_email)}.lower() in data['email'].lower()")
+
 	w_id = _GET.get('userid', '')
 	if w_id != "":
 		wl.append(f"str(data['id']) == {json.dumps(w_id)}")
@@ -67,7 +71,7 @@ async def update(self, request):
 		return await self.action_not_allowed(request, msg="Login required")
 
 	if not self.root.check_role(user_info, 'admin'):
-		return await self.action_not_allowed(request, msg="Admin rights reqired")
+		return await self.action_not_allowed(request, msg="Admin rights required")
 
 	_JSON = await request.json()
 	user_id = _JSON.get('user_id', None)
