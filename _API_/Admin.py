@@ -68,6 +68,17 @@ async def status(self, request):
 			bot_avatar=BASE.discord.user.avatar_url
 		)
 
+	# twitch
+	if BASE.twitch == None or not BASE.is_ready.twitch:
+		res['twitch'] = None
+	else:
+		res['twitch'] = dict(
+			bot_host=BASE.twitch.host,
+			bot_name=BASE.twitch.nickname,
+			bot_traffic=BASE.twitch.traffic,
+			channel=len(BASE.twitch.channels),
+		)
+
 	return self.root.response(
 		body=json.dumps(dict(result=res, status=200)),
 		status=200,

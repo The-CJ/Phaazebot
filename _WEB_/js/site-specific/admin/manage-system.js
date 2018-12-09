@@ -55,6 +55,15 @@ function load_status() {
       $("[name=discord_bot_avatar]").attr("src",null);
     }
 
+    // Twitch
+    if (data.result.twitch) {
+      for (var variable in data.result.twitch) {
+        $("[name=twitch_"+variable+"]").text(data.result.twitch[variable]);
+      }
+    } else {
+      let b = $("[name^=twitch]").text("[N/A]");
+    }
+
 
     console.log(data);
   })
