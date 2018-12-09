@@ -212,6 +212,26 @@ function _show_message(content, color, text_color, symbol, link, time) {
 
 }
 
+function _show_loading(content) {
+  if (!content) {content = "Loading..."}
+  var load_spot = $('#_loading');
+  if (load_spot.is(":empty")) {
+    var load_screen = $("<div class=\"loading_screen center-item-row\"</div>");
+    var inner_container = $("<div class=\"middle center-item-col\"></div>");
+    var image = $("<img class=\"animation-spin\"src=\"/favicon.ico\" alt=\"loading\" onclick=\"_hide_loading()\">");
+    var text = $("<span>"+content+"</span>");
+    inner_container.append(image);
+    inner_container.append(text);
+    load_screen.append(inner_container);
+
+    load_spot.append(load_screen);
+  }
+}
+
+function _hide_loading() {
+  $('#_loading').html("");
+}
+
 // stuff
 
 $('document').ready(function () {

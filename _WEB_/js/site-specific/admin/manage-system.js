@@ -76,7 +76,6 @@ function upload_avatar() {
     _hide_loading();
     _show_message(data.msg, "red");
   }
-  _show_loading();
-  _show_message("Uploading...", "yellow", "black");
+  _show_loading("Uploading...");
   upload_file(u, p, s, fa);
 }
