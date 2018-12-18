@@ -32,7 +32,9 @@ textarea {
 	background: transparent;
 	padding: 0.75em;
 }
+
 /*class styles*/
+
 .center-item-row {
 	display: flex;
 	flex-direction: row;
@@ -68,6 +70,7 @@ textarea {
 }
 
 /*global message animations*/
+
 #_message_field {
 	width: 100%;
 	z-index: 15000;
@@ -88,6 +91,7 @@ textarea {
 	animation-timing-function: linear;
 	animation-iteration-count: 1;
 }
+
 @keyframes _message-animation {
 	0%{
 		opacity: 0;
@@ -136,3 +140,33 @@ textarea {
 		width: 0%;
 	}
 }
+
+/* loading screen */
+
+#_loading {
+	z-index: 10000;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+#_loading > .loading_screen {
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.25);
+}
+
+#_loading > .loading_screen > .middle {
+	position: relative;
+	margin: 0 auto;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+#_loading span {
+	color: white;
+	font-size: 2em;
+}
+

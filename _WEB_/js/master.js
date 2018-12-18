@@ -1,3 +1,5 @@
+// Log- in/out
+
 function phaaze_logout() {
   var x = getCookie("phaaze_session");
   var r = {};
@@ -55,7 +57,7 @@ function phaaze_login() {
   );
 }
 
-//
+// Field data managment
 
 function extract_data(query_obj) {
   let d = {};
@@ -97,7 +99,7 @@ function insert_data(query_obj, data) {
   }
 }
 
-//
+// Cookie managment
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -123,6 +125,8 @@ function remCookie(name) {
   document.cookie = name+"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=\"/\""
 }
 
+// data transfer
+
 function copy_clipboad(field) {
   var copyText = document.getElementById(field);
   copyText.select();
@@ -133,6 +137,8 @@ function copy_data_fields(from, to) {
   var from_val = $('#'+from).val();
   $('#'+to).val(from_val);
 }
+
+// utils
 
 function upload_file(args, url, success_function, fail_function) {
   if (!(url && args)) {return false;}
@@ -156,7 +162,18 @@ function upload_file(args, url, success_function, fail_function) {
   request.send(formData);
 }
 
+// utils - screen
+
 function _show_message(content, color, text_color, symbol, link, time) {
+  if (typeof content == "object") {
+    color = content["color"];
+    text_color = content["text_color"];
+    symbol = content["symbol"];
+    link = content["link"];
+    time = content["time"];
+    content = content["content"];
+  }
+
   // The display field is located in the main navbar, so its everywere.
   var message_field = $('#_message_field');
 
@@ -194,6 +211,28 @@ function _show_message(content, color, text_color, symbol, link, time) {
   }, time);
 
 }
+
+function _show_loading(content) {
+  if (!content) {content = "Loading..."}
+  var load_spot = $('#_loading');
+  if (load_spot.is(":empty")) {
+    var load_screen = $("<div class=\"loading_screen center-item-row\"</div>");
+    var inner_container = $("<div class=\"middle center-item-col\"></div>");
+    var image = $("<img class=\"animation-spin\"src=\"/favicon.ico\" alt=\"loading\" onclick=\"_hide_loading()\">");
+    var text = $("<span>"+content+"</span>");
+    inner_container.append(image);
+    inner_container.append(text);
+    load_screen.append(inner_container);
+
+    load_spot.append(load_screen);
+  }
+}
+
+function _hide_loading() {
+  $('#_loading').html("");
+}
+
+// stuff
 
 $('document').ready(function () {
   Waves.attach('.btn', ['waves-effect', 'waves-light']);

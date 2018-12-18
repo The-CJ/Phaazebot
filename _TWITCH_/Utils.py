@@ -33,16 +33,16 @@ async def is_admin(BASE, message):
 #channelfiles
 async def get_channel_settings(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="twitch/channel_settings", where=f"data['channel_id'] == '{str(id)}'")
+	data = BASE.PhaazeDB.select(of="twitch/channel_settings", where=f"data['channel_id'] == '{str(id)}'")
 
-	if len(file['data']) == 0:
+	if len(data['data']) == 0:
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
 		else:
 			return await make_channel_settings(BASE, id)
 	else:
-		return file['data'][0]
+		return data['data'][0]
 
 async def make_channel_settings(BASE, id):
 	insert_ = dict()
@@ -75,16 +75,19 @@ async def make_channel_settings(BASE, id):
 #customfiles
 async def get_channel_commands(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="twitch/commands/commands_"+str(id))
+	try:
+		data = BASE.PhaazeDB.select(of="twitch/commands/commands_"+str(id))
+	except:
+		data = dict()
 
-	if file['status'] == "error":
+	if data.get('status', 'error') == "error":
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
 		else:
 			return await make_channel_commands(BASE, id)
 	else:
-		return file['data']
+		return data['data']
 
 async def make_channel_commands(BASE, id):
 
@@ -96,16 +99,19 @@ async def make_channel_commands(BASE, id):
 #levelfiles
 async def get_channel_levels(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="twitch/level/level_"+str(id))
+	try:
+		data = BASE.PhaazeDB.select(of="twitch/level/level_"+str(id))
+	except:
+		data = dict()
 
-	if file['status'] == "error":
+	if data.get('status', 'error') == "error":
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
 		else:
 			return await make_channel_levels(BASE, id)
 	else:
-		return file['data']
+		return data['data']
 
 async def make_channel_levels(BASE, id):
 
@@ -117,16 +123,19 @@ async def make_channel_levels(BASE, id):
 #quotefiles
 async def get_channel_quotes(BASE, id, prevent_new=False):
 	#get
-	file = BASE.PhaazeDB.select(of="twitch/quotes/quotes_"+str(id))
+	try:
+		data = BASE.PhaazeDB.select(of="twitch/quotes/quotes_"+str(id))
+	except:
+		data = dict()
 
-	if file['status'] == "error":
+	if data.get('status', 'error') == "error":
 		#didn't find entry -> make new
 		if prevent_new:
 			return None
 		else:
 			return await make_channel_quotes(BASE, id)
 	else:
-		return file['data']
+		return data['data']
 
 async def make_channel_quotes(BASE, id):
 

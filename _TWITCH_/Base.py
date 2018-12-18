@@ -133,8 +133,8 @@ async def lurkers(BASE):
 					content=f"data['amount_time'] += 1; data['amount_currency'] += {channel_settings.get('gain_currency', 1)}; data['active'] -= 1 if data.get('active', 0) else 0")
 
 				await asyncio.sleep(0.05)
-			except:
-				BASE.modules.Console.CRITICAL("Twitch Lurker Loop cause a unknown error")
+			except Exception as e:
+				BASE.modules.Console.CRITICAL("Twitch Lurker Loop cause a unknown error\n"+str(e))
 				await asyncio.sleep( sleep_time/2 )
 
 		await asyncio.sleep( sleep_time )

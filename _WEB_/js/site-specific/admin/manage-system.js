@@ -55,6 +55,15 @@ function load_status() {
       $("[name=discord_bot_avatar]").attr("src",null);
     }
 
+    // Twitch
+    if (data.result.twitch) {
+      for (var variable in data.result.twitch) {
+        $("[name=twitch_"+variable+"]").text(data.result.twitch[variable]);
+      }
+    } else {
+      let b = $("[name^=twitch]").text("[N/A]");
+    }
+
 
     console.log(data);
   })
@@ -69,11 +78,13 @@ function upload_avatar() {
   };
   var p = "/api/admin/controll";
   function s(data) {
+    _hide_loading();
     _show_message(data.msg, "green");
   }
   function fa(data) {
+    _hide_loading();
     _show_message(data.msg, "red");
   }
-  _show_message("Uploading...", "yellow", "black");  
+  _show_loading("Uploading...");
   upload_file(u, p, s, fa);
 }
