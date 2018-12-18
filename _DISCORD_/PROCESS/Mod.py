@@ -493,13 +493,16 @@ class Level(object):
 		if len(m) == 1:
 			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level [Option]`\n\n"\
 				f"`exp` - Edit a users exp and level\n"\
-				f"`medal` - add/rem/clear a users medals"
+				f"`medal` - add/rem/clear a users medals\n"\
+				f"`channel` - Set or remove a channel, where all level ups get announced\n"
 			return await BASE.discord.send_message(message.channel, r)
 
 		elif m[1].lower() == "exp":
 			return await Level.exp(BASE, message, kwargs)
 		elif m[1].lower() == "medal":
 			return await Level.medal(BASE, message, kwargs)
+		elif m[1].lower() == "channel":
+			return await Level.channel(BASE, message, kwargs)
 		else:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not an option.")
 
@@ -647,6 +650,46 @@ class Level(object):
 
 		else:
 			return await BASE.discord.send_message(message.channel, f':warning: Please use a valid method.')
+
+	async def channel(BASE, message, kwargs):
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
+
+		server_setting = kwargs.get('server_setting', None)
+		if server_setting == None:
+			server_setting = await BASE.modules._Discord_.Utils.get_server_setting(BASE, message.server.id)
+
+		current_channel = server_setting.get('level_announce_channel', None)
+		current_channel = discord.utils.get(message.server.channels, id=current_channel)
+		if current_channel != None:
+			current_channel = current_channel.mention
+		else:
+			current_channel = "None"
+
+		if len(m) <= 2:
+			r = f"Current channel: {current_channel}\n"\
+				f"use: `{BASE.vars.TRIGGER_DISCORD*2}level channel [#Channel]` to change\n\n"\
+				f"`#Channel` - a # mention of a channel, or \"clear\" to remove"
+			return await BASE.discord.send_message(message.channel, r)
+
+		if m[2].lower() == "clear":
+			BASE.PhaazeDB.update(
+				of="discord/server_setting",
+				where=f"data['server_id'] == '{message.server.id}'",
+				content=dict(level_announce_channel=None)
+			)
+			return await BASE.discord.send_message(message.channel, ':white_check_mark: Level-Announce-Channel removed.')
+
+		if len(message.channel_mentions) != 1:
+			return await BASE.discord.send_message(message.channel, ':warning: You must # mention a channel.')
+
+		chan = message.channel_mentions[0]
+
+		BASE.PhaazeDB.update(
+			of="discord/server_setting",
+			where=f"data['server_id'] == '{message.server.id}'",
+			content=dict(level_announce_channel=chan.id)
+		)
+		return await BASE.discord.send_message(message.channel, ':white_check_mark: Level-Announce-Channel set to '+chan.mention)
 
 class Giverole(object):
 

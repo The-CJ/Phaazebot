@@ -141,7 +141,18 @@ async def get(BASE, message, kwargs):
 	if level_user.get('medal', []):
 		emb.add_field(name="Medals:",value="\n".join(m for m in level_user.get('medal', [])), inline=False)
 
-	return await BASE.discord.send_message(message.channel, embed=emb)
+	level_announce_channel = kwargs.get('server_setting', {}).get('level_announce_channel', None)
+	if level_announce_channel != None:
+		c = message.channel
+	else:
+		search_chan = discord.utils.get(message.server.channel, id=level_announce_channel)
+		if search_chan != None:
+			c = search_chan
+
+		else:
+			c = message.channel
+			
+	return await BASE.discord.send_message(c, embed=emb)
 
 async def leaderboard(BASE, message, kwargs):
 	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message): return
