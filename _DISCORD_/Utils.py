@@ -55,6 +55,7 @@ async def make_server_file(BASE, id):
 
 	insert_['leave_msg'] = None
 	insert_['leave_chan'] = None
+	insert_['level_announce_channel'] = None
 
 	insert_['blacklist'] = []
 	insert_['blacklist_punishment'] = "leave"
