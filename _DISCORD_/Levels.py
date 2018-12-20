@@ -40,7 +40,10 @@ class Utils(object):
 		else:
 			return None
 
-	async def check_level(BASE, message, user):
+	async def check_level(BASE, message, kwargs):
+			user = kwargs.get("user")
+			server_setting = kwargs.get("server_setting")
+
 			#get level from exp
 			current_level = Calc.get_lvl(user.get('exp', 0))
 			#needed to next level
@@ -48,7 +51,19 @@ class Utils(object):
 
 			#on level up
 			if next_lvl_exp == user["exp"]:
-				try: return await BASE.discord.send_message(message.channel, message.author.mention + "  is now Level **{0}** :tada:".format(current_level+1))
+				level_announce_channel = kwargs.get('server_setting', {}).get('level_announce_channel', None)
+				if level_announce_channel == None:
+					c = message.channel
+				else:
+					search_chan = discord.utils.get(message.server.channels, id=level_announce_channel)
+				
+				if search_chan != None:
+					c = search_chan
+
+				else:
+					c = message.channel
+			
+				try: return await BASE.discord.send_message(c, message.author.mention + "  is now Level **{0}** :tada:".format(current_level+1))
 				except: pass
 
 async def Base(BASE, message, server_setting, server_levels):
@@ -79,8 +94,8 @@ async def Base(BASE, message, server_setting, server_levels):
 		where=f"data['member_id'] == '{user['member_id']}'",
 		content=dict(exp=user['exp'])
 	)
-
-	await Utils.check_level(BASE, message, user)
+	kwargs = dict(user=user, server_setting=server_setting)
+	await Utils.check_level(BASE, message, kwargs)
 
 async def get(BASE, message, kwargs):
 	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message): return
@@ -141,18 +156,7 @@ async def get(BASE, message, kwargs):
 	if level_user.get('medal', []):
 		emb.add_field(name="Medals:",value="\n".join(m for m in level_user.get('medal', [])), inline=False)
 
-	level_announce_channel = kwargs.get('server_setting', {}).get('level_announce_channel', None)
-	if level_announce_channel != None:
-		c = message.channel
-	else:
-		search_chan = discord.utils.get(message.server.channel, id=level_announce_channel)
-		if search_chan != None:
-			c = search_chan
-
-		else:
-			c = message.channel
-			
-	return await BASE.discord.send_message(c, embed=emb)
+	return await BASE.discord.send_message(message.channel, embed=emb)
 
 async def leaderboard(BASE, message, kwargs):
 	if kwargs.get('server_setting', {}).get('owner_disable_level', False) and not await BASE.modules._Discord_.Utils.is_Owner(BASE, message): return
