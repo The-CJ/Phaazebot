@@ -43,28 +43,45 @@ class Utils(object):
 			return None
 
 	async def check_level(BASE, message, kwargs):
-			user = kwargs.get("user")
+		user = kwargs["user"]
+		server_setting = kwargs.get("server_setting", {})
 
-			#get level from exp
-			current_level = Calc.get_lvl(user.get('exp', 0))
-			#needed to next level
-			next_lvl_exp = Calc.get_exp(current_level+1)
+		#get level from exp
+		current_level = Calc.get_lvl(user.get('exp', 0))
+		#needed to next level
+		next_lvl_exp = Calc.get_exp(current_level+1)
 
-			#on level up
-			if next_lvl_exp == user["exp"]:
-				level_announce_channel = kwargs.get('server_setting', {}).get('level_announce_channel', None)
-				if level_announce_channel == None: c = message.channel
+		#on level up
+		if next_lvl_exp == user["exp"]:
 
-				else:
-					search_chan = discord.utils.get(message.server.channels, id=level_announce_channel)
+			#channel
+			level_announce_channel = server_setting.get('level_announce_channel', None)
+			if level_announce_channel == None:
+				c = message.channel
+			else:
+				search_chan = discord.utils.get(message.server.channels, id=level_announce_channel)
+				if search_chan != None:	c = search_chan
+				else: c = message.channel
 
-					if search_chan != None:	c = search_chan
-					else: c = message.channel
+			#message
+			default = f"{message.author.mention} is now Level **{(current_level+1)}** :tada:"
+			custom_message = server_setting.get("level_custom_message", None)
+			if custom_message == None:
+				m = default
+			else:
+				m = custom_message
+				m = m.replace("[mention]", message.author.mention)
+				m = m.replace("[name]", message.author.name)
+				m = m.replace("[id]", message.author.id)
+				m = m.replace("[exp]", user["exp"])
+				m = m.replace("[lvl]", str(current_level+1))
 
-				try: return await BASE.discord.send_message(c, message.author.mention + "  is now Level **{0}** :tada:".format(current_level+1))
-				except: pass
+			try: return await BASE.discord.send_message(c, m)
+			except: pass
 
 async def Base(BASE, message, server_setting):
+	""" Run every time a user writes a message (not edited) and updates the exp """
+
 	#still in cooldown
 	if message.author.id in level_cooldown: return
 
