@@ -300,7 +300,7 @@ class Quote(object):
 			return await BASE.discord.send_message(message.channel, f":warning: You need to define a quote to add.")
 
 		quote = " ".join(x for x in m[2:])
-		server_quotes = kwargs.get('server_quotes', {})
+		server_quotes = await BASE.modules._Discord_.Utils.get_server_quotes(BASE, message.server.id)
 
 		if len(server_quotes) >= BASE.limit.DISCORD_QUOTES_AMOUNT:
 			return await BASE.discord.send_message(message.channel, f":no_entry_sign: This server hit the quote limit of {BASE.limit.DISCORD_QUOTES_AMOUNT}, please remove some first.")
@@ -357,7 +357,7 @@ class Prune(object):
 
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
 
-		if ""=="":#try:
+		try:
 			#nothing -> cancle
 			if len(m) == 1:
 				return await BASE.discord.send_message(message.channel,
@@ -388,10 +388,10 @@ class Prune(object):
 				name = " ".join(f for f in m[1:])
 				return await Prune.execute(BASE, message, kwargs, method="name", arg=name)
 
-		# except:
-		# 	return await BASE.discord.send_message(
-		# 		message.channel,
-		# 		":no_entry_sign: Prune could not be executed, something went wrong, sorry")
+		except:
+			return await BASE.discord.send_message(
+				message.channel,
+				":no_entry_sign: Prune could not be executed, something went wrong, sorry")
 
 	class Prune_Check(object):
 		def __init__(self, mod_message, method, arg):
@@ -430,7 +430,6 @@ class Prune(object):
 				return False
 
 			return True
-
 
 	async def execute(BASE, message, kwargs, method=None, arg=None):
 		if method not in ["mention", "id", "number", "name"]: raise AttributeError("prune got no method")
@@ -558,7 +557,6 @@ class Level(object):
 
 	async def medal(BASE, message, kwargs):
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
-
 
 		if len(m) <= 3:
 			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level medal [Method] [@Member] [Medalname]`\n\n"\
