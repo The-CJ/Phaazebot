@@ -57,7 +57,7 @@ async def add(BASE, message, kwargs):
 		return await BASE.discord.send_message(message.channel, r)
 
 	trigger = m[1].lower()
-	server_commands = kwargs.get('server_commands', [])
+	server_commands = await BASE.modules._Discord_.Utils.get_server_commands(BASE, message.server.id)
 
 	if len(trigger) >= 100:
 		return await BASE.discord.send_message(message.channel, ":no_entry_sign: Trigger to long. Maximum: 100 characters")
@@ -119,7 +119,7 @@ async def rem(BASE, message, kwargs):
 		x = str( del_.get('hits', 'N/A') )
 		return await BASE.discord.send_message(message.channel, f':white_check_mark: All {x} command(s) removed.')
 
-	server_commands = kwargs.get('server_commands', [])
+	server_commands = await BASE.modules._Discord_.Utils.get_server_commands(BASE, message.server.id)
 	found = False
 
 	for cmd in server_commands:

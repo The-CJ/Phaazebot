@@ -50,7 +50,7 @@ async def Base(BASE, message):
 	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD * 2):
 		if message.author.id not in cooldown_mod:
 			asyncio.ensure_future(cooldown_Mod(BASE, message))
-			await BASE.modules._Discord_.CMD.Mod.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
+			await BASE.modules._Discord_.CMD.Mod.Base(BASE, message, server_setting=server_setting)
 
 	#normal
 	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD):

@@ -60,7 +60,7 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("whois"):
 		return await BASE.modules._Discord_.PROCESS.Normal.Whois.Base(BASE, message, kwargs)
 
-	if check.startswith("phaazeinfo"): #TODO: remove this, since its on website
+	if check.startswith("phaazeinfo"):
 		return await BASE.modules._Discord_.Utils.Phaaze_info.Info(BASE, message, kwargs)
 
 	if check.startswith("phaaze"):
@@ -75,7 +75,7 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("wiki"):
 		return await BASE.modules._Discord_.PROCESS.Normal.Wiki.Base(BASE, message, kwargs)
 
-	if check.startswith("doujin"):
+	if check.startswith("doujin"): # Broken
 		return await BASE.modules._Discord_.PROCESS.Normal.Doujin(BASE, message, kwargs).Base()
 
 	if check.startswith("choice"):
