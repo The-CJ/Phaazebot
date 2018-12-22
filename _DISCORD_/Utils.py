@@ -1,6 +1,6 @@
 #BASE.modules._Discord_.Utils
 
-import asyncio, discord, tabulate, time
+import asyncio, discord, tabulate, time, json
 
 async def return_real_me(BASE, message):
 	return discord.utils.get(message.server.members, id=BASE.discord.user.id)
@@ -88,10 +88,22 @@ async def make_server_file(BASE, id):
 	return insert_
 
 #levelfiles
-async def get_server_level(BASE, id, prevent_new=False):
-	#get
+async def get_server_level(BASE, id, member_id=None, prevent_new=False):
+	"""
+	Get server levels, if member_id = None, get all
+	else only get one associated with the member_id
+	"""
+
+	if member_id != None:
+		w = f"data['member_id'] == {json.dumps(member_id)}"
+		l = 1
+
+	else:
+		w = None
+		l = None
+
 	try:
-		data = BASE.PhaazeDB.select(of="discord/level/level_"+str(id))
+		data = BASE.PhaazeDB.select(of=f"discord/level/level_{str(id)}", where=w, Limit=l)
 	except:
 		data = dict()
 
@@ -105,17 +117,31 @@ async def get_server_level(BASE, id, prevent_new=False):
 		return data['data']
 
 async def make_server_level_file(BASE, id):
-
+	"""
+	Create a new DB container for Discord level
+	"""
 	BASE.PhaazeDB.create(name="discord/level/level_"+str(id))
-	BASE.modules.Console.INFO("New Discord Server Level DB-Container created")
+	BASE.modules.Console.INFO(f"New Discord Server Level DB-Container created: {str(id)}")
 
 	return []
 
 #customfiles
-async def get_server_commands(BASE, id, prevent_new=False):
-	#get
+async def get_server_commands(BASE, id, trigger=None, prevent_new=False):
+	"""
+	Get custom commands from a server, if trigger = None, get all
+	else only get one associated with trigger
+	"""
+
+	if trigger != None:
+		w = f"data['trigger'] == {json.dumps(trigger)}"
+		l = 1
+
+	else:
+		w = None
+		l = None
+
 	try:
-		data = BASE.PhaazeDB.select(of="discord/commands/commands_"+str(id))
+		data = BASE.PhaazeDB.select(of=f"discord/commands/commands_{str(id)}", where=w, limit=l)
 	except:
 		data = dict()
 
@@ -129,9 +155,11 @@ async def get_server_commands(BASE, id, prevent_new=False):
 		return data['data']
 
 async def make_get_server_commands(BASE, id):
-
-	BASE.PhaazeDB.create(name="discord/commands/commands_"+str(id))
-	BASE.modules.Console.INFO("New Discord Server Command DB-Container created")
+	"""
+	Create a new DB container for Discord served commands
+	"""
+	BASE.PhaazeDB.create(name=f"discord/commands/commands_{str(id)}")
+	BASE.modules.Console.INFO(f"New Discord Server Command DB-Container created: {str(id)}")
 
 	return []
 

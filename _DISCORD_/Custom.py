@@ -5,7 +5,7 @@ import asyncio, json
 # store list of timeouted channels, so user cant spam
 custom_command_cooldown = []
 
-async def get(BASE, message, server_setting, server_commands):
+async def get(BASE, message, server_setting):
 	if message.channel.id in custom_command_cooldown: return
 	asyncio.ensure_future(cooldown(BASE, message))
 
@@ -14,6 +14,8 @@ async def get(BASE, message, server_setting, server_commands):
 	if server_setting.get("owner_disable_custom", False): return
 
 	m = message.content.lower().split(" ")
+
+	server_commands = await BASE.modules._Discord_.Utils.get_server_commands(BASE, message.server.id, trigger=m[0])
 
 	for cmd in server_commands:
 		if cmd.get("trigger", None) == m[0]:
@@ -30,13 +32,12 @@ async def get(BASE, message, server_setting, server_commands):
 			send = send.replace("[member-count]", str(message.server.member_count))
 			send = send.replace("[uses]", str(cmd["uses"]))
 
-			await BASE.discord.send_message(message.channel, send)
 			BASE.PhaazeDB.update(
 				of="discord/commands/commands_"+message.server.id,
 				content=dict(uses = cmd["uses"]),
-				where=f"data['trigger'] == {json.dumps(str(cmd['trigger']))}"
+				where=f"data['trigger'] == {json.dumps( cmd['trigger']) }"
 			)
-			break
+			return await BASE.discord.send_message(message.channel, send)
 
 async def add(BASE, message, kwargs):
 	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")

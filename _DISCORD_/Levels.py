@@ -21,10 +21,12 @@ class Calc(object):
 		return math.floor(l)
 
 class Utils(object):
-	async def get_user(BASE, level_file, server_id, member_id, prevent_new=False):
-		for user in level_file:
-			if user.get("member_id", None) == member_id:
-				return user
+	async def get_user(BASE, server_id, member_id, prevent_new=False):
+		user_level = await BASE.modules._Discord_.Utils.get_server_level(BASE, server_id, member_id=member_id)
+
+		for entry in user_level:
+			if entry.get("member_id", None) == member_id:
+				return entry
 
 		#user was not found --> make new
 		user = dict(
@@ -62,7 +64,7 @@ class Utils(object):
 				try: return await BASE.discord.send_message(c, message.author.mention + "  is now Level **{0}** :tada:".format(current_level+1))
 				except: pass
 
-async def Base(BASE, message, server_setting, server_levels):
+async def Base(BASE, message, server_setting):
 	#still in cooldown
 	if message.author.id in level_cooldown: return
 
@@ -77,7 +79,7 @@ async def Base(BASE, message, server_setting, server_levels):
 	if server_setting.get("owner_disable_level", False): return
 
 	#get user
-	user = await Utils.get_user(BASE, server_levels, message.server.id, message.author.id)
+	user = await Utils.get_user(BASE, message.server.id, message.author.id)
 
 	user['exp'] = user.get("exp", 0)
 	user["exp"] += 1
@@ -131,7 +133,7 @@ async def get(BASE, message, kwargs):
 		return await BASE.discord.send_message(message.channel, f":no_entry_sign: Bots don't have a level.")
 
 	# # #
-	level_user = await Utils.get_user(BASE, kwargs.get('server_levels', []), message.server.id, user.id, prevent_new=True)
+	level_user = await Utils.get_user(BASE, message.server.id, user.id, prevent_new=True)
 
 	if level_user == None:
 		return await BASE.discord.send_message(message.channel, f":warning: Seems like there is no level for `{user.name}`\nMaybe the user never typed anything or got deleted.")
