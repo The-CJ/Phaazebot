@@ -449,10 +449,17 @@ class Osu(object):
 		EMB.add_field(name="Ranks:",value="```{}```".format(tabulate(table_R, tablefmt="plain")), inline=True)
 
 		EMB.set_thumbnail(url="https://a.ppy.sh/{0}".format(User.get('user_id', '3')))
-		EMB.set_footer(text="Provided by osu!", icon_url="http://w.ppy.sh/c/c9/Logo.png")
+		EMB.set_footer(text="Provided by osu!", icon_url=BASE.vars.osu_logo)
 		EMB.set_author(name="Stats for: {0}".format(mode.lower().capitalize()))
 
 		return await BASE.discord.send_message(message.channel, embed=EMB)
+
+	def extract_user(info):
+		hit = re.match(Regex.Osu.userlink, info)
+		if hit != None:
+			return hit.group("id"), "id"
+
+		return info, None
 
 	class Map_Info(object):
 
