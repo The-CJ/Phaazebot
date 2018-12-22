@@ -173,7 +173,7 @@ async def leaderboard(BASE, message, kwargs):
 		else:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is unsupported, leaderboard's length must be between 1 and 15")
 
-	server_levels = kwargs.get('server_levels', [])
+	server_levels = await BASE.modules._Discord_.Utils.get_server_level(BASE, message.server.id)
 	server_members = [member for member in message.server.members if not member.bot]
 	# Be sure saved member is on server
 	members_to_list = [member for member in server_levels if member.get('member_id', None) in [s.id for s in server_members] ]

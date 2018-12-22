@@ -60,7 +60,7 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("whois"):
 		return await BASE.modules._Discord_.PROCESS.Normal.Whois.Base(BASE, message, kwargs)
 
-	if check.startswith("phaazeinfo"):
+	if check.startswith("phaazeinfo"): #TODO: remove this, since its on website
 		return await BASE.modules._Discord_.Utils.Phaaze_info.Info(BASE, message, kwargs)
 
 	if check.startswith("phaaze"):

@@ -208,7 +208,7 @@ class Quotes(object):
 			return
 
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)):].split(' ')
-		server_quotes = kwargs.get('server_quotes', {})
+		server_quotes = await BASE.modules._Discord_.Utils.get_server_quotes(BASE, message.server.id)
 
 		if not server_quotes:
 			return await BASE.discord.send_message(message.channel, ":grey_exclamation: This server don't has any Quotes")
