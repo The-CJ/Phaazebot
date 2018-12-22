@@ -33,14 +33,20 @@ async def Base(BASE, message, **kwargs):
 
 	# # #
 
-	if check.startswith("custom"):
-		return await BASE.modules._Discord_.Custom.get_all(BASE, message, kwargs)
-
 	if check.startswith("command"):
-		return await BASE.discord.send_message(message.channel, ":link: All commands Phaaze can do in one place\nhttps://phaaze.net/wiki/discord/commands")
+		return await BASE.discord.send_message(
+			message.channel,
+			f":link: All commands Phaaze can do in one place\n"\
+			f"https://phaaze.net/wiki/discord/commands\n"\
+			f"For all custom commands on this server, use: `{BASE.vars.TRIGGER_DISCORD}custom`")
 
 	if check.startswith("help"):
-		return await BASE.discord.send_message(message.channel, ":link: Need help with Phaaze? Maybe that can help:\nhttps://phaaze.net/wiki")
+		return await BASE.discord.send_message(
+			message.channel,
+			":link: Need help with Phaaze? Maybe that can help:\nhttps://phaaze.net/wiki")
+
+	if check.startswith("custom"):
+		return await BASE.modules._Discord_.Custom.get_all(BASE, message, kwargs)
 
 	if check.startswith("level"):
 		return await BASE.modules._Discord_.Levels.get(BASE, message, kwargs)

@@ -139,7 +139,7 @@ async def rem(BASE, message, kwargs):
 	return await BASE.discord.send_message(message.channel, f':white_check_mark: The command: "`{m[1].lower()}`" has been removed!')
 
 async def get_all(BASE, message, kwargs):
-	server_commands = kwargs.get('server_commands', [])
+	server_commands = await BASE.modules._Discord_.Utils.get_server_commands(BASE, message.server.id)
 
 	if len(server_commands) == 0:
 		return await BASE.discord.send_message(message.channel,

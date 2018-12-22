@@ -56,7 +56,7 @@ async def Base(BASE, message):
 	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD):
 		if message.author.id not in cooldown_normal:
 			asyncio.ensure_future(cooldown_Normal(BASE, message))
-			await BASE.modules._Discord_.CMD.Normal.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
+			await BASE.modules._Discord_.CMD.Normal.Base(BASE, message, server_setting=server_setting)
 
 	#@phaazebot ai call
 	if message.edited_timestamp == None:
