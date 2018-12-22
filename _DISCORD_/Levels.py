@@ -42,7 +42,6 @@ class Utils(object):
 
 	async def check_level(BASE, message, kwargs):
 			user = kwargs.get("user")
-			server_setting = kwargs.get("server_setting")
 
 			#get level from exp
 			current_level = Calc.get_lvl(user.get('exp', 0))
@@ -52,17 +51,14 @@ class Utils(object):
 			#on level up
 			if next_lvl_exp == user["exp"]:
 				level_announce_channel = kwargs.get('server_setting', {}).get('level_announce_channel', None)
-				if level_announce_channel == None:
-					c = message.channel
-				else:
-					search_chan = discord.utils.get(message.server.channels, id=level_announce_channel)
-				
-				if search_chan != None:
-					c = search_chan
+				if level_announce_channel == None: c = message.channel
 
 				else:
-					c = message.channel
-			
+					search_chan = discord.utils.get(message.server.channels, id=level_announce_channel)
+
+					if search_chan != None:	c = search_chan
+					else: c = message.channel
+
 				try: return await BASE.discord.send_message(c, message.author.mention + "  is now Level **{0}** :tada:".format(current_level+1))
 				except: pass
 
