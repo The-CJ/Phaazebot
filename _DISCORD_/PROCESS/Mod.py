@@ -502,6 +502,8 @@ class Level(object):
 			return await Level.medal(BASE, message, kwargs)
 		elif m[1].lower() == "channel":
 			return await Level.channel(BASE, message, kwargs)
+		elif m[1].lower() == "message":
+			return await Level.message(BASE, message, kwargs)
 		else:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not an option.")
 
@@ -688,6 +690,48 @@ class Level(object):
 			content=dict(level_announce_channel=chan.id)
 		)
 		return await BASE.discord.send_message(message.channel, ':white_check_mark: Level-Announce-Channel set to '+chan.mention)
+
+	async def message(BASE, message, kwargs):
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].split(" ")
+		server_setting = kwargs.get('server_setting', None)
+
+		if len(m) <= 2:
+			r = f":warning: Syntax Error!\nUsage: `{BASE.vars.TRIGGER_DISCORD*2}level message [Option]`\n\n"\
+				f"`Option` can be:\n"\
+				f"`get`, `set` or `clear`"
+			return await BASE.discord.send_message(message.channel, r)
+
+		if m[2].lower() not in ["get", "set", "clear"]:
+			return await BASE.discord.send_message(message.channel, ":warning: Thats not an option")
+
+		if m[2].lower() == "get":
+			current_message = server_setting.get("level_custom_message", None)
+
+			if current_message == None:
+				return await BASE.discord.send_message(message.channel, ":information_source: There is no custom levelup message")
+			else:
+				return await BASE.discord.send_message(message.channel, f"Current: ```{current_message}```")
+
+		elif m[2].lower() == "clear":
+			BASE.PhaazeDB.update(of="discord/server_setting", where=f"data['server_id'] == {json.dumps(message.server.id)}", content=dict(level_custom_message=None))
+			return await BASE.discord.send_message(message.channel, ":white_check_mark: Custom levelup message removed")
+
+		elif m[2].lower() == "set":
+
+			if len(m) <= 3:
+				return await BASE.discord.send_message(
+					message.channel,
+					":warning: Missing a message to set, the message can contain token, that will be replaced\n\n"\
+					"`[mention]` - A @mention of the user\n"\
+					"`[name]` - User name\n"\
+					"`[id]` - User id\n"\
+					"`[exp]` - The exp the user have right now\n"\
+					"`[lvl]` - The level the user have right now"
+				)
+
+			new_message = " ".join(m[3:])
+			BASE.PhaazeDB.update(of="discord/server_setting", where=f"data['server_id'] == {json.dumps(message.server.id)}", content=dict(level_custom_message=new_message))
+			return await BASE.discord.send_message(message.channel, ":white_check_mark: Custom levelup message set")
 
 class Giverole(object):
 
