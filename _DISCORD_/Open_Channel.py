@@ -12,15 +12,8 @@ async def Base(BASE, message):
 		role = discord.utils.get(message.server.roles, id="117808048919019527")
 		await BASE.discord.add_roles(message.author, role)
 
-	# NOTE: -
-	# MAYBE only call things when needed and not on every message, but i don't think its a big problem for now,
-	# PhaazeDB can handle ~700 request/sec without a big delay. (Discord traffic on huge [5M user] servers: ~100-200 msg/sec)
-
 	#get server files
 	server_setting =  await BASE.modules._Discord_.Utils.get_server_setting(BASE, message.server.id)
-	#server_commands = await BASE.modules._Discord_.Utils.get_server_commands(BASE, message.server.id)
-	#server_levels =   await BASE.modules._Discord_.Utils.get_server_level(BASE, message.server.id)
-	#server_quotes =   await BASE.modules._Discord_.Utils.get_server_quotes(BASE, message.server.id)
 
 	#blacklist (Only, when links are banned or at least one word is in the blacklist)
 	if server_setting.get('ban_links', False) or server_setting.get('blacklist', []) != []:

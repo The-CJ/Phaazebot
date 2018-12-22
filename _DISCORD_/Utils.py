@@ -31,7 +31,9 @@ async def is_Owner(BASE, message):
 
 #serverfiles
 async def get_server_setting(BASE, id, prevent_new=False):
-	#get
+	"""
+	Get server settings for a server
+	"""
 	data = BASE.PhaazeDB.select(of="discord/server_setting", where="data['server_id'] == '{}'".format(id))
 
 	if len(data['data']) == 0:
@@ -44,6 +46,9 @@ async def get_server_setting(BASE, id, prevent_new=False):
 		return data['data'][0]
 
 async def make_server_file(BASE, id):
+	"""
+	make a new entry in server settings for a server
+	"""
 	insert_ = dict()
 
 	insert_['server_id'] = id
@@ -81,7 +86,7 @@ async def make_server_file(BASE, id):
 	insert_['track_options'] = []
 	insert_['track_channel'] = None
 
-	BASE.modules.Console.INFO("New Discord Server Settings DB entry")
+	BASE.modules.Console.INFO(f"New Discord Server Settings DB entry: {str(id)}")
 
 	BASE.PhaazeDB.insert(into="discord/server_setting", content=insert_)
 
@@ -165,7 +170,10 @@ async def make_get_server_commands(BASE, id):
 
 #customquotes
 async def get_server_quotes(BASE, id, prevent_new=False):
-	#get
+	"""
+	Get quotes for a server
+	"""
+
 	try:
 		data = BASE.PhaazeDB.select(of="discord/quotes/quotes_"+str(id))
 	except:
@@ -181,15 +189,20 @@ async def get_server_quotes(BASE, id, prevent_new=False):
 		return data['data']
 
 async def make_get_server_quotes(BASE, id):
-
-	BASE.PhaazeDB.create(name="discord/quotes/quotes_"+str(id))
-	BASE.modules.Console.INFO("New Discord Server Quote DB-Container created")
+	"""
+	Create a new DB container for Discord quotes
+	"""
+	BASE.PhaazeDB.create(name=f"discord/quotes/quotes_{str(id)}")
+	BASE.modules.Console.INFO(f"New Discord Server Quote DB-Container created: {str(id)}")
 
 	return []
 
 #addrolelist
 async def get_server_addrolelist(BASE, id, prevent_new=False):
-	#get
+	"""
+	Get addroles for a server
+	"""
+
 	try:
 		data = BASE.PhaazeDB.select(of="discord/addrole/addrole_"+str(id))
 	except:
@@ -205,9 +218,11 @@ async def get_server_addrolelist(BASE, id, prevent_new=False):
 		return data['data']
 
 async def make_server_addrolelist(BASE, id):
-
-	BASE.PhaazeDB.create(name="discord/addrole/addrole_"+str(id))
-	BASE.modules.Console.INFO("New Discord Server Quote DB-Container created")
+	"""
+	Create a new DB container for Discord addroles
+	"""
+	BASE.PhaazeDB.create(name=f"discord/addrole/addrole_{str(id)}")
+	BASE.modules.Console.INFO(f"New Discord Server Quote DB-Container created: {str(id)}")
 
 	return []
 
