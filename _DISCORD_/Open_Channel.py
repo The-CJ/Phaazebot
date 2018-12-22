@@ -38,13 +38,13 @@ async def Base(BASE, message):
 	#dev
 	if message.content.startswith(BASE.vars.TRIGGER_DISCORD * 5):
 		if message.author.id in BASE.vars.developer_id:
-			await BASE.modules._Discord_.CMD.Dev.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
+			await BASE.modules._Discord_.CMD.Dev.Base(BASE, message, server_setting=server_setting)
 
 	#owner
 	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD * 3):
 		if message.author.id not in cooldown_owner:
 			asyncio.ensure_future(cooldown_Owner(BASE, message))
-			await BASE.modules._Discord_.CMD.Owner.Base(BASE, message, server_setting=server_setting, server_commands=server_commands, server_levels=server_levels, server_quotes=server_quotes)
+			await BASE.modules._Discord_.CMD.Owner.Base(BASE, message, server_setting=server_setting)
 
 	#mod
 	elif message.content.startswith(BASE.vars.TRIGGER_DISCORD * 2):
