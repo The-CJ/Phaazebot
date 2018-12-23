@@ -62,7 +62,7 @@ async def stats(BASE, message, kwargs):
 	if len(m) == 3:
 		if m[1].lower() == "calc":
 			if m[2].isdigit():
-				needed_time = BASE.modules._Twitch_.Base.Calc.get_exp(int(m[2]))
+				needed_time = BASE.modules._Twitch_.Lurker.Calc.get_exp(int(m[2]))
 				hours = str(round((needed_time*5) / 60, 1))
 				resp = f"Level {m[2]} = {hours}h+"
 
@@ -77,7 +77,7 @@ async def stats(BASE, message, kwargs):
 
 	user = BASE.PhaazeDB.select(
 		of = f"twitch/level/level_{message.channel_id}",
-		where = f"data['user_name'] == {json.dumps( str(search_user).lower() )}",
+		where = f"data['user_name'] == {json.dumps( str(search_user).lower() )}", limit=1,
 	)
 
 	if user.get('data', []) == []:
@@ -94,13 +94,12 @@ async def stats(BASE, message, kwargs):
 		display_name = user.get('user_display_name', None)
 		return await BASE.twitch.send_message(message.channel_name, f"{display_name}, Credits: {currency} | Level: ∞ (Channel Owner)")
 
-
 	currency = str(user.get("amount_currency", 0))
 	time = user.get("amount_time", 1) * 5
 	hours = str(round(time / 60, 1))
 
-	current_level = BASE.modules._Twitch_.Base.Calc.get_lvl(time/5)
-	time_to_next = BASE.modules._Twitch_.Base.Calc.get_exp(current_level+1)
+	current_level = BASE.modules._Twitch_.Lurker.Calc.get_lvl(time/5)
+	time_to_next = BASE.modules._Twitch_.Lurker.Calc.get_exp(current_level+1)
 	time_to_next = str(round((time_to_next * 5) / 60, 1))
 
 	if u == 0:
@@ -110,7 +109,7 @@ async def stats(BASE, message, kwargs):
 
 	return await BASE.twitch.send_message(message.channel_name, resp)
 
-async def leaderboard(BASE, message, package, art="time"):
+async def leaderboard(BASE, message, package, art="time"): #TODO: x 
 	settings = await package["BASE"].moduls._Twitch_.Utils.get_twitch_file(package["BASE"], package["message"].room_id)
 	stats_active = settings.get("stats", False)
 	if not stats_active: return
