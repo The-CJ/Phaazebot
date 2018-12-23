@@ -21,7 +21,7 @@ class Init_twitch(twitch.Client):
 		# Because Twitch like reconnecting us
 		if not self.lurker_loop_running:
 			self.lurker_loop_running = True
-			asyncio.ensure_future( self.BASE.modules._Twitch_.Base.lurkers(self.BASE) )
+			asyncio.ensure_future( self.BASE.modules._Twitch_.Lurker.Base(self.BASE) )
 
 		#join all channel
 		await self.join_all()

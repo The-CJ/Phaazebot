@@ -179,6 +179,8 @@ class BASE(object):
 
 			import _TWITCH_.Level as Level
 
+			import _TWITCH_.Lurker as Lurker
+
 			import _TWITCH_.Streams as Streams
 
 			import _TWITCH_.Utils as Utils
