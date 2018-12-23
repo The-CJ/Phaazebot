@@ -32,7 +32,7 @@ class Everything(object):
 							message.channel_name,
 							f'@{message.display_name} > Override >> Phaaze successfull joined "{user["display_name"]}"')
 					else:
-						return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Something went wrong, try again or contact the developer.')	
+						return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Something went wrong, try again or contact the developer.')
 
 		#check if not already in
 		check = BASE.modules._Twitch_.Streams.Main.get_stream(message.user_id)
@@ -48,22 +48,19 @@ class Everything(object):
 			else:
 				return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Something went wrong, try again or contact the developer.')
 
-	async def leave(BASE, message, kwargs): #TODO:
+	async def leave(BASE, message, kwargs):
 		#check if in
-		check = BASE.PhaazeDB.select(of='setting/twitch_channel', where=f"str(data['twitch_id']) == str('{message.user_id}')")
-		data = check.get('data', [])
-		#is in
-		if data == []:
+		check = BASE.modules._Twitch_.Streams.Main.get_stream(message.user_id)
+
+		if check == None or not check.get("chat_managed", False):
 			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze is not in your channel')
 
-		#its in -> remove it
-		else :
-			BASE.PhaazeDB.delete(
-				of='setting/twitch_channel',
-				where = f"str(data['twitch_id']) == str('{message.user_id}')"
-				)
+		success = BASE.modules._Twitch_.Streams.Main.set_stream(message.user_id, chat_managed=False, twitch_name=message.name)
+		if success:
 			await BASE.twitch.part_channel(message.name)
-			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfully left your channel!')
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfull left your channel! :c')
+		else:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Something went wrong, try again or contact the developer.')
 
 class OsuLink(object):
 
