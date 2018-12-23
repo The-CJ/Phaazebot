@@ -4,16 +4,18 @@ import asyncio, discord, json
 
 #BASE.modules._Twitch_.Streams.Main
 class Init_Main(object):
+	""" Provides a """
 
 	def __init__(self, BASE):
 		super(Init_Main, self).__init__()
 		self.running = False
+		self.refresh_time = 30
 
 		#add to BASE
 		self.BASE = BASE
 
 	def stop(self):
-		if not self.running: raise Exception("not running") 
+		if not self.running: raise Exception("not running")
 		self.running = False
 
 	async def start(self):
@@ -21,18 +23,28 @@ class Init_Main(object):
 
 		self.running = True
 		while self.running:
-			all_alerts = self.BASE.PhaazeDB.select(of="twitch/alerts").get('data',[])
-			try:
-				live_streams = self.BASE.modules._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in all_alerts if s.get('twitch_id', None) != None])
-				if live_streams.get('_total', 0) == 0:
-					await asyncio.sleep(60*3)
-					continue
-				live_streams = live_streams.get('streams', 0)
 
-			except:
-				self.BASE.modules.Console.ERROR("No Twitch API Response")
-				await asyncio.sleep(60*3)
+			# to reduce twitch requests as much as possible, we only update channels,
+			# that have at least one discord channel to alert or have Phaaze in the twitch channel
+
+			need_to_check = self.BASE.PhaazeDB.select(of="setting/twitch_channel", where="data['chat_managed'] or len(data['alert_discord_channel'])").get("data", [])
+
+			try:
+				live_streams = self.BASE.modules._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in need_to_check if s.get('twitch_id', None) != None])
+				# no channel are live -> no updates
+				if live_streams.get('_total', 0) == 0:
+					await asyncio.sleep(self.refresh_time)
+					continue
+
+			except Exception as e:
+				#nothing usual, just twitch things
+				self.BASE.modules.Console.ERROR("No Twitch API Response\n"+str(e))
+				await asyncio.sleep(self.refresh_time * 0.75)
 				continue
+
+
+
+
 
 			id_list_of_live_channel = [ str(stream.get('channel', {}).get('_id', 0)) for stream in live_streams ]
 			old_ = self.generate_stream_obj(all_alerts, type_="db")
