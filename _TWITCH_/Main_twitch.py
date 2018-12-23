@@ -34,7 +34,7 @@ class Init_twitch(twitch.Client):
 		await self.BASE.modules._Twitch_.Base.on_message(self.BASE, message)
 
 	async def join_all(self):
-		req = self.BASE.PhaazeDB.select(of="twitch/stream", where=f"data['chat_managed'] and data['twitch_name'] not in ['', None]")
+		req = self.BASE.PhaazeDB.select(of="twitch/stream", where=f"data['chat_managed'] and data['twitch_name'] not in ['', None]", fields=["twitch_name"])
 		data = req.get('data',[])
 
 		#join limit / 30sec
