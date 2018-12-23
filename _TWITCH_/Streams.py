@@ -135,28 +135,44 @@ class Init_Main(object):
 		return r
 
 	#functions
-	def add_stream(self, **kwargs):
-		pass #TODO
+	def set_stream(self, twitch_id=None, **kwargs):
+		if twitch_id == None: raise AttributeError("Missing 'twitch_id'")
 
-	def get_stream(self, twitch_id, prevent_new=False):
-		check = self.BASE.PhaazeDB.select(of="twitch/stream", where=f"data['twitch_id'] == '{twitch_id}'")
+		#check if allready exist
+		check = self.get_stream(twitch_id)
+
+		#new entry
+		if check == None:
+			insert = dict(
+				alert_discord_channel = kwargs.get("alert_discord_channel", []),
+				chat_managed = kwargs.get("chat_managed", False),
+				game = kwargs.get("game", None),
+				live = kwargs.get("live", False),
+				twitch_id = twitch_id,
+				twitch_name = kwargs.get("twitch_name", None)
+			)
+			self.BASE.PhaazeDB.select( into="twitch/stream", content=insert )
+			return True
+
+		#update existing
+		update = dict()
+		for key in kwargs:
+			update[key] = kwargs[key]
+		update['twitch_id'] = twitch_id
+
+		self.BASE.PhaazeDB.update( of="twitch/stream", where=f"data['twitch_id'] == {json.dumps(twitch_id)}", content=update )
+		return True
+
+	def get_stream(self, twitch_id):
+		check = self.BASE.PhaazeDB.select(of="twitch/stream", where=f"data['twitch_id'] == {json.dumps(twitch_id)}")
 		if check.get('hits', 0) < 1:
-			insert_ = dict()
-
-			insert_['alert_discord_channel'] = []
-			insert_['game'] = None
-			insert_['chat_managed'] = False
-			insert_['live'] = False
-			insert_['twitch_id'] = twitch_id
-			insert_['twitch_name'] = None
-
-			if not prevent_new: self.BASE.PhaazeDB.insert(into="twitch/stream", content=insert_)
-			return insert_
-
+			return None
 		return check.get('data',[])[0]
 
 	#Stream Events
 	def event_live(self, twitch_info=dict(), db_info=dict()):
+		if not self.BASE.active.twitch_alert: return
+
 		if twitch_info.get('stream_type', None) != 'live': return
 
 		game = twitch_info.get('game', '[N/A]')
@@ -187,6 +203,8 @@ class Init_Main(object):
 				)
 
 	def event_gamechange(self, twitch_info=dict(), db_info=dict()):
+		if not self.BASE.active.twitch_alert: return
+		
 		if twitch_info.get('stream_type', None) != 'live': return
 
 		game = twitch_info.get('game', '[N/A]')

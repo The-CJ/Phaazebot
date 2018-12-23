@@ -51,8 +51,8 @@ class BASE(object):
 
 			self.discord = bool(config.get('discord', False))
 			self.twitch_irc = bool(config.get('twitch_irc', False))
-			self.twitch_alert = bool(config.get('twitch_alert', False)) #FIXME
-			self.twitch_stream = bool(config.get('twitch_streams', True)) #FIXME
+			self.twitch_alert = bool(config.get('twitch_alert', False))
+			self.twitch_stream = bool(config.get('twitch_streams', False))
 
 			self.osu_irc = bool(config.get('osu_irc', False))
 
