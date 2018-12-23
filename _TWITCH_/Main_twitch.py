@@ -8,7 +8,6 @@ class Init_twitch(twitch.Client):
 	def __init__(self, BASE):
 		self.BASE = BASE
 		super().__init__()
-		self.live = [] # string list of channel id's
 		self.lurker_loop_running = False
 
 	async def on_ready(self):
