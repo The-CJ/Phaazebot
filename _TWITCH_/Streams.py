@@ -190,8 +190,15 @@ class Init_Main(object):
 		status = twitch_info.get('channel', {}).get('status', '[N/A]')
 
 		#Discord
-		discord_channel = db_info.get('discord_channel', [])
+		discord_channel = db_info.get('alert_discord_channel', [])
 		if discord_channel:
+
+			raw_custom_formats = self.BASE.PhaazeDB.select( of="twitch/alert_format",where=f"data['discord_channel_id'] in str({json.dumps(discord_channel)})" ).get("data", [])
+
+			channel_format_index = dict()
+			for raw_alert_format in raw_custom_formats:
+				channel_format_index[raw_alert_format.get('discord_channel_id', '-')] = raw_alert_format.get("custom_alert", None)
+
 			emb = discord.Embed(title=status, url=url, description=f":game_die: Playing: **{game}**", color=0x6441A4)
 			emb.set_author(name=display_name, url=url, icon_url=logo)
 			emb.set_footer(text="Provided by Twitch.tv", icon_url=self.BASE.vars.twitch_logo)
@@ -199,10 +206,7 @@ class Init_Main(object):
 
 			for channel_id in discord_channel:
 				#check for custom format
-				alert_format = None
-				res = self.BASE.PhaazeDB.select(of="twitch/alert_format", where=f"data['discord_channel_id'] == '{channel_id}'", limit=1)
-				if res.get('data', []):
-					alert_format = res.get('data', [])[0].get('custom_alert', None)
+				alert_format = channel_format_index.get(channel_id, None)
 
 				chan = discord.Object(id=channel_id)
 				asyncio.ensure_future(
