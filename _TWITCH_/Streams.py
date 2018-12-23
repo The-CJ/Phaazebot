@@ -27,7 +27,7 @@ class Init_Main(object):
 			# to reduce twitch requests as much as possible, we only update channels,
 			# that have at least one discord channel to alert or have Phaaze in the twitch channel
 
-			need_to_check = self.BASE.PhaazeDB.select(of="setting/twitch_channel", where="data['chat_managed'] or data['alert_discord_channel']").get("data", [])
+			need_to_check = self.BASE.PhaazeDB.select(of="twitch/stream", where="data['chat_managed'] or data['alert_discord_channel']").get("data", [])
 
 			try:
 				live_streams = self.BASE.modules._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in need_to_check if s.get('twitch_id', None) != None])
@@ -42,6 +42,7 @@ class Init_Main(object):
 				await asyncio.sleep(self.refresh_time * 0.75)
 				continue
 
+			live_streams = live_streams.get("streams",[])
 			id_list_of_live_channel = [ str(stream.get('channel', {}).get('_id', 0)) for stream in live_streams ]
 
 			old_list = self.generate_stream_list(need_to_check, source="db")
