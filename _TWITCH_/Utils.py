@@ -32,7 +32,9 @@ async def is_admin(BASE, message):
 
 #channelfiles
 async def get_channel_settings(BASE, id, prevent_new=False):
-	#get
+	"""
+	Get settings for a channel
+	"""
 	data = BASE.PhaazeDB.select(of="twitch/channel_settings", where=f"data['channel_id'] == '{str(id)}'")
 
 	if len(data['data']) == 0:
@@ -45,6 +47,9 @@ async def get_channel_settings(BASE, id, prevent_new=False):
 		return data['data'][0]
 
 async def make_channel_settings(BASE, id):
+	"""
+	create new entry in server file
+	"""
 	insert_ = dict()
 
 	insert_['channel_id'] = str(id)
@@ -73,8 +78,12 @@ async def make_channel_settings(BASE, id):
 	return insert_
 
 #customfiles
-async def get_channel_commands(BASE, id, prevent_new=False):
-	#get
+async def get_channel_commands(BASE, id, trigger=None, prevent_new=False):
+	"""
+	Get custom commands from a channel, if trigger = None, get all
+	else only get one associated with trigger
+	"""
+
 	try:
 		data = BASE.PhaazeDB.select(of="twitch/commands/commands_"+str(id))
 	except:
@@ -90,15 +99,20 @@ async def get_channel_commands(BASE, id, prevent_new=False):
 		return data['data']
 
 async def make_channel_commands(BASE, id):
-
+	"""
+	Create a new DB container for Twitch commands
+	"""
 	BASE.PhaazeDB.create(name="twitch/commands/commands_"+str(id))
 	BASE.modules.Console.INFO("New Twitch Channel Command DB-Container created")
 
 	return []
 
 #levelfiles
-async def get_channel_levels(BASE, id, prevent_new=False):
-	#get
+async def get_channel_levels(BASE, id, user_id=None, prevent_new=False):
+	"""
+	Get server levels, if user_id = None, get all
+	else only get one associated with the member_id
+	"""
 	try:
 		data = BASE.PhaazeDB.select(of="twitch/level/level_"+str(id))
 	except:
@@ -114,7 +128,9 @@ async def get_channel_levels(BASE, id, prevent_new=False):
 		return data['data']
 
 async def make_channel_levels(BASE, id):
-
+	"""
+	Create a new DB container for Twitch level
+	"""
 	BASE.PhaazeDB.create(name="twitch/level/level_"+str(id))
 	BASE.modules.Console.INFO("New Twitch Channel Level DB-Container created")
 
@@ -122,7 +138,9 @@ async def make_channel_levels(BASE, id):
 
 #quotefiles
 async def get_channel_quotes(BASE, id, prevent_new=False):
-	#get
+	"""
+	Get quotes for a channel
+	"""
 	try:
 		data = BASE.PhaazeDB.select(of="twitch/quotes/quotes_"+str(id))
 	except:
@@ -138,7 +156,9 @@ async def get_channel_quotes(BASE, id, prevent_new=False):
 		return data['data']
 
 async def make_channel_quotes(BASE, id):
-
+	"""
+	Create a new DB container for Twitch quotes
+	"""
 	BASE.PhaazeDB.create(name="twitch/quotes/quotes_"+str(id))
 	BASE.modules.Console.INFO("New Twitch Quote Level DB-Container created")
 
