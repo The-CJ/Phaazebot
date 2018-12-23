@@ -4,7 +4,7 @@ import asyncio, json
 
 class Everything(object):
 
-	async def join(BASE, message, kwargs):
+	async def join(BASE, message, kwargs): #TODO:
 
 		#admin override
 		if await BASE.modules._Twitch_.Utils.is_admin(BASE, message):
@@ -48,7 +48,7 @@ class Everything(object):
 			await BASE.twitch.join_channel(message.name)
 			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfull joined your channel!')
 
-	async def leave(BASE, message, kwargs):
+	async def leave(BASE, message, kwargs): #TODO:
 		#check if in
 		check = BASE.PhaazeDB.select(of='setting/twitch_channel', where=f"str(data['twitch_id']) == str('{message.user_id}')")
 		data = check.get('data', [])
@@ -141,7 +141,6 @@ class OsuLink(object):
 				message.channel_name,
 				f"You are already linked with '{linked_osu_account.lower()}', you cannot link your twitch account with another osu account. Use '{BASE.vars.TRIGGER_TWITCH}osulink unlink' first"
 			)
-
 
 	async def startlink(BASE, message, kwargs, osu_account):
 
