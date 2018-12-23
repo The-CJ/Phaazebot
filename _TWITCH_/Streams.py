@@ -238,8 +238,8 @@ class Init_Main(object):
 
 	class Discord(object):
 		def toggle_chan(BASE, twitch_id, discord_channel_id):
-			twitch_info = BASE.modules._Twitch_.Alerts.Main.get_stream(twitch_id)
-			twitch_discord_channel_list = twitch_info.get('discord_channel', [])
+			twitch_info = BASE.modules._Twitch_.Streams.Main.get_stream(twitch_id)
+			twitch_discord_channel_list = twitch_info.get('alert_discord_channel', [])
 
 			if discord_channel_id in twitch_discord_channel_list:
 				twitch_discord_channel_list.remove(discord_channel_id)
@@ -249,10 +249,32 @@ class Init_Main(object):
 				state = 'add'
 
 			BASE.PhaazeDB.update(
-				of="twitch/alerts",
-				where=f"data['twitch_id'] == '{twitch_id}'",
-				content=dict(discord_channel=twitch_discord_channel_list))
+				of="twitch/stream",
+				where=f"str(data['twitch_id']) == str({json.dumps(twitch_id)})",
+				content=dict(alert_discord_channel=twitch_discord_channel_list))
 
 			return state
 
+		def get_alerts_for_channel(BASE, channel_id):
+			res = BASE.PhaazeDB.select(	of=f"twitch/stream",  where=f"'{channel_id}' in data['alert_discord_channel']" ).get("data", [])
+			return res
+
+		def clear_channel_alerts(BASE, channel_id):
+			compare = BASE.modules._Twitch_.Streams.Main.Discord.get_alerts_for_channel(BASE, channel_id)
+
+			r = []
+
+			for chan in compare:
+				twitch_id = chan.get('twitch_id', None)
+				if twitch_id == None: continue
+				r.append( dict(twitch_id=twitch_id, twitch_name=chan.get('twitch_name', '[N/A]')) )
+				chan['alert_discord_channel'].remove(channel_id)
+
+				BASE.PhaazeDB.update(
+					of = f"twitch/stream",
+					limit=1,
+					where = f"data['twitch_id'] == '{twitch_id}'",
+					content = dict (alert_discord_channel = chan['alert_discord_channel'])
+				)
+			return r
 
