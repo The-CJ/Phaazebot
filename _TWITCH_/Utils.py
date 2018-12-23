@@ -1,6 +1,6 @@
 #BASE.modules._Twitch_.Utils
 
-import asyncio, requests
+import asyncio, requests, json
 
 MAIN = "https://api.twitch.tv/kraken/"
 
@@ -35,7 +35,7 @@ async def get_channel_settings(BASE, id, prevent_new=False):
 	"""
 	Get settings for a channel
 	"""
-	data = BASE.PhaazeDB.select(of="twitch/channel_settings", where=f"data['channel_id'] == '{str(id)}'")
+	data = BASE.PhaazeDB.select(of="twitch/channel_settings", where=f"data['channel_id'] == '{str(id)}'", limit=1)
 
 	if len(data['data']) == 0:
 		#didn't find entry -> make new
@@ -83,9 +83,15 @@ async def get_channel_commands(BASE, id, trigger=None, prevent_new=False):
 	Get custom commands from a channel, if trigger = None, get all
 	else only get one associated with trigger
 	"""
+	l = None
+	w = None
+
+	if trigger != None:
+		l = 1
+		w = f"str(data['trigger']) == str({ json.dumps(trigger) })"
 
 	try:
-		data = BASE.PhaazeDB.select(of="twitch/commands/commands_"+str(id))
+		data = BASE.PhaazeDB.select(of=f"twitch/commands/commands_{str(id)}", where=w, limit=l)
 	except:
 		data = dict()
 
@@ -111,10 +117,18 @@ async def make_channel_commands(BASE, id):
 async def get_channel_levels(BASE, id, user_id=None, prevent_new=False):
 	"""
 	Get server levels, if user_id = None, get all
-	else only get one associated with the member_id
+	else only get one associated with the user_id
 	"""
+
+	l = None
+	w = None
+
+	if user_id != None:
+		l = 1
+		w = f"str(data['twitch_id']) == str({ json.dumps(user_id) })"
+
 	try:
-		data = BASE.PhaazeDB.select(of="twitch/level/level_"+str(id))
+		data = BASE.PhaazeDB.select(of=f"twitch/level/level_{str(id)}", where=w, limit=l)
 	except:
 		data = dict()
 
