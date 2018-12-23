@@ -52,7 +52,7 @@ class BASE(object):
 			self.discord = bool(config.get('discord', False))
 			self.twitch_irc = bool(config.get('twitch_irc', False))
 			self.twitch_alert = bool(config.get('twitch_alert', False)) #FIXME
-			self.twitch_alert = bool(config.get('twitch_streams', True)) #FIXME
+			self.twitch_stream = bool(config.get('twitch_streams', True)) #FIXME
 
 			self.osu_irc = bool(config.get('osu_irc', False))
 
@@ -416,7 +416,7 @@ _web_ = __WEB__()
 
 async def MAINFRAME_LOOP(_d_: __DISCORD__,
 						_t_: __TWITCH_IRC__,
-						_ta_: __TWITCH_STREAMS__,
+						_ts_: __TWITCH_STREAMS__,
 						_o_: __OSU_IRC__,
 						_web_:__WEB__,
 						_worker_:__WORKER__):
@@ -426,14 +426,14 @@ async def MAINFRAME_LOOP(_d_: __DISCORD__,
 		try:
 
 			if BASE.active.twitch_alert:
-				if not _ta_.isAlive():
+				if not _ts_.isAlive():
 					try:
-						BASE.modules.Console.INFO("Starting Twitch Alerts loop")
+						BASE.modules.Console.INFO("Starting Twitch Stream loop")
 						_ts_ = __TWITCH_STREAMS__()
 						_ts_.start()
-						BASE.Twitch_Alerts_loop = _ts_.loop
+						BASE.Twitch_Stream_loop = _ts_.loop
 					except:
-						BASE.modules.Console.CRITICAL("Restarting Twitch Alerts Thread failed.")
+						BASE.modules.Console.CRITICAL("Restarting Twitch Stream Thread failed.")
 
 			if BASE.active.discord:
 				if not _d_.isAlive():

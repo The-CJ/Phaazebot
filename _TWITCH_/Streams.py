@@ -135,17 +135,22 @@ class Init_Main(object):
 		return r
 
 	#functions
-	def get_alert_info(self, twitch_id, prevent_new=False):
-		check = self.BASE.PhaazeDB.select(of="twitch/alerts", where=f"data['twitch_id'] == '{twitch_id}'")
+	def add_stream(self, **kwargs):
+		pass #TODO
+
+	def get_stream(self, twitch_id, prevent_new=False):
+		check = self.BASE.PhaazeDB.select(of="twitch/stream", where=f"data['twitch_id'] == '{twitch_id}'")
 		if check.get('hits', 0) < 1:
 			insert_ = dict()
 
-			insert_['twitch_id'] = twitch_id
-			insert_['live'] = False
+			insert_['alert_discord_channel'] = []
 			insert_['game'] = None
-			insert_['discord_channel'] = []
+			insert_['chat_managed'] = False
+			insert_['live'] = False
+			insert_['twitch_id'] = twitch_id
+			insert_['twitch_name'] = None
 
-			if not prevent_new: self.BASE.PhaazeDB.insert(into="twitch/alerts", content=insert_)
+			if not prevent_new: self.BASE.PhaazeDB.insert(into="twitch/stream", content=insert_)
 			return insert_
 
 		return check.get('data',[])[0]
@@ -207,7 +212,7 @@ class Init_Main(object):
 
 	class Discord(object):
 		def toggle_chan(BASE, twitch_id, discord_channel_id):
-			twitch_info = BASE.modules._Twitch_.Alerts.Main.get_alert_info(twitch_id)
+			twitch_info = BASE.modules._Twitch_.Alerts.Main.get_stream(twitch_id)
 			twitch_discord_channel_list = twitch_info.get('discord_channel', [])
 
 			if discord_channel_id in twitch_discord_channel_list:
