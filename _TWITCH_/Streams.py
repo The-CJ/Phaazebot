@@ -1,22 +1,25 @@
-#BASE.modules._Twitch_.Alerts
+#BASE.modules._Twitch_.Streams
 
 import asyncio, discord, json
 
-#BASE.modules._Twitch_.Alerts.Main
+#BASE.modules._Twitch_.Streams.Main
 class Init_Main(object):
 
 	def __init__(self, BASE):
 		super(Init_Main, self).__init__()
-		self.running = True
+		self.running = False
 
 		#add to BASE
 		self.BASE = BASE
-		BASE.modules._Twitch_.Alerts.Main = self
 
 	def stop(self):
+		if not self.running: raise Exception("not running") 
 		self.running = False
 
 	async def start(self):
+		if self.running: raise Exception("allready running")
+
+		self.running = True
 		while self.running:
 			all_alerts = self.BASE.PhaazeDB.select(of="twitch/alerts").get('data',[])
 			try:

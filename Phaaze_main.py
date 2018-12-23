@@ -51,7 +51,8 @@ class BASE(object):
 
 			self.discord = bool(config.get('discord', False))
 			self.twitch_irc = bool(config.get('twitch_irc', False))
-			self.twitch_alert = bool(config.get('twitch_alert', False))
+			self.twitch_alert = bool(config.get('twitch_alert', False)) #FIXME
+			self.twitch_alert = bool(config.get('twitch_streams', True)) #FIXME
 
 			self.osu_irc = bool(config.get('osu_irc', False))
 
@@ -71,7 +72,7 @@ class BASE(object):
 			self.TRIGGER_TWITCH = config.get('trigger_twitch', '!')
 
 			self.osu_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
-			
+
 			self.developer_id = config.get('developer', []) #override id's for discord #TODO: remove this
 			self.doujin_help = open("VARS/doujin_help.txt","r").read().format("<",self.TRIGGER_DISCORD) #TODO: remove this
 			self.twitch_logo = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504" #TODO: remove this
@@ -168,8 +169,6 @@ class BASE(object):
 				import _OSU_.PROCESS.Normal as Normal
 
 		class _Twitch_(object):
-			import _TWITCH_.Alerts as Alerts
-
 			import _TWITCH_.Base as Base
 
 			import _TWITCH_.Blacklist as Blacklist
@@ -179,6 +178,8 @@ class BASE(object):
 			import _TWITCH_.Games as Games
 
 			import _TWITCH_.Level as Level
+
+			import _TWITCH_.Streams as Streams
 
 			import _TWITCH_.Utils as Utils
 
@@ -381,21 +382,21 @@ class __OSU_IRC__(threading.Thread):
 _osu_irc_ = __OSU_IRC__()
 ######################################
 
-class __TWITCH_ALERTS__(threading.Thread):
+class __TWITCH_STREAMS__(threading.Thread):
 	def __init__(self):
-		super(__TWITCH_ALERTS__, self).__init__()
-		self.name = "T_Alerts"
+		super(__TWITCH_STREAMS__, self).__init__()
+		self.name = "T_streams"
 		self.daemon = True
 		self.loop = asyncio.new_event_loop()
 
 	def run(self):
 		asyncio.set_event_loop(self.loop)
 
-		#init BASE.twitch_alert_obj
-		BASE.modules._Twitch_.Alerts.Init_Main(BASE)
-		self.loop.run_until_complete(BASE.modules._Twitch_.Alerts.Main.start())
+		Twitch_Streams = BASE.modules._Twitch_.Streams.Init_Main(BASE)
+		BASE.modules._Twitch_.Streams.Main = Twitch_Streams
+		self.loop.run_until_complete( BASE.modules._Twitch_.Streams.Main.start() )
 
-_twitch_alerts_ = __TWITCH_ALERTS__()
+_twitch_streams_ = __TWITCH_STREAMS__()
 ######################################
 
 class __WEB__(threading.Thread):
@@ -415,7 +416,7 @@ _web_ = __WEB__()
 
 async def MAINFRAME_LOOP(_d_: __DISCORD__,
 						_t_: __TWITCH_IRC__,
-						_ta_: __TWITCH_ALERTS__,
+						_ta_: __TWITCH_STREAMS__,
 						_o_: __OSU_IRC__,
 						_web_:__WEB__,
 						_worker_:__WORKER__):
@@ -428,9 +429,9 @@ async def MAINFRAME_LOOP(_d_: __DISCORD__,
 				if not _ta_.isAlive():
 					try:
 						BASE.modules.Console.INFO("Starting Twitch Alerts loop")
-						_ta_ = __TWITCH_ALERTS__()
-						_ta_.start()
-						BASE.Twitch_Alerts_loop = _ta_.loop
+						_ts_ = __TWITCH_STREAMS__()
+						_ts_.start()
+						BASE.Twitch_Alerts_loop = _ts_.loop
 					except:
 						BASE.modules.Console.CRITICAL("Restarting Twitch Alerts Thread failed.")
 
@@ -504,7 +505,7 @@ class MAINFRAME(threading.Thread):
 					MAINFRAME_LOOP(
 						_discord_,
 						_twitch_irc_,
-						_twitch_alerts_,
+						_twitch_streams_,
 						_osu_irc_,
 						_web_,
 						_worker_
