@@ -22,7 +22,7 @@ class Init_Main(object):
 		if self.running: raise Exception("allready running")
 
 		self.running = True
-		while self.running:
+		while self.running and self.BASE.active.twitch_stream:
 
 			# to reduce twitch requests as much as possible, we only update channels,
 			# that have at least one discord channel to alert or have Phaaze in the twitch channel
@@ -151,8 +151,11 @@ class Init_Main(object):
 				twitch_id = twitch_id,
 				twitch_name = kwargs.get("twitch_name", None)
 			)
-			self.BASE.PhaazeDB.select( into="twitch/stream", content=insert )
-			return True
+			try:
+				self.BASE.PhaazeDB.select( into="twitch/stream", content=insert )
+				return True
+			except:
+				return False
 
 		#update existing
 		update = dict()
@@ -160,8 +163,11 @@ class Init_Main(object):
 			update[key] = kwargs[key]
 		update['twitch_id'] = twitch_id
 
-		self.BASE.PhaazeDB.update( of="twitch/stream", where=f"data['twitch_id'] == {json.dumps(twitch_id)}", content=update )
-		return True
+		try:
+			self.BASE.PhaazeDB.update( of="twitch/stream", where=f"data['twitch_id'] == {json.dumps(twitch_id)}", content=update )
+			return True
+		except:
+			return False
 
 	def get_stream(self, twitch_id):
 		check = self.BASE.PhaazeDB.select(of="twitch/stream", where=f"data['twitch_id'] == {json.dumps(twitch_id)}")
@@ -204,7 +210,7 @@ class Init_Main(object):
 
 	def event_gamechange(self, twitch_info=dict(), db_info=dict()):
 		if not self.BASE.active.twitch_alert: return
-		
+
 		if twitch_info.get('stream_type', None) != 'live': return
 
 		game = twitch_info.get('game', '[N/A]')

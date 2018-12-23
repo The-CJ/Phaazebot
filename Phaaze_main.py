@@ -52,7 +52,7 @@ class BASE(object):
 			self.discord = bool(config.get('discord', False))
 			self.twitch_irc = bool(config.get('twitch_irc', False))
 			self.twitch_alert = bool(config.get('twitch_alert', False))
-			self.twitch_stream = bool(config.get('twitch_streams', False))
+			self.twitch_stream = bool(config.get('twitch_stream', False))
 
 			self.osu_irc = bool(config.get('osu_irc', False))
 
@@ -425,7 +425,7 @@ async def MAINFRAME_LOOP(_d_: __DISCORD__,
 	while BASE.active.main:
 		try:
 
-			if BASE.active.twitch_alert:
+			if BASE.active.twitch_stream:
 				if not _ts_.isAlive():
 					try:
 						BASE.modules.Console.INFO("Starting Twitch Stream loop")
