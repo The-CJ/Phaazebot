@@ -9,6 +9,7 @@ class Init_Main(object):
 	def __init__(self, BASE):
 		super(Init_Main, self).__init__()
 		self.running = False
+		self.live = []
 		self.refresh_time = 50
 
 		#add to BASE
@@ -43,7 +44,7 @@ class Init_Main(object):
 				continue
 
 			live_streams = live_streams.get("streams",[])
-			id_list_of_live_channel = [ str(stream.get('channel', {}).get('_id', 0)) for stream in live_streams ]
+			self.live = id_list_of_live_channel = [ str(stream.get('channel', {}).get('_id', 0)) for stream in live_streams ]
 
 			old_list = self.generate_stream_list(need_to_check, source="db")
 			new_list = self.generate_stream_list(live_streams, source="twitch")

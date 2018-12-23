@@ -8,21 +8,13 @@ async def Base(BASE, message, **kwargs):
 	channel_settings = kwargs.get('channel_settings', {})
 
 	#only if channel is live
-	if not message.channel_id in BASE.twitch.live:
+	if not message.channel_id in BASE.modules._Twitch_.Streams.Main.live:
 		return
 
 	#get levels
-	channel_levels = await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, message.channel_id)
+	user_level = await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, message.channel_id, user_id=message.user_id)
 
-	# IDEA: add a DB function that updates if there, else create
-
-	user = None
-
-	for check_user in channel_levels:
-		if check_user.get('user_id', None) == message.user_id:
-			user = check_user
-
-	if user == None:
+	if len(user_level) <= 0:
 		new_user = dict(
 			user_id = message.user_id,
 			user_name = message.name,
@@ -38,6 +30,7 @@ async def Base(BASE, message, **kwargs):
 		)
 
 	else:
+		user = user_level.get("data", [])[0]
 		c = dict(
 			user_name = message.name,
 			user_display_name = message.display_name,
@@ -48,7 +41,8 @@ async def Base(BASE, message, **kwargs):
 		BASE.PhaazeDB.update(
 			of=f"twitch/level/level_{message.channel_id}",
 			content=c,
-			where=f"str(data['user_id']) == str({message.user_id})"
+			where=f"str(data['user_id']) == str({message.user_id})",
+			limit=1
 		)
 
 async def stats(BASE, message, kwargs):
