@@ -26,7 +26,7 @@ class Everything(object):
 					)
 				else:
 					success = BASE.modules._Twitch_.Streams.Main.set_stream(user["_id"], chat_managed=True, twitch_name=user["name"])
-					if success:
+					if success != False:
 						await BASE.twitch.join_channel(user['name'])
 						return await BASE.twitch.send_message(
 							message.channel_name,
@@ -42,7 +42,7 @@ class Everything(object):
 		#it's not in -> add it
 		else :
 			success = BASE.modules._Twitch_.Streams.Main.set_stream(message.user_id, chat_managed=True, twitch_name=message.name)
-			if success:
+			if success != False:
 				await BASE.twitch.join_channel(message.name)
 				return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfull joined your channel!')
 			else:
@@ -56,7 +56,7 @@ class Everything(object):
 			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze is not in your channel')
 
 		success = BASE.modules._Twitch_.Streams.Main.set_stream(message.user_id, chat_managed=False, twitch_name=message.name)
-		if success:
+		if success != False:
 			await BASE.twitch.part_channel(message.name)
 			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfull left your channel! :c')
 		else:

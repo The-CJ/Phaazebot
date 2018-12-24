@@ -43,7 +43,7 @@ async def track(BASE, message, kwargs, twitch_name):
 
 	chan = chan[0]
 
-	state = BASE.modules._Twitch_.Streams.Main.Discord.toggle_chan(BASE, chan.get("_id", None), message.channel.id)
+	state = BASE.modules._Twitch_.Streams.Main.Discord.toggle_chan(BASE, chan.get("_id", None), message.channel.id, twitch_name=chan.get('name', None))
 
 	display_name = chan.get('display_name',"N/A")
 	if state == "add":

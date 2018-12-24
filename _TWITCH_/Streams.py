@@ -137,11 +137,14 @@ class Init_Main(object):
 		return r
 
 	#functions
-	def set_stream(self, twitch_id=None, **kwargs):
+	def set_stream(self, twitch_id=None, create_new=False, **kwargs):
 		if twitch_id == None: raise AttributeError("Missing 'twitch_id'")
 
 		#check if allready exist
-		check = self.get_stream(twitch_id)
+		if create_new:
+			check = None
+		else:
+			check = self.get_stream(twitch_id)
 
 		#new entry
 		if check == None:
@@ -154,27 +157,33 @@ class Init_Main(object):
 				twitch_name = kwargs.get("twitch_name", None)
 			)
 			try:
-				self.BASE.PhaazeDB.select( into="twitch/stream", content=insert )
-				return True
+				self.BASE.modules.Console.INFO(f"New Sream Entry created: {twitch_id}")
+				self.BASE.PhaazeDB.insert( into="twitch/stream", content=insert )
+				return insert
 			except:
 				return False
 
 		#update existing
 		update = dict()
 		for key in kwargs:
+			check[key] = kwargs[key]
 			update[key] = kwargs[key]
 		update['twitch_id'] = twitch_id
 
 		try:
 			self.BASE.PhaazeDB.update( of="twitch/stream", where=f"data['twitch_id'] == {json.dumps(twitch_id)}", content=update )
-			return True
+			return check
 		except:
 			return False
 
-	def get_stream(self, twitch_id):
-		check = self.BASE.PhaazeDB.select(of="twitch/stream", where=f"data['twitch_id'] == {json.dumps(twitch_id)}")
+	def get_stream(self, twitch_id, create_new=False, **kwargs):
+		check = self.BASE.PhaazeDB.select(of="twitch/stream", where=f"data['twitch_id'] == {json.dumps(twitch_id)}", limit=1)
 		if check.get('hits', 0) < 1:
-			return None
+			#create new
+			if create_new:
+				return self.set_stream(twitch_id=twitch_id, create_new=True, **kwargs)
+			else:
+				return None
 		return check.get('data',[])[0]
 
 	#Stream Events
@@ -241,8 +250,8 @@ class Init_Main(object):
 				)
 
 	class Discord(object):
-		def toggle_chan(BASE, twitch_id, discord_channel_id):
-			twitch_info = BASE.modules._Twitch_.Streams.Main.get_stream(twitch_id)
+		def toggle_chan(BASE, twitch_id, discord_channel_id, **kwargs):
+			twitch_info = BASE.modules._Twitch_.Streams.Main.get_stream(twitch_id, create_new=True, **kwargs)
 			twitch_discord_channel_list = twitch_info.get('alert_discord_channel', [])
 
 			if discord_channel_id in twitch_discord_channel_list:
