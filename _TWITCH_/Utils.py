@@ -223,3 +223,28 @@ def get_streams(BASE, streams):
 		return res
 	except:
 		return None
+
+# # #
+
+def repair_twitch_streams(BASE):
+	""" execute to ensure, that every entry in twitch/stream has: twitch_id and twitch_name set. """
+	streams = BASE.PhaazeDB.select(of="twitch/stream", where="not ( data.get('twitch_id', False) and data.get('twitch_name', False) )")
+
+	need_name = []
+	need_id = []
+
+	for entry in streams['data']:
+		if entry.get("twitch_name", None) == None: need_name.append(entry)
+		elif entry.get("twitch_id", None) == None: need_id.append(entry)
+		else: BASE.modules.Console.INFO("Error for entry "+str(entry))
+
+	twitch_api_name = get_user(BASE, [x.get("twitch_id", "0") for x in need_name], search="id")
+	twitch_api_id = get_user(BASE, [x.get("twitch_name", "0") for x in need_id], search="name")
+
+	for nn in twitch_api_name:
+		BASE.PhaazeDB.update(of="twitch/stream", content=dict(twitch_name=nn.get("name", None)), where=f"data['twitch_id'] == {json.dumps(nn.get('_id','---'))}")
+
+	for ni in twitch_api_id:
+		BASE.PhaazeDB.update(of="twitch/stream", content=dict(twitch_id=ni.get("_id", None)), where=f"data['twitch_name'] == {json.dumps(ni.get('name','---'))}")
+
+	return True
