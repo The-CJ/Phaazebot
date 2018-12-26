@@ -178,7 +178,7 @@ async def make_channel_quotes(BASE, id):
 
 	return []
 
-# # #
+# API #
 
 def API_call(BASE, url):
 	#main api call
@@ -224,7 +224,7 @@ def get_streams(BASE, streams):
 	except:
 		return None
 
-# # #
+# Stuff #
 
 def repair_twitch_streams(BASE):
 	""" execute to ensure, that every entry in twitch/stream has: twitch_id and twitch_name set. """
