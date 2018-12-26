@@ -62,6 +62,8 @@ async def Base(BASE):
 
 				await asyncio.sleep(0.05)
 
+			await asyncio.sleep( sleep_time )
+
 		except Exception as e:
 			BASE.modules.Console.CRITICAL("Twitch Lurker Loop cause a error\n"+str(e))
 			await asyncio.sleep( sleep_time/2 )
