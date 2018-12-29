@@ -10,60 +10,57 @@ class Everything(object):
 		if await BASE.modules._Twitch_.Utils.is_admin(BASE, message):
 			m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(' ')
 			if len(m) > 1:
-				n = " ".join(f for f in m[1:])
-				check = BASE.PhaazeDB.select(of='setting/twitch_channel', where=f"str(data['twitch_name']) == str({json.dumps(n.lower())})")
-				data = check.get('data', [])
-
-				if data != []:
-					return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Override >> Phaaze already is in "{n}\'s" channel')
+				name = " ".join(m[1:])
+				user = BASE.modules._Twitch_.Utils.get_user(BASE, name.lower(), search="name")
+				if len(user) <= 1:
+					user = user[0]
 				else:
-					u = BASE.modules._Twitch_.Utils.get_user(BASE, n.lower(), search="name")
-					if u == None:
-						return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Override >> No channel found. "{n}"')
+					return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Override >> No channel found. "{name}"')
 
-					BASE.PhaazeDB.insert(
-						into='setting/twitch_channel',
-						content=dict(
-							twitch_id = u['_id'],
-							twitch_name = u['name']
-						))
-					await BASE.twitch.join_channel(u['name'])
-					return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Override >> Phaaze successfull joined "{u["display_name"]}"')
+				check = BASE.modules._Twitch_.Streams.Main.get_stream(user["_id"])
+
+				if check != None and check.get("chat_managed", False):
+					return await BASE.twitch.send_message(
+						message.channel_name,
+						f'@{message.display_name} > Override >> Phaaze already is in channel: {user["display_name"]}'
+					)
+				else:
+					success = BASE.modules._Twitch_.Streams.Main.set_stream(user["_id"], chat_managed=True, twitch_name=user["name"])
+					if success != False:
+						await BASE.twitch.join_channel(user['name'])
+						return await BASE.twitch.send_message(
+							message.channel_name,
+							f'@{message.display_name} > Override >> Phaaze successfull joined "{user["display_name"]}"')
+					else:
+						return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Something went wrong, try again or contact the developer.')
 
 		#check if not already in
-		check = BASE.PhaazeDB.select(of='setting/twitch_channel', where=f"str(data['twitch_id']) == str('{message.user_id}')")
-		data = check.get('data', [])
-		#is in
-		if data != []:
+		check = BASE.modules._Twitch_.Streams.Main.get_stream(message.user_id)
+		if check != None and check.get("chat_managed", False):
 			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze already is in your channel')
 
-		#its not in -> add it
+		#it's not in -> add it
 		else :
-			BASE.PhaazeDB.insert(
-				into='setting/twitch_channel',
-				content=dict(
-					twitch_id = message.user_id,
-					twitch_name = message.name
-				))
-			await BASE.twitch.join_channel(message.name)
-			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfull joined your channel!')
+			success = BASE.modules._Twitch_.Streams.Main.set_stream(message.user_id, chat_managed=True, twitch_name=message.name)
+			if success != False:
+				await BASE.twitch.join_channel(message.name)
+				return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfull joined your channel!')
+			else:
+				return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Something went wrong, try again or contact the developer.')
 
 	async def leave(BASE, message, kwargs):
 		#check if in
-		check = BASE.PhaazeDB.select(of='setting/twitch_channel', where=f"str(data['twitch_id']) == str('{message.user_id}')")
-		data = check.get('data', [])
-		#is in
-		if data == []:
+		check = BASE.modules._Twitch_.Streams.Main.get_stream(message.user_id)
+
+		if check == None or not check.get("chat_managed", False):
 			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze is not in your channel')
 
-		#its in -> remove it
-		else :
-			BASE.PhaazeDB.delete(
-				of='setting/twitch_channel',
-				where = f"str(data['twitch_id']) == str('{message.user_id}')"
-				)
+		success = BASE.modules._Twitch_.Streams.Main.set_stream(message.user_id, chat_managed=False, twitch_name=message.name)
+		if success != False:
 			await BASE.twitch.part_channel(message.name)
-			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfully left your channel!')
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Phaaze successfull left your channel! :c')
+		else:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Something went wrong, try again or contact the developer.')
 
 class OsuLink(object):
 
@@ -141,7 +138,6 @@ class OsuLink(object):
 				message.channel_name,
 				f"You are already linked with '{linked_osu_account.lower()}', you cannot link your twitch account with another osu account. Use '{BASE.vars.TRIGGER_TWITCH}osulink unlink' first"
 			)
-
 
 	async def startlink(BASE, message, kwargs, osu_account):
 

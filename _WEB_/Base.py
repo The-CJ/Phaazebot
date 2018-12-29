@@ -125,6 +125,12 @@ def webserver(BASE):
 		SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
 		BASE.modules.Console.INFO("Started web server (p433/live)")
 		web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
+	elif all_args.get("http", "test") == "unsecure":
+		BASE.modules.Console.INFO("Started web server (p80/unsecure)")
+		web.run_app(server, handle_signals=False, port=80, print=False)
+	elif all_args.get("http", "test") == "error_ssl":
+		BASE.modules.Console.INFO("Started web server (p433/error_ssl)")
+		web.run_app(server, handle_signals=False, port=443, print=False)
 	else:
 		BASE.modules.Console.INFO("Started web server (p900/test)")
 		web.run_app(server, handle_signals=False, port=900, print=False)

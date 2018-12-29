@@ -8,7 +8,6 @@ class Init_twitch(twitch.Client):
 	def __init__(self, BASE):
 		self.BASE = BASE
 		super().__init__()
-		self.live = [] # string list of channel id's
 		self.lurker_loop_running = False
 
 	async def on_ready(self):
@@ -22,7 +21,7 @@ class Init_twitch(twitch.Client):
 		# Because Twitch like reconnecting us
 		if not self.lurker_loop_running:
 			self.lurker_loop_running = True
-			asyncio.ensure_future( self.BASE.modules._Twitch_.Base.lurkers(self.BASE) )
+			asyncio.ensure_future( self.BASE.modules._Twitch_.Lurker.Base(self.BASE) )
 
 		#join all channel
 		await self.join_all()
@@ -35,7 +34,7 @@ class Init_twitch(twitch.Client):
 		await self.BASE.modules._Twitch_.Base.on_message(self.BASE, message)
 
 	async def join_all(self):
-		req = self.BASE.PhaazeDB.select(of="setting/twitch_channel")
+		req = self.BASE.PhaazeDB.select(of="twitch/stream", where=f"data['chat_managed'] and data['twitch_name'] not in ['', None]", fields=["twitch_name"])
 		data = req.get('data',[])
 
 		#join limit / 30sec

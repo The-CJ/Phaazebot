@@ -3,7 +3,7 @@
 import asyncio, discord
 
 async def Base(BASE, message, kwargs):
-	AV = ["track", "get", "reset", "custom"]
+	AV = ["track", "get", "clear", "custom"]
 	m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].split(" ")
 
 	if len(m) == 1:
@@ -26,8 +26,8 @@ async def Base(BASE, message, kwargs):
 	elif m[1].lower() == "get":
 		return await get(BASE, message, kwargs)
 
-	elif m[1].lower() == "reset":
-		return await reset(BASE, message, kwargs)
+	elif m[1].lower() == "clear":
+		return await clear(BASE, message, kwargs)
 
 	else:
 		return await BASE.discord.send_message(message.channel, ":warning: `{1}` is not a option, available are: {0}".format(" ".join(f"`{g}`" for g in AV), m[1]))
@@ -43,7 +43,7 @@ async def track(BASE, message, kwargs, twitch_name):
 
 	chan = chan[0]
 
-	state = BASE.modules._Twitch_.Alerts.Main.Discord.toggle_chan(BASE, chan.get("_id", None), message.channel.id)
+	state = BASE.modules._Twitch_.Streams.Main.Discord.toggle_chan(BASE, chan.get("_id", None), message.channel.id, twitch_name=chan.get('name', None))
 
 	display_name = chan.get('display_name',"N/A")
 	if state == "add":
@@ -60,54 +60,25 @@ async def track(BASE, message, kwargs, twitch_name):
 			f":warning: Something Strange happen, your changes could not be processed, maybe Twitch Alerts are disbled by the Developer?")
 
 async def get(BASE, message, kwargs):
-	res = BASE.PhaazeDB.select(
-		of=f"twitch/alerts",
-		where=f"'{message.channel.id}' in data['discord_channel']"
-	)
+	tracked_channel = BASE.modules._Twitch_.Streams.Main.Discord.get_alerts_for_channel(BASE, message.channel.id)
 
-	if not res.get('data', []):
+	if not tracked_channel:
 		return await BASE.discord.send_message(message.channel, f":information_source: No Twitch channels are tracked in {message.channel.mention}")
 
-	channel = [a.get('twitch_id', "0") for a in res.get('data', [])]
+	x = ",".join( f"`{x.get('twitch_name', 'N/A')}`" for x in tracked_channel )
+	return await BASE.discord.send_message(message.channel, f":information_source: All tracked Twitch channel in {message.channel.mention}\n\n{x}")
 
-	channel_result = BASE.modules._Twitch_.Utils.get_user(BASE, channel, search="id")
+async def clear(BASE, message, kwargs):
+	removed_alerts = BASE.modules._Twitch_.Streams.Main.Discord.clear_channel_alerts(BASE, message.channel.id)
 
-	if channel_result == None:
-		return await BASE.discord.send_message(message.channel, f":information_source: No valid Twitch channels are tracked in {message.channel.mention}")
-
-	x = ",".join( f"`{x.get('display_name', 'N/A')}`" for x in channel_result )
-	return await BASE.discord.send_message(message.channel, f":information_source:  All tracked Twitch channel in {message.channel.mention}\n\n{x}")
-
-async def reset(BASE, message, kwargs):
-	res = BASE.PhaazeDB.select(
-		of=f"twitch/alerts",
-		where=f"'{message.channel.id}' in data['discord_channel']"
-	)
-
-	res = res.get('data', [])
-	if not res:
+	if not removed_alerts:
 		return await BASE.discord.send_message(message.channel, f":information_source: {message.channel.mention} don't have any alerts")
 
-	search = []
-
-	for match in res:
-		twitch_id = match.get('twitch_id', None)
-		if twitch_id == None: continue
-		search.append(twitch_id)
-		match['discord_channel'].remove(message.channel.id)
-
-		BASE.PhaazeDB.update(
-			of = f"twitch/alerts",
-			where = f"data['twitch_id'] == '{twitch_id}'",
-			content = dict (discord_channel = match['discord_channel'])
-		)
-
-	channel_result = BASE.modules._Twitch_.Utils.get_user(BASE, search, search="id")
-	x = ",".join( f"`{c.get('display_name', 'N/A')}`" for c in channel_result )
+	x = " ".join( f"`{c.get('twitch_name', '-')}`" for c in removed_alerts)
 
 	return await BASE.discord.send_message(
 		message.channel,
-		f":white_check_mark: All tracked Twitch channel in {message.channel.mention}\nHave been removed\n\nRemoved Tracked channels: {x}")
+		f":white_check_mark: All tracked Twitch channel in {message.channel.mention} have been removed\n\nRemoved Tracked channels: {x}")
 
 async def custom(BASE, message, kwargs, custom_alert):
 	if custom_alert.lower() == "clear":

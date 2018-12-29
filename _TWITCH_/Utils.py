@@ -1,6 +1,6 @@
 #BASE.modules._Twitch_.Utils
 
-import asyncio, requests
+import asyncio, requests, json
 
 MAIN = "https://api.twitch.tv/kraken/"
 
@@ -32,8 +32,10 @@ async def is_admin(BASE, message):
 
 #channelfiles
 async def get_channel_settings(BASE, id, prevent_new=False):
-	#get
-	data = BASE.PhaazeDB.select(of="twitch/channel_settings", where=f"data['channel_id'] == '{str(id)}'")
+	"""
+	Get settings for a channel
+	"""
+	data = BASE.PhaazeDB.select(of="twitch/channel_settings", where=f"data['channel_id'] == '{str(id)}'", limit=1)
 
 	if len(data['data']) == 0:
 		#didn't find entry -> make new
@@ -45,6 +47,9 @@ async def get_channel_settings(BASE, id, prevent_new=False):
 		return data['data'][0]
 
 async def make_channel_settings(BASE, id):
+	"""
+	create new entry in server file
+	"""
 	insert_ = dict()
 
 	insert_['channel_id'] = str(id)
@@ -73,10 +78,20 @@ async def make_channel_settings(BASE, id):
 	return insert_
 
 #customfiles
-async def get_channel_commands(BASE, id, prevent_new=False):
-	#get
+async def get_channel_commands(BASE, id, trigger=None, prevent_new=False):
+	"""
+	Get custom commands from a channel, if trigger = None, get all
+	else only get one associated with trigger
+	"""
+	l = None
+	w = None
+
+	if trigger != None:
+		l = 1
+		w = f"str(data['trigger']) == str({ json.dumps(trigger) })"
+
 	try:
-		data = BASE.PhaazeDB.select(of="twitch/commands/commands_"+str(id))
+		data = BASE.PhaazeDB.select(of=f"twitch/commands/commands_{str(id)}", where=w, limit=l)
 	except:
 		data = dict()
 
@@ -90,17 +105,30 @@ async def get_channel_commands(BASE, id, prevent_new=False):
 		return data['data']
 
 async def make_channel_commands(BASE, id):
-
+	"""
+	Create a new DB container for Twitch commands
+	"""
 	BASE.PhaazeDB.create(name="twitch/commands/commands_"+str(id))
 	BASE.modules.Console.INFO("New Twitch Channel Command DB-Container created")
 
 	return []
 
 #levelfiles
-async def get_channel_levels(BASE, id, prevent_new=False):
-	#get
+async def get_channel_levels(BASE, id, user_id=None, prevent_new=False):
+	"""
+	Get server levels, if user_id = None, get all
+	else only get one associated with the user_id
+	"""
+
+	l = None
+	w = None
+
+	if user_id != None:
+		l = 1
+		w = f"str(data['twitch_id']) == str({ json.dumps(user_id) })"
+
 	try:
-		data = BASE.PhaazeDB.select(of="twitch/level/level_"+str(id))
+		data = BASE.PhaazeDB.select(of=f"twitch/level/level_{str(id)}", where=w, limit=l)
 	except:
 		data = dict()
 
@@ -114,7 +142,9 @@ async def get_channel_levels(BASE, id, prevent_new=False):
 		return data['data']
 
 async def make_channel_levels(BASE, id):
-
+	"""
+	Create a new DB container for Twitch level
+	"""
 	BASE.PhaazeDB.create(name="twitch/level/level_"+str(id))
 	BASE.modules.Console.INFO("New Twitch Channel Level DB-Container created")
 
@@ -122,7 +152,9 @@ async def make_channel_levels(BASE, id):
 
 #quotefiles
 async def get_channel_quotes(BASE, id, prevent_new=False):
-	#get
+	"""
+	Get quotes for a channel
+	"""
 	try:
 		data = BASE.PhaazeDB.select(of="twitch/quotes/quotes_"+str(id))
 	except:
@@ -138,13 +170,15 @@ async def get_channel_quotes(BASE, id, prevent_new=False):
 		return data['data']
 
 async def make_channel_quotes(BASE, id):
-
+	"""
+	Create a new DB container for Twitch quotes
+	"""
 	BASE.PhaazeDB.create(name="twitch/quotes/quotes_"+str(id))
 	BASE.modules.Console.INFO("New Twitch Quote Level DB-Container created")
 
 	return []
 
-# # #
+# API #
 
 def API_call(BASE, url):
 	#main api call
@@ -189,3 +223,28 @@ def get_streams(BASE, streams):
 		return res
 	except:
 		return None
+
+# Stuff #
+
+def repair_twitch_streams(BASE):
+	""" execute to ensure, that every entry in twitch/stream has: twitch_id and twitch_name set. """
+	streams = BASE.PhaazeDB.select(of="twitch/stream", where="not ( data.get('twitch_id', False) and data.get('twitch_name', False) )")
+
+	need_name = []
+	need_id = []
+
+	for entry in streams['data']:
+		if entry.get("twitch_name", None) == None: need_name.append(entry)
+		elif entry.get("twitch_id", None) == None: need_id.append(entry)
+		else: BASE.modules.Console.INFO("Error for entry "+str(entry))
+
+	twitch_api_name = get_user(BASE, [x.get("twitch_id", "0") for x in need_name], search="id")
+	twitch_api_id = get_user(BASE, [x.get("twitch_name", "0") for x in need_id], search="name")
+
+	for nn in twitch_api_name:
+		BASE.PhaazeDB.update(of="twitch/stream", content=dict(twitch_name=nn.get("name", None)), where=f"data['twitch_id'] == {json.dumps(nn.get('_id','---'))}")
+
+	for ni in twitch_api_id:
+		BASE.PhaazeDB.update(of="twitch/stream", content=dict(twitch_id=ni.get("_id", None)), where=f"data['twitch_name'] == {json.dumps(ni.get('name','---'))}")
+
+	return True
