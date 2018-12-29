@@ -51,7 +51,7 @@ async def Base(BASE):
 				db_lvl_up_request = [
 					"data['amount_time'] += 1;",
 					f"data['amount_currency'] += {channel_settings.get('gain_currency', 1)};",
-					"data['active'] -= 1 if data.get('active', 0) else 0"
+					"data['active'] -= 1 if data.get('active', 0) > 0 else 0"
 				]
 
 				BASE.PhaazeDB.update(
