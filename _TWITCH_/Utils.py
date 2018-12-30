@@ -125,7 +125,7 @@ async def get_channel_levels(BASE, id, user_id=None, prevent_new=False):
 
 	if user_id != None:
 		l = 1
-		w = f"str(data['twitch_id']) == str({ json.dumps(user_id) })"
+		w = f"str(data['user_id']) == str({ json.dumps(user_id) })"
 
 	try:
 		data = BASE.PhaazeDB.select(of=f"twitch/level/level_{str(id)}", where=w, limit=l)
