@@ -33,7 +33,7 @@ class Init_Main(object):
 			try:
 				live_streams = self.BASE.modules._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in need_to_check if s.get('twitch_id', None) != None])
 				# no channel are live -> no updates
-				if live_streams.get('_total', 0) == 0:
+				if not live_streams:
 					await asyncio.sleep(self.refresh_time)
 					continue
 
@@ -43,8 +43,7 @@ class Init_Main(object):
 				await asyncio.sleep(self.refresh_time * 0.75)
 				continue
 
-			live_streams = live_streams.get("streams",[])
-			self.live = id_list_of_live_channel = [ str(stream.get('channel', {}).get('_id', 0)) for stream in live_streams ]
+			self.live = id_list_of_live_channel = [ str(stream.get('user_id', 0)) for stream in live_streams ]
 
 			old_list = self.generate_stream_list(need_to_check, source="db")
 			new_list = self.generate_stream_list(live_streams, source="twitch")
@@ -69,12 +68,11 @@ class Init_Main(object):
 
 				# has gone live
 				if old_status != new_status and new_status == True:
-
-					self.event_live(twitch_info=twitch_info, db_info=db_info)
+					asyncio.ensure_future( self.event_live(twitch_info=twitch_info, db_info=db_info) )
 
 				# was live, changed game
 				elif old_game != new_game and new_game != None:
-					self.event_gamechange(twitch_info=twitch_info, db_info=db_info)
+					asyncio.ensure_future( self.event_gamechange(twitch_info=twitch_info, db_info=db_info) )
 
 			sorted_list_of_streams_per_game = self.sort_channel_per_game(live_streams)
 
@@ -117,13 +115,13 @@ class Init_Main(object):
 
 			if source == "db":
 				key = stream.get('twitch_id', None)
-				game = stream.get('game', None)
+				game = stream.get('game_id', None)
 				live = stream.get('live', False)
 				db_info = stream
 
 			elif source == "twitch":
-				key = stream.get('channel', {}).get('_id', None)
-				game = stream.get('game', None)
+				key = stream.get('user_id', None)
+				game = stream.get('game_id', None)
 				live = True
 				twitch_api_info = stream
 
@@ -190,13 +188,13 @@ class Init_Main(object):
 	def event_live(self, twitch_info=dict(), db_info=dict()):
 		if not self.BASE.active.twitch_alert: return
 
-		if twitch_info.get('stream_type', None) != 'live': return
+		if twitch_info.get('type', None) != 'live': return
 
-		game = twitch_info.get('game', '[N/A]')
-		logo = twitch_info.get('channel', {}).get('logo', '[N/A]')
-		display_name = twitch_info.get('channel', {}).get('display_name', '[N/A]')
-		url = twitch_info.get('channel', {}).get('url', '[N/A]')
-		status = twitch_info.get('channel', {}).get('status', '[N/A]')
+		game = twitch_info.get('game_id', '[N/A]')
+		logo = twitch_info.get('thumbnail_url', None)
+		display_name = twitch_info.get('user_name', '[N/A]')
+		url = "https://www.twitch.tv/"+twitch_info.get('user_name', "[N/A]")
+		status = twitch_info.get('title', '[N/A]')
 
 		#Discord
 		discord_channel = db_info.get('alert_discord_channel', [])
@@ -226,13 +224,13 @@ class Init_Main(object):
 	def event_gamechange(self, twitch_info=dict(), db_info=dict()):
 		if not self.BASE.active.twitch_alert: return
 
-		if twitch_info.get('stream_type', None) != 'live': return
+		if twitch_info.get('type', None) != 'live': return
 
-		game = twitch_info.get('game', '[N/A]')
-		logo = twitch_info.get('channel', {}).get('logo', '[N/A]')
-		display_name = twitch_info.get('channel', {}).get('display_name', '[N/A]')
-		url = twitch_info.get('channel', {}).get('url', '[N/A]')
-		status = twitch_info.get('channel', {}).get('status', '[N/A]')
+		game = twitch_info.get('game_id', '[N/A]')
+		logo = twitch_info.get('thumbnail_url', None)
+		display_name = twitch_info.get('user_name', '[N/A]')
+		url = "https://www.twitch.tv/"+twitch_info.get('user_name', "[N/A]")
+		status = twitch_info.get('title', '[N/A]')
 
 		#Discord
 		discord_channel = db_info.get('discord_channel', [])
