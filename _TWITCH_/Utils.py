@@ -272,6 +272,6 @@ def repair_twitch_streams(BASE):
 		BASE.PhaazeDB.update(of="twitch/stream", content=dict(twitch_name=nn.get("name", None)), where=f"data['twitch_id'] == {json.dumps(nn.get('_id','---'))}")
 
 	for ni in twitch_api_id:
-		BASE.PhaazeDB.update(of="twitch/stream", content=dict(twitch_id=ni.get("_id", None)), where=f"data['twitch_name'] == {json.dumps(ni.get('name','---'))}")
+		BASE.PhaazeDB.update(of="twitch/stream", content=dict(twitch_id=ni.get("id", None)), where=f"data['twitch_name'] == {json.dumps(ni.get('name','---'))}")
 
 	return True

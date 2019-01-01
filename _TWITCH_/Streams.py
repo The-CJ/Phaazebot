@@ -91,11 +91,11 @@ class Init_Main(object):
 
 		for st in streams:
 
-			game = st.get('game', "---")
+			game = st.get('game_id', "---")
 			if r.get(game, None) == None:
 				r[game] = []
 
-			channel_id = st.get('channel', {}).get('_id', None)
+			channel_id = st.get('id', None)
 			if channel_id != None:
 				r[game].append( str(channel_id) )
 
@@ -185,7 +185,7 @@ class Init_Main(object):
 		return check.get('data',[])[0]
 
 	#Stream Events
-	def event_live(self, twitch_info=dict(), db_info=dict()):
+	async def event_live(self, twitch_info=dict(), db_info=dict()):
 		if not self.BASE.active.twitch_alert: return
 
 		if twitch_info.get('type', None) != 'live': return
@@ -221,7 +221,7 @@ class Init_Main(object):
 					loop=self.BASE.Discord_loop
 				)
 
-	def event_gamechange(self, twitch_info=dict(), db_info=dict()):
+	async def event_gamechange(self, twitch_info=dict(), db_info=dict()):
 		if not self.BASE.active.twitch_alert: return
 
 		if twitch_info.get('type', None) != 'live': return
