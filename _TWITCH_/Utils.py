@@ -215,20 +215,39 @@ def get_user(BASE, twitch_info, search="id"):
 
 		result = res.get("data", None)
 
-		#No User
 		if result: return result
 		else: return None
 
 	except:
 		return None
 
-def get_streams(BASE, streams):
-	if type(streams) == str:
-		streams = [streams]
+def get_streams(BASE, stream_ids, search="id"):
+	if type(stream_ids) == str:
+		stream_ids = [stream_ids]
+
+	s = "user_id"
+	if search.lower() in ["name", "login"]:
+		s = "user_login"
+	elif search.lower() in ["id"]:
+		s = "user_id"
+	elif search.lower() in ["game"]:
+		s = "game_id"
+	elif search.lower() in ["language"]:
+		s = "language"
+
+	query = ""
+	for thing in stream_ids:
+		if query:
+			query += f"&{s}={thing}"
+		else:
+			query += f"?{s}={thing}"
 	try:
-		link = MAIN + 'streams?channel=' + ",".join(stream for stream in streams)
+		link = MAIN + "streams" + query
 		res = API_call(BASE, link)
-		return res
+		result = res.get("data", None)
+
+		if result: return result
+		else: return None
 	except:
 		return None
 
