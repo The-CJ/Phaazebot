@@ -2,7 +2,7 @@
 
 import asyncio, requests, json
 
-MAIN = "https://api.twitch.tv/kraken/"
+MAIN = "https://api.twitch.tv/helix/"
 
 #auth
 async def is_Mod(BASE, message):
@@ -183,7 +183,7 @@ async def make_channel_quotes(BASE, id):
 def API_call(BASE, url):
 	#main api call
 	key = BASE.access.Twitch_API_Token
-	header = {"Client-ID": key, "Accept": "application/vnd.twitchtv.v5+json"}
+	header = {"Client-ID": key}#, "Accept": "application/vnd.twitchtv.v5+json"}
 	try:
 		resp = requests.get(url, headers = header)
 		return resp.json()
@@ -196,20 +196,28 @@ def get_user(BASE, twitch_info, search="id"):
 		if type(twitch_info) == str:
 			twitch_info = [twitch_info]
 
-		s = "/"
-		if search == "name":
-			s = "?login="
-		elif search == "id":
-			s = "?id="
+		s = "id"
+		if search.lower() in ["name", "login"]:
+			s = "login"
+		elif search.lower() in ["id"]:
+			s = "id"
 
-		link = MAIN + "users" + s + ",".join(thing for thing in twitch_info)
+		query = ""
+		for thing in twitch_info:
+			if query:
+				query += f"&{s}={thing}"
+			else:
+				query += f"?{s}={thing}"
+
+		link = MAIN + "users" + query
 
 		res = API_call(BASE, link)
 
-		#No User
-		if res.get("_total", 0) == 0: return None
+		result = res.get("data", None)
 
-		return res["users"]
+		#No User
+		if result: return result
+		else: return None
 
 	except:
 		return None
