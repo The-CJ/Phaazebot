@@ -32,7 +32,7 @@ class Init_Main(object):
 
 			try:
 				live_streams = self.BASE.modules._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in need_to_check if s.get('twitch_id', None) != None])
-				# no channel are live -> no updates
+                                # no channel are live -> no updates
 				if not live_streams:
 					await asyncio.sleep(self.refresh_time)
 					continue
@@ -95,7 +95,7 @@ class Init_Main(object):
 			if r.get(game, None) == None:
 				r[game] = []
 
-			channel_id = st.get('id', None)
+			channel_id = st.get('user_id', None)
 			if channel_id != None:
 				r[game].append( str(channel_id) )
 
