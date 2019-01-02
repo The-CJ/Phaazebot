@@ -1,8 +1,9 @@
 #BASE-modules._Web_.Base
 
-import re, sys
+import re
 import ssl
 from aiohttp import web
+from Utils import CLI_Args
 
 class root(object):
 
@@ -113,22 +114,15 @@ def webserver(BASE):
 
 	###################################
 
-	option_re = re.compile(r'^--(.+?)=(.*)$')
-	all_args = dict()
-	for arg in sys.argv[1:]:
-		d = option_re.match(arg)
-		if d != None:
-			all_args[d.group(1)] = d.group(2)
-
-	if all_args.get("http", "test") == "live":
+	if CLI_Args.get("http", "test") == "live":
 		SSL = ssl.SSLContext()
 		SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
 		BASE.modules.Console.INFO("Started web server (p433/live)")
 		web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
-	elif all_args.get("http", "test") == "unsecure":
+	elif CLI_Args.get("http", "test") == "unsecure":
 		BASE.modules.Console.INFO("Started web server (p80/unsecure)")
 		web.run_app(server, handle_signals=False, port=80, print=False)
-	elif all_args.get("http", "test") == "error_ssl":
+	elif CLI_Args.get("http", "test") == "error_ssl":
 		BASE.modules.Console.INFO("Started web server (p433/error_ssl)")
 		web.run_app(server, handle_signals=False, port=443, print=False)
 	else:

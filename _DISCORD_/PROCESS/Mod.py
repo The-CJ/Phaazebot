@@ -460,6 +460,9 @@ class Prune(object):
 
 		P = Prune.Prune_Check(message, method, arg)
 
+		#add channel to message.delete ignore list
+		BASE.modules._Discord_.Discord_Events.Message.prune_lock.append(message.channel.id)
+
 		#the actuall prune
 		delete_amount = await BASE.discord.purge_from(message.channel, limit=limit, check=P.check)
 
@@ -482,6 +485,7 @@ class Prune(object):
 			f":wastebasket: Deleted the last **{len(delete_amount)-1}** messages :pencil2:"\
 			f"{addition_prune}"
 		)
+		asyncio.ensure_future( BASE.modules._Discord_.Discord_Events.Message.prune(BASE, message, len(delete_amount)-1) )
 		await asyncio.sleep(10)
 		return await BASE.discord.delete_message(confirm_delete)
 
