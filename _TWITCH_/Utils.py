@@ -221,7 +221,40 @@ def get_user(BASE, twitch_info, search="id"):
 	except:
 		return None
 
-def get_streams(BASE, stream_ids, search="id"):
+def get_game(BASE, games, search="id"):
+	try:
+
+		if type(games) == str:
+			games = [games]
+
+		s = "id"
+		if search.lower() in ["name"]:
+			s = "name"
+		elif search.lower() in ["id"]:
+			s = "id"
+
+		query = ""
+		for g in games:
+			if query:
+				query += f"&{s}={g}"
+			else:
+				query += f"?{s}={g}"
+
+		link = MAIN + "games" + query
+
+		res = API_call(BASE, link)
+
+		result = res.get("data", None)
+
+		if result: return result
+		else: return None
+
+	except:
+		return None
+
+def get_streams(BASE, stream_ids, search="id", limit=100):
+	if limit > 100: limit = 100
+
 	if type(stream_ids) == str:
 		stream_ids = [stream_ids]
 
@@ -235,18 +268,16 @@ def get_streams(BASE, stream_ids, search="id"):
 	elif search.lower() in ["language"]:
 		s = "language"
 
-	query = ""
+	query = f"?first={limit}"
 	for thing in stream_ids:
-		if query:
-			query += f"&{s}={thing}"
-		else:
-			query += f"?{s}={thing}"
+		query += f"&{s}={thing}"
+
 	try:
 		link = MAIN + "streams" + query
 		res = API_call(BASE, link)
 		result = res.get("data", None)
 
-		if result: return result
+		if result != None: return result
 		else: return None
 	except:
 		return None
