@@ -4,7 +4,8 @@ import asyncio, discord, json
 
 #BASE.modules._Twitch_.Streams.Main
 class Init_Main(object):
-	""" Provides a information source for other modules, so there don't have to make a api request to twitch"""
+	""" Provides a information source for other modules, so there don't have to make a api request to twitch
+		also used for setting stream settings, like chat managed and discord channel """
 
 	def __init__(self, BASE):
 		super(Init_Main, self).__init__()
@@ -247,6 +248,7 @@ class Init_Main(object):
 					loop=self.BASE.Discord_loop
 				)
 
+	#for platforms
 	class Discord(object):
 		def toggle_chan(BASE, twitch_id, discord_channel_id, **kwargs):
 			twitch_info = BASE.modules._Twitch_.Streams.Main.get_stream(twitch_id, create_new=True, **kwargs)
