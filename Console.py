@@ -34,8 +34,19 @@ else:
 
 active_debugs = [a.lower() for a in CLI_Args.get("debug", "").split(",")]
 
+# ["web", "api:fail"]
+# web:error
+# api
+# api:success
+
 def DEBUG(message, require="all"):
-	if require in active_debugs or "all" in active_debugs: LOG.debug(message)
+	show = False
+	for ad in active_debugs:
+		if ad == "all": show = True; break
+		if require == ad: show = True; break
+		if require.split(":")[0] == ad: show = True; break
+
+	if show: LOG.debug(message)
 
 def INFO(m):
 	LOG.info(m)

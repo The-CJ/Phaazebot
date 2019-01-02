@@ -26,7 +26,7 @@ async def login(self, request, **kwargs):
 	entry = dict(session = new_session, user_id=auth_user['id'])
 	self.root.BASE.PhaazeDB.insert(into="session/phaaze", content=entry)
 	self.root.BASE.PhaazeDB.update(of="user", content=dict(last_login=str(datetime.datetime.now())), where=f"int(data['id']) == int({entry.get('user_id', None)})")
-
+	self.root.BASE.modules.Console.DEBUG(f"New Login - Session: {new_session}\n{str(auth_user)}", require="api:login")
 	return self.root.response(
 		text=json.dumps( dict(phaaze_session=new_session,status=200) ),
 		content_type="application/json",
@@ -47,7 +47,7 @@ async def logout(self, request, **kwargs):
 
 	us_id = user.get('id', '')
 	res = self.root.BASE.PhaazeDB.delete(of="session/phaaze", where=f"int(data['user_id']) == int({us_id})")
-
+	self.root.BASE.modules.Console.DEBUG(f"Logout of user: {str(us_id)}", require="api:logout")
 	if res['hits'] >= 1:
 		return self.root.response(
 			text=json.dumps( dict(status=200) ),
@@ -97,6 +97,7 @@ async def create(self, request, **kwargs):
 	#check if username is taken
 	check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['username'] == {json.dumps(username)} or data['email'] == {json.dumps(email)}")
 	if check_user.get('hits', 1) != 0:
+		self.root.BASE.modules.Console.DEBUG(f"User already exist: {str(auth_user)}", require="api:create")
 		return self.root.response(
 			text=json.dumps( dict(error="account_taken", status=400, msg="username or email is taken") ),
 			content_type="application/json",
@@ -120,6 +121,7 @@ async def create(self, request, **kwargs):
 	new_user = self.root.BASE.PhaazeDB.insert(into="user", content=cont)
 	_id_ = new_user.get('data', {}).get('id', '[N/A]')
 
+	self.root.BASE.modules.Console.DEBUG(f"User created: {str(cont)}", require="api:create")
 	return self.root.response(
 		text=json.dumps( dict(status=200, message="successfull created user", id=_id_, username=username) ),
 		content_type="application/json",

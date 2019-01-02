@@ -3,6 +3,7 @@ import json
 
 # /api/?
 async def unknown(self, request, **kwargs):
+	self.root.BASE.modules.Console.DEBUG(f"404: {request.path}", require="api:404")
 	return self.root.response(
 		text=json.dumps( dict(error="unknown_api",status=404) ),
 		content_type="application/json",
@@ -19,6 +20,7 @@ async def nothing(self, request, **kwargs):
 
 # <403><401><404>
 async def action_not_allowed(self, request, msg="Not allowed"):
+	self.root.BASE.modules.Console.DEBUG(f"401: {request.path}", require="api:401")
 	return self.root.response(
 		text=json.dumps( dict(error="action_not_allowed",status=403,msg=msg) ),
 		content_type="application/json",
