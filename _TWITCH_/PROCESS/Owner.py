@@ -17,7 +17,7 @@ class Everything(object):
 				else:
 					return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name} > Override >> No channel found. "{name}"')
 
-				check = BASE.modules._Twitch_.Streams.Main.get_stream(user["_id"])
+				check = BASE.modules._Twitch_.Streams.Main.get_stream(user["id"])
 
 				if check != None and check.get("chat_managed", False):
 					return await BASE.twitch.send_message(
@@ -25,7 +25,7 @@ class Everything(object):
 						f'@{message.display_name} > Override >> Phaaze already is in channel: {user["display_name"]}'
 					)
 				else:
-					success = BASE.modules._Twitch_.Streams.Main.set_stream(user["_id"], chat_managed=True, twitch_name=user["name"])
+					success = BASE.modules._Twitch_.Streams.Main.set_stream(user["id"], chat_managed=True, twitch_name=user["name"])
 					if success != False:
 						await BASE.twitch.join_channel(user['name'])
 						return await BASE.twitch.send_message(

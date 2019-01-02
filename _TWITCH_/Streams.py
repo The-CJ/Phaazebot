@@ -4,7 +4,8 @@ import asyncio, discord, json
 
 #BASE.modules._Twitch_.Streams.Main
 class Init_Main(object):
-	""" Provides a information source for other modules, so there don't have to make a api request to twitch"""
+	""" Provides a information source for other modules, so there don't have to make a api request to twitch
+		also used for setting stream settings, like chat managed and discord channel """
 
 	def __init__(self, BASE):
 		super(Init_Main, self).__init__()
@@ -29,37 +30,45 @@ class Init_Main(object):
 			# that have at least one discord channel to alert or have Phaaze in the twitch channel
 
 			need_to_check = self.BASE.PhaazeDB.select(of="twitch/stream", where="data['chat_managed'] or data['alert_discord_channel']").get("data", [])
+			live_streams = self.BASE.modules._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in need_to_check if s.get('twitch_id', None) != None], search="id")
 
-			try:
-				live_streams = self.BASE.modules._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in need_to_check if s.get('twitch_id', None) != None])
-				# no channel are live -> no updates
-				if live_streams.get('_total', 0) == 0:
-					await asyncio.sleep(self.refresh_time)
-					continue
+			# no channel are live -> no updates
+			if len(live_streams) == 0:
+				self.BASE.PhaazeDB.update(of="twitch/stream", content=dict(live=False))
+				await asyncio.sleep(self.refresh_time)
+				continue
 
-			except Exception as e:
-				#nothing usual, just twitch things
-				self.BASE.modules.Console.ERROR("No Twitch API Response\n"+str(e))
+			#twitch gave nothing, retry soon
+			#nothing usual, just twitch things
+			elif live_streams == None:
+				self.BASE.modules.Console.ERROR("No Twitch API Response")
 				await asyncio.sleep(self.refresh_time * 0.75)
 				continue
 
-			live_streams = live_streams.get("streams",[])
-			self.live = id_list_of_live_channel = [ str(stream.get('channel', {}).get('_id', 0)) for stream in live_streams ]
+			#set all live channel for other modules
+			self.live = [ str(stream.get('user_id', 0)) for stream in live_streams ]
 
-			old_list = self.generate_stream_list(need_to_check, source="db")
-			new_list = self.generate_stream_list(live_streams, source="twitch")
+
+			old_list = self.generate_stream_dict_from_db(need_to_check)
+			new_list = self.generate_stream_dict_from_api(live_streams)
 
 			# every entry in new_list has a entry in old_list
 			# but not vise versa
 			# because the opposite in new_list is only there, if the channel is live
 
+			need_to_alert = dict()
+
+			#find out streams diffrents
 			for entry in old_list:
 
 				old_stream = old_list.get(entry, {})
 				new_stream = new_list.get(entry, {}) # <- only there if live
 
-				twitch_info = new_stream.get('twitch_api_info', {})
-				db_info = old_stream.get('db_info', {})
+				info_api = new_stream.get('info_api', {})
+				info_db = old_stream.get('info_db', {})
+
+				sid = info_api.get("id", None)
+				if sid == None: continue
 
 				old_status = old_stream.get('live', False)
 				new_status = new_stream.get('live', False)
@@ -69,16 +78,26 @@ class Init_Main(object):
 
 				# has gone live
 				if old_status != new_status and new_status == True:
-
-					self.event_live(twitch_info=twitch_info, db_info=db_info)
+					need_to_alert[str(sid)] = dict(
+						event="live",
+						stream=info_api,
+						info_db=info_db,
+					)
 
 				# was live, changed game
 				elif old_game != new_game and new_game != None:
-					self.event_gamechange(twitch_info=twitch_info, db_info=db_info)
+					need_to_alert[str(sid)] = dict(
+						event="game_change",
+						stream=info_api,
+						info_db=info_db,
+					)
+
+			#prepare stream info, like game, and user data
+			asyncio.ensure_future( self.complete_streams(need_to_alert) )
 
 			sorted_list_of_streams_per_game = self.sort_channel_per_game(live_streams)
 
-			update_string = f"data['live'] = True if data['twitch_id'] in {str(id_list_of_live_channel)} else False;"
+			update_string = f"data['live'] = True if data['twitch_id'] in {str(self.live)} else False;"
 
 			for game in sorted_list_of_streams_per_game:
 				id_channel_list = sorted_list_of_streams_per_game[game]
@@ -87,54 +106,84 @@ class Init_Main(object):
 			self.BASE.PhaazeDB.update(of="twitch/stream", content=update_string)
 			await asyncio.sleep(self.refresh_time)
 
+	async def complete_streams(self, alert_dict):
+		needed_users = []
+		needed_games = []
+
+		for alert_id in alert_dict:
+			alert = alert_dict[alert_id]
+			needed_users.append( alert.get("stream", {}).get("user_id", None) )
+			needed_games.append( alert.get("stream", {}).get("game_id", None) )
+
+		user_data = self.BASE.modules._Twitch_.Utils.get_user(self.BASE, needed_users, search="id")
+		game_data = self.BASE.modules._Twitch_.Utils.get_game(self.BASE, needed_games, search="id")
+
+		for alert_id in alert_dict:
+			alert = alert_dict[alert_id]
+			alert["user"] = self.get_right_from_list( user_data, search="id", value=alert.get("stream", {}).get("user_id", None) )
+			alert["game"] = self.get_right_from_list( game_data, search="id", value=alert.get("stream", {}).get("game_id", None) )
+
+			alert_type = alert.get("event", None)
+			if alert_type == "live":
+				asyncio.ensure_future( self.event_live(alert) )
+			elif alert_type == "game_change":
+				asyncio.ensure_future( self.event_gamechange(alert) )
+			else: continue
 	# utils
 	def sort_channel_per_game(self, streams):
 		r = {}
 
 		for st in streams:
 
-			game = st.get('game', "---")
+			game = st.get('game_id', "---")
 			if r.get(game, None) == None:
 				r[game] = []
 
-			channel_id = st.get('channel', {}).get('_id', None)
+			channel_id = st.get('user_id', None)
 			if channel_id != None:
 				r[game].append( str(channel_id) )
 
 		return r
 
-	def generate_stream_list(self, streams, source="db"):
-		r = dict()
+	def get_right_from_list(self, li, search="id", value=None):
+		for entry in li:
+			check = entry.get(search, None)
+			if check == value: return entry
+
+	def generate_stream_dict_from_db(self, db_entrys):
+		entry_dict = dict()
+
+		for entry in db_entrys:
+
+			twitch_id = entry.get('twitch_id', None)
+			game = entry.get('game', None)
+			live = entry.get('live', False)
+
+			entry_dict[str(twitch_id)] = dict(
+				game=game,
+				live=live,
+				info_api=None,
+				info_db=entry
+			)
+
+		return entry_dict
+
+	def generate_stream_dict_from_api(self, streams):
+		stream_dict = dict()
 
 		for stream in streams:
 
-			key = None
-			game = None
-			live = None
+			twitch_id = stream.get("user_id")
+			game = stream.get("game_id")
 
-			twitch_api_info = None
-			db_info = None
-
-			if source == "db":
-				key = stream.get('twitch_id', None)
-				game = stream.get('game', None)
-				live = stream.get('live', False)
-				db_info = stream
-
-			elif source == "twitch":
-				key = stream.get('channel', {}).get('_id', None)
-				game = stream.get('game', None)
-				live = True
-				twitch_api_info = stream
-
-			r[str(key)] = dict(
+			stream_dict[str(twitch_id)] = dict(
 				game=game,
-				live=live,
-				twitch_api_info=twitch_api_info,
-				db_info=db_info
+				live=True,
+				info_api=stream,
+				info_db=None
 			)
 
-		return r
+		return stream_dict
 
 	#functions
 	def set_stream(self, twitch_id=None, create_new=False, **kwargs):
@@ -157,7 +206,7 @@ class Init_Main(object):
 				twitch_name = kwargs.get("twitch_name", None)
 			)
 			try:
-				self.BASE.modules.Console.INFO(f"New Sream Entry created: {twitch_id}")
+				self.BASE.modules.Console.INFO(f"New Stream Entry created: {twitch_id}")
 				self.BASE.PhaazeDB.insert( into="twitch/stream", content=insert )
 				return insert
 			except:
@@ -187,19 +236,24 @@ class Init_Main(object):
 		return check.get('data',[])[0]
 
 	#Stream Events
-	def event_live(self, twitch_info=dict(), db_info=dict()):
+	async def event_live(self, alert):
 		if not self.BASE.active.twitch_alert: return
 
-		if twitch_info.get('stream_type', None) != 'live': return
+		game = alert.get("game", {})
+		stream = alert.get("stream", {})
+		user = alert.get("user", {})
+		info_db = alert.get("info_db", {})
 
-		game = twitch_info.get('game', '[N/A]')
-		logo = twitch_info.get('channel', {}).get('logo', '[N/A]')
-		display_name = twitch_info.get('channel', {}).get('display_name', '[N/A]')
-		url = twitch_info.get('channel', {}).get('url', '[N/A]')
-		status = twitch_info.get('channel', {}).get('status', '[N/A]')
+		if stream.get('type', None) != 'live': return
+
+		game_name = game.get('name', '[N/A]')
+		user_logo_url = user.get('profile_image_url', None)
+		user_display_name = user.get('display_name', '[N/A]')
+		stream_url = "https://www.twitch.tv/"+user.get('login', "")
+		stream_status = stream.get('title', '[N/A]')
 
 		#Discord
-		discord_channel = db_info.get('alert_discord_channel', [])
+		discord_channel = info_db.get('alert_discord_channel', [])
 		if discord_channel:
 
 			raw_custom_formats = self.BASE.PhaazeDB.select( of="twitch/alert_format",where=f"data['discord_channel_id'] in str({json.dumps(discord_channel)})" ).get("data", [])
@@ -208,10 +262,10 @@ class Init_Main(object):
 			for raw_alert_format in raw_custom_formats:
 				channel_format_index[raw_alert_format.get('discord_channel_id', '-')] = raw_alert_format.get("custom_alert", None)
 
-			emb = discord.Embed(title=status, url=url, description=f":game_die: Playing: **{game}**", color=0x6441A4)
-			emb.set_author(name=display_name, url=url, icon_url=logo)
+			emb = discord.Embed(title=stream_status, url=stream_url, description=f":game_die: Playing: **{game_name}**", color=0x6441A4)
+			emb.set_author(name=user_display_name, url=stream_url, icon_url=user_logo_url)
 			emb.set_footer(text="Provided by Twitch.tv", icon_url=self.BASE.vars.twitch_logo)
-			emb.set_image(url=logo)
+			emb.set_image(url=user_logo_url)
 
 			for channel_id in discord_channel:
 				#check for custom format
@@ -223,24 +277,29 @@ class Init_Main(object):
 					loop=self.BASE.Discord_loop
 				)
 
-	def event_gamechange(self, twitch_info=dict(), db_info=dict()):
+	async def event_gamechange(self, alert):
 		if not self.BASE.active.twitch_alert: return
 
-		if twitch_info.get('stream_type', None) != 'live': return
+		game = alert.get("game", {})
+		stream = alert.get("stream", {})
+		user = alert.get("user", {})
+		info_db = alert.get("info_db", {})
 
-		game = twitch_info.get('game', '[N/A]')
-		logo = twitch_info.get('channel', {}).get('logo', '[N/A]')
-		display_name = twitch_info.get('channel', {}).get('display_name', '[N/A]')
-		url = twitch_info.get('channel', {}).get('url', '[N/A]')
-		status = twitch_info.get('channel', {}).get('status', '[N/A]')
+		if stream.get('type', None) != 'live': return
+
+		game_name = game.get('name', '[N/A]')
+		user_logo_url = user.get('profile_image_url', None)
+		user_display_name = user.get('display_name', '[N/A]')
+		stream_url = "https://www.twitch.tv/"+user.get('login', "")
+		stream_status = stream.get('title', '[N/A]')
 
 		#Discord
-		discord_channel = db_info.get('discord_channel', [])
+		discord_channel = info_db.get('alert_discord_channel', [])
 		if discord_channel:
-			emb = discord.Embed(title=status, url=url, description=f":game_die: Now Playing: **{game}**", color=0x6441A4)
-			emb.set_author(name=display_name, url=url, icon_url=logo)
+			emb = discord.Embed(title=stream_status, url=stream_url, description=f":game_die: Now Playing: **{game_name}**", color=0x6441A4)
+			emb.set_author(name=user_display_name, url=stream_url, icon_url=user_logo_url)
 			emb.set_footer(text="Provided by Twitch.tv", icon_url=self.BASE.vars.twitch_logo)
-			emb.set_thumbnail(url=logo)
+			emb.set_thumbnail(url=user_logo_url)
 
 			for channel_id in discord_channel:
 				chan = discord.Object(id=channel_id)
@@ -249,6 +308,7 @@ class Init_Main(object):
 					loop=self.BASE.Discord_loop
 				)
 
+	#for platforms
 	class Discord(object):
 		def toggle_chan(BASE, twitch_id, discord_channel_id, **kwargs):
 			twitch_info = BASE.modules._Twitch_.Streams.Main.get_stream(twitch_id, create_new=True, **kwargs)

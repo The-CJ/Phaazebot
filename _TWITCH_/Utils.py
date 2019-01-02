@@ -2,7 +2,7 @@
 
 import asyncio, requests, json
 
-MAIN = "https://api.twitch.tv/kraken/"
+MAIN = "https://api.twitch.tv/helix/"
 
 #auth
 async def is_Mod(BASE, message):
@@ -183,7 +183,7 @@ async def make_channel_quotes(BASE, id):
 def API_call(BASE, url):
 	#main api call
 	key = BASE.access.Twitch_API_Token
-	header = {"Client-ID": key, "Accept": "application/vnd.twitchtv.v5+json"}
+	header = {"Client-ID": key}#, "Accept": "application/vnd.twitchtv.v5+json"}
 	try:
 		resp = requests.get(url, headers = header)
 		return resp.json()
@@ -196,31 +196,89 @@ def get_user(BASE, twitch_info, search="id"):
 		if type(twitch_info) == str:
 			twitch_info = [twitch_info]
 
-		s = "/"
-		if search == "name":
-			s = "?login="
-		elif search == "id":
-			s = "?id="
+		s = "id"
+		if search.lower() in ["name", "login"]:
+			s = "login"
+		elif search.lower() in ["id"]:
+			s = "id"
 
-		link = MAIN + "users" + s + ",".join(thing for thing in twitch_info)
+		query = ""
+		for thing in twitch_info:
+			if query:
+				query += f"&{s}={thing}"
+			else:
+				query += f"?{s}={thing}"
+
+		link = MAIN + "users" + query
 
 		res = API_call(BASE, link)
 
-		#No User
-		if res.get("_total", 0) == 0: return None
+		result = res.get("data", None)
 
-		return res["users"]
+		if result: return result
+		else: return None
 
 	except:
 		return None
 
-def get_streams(BASE, streams):
-	if type(streams) == str:
-		streams = [streams]
+def get_game(BASE, games, search="id"):
 	try:
-		link = MAIN + 'streams?channel=' + ",".join(stream for stream in streams)
+
+		if type(games) == str:
+			games = [games]
+
+		s = "id"
+		if search.lower() in ["name"]:
+			s = "name"
+		elif search.lower() in ["id"]:
+			s = "id"
+
+		query = ""
+		for g in games:
+			if query:
+				query += f"&{s}={g}"
+			else:
+				query += f"?{s}={g}"
+
+		link = MAIN + "games" + query
+
 		res = API_call(BASE, link)
-		return res
+
+		result = res.get("data", None)
+
+		if result: return result
+		else: return None
+
+	except:
+		return None
+
+def get_streams(BASE, stream_ids, search="id", limit=100):
+	if limit > 100: limit = 100
+
+	if type(stream_ids) == str:
+		stream_ids = [stream_ids]
+
+	s = "user_id"
+	if search.lower() in ["name", "login"]:
+		s = "user_login"
+	elif search.lower() in ["id"]:
+		s = "user_id"
+	elif search.lower() in ["game"]:
+		s = "game_id"
+	elif search.lower() in ["language"]:
+		s = "language"
+
+	query = f"?first={limit}"
+	for thing in stream_ids:
+		query += f"&{s}={thing}"
+
+	try:
+		link = MAIN + "streams" + query
+		res = API_call(BASE, link)
+		result = res.get("data", None)
+
+		if result != None: return result
+		else: return None
 	except:
 		return None
 
@@ -245,6 +303,6 @@ def repair_twitch_streams(BASE):
 		BASE.PhaazeDB.update(of="twitch/stream", content=dict(twitch_name=nn.get("name", None)), where=f"data['twitch_id'] == {json.dumps(nn.get('_id','---'))}")
 
 	for ni in twitch_api_id:
-		BASE.PhaazeDB.update(of="twitch/stream", content=dict(twitch_id=ni.get("_id", None)), where=f"data['twitch_name'] == {json.dumps(ni.get('name','---'))}")
+		BASE.PhaazeDB.update(of="twitch/stream", content=dict(twitch_id=ni.get("id", None)), where=f"data['twitch_name'] == {json.dumps(ni.get('name','---'))}")
 
 	return True

@@ -30,7 +30,7 @@ async def Base(BASE, message, **kwargs):
 		)
 
 	else:
-		user = user_level.get("data", [])[0]
+		user = user_level[0]
 		c = dict(
 			user_name = message.name,
 			user_display_name = message.display_name,
@@ -109,7 +109,7 @@ async def stats(BASE, message, kwargs):
 
 	return await BASE.twitch.send_message(message.channel_name, resp)
 
-async def leaderboard(BASE, message, package, art="time"): #TODO: x 
+async def leaderboard(BASE, message, package, art="time"): #TODO: x
 	settings = await package["BASE"].moduls._Twitch_.Utils.get_twitch_file(package["BASE"], package["message"].room_id)
 	stats_active = settings.get("stats", False)
 	if not stats_active: return
