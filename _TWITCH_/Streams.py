@@ -294,7 +294,7 @@ class Init_Main(object):
 		stream_status = stream.get('title', '[N/A]')
 
 		#Discord
-		discord_channel = info_db.get('discord_channel', [])
+		discord_channel = info_db.get('alert_discord_channel', [])
 		if discord_channel:
 			emb = discord.Embed(title=stream_status, url=stream_url, description=f":game_die: Now Playing: **{game_name}**", color=0x6441A4)
 			emb.set_author(name=user_display_name, url=stream_url, icon_url=user_logo_url)
