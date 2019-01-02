@@ -1,12 +1,6 @@
-import logging, sys, re
+import logging
+from Utils import CLI_Args
 from systemd.journal import JournalHandler
-
-option_re = re.compile(r'^--(.+?)=(.*)$')
-all_args = dict()
-for arg in sys.argv[1:]:
-	d = option_re.match(arg)
-	if d != None:
-		all_args[d.group(1)] = d.group(2)
 
 LOG = logging.getLogger('PhaazeOS')
 LOG.setLevel(logging.DEBUG)
@@ -29,7 +23,7 @@ class ColoredLogger(logging.Formatter):
 
 SHF = ColoredLogger("\033[00m[%(levelname)s] %(message)s\033[00m")
 
-if all_args.get('logging', 'console') == "systemd":
+if CLI_Args.get('logging', 'console') == "systemd":
 	JH = JournalHandler()
 	JH.setFormatter(SHF)
 	LOG.addHandler(JH)
