@@ -277,24 +277,29 @@ class Init_Main(object):
 					loop=self.BASE.Discord_loop
 				)
 
-	async def event_gamechange(self, twitch_info=dict(), db_info=dict()):
+	async def event_gamechange(self, alert):
 		if not self.BASE.active.twitch_alert: return
 
-		if twitch_info.get('type', None) != 'live': return
+		game = alert.get("game", {})
+		stream = alert.get("stream", {})
+		user = alert.get("user", {})
+		info_db = alert.get("info_db", {})
 
-		game = twitch_info.get('game_id', '[N/A]')
-		logo = twitch_info.get('thumbnail_url', None)
-		display_name = twitch_info.get('user_name', '[N/A]')
-		url = "https://www.twitch.tv/"+twitch_info.get('user_name', "[N/A]")
-		status = twitch_info.get('title', '[N/A]')
+		if stream.get('type', None) != 'live': return
+
+		game_name = game.get('name', '[N/A]')
+		user_logo_url = user.get('profile_image_url', None)
+		user_display_name = user.get('display_name', '[N/A]')
+		stream_url = "https://www.twitch.tv/"+user.get('login', "")
+		stream_status = stream.get('title', '[N/A]')
 
 		#Discord
-		discord_channel = db_info.get('discord_channel', [])
+		discord_channel = info_db.get('discord_channel', [])
 		if discord_channel:
-			emb = discord.Embed(title=status, url=url, description=f":game_die: Now Playing: **{game}**", color=0x6441A4)
-			emb.set_author(name=display_name, url=url, icon_url=logo)
+			emb = discord.Embed(title=stream_status, url=stream_url, description=f":game_die: Now Playing: **{game_name}**", color=0x6441A4)
+			emb.set_author(name=user_display_name, url=stream_url, icon_url=user_logo_url)
 			emb.set_footer(text="Provided by Twitch.tv", icon_url=self.BASE.vars.twitch_logo)
-			emb.set_thumbnail(url=logo)
+			emb.set_thumbnail(url=user_logo_url)
 
 			for channel_id in discord_channel:
 				chan = discord.Object(id=channel_id)
