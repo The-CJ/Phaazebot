@@ -11,7 +11,7 @@ async def main(self, request, msg=""):
 	current_navbar = self.root.html_header(self.root.BASE, user_info=user_info)
 	page_na = open('_WEB_/content/action_not_allowed.html', 'r').read()
 
-	self.root.BASE.modules.Console.DEBUG(request.path)
+	self.root.BASE.modules.Console.DEBUG(f"401: {request.path}", require="web")
 
 	page_na = self.root.format_html(page_na,
 		path=req_str,

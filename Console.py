@@ -32,8 +32,10 @@ else:
 	SH.setFormatter(SHF)
 	LOG.addHandler(SH)
 
-def DEBUG(m):
-	LOG.debug(m)
+active_debugs = [a.lower() for a in CLI_Args.get("debug", "").split(",")]
+
+def DEBUG(message, require="all"):
+	if require in active_debugs or "all" in active_debugs: LOG.debug(message)
 
 def INFO(m):
 	LOG.info(m)

@@ -11,7 +11,7 @@ async def main(self, request, msg=""):
 	current_navbar = self.root.html_header(self.root.BASE, user_info=user_info)
 	page_nf = open('_WEB_/content/page_not_found.html', 'r').read()
 
-	self.root.BASE.modules.Console.DEBUG(request.path)
+	self.root.BASE.modules.Console.DEBUG(f"404: {request.path}", require="web")
 
 	page_nf = self.root.format_html(page_nf,
 		path=req_str,
