@@ -9,5 +9,8 @@ function save_wiki() {
     m = data.responseJSON ? data.responseJSON.msg : "unknown";
     _show_message(m, "red");
   })
-  .done(function (data) {console.log(data);})
+  .done(function (data) {
+    var bbb = $("[name=url_id]").val();
+    window.location = "/wiki/"+bbb;
+  })
 }

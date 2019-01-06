@@ -1,4 +1,4 @@
-import asyncio, json
+import asyncio, json, datetime
 
 # /api/wiki
 async def main(self, request):
@@ -30,7 +30,6 @@ async def get(self, request):
 			status=400,
 			content_type='application/json'
 		)
-
 
 	j = dict(of="user", limit=1, where="int(user['id']) == int(data['edited_by'])", store="user")
 	page_res = self.root.BASE.PhaazeDB.select(of="wiki", where=f"data['url_id'] == {json.dumps(url_id)}", join=j)
@@ -85,3 +84,46 @@ async def save(self, request):
 	user_info = await self.root.get_user_info(request)
 	if not self.root.check_role(user_info, ['superadmin', 'admin', 'wiki moderator']):
 		return await self.root.api.action_not_allowed(request, msg="You don't have permissions to edit the wiki")
+
+	#check if page exist
+	page_res = self.root.BASE.PhaazeDB.select(of="wiki", where=f"data['url_id'] == {json.dumps(url_id)}")
+	if page_res.get("hits", 0) == 0:
+		new = True
+	else:
+		new = False
+
+	if new:
+		entry = dict(
+			content=content,
+			created_by=user_info.get("id", 0),
+			created_at=str(datetime.datetime.now()),
+			edited_by=user_info.get("id", 0),
+			edited_at=str(datetime.datetime.now()),
+			tags=tags.split(","),
+			url_id=url_id
+		)
+
+		res = self.root.BASE.PhaazeDB.insert(into="wiki", content=entry)
+
+	else:
+		update = dict(
+			content=content,
+			edited_by=user_info.get("id", 0),
+			edited_at=str(datetime.datetime.now()),
+			tags=tags.split(","),
+		)
+
+		res = self.root.BASE.PhaazeDB.update(of="wiki", content=update, where=f"data['url_id'] == {json.dumps(url_id)}")
+
+	if 200 <= res.get("code", 400) <= 299:
+		return self.root.response(
+			body=json.dumps(dict(status=200, msg=f"successfull {'created' if new else 'edited'} page: {url_id}")),
+			status=200,
+			content_type='application/json'
+		)
+	else:
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg=f"error {'creating' if new else 'editing'} page: {url_id}")),
+			status=400,
+			content_type='application/json'
+		)
