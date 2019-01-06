@@ -10,7 +10,7 @@ class root(object):
 	def __init__(self, BASE):
 		self.BASE = BASE
 		self.response = self.send_Response
-		self.format_html_regex = re.compile(r"\|>>>\((.+)\)<<<\|")
+		self.format_html_regex = re.compile(r"\|>>>\((.+?)\)<<<\|")
 		self.html_root = open('_WEB_/content/root.html','r').read()
 		self.html_header = BASE.modules._Web_.Utils.get_navbar
 

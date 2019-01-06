@@ -4,7 +4,6 @@ import asyncio, json
 
 # /wiki
 async def main(self, request):
-
 	# edit mode
 	if request.query.get("edit", "") != "":
 		return await edit(self, request)
@@ -16,7 +15,7 @@ async def main(self, request):
 
 	# no site define -> show main
 	if wiki_site == None or wiki_site == "":
-		main_wiki = open('_WEB_/content/wiki/root.html', 'r', encoding='utf-8').read()
+		main_wiki = open('_WEB_/content/wiki/main.html', 'r', encoding='utf-8').read()
 		site = self.root.format_html(self.root.html_root,
 			title="Phaaze | Wiki",
 			header=current_navbar,
@@ -48,6 +47,7 @@ async def main(self, request):
 			body=pnf_site
 		)
 
+# /wiki?edit=.*
 async def edit(self, request):
 	user_info = await self.root.get_user_info(request)
 	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info)
@@ -55,10 +55,47 @@ async def edit(self, request):
 	page_to_edit = request.query.get("edit", None)
 	if page_to_edit == None: self.root.response(status=400)
 
+	# not allowed to edit
+	if not self.root.check_role(user_info, ['superadmin', 'admin', 'wiki moderator']):
+		return await self.root.web.action_not_allowed(request, msg="You don't have permissions to edit the wiki")
+
+	j = dict(of="user", limit=1, where="int(user['id']) == int(data['edited_by'])", store="user")
+	page_res = self.root.BASE.PhaazeDB.select(of="wiki", where=f"data['url_id'] == {json.dumps(page_to_edit)}", join=j)
+
+	print(page_res)
+
+	if page_res.get("data", []):
+		page_to_edit_entry = page_res["data"][0]
+		edited_at = page_to_edit_entry.get("edited_at", "[N/A]")
+		user = page_to_edit_entry.get("user", [])
+
+		if len(user) == 0:
+			edited_by_name = "None"
+			edited_by_id = "0"
+		else:
+			edited_by_name = user[0].get("username", "Unknown")
+			edited_by_id = user[0].get("id", "Unknown")
+
+	else:
+		page_to_edit_entry = None
+		edited_at = "Never"
+		edited_by_name = "None"
+		edited_by_id = "0"
+
+	wiki_edit_page = self.root.format_html(
+		open('_WEB_/content/wiki/edit.html', 'r', encoding='utf-8').read(),
+		action="Edit" if page_to_edit_entry != None else "Create",
+		url_id=page_to_edit,
+		last_user_name=edited_by_name,
+		last_user_id=edited_by_id,
+		last_date=edited_at,
+		content=page_to_edit_entry.get("content", "[N/A]") if page_to_edit_entry != None else "",
+	)
+
 	site = self.root.format_html(self.root.html_root,
 		title="Phaaze | Wiki - Edit: "+page_to_edit,
 		header=current_navbar,
-		main="HIER"
+		main=wiki_edit_page
 	)
 
 	return self.root.response(
@@ -66,28 +103,4 @@ async def edit(self, request):
 		content_type='text/html',
 		body=site
 	)
-
-def wiki(BASE, info):
-	return_header = [('Content-Type','text/html')]
-
-	site = open('_WEB_/content/wiki/root.html', 'r', encoding='utf-8').read()
-
-	page_index = info.get('values', {}).get("page", "main")
-	page_index = page_index.replace('..', '')
-	if page_index.startswith('/'):
-		page_index = " N/A"
-
-	try:
-		content = open('_WEB_/content/wiki/pages/{}.html'.format(page_index), 'r', encoding='utf-8').read()
-	except:
-		content = open('_WEB_/content/wiki/not_found.html', 'r', encoding='utf-8').read()
-		content = content.replace("<!-- tryed_path -->", page_index)
-
-	site = site.replace("<!-- about_content -->", content)
-	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
-	class r (object):
-		content = site.encode("UTF-8")
-		response = 200
-		header = return_header
-	return r
 
