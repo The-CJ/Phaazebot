@@ -1,15 +1,28 @@
-#BASE.modules._Web_.Base.root.wiki.main
+#BASE.modules._Web_.Base.root.wiki.wiki
 
-from importlib import reload
-import json, hashlib, random, string, html
+import asyncio
 
-def main(BASE, info, root):
-	#/wiki
-	if len(info['path']) == 0:
-		return wiki(BASE, info)
+# /wiki
+async def main(self, request):
 
-	else:
-		return root.page_not_found.page_not_found(BASE, info, root)
+	site = request.match_info.get('site', None)
+	user_info = await self.root.get_user_info(request)
+	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info)
+
+	# no site define -> show main
+	if site == None or site == "":
+		main_wiki = open('_WEB_/content/wiki/root.html', 'r', encoding='utf-8').read()
+		site = self.root.format_html(self.root.html_root,
+			title="Phaaze | Wiki",
+			header=current_navbar,
+			main=main_wiki
+		)
+
+		return self.root.response(
+			status=200,
+			content_type='text/html',
+			body=site
+		)
 
 def wiki(BASE, info):
 	return_header = [('Content-Type','text/html')]
