@@ -1,16 +1,21 @@
 #BASE.modules._Web_.Base.root.wiki.wiki
 
-import asyncio
+import asyncio, json
 
 # /wiki
 async def main(self, request):
 
-	site = request.match_info.get('site', None)
+	# edit mode
+	if request.query.get("edit", "") != "":
+		return await edit(self, request)
+
 	user_info = await self.root.get_user_info(request)
 	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info)
 
+	wiki_site = request.match_info.get('site', None)
+
 	# no site define -> show main
-	if site == None or site == "":
+	if wiki_site == None or wiki_site == "":
 		main_wiki = open('_WEB_/content/wiki/root.html', 'r', encoding='utf-8').read()
 		site = self.root.format_html(self.root.html_root,
 			title="Phaaze | Wiki",
@@ -23,6 +28,44 @@ async def main(self, request):
 			content_type='text/html',
 			body=site
 		)
+
+	# get page
+	page_res = self.root.BASE.PhaazeDB.select(of="wiki", where=f"data['url_id'] == {json.dumps(wiki_site)}")
+	page_res_hits = page_res.get("hits", 0)
+
+	# not found, (ask for create)
+	if page_res_hits == 0:
+		pnf = open('_WEB_/content/wiki/not_found.html', 'r', encoding='utf-8').read()
+		pnf_site = self.root.format_html(self.root.html_root,
+			title="Phaaze | Wiki - Not Found",
+			header=current_navbar,
+			main=self.root.format_html(pnf, url_id=wiki_site)
+		)
+
+		return self.root.response(
+			status=200,
+			content_type='text/html',
+			body=pnf_site
+		)
+
+async def edit(self, request):
+	user_info = await self.root.get_user_info(request)
+	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info)
+
+	page_to_edit = request.query.get("edit", None)
+	if page_to_edit == None: self.root.response(status=400)
+
+	site = self.root.format_html(self.root.html_root,
+		title="Phaaze | Wiki - Edit: "+page_to_edit,
+		header=current_navbar,
+		main="HIER"
+	)
+
+	return self.root.response(
+		status=200,
+		content_type='text/html',
+		body=site
+	)
 
 def wiki(BASE, info):
 	return_header = [('Content-Type','text/html')]
