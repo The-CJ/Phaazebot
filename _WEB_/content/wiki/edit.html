@@ -1,5 +1,5 @@
 <div class="container-fluid white-text">
-	<br>
+	<hr>
 	<h2 class="text-center">
 		<span>|>>>(action)<<<|</span>
 		<span> page: </span>
@@ -9,7 +9,13 @@
 		<span>Last edit by: |>>>(last_user_name)<<<| (ID: |>>>(last_user_id)<<<|)</span>
 		<span> - at: |>>>(last_date)<<<|</span>
 	</h4>
-	<br>
+	<hr>
+	<div class="center-item-row">
+		<span>Tags:</span>
+		<input class="white-text input" type="text" name="tags" value="|>>>(tags)<<<|">
+	</div>
 	<textarea class="white-text" style="width: 100%;resize: none;" rows="20" name="content">|>>>(content)<<<|</textarea>
 	<input type="hidden" name="url_id" value="|>>>(url_id)<<<|">
+	<button type="button" class="btn btn-block btn-success" onclick="save_wiki()">Save</button>
 </div>
+<script src="/js/site-specific/wiki/edit.js" charset="utf-8"></script>

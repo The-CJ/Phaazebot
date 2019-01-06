@@ -49,6 +49,8 @@ class root(object):
 		from _API_.Admin import controll as admin_controll									#/admin/controll
 		from _API_._Admin_.manage_user import main as admin_manage_user						#/admin/manage-user
 		from _API_._Admin_.manage_type import main as admin_manage_type						#/admin/manage-type
+																							#
+		from _API_.Wiki import main as wiki													#/api/wiki
 
 	# / ...
 	class init_web(object):																	#
@@ -105,6 +107,7 @@ def webserver(BASE):
 	server.router.add_route('*',   '/api/admin/controll', root.api.admin_controll)
 	server.router.add_route('*',   '/api/admin/manage-user{x:/?}{method:.*}', root.api.admin_manage_user)
 	server.router.add_route('*',   '/api/admin/manage-type{x:/?}{method:.*}', root.api.admin_manage_type)
+	server.router.add_route('*',   '/api/wiki{x:/?}{method:.*}', root.api.wiki)
 	server.router.add_route('*',   '/api/{path:.*}', root.api.unknown)
 
 	# /js /img /css

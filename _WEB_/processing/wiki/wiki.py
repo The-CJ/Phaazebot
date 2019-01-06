@@ -84,6 +84,7 @@ async def edit(self, request):
 	if page_res.get("data", []):
 		page_to_edit_entry = page_res["data"][0]
 		edited_at = page_to_edit_entry.get("edited_at", "[N/A]")
+		edit_tags = ",".join(page_to_edit_entry.get("tags", []))
 		user = page_to_edit_entry.get("user", [])
 
 		if len(user) == 0:
@@ -97,6 +98,7 @@ async def edit(self, request):
 		edited_at = "Never"
 		edited_by_name = "None"
 		edited_by_id = "0"
+		edit_tags=""
 
 	wiki_edit_page = self.root.format_html(
 		open('_WEB_/content/wiki/edit.html', 'r', encoding='utf-8').read(),
@@ -105,6 +107,7 @@ async def edit(self, request):
 		last_user_name=edited_by_name,
 		last_user_id=edited_by_id,
 		last_date=edited_at,
+		tags=edit_tags,
 		content=page_to_edit_entry.get("content", "[N/A]") if page_to_edit_entry != None else "",
 	)
 
