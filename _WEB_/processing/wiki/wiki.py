@@ -127,6 +127,7 @@ async def edit(self, request):
 		body=site
 	)
 
+# /wiki?search=.*
 async def search (self, request):
 	#TODO: reeeee
 	return await self.action_not_allowed(request, msg="Search is in Development")

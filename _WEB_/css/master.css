@@ -3,6 +3,17 @@
 	box-sizing: border-box;
 }
 
+code {
+	border: 2px solid #7c7c7c;
+	border-radius: 3px;
+	color: rgb(255, 0, 107);
+	padding: 2px;
+	background: white;
+}
+code > a {
+	color: blue!important;
+}
+
 pre {
 	border-radius: 5px;
 	border: 1px solid lightgrey;
