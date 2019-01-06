@@ -47,6 +47,24 @@ async def main(self, request):
 			body=pnf_site
 		)
 
+	found_page = page_res.get("data", [None])[0]
+
+	# should never happen, but hey
+	if found_page == None:
+		return await self.root.web.page_not_found(msg="Getting wiki info returned nothing... that should not happen")
+
+	wiki_site = self.root.format_html(self.root.html_root,
+		title="Phaaze | Wiki - "+found_page.get("url_id", "???"),
+		header=current_navbar,
+		main=found_page.get("content", "Error returning content")
+	)
+
+	return self.root.response(
+		status=200,
+		content_type='text/html',
+		body=wiki_site
+	)
+
 # /wiki?edit=.*
 async def edit(self, request):
 	user_info = await self.root.get_user_info(request)
@@ -62,20 +80,18 @@ async def edit(self, request):
 	j = dict(of="user", limit=1, where="int(user['id']) == int(data['edited_by'])", store="user")
 	page_res = self.root.BASE.PhaazeDB.select(of="wiki", where=f"data['url_id'] == {json.dumps(page_to_edit)}", join=j)
 
-	print(page_res)
-
+	# gather user infos
 	if page_res.get("data", []):
 		page_to_edit_entry = page_res["data"][0]
 		edited_at = page_to_edit_entry.get("edited_at", "[N/A]")
 		user = page_to_edit_entry.get("user", [])
 
 		if len(user) == 0:
-			edited_by_name = "None"
-			edited_by_id = "0"
+			edited_by_name = "Unknown"
+			edited_by_id = "Unknown"
 		else:
 			edited_by_name = user[0].get("username", "Unknown")
 			edited_by_id = user[0].get("id", "Unknown")
-
 	else:
 		page_to_edit_entry = None
 		edited_at = "Never"
