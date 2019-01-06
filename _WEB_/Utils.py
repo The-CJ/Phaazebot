@@ -57,7 +57,7 @@ def format_html(self, html_string, **values):
 	search_results = re.finditer(self.format_html_regex, html_string)
 	for hit in search_results:
 		rep = values.get(hit.group(1), "")
-		html_string = html_string.replace(hit.group(0), rep)
+		html_string = html_string.replace(hit.group(0), str(rep))
 
 	return html_string
 
