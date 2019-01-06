@@ -8,8 +8,12 @@ async def main(self, request):
 	if request.query.get("edit", "") != "":
 		return await edit(self, request)
 
+	#search
+	if request.query.get("wiki_search", "") != "":
+		return await search(self, request)
+
 	user_info = await self.root.get_user_info(request)
-	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info)
+	current_navbar = self.root.html_header(self.root.BASE, active="wiki", user_info = user_info)
 
 	wiki_site = request.match_info.get('site', "").lower()
 
@@ -123,3 +127,6 @@ async def edit(self, request):
 		body=site
 	)
 
+async def search (self, request):
+	#TODO: reeeee
+	return await self.action_not_allowed(request, msg="Search is in Development")
