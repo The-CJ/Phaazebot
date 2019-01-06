@@ -23,7 +23,7 @@ async def main(self, request):
 
 async def get(self, request):
 	_GET = request.query
-	url_id = _GET.get("url_id", None)
+	url_id = _GET.get("url_id", "").lower()
 	if url_id == None or url_id == "":
 		return self.root.response(
 			body=json.dumps(dict(status=400, msg="missing field 'url_id'")),
@@ -70,7 +70,7 @@ async def get(self, request):
 
 async def save(self, request):
 	_POST = await request.post()
-	url_id = _POST.get("url_id", None)
+	url_id = _POST.get("url_id", "").lower()
 	tags = _POST.get("tags", None)
 	content = _POST.get("content", None)
 

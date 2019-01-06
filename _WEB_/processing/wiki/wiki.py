@@ -11,7 +11,7 @@ async def main(self, request):
 	user_info = await self.root.get_user_info(request)
 	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info)
 
-	wiki_site = request.match_info.get('site', None)
+	wiki_site = request.match_info.get('site', "").lower()
 
 	# no site define -> show main
 	if wiki_site == None or wiki_site == "":
@@ -70,8 +70,8 @@ async def edit(self, request):
 	user_info = await self.root.get_user_info(request)
 	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info)
 
-	page_to_edit = request.query.get("edit", None)
-	if page_to_edit == None: self.root.response(status=400)
+	page_to_edit = request.query.get("edit", "").lower()
+	if page_to_edit == "": self.root.response(status=400)
 
 	# not allowed to edit
 	if not self.root.check_role(user_info, ['superadmin', 'admin', 'wiki moderator']):
