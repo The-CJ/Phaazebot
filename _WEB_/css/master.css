@@ -80,6 +80,10 @@ textarea {
 		-1px -1px 1px black;
 }
 
+.material-icons {
+	line-height: unset;
+}
+
 /*global message animations*/
 
 #_message_field {
