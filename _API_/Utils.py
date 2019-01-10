@@ -109,6 +109,8 @@ def make_session_key(self):
 
 #check throw all roles and verify
 def check_role(self, user_info, role):
+	if user_info == None: return False
+
 	if type(role) != list:
 		role = [role]
 

@@ -10,7 +10,7 @@ class root(object):
 	def __init__(self, BASE):
 		self.BASE = BASE
 		self.response = self.send_Response
-		self.format_html_regex = re.compile(r"\|>>>\((.+)\)<<<\|")
+		self.format_html_regex = re.compile(r"\|>>>\((.+?)\)<<<\|")
 		self.html_root = open('_WEB_/content/root.html','r').read()
 		self.html_header = BASE.modules._Web_.Utils.get_navbar
 
@@ -49,6 +49,8 @@ class root(object):
 		from _API_.Admin import controll as admin_controll									#/admin/controll
 		from _API_._Admin_.manage_user import main as admin_manage_user						#/admin/manage-user
 		from _API_._Admin_.manage_type import main as admin_manage_type						#/admin/manage-type
+																							#
+		from _API_.Wiki import main as wiki													#/api/wiki
 
 	# / ...
 	class init_web(object):																	#
@@ -73,6 +75,8 @@ class root(object):
 		from _WEB_.processing.admin.manage_user import main as admin_manage_user			#/admin/manage-user
 		from _WEB_.processing.admin.manage_type import main as admin_manage_type			#/admin/manage-type
 		from _WEB_.processing.admin.manage_system import main as admin_manage_system		#/admin/manage-system
+																							#
+		from _WEB_.processing.wiki.wiki import main as wiki									#/wiki
 
 def webserver(BASE):
 	server = web.Application()
@@ -91,6 +95,7 @@ def webserver(BASE):
 	server.router.add_route('GET', '/admin/manage-user', root.web.admin_manage_user)
 	server.router.add_route('GET', '/admin/manage-type', root.web.admin_manage_type)
 	server.router.add_route('GET', '/admin/manage-system', root.web.admin_manage_system)
+	server.router.add_route('GET', '/wiki{x:/?}{site:.*}', root.web.wiki)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
@@ -102,6 +107,7 @@ def webserver(BASE):
 	server.router.add_route('*',   '/api/admin/controll', root.api.admin_controll)
 	server.router.add_route('*',   '/api/admin/manage-user{x:/?}{method:.*}', root.api.admin_manage_user)
 	server.router.add_route('*',   '/api/admin/manage-type{x:/?}{method:.*}', root.api.admin_manage_type)
+	server.router.add_route('*',   '/api/wiki{x:/?}{method:.*}', root.api.wiki)
 	server.router.add_route('*',   '/api/{path:.*}', root.api.unknown)
 
 	# /js /img /css

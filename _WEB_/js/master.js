@@ -234,6 +234,14 @@ function _hide_loading() {
 
 // stuff
 
+function edit_wiki_page() {
+  var path = window.location.pathname;
+  if (!path.startsWith("/wiki")) {return}
+  var p = path.slice(6);
+  if (p == "") {_show_message("Not a editable page");return}
+  window.location = "/wiki?edit="+p;
+}
+
 $('document').ready(function () {
   Waves.attach('.btn', ['waves-effect', 'waves-light']);
   Waves.attach('.nav-link', ['waves-effect', 'waves-light']);

@@ -10,3 +10,4 @@ _WEB_/js/materialize.js
 _WEB_/js/mdb.js
 _WEB_/img/*
 !_WEB_/img/*.py
+*.swp
