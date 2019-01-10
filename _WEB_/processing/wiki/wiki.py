@@ -58,7 +58,7 @@ async def main(self, request):
 		return await self.root.web.page_not_found(msg="Getting wiki info returned nothing... that should not happen")
 
 	wiki_site = self.root.format_html(self.root.html_root,
-		title="Phaaze | Wiki - "+found_page.get("url_id", "???"),
+		title="Phaaze | Wiki - "+found_page['title'] if found_page.get("title", None) not in [None, ""] else found_page.get("url_id", "???"),
 		header=current_navbar,
 		main=found_page.get("content", "Error returning content")
 	)
