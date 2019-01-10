@@ -1,6 +1,6 @@
 #BASE.modules._Web_.Base.root.wiki.wiki
 
-import asyncio, json
+import asyncio, json, html
 
 # /wiki
 async def main(self, request):
@@ -9,7 +9,7 @@ async def main(self, request):
 		return await edit(self, request)
 
 	#search
-	if request.query.get("wiki_search", "") != "":
+	if request.query.get("search", None) != None:
 		return await search(self, request)
 
 	user_info = await self.root.get_user_info(request)
@@ -72,10 +72,10 @@ async def main(self, request):
 # /wiki?edit=.*
 async def edit(self, request):
 	user_info = await self.root.get_user_info(request)
-	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info)
+	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info, active="wiki")
 
 	page_to_edit = request.query.get("edit", "").lower()
-	if page_to_edit == "": self.root.response(status=400)
+	if page_to_edit == "": return self.root.response(status=400)
 
 	# not allowed to edit
 	if not self.root.check_role(user_info, ['superadmin', 'admin', 'wiki moderator']):
@@ -129,5 +129,43 @@ async def edit(self, request):
 
 # /wiki?search=.*
 async def search (self, request):
-	#TODO: reeeee
-	return await self.action_not_allowed(request, msg="Search is in Development")
+	user_info = await self.root.get_user_info(request)
+	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info, active="wiki")
+
+	search_query = request.query.get("search", "").lower()
+	if search_query == "":
+		w = "True"
+	else:
+		user_search = json.dumps(search_query)
+		w = f"data['url_id'] == {user_search} or {user_search.lower()} in data['content'].lower() or {user_search.lower()} in data['tags']"
+
+	page_search = self.root.BASE.PhaazeDB.select(
+		of="wiki",
+		where=w,
+		fields=["url_id"]
+	)
+
+	page_hits = page_search.get("data", [])
+
+	if not page_hits:
+		query_results = f"<h2>No results found...</h2><h3>Create page: <a href=\"/wiki?edit={search_query}\">{search_query}</a></h3>"
+	else:
+		query_results = "".join(f"<h3 class=\"search-result\"><a href=\"/wiki/{html.escape(c['url_id'])}\">{html.escape(c['url_id'])}</a></h3>" for c in page_hits)
+
+	wiki_edit_page = self.root.format_html(
+		open('_WEB_/content/wiki/search.html', 'r', encoding='utf-8').read(),
+		user_search=search_query,
+		query_results=query_results
+	)
+
+	site = self.root.format_html(self.root.html_root,
+		title="Phaaze | Wiki - Search",
+		header=current_navbar,
+		main=wiki_edit_page
+	)
+
+	return self.root.response(
+		status=200,
+		content_type='text/html',
+		body=site
+	)
