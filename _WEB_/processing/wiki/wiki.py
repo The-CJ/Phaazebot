@@ -137,20 +137,24 @@ async def search (self, request):
 		w = "True"
 	else:
 		user_search = json.dumps(search_query)
-		w = f"data['url_id'] == {user_search} or {user_search.lower()} in data['content'].lower() or {user_search.lower()} in data['tags']"
+		w = f"data['url_id'] == {user_search} or {user_search.lower()} in data['content'].lower() or {user_search.lower()} in data['tags'] or {user_search.lower()} in data['title']"
 
 	page_search = self.root.BASE.PhaazeDB.select(
 		of="wiki",
 		where=w,
-		fields=["url_id"]
+		fields=["url_id", "title"]
 	)
 
 	page_hits = page_search.get("data", [])
 
+	query_results = ""
 	if not page_hits:
 		query_results = f"<h2>No results found...</h2><h3>Create page: <a href=\"/wiki?edit={search_query}\">{search_query}</a></h3>"
 	else:
-		query_results = "".join(f"<h3 class=\"search-result\"><a href=\"/wiki/{html.escape(c['url_id'])}\">{html.escape(c['url_id'])}</a></h3>" for c in page_hits)
+		for c in page_hits:
+			e = html.escape(c['url_id']) if c["url_id"] not in [None, ""] else ""
+			t = html.escape(c['title']) if c["title"] not in [None, ""] else e
+			query_results += f"<h5 class=\"search-result\"><a href=\"/wiki/{e}\"><span class=\"p1\">{t}</span><span class=\"p2\"></span><span class=\"p3\">{e}</span></a></h5>"
 
 	wiki_edit_page = self.root.format_html(
 		open('_WEB_/content/wiki/search.html', 'r', encoding='utf-8').read(),
