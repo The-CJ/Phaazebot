@@ -31,6 +31,8 @@ async def get(self, request):
 			content_type='application/json'
 		)
 
+	url_id = url_id.strip(" ").strip("/").strip("..").strip("\\").replace(" ","_")
+
 	j = dict(of="user", limit=1, where="int(user['id']) == int(data['edited_by'])", store="user")
 	page_res = self.root.BASE.PhaazeDB.select(of="wiki", where=f"data['url_id'] == {json.dumps(url_id)}", join=j)
 
@@ -59,6 +61,7 @@ async def get(self, request):
 			edited_at=p.get("edited_at",None),
 			id=p.get("id",None),
 			tags=p.get("tags",None),
+			title=p.get("title",None),
 			url_id=p.get("url_id",None),
 			user=user
 		)
@@ -71,12 +74,13 @@ async def get(self, request):
 async def save(self, request):
 	_POST = await request.post()
 	url_id = _POST.get("url_id", "").lower()
+	title = _POST.get("title", "")
 	tags = _POST.get("tags", None)
 	content = _POST.get("content", None)
 
-	if not (url_id != None and tags != None and content != None):
+	if not (url_id != None and tags != None and content != None and title != None):
 		return self.root.response(
-			body=json.dumps(dict(status=400, msg="required fields: 'url_id', 'tags', 'content'")),
+			body=json.dumps(dict(status=400, msg="required fields: 'url_id', 'tags', 'content', 'title'")),
 			status=400,
 			content_type='application/json'
 		)
@@ -84,6 +88,8 @@ async def save(self, request):
 	user_info = await self.root.get_user_info(request)
 	if not self.root.check_role(user_info, ['superadmin', 'admin', 'wiki moderator']):
 		return await self.root.api.action_not_allowed(request, msg="You don't have permissions to edit the wiki")
+
+	url_id = url_id.strip(" ").strip("/").strip("..").strip("\\").replace(" ","_")
 
 	#check if page exist
 	page_res = self.root.BASE.PhaazeDB.select(of="wiki", where=f"data['url_id'] == {json.dumps(url_id)}")
@@ -100,6 +106,7 @@ async def save(self, request):
 			edited_by=user_info.get("id", 0),
 			edited_at=str(datetime.datetime.now()),
 			tags=tags.split(","),
+			title=title,
 			url_id=url_id
 		)
 
@@ -111,6 +118,7 @@ async def save(self, request):
 			edited_by=user_info.get("id", 0),
 			edited_at=str(datetime.datetime.now()),
 			tags=tags.split(","),
+			title=title,
 		)
 
 		res = self.root.BASE.PhaazeDB.update(of="wiki", content=update, where=f"data['url_id'] == {json.dumps(url_id)}")

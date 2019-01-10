@@ -1,6 +1,7 @@
 function save_wiki() {
   r = {}
   r["url_id"] = $("[name=url_id]").val();
+  r["title"] = $("[name=title]").val();
   r["tags"] = $("[name=tags]").val();
   r["content"] = $("[name=content]").val();
 

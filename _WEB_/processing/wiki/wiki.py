@@ -1,6 +1,6 @@
 #BASE.modules._Web_.Base.root.wiki.wiki
 
-import asyncio, json, html
+import asyncio, json, html, urllib
 
 # /wiki
 async def main(self, request):
@@ -77,6 +77,8 @@ async def edit(self, request):
 	page_to_edit = request.query.get("edit", "").lower()
 	if page_to_edit == "": return self.root.response(status=400)
 
+	page_to_edit = page_to_edit.strip(" ").strip("/").strip("..").strip("\\").replace(" ","_")
+
 	# not allowed to edit
 	if not self.root.check_role(user_info, ['superadmin', 'admin', 'wiki moderator']):
 		return await self.root.web.action_not_allowed(request, msg="You don't have permissions to edit the wiki")
@@ -90,6 +92,7 @@ async def edit(self, request):
 		edited_at = page_to_edit_entry.get("edited_at", "[N/A]")
 		edit_tags = ",".join(page_to_edit_entry.get("tags", []))
 		user = page_to_edit_entry.get("user", [])
+		edit_title = page_to_edit_entry.get("title", "")
 
 		if len(user) == 0:
 			edited_by_name = "Unknown"
@@ -103,16 +106,18 @@ async def edit(self, request):
 		edited_by_name = "None"
 		edited_by_id = "0"
 		edit_tags=""
+		edit_title=""
 
 	wiki_edit_page = self.root.format_html(
 		open('_WEB_/content/wiki/edit.html', 'r', encoding='utf-8').read(),
 		action="Edit" if page_to_edit_entry != None else "Create",
-		url_id=page_to_edit,
-		last_user_name=edited_by_name,
-		last_user_id=edited_by_id,
-		last_date=edited_at,
-		tags=edit_tags,
-		content=page_to_edit_entry.get("content", "[N/A]") if page_to_edit_entry != None else "",
+		url_id=html.escape(str(page_to_edit)),
+		last_user_name=html.escape(str(edited_by_name)),
+		last_user_id=html.escape(str(edited_by_id)),
+		last_date=html.escape(str(edited_at)),
+		tags=html.escape(str(edit_tags)),
+		title=html.escape(edit_title),
+		content=html.escape(str(page_to_edit_entry.get("content", "[N/A]") if page_to_edit_entry != None else "")),
 	)
 
 	site = self.root.format_html(self.root.html_root,
@@ -142,24 +147,30 @@ async def search (self, request):
 	page_search = self.root.BASE.PhaazeDB.select(
 		of="wiki",
 		where=w,
-		fields=["url_id", "title"]
+		fields=["url_id", "title"],
+		limit=request.query.get("limit", 50)
 	)
 
 	page_hits = page_search.get("data", [])
 
+	# process results
 	query_results = ""
 	if not page_hits:
-		query_results = f"<h2>No results found...</h2><h3>Create page: <a href=\"/wiki?edit={search_query}\">{search_query}</a></h3>"
+		search_query = search_query.replace("..", "").strip("/").strip("\\").strip(" ")
+		l = urllib.parse.quote(search_query, safe="/")
+		h = html.escape(search_query)
+		query_results = f"<h2>No results found...</h2><h3>Create page: <a class=\"create\" href=\"/wiki?edit={l}\">{h}</a></h3>"
 	else:
 		for c in page_hits:
 			e = html.escape(c['url_id']) if c["url_id"] not in [None, ""] else ""
 			t = html.escape(c['title']) if c["title"] not in [None, ""] else e
-			query_results += f"<h5 class=\"search-result\"><a href=\"/wiki/{e}\"><span class=\"p1\">{t}</span><span class=\"p2\"></span><span class=\"p3\">{e}</span></a></h5>"
+			l = urllib.parse.quote(e, safe="/")
+			query_results += f"<h5 class=\"search-result\"><a href=\"/wiki/{l}\"><span class=\"p1\">{t}</span><span class=\"p2\"></span><span class=\"p3\">{e}</span></a></h5>"
 
 	wiki_edit_page = self.root.format_html(
 		open('_WEB_/content/wiki/search.html', 'r', encoding='utf-8').read(),
-		user_search=search_query,
-		query_results=query_results
+		user_search=html.escape(search_query),
+		query_results=query_results,
 	)
 
 	site = self.root.format_html(self.root.html_root,

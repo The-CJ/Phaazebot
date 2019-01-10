@@ -9,12 +9,15 @@
 		<span>Last edit by: |>>>(last_user_name)<<<| (ID: |>>>(last_user_id)<<<|)</span>
 		<span> - at: |>>>(last_date)<<<|</span>
 	</h4>
-	<hr>
+	<div class="center-item-row">
+		<span>Title:</span>
+		<input class="white-text input" type="text" name="title" value="|>>>(title)<<<|" placeholder="Page Title...">
+	</div>
 	<div class="center-item-row">
 		<span>Tags:</span>
-		<input class="white-text input" type="text" name="tags" value="|>>>(tags)<<<|">
+		<input class="white-text input" type="text" name="tags" value="|>>>(tags)<<<|" placeholder="Tags...">
 	</div>
-	<textarea class="white-text" style="width: 100%;resize: none;" rows="25" name="content">|>>>(content)<<<|</textarea>
+	<textarea class="white-text" style="width: 100%;resize: none;" rows="20" name="content">|>>>(content)<<<|</textarea>
 	<input type="hidden" name="url_id" value="|>>>(url_id)<<<|">
 	<button type="button" class="btn btn-block btn-success" onclick="save_wiki()">Save</button>
 </div>
