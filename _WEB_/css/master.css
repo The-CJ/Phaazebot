@@ -164,7 +164,7 @@ textarea {
 #_loading > .loading_screen {
 	width: 100vw;
 	height: 100vh;
-	background: rgba(0, 0, 0, 0.25);
+	background: rgba(0, 0, 0, 0.75);
 }
 
 #_loading > .loading_screen > .middle {
