@@ -83,7 +83,7 @@ function upload_avatar() {
   }
   function fa(data) {
     _hide_loading();
-    _show_message(data.msg, "red");
+    _show_message(data.msg ? data.msg : "Critical Error", "red");
   }
   _show_loading("Uploading...");
   upload_file(u, p, s, fa);

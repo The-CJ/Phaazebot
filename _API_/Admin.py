@@ -85,6 +85,7 @@ async def status(self, request):
 		content_type='application/json'
 	)
 
+# /api/admin/controll
 async def controll(self, request):
 	user_info = await self.root.get_user_info(request)
 
@@ -115,6 +116,7 @@ async def controll(self, request):
 			content_type='application/json'
 		)
 
+# /api/admin/controll {action:module}
 async def module_switch(self, _POST):
 	module = _POST.get('module', None)
 	state = _POST.get("state", None)
@@ -131,6 +133,7 @@ async def module_switch(self, _POST):
 		content_type='application/json'
 	)
 
+# /api/admin/controll {action:discord_avatar}
 async def discord_avatar(self, _POST):
 	upload = _POST.get("file", None)
 
