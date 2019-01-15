@@ -1,27 +1,91 @@
 <div class="container text-center white-text">
 
-  <h1 style="font-size: 80px">Manage account</h1>
+  <!-- head -->
+  <div class="row">
+		<div class="col text-center vertical-middle" style="font-size:80px;">
+			<p class="inline vertical-middle">Manage account</p>
+		</div>
+	</div>
 
-  <hr>
-
-  <!-- username -->
+  <!-- info -->
   <div class="center-item-row">
-    <div class="col-2">
-      <span>Username</span>
+
+    <!-- avatar -->
+    <div class="col-3 text-center">
+      <div class="btn" id="avatar" href="/wiki">
+        <!-- gets filled with a img element if user has a avatar -->
+        <i class="material-icons" style="font-size: 128px">account_circle</i>
+      </div>
     </div>
-    <div class="col">
-      <input type="text" value="" placeholder="Username">
+
+    <!-- rest -->
+    <div class="col-9">
+
+      <!-- username -->
+      <div class="center-item-row">
+        <div class="col-3 text-left">
+          <span>Username</span>
+        </div>
+        <div class="col">
+          <input type="text" value="" placeholder="Username" id="username">
+        </div>
+      </div>
+
+      <!-- email -->
+      <div class="center-item-row">
+        <div class="col-3 text-left">
+          <span>E-Mail</span>
+        </div>
+        <div class="col">
+          <input type="email" value="" placeholder="Email" id="email">
+        </div>
+      </div>
+
+      <!-- current password -->
+      <div class="center-item-row">
+        <div class="col-3 text-left">
+          <span>Current password*</span>
+        </div>
+        <div class="col">
+          <input type="password" value="" placeholder="Current password" id="current_password">
+        </div>
+      </div>
+
+      <!-- new password -->
+      <div class="center-item-row">
+        <div class="col-3"></div>
+        <div class="col" id="pw_btn">
+          <button type="button" class="btn btn-warning btn-block" onclick="show_newpassword()">Set new password</button>
+        </div>
+        <div class="col" style="display: none;">
+          <input type="password" value="" placeholder="New password" id="new_password">
+        </div>
+        <div class="col" style="display: none;">
+          <input type="password" value="" placeholder="Retype password" id="new_password2">
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- save btn -->
+      <div class="center-item-row">
+        <div class="col text-right">
+          <button type="button" class="btn btn-secondary">Cancle</button>
+          <button type="button" class="btn btn-primary" onclick="save_changes()">Save</button>
+        </div>
+      </div>
+
     </div>
+
+
   </div>
 
-  <!-- email -->
-  <div class="center-item-row">
-    <div class="col-2">
-      <span>E-Mail</span>
-    </div>
-    <div class="col">
-      <input type="email" value="" placeholder="Email">
-    </div>
+  <!-- roles -->
+  <div class="row">
+  </div>
+
+  <!-- linked platform -->
+  <div class="row">
   </div>
 
 </div>
