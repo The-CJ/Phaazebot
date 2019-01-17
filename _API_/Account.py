@@ -1,7 +1,54 @@
 import asyncio, json, datetime
 
-# log in/out
-# /api/login
+async def main(self, request):
+	method = request.match_info.get('method', 'get')
+
+	if method == "get":
+		return await get(self, request)
+
+	elif method == "edit":
+		return await edit(self, request)
+
+	elif method == "create":
+		return await create(self, request)
+
+	elif method == "login":
+		return await login(self, request)
+
+	elif method == "logout":
+		return await logout(self, request)
+
+	else:
+		return self.root.response(
+			status=400,
+			text=json.dumps( dict(error="invalid_method", status=400) ),
+			content_type="application/json"
+		)
+
+# /api/account/get
+async def get(self, request, **kwargs):
+
+	auth_user = await self.root.get_user_info(request)
+
+	if auth_user == None:
+		return self.root.response(
+			status=400,
+			text=json.dumps( dict(error="missing_authorisation", status=400) ),
+			content_type="application/json"
+		)
+
+	return self.root.response(
+		status=200,
+		text=json.dumps(auth_user),
+		content_type="application/json"
+	)
+
+
+# /api/account/edit
+async def edit(self, request, **kwargs):
+	pass
+
+# /api/account/login
 async def login(self, request, **kwargs):
 
 	auth_user = await self.root.get_user_info(request)
@@ -33,7 +80,7 @@ async def login(self, request, **kwargs):
 		status=200
 	)
 
-# /api/logout
+# /api/account/logout
 async def logout(self, request, **kwargs):
 
 	user = await self.root.get_user_info(request)
@@ -55,7 +102,7 @@ async def logout(self, request, **kwargs):
 			status=200
 		)
 
-# /api/create
+# /api/account/create
 async def create(self, request, **kwargs):
 	auth_user = await self.root.get_user_info(request)
 	if auth_user != None:

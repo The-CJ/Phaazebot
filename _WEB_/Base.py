@@ -1,4 +1,4 @@
-#BASE-modules._Web_.Base
+#BASE.modules._Web_.Base
 
 import re
 import ssl
@@ -40,9 +40,7 @@ class root(object):
 		from _API_.Base import unknown as unknown											#/api/?
 		from _API_.Base import action_not_allowed as action_not_allowed						#<400><401><402>
 																							#
-		from _API_.Account import login as account_login									#/api/account/login
-		from _API_.Account import logout as account_logout									#/api/account/logout
-		from _API_.Account import create as account_create									#/api/account/create
+		from _API_.Account import main as account											#/api/account
 																							#
 		from _API_.Admin import eval_command as admin_eval_command							#/admin/eval_command
 		from _API_.Admin import status as admin_status										#/admin/status
@@ -99,9 +97,7 @@ def webserver(BASE):
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
-	server.router.add_route('*',   '/api/account/login', root.api.account_login)
-	server.router.add_route('*',   '/api/account/logout', root.api.account_logout)
-	server.router.add_route('*',   '/api/account/create', root.api.account_create)
+	server.router.add_route('*',   '/api/account{x:/?}{method:.*}', root.api.account)
 	server.router.add_route('*',   '/api/admin/eval_command', root.api.admin_eval_command)
 	server.router.add_route('*',   '/api/admin/status', root.api.admin_status)
 	server.router.add_route('*',   '/api/admin/control', root.api.admin_control)

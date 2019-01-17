@@ -58,7 +58,7 @@ async def get_user_informations(self, request, **kwargs):
 
 	if phaaze_token != None:
 		return None
-		# TODO: be able ti auth with token
+		# TODO: be able to auth with token
 
 	#via username and password
 	phaaze_password = kwargs.get('password', None)
@@ -79,21 +79,15 @@ async def get_user_informations(self, request, **kwargs):
 
 	if phaaze_username != None and phaaze_password != None:
 		phaaze_password = self.password(phaaze_password)
-		search_str = f"data['username'] == {json.dumps(phaaze_username)} and data['password'] == {json.dumps(phaaze_password)}"
-		res = self.BASE.PhaazeDB.select(of="user", where=search_str)
-		if len(res['data']) != 1:
-			return None
+		search_str = f"user['username'] == {json.dumps(phaaze_username)} and user['password'] == {json.dumps(phaaze_password)}"
+		join_user_roles = dict(of="role", store="role", where="role['id'] in user['role']", fields=["name"])
+		res = self.BASE.PhaazeDB.select(of="user", where=search_str, join=join_user_roles, store="user")
 
-		else:
-			u = res['data'][0]
-			res = self.BASE.PhaazeDB.select(of="role", where=f"int(data['id']) in {str(u.get('type', []))}")
-
-			rl = []
-			for role in res['data']:
-				rl.append(role['name'])
-
-			u['type'] = rl
-			return u
+		user = res.get('data', [])
+		if len(user) == 1:
+			user = user[0]
+			user['role'] = [r['name'] for r in user.get('role', []) if r.get('name', False)]
+			return user
 
 	return None
 
