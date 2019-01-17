@@ -34,3 +34,15 @@
   width: 256px;
   background: rgba(0, 0, 0, 0.5);
 }
+
+.role {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 5px;
+  border: 2px solid white;
+  margin: 3px;
+}
+.role-none {
+  background: rgba(255, 225, 225, 0.25);
+  padding: 5px 40px;
+  margin: 3px;
+}

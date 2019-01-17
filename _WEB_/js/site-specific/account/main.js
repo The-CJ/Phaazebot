@@ -7,12 +7,28 @@ function load_account() {
     if (data.img_path != null) {
       $("#avatar").html('<img src="'+data.img_path+'" alt="avatar_'+data.id+'">')
     }
+    var r = $("#roles").html("");
+    data.role = data.role ? data.role : [];
+    if (data.role.length == 0) { r.append($('<h4 class="role-none"></h4>').text("None")); }
+    else {
+      for (role of data.role) {
+        r.append($('<div class="role"></div>').text(role));
+      }
+    }
+    // TODO: add platforms
+    var r = $("#platforms").html("");
+    data.linked = data.linked ? data.linked : [];
+    if (data.linked.length == 0) { r.append($('<h4 class="role-none"></h4>').text("None")); }
+    else {
+      for (link of data.linked) {
+        r.append($('<div class="role-none"></div>').text(link));
+      }
+    }
   })
   .fail(function (data) {
     m = data.responseJSON ? data.responseJSON.msg : "unknown";
     _show_message(m, "red");
   })
-
 }
 
 function show_newpassword() {
