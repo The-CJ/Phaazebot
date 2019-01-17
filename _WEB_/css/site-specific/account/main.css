@@ -17,3 +17,20 @@
   height: 256px;
   width: 256px;
 }
+
+#avatar:hover::after {
+  opacity: 1;
+}
+
+#avatar::after {
+  transition-duration: 0.75s;
+  opacity: 0;
+  content: "Change";
+  font-size: 30px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 50px;
+  width: 256px;
+  background: rgba(0, 0, 0, 0.5);
+}
