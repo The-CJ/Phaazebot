@@ -37,6 +37,7 @@ async def get(self, request, **kwargs):
 			content_type="application/json"
 		)
 
+	if auth_user.get("password", None) != None: del auth_user["password"]
 	return self.root.response(
 		status=200,
 		text=json.dumps(auth_user),
