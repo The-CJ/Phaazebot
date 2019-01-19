@@ -184,4 +184,3 @@ def get_unique_discord_members(servers):
 			if member.id not in a: a.append(member.id)
 
 	return len(a)
-

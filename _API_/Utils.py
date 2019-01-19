@@ -9,22 +9,14 @@ async def get_user_informations(self, request, **kwargs):
 	_POST = dict()
 	_JSON = dict()
 
-	try:
-		_GET = request.query
-	except:
-		pass
-
-	try:
-		_POST = await request.post()
-	except:
-		pass
+	_GET = request.query
 
 	try:
 		_JSON = await request.json()
 	except:
-		pass
+		_POST = await request.post()
 
-	# All vars have the same Auth way: Systemcall var -> POST -> JSON Content -> GET
+	# All vars have the same Auth way: Systemcall var -> POST -> JSON -> GET
 
 	#via session from header
 	phaaze_session = request.headers.get('phaaze_session', None)

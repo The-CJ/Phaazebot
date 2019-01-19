@@ -44,7 +44,6 @@ async def get(self, request, **kwargs):
 		content_type="application/json"
 	)
 
-
 # /api/account/edit
 async def edit(self, request, **kwargs):
 	pass
