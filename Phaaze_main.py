@@ -117,6 +117,8 @@ class BASE(object):
 			self.TWITCH_QUOTE_AMOUNT = config.get("twitch_quote_amount", 100)
 			self.TWITCH_STATS_COOLDOWN = config.get("twitch_stats_cooldown", 5)
 
+			self.WEB_CLIENT_MAX_SIZE = config.get("web_client_max_size", 5242880) #5MB
+
 	class MODULES(object): #BASE.modules
 		def __init__(self):
 			pass

@@ -90,7 +90,7 @@ class root(object):
 		from _WEB_.processing.wiki.wiki import main as wiki									#/wiki
 
 def webserver(BASE):
-	server = web.Application()
+	server = web.Application(client_max_size=BASE.limit.WEB_CLIENT_MAX_SIZE)
 	root = BASE.modules._Web_.Base.root(BASE)
 	BASE.web = server
 
