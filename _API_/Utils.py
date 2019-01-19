@@ -11,10 +11,10 @@ async def get_user_informations(self, request, **kwargs):
 
 	_GET = request.query
 
-	try:
-		_JSON = await request.json()
-	except:
-		_POST = await request.post()
+	_POST = await request.post()
+
+	try: _JSON = await request.json()
+	except: pass
 
 	# All vars have the same Auth way: Systemcall var -> POST -> JSON -> GET
 

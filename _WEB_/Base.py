@@ -2,6 +2,7 @@
 
 import re
 import ssl
+import asyncio, json
 from aiohttp import web
 from Utils import CLI_Args
 
@@ -24,6 +25,18 @@ class root(object):
 
 		return web.Response(**kwargs)
 
+	@web.middleware
+	async def middleware_handler(self, request, handler):
+		try:
+			response = await handler(request)
+			return response
+		except web.HTTPException as HTTPEx:
+			return self.response(
+				body=json.dumps(dict(msg=HTTPEx.reason, status=HTTPEx.status)),
+				status=HTTPEx.status,
+				content_type='application/json'
+			)
+
 	# Utility functions that are needed everywhere
 	from _WEB_.Utils import format_html as format_html
 	from _API_.Utils import check_role as check_role
@@ -37,8 +50,8 @@ class root(object):
 			self.root = root
 
 		from _API_.Base import nothing as nothing											#/api
-		from _API_.Base import unknown as unknown											#/api/?
-		from _API_.Base import action_not_allowed as action_not_allowed						#<400><401><402>
+		from _API_.Base import unknown as unknown											#/api/? <400>
+		from _API_.Base import action_not_allowed as action_not_allowed						#<401><402>
 																							#
 		from _API_.Account import main as account											#/api/account
 																							#
@@ -114,19 +127,26 @@ def webserver(BASE):
 	# somewhere but i don't know
 	server.router.add_route('*',   '/{x:.*}', root.web.page_not_found)
 
+	# main handler to catch errors
+	server.middlewares.append(root.middleware_handler)
+
 	###################################
 
+	port = 900
+	ssl_context = None
+
 	if CLI_Args.get("http", "test") == "live":
-		SSL = ssl.SSLContext()
-		SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
+		port = 443
+		ssl_context = ssl.SSLContext()
+		ssl_context.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
 		BASE.modules.Console.INFO("Started web server (p433/live)")
-		web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
 	elif CLI_Args.get("http", "test") == "unsecure":
-		BASE.modules.Console.INFO("Started web server (p80/unsecure)")
-		web.run_app(server, handle_signals=False, port=80, print=False)
+		port = 80
+		BASE.modules.Console.INFO("Started web server (p80/http-unsecure)")
 	elif CLI_Args.get("http", "test") == "error_ssl":
-		BASE.modules.Console.INFO("Started web server (p433/error_ssl)")
-		web.run_app(server, handle_signals=False, port=443, print=False)
+		port = 443
+		BASE.modules.Console.INFO("Started web server (p433/https-no_ssl)")
 	else:
 		BASE.modules.Console.INFO("Started web server (p900/test)")
-		web.run_app(server, handle_signals=False, port=900, print=False)
+
+	web.run_app(server, handle_signals=False, port=port, ssl_context=ssl_context, print=False)
