@@ -53,15 +53,17 @@ function upload_avatar(operation) {
   else { return }
 
   function success(data) {
+    _hide_loading();
     _show_message("Avatar changed!", "green");
     load_account();
   }
 
   function fail(data) {
+    _hide_loading();
     m = data.msg ? data.msg : "unknown";
     _show_message(m, "red");
   }
-
+  _show_loading("Uploading...");
   upload_file(payload, path, success, fail);
 }
 

@@ -165,6 +165,19 @@ async def avatar(self, request, **kwargs):
 
 	_POST = await request.post()
 
+	if bool(_POST.get("remove", "")):
+		u = dict(img_path=None)
+		res = self.root.BASE.PhaazeDB.update(of="user", where=f"str(data['id']) == str({auth_user.get('id',0)})", content=u)
+		# TODO: remove from local file
+		if res.get("hits", 0) >= 1:
+			return self.root.response(
+				status=200,
+				text=json.dumps( dict(error="avatar_removed", msg="Your avatar has been removed", status=200) ),
+				content_type="application/json"
+			)
+
+	# TODO: save new image and get url
+
 	return self.root.response(
 		status=400,
 		text=json.dumps( dict(error="wrong_file", msg="No usable file", status=400) ),
