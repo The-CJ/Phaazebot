@@ -1,5 +1,7 @@
 import asyncio, json, datetime
+import Regex, re
 
+# /api/account
 async def main(self, request):
 	method = request.match_info.get('method', 'get')
 
@@ -46,8 +48,106 @@ async def get(self, request, **kwargs):
 
 # /api/account/edit
 async def edit(self, request, **kwargs):
-	pass
+	auth_user = await self.root.get_user_info(request)
 
+	if auth_user == None:
+		return self.root.response(
+			status=400,
+			text=json.dumps( dict(error="missing_authorisation", status=400) ),
+			content_type="application/json"
+		)
+
+	_POST = await request.post()
+
+	# get current password and check
+	check_password = _POST.get("current_password", None)
+	if check_password == None or auth_user.get("password", None) != self.root.password(check_password):
+		return self.root.response(
+			status=400,
+			text=json.dumps( dict(error="current_password_wrong", msg="Current password is not current", status=400) ),
+			content_type="application/json"
+		)
+
+	changed_email = False # if yes, reset valiated and send mail
+
+	new_username = _POST.get("username", None)
+	new_email = _POST.get("email", None)
+	new_password = _POST.get("new_password", None)
+	new_password2 = _POST.get("new_password2", None)
+
+	need_to_update = dict()
+
+	if new_password not in [None, ""] and self.root.password(new_password) != auth_user.get("password", new_password): # set new password
+		if new_password != new_password2:
+			return self.root.response(
+				text=json.dumps( dict(error="unequal_passwords", status=400, msg="the passwords are not the same") ),
+				content_type="application/json",
+				status=400
+			)
+		if len(new_password) < 8:
+			return self.root.response(
+				text=json.dumps( dict(error="invalid_password", status=400, msg="the new password must be at least 8 chars long") ),
+				content_type="application/json",
+				status=400
+			)
+
+		need_to_update["password"] = self.root.password(new_password)
+
+	if new_username not in [None, ""] and new_username != auth_user.get("username", new_password): # set username
+
+		#check if username taken
+		check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['username'] == {json.dumps(new_username)}")
+		if check_user.get('hits', 1) != 0:
+			return self.root.response(
+				status=400,
+				text=json.dumps( dict(error="account_taken", msg="username or email is taken", status=400) ),
+				content_type="application/json"
+			)
+
+		need_to_update["username"] = new_username
+
+	if new_email not in [None, ""] and new_email != auth_user.get("email", new_email): # set email
+		if len(new_email) < 5 or re.match(Regex.is_email, new_email) == None:
+			return self.root.response(
+				text=json.dumps( dict(error="invalid_email", status=400, msg="email looks false") ),
+				content_type="application/json",
+				status=400
+			)
+		#check if email is taken
+		check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['email'] == {json.dumps(new_email)}")
+		if check_user.get('hits', 1) != 0:
+			return self.root.response(
+				status=400,
+				text=json.dumps( dict(error="account_taken", msg="username or email is taken", status=400) ),
+				content_type="application/json"
+			)
+
+		need_to_update["verified"] = False
+		need_to_update["email"] = new_email
+		changed_email = True
+
+	if need_to_update == dict():
+		return self.root.response(
+			status=200,
+			text=json.dumps( dict(error="no_action_taken", msg="Nothing has been changed", status=200) ),
+			content_type="application/json"
+		)
+
+	# all done, save update
+	self.root.BASE.modules.Console.DEBUG(f"Account edit {auth_user.get('id',0)}: {str(need_to_update)}", require="api:account")
+	res = self.root.BASE.PhaazeDB.update(of="user", where=f"str(data['id']) == str({auth_user.get('id',0)})", content=need_to_update)
+	if res.get("hits", 0) == 1:
+		return self.root.response(
+			status=200,
+			text=json.dumps( dict(error="successfull_edited", msg="Your account has been successfull edited", status=200) ),
+			content_type="application/json"
+		)
+	else:
+		return self.root.response(
+			status=500,
+			text=json.dumps( dict(error="edit_failed", msg="Editing you account failed", status=500) ),
+			content_type="application/json"
+		)
 # /api/account/login
 async def login(self, request, **kwargs):
 
@@ -135,7 +235,7 @@ async def create(self, request, **kwargs):
 			status=400
 		)
 	#email
-	if len(email) < 5:
+	if len(email) < 5 or re.match(Regex.is_email, email) == None:
 		return self.root.response(
 			text=json.dumps( dict(error="invalid_email", status=400, msg="email looks false") ),
 			content_type="application/json",

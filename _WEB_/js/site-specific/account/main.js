@@ -42,7 +42,22 @@ function show_avatarselect() {
 }
 
 function save_changes() {
-
+  r = {
+    "current_password":$("#current_password").val(),
+    "new_password":$("#new_password").val(),
+    "new_password2":$("#new_password2").val(),
+    "email":$("#email").val(),
+    "username":$("#username").val()
+  }
+  $.post("/api/account/edit", r)
+  .done(function (data) {
+    _show_message(data.msg, "green");
+    load_account();
+  })
+  .fail(function (data) {
+    m = data.responseJSON ? data.responseJSON.msg : "unknown";
+    _show_message(m, "red");
+  })
 }
 
 $("document").ready(function () {
