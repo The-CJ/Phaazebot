@@ -96,7 +96,7 @@ async def edit(self, request, **kwargs):
 	if new_username not in [None, ""] and new_username != auth_user.get("username", new_password): # set username
 
 		#check if username taken
-		check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['username'] == {json.dumps(new_username)}")
+		check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['username'].lower() == {json.dumps(new_username)}.lower()")
 		if check_user.get('hits', 1) != 0:
 			return self.root.response(
 				status=400,
@@ -114,7 +114,7 @@ async def edit(self, request, **kwargs):
 				status=400
 			)
 		#check if email is taken
-		check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['email'] == {json.dumps(new_email)}")
+		check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['email'].lower() == {json.dumps(new_email)}.lower()")
 		if check_user.get('hits', 1) != 0:
 			return self.root.response(
 				status=400,
@@ -148,6 +148,7 @@ async def edit(self, request, **kwargs):
 			text=json.dumps( dict(error="edit_failed", msg="Editing you account failed", status=500) ),
 			content_type="application/json"
 		)
+
 # /api/account/login
 async def login(self, request, **kwargs):
 
@@ -242,7 +243,7 @@ async def create(self, request, **kwargs):
 			status=400
 		)
 	#check if username is taken
-	check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['username'] == {json.dumps(username)} or data['email'] == {json.dumps(email)}")
+	check_user = self.root.BASE.PhaazeDB.select(of="user", where=f"data['username'].lower() == {json.dumps(username)}.lower() or data['email'].lower() == {json.dumps(email)}.lower()")
 	if check_user.get('hits', 1) != 0:
 		self.root.BASE.modules.Console.DEBUG(f"User already exist: {str(auth_user)}", require="api:create")
 		return self.root.response(
