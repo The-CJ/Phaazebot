@@ -88,6 +88,7 @@
     </div>
   </div>
   <hr>
+
   <!-- linked platform -->
   <div class="row">
     <div class="col">
@@ -100,3 +101,25 @@
 
 <link rel="stylesheet" href="/css/site-specific/account/main.css">
 <script src="/js/site-specific/account/main.js" charset="utf-8"></script>
+
+<div class="modal fade" id="avatar_upload_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header green">
+        <h3 class="white-text">Upload new avatar</h3>
+      </div>
+      <div class="modal-body">
+        <h3>Please select a picture as your avatar</h3>
+        <p>PNG and JPG only. Image will be cropped to max 256px x 256px</p>
+        <div class="text-center">
+          <input class="btn black-text" type="file" name="avatar" style="width:100%;">
+        </div>
+        <p>don't want one at all? <a onclick="upload_avatar(false)" class="blue-text">remove it</a></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" onclick="$('#avatar_upload_modal').modal('hide')">Cancle</button>
+        <button type="button" class="btn btn-success" onclick="upload_avatar(true)">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

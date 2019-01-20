@@ -38,7 +38,31 @@ function show_newpassword() {
 }
 
 function show_avatarselect() {
+  $("#avatar_upload_modal").modal("show");
+}
 
+function upload_avatar(operation) {
+  var payload = {};
+  var path = "/api/account/avatar";
+
+  if (operation == false) { payload["remove"] = "true"; }
+  else if (operation == true) {
+    var f = $("#avatar_upload_modal [name=avatar]");
+    payload["file"] = f[0].files[0];
+  }
+  else { return }
+
+  function success(data) {
+    _show_message("Avatar changed!", "green");
+    load_account();
+  }
+
+  function fail(data) {
+    m = data.msg ? data.msg : "unknown";
+    _show_message(m, "red");
+  }
+
+  upload_file(payload, path, success, fail);
 }
 
 function save_changes() {

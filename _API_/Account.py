@@ -14,6 +14,9 @@ async def main(self, request):
 	elif method == "create":
 		return await create(self, request)
 
+	elif method == "avatar":
+		return await avatar(self, request)
+
 	elif method == "login":
 		return await login(self, request)
 
@@ -148,6 +151,25 @@ async def edit(self, request, **kwargs):
 			text=json.dumps( dict(error="edit_failed", msg="Editing you account failed", status=500) ),
 			content_type="application/json"
 		)
+
+# /api/account/avatar
+async def avatar(self, request, **kwargs):
+	auth_user = await self.root.get_user_info(request)
+
+	if auth_user == None:
+		return self.root.response(
+			status=400,
+			text=json.dumps( dict(error="missing_authorisation", status=400) ),
+			content_type="application/json"
+		)
+
+	_POST = await request.post()
+
+	return self.root.response(
+		status=400,
+		text=json.dumps( dict(error="wrong_file", msg="No usable file", status=400) ),
+		content_type="application/json"
+	)
 
 # /api/account/login
 async def login(self, request, **kwargs):
