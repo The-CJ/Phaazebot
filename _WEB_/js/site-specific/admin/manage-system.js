@@ -37,7 +37,7 @@ function load_status() {
         s=true;
       }
       b.click(function () {
-        $.post("/api/admin/controll", JSON.stringify({"action":"module", "module":name,"state":s})).done(location.reload())
+        $.post("/api/admin/control", JSON.stringify({"action":"module", "module":name,"state":s})).done(location.reload())
       });
     }
 
@@ -76,14 +76,14 @@ function upload_avatar() {
     "action": "discord_avatar",
     "file": f[0].files[0],
   };
-  var p = "/api/admin/controll";
+  var p = "/api/admin/control";
   function s(data) {
     _hide_loading();
     _show_message(data.msg, "green");
   }
   function fa(data) {
     _hide_loading();
-    _show_message(data.msg, "red");
+    _show_message(data.msg ? data.msg : "Critical Error", "red");
   }
   _show_loading("Uploading...");
   upload_file(u, p, s, fa);

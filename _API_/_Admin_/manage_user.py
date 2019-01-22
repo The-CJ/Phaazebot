@@ -52,10 +52,11 @@ async def get(self, request):
 	else:
 		fields = ["username", "id", "type"]
 
-	if _GET.get("verified", "0") == "1":
-		wl.append("data['verified'] == True")
-	else:
-		wl.append("data['verified'] == False")
+	if _GET.get("verified", None) != None:
+		if _GET.get("verified", "0") == "1":
+			wl.append("data['verified'] == True")
+		else:
+			wl.append("data['verified'] == False")
 
 	all_user = self.root.BASE.PhaazeDB.select(of="user", where=" and ".join(wl), fields=fields)
 	return self.root.response(

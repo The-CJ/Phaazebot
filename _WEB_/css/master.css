@@ -46,6 +46,10 @@ textarea {
 
 /*class styles*/
 
+@media (max-width: 1000px) {
+	.container { max-width: 900px }
+}
+
 .center-item-row {
 	display: flex;
 	flex-direction: row;

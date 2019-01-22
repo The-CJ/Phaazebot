@@ -1,7 +1,8 @@
-#BASE-modules._Web_.Base
+#BASE.modules._Web_.Base
 
 import re
 import ssl
+import asyncio, json
 from aiohttp import web
 from Utils import CLI_Args
 
@@ -24,6 +25,18 @@ class root(object):
 
 		return web.Response(**kwargs)
 
+	@web.middleware
+	async def middleware_handler(self, request, handler):
+		try:
+			response = await handler(request)
+			return response
+		except web.HTTPException as HTTPEx:
+			return self.response(
+				body=json.dumps(dict(msg=HTTPEx.reason, status=HTTPEx.status)),
+				status=HTTPEx.status,
+				content_type='application/json'
+			)
+
 	# Utility functions that are needed everywhere
 	from _WEB_.Utils import format_html as format_html
 	from _API_.Utils import check_role as check_role
@@ -37,16 +50,14 @@ class root(object):
 			self.root = root
 
 		from _API_.Base import nothing as nothing											#/api
-		from _API_.Base import unknown as unknown											#/api/?
-		from _API_.Base import action_not_allowed as action_not_allowed						#<400><401><402>
+		from _API_.Base import unknown as unknown											#/api/? <400>
+		from _API_.Base import action_not_allowed as action_not_allowed						#<401><402>
 																							#
-		from _API_.Account import login as account_login									#/api/account/login
-		from _API_.Account import logout as account_logout									#/api/account/logout
-		from _API_.Account import create as account_create									#/api/account/create
+		from _API_.Account import main as account											#/api/account
 																							#
 		from _API_.Admin import eval_command as admin_eval_command							#/admin/eval_command
 		from _API_.Admin import status as admin_status										#/admin/status
-		from _API_.Admin import controll as admin_controll									#/admin/controll
+		from _API_.Admin import control as admin_control									#/admin/control
 		from _API_._Admin_.manage_user import main as admin_manage_user						#/admin/manage-user
 		from _API_._Admin_.manage_type import main as admin_manage_type						#/admin/manage-type
 																							#
@@ -79,7 +90,7 @@ class root(object):
 		from _WEB_.processing.wiki.wiki import main as wiki									#/wiki
 
 def webserver(BASE):
-	server = web.Application()
+	server = web.Application(client_max_size=BASE.limit.WEB_CLIENT_MAX_SIZE)
 	root = BASE.modules._Web_.Base.root(BASE)
 	BASE.web = server
 
@@ -99,12 +110,10 @@ def webserver(BASE):
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
-	server.router.add_route('*',   '/api/account/login', root.api.account_login)
-	server.router.add_route('*',   '/api/account/logout', root.api.account_logout)
-	server.router.add_route('*',   '/api/account/create', root.api.account_create)
+	server.router.add_route('*',   '/api/account{x:/?}{method:.*}', root.api.account)
 	server.router.add_route('*',   '/api/admin/eval_command', root.api.admin_eval_command)
 	server.router.add_route('*',   '/api/admin/status', root.api.admin_status)
-	server.router.add_route('*',   '/api/admin/controll', root.api.admin_controll)
+	server.router.add_route('*',   '/api/admin/control', root.api.admin_control)
 	server.router.add_route('*',   '/api/admin/manage-user{x:/?}{method:.*}', root.api.admin_manage_user)
 	server.router.add_route('*',   '/api/admin/manage-type{x:/?}{method:.*}', root.api.admin_manage_type)
 	server.router.add_route('*',   '/api/wiki{x:/?}{method:.*}', root.api.wiki)
@@ -118,19 +127,26 @@ def webserver(BASE):
 	# somewhere but i don't know
 	server.router.add_route('*',   '/{x:.*}', root.web.page_not_found)
 
+	# main handler to catch errors
+	server.middlewares.append(root.middleware_handler)
+
 	###################################
 
+	port = 900
+	ssl_context = None
+
 	if CLI_Args.get("http", "test") == "live":
-		SSL = ssl.SSLContext()
-		SSL.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
+		port = 443
+		ssl_context = ssl.SSLContext()
+		ssl_context.load_cert_chain('/etc/letsencrypt/live/phaaze.net/fullchain.pem', keyfile='/etc/letsencrypt/live/phaaze.net/privkey.pem')
 		BASE.modules.Console.INFO("Started web server (p433/live)")
-		web.run_app(server, handle_signals=False, ssl_context=SSL, port=443, print=False)
 	elif CLI_Args.get("http", "test") == "unsecure":
-		BASE.modules.Console.INFO("Started web server (p80/unsecure)")
-		web.run_app(server, handle_signals=False, port=80, print=False)
+		port = 80
+		BASE.modules.Console.INFO("Started web server (p80/http-unsecure)")
 	elif CLI_Args.get("http", "test") == "error_ssl":
-		BASE.modules.Console.INFO("Started web server (p433/error_ssl)")
-		web.run_app(server, handle_signals=False, port=443, print=False)
+		port = 443
+		BASE.modules.Console.INFO("Started web server (p433/https-no_ssl)")
 	else:
 		BASE.modules.Console.INFO("Started web server (p900/test)")
-		web.run_app(server, handle_signals=False, port=900, print=False)
+
+	web.run_app(server, handle_signals=False, port=port, ssl_context=ssl_context, print=False)

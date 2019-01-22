@@ -151,6 +151,8 @@ function upload_file(args, url, success_function, fail_function) {
   request.onload = function () {
     if (200 <= request.status && request.status < 300) {
       success_function( JSON.parse(request.responseText) );
+    } else if (request.status >= 500) {
+      fail_function( Array() );
     } else {
       fail_function( JSON.parse(request.responseText) );
     }
