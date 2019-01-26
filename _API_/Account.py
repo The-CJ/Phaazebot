@@ -180,7 +180,7 @@ async def avatar(self, request, **kwargs):
 
 	return self.root.response(
 		status=400,
-		text=json.dumps( dict(error="wrong_file", msg="No usable file", status=400) ),
+		text=json.dumps( dict(error="not_avariable", msg="Setting avatar avariable soon", status=400) ),
 		content_type="application/json"
 	)
 
