@@ -98,3 +98,74 @@ class Settings(object):
 		state = "disabled" if not state else "enabled"
 		return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, setting: "{m[1]}" is now {state}')
 
+	async def level(BASE, message, kwargs):
+		m = message.content[len(BASE.vars.TRIGGER_TWITCH):].lower().split()
+
+		if len(m) == 2:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, "{m[0]} {m[1]}" is missing a valid state, try: "on"/"off"')
+
+		if m[2] in ['on', 'enable', 'yes']:
+			state = True
+
+		elif m[2] in ['off', 'disable', 'no']:
+			state = False
+
+		else:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, "{m[0]} {m[1]}" is missing a valid state, try: "on"/"off"')
+
+		channel_settings = kwargs.get('channel_settings', None)
+		if channel_settings == None:
+			channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+
+		active_level = channel_settings.get("active_level", False)
+
+		if active_level and state:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, setting: "{m[1]}" is already active!')
+
+		if not active_level and not state:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, setting: "{m[1]}" was not active')
+
+		BASE.PhaazeDB.update(
+			of = "twitch/channel_settings",
+			where = f"data['channel_id'] == '{message.channel_id}'",
+			content = dict(active_level=state)
+		)
+		state = "disabled" if not state else "enabled"
+		return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, setting: "{m[1]}" is now {state}')
+
+	async def quote(BASE, message, kwargs):
+		m = message.content[len(BASE.vars.TRIGGER_TWITCH):].lower().split()
+
+		if len(m) == 2:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, "{m[0]} {m[1]}" is missing a valid state, try: "on"/"off"')
+
+		if m[2] in ['on', 'enable', 'yes']:
+			state = True
+
+		elif m[2] in ['off', 'disable', 'no']:
+			state = False
+
+		else:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, "{m[0]} {m[1]}" is missing a valid state, try: "on"/"off"')
+
+		channel_settings = kwargs.get('channel_settings', None)
+		if channel_settings == None:
+			channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+
+		active_quotes = channel_settings.get("active_quotes", False)
+
+		if active_quotes and state:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, setting: "{m[1]}" is already active!')
+
+		if not active_quotes and not state:
+			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, setting: "{m[1]}" was not active')
+
+		BASE.PhaazeDB.update(
+			of = "twitch/channel_settings",
+			where = f"data['channel_id'] == '{message.channel_id}'",
+			content = dict(active_quotes=state)
+		)
+		state = "disabled" if not state else "enabled"
+		return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, setting: "{m[1]}" is now {state}')
+
+
