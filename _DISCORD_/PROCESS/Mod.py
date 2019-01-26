@@ -4,7 +4,7 @@ import asyncio, discord, tabulate, json, datetime
 
 class Settings(object):
 	async def Base(BASE, message, kwargs):
-		AVAILABLE = ["nsfw", "custom", "level", "quotes", "ai", "nonmod", "game"]
+		AVAILABLE = ["nsfw", "custom", "level", "quote", "ai", "nonmod", "game"]
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 1:
@@ -30,8 +30,8 @@ class Settings(object):
 		elif m[1] == "custom":
 			await Settings.custom(BASE, message, kwargs)
 
-		elif m[1] == "quotes":
-			await Settings.quotes(BASE, message, kwargs)
+		elif m[1] == "quote":
+			await Settings.quote(BASE, message, kwargs)
 
 		else:
 			av = ", ".join("`"+l+"`" for l in AVAILABLE)
@@ -150,7 +150,7 @@ class Settings(object):
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
 		return await BASE.discord.send_message(message.channel, f":white_check_mark: Custom commands are now {state} in {message.channel.mention}")
 
-	async def quotes(BASE, message, kwargs):
+	async def quote(BASE, message, kwargs):
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:

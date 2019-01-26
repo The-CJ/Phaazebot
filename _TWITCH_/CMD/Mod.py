@@ -17,3 +17,6 @@ async def Base(BASE, message, **kwargs):
 
 	if check.startswith("delquote"):
 		return await BASE.modules._Twitch_.PROCESS.Mod.Quote.rem(BASE, message, kwargs)
+
+	if check.startswith("setting"):
+		return await BASE.modules._Twitch_.PROCESS.Mod.Settings.Base(BASE, message, kwargs)
