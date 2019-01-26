@@ -10,7 +10,7 @@ async def Base(BASE, message, **kwargs):
 	#level disabled
 	if not channel_settings.get("active_level", False):
 		return
-		
+
 	# twitch stream module not loaded, means we can not know if channel is live or not
 	if BASE.modules._Twitch_.Streams.Main == None:
 		BASE.modules.Console.DEBUG(f"Level gain in {message.channel_name} not possible, Twitch Streams are disabled", require="twitch:level")
@@ -30,7 +30,7 @@ async def Base(BASE, message, **kwargs):
 			user_display_name = message.display_name,
 			amount_time = 1,
 			amount_currency = 1,
-			active = 5
+			active = 3
 		)
 
 		BASE.PhaazeDB.insert(
@@ -44,7 +44,7 @@ async def Base(BASE, message, **kwargs):
 			user_name = message.name,
 			user_display_name = message.display_name,
 			amount_currency = user.get('amount_currency',0) + channel_settings.get('gain_currency_message', 1),
-			active = 5,
+			active = 3,
 		)
 
 		BASE.PhaazeDB.update(

@@ -280,6 +280,7 @@ class Phaaze_info(object):
 			["PhaazeAPI", ":", "Active" if BASE.active.api else "Offline"],
 			["PhaazeDiscord", ":", "Active" if BASE.active.discord else "Offline"],
 			["PhaazeTwitchIRC", ":", "Active" if BASE.active.twitch_irc else "Offline"],
+			["PhaazeTwitchStreams", ":", "Active" if BASE.active.twitch_streams else "Offline"],
 			["PhaazeTwitchAlerts", ":", "Active" if BASE.active.twitch_alert else "Offline"],
 			["PhaazeAI", ":", "Active" if BASE.active.ai else "Offline"],
 			["PhaazeMusic", ":", "Active" if BASE.active.music else "Offline"],

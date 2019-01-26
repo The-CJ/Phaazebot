@@ -5,12 +5,6 @@ import asyncio, math
 # as enshure corotine
 async def Base(BASE):
 	sleep_time = 60 * 5
-	# channel_settings = kwargs.get('channel_settings', {})
-	#
-	# #level disabled
-	# if not channel_settings.get("active_level", False):
-	# 	return
-
 
 	# BASE.active.twitch_stream is required, since its provides data
 	while BASE.twitch.lurker_loop_running and BASE.modules._Twitch_.Streams.Main != None:
@@ -79,11 +73,14 @@ async def Base(BASE):
 async def check_levelup(BASE, channel_settings, channel, user):
 	default_level_message = ">> [display_name] is now level [level]"
 
+	# is in lurk mode
+	if user.get("active", 0) <= 0: return
+
 	now_level = Calc.get_lvl(user.get('amount_time', 0))
 	exp_to_next = Calc.get_exp(now_level+1)
 
 	#has a level up, and is active
-	if exp_to_next == user.get('amount_time', 0)+1 and user.get("active", 0) != 0:
+	if exp_to_next == user.get('amount_time', 0)+1:
 
 		#get level message
 		level_message = channel_settings.get('message_level', default_level_message)
