@@ -53,10 +53,12 @@ async def Base(BASE):
 
 					await check_levelup(BASE, channel_settings, twitch_bot_channel, user)
 
+				gain_c = channel_settings.get('gain_currency', 1)
+				gain_c_m = channel_settings.get('gain_currency_active_multi', 1.0)
 				#update all
 				db_lvl_up_request = [
 					"data['amount_time'] += 1;",
-					f"data['amount_currency'] += {channel_settings.get('gain_currency', 1)};",
+					f"data['amount_currency'] += int({gain_c} * ({gain_c_m} if if data.get('active', 0) > 0 else 1));",
 					"data['active'] -= 1 if data.get('active', 0) > 0 else 0"
 				]
 

@@ -68,6 +68,7 @@ async def make_channel_settings(BASE, id):
 
 	insert_['gain_currency'] = 1
 	insert_['gain_currency_message'] = 1
+	insert_['gain_currency_active_multi'] = 1.0
 
 	insert_['blacklist'] = []
 	insert_['blacklist_punishment'] = 0
