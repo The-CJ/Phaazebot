@@ -2,7 +2,7 @@
 
 import asyncio, discord, json
 
-Main = None
+Main = None # will be overwritten
 
 class Init_Main(object):
 	""" Provides a information source for other modules, so there don't have to make a api request to twitch
@@ -48,7 +48,6 @@ class Init_Main(object):
 
 			#set all live channel for other modules
 			self.live = [ str(stream.get('user_id', 0)) for stream in live_streams ]
-
 
 			old_list = self.generate_stream_dict_from_db(need_to_check)
 			new_list = self.generate_stream_dict_from_api(live_streams)
@@ -277,6 +276,10 @@ class Init_Main(object):
 					self.BASE.discord.send_message(chan, content=alert_format, embed=emb),
 					loop=self.BASE.Discord_loop
 				)
+
+		# reset db level user entrys
+		self.BASE.PhaazeDB.update( of="twitch/level_"+user.get("id", "-"), content=dict(active=0))
+		self.BASE.modules.Console.DEBUG(f'{user.get("login", "-")} gone live, set twitch/level_{user.get("id", None)}["active"] to 0', require="twitch:streams")
 
 	async def event_gamechange(self, alert):
 		if not self.BASE.active.twitch_alert: return
