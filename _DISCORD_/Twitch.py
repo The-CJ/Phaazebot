@@ -34,6 +34,12 @@ async def Base(BASE, message, kwargs):
 
 async def track(BASE, message, kwargs, twitch_name):
 
+	if BASE.modules._Twitch_.Streams.Main == None:
+		BASE.modules.Console.DEBUG(f"User wanted {BASE.vars.TRIGGER_DISCORD*3}twitch track, but Twitch Streams are disabled", require="discord:twitch")
+		return await BASE.discord.send_message(
+			message.channel,
+			":no_entry_sign: Twitch Stream module is currently not active.")
+
 	#get channel + check if a real channel
 	chan = BASE.modules._Twitch_.Utils.get_user(BASE, twitch_name, search="name")
 	if chan == None:
@@ -60,6 +66,12 @@ async def track(BASE, message, kwargs, twitch_name):
 			f":warning: Something Strange happen, your changes could not be processed, maybe Twitch Alerts are disbled by the Developer?")
 
 async def get(BASE, message, kwargs):
+	if BASE.modules._Twitch_.Streams.Main == None:
+		BASE.modules.Console.DEBUG(f"User wanted {BASE.vars.TRIGGER_DISCORD*3}twitch get, but Twitch Streams are disabled", require="discord:twitch")
+		return await BASE.discord.send_message(
+			message.channel,
+			":no_entry_sign: Twitch Stream module is currently not active.")
+
 	tracked_channel = BASE.modules._Twitch_.Streams.Main.Discord.get_alerts_for_channel(BASE, message.channel.id)
 
 	if not tracked_channel:
@@ -69,6 +81,12 @@ async def get(BASE, message, kwargs):
 	return await BASE.discord.send_message(message.channel, f":information_source: All tracked Twitch channel in {message.channel.mention}\n\n{x}")
 
 async def clear(BASE, message, kwargs):
+	if BASE.modules._Twitch_.Streams.Main == None:
+		BASE.modules.Console.DEBUG(f"User wanted {BASE.vars.TRIGGER_DISCORD*3}twitch clear, but Twitch Streams are disabled", require="discord:twitch")
+		return await BASE.discord.send_message(
+			message.channel,
+			":no_entry_sign: Twitch Stream module is currently not active.")
+
 	removed_alerts = BASE.modules._Twitch_.Streams.Main.Discord.clear_channel_alerts(BASE, message.channel.id)
 
 	if not removed_alerts:

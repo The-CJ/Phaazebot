@@ -2,7 +2,8 @@
 
 import asyncio, discord, json
 
-#BASE.modules._Twitch_.Streams.Main
+Main = None
+
 class Init_Main(object):
 	""" Provides a information source for other modules, so there don't have to make a api request to twitch
 		also used for setting stream settings, like chat managed and discord channel """
