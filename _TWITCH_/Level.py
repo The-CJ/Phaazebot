@@ -7,6 +7,10 @@ cooldown_stats = []
 async def Base(BASE, message, **kwargs):
 	channel_settings = kwargs.get('channel_settings', {})
 
+	#level disabled
+	if not channel_settings.get("active_level", False):
+		return
+		
 	# twitch stream module not loaded, means we can not know if channel is live or not
 	if BASE.modules._Twitch_.Streams.Main == None:
 		BASE.modules.Console.DEBUG(f"Level gain in {message.channel_name} not possible, Twitch Streams are disabled", require="twitch:level")

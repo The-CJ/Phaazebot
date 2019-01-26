@@ -5,9 +5,15 @@ import asyncio, math
 # as enshure corotine
 async def Base(BASE):
 	sleep_time = 60 * 5
+	# channel_settings = kwargs.get('channel_settings', {})
+	#
+	# #level disabled
+	# if not channel_settings.get("active_level", False):
+	# 	return
+
 
 	# BASE.active.twitch_stream is required, since its provides data
-	while BASE.twitch.lurker_loop_running and BASE.active.twitch_stream:
+	while BASE.twitch.lurker_loop_running and BASE.modules._Twitch_.Streams.Main != None:
 		try:
 			currently_in_channel = [BASE.twitch.channels[c].id for c in BASE.twitch.channels if BASE.twitch.channels[c].id != None]
 			currently_live_channels = BASE.PhaazeDB.select(of="twitch/stream", where=f"data['live'] and data['chat_managed'] and data['twitch_id'] in {str(currently_in_channel)}")
