@@ -6,6 +6,8 @@ async def Base(BASE, message, **kwargs):
 	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].lower().split(" ")
 	check = m[0]
 
+	if kwargs.get('channel_settings', {}).get('owner_disable_normal', False) and not await BASE.modules._Twitch_.Utils.is_Owner(BASE, message): return
+
 	if check.startswith("stats"):
 		return await BASE.modules._Twitch_.Level.stats(BASE, message, kwargs)
 

@@ -59,6 +59,9 @@ async def make_channel_settings(BASE, id):
 	insert_['active_games'] = False
 	insert_['active_level'] = True
 
+	insert_['owner_disable_normal'] = False
+	insert_['owner_disable_mod'] = False
+
 	insert_['ban_links'] = False
 	insert_['regulars'] = []
 	insert_['link_whitelist'] = []
