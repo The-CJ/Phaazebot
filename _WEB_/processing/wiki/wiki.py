@@ -1,6 +1,7 @@
 #BASE.modules._Web_.Base.root.wiki.wiki
 
 import asyncio, json, html, urllib
+import markdown
 
 # /wiki
 async def main(self, request):
@@ -57,10 +58,12 @@ async def main(self, request):
 	if found_page == None:
 		return await self.root.web.page_not_found(msg="Getting wiki info returned nothing... that should not happen")
 
+	wiki_site_content = found_page.get("content", "Error returning content")
+	wiki_site_content = markdown.markdown(wiki_site_content)
 	wiki_site = self.root.format_html(self.root.html_root,
 		title="Phaaze | Wiki - "+found_page['title'] if found_page.get("title", None) not in [None, ""] else found_page.get("url_id", "???"),
 		header=current_navbar,
-		main=found_page.get("content", "Error returning content")
+		main='<div class="wiki">'+wiki_site_content+'</div>'
 	)
 
 	return self.root.response(
