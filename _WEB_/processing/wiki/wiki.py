@@ -18,13 +18,13 @@ async def main(self, request):
 
 	wiki_site = request.match_info.get('site', "").lower()
 
-	# no site define -> show main
+	# no site define -> show start site
 	if wiki_site == None or wiki_site == "":
-		main_wiki = open('_WEB_/content/wiki/main.html', 'r', encoding='utf-8').read()
+		start_site = open('_WEB_/content/wiki/start.html', 'r', encoding='utf-8').read()
 		site = self.root.format_html(self.root.html_root,
 			title="Phaaze | Wiki",
 			header=current_navbar,
-			main=main_wiki
+			main=start_site
 		)
 
 		return self.root.response(
@@ -40,7 +40,7 @@ async def main(self, request):
 	# not found, (ask for create)
 	if page_res_hits == 0:
 		pnf = open('_WEB_/content/wiki/not_found.html', 'r', encoding='utf-8').read()
-		pnf_site = self.root.format_html(self.root.html_root,
+		site = self.root.format_html(self.root.html_root,
 			title="Phaaze | Wiki - Not Found",
 			header=current_navbar,
 			main=self.root.format_html(pnf, url_id=wiki_site)
@@ -49,27 +49,33 @@ async def main(self, request):
 		return self.root.response(
 			status=200,
 			content_type='text/html',
-			body=pnf_site
+			body=site
 		)
 
-	found_page = page_res.get("data", [None])[0]
+	page_object = page_res.get("data", [None])[0]
 
 	# should never happen, but hey
-	if found_page == None:
+	if page_object == None:
 		return await self.root.web.page_not_found(msg="Getting wiki info returned nothing... that should not happen")
 
-	wiki_site_content = found_page.get("content", "Error returning content")
-	wiki_site_content = markdown.markdown(wiki_site_content)
-	wiki_site = self.root.format_html(self.root.html_root,
-		title="Phaaze | Wiki - "+found_page['title'] if found_page.get("title", None) not in [None, ""] else found_page.get("url_id", "???"),
+	# title
+	wiki_title = "Phaaze | Wiki - "+page_object['title'] if page_object.get("title", None) not in [None, ""] else page_object.get("url_id", "???")
+	# content
+	wiki_content = page_object.get("content", "Error returning content")
+	try: wiki_content = markdown.markdown(wiki_content)
+	except: pass
+	wiki_tmp = open('_WEB_/content/wiki/wiki_tmp.html', 'r', encoding='utf-8').read()
+
+	site = self.root.format_html(self.root.html_root,
+		title=wiki_title,
 		header=current_navbar,
-		main='<div class="wiki">'+wiki_site_content+'</div>'
+		main=self.root.format_html(wiki_tmp, content=wiki_content)
 	)
 
 	return self.root.response(
 		status=200,
 		content_type='text/html',
-		body=wiki_site
+		body=site
 	)
 
 # /wiki?edit=.*
