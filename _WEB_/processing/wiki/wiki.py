@@ -58,6 +58,10 @@ async def main(self, request):
 	if page_object == None:
 		return await self.root.web.page_not_found(msg="Getting wiki info returned nothing... that should not happen")
 
+	if page_object.get("mod_only", False):
+		if not self.root.check_role(user_info, ['superadmin', 'admin', 'wiki moderator']):
+			return await self.root.web.action_not_allowed(request, msg="You don't have permissions to see this page")
+
 	# title
 	wiki_title = "Phaaze | Wiki - "+page_object['title'] if page_object.get("title", None) not in [None, ""] else page_object.get("url_id", "???")
 	# content
