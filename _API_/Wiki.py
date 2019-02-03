@@ -49,6 +49,11 @@ async def get(self, request):
 		if len(u) == 0: u = dict()
 		else: u = u[0]
 
+		if p.get("mod_only", False):
+			user_info = await self.root.get_user_info(request)
+			if not self.root.check_role(user_info, ['superadmin', 'admin', 'wiki moderator']):
+				return await self.root.api.action_not_allowed(request, msg="You don't have permissions see this page")
+
 		user = dict(
 			username = u.get("username",None),
 			img_url = u.get("img_url",None),
@@ -77,6 +82,11 @@ async def save(self, request):
 	title = _POST.get("title", "")
 	tags = _POST.get("tags", None)
 	content = _POST.get("content", None)
+	if _POST.get("mod_only", None) != None:
+		if _POST.get("mod_only", "0") == "1":
+			mod_only = True
+		else:
+			mod_only = False
 
 	if not (url_id != None and tags != None and content != None and title != None):
 		return self.root.response(
@@ -107,7 +117,8 @@ async def save(self, request):
 			edited_at=str(datetime.datetime.now()),
 			tags=tags.split(","),
 			title=title,
-			url_id=url_id
+			url_id=url_id,
+			mod_only=mod_only
 		)
 
 		res = self.root.BASE.PhaazeDB.insert(into="wiki", content=entry)
@@ -119,6 +130,7 @@ async def save(self, request):
 			edited_at=str(datetime.datetime.now()),
 			tags=tags.split(","),
 			title=title,
+			mod_only=mod_only
 		)
 
 		res = self.root.BASE.PhaazeDB.update(of="wiki", content=update, where=f"data['url_id'] == {json.dumps(url_id)}")

@@ -58,6 +58,7 @@ async def main(self, request):
 	if page_object == None:
 		return await self.root.web.page_not_found(msg="Getting wiki info returned nothing... that should not happen")
 
+	# mod only
 	if page_object.get("mod_only", False):
 		if not self.root.check_role(user_info, ['superadmin', 'admin', 'wiki moderator']):
 			return await self.root.web.action_not_allowed(request, msg="You don't have permissions to see this page")
@@ -69,11 +70,12 @@ async def main(self, request):
 	try: wiki_content = markdown.markdown(wiki_content, extensions=["toc", "extra"])
 	except: pass
 	wiki_tmp = open('_WEB_/content/wiki/wiki_tmp.html', 'r', encoding='utf-8').read()
+	mod_only_mark = "" if page_object.get("mod_only", False) else "hidden"
 
 	site = self.root.format_html(self.root.html_root,
 		title=wiki_title,
 		header=current_navbar,
-		main=self.root.format_html(wiki_tmp, content=wiki_content)
+		main=self.root.format_html(wiki_tmp, content=wiki_content, mod_only_mark=mod_only_mark)
 	)
 
 	return self.root.response(
@@ -106,6 +108,7 @@ async def edit(self, request):
 		edit_tags = ",".join(page_to_edit_entry.get("tags", []))
 		user = page_to_edit_entry.get("user", [])
 		edit_title = page_to_edit_entry.get("title", "")
+		edit_mod_only = "checked" if page_to_edit_entry.get("mod_only", False) else ""
 
 		if len(user) == 0:
 			edited_by_name = "Unknown"
@@ -120,10 +123,12 @@ async def edit(self, request):
 		edited_by_id = "0"
 		edit_tags=""
 		edit_title=""
+		edit_mod_only = ""
 
 	wiki_edit_page = self.root.format_html(
 		open('_WEB_/content/wiki/edit.html', 'r', encoding='utf-8').read(),
 		action="Edit" if page_to_edit_entry != None else "Create",
+		mod_only=edit_mod_only,
 		url_id=html.escape(str(page_to_edit)),
 		last_user_name=html.escape(str(edited_by_name)),
 		last_user_id=html.escape(str(edited_by_id)),

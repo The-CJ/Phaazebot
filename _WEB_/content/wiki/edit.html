@@ -1,13 +1,25 @@
-<div class="container-fluid white-text">
+<div class="container-fluid white-text" edit_table>
+	<div class="center-item-row white-text red" style="position: absolute;padding: 0.2em;">
+		<i class="material-icons">lock</i>
+		<span title="This Page is mod only">Mod Only</span>
+		<label class="bs-switch" style="margin: 0 0 0 .5em">
+			<input type="checkbox" name="mod_only" |>>>(mod_only)<<<|>
+			<span class="slider"></span>
+		</label>
+	</div>
 	<hr>
 	<h2 class="text-center">
-		<span>|>>>(action)<<<|</span>
+		<attr>|>>>(action)<<<|</attr>
 		<span> page: </span>
-		<span>|>>>(url_id)<<<|</span>
+		<attr>|>>>(url_id)<<<|</attr>
 	</h2>
 	<h4 class="text-center">
-		<span>Last edit by: |>>>(last_user_name)<<<| (ID: |>>>(last_user_id)<<<|)</span>
-		<span> - at: |>>>(last_date)<<<|</span>
+		<span>Last edit by: </span>
+		<attr>|>>>(last_user_name)<<<|</attr>
+		<span>(ID: </span>
+		<attr>|>>>(last_user_id)<<<|</attr>
+		<span>) - at: </span>
+		<attr>|>>>(last_date)<<<|</attr>
 	</h4>
 	<div class="center-item-row">
 		<span>Title:</span>
@@ -21,5 +33,8 @@
 	<input type="hidden" name="url_id" value="|>>>(url_id)<<<|">
 	<p>Supports <a href="https://www.markdownguide.org/basic-syntax/" style="color:lightblue;">Markdown</a> and pure HTML</p>
 	<button type="button" class="btn btn-block btn-success" onclick="save_wiki()">Save</button>
+
 </div>
 <script src="/js/site-specific/wiki/edit.js" charset="utf-8"></script>
+
+

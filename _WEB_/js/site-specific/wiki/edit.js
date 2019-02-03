@@ -1,9 +1,5 @@
 function save_wiki() {
-  r = {}
-  r["url_id"] = $("[name=url_id]").val();
-  r["title"] = $("[name=title]").val();
-  r["tags"] = $("[name=tags]").val();
-  r["content"] = $("[name=content]").val();
+  r = extract_data($("div[edit_table]"));
 
   $.post("/api/wiki/save", r)
   .fail(function (data) {
