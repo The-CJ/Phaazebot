@@ -156,11 +156,14 @@ async def search (self, request):
 	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info, active="wiki")
 
 	search_query = request.query.get("search", "").lower()
-	if search_query == "":
-		w = "True"
+	if self.root.check_role(user_info, ['superadmin', 'admin', 'wiki moderator']):
+		can_see_mod = True
 	else:
-		user_search = json.dumps(search_query)
-		w = f"data['url_id'] == {user_search} or {user_search.lower()} in data['content'].lower() or {user_search.lower()} in data['tags'] or {user_search.lower()} in data['title']"
+		can_see_mod = False
+
+	w = "data.get('mod_only', False) == False" if not can_see_mod else "True"
+	user_search = json.dumps(search_query)
+	w += f" and (data['url_id'] == {user_search} or {user_search.lower()} in data['content'].lower() or {user_search.lower()} in data['tags'] or {user_search.lower()} in data['title'])"
 
 	page_search = self.root.BASE.PhaazeDB.select(
 		of="wiki",
