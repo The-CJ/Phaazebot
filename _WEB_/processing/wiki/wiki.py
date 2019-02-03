@@ -62,7 +62,7 @@ async def main(self, request):
 	wiki_title = "Phaaze | Wiki - "+page_object['title'] if page_object.get("title", None) not in [None, ""] else page_object.get("url_id", "???")
 	# content
 	wiki_content = page_object.get("content", "Error returning content")
-	try: wiki_content = markdown.markdown(wiki_content)
+	try: wiki_content = markdown.markdown(wiki_content, extensions=["toc", "extra"])
 	except: pass
 	wiki_tmp = open('_WEB_/content/wiki/wiki_tmp.html', 'r', encoding='utf-8').read()
 

@@ -1,28 +1,40 @@
-.search-result a, .create {color: lightblue}
-
-.search-result {
-  position: relative;
-  border: 1px solid black;
-  padding: 7px;
-  border-radius: 2px;
+.wiki {
+  padding-top: 1em;
 }
 
-span.p1 {
-  position: relative;
-  margin: auto;
-}
-span.p2 {
-  position: absolute;
-  width: 100%;
-  margin-left: auto;
-}
-span.p3 {
-  position: absolute;
-  right: 0;
-  color: rgb(130, 130, 130);
+.wiki h1, .wiki h2, .wiki h3, .wiki h4, .wiki h5, .wiki h6 {
+  color: white;
 }
 
-.wiki h1 {
-  color:red;
-
+.wiki li, .wiki p {
+  color: white;
 }
+
+.wiki a {
+  color: lightblue;
+}
+
+.wiki dl, .wiki dd, .wiki dt {
+  color: white
+}
+
+.wiki code {
+	border: 2px solid #7c7c7c;
+	border-radius: 3px;
+	color: black;
+	padding: 2px;
+	background: white;
+}
+
+.wiki code a {
+  color: red;
+}
+
+.wiki pre code {
+	border: none;
+	border-radius: none;
+	color: white;
+	padding: none;
+	background: none;
+}
+
