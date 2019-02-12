@@ -130,6 +130,7 @@ class Init_Main(object):
 			elif alert_type == "game_change":
 				asyncio.ensure_future( self.event_gamechange(alert) )
 			else: continue
+
 	# utils
 	def sort_channel_per_game(self, streams):
 		r = {}
@@ -185,6 +186,10 @@ class Init_Main(object):
 			)
 
 		return stream_dict
+
+	async def send_void_message(self, c, **k):
+		try: self.BASE.discord.send_message(c, **k)
+		except: pass
 
 	#functions
 	def set_stream(self, twitch_id=None, create_new=False, **kwargs):
@@ -272,9 +277,10 @@ class Init_Main(object):
 				#check for custom format
 				alert_format = channel_format_index.get(channel_id, None)
 
+				# NOTE: check if phaaze can see channel befor sending, for now, just send and ignore error
 				chan = discord.Object(id=channel_id)
 				asyncio.ensure_future(
-					self.BASE.discord.send_message(chan, content=alert_format, embed=emb),
+					self.send_void_message(chan, content=alert_format, embed=emb),
 					loop=self.BASE.Discord_loop
 				)
 
@@ -305,7 +311,7 @@ class Init_Main(object):
 			for channel_id in discord_channel:
 				chan = discord.Object(id=channel_id)
 				asyncio.ensure_future(
-					self.BASE.discord.send_message(chan, embed=emb),
+					self.send_void_message(chan, embed=emb),
 					loop=self.BASE.Discord_loop
 				)
 
