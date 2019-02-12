@@ -36,6 +36,8 @@ class root(object):
 				status=HTTPEx.status,
 				content_type='application/json'
 			)
+		except Exception as e:
+			self.BASE.modules.Console.ERROR(str(e))
 
 	# Utility functions that are needed everywhere
 	from _WEB_.Utils import format_html as format_html
