@@ -188,7 +188,8 @@ class Init_Main(object):
 		return stream_dict
 
 	async def send_void_message(self, c, **k):
-		try: self.BASE.discord.send_message(c, **k)
+                #anti érror wrapper
+		try: await self.BASE.discord.send_message(c, **k)
 		except: pass
 
 	#functions
