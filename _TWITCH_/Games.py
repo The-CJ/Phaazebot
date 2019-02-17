@@ -2,83 +2,73 @@
 
 import asyncio, random
 
-"""Global game storage"""
 active_battle_games = []
 active_missions = []
 
-"""Battle game"""
-async def battle(BASE, message):
-	file = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
-	file["games"] = file.get("games", False)
-	if not file["games"]: return
+class Battle(object):
 
-	#make new game
-	if not message.room_id in [game.room_id for game in active_battle_games]:
+	active_battles = []
 
-		ok = await BASE.modules._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", 200)
-		if not ok: return
+	async def Base(BASE, message, kwargs):
+		channel_settings = kwargs.get('channel_settings', None)
+		if channel_settings == None:
+			channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+			kwargs['channel_settings'] = channel_settings
 
-		new_game = battel_game(BASE, message.room_id, message.channel)
+		if not channel_settings.get('active_games', False): return
 
-		new_game.fighter.append({"name": message.display_name, "_id": message.user_id})
+		battle = Battle.get_battle(message.channel_id)
 
+		if battle == None: return await Battle.new_game(BASE, message, kwargs)
+		elif battle.finished: await battle.warn()
+		else: return await Battle.add_fighter(BASE, message, battle, kwargs)
+
+	async def new_game(BASE, message, kwargs):
+		# only start new game if invoker has enough gold
+		has_enough = await BASE.modules._Twitch_.Utils.edit_currency(BASE, channel_id=message.channel_id, user_id=message.user_id, change=-200)
+		if not has_enough: return
+
+		# generate battle
+		new_game = BattleObject(BASE, message.channel)
+		new_game.fighter.append(Battle.Fighter(message.author))
+
+		# start timer and append as active
 		asyncio.ensure_future(new_game.start())
-		active_battle_games.append(new_game)
-		await BASE.Twitch_IRC_connection.send_message(message.channel, "Battle has been opened, type: \"!battle\" to join. (you need 200 Credits)")
+		Battle.active_battles.append(new_game)
 
-	else:
-		for game in active_battle_games:
-			if message.room_id == game.room_id:
-				if not game.active:
-					if not game.warned:
-						await BASE.Twitch_IRC_connection.send_message(message.channel, "The Arena is closed right now, visit again later")
-						game.warned = True
-					return
+		currency_name_multi = kwargs.get('channel_settings', dict()).get("currency_name_multi", BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI)
+		return await BASE.twitch.send_message(
+			message.channel_name,
+			f'Battle has been opened, type: "{BASE.vars.TRIGGER_TWITCH}battle" to join. (you need 200 {currency_name_multi})'
+		)
 
-				#already in
-				fighter_ = [f["_id"] for f in game.fighter]
+	async def add_fighter(BASE, message, battle, kwargs):
+		#already in?
+		check = Battle.get_fighter(battle, message.user_id)
+		if check != None: return
 
-				if message.user_id in fighter_:
-					return
+		#can afford?
+		has_enough = await BASE.modules._Twitch_.Utils.edit_currency(BASE, channel_id=message.channel_id, user_id=message.user_id, change=-200)
+		if not has_enough: return
 
-				else:
-					ok = await BASE.modules._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", 200)
-					if not ok:return
-					game.fighter.append({"name": message.display_name, "_id": message.user_id})
+		battle.fighter.append(Battle.Fighter(message.author))
 
-class battel_game(object):
-	def __init__(self, BASE, room_id, room_name):
-		self.room_id = room_id
-		self.room_name = room_name
-		self.BASE = BASE
-		self.fighter = []
-		self.warned = False
+	class Fighter(object):
+		def __init__(self, author):
+			self.display_name = author.display_name
+			self.user_id = author.id
 
-		self.time_left = ( 60 * 2 )
-		self.active = True
-		self.timeout = ( 60 * 10 )
+	def get_fighter(battle, search_id):
+		for Fighter in battle.fighter:
+			if str(Fighter.user_id) == str(search_id): return Fighter
+		return None
 
-	async def start(self):
-		while not self.time_left == 0:
-			self.time_left -= 1
-			await asyncio.sleep(1)
-		await self.end()
+	def get_battle(search_id):
+		for CheckBattle in Battle.active_battles:
+			if str(CheckBattle.channel.id) == str(search_id): return CheckBattle
+		return None
 
-	async def end(self):
-		self.active = False
-		winner = random.choice(self.fighter)
-		win = len(self.fighter) * 200
-
-		await self.BASE.modules._Twitch_.Gold.edit_gold(self.BASE, self.room_id, winner["_id"], "+", win)
-		await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "The fight is over, the winner is: {0}, Congratulation! You won {1} Credits.".format(winner["name"], str(win)))
-		while not self.timeout == 0:
-			self.timeout -= 1
-			await asyncio.sleep(1)
-		await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "The Arena has opened again and waits for new fighter. | !battle")
-		active_battle_games.remove(self)
-
-"""Mission Game"""
-async def mission(BASE, message):
+async def Mission(BASE, message, kwargs):
 	file = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
 	file["games"] = file.get("games", False)
 	if not file["games"]: return
@@ -129,17 +119,16 @@ async def mission(BASE, message):
 					if not ok:return
 					game.fighter.append({"name": message.display_name, "_id": message.user_id, "amount": bet})
 
-class mission_game(object):
-	def __init__(self, BASE, room_id, room_name):
-		self.room_id = room_id
-		self.room_name = room_name
+class BattleObject(object):
+	def __init__(self, BASE, channel):
 		self.BASE = BASE
+		self.channel = channel
 		self.fighter = []
-		self.winner = []
+
 		self.warned = False
+		self.finished = False
 
 		self.time_left = ( 60 * 2 )
-		self.active = True
 		self.timeout = ( 60 * 10 )
 
 	async def start(self):
@@ -149,36 +138,31 @@ class mission_game(object):
 		await self.end()
 
 	async def end(self):
-		self.active = False
+		self.finished = True
+		winner = random.choice(self.fighter)
+		win = len(self.fighter) * 200
 
-		win_or_lose = [True, True, True, False, False, False, True]
-		for player in self.fighter:
-			if random.choice(win_or_lose):
-				success = await self.BASE.modules._Twitch_.Gold.edit_gold(
-											self.BASE,
-											self.room_id,
-											player["_id"],
-											"+",
-											int(player["amount"] * 1.6))
-				if not success:
-					raise
-				self.winner.append(player)
-		#dead
-		if len(self.winner) == 0:
-			await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "Mission failed ! | The fights were too rough and everyone was lost.")
+		await self.BASE.modules._Twitch_.Utils.edit_currency(self.BASE, self.channel.id, winner.user_id, win)
+		await self.BASE.twitch.send_message(
+			self.channel.name,
+			f"The fight is over, the winner is: {winner.display_name}, Congratulation! You won {win} Credits."
+		)
+		await self.cooldown()
 
-		#all
-		elif len(self.winner) == len(self.fighter):
-			annc = ", ".join(f["name"] + " [" + str(int(f["amount"] * 1.5)) + "]" for f in self.winner)
-			await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "Mission success ! | The fights were rough, but everyone came back in one piece | They also brought some loot with them: {0}".format(annc))
+	async def warn(self):
+		if self.warned: return
+		self.warned = True
+		await self.BASE.twitch.send_message(
+			self.channel.name,
+			f"The Arena is closed right now, visit again later"
+		)
 
-		#announce
-		else:
-			annc = ", ".join(f["name"] + " [" + str(int(f["amount"] * 1.5)) + "]" for f in self.winner)
-			await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "Mission success ! | The fights were rough and some were lost | The rest brought some loot with them: {0}".format(annc))
-
+	async def cooldown(self):
 		while not self.timeout == 0:
 			self.timeout -= 1
 			await asyncio.sleep(1)
-		await self.BASE.Twitch_IRC_connection.send_message(self.room_name, "New Missions are available, are you ready for more awesome loot? | !mission [Credits]")
-		active_missions.remove(self)
+		await self.BASE.twitch.send_message(
+			self.channel.name,
+			f"The Arena has opened again and waits for new fighter. | {self.BASE.vars.TRIGGER_TWITCH}battle"
+		)
+		Battle.active_battles.remove(self)
