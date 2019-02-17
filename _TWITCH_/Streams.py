@@ -148,6 +148,7 @@ class Init_Main(object):
 		return r
 
 	def get_right_from_list(self, li, search="id", value=None):
+		if li == None: return dict() # api errors
 		for entry in li:
 			check = entry.get(search, None)
 			if check == value: return entry
@@ -188,7 +189,7 @@ class Init_Main(object):
 		return stream_dict
 
 	async def send_void_message(self, c, **k):
-                #anti érror wrapper
+		#anti 404 error wrapper
 		try: await self.BASE.discord.send_message(c, **k)
 		except: pass
 
