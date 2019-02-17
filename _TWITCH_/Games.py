@@ -2,9 +2,6 @@
 
 import asyncio, random
 
-active_battle_games = []
-active_missions = []
-
 class Battle(object):
 
 	active_battles = []
@@ -29,12 +26,12 @@ class Battle(object):
 		if not has_enough: return
 
 		# generate battle
-		new_game = BattleObject(BASE, message.channel)
-		new_game.fighter.append(Battle.Fighter(message.author))
+		battle = BattleObject(BASE, message.channel)
+		battle.fighter.append(Battle.Fighter(message.author))
 
 		# start timer and append as active
-		asyncio.ensure_future(new_game.start())
-		Battle.active_battles.append(new_game)
+		asyncio.ensure_future(battle.start())
+		Battle.active_battles.append(battle)
 
 		currency_name_multi = kwargs.get('channel_settings', dict()).get("currency_name_multi", BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI)
 		return await BASE.twitch.send_message(
@@ -68,56 +65,82 @@ class Battle(object):
 			if str(CheckBattle.channel.id) == str(search_id): return CheckBattle
 		return None
 
-async def Mission(BASE, message, kwargs):
-	file = await BASE.modules._Twitch_.Utils.get_twitch_file(BASE, message.room_id)
-	file["games"] = file.get("games", False)
-	if not file["games"]: return
+class Mission(object):
 
-	#get bet
-	m = message.content.split(" ")
-	if len(m) == 1:
-		return
-	bet = m[1]
-	if not bet.isdigit(): return
-	bet = int(bet)
+	active_missions = []
 
-	#exist or new
-	if bet == 0:
-		return
-	#new
-	if not message.room_id in [game.room_id for game in active_missions]:
+	async def Base(BASE, message, kwargs):
+		channel_settings = kwargs.get('channel_settings', None)
+		if channel_settings == None:
+			channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+			kwargs['channel_settings'] = channel_settings
 
-		ok = await BASE.modules._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", bet)
-		if not ok: return
+		if not channel_settings.get('active_games', False): return
 
-		new_game = mission_game(BASE, message.room_id, message.channel)
+		mission = Mission.get_mission(message.channel_id)
 
-		new_game.fighter.append({"name": message.display_name, "_id": message.user_id, "amount": bet})
+		if mission == None: return await Mission.new_game(BASE, message, kwargs)
+		elif mission.finished: await mission.warn()
+		else: return await Mission.add_adventurer(BASE, message, mission, kwargs)
 
-		asyncio.ensure_future(new_game.start())
-		active_missions.append(new_game)
-		await BASE.Twitch_IRC_connection.send_message(message.channel, "{0} is looking for fellows for a dangerous mission, you might die or come back with a lot of loot. Type: \"!mission [Credits]\" to join. ".format(message.save_name))
+	async def new_game(BASE, message, kwargs):
 
-	#exist
-	else:
-		for game in active_missions:
-			if message.room_id == game.room_id:
-				if not game.active:
-					if not game.warned:
-						await BASE.Twitch_IRC_connection.send_message(message.channel, "No Missions available, visit again later")
-						game.warned = True
-					return
+		bet = Mission.get_bet(message)
+		if not bet: return
 
-				#already in
-				fighter_ = [f["_id"] for f in game.fighter]
+		has_enough = await BASE.modules._Twitch_.Utils.edit_currency(BASE, channel_id=message.channel_id, user_id=message.user_id, change=(bet*-1))
+		if not has_enough: return
 
-				if message.user_id in fighter_:
-					return
+		mission = MissionObject(BASE, message.channel)
 
-				else:
-					ok = await BASE.modules._Twitch_.Gold.edit_gold(BASE, message.room_id, message.user_id, "-", bet)
-					if not ok:return
-					game.fighter.append({"name": message.display_name, "_id": message.user_id, "amount": bet})
+		mission.adventurers.append(Mission.Adventurer(message.author, bet))
+
+		asyncio.ensure_future(mission.start())
+		Mission.active_missions.append(mission)
+
+		return await BASE.twitch.send_message(
+			message.channel_name,
+			f'{message.author.display_name} is looking for fellows for a dangerous mission,'\
+			f' you might die or come back with a lot of loot. Type: "{BASE.vars.TRIGGER_TWITCH}mission [amount]" to join.')
+
+	async def add_adventurer(BASE, message, mission, kwargs):
+		#already in?
+		check = Mission.get_adventurer(mission, message.user_id)
+		if check != None: return
+
+		bet = Mission.get_bet(message)
+		if not bet: return
+
+		#can afford?
+		has_enough = await BASE.modules._Twitch_.Utils.edit_currency(BASE, channel_id=message.channel_id, user_id=message.user_id, change=(bet*-1))
+		if not has_enough: return
+
+		mission.adventurers.append(Mission.Adventurer(message.author, bet))
+
+	class Adventurer(object):
+		def __init__(self, author, amount):
+			self.display_name = author.display_name
+			self.user_id = author.id
+			self.amount = amount
+
+	def get_bet(message):
+		m = message.content.split(" ")
+		if len(m) < 2: return False
+		bet = m[1]
+		if not bet.isdigit(): return False
+		bet = int(bet)
+		if bet <= 0: return False
+		return bet
+
+	def get_adventurer(mission, search_id):
+		for Adventurer in mission.adventurers:
+			if str(Adventurer.user_id) == str(search_id): return Adventurer
+		return None
+
+	def get_mission(search_id):
+		for CheckMission in Mission.active_missions:
+			if str(CheckMission.channel.id) == str(search_id): return CheckMission
+		return None
 
 class BattleObject(object):
 	def __init__(self, BASE, channel):
@@ -166,3 +189,69 @@ class BattleObject(object):
 			f"The Arena has opened again and waits for new fighter. | {self.BASE.vars.TRIGGER_TWITCH}battle"
 		)
 		Battle.active_battles.remove(self)
+
+class MissionObject(object):
+	def __init__(self, BASE, channel):
+		self.BASE = BASE
+		self.channel = channel
+		self.adventurers = []
+		self.winner = []
+
+		self.warned = False
+		self.finished = False
+
+		self.time_left = ( 60 * 2 )
+		self.timeout = ( 60 * 10 )
+		self.win_chance = 0.625
+
+	async def start(self):
+		while not self.time_left == 0:
+			self.time_left -= 1
+			await asyncio.sleep(1)
+		await self.end()
+
+	async def end(self):
+		self.finished = True
+
+		for Adventurer in self.adventurers:
+			if random.random() < self.win_chance:
+				await self.BASE.modules._Twitch_.Utils.edit_currency(
+					self.BASE,
+					channel_id=self.channel.id,
+					user_id=Adventurer.user_id,
+					change=int(Adventurer.amount*1.5)
+				)
+				self.winner.append(Adventurer)
+
+		if len(self.winner) == 0:
+			await self.BASE.twitch.send_message(self.channel.name, "Mission failed! | The fights were to rough and everyone was lost...")
+
+		elif len(self.winner) == len(self.adventurers):
+			rep_addition = ", ".join(f"[{w.display_name} +{int(w.amount*1.5)}]" for w in self.winner)
+			rep_message = "Mission success! | The fights were rough, but everyone came back in one piece and got some loot: " + rep_addition
+			await self.BASE.twitch.send_message(self.channel.name, rep_message)
+
+		else:
+			rep_addition = ", ".join(f"[{w.display_name} +{int(w.amount*1.5)}]" for w in self.winner)
+			rep_message = "Mission success! | The fights were rough and some gone lost, the rest brought some loot back: " + rep_addition
+			await self.BASE.twitch.send_message(self.channel.name, rep_message)
+
+		await self.cooldown()
+
+	async def warn(self):
+		if self.warned: return
+		self.warned = True
+		await self.BASE.twitch.send_message(
+			self.channel.name,
+			f"No Missions available, visit again later"
+		)
+
+	async def cooldown(self):
+		while not self.timeout == 0:
+			self.timeout -= 1
+			await asyncio.sleep(1)
+		await self.BASE.twitch.send_message(
+			self.channel.name,
+			f"New missions are avariable, are you ready for more awesome loot? | {self.BASE.vars.TRIGGER_TWITCH}mission [amount]"
+		)
+		Mission.active_missions.remove(self)
