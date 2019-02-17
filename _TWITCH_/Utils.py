@@ -52,25 +52,29 @@ async def make_channel_settings(BASE, id):
 	"""
 	insert_ = dict()
 
-	insert_['channel_id'] = str(id)
-
-	insert_['active_quotes'] = False
 	insert_['active_custom'] = True
 	insert_['active_games'] = False
 	insert_['active_level'] = True
-
+	insert_['active_quotes'] = True
 	insert_['ban_links'] = False
-	insert_['regulars'] = []
-	insert_['link_whitelist'] = []
-
-	insert_['gain_currency'] = 1
-	insert_['gain_currency_message'] = 1
-
 	insert_['blacklist'] = []
-	insert_['blacklist_punishment'] = 0
+	insert_['blacklist_link_message'] = None
 	insert_['blacklist_notify'] = True
 	insert_['blacklist_message'] = None
-	insert_['blacklist_link_message'] = None
+	insert_['blacklist_punishment'] = 0
+	insert_['channel_id'] = str(id)
+	insert_['currency_name'] = None
+	insert_['currency_name_multi'] = None
+	insert_['gain_currency'] = 1
+	insert_['gain_currency_message'] = 1
+	insert_['gain_currency_active_multi'] = 1
+	insert_['link_whitelist'] = []
+	insert_['linked_osu_account'] = None
+	insert_['osurequestformat_osu'] = None
+	insert_['osurequestformat_twtich'] = None
+	insert_['owner_disable_normal'] = False
+	insert_['owner_disable_mod'] = False
+	insert_['regulars'] = []
 
 	BASE.PhaazeDB.insert(into="twitch/channel_settings", content=insert_)
 	BASE.modules.Console.INFO("New Twitch Setting DB entry")
@@ -150,6 +154,22 @@ async def make_channel_levels(BASE, id):
 
 	return []
 
+async def edit_currency(BASE, channel_id=None, user_id=None, change=0):
+	""" Edit user currency, returns True or False if < 0 """
+
+	if channel_id == None or user_id == None: raise AttributeError("missing 'channel_id' and 'user_id'")
+
+	if change < 0: #negative value
+		update_where = f"str(data['user_id']) == str({json.dumps(user_id)}) and (int(data.get('amount_currency', 0)) + int({json.dumps(change)})) >= 0"
+	else:
+		update_where = f"str(data['user_id']) == str({json.dumps(user_id)})"
+
+	update_content = f"data['amount_currency'] = int(data.get('amount_currency', 0)) + int({json.dumps(change)})"
+
+	res = BASE.PhaazeDB.update(of = f"twitch/level/level_{channel_id}", where=update_where, content=update_content, limit=1)
+	if res.get('hits', 0) == 1:	return True
+	return False
+
 #quotefiles
 async def get_channel_quotes(BASE, id, prevent_new=False):
 	"""
@@ -178,8 +198,7 @@ async def make_channel_quotes(BASE, id):
 
 	return []
 
-# API #
-
+# API
 def API_call(BASE, url):
 	#main api call
 	key = BASE.access.Twitch_API_Token

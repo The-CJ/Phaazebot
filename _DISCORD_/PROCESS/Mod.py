@@ -3,271 +3,91 @@
 import asyncio, discord, tabulate, json, datetime
 
 class Settings(object):
+
+	AVAILABLE = dict(
+		ai = "enable_chan_ai",
+		custom = "disable_chan_custom",
+		game = "enable_chan_game",
+		level = "disable_chan_level",
+		nonmod = "disable_chan_normal",
+		nsfw = "enable_chan_nsfw",
+		quote = "disable_chan_quotes"
+	)
+
 	async def Base(BASE, message, kwargs):
-		AVAILABLE = ["nsfw", "custom", "level", "quote", "ai", "nonmod", "game"]
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 1:
+			av = ", ".join(f"`{l}`" for l in Settings.AVAILABLE)
 			return await BASE.discord.send_message(
 				message.channel,
-				":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in AVAILABLE)))
+				f":warning: Missing option! Available are: {av}")
 
-		elif m[1] == "ai":
-			await Settings.ai(BASE, message, kwargs)
+		if m[1] not in Settings.AVAILABLE:
+			av = ", ".join(f"`{l}`" for l in Settings.AVAILABLE)
+			return await BASE.discord.send_message(
+				message.channel,
+				f":warning: `{m[1]}` is not a option! Available are: {av}")
 
-		if m[1] == "nsfw":
-			await Settings.nsfw(BASE, message, kwargs)
+		return await Settings.change_option(BASE, message, m[1], kwargs)
 
-		elif m[1] == "game" and "" == "-": #TODO:
-			await Settings.game(BASE, message, kwargs)
-
-		elif m[1] == "nonmod":
-			await Settings.nonmod(BASE, message, kwargs)
-
-		elif m[1] == "level":
-			await Settings.level(BASE, message, kwargs)
-
-		elif m[1] == "custom":
-			await Settings.custom(BASE, message, kwargs)
-
-		elif m[1] == "quote":
-			await Settings.quote(BASE, message, kwargs)
-
-		else:
-			av = ", ".join("`"+l+"`" for l in AVAILABLE)
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
-
-	# # #
-
-	async def nsfw(BASE, message, kwargs):
+	async def change_option(BASE, message, field, kwargs):
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
 
 		if len(m) == 2:
 			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
-		if m[2] in ['on', 'enable', 'yes']:
-			state = True
+		state = Settings.get_state(m[2])
 
-		elif m[2] in ['off', 'disable', 'no']:
-			state = False
+		if state == None:
+			return await BASE.discord.send_message(message.channel, f'@{message.display_name}, `{m[2]}` is a invalid state, try: `on`/`off`')
 
-		else:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+		server_setting = kwargs.get('server_setting', None)
+		if server_setting == None:
+			server_setting =  await BASE.modules._Discord_.Utils.get_server_setting(BASE, message.server.id)
 
-		server_setting = kwargs.get('server_setting', {})
-		channel_list = server_setting.get('enable_chan_nsfw', [])
+		db_field = Settings.AVAILABLE.get(field, None)
+		if db_field == None: raise AttributeError("Invalid db_field search: "+field)
 
-		if message.channel.id in channel_list and state:
-			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already has enabled NSFW")
+		channel_list = server_setting.get(db_field, [])
 
-		if message.channel.id not in channel_list and not state:
-			return await BASE.discord.send_message(message.channel, f":warning: Can't disable NSFW for {message.channel.mention}, it's already off.")
+		# options that are by default on, are added to the disables list when turned off,
+		# options that are by default off, are added to the enabled list when turned on,
 
-		if state:
+		enable_list = True if db_field.startswith("enable") else False
+		if (enable_list and message.channel.id in channel_list and state) or (not enable_list and message.channel.id not in channel_list and state) :
+			return await BASE.discord.send_message(
+				message.channel,
+				f":warning: {message.channel.mention} already has option `{field}` enabled")
+
+		elif (enable_list and not message.channel.id in channel_list and not state) or (not enable_list and message.channel.id in channel_list and not state) :
+			return await BASE.discord.send_message(
+				message.channel,
+				f":warning: {message.channel.mention} already has option `{field}` disabled")
+
+		if (enable_list and state) or (not enable_list and not state):
 			channel_list.append(message.channel.id)
-		else:
+		elif (enable_list and not state) or (not enable_list and state):
 			channel_list.remove(message.channel.id)
+		else: raise AttributeError("invalid operation")
 
 		BASE.PhaazeDB.update(
 			of = "discord/server_setting",
 			where = f"data['server_id'] == '{message.server.id}'",
-			content = dict(enable_chan_nsfw=channel_list)
+			content = f"data['{db_field}'] = {str(channel_list)}"
 		)
 		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.discord.send_message(message.channel, f":white_check_mark: NSFW Commands are now {state} in {message.channel.mention}")
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: Option: `{field}` is now {state} in {message.channel.mention}")
 
-	async def ai(BASE, message, kwargs):
-		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
+	def get_state(value):
+		if value is str: value = value.lower()
+		if value in [True, 'on', 'enable', 'yes']:
+			return True
 
-		if len(m) == 2:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
+		elif value in [False, 'off', 'disable', 'no']:
+			return False
 
-		if m[2] in ['on', 'enable', 'yes']:
-			state = True
-
-		elif m[2] in ['off', 'disable', 'no']:
-			state = False
-
-		else:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
-
-		server_setting = kwargs.get('server_setting', {})
-		channel_list = server_setting.get('enable_chan_ai', [])
-
-		if message.channel.id in channel_list and state:
-			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already has enabled AI Talks")
-
-		if message.channel.id not in channel_list and not state:
-			return await BASE.discord.send_message(message.channel, f":warning: Can't disable AI Talks for {message.channel.mention}, it's already off.")
-
-		if state:
-			channel_list.append(message.channel.id)
-		else:
-			channel_list.remove(message.channel.id)
-
-		BASE.PhaazeDB.update(
-			of = "discord/server_setting",
-			where = f"data['server_id'] == '{message.server.id}'",
-			content = dict(enable_chan_ai=channel_list)
-		)
-		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.discord.send_message(message.channel, f":white_check_mark: AI Talks Commands are now {state} in {message.channel.mention}")
-
-	async def custom(BASE, message, kwargs):
-		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
-
-		if len(m) == 2:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
-
-		if m[2] in ['on', 'enable', 'yes']:
-			state = True
-
-		elif m[2] in ['off', 'disable', 'no']:
-			state = False
-
-		else:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
-
-		server_setting = kwargs.get('server_setting', {})
-		channel_list = server_setting.get('disable_chan_custom', [])
-
-		if message.channel.id not in channel_list and state:
-			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already allowes Custom commands")
-
-		if message.channel.id in channel_list and not state:
-			return await BASE.discord.send_message(message.channel, f":warning: Can't disable Custom commands in {message.channel.mention}, it's already disabled.")
-
-		if not state:
-			channel_list.append(message.channel.id)
-		else:
-			channel_list.remove(message.channel.id)
-
-		BASE.PhaazeDB.update(
-			of = "discord/server_setting",
-			where = f"data['server_id'] == '{message.server.id}'",
-			content = dict(disable_chan_custom=channel_list)
-		)
-		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.discord.send_message(message.channel, f":white_check_mark: Custom commands are now {state} in {message.channel.mention}")
-
-	async def quote(BASE, message, kwargs):
-		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
-
-		if len(m) == 2:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
-
-		if m[2] in ['on', 'enable', 'yes']:
-			state = True
-
-		elif m[2] in ['off', 'disable', 'no']:
-			state = False
-
-		else:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
-
-		server_setting = kwargs.get('server_setting', {})
-		channel_list = server_setting.get('disable_chan_quotes', [])
-
-		if message.channel.id not in channel_list and state:
-			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already allowes Quote commands")
-
-		if message.channel.id in channel_list and not state:
-			return await BASE.discord.send_message(message.channel, f":warning: Can't disable Quote commands in {message.channel.mention}, it's already disabled.")
-
-		if not state:
-			channel_list.append(message.channel.id)
-		else:
-			channel_list.remove(message.channel.id)
-
-		BASE.PhaazeDB.update(
-			of = "discord/server_setting",
-			where = f"data['server_id'] == '{message.server.id}'",
-			content = dict(disable_chan_quotes=channel_list)
-		)
-		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.discord.send_message(message.channel, f":white_check_mark: Quote commands are now {state} in {message.channel.mention}")
-
-	async def level(BASE, message, kwargs):
-		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
-
-		if len(m) == 2:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
-
-		if m[2] in ['on', 'enable', 'yes']:
-			state = True
-
-		elif m[2] in ['off', 'disable', 'no']:
-			state = False
-
-		else:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
-
-		server_setting = kwargs.get('server_setting', {})
-		channel_list = server_setting.get('disable_chan_level', [])
-
-		if message.channel.id not in channel_list and state:
-			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already has enabled Level System")
-
-		if message.channel.id in channel_list and not state:
-			return await BASE.discord.send_message(message.channel, f":warning: Can't disable Level system in {message.channel.mention}, it's already disabled.")
-
-		if not state:
-			channel_list.append(message.channel.id)
-		else:
-			channel_list.remove(message.channel.id)
-
-		BASE.PhaazeDB.update(
-			of = "discord/server_setting",
-			where = f"data['server_id'] == '{message.server.id}'",
-			content = dict(disable_chan_level=channel_list)
-		)
-		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.discord.send_message(
-			message.channel,
-			f":white_check_mark: Level system is now {state} in {message.channel.mention}\n"\
-			f"(affects member XP gain and the use of level commands like: {BASE.vars.TRIGGER_DISCORD}level, {BASE.vars.TRIGGER_DISCORD}leaderboard, etc.)"
-		)
-
-	async def nonmod(BASE, message, kwargs):
-		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*2):].lower().split()
-
-		if len(m) == 2:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
-
-		if m[2] in ['on', 'enable', 'yes']:
-			state = True
-
-		elif m[2] in ['off', 'disable', 'no']:
-			state = False
-
-		else:
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
-
-		server_setting = kwargs.get('server_setting', {})
-		channel_list = server_setting.get('disable_chan_normal', [])
-
-		if message.channel.id not in channel_list and state:
-			return await BASE.discord.send_message(message.channel, f":warning: {message.channel.mention} already has allowes normal commands")
-
-		if message.channel.id in channel_list and not state:
-			return await BASE.discord.send_message(message.channel, f":warning: Can't disable normal commands in {message.channel.mention}, it's already disabled.")
-
-		if not state:
-			channel_list.append(message.channel.id)
-		else:
-			channel_list.remove(message.channel.id)
-
-		BASE.PhaazeDB.update(
-			of = "discord/server_setting",
-			where = f"data['server_id'] == '{message.server.id}'",
-			content = dict(disable_chan_normal=channel_list)
-		)
-		state = "**disabled** :red_circle:" if not state else "**enabled** :large_blue_circle:"
-		return await BASE.discord.send_message(
-			message.channel,
-			f":white_check_mark: All non-moderator commands are now {state} in {message.channel.mention}\n"\
-			f"(Custom commands are not affected)"
-		)
+		else: return None
 
 class Quote(object):
 
