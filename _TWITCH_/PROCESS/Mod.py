@@ -44,6 +44,7 @@ class Quote(object):
 			return await BASE.twitch.send_message(message.channel_name, f' There is not quote with index "{str(_id_)}"')
 
 class Settings(object):
+
 	AVAILABLE = dict(
 		custom = "active_custom",
 		level = "active_level",
@@ -64,7 +65,6 @@ class Settings(object):
 
 	async def change_option(BASE, message, field, kwargs):
 		m = message.content[len(BASE.vars.TRIGGER_TWITCH):].lower().split()
-
 
 		if len(m) == 2:
 			return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, "{m[0]} {m[1]}" is missing a valid state, try: "on"/"off"')
@@ -98,7 +98,7 @@ class Settings(object):
 		return await BASE.twitch.send_message(message.channel_name, f'@{message.display_name}, setting: "{m[1]}" is now {state}')
 
 	def get_state(value):
-		value = value.lower()
+		if value is str: value = value.lower()
 		if value in [True, 'on', 'enable', 'yes']:
 			return True
 
