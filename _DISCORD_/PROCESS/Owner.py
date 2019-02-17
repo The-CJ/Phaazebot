@@ -3,29 +3,81 @@
 import asyncio, discord
 
 class Master(object):
+
+	AVAILABLE = dict(
+		custom = "owner_disable_custom",
+		level = "owner_disable_level",
+		mod = "owner_disable_mod",
+		normal = "owner_disable_normal"
+	)
+
 	async def Base(BASE, message, kwargs):
-		available = ['normal', 'mod', 'level', 'custom']
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
 		if len(m) == 1:
-			return await BASE.discord.send_message(message.channel, ":warning: Missing option! Available are: {0}".format(", ".join("`"+l+"`" for l in available)))
+			av = ", ".join(f"`{l}`" for l in Master.AVAILABLE)
+			return await BASE.discord.send_message(
+				message.channel,
+				f":warning: Missing option! Available are: {av}")
 
-		if m[1] == "normal":
-			await Master.normal(BASE, message, kwargs)
+		if m[1] not in Master.AVAILABLE:
+			av = ", ".join(f"`{l}`" for l in Master.AVAILABLE)
+			return await BASE.discord.send_message(
+				message.channel,
+				f":warning: `{m[1]}` is not a option! Available are: {av}")
 
-		elif m[1] == "mod":
-			await Master.mod(BASE, message, kwargs)
+		return await Master.change_option(BASE, message, m[1], kwargs)
 
-		elif m[1] == "level":
-			await Master.level(BASE, message, kwargs)
+	async def change_option(BASE, message, field, kwargs):
+		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
-		elif m[1] == "custom":
-			await Master.custom(BASE, message, kwargs)
+		if len(m) == 2:
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[0]} {m[1]}` is missing a valid state,\nTry: `on`/`off`")
 
-		else:
-			av = ", ".join("`"+l+"`" for l in available)
-			return await BASE.discord.send_message(message.channel, f":warning: `{m[1]}` is not a option! Available are: {av}")
+		state = Master.get_state(m[2])
 
+		if state == None:
+			return await BASE.discord.send_message(message.channel, f":warning: `{m[2]}` is a invalid state,\nTry: `on`/`off`")
+
+		db_field = Master.AVAILABLE.get(field, None)
+		if db_field == None: raise AttributeError("Invalid db_field search: "+field)
+
+		server_setting = kwargs.get('server_setting', None)
+		if server_setting == None:
+			server_setting =  await BASE.modules._Discord_.Utils.get_server_setting(BASE, message.server.id)
+
+		current_state = server_setting.get(db_field, False)
+
+		# state == True means to set the DB Field False, so we swap
+		state = not state
+
+		if not current_state and not state:
+			return await BASE.discord.send_message(message.channel, f":warning: Master setting: `{m[1]}` is already active")
+
+		if current_state and state:
+			return await BASE.discord.send_message(message.channel, f":warning: Master setting: `{m[1]}` is already disabled")
+
+		BASE.PhaazeDB.update(
+			of = "discord/server_setting",
+			where = f"data['server_id'] == '{message.server.id}'",
+			content = f"data['{db_field}'] = {str(state)}"
+		)
+
+		state = "**disabled** :red_circle:" if state else "**enabled** :large_blue_circle:"
+		return await BASE.discord.send_message(message.channel, f":white_check_mark: Master setting `{field}` is now serverwide {state}")
+
+	def get_state(value):
+		if value is str: value = value.lower()
+		if value in [True, 'on', 'enable', 'yes']:
+			return True
+
+		elif value in [False, 'off', 'disable', 'no']:
+			return False
+
+		else: return None
+
+
+	###
 	async def normal(BASE, message, kwargs):
 		m = message.content[(len(BASE.vars.TRIGGER_DISCORD)*3):].lower().split()
 
