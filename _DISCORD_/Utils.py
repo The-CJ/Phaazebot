@@ -51,40 +51,33 @@ async def make_server_file(BASE, id):
 	"""
 	insert_ = dict()
 
-	insert_['server_id'] = id
 	insert_['autorole'] = None
-
-	insert_['welcome_msg'] = None
-	insert_['welcome_msg_priv'] = None
-	insert_['welcome_chan'] = None
-
-	insert_['leave_msg'] = None
-	insert_['leave_chan'] = None
-	insert_['level_announce_channel'] = None
-
+	insert_['ban_links'] = False
+	insert_['ban_links_role'] = []
+	insert_['ban_links_whitelist'] = []
 	insert_['blacklist'] = []
 	insert_['blacklist_punishment'] = "leave"
-
-	insert_['ban_links'] = False
-	insert_['ban_links_whitelist'] = []
-	insert_['ban_links_role'] = []
-
-	insert_['enable_chan_ai'] = []
-	insert_['enable_chan_nsfw'] = []
-	insert_['enable_chan_game'] = []
-
-	insert_['disable_chan_normal'] = []
-	insert_['disable_chan_level'] = []
 	insert_['disable_chan_custom'] = []
+	insert_['disable_chan_level'] = []
+	insert_['disable_chan_normal'] = []
 	insert_['disable_chan_quotes'] = []
-
-	insert_['owner_disable_normal'] = False
-	insert_['owner_disable_mod'] = False
-	insert_['owner_disable_level'] = False
+	insert_['enable_chan_ai'] = []
+	insert_['enable_chan_game'] = []
+	insert_['enable_chan_nsfw'] = []
+	insert_['leave_chan'] = None
+	insert_['leave_msg'] = None
+	insert_['level_announce_channel'] = None
+	insert_['level_custom_message'] = None
 	insert_['owner_disable_custom'] = False
-
-	insert_['track_options'] = []
+	insert_['owner_disable_level'] = False
+	insert_['owner_disable_mod'] = False
+	insert_['owner_disable_normal'] = False
+	insert_['server_id'] = id
 	insert_['track_channel'] = None
+	insert_['track_options'] = []
+	insert_['welcome_chan'] = None
+	insert_['welcome_msg'] = None
+	insert_['welcome_msg_priv'] = None
 
 	BASE.modules.Console.INFO(f"New Discord Server Settings DB entry: {str(id)}")
 
