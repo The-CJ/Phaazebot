@@ -3,6 +3,7 @@ import asyncio
 import threading
 import traceback
 import PhaazeDBC as PhaazeDB
+from Utils import CLI_Args
 
 class BASE(object):
 	""" contains everything, does everything, is everything -> can be found anywhere """
@@ -71,11 +72,14 @@ class BASE(object):
 			self.TRIGGER_OSU = config.get('trigger_osu', '!')
 			self.TRIGGER_TWITCH = config.get('trigger_twitch', '!')
 
+			self.DEFAULT_TWITCH_CURRENCY = config.get('default_twitch_currency', 'Credit')
+			self.DEFAULT_TWITCH_CURRENCY_MULTI = config.get('default_twitch_currency_multi', 'Credits')
+
 			self.osu_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
+			self.twitch_logo = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504" #TODO: remove this
 
 			self.developer_id = config.get('developer', []) #override id's for discord #TODO: remove this
 			self.doujin_help = open("VARS/doujin_help.txt","r").read().format("<",self.TRIGGER_DISCORD) #TODO: remove this
-			self.twitch_logo = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504" #TODO: remove this
 
 	class ACCESS(object): #BASE.access
 		def __init__(self, config):
@@ -125,6 +129,22 @@ class BASE(object):
 
 		class _Discord_(object):
 
+			import _DISCORD_.Blacklist as Blacklist
+
+			import _DISCORD_.Custom as Custom
+
+			import _DISCORD_.Discord_Events as Discord_Events
+
+			import _DISCORD_.Levels as Levels
+
+			import _DISCORD_.Open_Channel as Open
+
+			import _DISCORD_.Priv_Channel as Priv
+
+			import _DISCORD_.Twitch as Twitch
+
+			import _DISCORD_.Utils as Utils
+
 			class CMD(object):
 				import _DISCORD_.CMD.Normal as Normal
 
@@ -142,22 +162,6 @@ class BASE(object):
 				import _DISCORD_.PROCESS.Owner as Owner
 
 				import _DISCORD_.PROCESS.Dev as Dev
-
-			import _DISCORD_.Blacklist as Blacklist
-
-			import _DISCORD_.Custom as Custom
-
-			import _DISCORD_.Discord_Events as Discord_Events
-
-			import _DISCORD_.Levels as Levels
-
-			import _DISCORD_.Open_Channel as Open
-
-			import _DISCORD_.Priv_Channel as Priv
-
-			import _DISCORD_.Twitch as Twitch
-
-			import _DISCORD_.Utils as Utils
 
 		class _Osu_(object):
 			import _OSU_.Base as Base
@@ -262,27 +266,30 @@ class BASE(object):
 		print("PhaazeOS will be shutdown as soon as possible.")
 
 #get config
+if CLI_Args.get("no-args", False) == False:
+	try:
+		file_ = open("config.json", "r").read()
+		structure = json.loads(file_)
 
-try:
-	file_ = open("config.json", "r").read()
-	structure = json.loads(file_)
+	except json.decoder.JSONDecodeError:
+		print('config.json could not be loaded, invalid json')
+		structure=None
 
-except json.decoder.JSONDecodeError:
-	print('config.js could not be loaded, invalid json')
-	structure=None
+	except FileNotFoundError:
+		print('config.json could not be read, no file found')
+		structure=None
 
-except FileNotFoundError:
-	print('config.js could not be read, no file found')
-	structure=None
+	except Exception as e:
+		print('unknown error')
+		print(str(e))
+		structure=None
 
-except Exception as e:
-	print('unknown error')
-	print(str(e))
-	structure=None
-
-finally:
-	if structure == None: exit("PhaazeOS not started -> missing configuration")
-	configuration = structure
+	finally:
+		if structure == None: exit("PhaazeOS not started -> missing configuration")
+		configuration = structure
+else:
+	print('Starting without configuration')
+	configuration = dict()
 
 #load it up
 BASE = BASE(config=configuration)
