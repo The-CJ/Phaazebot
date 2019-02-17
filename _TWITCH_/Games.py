@@ -25,18 +25,21 @@ class Battle(object):
 		has_enough = await BASE.modules._Twitch_.Utils.edit_currency(BASE, channel_id=message.channel_id, user_id=message.user_id, change=-200)
 		if not has_enough: return
 
+		channel_settings = kwargs.get('channel_settings', None)
+		if channel_settings == None:
+			channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+
 		# generate battle
-		battle = BattleObject(BASE, message.channel)
+		battle = BattleObject(BASE, message.channel, channel_settings=channel_settings )
 		battle.fighter.append(Battle.Fighter(message.author))
 
 		# start timer and append as active
 		asyncio.ensure_future(battle.start())
 		Battle.active_battles.append(battle)
 
-		currency_name_multi = kwargs.get('channel_settings', dict()).get("currency_name_multi", BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI)
 		return await BASE.twitch.send_message(
 			message.channel_name,
-			f'Battle has been opened, type: "{BASE.vars.TRIGGER_TWITCH}battle" to join. (you need 200 {currency_name_multi})'
+			f'Battle has been opened, type: "{BASE.vars.TRIGGER_TWITCH}battle" to join. (you need 200 {battle.currency_name_multi})'
 		)
 
 	async def add_fighter(BASE, message, battle, kwargs):
@@ -91,7 +94,11 @@ class Mission(object):
 		has_enough = await BASE.modules._Twitch_.Utils.edit_currency(BASE, channel_id=message.channel_id, user_id=message.user_id, change=(bet*-1))
 		if not has_enough: return
 
-		mission = MissionObject(BASE, message.channel)
+		channel_settings = kwargs.get('channel_settings', None)
+		if channel_settings == None:
+			channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+
+		mission = MissionObject(BASE, message.channel, channel_settings=channel_settings)
 
 		mission.adventurers.append(Mission.Adventurer(message.author, bet))
 
@@ -143,10 +150,13 @@ class Mission(object):
 		return None
 
 class BattleObject(object):
-	def __init__(self, BASE, channel):
+	def __init__(self, BASE, channel, channel_settings = dict()):
 		self.BASE = BASE
 		self.channel = channel
 		self.fighter = []
+
+		self.currency_name = channel_settings.get('currency_name', self.BASE.vars.DEFAULT_TWITCH_CURRENCY) or self.BASE.vars.DEFAULT_TWITCH_CURRENCY
+		self.currency_name_multi = channel_settings.get('currency_name_multi', self.BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI) or self.BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI
 
 		self.warned = False
 		self.finished = False
@@ -168,7 +178,7 @@ class BattleObject(object):
 		await self.BASE.modules._Twitch_.Utils.edit_currency(self.BASE, self.channel.id, winner.user_id, win)
 		await self.BASE.twitch.send_message(
 			self.channel.name,
-			f"The fight is over, the winner is: {winner.display_name}, Congratulation! You won {win} Credits."
+			f"The fight is over, the winner is: {winner.display_name}, Congratulation! You won {win} {self.currency_name_multi}."
 		)
 		await self.cooldown()
 
@@ -191,11 +201,14 @@ class BattleObject(object):
 		Battle.active_battles.remove(self)
 
 class MissionObject(object):
-	def __init__(self, BASE, channel):
+	def __init__(self, BASE, channel, channel_settings = dict()):
 		self.BASE = BASE
 		self.channel = channel
 		self.adventurers = []
 		self.winner = []
+
+		self.currency_name = channel_settings.get('currency_name', self.BASE.vars.DEFAULT_TWITCH_CURRENCY) or self.BASE.vars.DEFAULT_TWITCH_CURRENCY
+		self.currency_name_multi = channel_settings.get('currency_name_multi', self.BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI) or self.BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI
 
 		self.warned = False
 		self.finished = False

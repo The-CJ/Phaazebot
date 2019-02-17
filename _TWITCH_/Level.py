@@ -93,11 +93,13 @@ async def stats(BASE, message, kwargs):
 
 	user = user['data'][0]
 
+	currency_name_multi = channel_settings.get('currency_name_multi', BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI) or BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI
+
 	#owner
 	if message.channel_name == user.get('user_name', None):
 		currency = str( user.get("amount_currency", 0) )
 		display_name = user.get('user_display_name', None)
-		return await BASE.twitch.send_message(message.channel_name, f"{display_name}, Credits: {currency} | Level: ∞ (Channel Owner)")
+		return await BASE.twitch.send_message(message.channel_name, f"{display_name}, {currency_name_multi}: {currency} | Level: ∞ (Channel Owner)")
 
 	currency = str(user.get("amount_currency", 0))
 	time = user.get("amount_time", 1) * 5
@@ -108,9 +110,9 @@ async def stats(BASE, message, kwargs):
 	time_to_next = str(round((time_to_next * 5) / 60, 1))
 
 	if u == 0:
-		resp = f"@{message.display_name}, Credits: {currency} | Level: {current_level} ({hours}h/{time_to_next}h)"
+		resp = f"@{message.display_name}, {currency_name_multi}: {currency} | Level: {current_level} ({hours}h/{time_to_next}h)"
 	elif u == 1:
-		resp = f"Stats for: {search_user}, Credits: {currency} | Level: {current_level} ({hours}h/{time_to_next}h)"
+		resp = f"Stats for: {search_user}, {currency_name_multi}: {currency} | Level: {current_level} ({hours}h/{time_to_next}h)"
 
 	return await BASE.twitch.send_message(message.channel_name, resp)
 
