@@ -68,7 +68,6 @@ async def stats(BASE, message, kwargs):
 		channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
 		kwargs['channel_settings'] = channel_settings
 
-
 	#level disabled
 	if not channel_settings.get("active_level", False):
 		return
@@ -143,6 +142,9 @@ async def leaderboard(BASE, message, kwargs): #TODO: x
 	if not channel_settings.get("active_level", False):
 		return
 
+	bot_list_db = BASE.PhaazeDB.select(of="setting/known_twitch_bots")
+	bot_list = [bot["name"].lower() for bot in bot_list_db['data'] if bot.get("name", None) != None]
+
 	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
 
 	search_time = True
@@ -158,11 +160,13 @@ async def leaderboard(BASE, message, kwargs): #TODO: x
 		sort_list = sorted(channel_level_stats, key=lambda user: user.get("amount_currency", 0), reverse=True)
 
 	return_list = []
-	check_size = 3 if len(sort_list) > 3 else len(sort_list)
+	place = 0
 
-	for x in range(check_size):
-		user = sort_list[x]
-		place = x+1
+	for user in sort_list:
+		check_name = user.get("user_name", "[N/A]")
+		if check_name in bot_list: continue #ignore bots
+
+		place = place+1
 		name = user.get("user_display_name", "[N/A]")
 		if search_time:
 			time = user.get("amount_time", 0)
@@ -171,6 +175,8 @@ async def leaderboard(BASE, message, kwargs): #TODO: x
 		else:
 			currency = user.get("amount_currency", 0)
 			return_list.append(f"#{place}: {name} [{currency}]")
+
+		if place == 3: break
 
 	aws = " | ".join(x for x in return_list)
 
