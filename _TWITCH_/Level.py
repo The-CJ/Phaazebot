@@ -150,7 +150,7 @@ async def leaderboard(BASE, message, kwargs): #TODO: x
 	search_time = True
 
 	if len(m) >= 2:
-		if m[1].lower() == "currency": search_time = False
+		if m[1].lower() in ["currency", "money", "gold"]: search_time = False
 
 	channel_level_stats = await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, message.channel_id)
 
@@ -165,6 +165,7 @@ async def leaderboard(BASE, message, kwargs): #TODO: x
 	for user in sort_list:
 		check_name = user.get("user_name", "[N/A]")
 		if check_name in bot_list: continue #ignore bots
+		if search_time and check_name == message.channel_name: continue #ignore channel owner in time
 
 		place = place+1
 		name = user.get("user_display_name", "[N/A]")
