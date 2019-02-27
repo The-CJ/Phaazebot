@@ -15,6 +15,10 @@ async def Base(BASE, message, **kwargs):
 		BASE.modules.Console.DEBUG(f"Level gain in {message.channel_name} not possible, Twitch Streams are disabled", require="twitch:level")
 		return
 
+	#level disabled
+	if not channel_settings.get("active_level", False):
+		return
+
 	#only if channel is live
 	if not message.channel_id in BASE.modules._Twitch_.Streams.Main.live:
 		return
@@ -60,6 +64,10 @@ async def stats(BASE, message, kwargs):
 	asyncio.ensure_future(timeout_stats(BASE, message.channel_id))
 
 	channel_settings = kwargs.get('channel_settings', None)
+	if channel_settings == None:
+		channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+		kwargs['channel_settings'] = channel_settings
+
 
 	#level disabled
 	if not channel_settings.get("active_level", False):
@@ -125,7 +133,11 @@ async def leaderboard(BASE, message, **kwargs): #TODO: x
 	#timeout this channel
 	asyncio.ensure_future(timeout_stats(BASE, message.channel_id))
 
+	# get settings
 	channel_settings = kwargs.get('channel_settings', None)
+	if channel_settings == None:
+		channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+		kwargs['channel_settings'] = channel_settings
 
 	#level disabled = no leaderboard
 	if not channel_settings.get("active_level", False):
@@ -133,51 +145,33 @@ async def leaderboard(BASE, message, **kwargs): #TODO: x
 
 	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
 
-	def get_lenght(check):
-		if check.isdigit():
-			if 0 < int(check) < 6:
-				return int(check)
-		else:
-			return 3
+	seach_time = False
 
-	if len(package["m"]) >= 2:
-		number = get_lenght(package["m"][1])
+	if len(m) >= 2:
+		if m[1].lower() == "time": seach_time = True
+
+	channel_level_stats = await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, message.channel_id)
+
+	if seach_time:
+		sort_list = sorted(channel_level_stats, key=lambda user: user.get("amount_time", 0), reverse=True)
 	else:
-		number = 3
+		sort_list = sorted(channel_level_stats, key=lambda user: user.get("amount_currency", 0), reverse=True)
 
-	level_file = await package["BASE"].moduls._Twitch_.Utils.get_twitch_level_file(package["BASE"], package["message"].room_id)
-	all_user = level_file.get("user", [])
+	return_list = []
+	check_size = 3 if len(sort_list) > 3 else len(sort_list)
 
-	if art == "time":
-		cool_list = sorted(all_user, key=lambda user: user["time"], reverse=True)
-	elif art == "money":
-		cool_list = sorted(all_user, key=lambda user: user["amount"], reverse=True)
-	else:
-		return
+	for x in range(check_size):
+		user = sort_list[x]
+		place = x+1
+		name = user.get("user_display_name", "[N/A]")
+		currency = user.get("amount_currency", 0)
+		time = user.get("amount_time", 0)
+		calc_time = str( round( (time*5)/60, 1) )
+		return_list.append(f"#{place}: {name} [{calc_time}h - {currency}]")
 
-	end_list = []
-	start_count = 0
-	for user in cool_list:
-		if start_count == number:
-			break
+	aws = " | ".join(x for x in return_list)
 
-		try:
-			if user["name"].lower() == message.channel:
-				continue
-			if user["name"].lower() in BASE.vars.twitch_bots:
-				continue
-
-			N = user["call_name"]
-			A = str(user["amount"])
-			T = str( round( (user["time"]*5)/60, 1) )
-			NU = str(start_count+1)
-
-			end_list.append("#{3}: {0} [{2}h - {1} C]".format(N, A, T, NU))
-			start_count += 1
-		except:
-			continue
-
-	return await BASE.Twitch_IRC_connection.send_message(message.channel, " | ".join(x for x in end_list))
+	return await BASE.twtich.send_message(message.channel_name, aws + " Full leaderboard: https://phaaze.net/twitch/level/"+message.channel_name)
 
 async def timeout_stats(BASE, room_id):
 	cooldown_stats.append(room_id)
