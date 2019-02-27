@@ -126,7 +126,7 @@ async def stats(BASE, message, kwargs):
 
 	return await BASE.twitch.send_message(message.channel_name, resp)
 
-async def leaderboard(BASE, message, kwargs): #TODO: x
+async def leaderboard(BASE, message, kwargs):
 	if message.channel_id in cooldown_stats: return
 
 	#timeout this channel
@@ -150,7 +150,9 @@ async def leaderboard(BASE, message, kwargs): #TODO: x
 	search_time = True
 
 	if len(m) >= 2:
-		if m[1].lower() in ["currency", "money", "gold"]: search_time = False
+		currency_name_multi = channel_settings.get('currency_name_multi', BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI) or BASE.vars.DEFAULT_TWITCH_CURRENCY_MULTI
+		currency_name = channel_settings.get('currency_name', BASE.vars.DEFAULT_TWITCH_CURRENCY) or BASE.vars.DEFAULT_TWITCH_CURRENCY
+		if m[1].lower() in ["currency", "money", "gold", currency_name_multi.lower(), currency_name.lower()]: search_time = False
 
 	channel_level_stats = await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, message.channel_id)
 
