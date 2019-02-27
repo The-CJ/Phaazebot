@@ -5,7 +5,10 @@ import asyncio, json
 cooldown_stats = []
 
 async def Base(BASE, message, **kwargs):
-	channel_settings = kwargs.get('channel_settings', {})
+	channel_settings = kwargs.get('channel_settings', None)
+	if channel_settings == None:
+		channel_settings = await BASE.modules._Twitch_.Utils.get_channel_settings(BASE, message.channel_id)
+		kwargs['channel_settings'] = channel_settings
 
 	# twitch stream module not loaded, means we can not know if channel is live or not
 	if BASE.modules._Twitch_.Streams.Main == None:
@@ -116,10 +119,19 @@ async def stats(BASE, message, kwargs):
 
 	return await BASE.twitch.send_message(message.channel_name, resp)
 
-async def leaderboard(BASE, message, package, art="time"): #TODO: x
-	settings = await package["BASE"].moduls._Twitch_.Utils.get_twitch_file(package["BASE"], package["message"].room_id)
-	stats_active = settings.get("stats", False)
-	if not stats_active: return
+async def leaderboard(BASE, message, **kwargs): #TODO: x
+	if message.channel_id in cooldown_stats: return
+
+	#timeout this channel
+	asyncio.ensure_future(timeout_stats(BASE, message.channel_id))
+
+	channel_settings = kwargs.get('channel_settings', None)
+
+	#level disabled = no leaderboard
+	if not channel_settings.get("active_level", False):
+		return
+
+	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
 
 	def get_lenght(check):
 		if check.isdigit():
