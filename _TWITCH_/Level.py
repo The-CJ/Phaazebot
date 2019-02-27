@@ -127,7 +127,7 @@ async def stats(BASE, message, kwargs):
 
 	return await BASE.twitch.send_message(message.channel_name, resp)
 
-async def leaderboard(BASE, message, **kwargs): #TODO: x
+async def leaderboard(BASE, message, kwargs): #TODO: x
 	if message.channel_id in cooldown_stats: return
 
 	#timeout this channel
@@ -145,14 +145,14 @@ async def leaderboard(BASE, message, **kwargs): #TODO: x
 
 	m = message.content[len(BASE.vars.TRIGGER_TWITCH):].split(" ")
 
-	seach_time = False
+	search_time = True
 
 	if len(m) >= 2:
-		if m[1].lower() == "time": seach_time = True
+		if m[1].lower() == "currency": search_time = False
 
 	channel_level_stats = await BASE.modules._Twitch_.Utils.get_channel_levels(BASE, message.channel_id)
 
-	if seach_time:
+	if search_time:
 		sort_list = sorted(channel_level_stats, key=lambda user: user.get("amount_time", 0), reverse=True)
 	else:
 		sort_list = sorted(channel_level_stats, key=lambda user: user.get("amount_currency", 0), reverse=True)
@@ -164,14 +164,17 @@ async def leaderboard(BASE, message, **kwargs): #TODO: x
 		user = sort_list[x]
 		place = x+1
 		name = user.get("user_display_name", "[N/A]")
-		currency = user.get("amount_currency", 0)
-		time = user.get("amount_time", 0)
-		calc_time = str( round( (time*5)/60, 1) )
-		return_list.append(f"#{place}: {name} [{calc_time}h - {currency}]")
+		if search_time:
+			time = user.get("amount_time", 0)
+			calc_time = str( round( (time*5)/60, 1) )
+			return_list.append(f"#{place}: {name} [{calc_time}h]")
+		else:
+			currency = user.get("amount_currency", 0)
+			return_list.append(f"#{place}: {name} [{currency}]")
 
 	aws = " | ".join(x for x in return_list)
 
-	return await BASE.twtich.send_message(message.channel_name, aws + " Full leaderboard: https://phaaze.net/twitch/level/"+message.channel_name)
+	return await BASE.twitch.send_message(message.channel_name, aws + f" (https://phaaze.net/twitch/level/{message.channel_name})")
 
 async def timeout_stats(BASE, room_id):
 	cooldown_stats.append(room_id)
