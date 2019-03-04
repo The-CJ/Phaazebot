@@ -33,6 +33,9 @@ class Init_Main(object):
 			need_to_check = self.BASE.PhaazeDB.select(of="twitch/stream", where="data['chat_managed'] or data['alert_discord_channel']").get("data", [])
 			live_streams = self.BASE.modules._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in need_to_check if s.get('twitch_id', None) != None], search="id")
 
+			# No API response
+			if live_streams == None: await asyncio.sleep(self.refresh_time * 0.75)
+
 			# no channel are live -> no updates
 			if len(live_streams) == 0:
 				self.BASE.PhaazeDB.update(of="twitch/stream", content=dict(live=False))
