@@ -9,6 +9,9 @@ async def Base(BASE, message, **kwargs):
 	if check.startswith("stats"):
 		return await BASE.modules._Twitch_.Level.stats(BASE, message, kwargs)
 
+	if check.startswith("leaderboard"):
+		return await BASE.modules._Twitch_.Level.leaderboard(BASE, message, kwargs)
+
 	if check.startswith("quote"):
 		return await BASE.modules._Twitch_.PROCESS.Normal.Quote.Base(BASE, message, kwargs)
 
