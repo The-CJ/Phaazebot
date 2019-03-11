@@ -57,11 +57,11 @@ class root(object):
 																							#
 		from _API_.Account import main as account											#/api/account
 																							#
-		from _API_.Admin import eval_command as admin_eval_command							#/admin/eval_command
-		from _API_.Admin import status as admin_status										#/admin/status
-		from _API_.Admin import control as admin_control									#/admin/control
-		from _API_._Admin_.manage_user import main as admin_manage_user						#/admin/manage-user
-		from _API_._Admin_.manage_type import main as admin_manage_type						#/admin/manage-type
+		from _API_.Admin import eval_command as admin_eval_command							#/api/admin/eval_command
+		from _API_.Admin import status as admin_status										#/api/admin/status
+		from _API_.Admin import control as admin_control									#/api/admin/control
+		from _API_._Admin_.manage_user import main as admin_manage_user						#/api/admin/manage-user
+		from _API_._Admin_.manage_type import main as admin_manage_type						#/api/admin/manage-type
 																							#
 		from _API_.Wiki import main as wiki													#/api/wiki
 
@@ -73,6 +73,7 @@ class root(object):
 		from _WEB_.js.Base import main as js												#/js
 		from _WEB_.css.Base import main as css												#/css
 		from _WEB_.img.Base import main as img												#/img
+		from _WEB_.img.Base import manage as img_manage										#/img/manage
 																							#
 		from _WEB_.processing.Base import get_favicon as favicon							#/favicon.ico
 		from _WEB_.processing.Base import main as main										#/
@@ -106,12 +107,15 @@ def webserver(BASE):
 	server.router.add_route('GET', '/login', root.web.login)
 	server.router.add_route('GET', '/account', root.web.account)
 	server.router.add_route('GET', '/account/create', root.web.account_create)
+	server.router.add_route('GET', '/wiki{x:/?}{site:.*}', root.web.wiki)
+
+	# /admin
 	server.router.add_route('GET', '/admin', root.web.admin_main)
 	server.router.add_route('GET', '/admin/manage-user', root.web.admin_manage_user)
 	server.router.add_route('GET', '/admin/manage-type', root.web.admin_manage_type)
 	server.router.add_route('GET', '/admin/manage-system', root.web.admin_manage_system)
-	server.router.add_route('GET', '/wiki{x:/?}{site:.*}', root.web.wiki)
 
+	# /discord
 	server.router.add_route('GET', '/discord/invite', root.web.discord_invite)
 
 	# /api
@@ -126,6 +130,7 @@ def webserver(BASE):
 	server.router.add_route('*',   '/api/{path:.*}', root.api.unknown)
 
 	# /js /img /css
+	server.router.add_route('GET', '/img/manage', root.web.img_manage)
 	server.router.add_route('GET', '/img{file:.*}', root.web.img)
 	server.router.add_route('GET', '/css{file:.*}', root.web.css)
 	server.router.add_route('GET', '/js{file:.*}', root.web.js)
