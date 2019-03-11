@@ -89,6 +89,8 @@ class root(object):
 		from _WEB_.processing.admin.manage_type import main as admin_manage_type			#/admin/manage-type
 		from _WEB_.processing.admin.manage_system import main as admin_manage_system		#/admin/manage-system
 																							#
+		from _WEB_.processing.discord.invite import main as discord_invite					#/discord/invite
+																							#
 		from _WEB_.processing.wiki.wiki import main as wiki									#/wiki
 
 def webserver(BASE):
@@ -109,6 +111,8 @@ def webserver(BASE):
 	server.router.add_route('GET', '/admin/manage-type', root.web.admin_manage_type)
 	server.router.add_route('GET', '/admin/manage-system', root.web.admin_manage_system)
 	server.router.add_route('GET', '/wiki{x:/?}{site:.*}', root.web.wiki)
+
+	server.router.add_route('GET', '/discord/invite', root.web.discord_invite)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
