@@ -1,4 +1,3 @@
-
 import json, mimetypes
 
 #BASE.modules._Web_.Base.root.web.img
@@ -21,6 +20,7 @@ async def main(self, request):
 	try:
 		img_file = open(path_str, 'rb').read()
 	except Exception as e:
+		self.root.BASE.modules.Console.DEBUG(f"Exception in file open: {str(e)}", require="web:img")
 		img_file = None
 
 	# no file found
