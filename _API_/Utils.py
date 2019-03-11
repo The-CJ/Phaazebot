@@ -2,8 +2,17 @@
 import asyncio, json
 import hashlib, random, string
 
-#get user infos
 async def get_user_informations(self, request, **kwargs):
+	if hasattr(request, "user_info"):
+		self.root.BASE.modules.Console.DEBUG(f"Used stored infos: {str(request.user_info)}", require="api:debug")
+		return request.user_info
+
+	userI = await _get_user_informations(self, request, **kwargs)
+	request.user_info = userI
+	return userI
+
+#get user infos
+async def _get_user_informations(self, request, **kwargs):
 
 	_GET = dict()
 	_POST = dict()
@@ -23,6 +32,7 @@ async def get_user_informations(self, request, **kwargs):
 	#or cookie
 	if phaaze_session == None:
 		phaaze_session = request.cookies.get('phaaze_session', None)
+
 	if phaaze_session != None:
 		join_user_roles = dict(of="role", store="role", where="role['id'] in user['role']", fields=["name"])
 		join_user = dict(of="user", store="user", where="session['user_id'] == user['id']", join=join_user_roles)
