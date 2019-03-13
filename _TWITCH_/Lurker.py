@@ -33,7 +33,10 @@ async def Base(BASE):
 				# NOTE: making it actully name based, because Twitch is to dumb to send ID's - Thanks
 				# FIXME: Maybe sometimes fix this to ID, someday
 				viewer = [ twitch_bot_channel.users[user_name].name for user_name in twitch_bot_channel.users ]
-				user_to_check = BASE.PhaazeDB.select(of=f"twitch/level/level_{twitch_bot_channel_id}", where=f"data['user_name'] in {str(viewer)}", limit=len(viewer) ).get("data", [])
+				try:
+					user_to_check = BASE.PhaazeDB.select(of=f"twitch/level/level_{twitch_bot_channel_id}", where=f"data['user_name'] in {str(viewer)}", limit=len(viewer) ).get("data", [])
+				except:
+					continue # a channel that never has a talking viewer -> never generated a level container
 
 				#check if user has level up
 				for user in user_to_check:
