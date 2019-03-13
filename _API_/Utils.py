@@ -4,7 +4,7 @@ import hashlib, random, string
 
 async def get_user_informations(self, request, **kwargs):
 	if hasattr(request, "user_info"):
-		self.root.BASE.modules.Console.DEBUG(f"Used stored infos: {str(request.user_info)}", require="api:debug")
+		self.BASE.modules.Console.DEBUG(f"Used stored infos: {str(request.user_info)}", require="api:debug")
 		return request.user_info
 
 	userI = await _get_user_informations(self, request, **kwargs)

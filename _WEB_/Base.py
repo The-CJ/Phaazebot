@@ -73,7 +73,6 @@ class root(object):
 		from _WEB_.js.Base import main as js												#/js
 		from _WEB_.css.Base import main as css												#/css
 		from _WEB_.img.Base import main as img												#/img
-		from _WEB_.img.Base import manage as img_manage										#/img/manage
 																							#
 		from _WEB_.processing.Base import get_favicon as favicon							#/favicon.ico
 		from _WEB_.processing.Base import main as main										#/
@@ -89,6 +88,7 @@ class root(object):
 		from _WEB_.processing.admin.manage_user import main as admin_manage_user			#/admin/manage-user
 		from _WEB_.processing.admin.manage_type import main as admin_manage_type			#/admin/manage-type
 		from _WEB_.processing.admin.manage_system import main as admin_manage_system		#/admin/manage-system
+		from _WEB_.processing.admin.manage_image import main as admin_manage_image			#/admin/manage-image
 																							#
 		from _WEB_.processing.discord.invite import main as discord_invite					#/discord/invite
 																							#
@@ -114,6 +114,7 @@ def webserver(BASE):
 	server.router.add_route('GET', '/admin/manage-user', root.web.admin_manage_user)
 	server.router.add_route('GET', '/admin/manage-type', root.web.admin_manage_type)
 	server.router.add_route('GET', '/admin/manage-system', root.web.admin_manage_system)
+	server.router.add_route('GET', '/admin/manage-image', root.web.admin_manage_image)
 
 	# /discord
 	server.router.add_route('GET', '/discord/invite', root.web.discord_invite)
@@ -130,7 +131,6 @@ def webserver(BASE):
 	server.router.add_route('*',   '/api/{path:.*}', root.api.unknown)
 
 	# /js /img /css
-	server.router.add_route('GET', '/img/manage', root.web.img_manage)
 	server.router.add_route('GET', '/img{file:.*}', root.web.img)
 	server.router.add_route('GET', '/css{file:.*}', root.web.css)
 	server.router.add_route('GET', '/js{file:.*}', root.web.js)
@@ -139,7 +139,7 @@ def webserver(BASE):
 	server.router.add_route('*',   '/{x:.*}', root.web.page_not_found)
 
 	# main handler to catch errors
-	server.middlewares.append(root.middleware_handler)
+	#server.middlewares.append(root.middleware_handler)
 
 	###################################
 

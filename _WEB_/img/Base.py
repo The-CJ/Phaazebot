@@ -1,6 +1,7 @@
 import json, mimetypes
 
-#BASE.modules._Web_.Base.root.web.img
+# BASE.modules._Web_.Base.root.web.img
+# /img/{file}
 async def main(self, request):
 
 	file_name = request.match_info.get('file', None)
