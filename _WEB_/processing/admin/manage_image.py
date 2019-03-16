@@ -8,7 +8,7 @@ async def main(self, request):
 		return await self.login(request, msg="Login required")
 
 	if not self.root.check_role(user_info, ['admin', 'image uploader']):
-		return await self.action_not_allowed(request, msg="Admin rights reqired")
+		return await self.action_not_allowed(request, msg="Insufficient rights.")
 
 	site = self.root.html_root
 	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info, active="admin")

@@ -22,6 +22,14 @@ async def main(self, request):
 		)
 
 async def get(self, request):
+	user_info = await self.root.get_user_info(request)
+
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
+
+	if not self.root.check_role(user_info, ['image uploader','admin']):
+		return await self.action_not_allowed(request, msg="Insufficient rights.")
+
 	search_term = request.query.get("image", "")
 	limit = int(request.query.get("limit", 50)) if request.query.get("limit", 50).isdigit() else 50
 
