@@ -32,10 +32,12 @@ async def get(self, request):
 
 	search_term = request.query.get("image", "")
 	limit = int(request.query.get("limit", 50)) if request.query.get("limit", 50).isdigit() else 50
+	offset = int(request.query.get("offset", 0)) if request.query.get("offset", 0).isdigit() else 0
 
 	files = []
 
 	for f in os.listdir("_WEB_/img/"):
+		if offset > 0: offset -= 1; continue
 		if limit <= 0: break
 		if f.endswith(".py") or (f.startswith("__") and f.endswith("__")): continue
 		if not search_term in f: continue
