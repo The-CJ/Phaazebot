@@ -31,8 +31,8 @@ async def get(self, request):
 		return await self.action_not_allowed(request, msg="Insufficient rights.")
 
 	search_term = request.query.get("image", "")
-	limit = int(request.query.get("limit", 50)) if request.query.get("limit", 50).isdigit() else 50
-	offset = int(request.query.get("offset", 0)) if request.query.get("offset", 0).isdigit() else 0
+	limit = int(request.query.get("limit", "50")) if request.query.get("limit", "50").isdigit() else 50
+	offset = int(request.query.get("offset", "0")) if request.query.get("offset", "0").isdigit() else 0
 
 	files = []
 

@@ -11,6 +11,18 @@
       <span>Search image:&nbsp;</span>
       <input type="text" name="image_search" placeholder="image name" class="text-white">
     </div>
+    <div class="center-item-row">
+      <div class="col">
+        <button type="submit" class="btn blue darken-3">Search</button>
+        <button type="reset" class="btn blue">Reset</button>
+      </div>
+      <div class="col text-right">
+        <button type="button" class="btn blue darken-3" onclick="image_offset(-1)"><</button>
+        <span>Site:</span>
+        <input type="number" name="site_index" class="text-white" value="0" style="width: 2em; padding:0;">
+        <button type="button" class="btn blue" onclick="image_offset(1)">></button>
+      </div>
+    </div>
   </form>
 
   <!-- result -->
