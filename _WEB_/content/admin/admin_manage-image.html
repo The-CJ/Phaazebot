@@ -15,6 +15,9 @@
       <div class="col">
         <button type="submit" class="btn blue darken-3">Search</button>
         <button type="reset" class="btn blue">Reset</button>
+        <a href="/admin/manage-image/new">
+          <button type="button" class="btn green">Add new</button>
+        </a>
       </div>
       <div class="col text-right">
         <button type="button" class="btn blue darken-3" onclick="image_offset(-1)"><</button>
@@ -41,8 +44,10 @@
       <img class="image-img" src="" alt="" height="50">
     </div>
     <a class="image-name"></a>
-    <button type="button" class="btn blue darken-2"><i class="material-icons">settings</i></button>
-    <button type="button" class="btn red darken-2"><i class="material-icons">delete</i></button>
+    <a edit href="">
+      <button type="button" class="btn blue darken-2"><i class="material-icons">settings</i></button>
+    </a>
+    <button type="button" onclick="delete_image(this)" class="btn red darken-2"><i class="material-icons">delete</i></button>
 
   </div>
 

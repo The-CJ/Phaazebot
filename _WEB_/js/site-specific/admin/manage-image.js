@@ -26,10 +26,25 @@ function build_result(data) {
   var rs = $("#result_space").html("");
   for (image of data.files) {
     var image_object = $("[tpl] > .image-preview").clone();
+
     image_object.find(".image-name").text(image);
     image_object.find(".image-name").attr("href", "/img/"+image);
+
+    image_object.find("[edit]").attr("href", "/admin/manage-image/edit?edit="+image);
+
     image_object.find(".image-img").attr("src", "/img/"+image+"?sizeY=50");
     image_object.find(".image-img").attr("alt", "Image at: /img/"+image);
     rs.append(image_object);
+  }
+}
+
+function delete_image(b) {
+  var name = $(b).closest(".image-preview").find('.image-name').text();
+  var e = confirm("sure you wanna delete: "+name);
+  if (e) {
+    $.post("/api/admin/manage-image/delete", {name:name})
+    .done(function () {
+      load_images();
+    });
   }
 }
