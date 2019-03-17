@@ -122,4 +122,36 @@ async def upload(self, request):
 	)
 
 async def delete(self, request):
-	pass
+	user_info = await self.root.get_user_info(request)
+
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
+
+	if not self.root.check_role(user_info, ['image uploader','admin']):
+		return await self.action_not_allowed(request, msg="Insufficient rights.")
+
+	_POST = await request.post()
+	image_to_delete = _POST.get("name", None)
+
+	if image_to_delete in [None, ""]:
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg="field 'name' is invalid")),
+			status=400,
+			content_type='application/json'
+		)
+
+	file_name = image_to_delete.replace("..", "").strip("/")
+	file_path = f"{self.root.BASE.vars.IMAGE_PATH}{file_name}"
+	if not os.path.isfile(file_path):
+		return self.root.response(
+			body=json.dumps(dict(status=400, msg=f"file '{file_name}' not found")),
+			status=400,
+			content_type='application/json'
+		)
+
+	os.remove(file_path)
+	return self.root.response(
+		body=json.dumps(dict(status=200, msg=f"file '{file_name}' successfull removed")),
+		status=200,
+		content_type='application/json'
+	)
