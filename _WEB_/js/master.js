@@ -140,6 +140,14 @@ function copy_data_fields(from, to) {
 
 // utils
 
+function JSONparse(j) {
+  try {
+    return JSON.parse(j);
+  } catch (e) {
+    return j;
+  }
+}
+
 function upload_file(args, url, success_function, fail_function) {
   if (!(url && args)) {return false;}
 
@@ -150,15 +158,15 @@ function upload_file(args, url, success_function, fail_function) {
   var request = new XMLHttpRequest();
   request.onload = function () {
     if (200 <= request.status && request.status < 300) {
-      success_function( JSON.parse(request.responseText) );
+      success_function( JSONparse(request.responseText) );
     } else if (request.status >= 500) {
       fail_function( Array() );
     } else {
-      fail_function( JSON.parse(request.responseText) );
+      fail_function( JSONparse(request.responseText) );
     }
   }
   request.onerror = function () {
-    fail_function(JSON.parse(request.responseText));
+    fail_function(JSONparse(request.responseText));
   }
   request.open("POST", url);
   request.send(formData);

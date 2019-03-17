@@ -1,26 +1,36 @@
-#BASE.modules._Web_.Base.root.discord.invite
+import asyncio
 
-def invite(BASE, info, root, dump, msg="", server_id=""):
-	return_header = [('Content-Type','text/html')]
+DISCORD_BOT_CLIENT_ID = "180679855422177280"
 
-	site = open("_WEB_\content\discord\discord_invite.html", 'r').read()
+# /discord/invite
+async def main(self, request, msg="", server_id=None):
+	user_info = await self.root.get_user_info(request)
 
-	site = site.replace("<!-- message -->", msg)
+	main_site = open("_WEB_/content/discord/discord_invite.html", 'r').read()
+	current_navbar = self.root.html_header(self.root.BASE, user_info = user_info, active="discord")
 
-	if server_id != "":
-		invite_link = "https://discordapp.com/oauth2/authorize?client_id=180679855422177280&scope=bot&permissions=8&guild_id="+server_id
-	else:
-		invite_link = "https://discordapp.com/oauth2/authorize?client_id=180679855422177280&scope=bot&permissions=8"
+	invite_link = f"https://discordapp.com/oauth2/authorize?client_id={DISCORD_BOT_CLIENT_ID}&scope=bot&permissions=8"
 
-	site = site.replace("<!-- server_invite -->", invite_link)
+	check_id = server_id or request.query.get("server_id", None)
+	if check_id != None:
+		invite_link += f"&guild_id={check_id}"
 
-	site = BASE.modules._Web_.Utils.format_html_functions(BASE, site, infos = info)
-	class r (object):
-		content = site.encode("UTF-8")
-		response = 200
-		header = return_header
-	return r
+	main_site = self.root.format_html(main_site,
+		message=msg,
+		invite_link=invite_link
+	)
 
+	site = self.root.format_html(self.root.html_root,
+		title="Phaaze | Discord - Invite",
+		header=current_navbar,
+		main=main_site
+	)
+
+	return self.root.response(
+		body=site,
+		status=200,
+		content_type='text/html'
+	)
 
 
 

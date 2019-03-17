@@ -57,11 +57,12 @@ class root(object):
 																							#
 		from _API_.Account import main as account											#/api/account
 																							#
-		from _API_.Admin import eval_command as admin_eval_command							#/admin/eval_command
-		from _API_.Admin import status as admin_status										#/admin/status
-		from _API_.Admin import control as admin_control									#/admin/control
-		from _API_._Admin_.manage_user import main as admin_manage_user						#/admin/manage-user
-		from _API_._Admin_.manage_type import main as admin_manage_type						#/admin/manage-type
+		from _API_.Admin import eval_command as admin_eval_command							#/api/admin/eval_command
+		from _API_.Admin import status as admin_status										#/api/admin/status
+		from _API_.Admin import control as admin_control									#/api/admin/control
+		from _API_._Admin_.manage_user import main as admin_manage_user						#/api/admin/manage-user
+		from _API_._Admin_.manage_type import main as admin_manage_type						#/api/admin/manage-type
+		from _API_._Admin_.manage_image import main as admin_manage_image					#/api/admin/manage-image
 																							#
 		from _API_.Wiki import main as wiki													#/api/wiki
 
@@ -88,6 +89,9 @@ class root(object):
 		from _WEB_.processing.admin.manage_user import main as admin_manage_user			#/admin/manage-user
 		from _WEB_.processing.admin.manage_type import main as admin_manage_type			#/admin/manage-type
 		from _WEB_.processing.admin.manage_system import main as admin_manage_system		#/admin/manage-system
+		from _WEB_.processing.admin.manage_image import main as admin_manage_image			#/admin/manage-image
+																							#
+		from _WEB_.processing.discord.invite import main as discord_invite					#/discord/invite
 																							#
 		from _WEB_.processing.wiki.wiki import main as wiki									#/wiki
 
@@ -104,11 +108,17 @@ def webserver(BASE):
 	server.router.add_route('GET', '/login', root.web.login)
 	server.router.add_route('GET', '/account', root.web.account)
 	server.router.add_route('GET', '/account/create', root.web.account_create)
+	server.router.add_route('GET', '/wiki{x:/?}{site:.*}', root.web.wiki)
+
+	# /admin
 	server.router.add_route('GET', '/admin', root.web.admin_main)
 	server.router.add_route('GET', '/admin/manage-user', root.web.admin_manage_user)
 	server.router.add_route('GET', '/admin/manage-type', root.web.admin_manage_type)
 	server.router.add_route('GET', '/admin/manage-system', root.web.admin_manage_system)
-	server.router.add_route('GET', '/wiki{x:/?}{site:.*}', root.web.wiki)
+	server.router.add_route('GET', '/admin/manage-image', root.web.admin_manage_image)
+
+	# /discord
+	server.router.add_route('GET', '/discord/invite', root.web.discord_invite)
 
 	# /api
 	server.router.add_route('GET', '/api{x:\/?}', root.api.nothing)
@@ -118,6 +128,7 @@ def webserver(BASE):
 	server.router.add_route('*',   '/api/admin/control', root.api.admin_control)
 	server.router.add_route('*',   '/api/admin/manage-user{x:/?}{method:.*}', root.api.admin_manage_user)
 	server.router.add_route('*',   '/api/admin/manage-type{x:/?}{method:.*}', root.api.admin_manage_type)
+	server.router.add_route('*',   '/api/admin/manage-image{x:/?}{method:.*}', root.api.admin_manage_image)
 	server.router.add_route('*',   '/api/wiki{x:/?}{method:.*}', root.api.wiki)
 	server.router.add_route('*',   '/api/{path:.*}', root.api.unknown)
 
@@ -130,7 +141,7 @@ def webserver(BASE):
 	server.router.add_route('*',   '/{x:.*}', root.web.page_not_found)
 
 	# main handler to catch errors
-	server.middlewares.append(root.middleware_handler)
+	#server.middlewares.append(root.middleware_handler)
 
 	###################################
 
