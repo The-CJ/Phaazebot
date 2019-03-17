@@ -75,6 +75,8 @@ class BASE(object):
 			self.DEFAULT_TWITCH_CURRENCY = config.get('default_twitch_currency', 'Credit')
 			self.DEFAULT_TWITCH_CURRENCY_MULTI = config.get('default_twitch_currency_multi', 'Credits')
 
+			self.IMAGE_PATH = config.get('image_path', '_WEB_/img/')
+
 			self.osu_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
 			self.twitch_logo = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504" #TODO: remove this
 

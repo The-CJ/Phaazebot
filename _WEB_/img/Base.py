@@ -14,7 +14,7 @@ async def main(self, request):
 			text=json.dumps( dict( error="no_file_defined",status=400 ) )
 		)
 	file_name = file_name.strip('/')
-	path_str = f"_WEB_/img/{file_name}"
+	path_str = f"{self.root.BASE.vars.IMAGE_PATH}{file_name}"
 	path_str = path_str.replace('..','')
 
 	# open file
