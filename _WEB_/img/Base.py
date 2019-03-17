@@ -1,4 +1,5 @@
-import json, mimetypes
+import json, mimetypes, io
+from PIL import Image
 
 # BASE.modules._Web_.Base.root.web.img
 # /img/{file}
@@ -19,7 +20,8 @@ async def main(self, request):
 
 	# open file
 	try:
-		img_file = open(path_str, 'rb').read()
+		#img_file = Image.open(path_str)
+		img_file = open(path_str, "rb")
 	except Exception as e:
 		self.root.BASE.modules.Console.DEBUG(f"Exception in file open: {str(e)}", require="web:img")
 		img_file = None
@@ -33,7 +35,17 @@ async def main(self, request):
 		)
 
 	content_type = mimetypes.guess_type(path_str, strict=True)
+
 	# file found -> return
+	#finished_image = None
+	#defaultX, defaultY = img_file.size
+	#sizeX = int(request.query.get("sizeX", defaultX )) if request.query.get("sizeX", str(defaultX) ).isdigit() else defaultX
+	#sizeY = int(request.query.get("sizeY", defaultY )) if request.query.get("sizeY", str(defaultY) ).isdigit() else defaultY
+	#finished_image = img_file.resize((sizeX, sizeY))
+
+	#bio = io.BytesIO()
+	#finished_image.save(bio)
+
 	return self.root.response(
 		status=200,
 		content_type=content_type[0],
