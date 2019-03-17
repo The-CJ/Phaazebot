@@ -52,7 +52,19 @@ async def get(self, request):
 	)
 
 async def upload(self, request):
-	pass
+	user_info = await self.root.get_user_info(request)
+
+	if user_info == None:
+		return await self.action_not_allowed(request, msg="Login required")
+
+	if not self.root.check_role(user_info, ['image uploader','admin']):
+		return await self.action_not_allowed(request, msg="Insufficient rights.")
+
+	return self.root.response(
+		body=json.dumps(dict(status=204)),
+		status=204,
+		content_type='application/json'
+	)
 
 async def delete(self, request):
 	pass
