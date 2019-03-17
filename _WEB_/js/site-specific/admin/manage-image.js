@@ -60,6 +60,7 @@ function upload_image() {
   var p = "/api/admin/manage-image/upload";
   function s(data) {
     _hide_loading();
+    $("#upload_modal")-modal('hide');
     _show_message(data.msg, "green");
   }
   function fa(data) {

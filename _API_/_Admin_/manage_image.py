@@ -46,6 +46,7 @@ async def get(self, request):
 		limit -= 1
 		files.append(f)
 
+	files = sorted(files)
 	return self.root.response(
 		body=json.dumps(dict(status=200, files=files)),
 		status=200,
