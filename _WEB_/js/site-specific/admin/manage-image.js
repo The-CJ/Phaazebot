@@ -23,5 +23,13 @@ function image_offset(value) {
 }
 
 function build_result(data) {
-  $("#result_space").text(data.files);
+  var rs = $("#result_space").html("");
+  for (image of data.files) {
+    var image_object = $("[tpl] > .image-preview").clone();
+    image_object.find(".image-name").text(image);
+    image_object.find(".image-name").attr("href", "/img/"+image);
+    image_object.find(".image-img").attr("src", "/img/"+image+"?sizeY=50");
+    image_object.find(".image-img").attr("alt", "Image at: /img/"+image);
+    rs.append(image_object);
+  }
 }
