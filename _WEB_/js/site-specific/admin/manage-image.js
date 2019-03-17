@@ -43,7 +43,12 @@ function delete_image(b) {
   var e = confirm("sure you wanna delete: "+name);
   if (e) {
     $.post("/api/admin/manage-image/delete", {name:name})
-    .done(function () {
+    .fail(function (data) {
+      m = data.responseJSON ? data.responseJSON.msg : "unknown";
+      _show_message(m, "red");
+    })
+    .done(function (data) {
+      _show_message(data.msg, "green");
       load_images();
     });
   }
