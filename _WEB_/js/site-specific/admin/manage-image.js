@@ -30,7 +30,7 @@ function build_result(data) {
     image_object.find(".image-name").text(image);
     image_object.find(".image-name").attr("href", "/img/"+image);
 
-    image_object.find("[edit]").attr("href", "/admin/manage-image/edit?edit="+image);
+    //image_object.find("[edit]").attr("href", "/admin/manage-image/edit?edit="+image);
 
     image_object.find(".image-img").attr("src", "/img/"+image+"?sizeY=50");
     image_object.find(".image-img").attr("alt", "Image at: /img/"+image);
@@ -47,4 +47,25 @@ function delete_image(b) {
       load_images();
     });
   }
+}
+
+function upload_image() {
+  var name = $("#upload_modal [name=name]").val();
+  if (name == "") { _show_message("Name can't be empty", "orange"); return; }
+  var f = $("#upload_modal [name=file]");
+  var r = {
+    "name": name,
+    "file": f[0].files[0],
+  }
+  var p = "/api/admin/manage-image/upload";
+  function s(data) {
+    _hide_loading();
+    _show_message(data.msg, "green");
+  }
+  function fa(data) {
+    _hide_loading();
+    _show_message(data.msg ? data.msg : "Critical Error", "red");
+  }
+  _show_loading("Uploading...");
+  upload_file(r, p, s, fa);
 }

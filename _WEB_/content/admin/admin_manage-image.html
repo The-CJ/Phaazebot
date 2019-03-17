@@ -15,9 +15,7 @@
       <div class="col">
         <button type="submit" class="btn blue darken-3">Search</button>
         <button type="reset" class="btn blue">Reset</button>
-        <a href="/admin/manage-image/new">
-          <button type="button" class="btn green">Add new</button>
-        </a>
+        <button type="button" class="btn green" onclick="$('#upload_modal').modal('show')">Add/Edit</button>
       </div>
       <div class="col text-right">
         <button type="button" class="btn blue darken-3" onclick="image_offset(-1)"><</button>
@@ -37,6 +35,26 @@
 
 </div>
 
+<div class="modal fade" id="upload_modal">
+  <form class="" action="javascript:upload_image()" method="post">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header green white-text">
+          <h3>Upload a new image<br>Or overwrite a exiting one</h3>
+        </div>
+        <div class="modal-body text-center">
+          <input type="text" name="name" placeholder="Name of the file">
+          <input type="file" name="file" class="">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" onclick="$('#upload_modal').modal('hide')">Cancle</button>
+          <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
 <div hidden tpl>
 
   <div class="image-preview center-item-row">
@@ -44,7 +62,7 @@
       <img class="image-img" src="" alt="" height="50">
     </div>
     <a class="image-name"></a>
-    <a edit href="">
+    <a edit hidden href="">
       <button type="button" class="btn blue darken-2"><i class="material-icons">settings</i></button>
     </a>
     <button type="button" onclick="delete_image(this)" class="btn red darken-2"><i class="material-icons">delete</i></button>

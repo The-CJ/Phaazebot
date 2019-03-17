@@ -1,6 +1,6 @@
 import asyncio
 
-# /admin/manage-user
+# /admin/manage-image
 async def main(self, request):
 	user_info = await self.root.get_user_info(request)
 
