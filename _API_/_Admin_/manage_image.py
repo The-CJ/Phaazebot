@@ -1,5 +1,6 @@
 import asyncio, json, os, io
 from PIL import Image
+from PIL.ImagePalette import ImagePalette
 
 # /api/admin/manage-image
 async def main(self, request):
@@ -90,8 +91,23 @@ async def upload(self, request):
 		)
 
 	try:
-		image_file = Image.open(io.BytesIO(image_file))
-		image_file.save(f"{self.root.BASE.vars.IMAGE_PATH}{image_name}")
+
+		#TODO: Need to fix this
+
+		#image_data = io.BytesIO(image_file)
+		#print(Image.open(image_data).verify())
+		# image_file.save(
+		# 	f"{self.root.BASE.vars.IMAGE_PATH}{image_name}",
+		# 	transparency=image_file.info.get("transparency", 255),
+		# 	save_all=True,
+		# 	interlace=False,
+		# 	include_color_table=True,
+		# 	palette=ImagePalette,
+		# 	disposal=2
+		# )
+		ff = open(f"{self.root.BASE.vars.IMAGE_PATH}{image_name}", "wb")
+		ff.write(image_file)
+		ff.close()
 	except:
 		return self.root.response(
 			body=json.dumps(dict(status=400, msg="file is not a valid image file")),
