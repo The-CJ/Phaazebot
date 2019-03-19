@@ -34,19 +34,17 @@ class Init_Main(object):
 			live_streams = self.BASE.modules._Twitch_.Utils.get_streams( self.BASE, [s['twitch_id'] for s in need_to_check if s.get('twitch_id', None) != None], search="id")
 
 			# No API response
-			if live_streams == None: await asyncio.sleep(self.refresh_time * 0.75)
+			# twitch gave nothing, retry soon
+			# nothing usual, just twitch things
+			if live_streams == None: 
+			    self.BASE.modules.Console.ERROR("No Twitch API Response")
+                            await asyncio.sleep(self.refresh_time * 0.75)
+                            continue
 
 			# no channel are live -> no updates
-			if len(live_streams) == 0:
+			elif len(live_streams) == 0:
 				self.BASE.PhaazeDB.update(of="twitch/stream", content=dict(live=False))
 				await asyncio.sleep(self.refresh_time)
-				continue
-
-			#twitch gave nothing, retry soon
-			#nothing usual, just twitch things
-			elif live_streams == None:
-				self.BASE.modules.Console.ERROR("No Twitch API Response")
-				await asyncio.sleep(self.refresh_time * 0.75)
 				continue
 
 			#set all live channel for other modules
