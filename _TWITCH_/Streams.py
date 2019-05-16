@@ -37,9 +37,9 @@ class Init_Main(object):
 			# twitch gave nothing, retry soon
 			# nothing usual, just twitch things
 			if live_streams == None: 
-			    self.BASE.modules.Console.ERROR("No Twitch API Response")
-                            await asyncio.sleep(self.refresh_time * 0.75)
-                            continue
+				self.BASE.modules.Console.ERROR("No Twitch API Response")
+				await asyncio.sleep(self.refresh_time * 0.75)
+				continue
 
 			# no channel are live -> no updates
 			elif len(live_streams) == 0:
