@@ -1,6 +1,7 @@
 import logging
 from Utils import CLI_Args
-from systemd.journal import JournalHandler
+try: from systemd.journal import JournalHandler
+except ImportError:	pass
 
 LOG = logging.getLogger('PhaazeOS')
 LOG.setLevel(logging.DEBUG)
@@ -23,7 +24,7 @@ class ColoredLogger(logging.Formatter):
 
 SHF = ColoredLogger("\033[00m[%(levelname)s] %(message)s\033[00m")
 
-if CLI_Args.get('logging', 'console') == "systemd":
+if CLI_Args.get('logging', 'console') == "systemd" and 'systemd' in sys.modules:
 	JH = JournalHandler()
 	JH.setFormatter(SHF)
 	LOG.addHandler(JH)

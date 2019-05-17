@@ -6,6 +6,7 @@ tabulate
 aiohttp
 cchardet
 systemd
+markdown
 git+https://github.com/The-CJ/osu_irc.git#egg=osu_irc
 git+https://github.com/The-CJ/twitch_irc.git#egg=twitch_irc
 git+https://github.com/The-CJ/PhaazeDB_connection.git#egg=PhaazeDBC
