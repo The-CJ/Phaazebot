@@ -26,8 +26,10 @@ class ConfigParser(object):
 		if not arg:
 			return self.content
 		else:
-			if len(arg) > 1: return self.content.get(arg[0], arg[1])
-			else: return self.content.get(arg[0], Undefined())
+			if len(arg) > 1:
+				return self.content.get(arg[0].lower(), arg[1])
+			else:
+				return self.content.get(arg[0], Undefined())
 
 	def loadJSON(self) -> None:
 		try:
