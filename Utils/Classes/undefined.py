@@ -12,3 +12,5 @@ class Undefined():
 
 	def __le__(self, value): return False # <=
 	def __lt__(self, value): return False # <
+
+	def __bool__(self): return False # if 
