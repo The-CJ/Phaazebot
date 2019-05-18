@@ -1,6 +1,6 @@
 import time
 import PhaazeDBC
-from Utils.Classes.storeclasses import ActiveStore, VarsStore, AccessStore
+from Utils.Classes.storeclasses import ActiveStore, VarsStore, AccessStore, LimitStore
 from Utils.config import ConfigParser
 
 # platforms
@@ -19,8 +19,11 @@ class Phaazebot(object):
 		# a class filled with permanent vars, mainly from external sources or whatever
 		self.vars:VarsStore = VarsStore(self.config)
 
-		#the key to everything, that will be needed to connect to everything thats not ourself
+		# the key to everything, that will be needed to connect to everything thats not ourself
 		self.access:AccessStore = AccessStore(self.config)
+
+		# contains user limits for all addeble things, like custom command amount
+		self.limit:LimitStore = LimitStore(self.config)
 
 		# all featured "superclasses" aka, stuff that makes calls to somewhere
 		self.discord:PhaazebotDiscord = None
