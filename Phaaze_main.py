@@ -44,67 +44,6 @@ class BASE(object):
 		twitter = False
 		youtube = False
 
-	class ACTIVE(object): #BASE.active
-		def __init__(self, config):
-			self.main = bool(config.get('main', True))
-			self.api = bool(config.get('api', False))
-			self.web = bool(config.get('web', False))
-
-			self.discord = bool(config.get('discord', False))
-			self.twitch_irc = bool(config.get('twitch_irc', False))
-			self.twitch_alert = bool(config.get('twitch_alert', False))
-			self.twitch_stream = bool(config.get('twitch_stream', False))
-
-			self.osu_irc = bool(config.get('osu_irc', False))
-
-			self.twitter = bool(config.get('twitter', False))
-			self.youtube = bool(config.get('youtube', False))
-
-			self.osu = False #TODO: remove this
-			self.ai  = False #TODO: remove this
-			self.music = False #TODO: remove this
-
-	class VARS(object): #BASE.vars
-		def __init__(self, config):
-			self.Logo = open("VARS/logo.txt", "r").read()
-
-			self.TRIGGER_DISCORD = config.get('trigger_discord', '>')
-			self.TRIGGER_OSU = config.get('trigger_osu', '!')
-			self.TRIGGER_TWITCH = config.get('trigger_twitch', '!')
-
-			self.DEFAULT_TWITCH_CURRENCY = config.get('default_twitch_currency', 'Credit')
-			self.DEFAULT_TWITCH_CURRENCY_MULTI = config.get('default_twitch_currency_multi', 'Credits')
-
-			self.IMAGE_PATH = config.get('image_path', '_WEB_/img/')
-
-			self.osu_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
-			self.twitch_logo = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504" #TODO: remove this
-
-			self.developer_id = config.get('developer', []) #override id's for discord #TODO: remove this
-			self.doujin_help = open("VARS/doujin_help.txt","r").read().format("<",self.TRIGGER_DISCORD) #TODO: remove this
-
-	class ACCESS(object): #BASE.access
-		def __init__(self, config):
-			self.Twitch_Admin_Token = config.get('Twitch_Admin_Token', '')
-			self.Twitch_API_Token = config.get('Twitch_API_Token', '')
-			self.Twitch_IRC_Token = config.get('Twitch_IRC_Token', '')
-
-			self.Discord = config.get('Discord', '')
-
-			self.Osu_API_Token = config.get('Osu_API_Token', '')
-			self.Osu_IRC_Token = config.get('Osu_IRC_Token', '')
-
-			self.Cleverbot_Token = config.get('Cleverbot_Token', '')
-
-			self.Mashape = config.get('Mashape', '') #i need this for..eee ... urban dict or so... dunno, remove someday
-
-			self.PhaazeDB_token = config.get('PhaazeDB_token', '')
-
-			self.twitter_token = config.get('twitter_token','')
-			self.twitter_token_key = config.get('twitter_token_key','')
-			self.twitter_consumer_key = config.get('twitter_consumer_key','')
-			self.twitter_consumer_secret = config.get('twitter_consumer_secret','')
-
 	class LIMIT(object): #BASE.limit
 		def __init__(self, config):
 			self.DISCORD_PRIVATE_COOLDOWN = config.get("discord_private_cooldown", 1)
