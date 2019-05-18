@@ -44,26 +44,6 @@ class BASE(object):
 		twitter = False
 		youtube = False
 
-	class LIMIT(object): #BASE.limit
-		def __init__(self, config):
-			self.DISCORD_PRIVATE_COOLDOWN = config.get("discord_private_cooldown", 1)
-			self.DISCORD_NORMAL_COOLDOWN = config.get("discord_normal_cooldown", 1)
-			self.DISCORD_MOD_COOLDOWN = config.get("discord_mod_cooldown", 3)
-			self.DISCORD_OWNER_COOLDOWN = config.get("discord_owner_cooldown", 5)
-			self.DISCORD_CUSTOM_COMAMNDS_AMOUNT = config.get("discord_custom_commands_amount", 100)
-			self.DISCORD_CUSTOM_COMMANDS_COOLDOWN = config.get("discord_custom_commands_cooldown", 3)
-			self.DISCORD_LEVEL_COOLDOWN = config.get("discord_level_cooldown", 3)
-			self.DISCORD_QUOTES_AMOUNT = config.get("discord_quotes_amount", 100)
-			self.DISCORD_ADDROLE_AMOUNT = config.get("discord_addrole_amount", 25)
-
-			self.TWITCH_TIMEOUT_MESSAGE_COOLDOWN = config.get("twitch_timeout_message_cooldown", 20)
-			self.TWITCH_BLACKLIST_REMEMBER_TIME = config.get("twitch_blacklist_remember_time", 180)
-			self.TWITCH_CUSTOM_COMMAND_AMOUNT = config.get("twitch_custom_command_amount", 100)
-			self.TWITCH_QUOTE_AMOUNT = config.get("twitch_quote_amount", 100)
-			self.TWITCH_STATS_COOLDOWN = config.get("twitch_stats_cooldown", 5)
-
-			self.WEB_CLIENT_MAX_SIZE = config.get("web_client_max_size", 5242880) #5MB
-
 	class MODULES(object): #BASE.modules
 		def __init__(self):
 			pass
