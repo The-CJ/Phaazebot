@@ -31,7 +31,8 @@ class Phaazebot(object):
 		self.osu = None
 		self.twitter = None
 
-		#self.PhaazeDB = PhaazeDBC.Connection(port=3000, token=self.config.PhaazeDB_token, exception_on_error=True)
+		# connection to phaaze brain
+		self.PhaazeDB:PhaazeDBC = PhaazeDBC.Connection(address=self.access.phaazedb_address, port=3000, token=self.access.phaazedb_token, exception_on_error=True)
 
 
 

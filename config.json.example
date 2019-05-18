@@ -14,6 +14,7 @@
   "mashape_token":"secret!..?",
 
   "phaazedb_token":"secret!..?",
+  "phaazedb_address":"http://127.0.0.1",
 
   "twitter_token":"secret!..?",
   "twitter_token_key":"secret!..?",

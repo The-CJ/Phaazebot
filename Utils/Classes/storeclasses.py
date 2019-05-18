@@ -18,6 +18,7 @@ class AccessStore(object):
 
 		self.mashape_token:str = str(config.get('mashape_token', ''))
 
+		self.phaazedb_address:str = str(config.get('phaazedb_address', ''))
 		self.phaazedb_token:str = str(config.get('phaazedb_token', ''))
 
 		self.twitter_token:str = str(config.get('twitter_token',''))
