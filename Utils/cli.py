@@ -1,5 +1,7 @@
 import sys, re
 from typing import Any
+from Utils.Classes.undefined import Undefined
+
 
 class CliArgs(object):
 	"""Contains arguments added by programm start """
@@ -27,21 +29,5 @@ class CliArgs(object):
 		else:
 			if len(arg) > 1: return self.args.get(arg[0], arg[1])
 			else: return self.args.get(arg[0], Undefined())
-
-class Undefined():
-	"""
-		This class is returnd when a Cli argument without alternative is given,
-		its never equal, bigger, smaller und else to everything, its nothing
-	"""
-	def __init__(self): pass
-
-	def __eq__(self, value): return False # ==
-	def __ne__(self, value): return False # !=
-
-	def __ge__(self, value): return False # >=
-	def __gt__(self, value): return False # >
-
-	def __le__(self, value): return False # <=
-	def __lt__(self, value): return False # <
 
 CliArgs = CliArgs()
