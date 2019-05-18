@@ -5,26 +5,27 @@ class AccessStore(object):
 		Settings and Keys to all platforms or entry points that is not us
 	"""
 	def __init__(self, config:ConfigParser):
-		self.twitch_api_token:str = str(config.get('twitch_api_token', ''))
-		self.twitch_irc_token:str = str(config.get('twitch_irc_token', ''))
-		self.twitch_admin_token:str = str(config.get('twitch_admin_token', ''))
+		self.TWITCH_API_TOKEN:str = str(config.get('twitch_api_token', ''))
+		self.TWITCH_IRC_TOKEN:str = str(config.get('twitch_irc_token', ''))
+		self.TWITCH_ADMIN_TOKEN:str = str(config.get('twitch_admin_token', ''))
 
-		self.discord_token:str = str(config.get('discord_token', ''))
+		self.DISCORD_TOKEN:str = str(config.get('discord_token', ''))
 
-		self.osu_api_token:str = str(config.get('osu_api_token', ''))
-		self.osu_irc_token:str = str(config.get('osu_irc_token', ''))
+		self.OSU_API_TOKEN:str = str(config.get('osu_api_token', ''))
+		self.OSU_IRC_TOKEN:str = str(config.get('osu_irc_token', ''))
 
-		self.cleverbot_token:str = str(config.get('cleverbot_token', ''))
+		self.CLEVERBOT_TOKEN:str = str(config.get('cleverbot_token', ''))
 
-		self.mashape_token:str = str(config.get('mashape_token', ''))
+		self.MASHAPE_TOKEN:str = str(config.get('mashape_token', ''))
 
-		self.phaazedb_address:str = str(config.get('phaazedb_address', ''))
-		self.phaazedb_token:str = str(config.get('phaazedb_token', ''))
+		self.PHAAZEDB_ADDRESS:str = str(config.get('phaazedb_address', 'http://127.0.0.1'))
+		self.PHAAZEDB_TOKEN:str = str(config.get('phaazedb_token', ''))
+		self.PHAAZEDB_PORT:str = str(config.get('phaazedb_port', 3000))
 
-		self.twitter_token:str = str(config.get('twitter_token',''))
-		self.twitter_token_key:str = str(config.get('twitter_token_key',''))
-		self.twitter_consumer_key:str = str(config.get('twitter_consumer_key',''))
-		self.twitter_consumer_secret:str = str(config.get('twitter_consumer_secret',''))
+		self.TWITTER_TOKEN:str = str(config.get('twitter_token',''))
+		self.TWITTER_TOKEN_KEY:str = str(config.get('twitter_token_key',''))
+		self.TWITTER_CONSUMER_KEY:str = str(config.get('twitter_consumer_key',''))
+		self.TWITTER_CONSUMER_SECRET:str = str(config.get('twitter_consumer_secret',''))
 
 class ActiveStore(object):
 	"""
@@ -75,17 +76,17 @@ class VarsStore(object):
 		filled with permanent vars, or functions to get vars
 	"""
 	def __init__(self, config:ConfigParser):
-		self.trigger_discord:str = str(config.get('trigger_discord', '>'))
-		self.trigger_osu:str = str(config.get('trigger_osu', '!'))
-		self.trigger_twitch:str = str(config.get('trigger_twitch', '!'))
+		self.TRIGGER_DISCORD:str = str(config.get('trigger_discord', '>'))
+		self.TRIGGER_OSU:str = str(config.get('trigger_osu', '!'))
+		self.TRIGGER_TWITCH:str = str(config.get('trigger_twitch', '!'))
 
-		self.default_twitch_currency:str = str(config.get('default_twitch_currency', 'Credit'))
-		self.default_twitch_currency_multi:str = str(config.get('default_twitch_currency_multi', 'Credits'))
+		self.DEFAULT_TWITCH_CURRENCY:str = str(config.get('default_twitch_currency', 'Credit'))
+		self.DEFAULT_TWITCH_CURRENCY_MULTI:str = str(config.get('default_twitch_currency_multi', 'Credits'))
 
-		self.image_path:str = str(config.get('image_path', '_WEB_/img/'))
+		self.IMAGE_PATH:str = str(config.get('image_path', '_WEB_/img/'))
 
-		self.logo_osu:str = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
-		self.logo_twitch:str = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504"
+		self.LOGO_OSU:str = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
+		self.LOGO_TWITCH:str = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504"
 
 	@property
 	def LOGO(self):

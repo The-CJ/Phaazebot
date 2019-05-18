@@ -8,7 +8,10 @@ from Utils.config import ConfigParser
 from Platforms.Discord.main_discord import PhaazebotDiscord
 
 class Phaazebot(object):
-	"""docstring for """
+	"""
+		mainclass containing all other informations.
+		thats phaaze
+	"""
 	def __init__(self, Config:ConfigParser=ConfigParser()):
 		self.Config:ConfigParser = Config
 		self.version:str = self.Config.get("version", "[N/A]")
@@ -32,12 +35,12 @@ class Phaazebot(object):
 		self.Osu = None
 		self.Twitter = None
 
-		#self.Togger
+		#self.Logger
 
 		# connection to phaaze brain
 		self.PhaazeDB:PhaazeDBC.Connection = PhaazeDBC.Connection(
 			address=self.Access.phaazedb_address,
-			port=3000,
+			port=self.Access.phaazedb_port,
 			token=self.Access.phaazedb_token,
 			exception_on_error=True
 		)
