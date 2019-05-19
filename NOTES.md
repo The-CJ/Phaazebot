@@ -1,6 +1,6 @@
 ## Programm call variables:
 
-`python3 main.py`
+`python3.7 main.py`
 
 ### args
 ```
