@@ -94,6 +94,7 @@ class DiscordThread(threading.Thread):
 
 		except discord.errors.LoginFailure as LoginFail:
 			self.BASE.Logger.critical(f"unable to start Discord: {str(LoginFail)}")
+			self.BASE.Active.discord = False
 
 		except Exception as e:
 			self.loop.run_until_complete( self.BASE.Discord.logout() )
