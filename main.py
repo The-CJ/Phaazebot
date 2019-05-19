@@ -3,6 +3,7 @@ import time
 import PhaazeDBC
 from Utils.Classes.storeclasses import ActiveStore, VarsStore, AccessStore, LimitStore
 from Utils.config import ConfigParser
+from Utils.logger import PhaazeLogger
 
 # platforms
 from Platforms.Discord.main_discord import PhaazebotDiscord
@@ -29,23 +30,23 @@ class Phaazebot(object):
 		# contains user limits for all addeble things, like custom command amount
 		self.Limit:LimitStore = LimitStore(self.Config)
 
+		# log to handler of choice
+		self.Logger:PhaazeLogger = PhaazeLogger()
+
 		# all featured "superclasses" aka, stuff that makes calls to somewhere
 		self.Discord:PhaazebotDiscord = None
 		self.Twitch = None
 		self.Osu = None
 		self.Twitter = None
 
-		#self.Logger
 
 		# connection to phaaze brain
 		self.PhaazeDB:PhaazeDBC.Connection = PhaazeDBC.Connection(
-			address=self.Access.phaazedb_address,
-			port=self.Access.phaazedb_port,
-			token=self.Access.phaazedb_token,
+			address=self.Access.PHAAZEDB_ADDRESS,
+			port=self.Access.PHAAZEDB_PORT,
+			token=self.Access.PHAAZEDB_TOKEN,
 			exception_on_error=True
 		)
-
-
 
 if __name__ == '__main__':
 	Phaazebot = Phaazebot()
