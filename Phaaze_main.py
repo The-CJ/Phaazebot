@@ -186,35 +186,6 @@ class BASE(object):
 
 		print("PhaazeOS will be shutdown as soon as possible.")
 
-#get config
-if CLI_Args.get("no-args", False) == False:
-	try:
-		file_ = open("config.json", "r").read()
-		structure = json.loads(file_)
-
-	except json.decoder.JSONDecodeError:
-		print('config.json could not be loaded, invalid json')
-		structure=None
-
-	except FileNotFoundError:
-		print('config.json could not be read, no file found')
-		structure=None
-
-	except Exception as e:
-		print('unknown error')
-		print(str(e))
-		structure=None
-
-	finally:
-		if structure == None: exit("PhaazeOS not started -> missing configuration")
-		configuration = structure
-else:
-	print('Starting without configuration')
-	configuration = dict()
-
-#load it up
-BASE = BASE(config=configuration)
-
 ################################################################################
 # All threads for all platforms
 ################################################################################
