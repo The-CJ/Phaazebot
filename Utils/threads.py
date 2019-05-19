@@ -42,7 +42,11 @@ class Mainframe(threading.Thread):
 			for module_name in self.modules:
 				module = self.modules[module_name]["current"]
 
-				if not module.isAlive():
+				# get from Phaazebot.Active if the module should be started or not
+				start:bool = bool( getattr(self.BASE.Active, module_name.lower(), False) )
+				if module_name.lower() == "worker": start = True # exception for worker, that always run
+
+				if not module.isAlive() and start:
 					self.BASE.Logger.info(f"Booting Thread: {module.name}")
 					self.modules[module_name]["current"] = (self.modules[module_name]["tpl"])(self.BASE)
 					self.modules[module_name]["current"].start()
