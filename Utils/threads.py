@@ -1,12 +1,16 @@
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+	from main import Phaazebot
+
 import threading
 import asyncio
 import traceback
 
 class Mainframe(threading.Thread):
 	""" thread starter, that runs all other modules and secures that they are running while active state """
-	def __init__(self, BASE):
+	def __init__(self, BASE:"Phaazebot"):
 		super().__init__()
-		self.BASE = BASE
+		self.BASE:"Phaazebot" = BASE
 		self.name = "Mainframe"
 		self.loop = asyncio.new_event_loop()
 		self.modules = dict(

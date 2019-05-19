@@ -2,13 +2,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from main import Phaazebot
 
-#import asyncio
 import discord
-#import traceback
 
 class PhaazebotDiscord(discord.Client):
-	def __init__(self, BASE:'Phaazebot'):
-		self.BASE:'Phaazebot' = BASE
+	def __init__(self, BASE:"Phaazebot"):
+		self.BASE:"Phaazebot" = BASE
 		super().__init__()
 
 	async def on_ready(self):

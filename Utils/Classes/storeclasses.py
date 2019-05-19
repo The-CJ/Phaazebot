@@ -46,6 +46,18 @@ class ActiveStore(object):
 		self.twitter:bool = bool(config.get('active_twitter', False))
 		self.youtube:bool = bool(config.get('active_youtube', False))
 
+class IsReadyStore(object):
+	"""
+		Containes the state if something s ready or not
+		all start False, turn True when connected
+	"""
+	def __init__(self):
+		self.discord = False
+		self.twitch = False
+		self.osu = False
+		self.twitter = False
+		self.youtube = False
+
 class LimitStore(object):
 	"""
 		contains user limits for all addeble things, like custom command amount
