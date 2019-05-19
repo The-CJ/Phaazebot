@@ -1,3 +1,4 @@
+cysystemd
 discord.py
 requests
 colorama
@@ -5,7 +6,6 @@ twitter
 tabulate
 aiohttp
 cchardet
-systemd
 markdown
 git+https://github.com/The-CJ/osu_irc.git#egg=osu_irc
 git+https://github.com/The-CJ/twitch_irc.git#egg=twitch_irc
