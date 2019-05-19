@@ -1,20 +1,25 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 if TYPE_CHECKING:
 	from main import Phaazebot
 
 import threading
 import asyncio
 import traceback
+import time
 
 class Mainframe(threading.Thread):
 	""" thread starter, that runs all other modules and secures that they are running while active state """
 	def __init__(self, BASE:"Phaazebot"):
 		super().__init__()
 		self.BASE:"Phaazebot" = BASE
-		self.name = "Mainframe"
-		self.loop = asyncio.new_event_loop()
-		self.modules = dict(
-			worker = dict(current=WorkerThread(BASE), tpl=WorkerThread)
+		self.name:str = "Mainframe"
+		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
+
+		# a new idea, current is the thread that is actully running, after its crashed, use tpl, to generate a new one
+		# making it so and can be looped from a dict
+		self.modules:Dict[Dict] = dict(
+			worker = dict(current=WorkerThread(BASE), tpl=WorkerThread),
+			discord = dict(current=DiscordThread(BASE), tpl=DiscordThread),
 		)
 
 	def run(self) -> None:
@@ -41,12 +46,12 @@ class Mainframe(threading.Thread):
 			await asyncio.sleep(1)
 
 class WorkerThread(threading.Thread):
-	def __init__(self, BASE):
+	def __init__(self, BASE:"Phaazebot"):
 		super().__init__()
-		self.BASE = BASE
-		self.name = "Worker"
-		self.daemon = True
-		self.loop = asyncio.new_event_loop()
+		self.BASE:"Phaazebot" = BASE
+		self.name:str = "Worker"
+		self.daemon:bool = True
+		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
 
 	async def sleepy(self):
 		while 1: await asyncio.sleep(0.005)
@@ -61,3 +66,24 @@ class WorkerThread(threading.Thread):
 		except Exception as e:
 			self.BASE.Logger.critical(f"Worker Thread crashed: {str(e)}")
 			traceback.print_exc()
+
+class DiscordThread(threading.Thread):
+	def __init__(self, BASE:"Phaazebot"):
+		super().__init__()
+		self.BASE:"Phaazebot" = BASE
+		self.name:str = "Discord"
+		self.daemon:bool = True
+		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
+
+	def run(self):
+		try:
+			asyncio.set_event_loop(self.loop)
+
+			from Platforms.Discord.main_discord import PhaazebotDiscord
+			self.BASE.Discord = PhaazebotDiscord(self.BASE)
+			self.BASE.Discord.run(self.BASE.Access.DISCORD_TOKEN)
+
+		except Exception as e:
+			self.BASE.Logger.error(f"Discord crashed: {str(e)}")
+			traceback.print_exc()
+			time.sleep(3)

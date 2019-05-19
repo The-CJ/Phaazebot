@@ -35,10 +35,22 @@ class Phaazebot(object):
 		self.Logger:PhaazeLogger = PhaazeLogger()
 
 		# all featured "superclasses" aka, stuff that makes calls to somewhere
+		# all of these get added by self.Mainframe when started
+		# both the actual working part anda quick link to there running loops, to inject async funtions for them to run
+		# most likly used for the worker, that can calculate time consuming functions or discord because send_message must be caled from this loop
 		self.Discord:PhaazebotDiscord = None
+		self.DiscordLoop:asyncio.AbstractEventLoop = None
+
 		self.Twitch = None
+		self.TwitchLoop:asyncio.AbstractEventLoop = None
+
 		self.Osu = None
+		self.OsuLoop:asyncio.AbstractEventLoop = None
+
 		self.Twitter = None
+		self.TwitterLoop:asyncio.AbstractEventLoop = None
+
+		self.WorkerLoop:asyncio.AbstractEventLoop = None # Worker object is protected and onyl gives us the loop in inject
 
 		# connection to phaaze brain
 		self.PhaazeDB:PhaazeDBC.Connection = PhaazeDBC.Connection(
