@@ -20,7 +20,7 @@ class Mainframe(threading.Thread):
 
 		# a new idea, current is the thread that is actully running, after its crashed, use tpl, to generate a new one
 		# making it so and can be looped from a dict
-		self.modules:Dict[Dict] = dict(
+		self.modules:Dict[str, dict] = dict(
 			discord = dict(current=DiscordThread(BASE), tpl=DiscordThread),
 			worker = dict(current=WorkerThread(BASE), tpl=WorkerThread),
 		)

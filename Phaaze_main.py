@@ -190,55 +190,6 @@ class BASE(object):
 # All threads for all platforms
 ################################################################################
 
-class __WORKER__(threading.Thread):
-	def __init__(self):
-		super(__WORKER__, self).__init__()
-		self.name = "Worker"
-		self.daemon = True
-		self.loop = asyncio.new_event_loop()
-
-	def run(self):
-		try:
-			async def sleepy():
-				while 1:
-					await asyncio.sleep(0.005)
-
-			asyncio.set_event_loop(self.loop)
-			asyncio.ensure_future(sleepy())
-			self.loop.run_forever()
-
-
-		except Exception as e:
-			BASE.modules.Console.ERROR("Worker crashed: "+str(e))
-			traceback.print_exc()
-			time.sleep(3)
-
-_worker_ = __WORKER__()
-
-######################################
-class __DISCORD__(threading.Thread):
-	def __init__(self):
-		super(__DISCORD__, self).__init__()
-		self.name = "Discord"
-		self.daemon = True
-		self.loop = asyncio.new_event_loop()
-
-	def run(self):
-		try:
-			asyncio.set_event_loop(self.loop)
-
-			from _DISCORD_.Main_discord import Init_discord
-			BASE.discord = Init_discord(BASE)
-			BASE.discord.run(BASE.access.Discord)
-
-		except Exception as e:
-			BASE.modules.Console.ERROR("Discord crashed: "+str(e))
-			traceback.print_exc()
-			time.sleep(3)
-
-_discord_ = __DISCORD__()
-######################################
-
 class __TWITCH_IRC__(threading.Thread):
 	def __init__(self):
 		super(__TWITCH_IRC__, self).__init__()
