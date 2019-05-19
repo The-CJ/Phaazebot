@@ -90,7 +90,7 @@ class DiscordThread(threading.Thread):
 			asyncio.set_event_loop(self.loop)
 			from Platforms.Discord.main_discord import PhaazebotDiscord
 			self.BASE.Discord:PhaazebotDiscord = PhaazebotDiscord(self.BASE)
-			self.loop.run_until_complete( self.BASE.Discord.start(self.BASE.Access.DISCORD_TOKEN) )
+			self.loop.run_until_complete( self.BASE.Discord.start(self.BASE.Access.DISCORD_TOKEN, reconnect=True) )
 
 		except discord.errors.LoginFailure as LoginFail:
 			self.BASE.Logger.critical(f"unable to start Discord: {str(LoginFail)}")

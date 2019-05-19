@@ -1,4 +1,6 @@
 {
+  "version": "0.0.0",
+  
   "twitch_api_token":"secret!..?",
   "twitch_irc_token":"secret!..?",
   "twitch_admin_token":"secret!..?",

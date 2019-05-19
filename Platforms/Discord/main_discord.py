@@ -3,14 +3,28 @@ if TYPE_CHECKING:
 	from main import Phaazebot
 
 import discord
+import asyncio
+import traceback
 
 class PhaazebotDiscord(discord.Client):
 	def __init__(self, BASE:"Phaazebot"):
-		self.BASE:"Phaazebot" = BASE
 		super().__init__()
+		self.BASE:"Phaazebot" = BASE
 
-	async def on_ready(self):
-		pass
+	async def on_ready(self) -> None:
+		try:
+			await self.change_presence(
+				activity=discord.Game ( type=0, name=f"{self.BASE.Vars.TRIGGER_DISCORD}help | v{self.BASE.version}"	),
+				status=discord.Status.online
+			)
+
+			self.BASE.Logger.info("Discord connected")
+			self.BASE.IsReady.discord = True
+
+		except discord.errors.GatewayNotFound:
+			self.BASE.Logger.warning("Discord Gatway Error --> Changing.")
+			await asyncio.sleep(3)
+			await self.on_ready()
 
 	async def on_message(self, message):
 		pass
@@ -51,6 +65,7 @@ class PhaazebotDiscord(discord.Client):
 	async def on_server_role_delete(self, role):
 		pass
 
-	#errors
+	# errors
 	async def on_error(self, event_method, *args, **kwargs):
-		pass
+		tb = traceback.format_exc()
+		self.BASE.Logger.error(f'Ignoring exception in {event_method}\n{tb}')
