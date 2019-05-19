@@ -6,6 +6,9 @@ import threading
 import asyncio
 import traceback
 import time
+import discord
+
+MAINTHREAD_RELOAD_DELAY = 5 # in seconds
 
 class Mainframe(threading.Thread):
 	""" thread starter, that runs all other modules and secures that they are running while active state """
@@ -18,8 +21,8 @@ class Mainframe(threading.Thread):
 		# a new idea, current is the thread that is actully running, after its crashed, use tpl, to generate a new one
 		# making it so and can be looped from a dict
 		self.modules:Dict[Dict] = dict(
-			worker = dict(current=WorkerThread(BASE), tpl=WorkerThread),
 			discord = dict(current=DiscordThread(BASE), tpl=DiscordThread),
+			worker = dict(current=WorkerThread(BASE), tpl=WorkerThread),
 		)
 
 	def run(self) -> None:
@@ -40,10 +43,11 @@ class Mainframe(threading.Thread):
 				module = self.modules[module_name]["current"]
 
 				if not module.isAlive():
+					self.BASE.Logger.info(f"Booting Thread: {module.name}")
 					self.modules[module_name]["current"] = (self.modules[module_name]["tpl"])(self.BASE)
 					self.modules[module_name]["current"].start()
 
-			await asyncio.sleep(1)
+			await asyncio.sleep(MAINTHREAD_RELOAD_DELAY)
 
 class WorkerThread(threading.Thread):
 	def __init__(self, BASE:"Phaazebot"):
@@ -61,6 +65,8 @@ class WorkerThread(threading.Thread):
 
 			asyncio.set_event_loop(self.loop)
 			asyncio.ensure_future(self.sleepy())
+			self.BASE.WorkerLoop = self.loop
+			self.BASE.Logger.info(f"Started Worker Thread")
 			self.loop.run_forever()
 
 		except Exception as e:
@@ -78,12 +84,15 @@ class DiscordThread(threading.Thread):
 	def run(self):
 		try:
 			asyncio.set_event_loop(self.loop)
-
 			from Platforms.Discord.main_discord import PhaazebotDiscord
-			self.BASE.Discord = PhaazebotDiscord(self.BASE)
-			self.BASE.Discord.run(self.BASE.Access.DISCORD_TOKEN)
+			self.BASE.Discord:PhaazebotDiscord = PhaazebotDiscord(self.BASE)
+			self.loop.run_until_complete( self.BASE.Discord.start(self.BASE.Access.DISCORD_TOKEN) )
+
+		except discord.errors.LoginFailure as LoginFail:
+			self.BASE.Logger.critical(f"unable to start Discord: {str(LoginFail)}")
 
 		except Exception as e:
-			self.BASE.Logger.error(f"Discord crashed: {str(e)}")
+			self.loop.run_until_complete( self.BASE.Discord.logout() )
+			self.BASE.Logger.error(f"Discord Thread crashed: {str(e)}")
 			traceback.print_exc()
 			time.sleep(3)
