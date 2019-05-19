@@ -4,6 +4,7 @@ import PhaazeDBC
 from Utils.Classes.storeclasses import ActiveStore, VarsStore, AccessStore, LimitStore
 from Utils.config import ConfigParser
 from Utils.logger import PhaazeLogger
+from Utils.threads import Mainframe
 
 # platforms
 from Platforms.Discord.main_discord import PhaazebotDiscord
@@ -39,7 +40,6 @@ class Phaazebot(object):
 		self.Osu = None
 		self.Twitter = None
 
-
 		# connection to phaaze brain
 		self.PhaazeDB:PhaazeDBC.Connection = PhaazeDBC.Connection(
 			address=self.Access.PHAAZEDB_ADDRESS,
@@ -48,5 +48,12 @@ class Phaazebot(object):
 			exception_on_error=True
 		)
 
+		self.Mainframe = Mainframe(self)
+
+	def start(self) -> None:
+		self.Logger.info("Phaazebot Mainframe started -> Starting Threads...")
+		self.Mainframe.start()
+
 if __name__ == '__main__':
 	Phaazebot = Phaazebot()
+	Phaazebot.start()
