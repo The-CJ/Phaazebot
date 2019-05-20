@@ -13,14 +13,14 @@ class CliArgs(object):
 
 		for arg in sys.argv[1:]:
 
-			arg_res = arg_re.match(arg)
-			if arg_res != None:
-				self.args[arg_res.group(1)] = True
-				continue
-
 			kwarg_res = kwarg_re.match(arg)
 			if kwarg_res != None:
 				self.args[kwarg_res.group(1)] = kwarg_res.group(2)
+				continue
+
+			arg_res = arg_re.match(arg)
+			if arg_res != None:
+				self.args[arg_res.group(1)] = True
 				continue
 
 	def get(self, *arg) -> Any:

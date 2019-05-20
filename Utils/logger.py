@@ -1,7 +1,7 @@
 import logging
 import sys
 from Utils.cli import CliArgs
-try: from systemd.journal import JournaldLogHandler
+try: from cysystemd.journal import JournaldLogHandler
 except ImportError:	pass
 
 class PhaazeLoggerFormatter(logging.Formatter):
@@ -30,9 +30,9 @@ class PhaazeLogger(object):
 		self.Formatter = PhaazeLoggerFormatter("[%(levelname)s]: %(message)s")
 		self.active_debugs = [a.lower() for a in CliArgs.get("debug", "").split(",")]
 
-		self.logging_type = CliArgs.get("logging" , "console")
+		self.logging_type:str = CliArgs.get("logging" , "console")
 
-		if self.logging_type == "systemd" and "systemd" in sys.modules:
+		if self.logging_type in ["systemd", "cysystemd"] and "cysystemd" in sys.modules:
 			JH = JournaldLogHandler()
 			JH.setFormatter(self.Formatter)
 			self.Log.addHandler(JH)
