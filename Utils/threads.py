@@ -5,7 +5,6 @@ if TYPE_CHECKING:
 import threading
 import asyncio
 import traceback
-import time
 import discord
 
 MAINTHREAD_RELOAD_DELAY = 5 # in seconds
@@ -52,7 +51,6 @@ class Mainframe(threading.Thread):
 					self.modules[module_name]["current"] = (self.modules[module_name]["tpl"])(self.BASE)
 					self.modules[module_name]["current"].start()
 
-			print(vars(self.BASE))
 			await asyncio.sleep(MAINTHREAD_RELOAD_DELAY)
 
 class WorkerThread(threading.Thread):
@@ -106,7 +104,6 @@ class DiscordThread(threading.Thread):
 			self.loop.run_until_complete( self.BASE.Discord.logout() )
 			self.BASE.Logger.error(f"Discord Thread crashed: {str(e)}")
 			traceback.print_exc()
-			time.sleep(3)
 
 class WebThread(threading.Thread):
 	def __init__(self, BASE:"Phaazebot"):
@@ -124,7 +121,8 @@ class WebThread(threading.Thread):
 			self.BASE.Web:PhaazebotWeb = PhaazebotWeb(self.BASE)
 			self.BASE.WebLoop:asyncio.AbstractEventLoop = self.loop
 
-			self.loop.run_until_complete(self.BASE.Web.start())
+			self.BASE.Web.start() # blocking call, takes asyncio.loop
 
 		except Exception as e:
 			self.BASE.Logger.error(f"Web Thread crashed: {str(e)}")
+			traceback.print_exc()
