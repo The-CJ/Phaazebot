@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import ssl
 from aiohttp import web
 from Utils.cli import CliArgs
+from .index import WebIndex
 
 class PhaazebotWeb(web.Application):
 	def __init__(self, BASE:"Phaazebot"):
@@ -13,12 +14,7 @@ class PhaazebotWeb(web.Application):
 		self._client_max_size = self.BASE.Limit.WEB_CLIENT_MAX_SIZE
 		self.port:int = 9001
 		self.SSLContext:ssl.SSLContext = None
-
-	def start(self) -> None:
-		self.setupSSL()
-		self.BASE.Logger.info("Web server ready")
-
-		web.run_app(self, handle_signals=False, port=self.port, ssl_context=self.SSLContext, print=False)
+		self.Index:WebIndex = None
 
 	def setupSSL(self) -> None:
 		if CliArgs.get("http", "test") == "live":
@@ -37,3 +33,13 @@ class PhaazebotWeb(web.Application):
 
 		else:
 			self.BASE.Logger.info(f"Configured webserver Port={self.port} (test)")
+
+	def setupRouter(self) -> None:
+		self.Index:WebIndex = WebIndex(self)
+
+	def start(self) -> None:
+		self.setupRouter()
+		self.setupSSL()
+		self.BASE.Logger.info("Web server ready")
+
+		web.run_app(self, handle_signals=False, port=self.port, ssl_context=self.SSLContext, print=False)
