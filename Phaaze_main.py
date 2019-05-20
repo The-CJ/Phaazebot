@@ -251,21 +251,7 @@ class __TWITCH_STREAMS__(threading.Thread):
 		self.loop.run_until_complete( BASE.modules._Twitch_.Streams.Main.start() )
 
 _twitch_streams_ = __TWITCH_STREAMS__()
-######################################
 
-class __WEB__(threading.Thread):
-	def __init__(self):
-		super(__WEB__, self).__init__()
-		self.name = "Web"
-		self.daemon = True
-		self.loop = asyncio.new_event_loop()
-
-	def run(self):
-		asyncio.set_event_loop(self.loop)
-
-		self.loop.run_until_complete(BASE.modules._Web_.Base.webserver(BASE))
-
-_web_ = __WEB__()
 ################################################################################
 
 async def MAINFRAME_LOOP(_d_: __DISCORD__,
