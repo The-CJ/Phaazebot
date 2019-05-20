@@ -8,6 +8,7 @@ from Utils.threads import Mainframe
 
 # platforms
 from Platforms.Discord.main_discord import PhaazebotDiscord
+from Platforms.Web.main_web import PhaazebotWeb
 
 class Phaazebot(object):
 	"""
@@ -49,6 +50,9 @@ class Phaazebot(object):
 
 		self.Twitter = None
 		self.TwitterLoop:asyncio.AbstractEventLoop = None
+
+		self.Web:PhaazebotWeb = None
+		self.WebLoop:asyncio.AbstractEventLoop = None
 
 		self.WorkerLoop:asyncio.AbstractEventLoop = None # Worker object is protected and onyl gives us the loop in inject
 

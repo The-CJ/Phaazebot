@@ -23,6 +23,7 @@ class Mainframe(threading.Thread):
 		self.modules:Dict[str, dict] = dict(
 			discord = dict(current=DiscordThread(BASE), tpl=DiscordThread),
 			worker = dict(current=WorkerThread(BASE), tpl=WorkerThread),
+			web = dict(current=WebThread(BASE), tpl=WebThread),
 		)
 
 	def run(self) -> None:
@@ -61,10 +62,10 @@ class WorkerThread(threading.Thread):
 		self.daemon:bool = True
 		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
 
-	async def sleepy(self):
+	async def sleepy(self) ->None:
 		while 1: await asyncio.sleep(0.005)
 
-	def run(self):
+	def run(self) -> None:
 		try:
 
 			asyncio.set_event_loop(self.loop)
@@ -85,7 +86,7 @@ class DiscordThread(threading.Thread):
 		self.daemon:bool = True
 		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
 
-	def run(self):
+	def run(self) -> None:
 		try:
 			asyncio.set_event_loop(self.loop)
 			from Platforms.Discord.main_discord import PhaazebotDiscord
@@ -101,3 +102,21 @@ class DiscordThread(threading.Thread):
 			self.BASE.Logger.error(f"Discord Thread crashed: {str(e)}")
 			traceback.print_exc()
 			time.sleep(3)
+
+class WebThread(threading.Thread):
+	def __init__(self, BASE:"Phaazebot"):
+		super().__init__()
+		self.BASE:"Phaazebot" = BASE
+		self.name:str = "Web"
+		self.daemon:bool = True
+		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
+
+	def run(self) -> None:
+		try:
+			asyncio.set_event_loop(self.loop)
+			from Platforms.Web.main_web import PhaazebotWeb
+			self.BASE.Web:PhaazebotWeb = PhaazebotWeb(self.BASE)
+			self.loop.run_until_complete(self.BASE.Web.start())
+
+		except Exception as e:
+			self.BASE.Logger.error(f"Web Thread crashed: {str(e)}")
