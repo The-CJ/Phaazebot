@@ -54,7 +54,7 @@ class Phaazebot(object):
 		self.Web:PhaazebotWeb = None
 		self.WebLoop:asyncio.AbstractEventLoop = None
 
-		self.WorkerLoop:asyncio.AbstractEventLoop = None # Worker object is protected and onyl gives us the loop in inject
+		self.WorkerLoop:asyncio.AbstractEventLoop = None # Worker object is protected and only gives us the loop in inject
 
 		# connection to phaaze brain
 		self.PhaazeDB:PhaazeDBC.Connection = PhaazeDBC.Connection(
@@ -75,5 +75,4 @@ class Phaazebot(object):
 
 if __name__ == '__main__':
 	Phaazebot = Phaazebot()
-	print(vars(Phaazebot))
 	Phaazebot.start()

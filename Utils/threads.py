@@ -52,6 +52,7 @@ class Mainframe(threading.Thread):
 					self.modules[module_name]["current"] = (self.modules[module_name]["tpl"])(self.BASE)
 					self.modules[module_name]["current"].start()
 
+			print(vars(self.BASE))
 			await asyncio.sleep(MAINTHREAD_RELOAD_DELAY)
 
 class WorkerThread(threading.Thread):
@@ -67,10 +68,11 @@ class WorkerThread(threading.Thread):
 
 	def run(self) -> None:
 		try:
-
 			asyncio.set_event_loop(self.loop)
 			asyncio.ensure_future(self.sleepy())
-			self.BASE.WorkerLoop = self.loop
+
+			self.BASE.WorkerLoop:asyncio.AbstractEventLoop = self.loop
+
 			self.BASE.Logger.info(f"Started Worker Thread")
 			self.loop.run_forever()
 
@@ -90,7 +92,10 @@ class DiscordThread(threading.Thread):
 		try:
 			asyncio.set_event_loop(self.loop)
 			from Platforms.Discord.main_discord import PhaazebotDiscord
+
 			self.BASE.Discord:PhaazebotDiscord = PhaazebotDiscord(self.BASE)
+			self.BASE.DiscordLoop:asyncio.AbstractEventLoop = self.loop
+
 			self.loop.run_until_complete( self.BASE.Discord.start(self.BASE.Access.DISCORD_TOKEN, reconnect=True) )
 
 		except discord.errors.LoginFailure as LoginFail:
@@ -115,7 +120,10 @@ class WebThread(threading.Thread):
 		try:
 			asyncio.set_event_loop(self.loop)
 			from Platforms.Web.main_web import PhaazebotWeb
+
 			self.BASE.Web:PhaazebotWeb = PhaazebotWeb(self.BASE)
+			self.BASE.WebLoop:asyncio.AbstractEventLoop = self.loop
+
 			self.loop.run_until_complete(self.BASE.Web.start())
 
 		except Exception as e:
