@@ -13,7 +13,12 @@ class HTMLFormatter(object):
 		self.FormatHTMLRegex = re.compile(new_re)
 
 	def loadHTML(self, path:str) -> None:
-		self.content = open(path, 'r').read()
+		try:
+			self.content = open(path, 'r').read()
+		except FileNotFoundError:
+			raise FileNotFoundError(f"Could not find: {path}")
+		except Exception as e:
+			raise Exception("HTMLFormatter raised unknown error: "+str(e))
 
 	def replace(self, replace_empty:bool=False, **values:Any) -> None:
 		"""
