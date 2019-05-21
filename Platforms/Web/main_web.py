@@ -36,6 +36,7 @@ class PhaazebotWeb(web.Application):
 
 	def setupRouter(self) -> None:
 		self.Index:WebIndex = WebIndex(self)
+		self.Index.addRoutes()
 
 	def start(self) -> None:
 		self.setupRouter()

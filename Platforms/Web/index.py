@@ -39,3 +39,9 @@ class WebIndex(object):
 				body=json.dumps( dict(msg=str(e), status=500) ),
 				content_type='application/json'
 			)
+
+	def addRoutes(self) -> None:
+		self.Web.router.add_route('*', '/{x:.*}', self.NotFound)
+
+	# utils and errors
+	from .Processing.errors import NotFound
