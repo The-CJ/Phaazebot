@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, Coroutine, Any
 if TYPE_CHECKING:
 	from .main_web import PhaazebotWeb
 
-import re
 import json
 from aiohttp.web import Response, middleware, HTTPException, Request
 
@@ -10,7 +9,6 @@ class WebIndex(object):
 	""" Contains all functions for the web to call """
 	def __init__(self, Web:"PhaazebotWeb"):
 		self.Web:"PhaazebotWeb" = Web
-		self.FormatHTMLRegex:re.Pattern = re.compile(r"\|>>>\((.+?)\)<<<\|")
 		self.Web.middlewares.append(self.middleware_handler)
 
 	def response(self, status:int=200, content_type:str=None, body:Any=None, **kwargs:Any) -> Response:
@@ -44,7 +42,6 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/{x:.*}', self.NotFound)
 
 	# utils
-	from .Processing.utils import formatHtml
 
 	# errors
 	from .Processing.errors import NotFound

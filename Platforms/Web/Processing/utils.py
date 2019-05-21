@@ -1,23 +1,35 @@
-from typing import TYPE_CHECKING, Any
-if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+from typing import Any
 
 import re
 
-def formatHtml(self:"WebIndex", html_string:str, **values:Any) -> str:
-	"""
-	This function will take all
-	|>>>(kwarg)<<<|
-	in the html_string, and replace kwarg with the right key match from **values
-	else empty string
+class HTMLFormatter(object):
+	""" Loades, contains and manipulates HTML files """
+	def __init__(self, path:str = None):
+		self.content:str = None
+		self.FormatHTMLRegex:re.Pattern = re.compile(r"\|>>>\((.+?)\)<<<\|")
+		if path: self.loadHTML(path)
 
-	returns formated html
-	"""
-	search_results:re.Match = re.finditer(self.FormatHTMLRegex, html_string)
-	for hit in search_results:
-		html_string = html_string.replace(
-			hit.group(0),
-			str( values.get(hit.group(1), "") )
-		)
+	def setRegex(self, new_re:str) -> None:
+		self.FormatHTMLRegex = re.compile(new_re)
 
-	return html_string
+	def loadHTML(self, path:str) -> None:
+		self.content = open(path, 'r').read()
+
+	def replace(self, replace_empty:bool=False, **values:Any) -> None:
+		"""
+		This function will take all
+		|>>>(kwarg)<<<|   (or other re set by self.setRegex)
+		in self.content, and replace kwarg with the right key match from **values
+		else empty string if replace_empty is True
+
+		returns formated html
+		"""
+		search_results:re.Match = re.finditer(self.FormatHTMLRegex, self.content)
+		for hit in search_results:
+			replacement:Any = values.get(hit.group(1), None)
+			if replacement == None and replace_empty == False: continue
+
+			self.content = self.content.replace(
+				hit.group(0),
+				str(replacement if replacement else "")
+			)
