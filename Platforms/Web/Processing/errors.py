@@ -11,11 +11,18 @@ async def NotFound(self:"WebIndex", Request:Request, msg:str="") -> Response:
 
 	self.Web.BASE.Logger.debug(f"(Web) 404: {Request.path}", require="web:404")
 
-	site:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/pageNotFound.html")
-	site.replace(mag=msg, path=req_str)
+	Site404:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/pageNotFound.html")
+	Site404.replace(msg=msg, path=req_str)
+
+	site:str = self.HTMLRoot.replace(
+		replace_empty = True,
+		
+		title = "Phaaze | Not Found",
+		main = Site404.content
+	)
 
 	return self.response(
-		body=site.content,
+		body=site,
 		status=404,
 		content_type='text/html'
 	)
