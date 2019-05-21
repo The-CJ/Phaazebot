@@ -4,12 +4,14 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, middleware, HTTPException, Request
+from .Processing.utils import HTMLFormatter
 
 class WebIndex(object):
 	""" Contains all functions for the web to call """
 	def __init__(self, Web:"PhaazebotWeb"):
 		self.Web:"PhaazebotWeb" = Web
 		self.Web.middlewares.append(self.middleware_handler)
+		self.HTMLRoot:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/root.html", template=True)
 
 	def response(self, status:int=200, content_type:str=None, body:Any=None, **kwargs:Any) -> Response:
 		already_set_header:dict = kwargs.get('headers', dict())

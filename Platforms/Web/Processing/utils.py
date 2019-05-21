@@ -3,9 +3,13 @@ from typing import Any
 import re
 
 class HTMLFormatter(object):
-	""" Loades, contains and manipulates HTML files """
-	def __init__(self, path:str = None):
+	"""
+		Loades, contains and manipulates HTML files
+		if template == True, the content can only be loaded initially and won't be changed by replace
+	"""
+	def __init__(self, path:str = None, template:bool=False):
 		self.content:str = None
+		self.template:bool=template
 		self.FormatHTMLRegex:re.Pattern = re.compile(r"\|>>>\((.+?)\)<<<\|")
 		if path: self.loadHTML(path)
 
@@ -20,7 +24,7 @@ class HTMLFormatter(object):
 		except Exception as e:
 			raise Exception("HTMLFormatter raised unknown error: "+str(e))
 
-	def replace(self, replace_empty:bool=False, **values:Any) -> None:
+	def replace(self, replace_empty:bool=False, **values:Any) -> str:
 		"""
 		This function will take all
 		|>>>(kwarg)<<<|   (or other re set by self.setRegex)
@@ -29,12 +33,15 @@ class HTMLFormatter(object):
 
 		returns formated html
 		"""
+		temp:str = self.content
 		search_results:re.Match = re.finditer(self.FormatHTMLRegex, self.content)
 		for hit in search_results:
 			replacement:Any = values.get(hit.group(1), None)
 			if replacement == None and replace_empty == False: continue
 
-			self.content = self.content.replace(
+			temp = temp.replace(
 				hit.group(0),
 				str(replacement if replacement else "")
 			)
+		if not self.template: self.content = temp
+		return temp
