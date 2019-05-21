@@ -43,5 +43,8 @@ class WebIndex(object):
 	def addRoutes(self) -> None:
 		self.Web.router.add_route('*', '/{x:.*}', self.NotFound)
 
-	# utils and errors
+	# utils
+	from .Processing.utils import formatHtml
+
+	# errors
 	from .Processing.errors import NotFound
