@@ -68,4 +68,4 @@ class PhaazebotDiscord(discord.Client):
 	# errors
 	async def on_error(self, event_method, *args, **kwargs):
 		tb = traceback.format_exc()
-		self.BASE.Logger.error(f'Ignoring exception in {event_method}\n{tb}')
+		self.BASE.Logger.error(f'(Discord) Ignoring exception in {event_method}\n{tb}')

@@ -11,7 +11,7 @@ class WebIndex(object):
 	def __init__(self, Web:"PhaazebotWeb"):
 		self.Web:"PhaazebotWeb" = Web
 		self.FormatHTMLRegex:re.Pattern = re.compile(r"\|>>>\((.+?)\)<<<\|")
-		self.Web.router.add_route("*", "/{x:.*}", self.test)
+		self.Web.middlewares.append(self.middleware_handler)
 
 	def response(self, status:int=200, content_type:str=None, body:Any=None, **kwargs:Any) -> Response:
 		already_set_header:dict = kwargs.get('headers', dict())
@@ -21,9 +21,9 @@ class WebIndex(object):
 		return Response(status=status, content_type=content_type, body=body, **kwargs)
 
 	@middleware
-	async def middleware_handler(self, Request:Request, handler:Coroutine) -> None:
+	async def middleware_handler(self, Request:Request, handler:Coroutine) -> Response:
 		try:
-			response = await handler(Request)
+			response:Response = await handler(Request)
 			return response
 
 		except HTTPException as HTTPEx:
@@ -33,8 +33,9 @@ class WebIndex(object):
 				content_type='application/json'
 			)
 		except Exception as e:
-			self.Web.BASE.Logger.error(str(e))
-
-	async def test(self, Request:Request):
-		print(f"{str(self)} - {str(self.Web)} - {str(Request)}")
-		return self.response(status=200, content_type="text/html", body="TODO")
+			self.Web.BASE.Logger.error(f"(Web) Error in request {str(e)}")
+			return self.response(
+				status=500,
+				body=json.dumps( dict(msg=str(e), status=500) ),
+				content_type='application/json'
+			)
