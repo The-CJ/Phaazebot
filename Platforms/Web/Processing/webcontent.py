@@ -16,7 +16,10 @@ async def serveCss(self:"WebIndex", Request:Request) -> Response:
 
 	file_location = file_location.replace("..","").strip("/")
 
-	file_content:bytes = open(f"{CONTENTFOLDER_CSS}/{file_location}", "rb").read()
+	try:
+		file_content:bytes = open(f"{CONTENTFOLDER_CSS}/{file_location}", "rb").read()
+	except FileNotFoundError:
+		return await fileNotFound(self, file_location)
 
 	return self.response(
 		status=200,
@@ -30,7 +33,10 @@ async def serveJs(self:"WebIndex", Request:Request) -> Response:
 
 	file_location = file_location.replace("..","").strip("/")
 
-	file_content:bytes = open(f"{CONTENTFOLDER_JS}/{file_location}", "rb").read()
+	try:
+		file_content:bytes = open(f"{CONTENTFOLDER_JS}/{file_location}", "rb").read()
+	except FileNotFoundError:
+		return await fileNotFound(self, file_location)
 
 	return self.response(
 		status=200,
@@ -44,7 +50,10 @@ async def serveImg(self:"WebIndex", Request:Request) -> Response:
 
 	file_location = file_location.replace("..","").strip("/")
 
-	file_content:bytes = open(f"{CONTENTFOLDER_IMG}/{file_location}", "rb").read()
+	try:
+		file_content:bytes = open(f"{CONTENTFOLDER_IMG}/{file_location}", "rb").read()
+	except FileNotFoundError:
+		return await fileNotFound(self, file_location)
 
 	return self.response(
 		status=200,
@@ -57,12 +66,12 @@ async def noFileDefined(cls:"WebIndex") -> Response:
 	return cls.response(
 		status=400,
 		content_type='application/json',
-		body=json.dumps( dict( error="no_file_defined",status=400 ) )
+		text=json.dumps( dict( error="no_file_defined",status=400 ) )
 	)
 
-async def fileNotFound(cls:"WebIndex") -> Response:
+async def fileNotFound(cls:"WebIndex", file_name:str) -> Response:
 	return cls.response(
-		status=400,
+		status=404,
 		content_type='application/json',
-		body=json.dumps( dict( error="file_not_found",status=400 ) )
+		text=json.dumps( dict( error="file_not_found", status=404, file=file_name ) )
 	)
