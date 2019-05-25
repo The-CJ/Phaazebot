@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import html
 from aiohttp.web import Request, Response
-from .utils import HTMLFormatter
+from Platforms.Web.utils import HTMLFormatter
 
 async def NotFound(self:"WebIndex", Request:Request, msg:str="") -> Response:
 	req_str:str = html.escape("Not Found: "+Request.path)
@@ -16,7 +16,7 @@ async def NotFound(self:"WebIndex", Request:Request, msg:str="") -> Response:
 
 	site:str = self.HTMLRoot.replace(
 		replace_empty = True,
-		
+
 		title = "Phaaze | Not Found",
 		main = Site404.content
 	)

@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, middleware, HTTPException, Request
-from .Processing.utils import HTMLFormatter
+from Platforms.Web.utils import HTMLFormatter
 
 class WebIndex(object):
 	""" Contains all functions for the web to call """

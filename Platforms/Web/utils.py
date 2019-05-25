@@ -10,7 +10,7 @@ class HTMLFormatter(object):
 	def __init__(self, path:str = None, template:bool=False):
 		self.content:str = None
 		self.template:bool=template
-		self.FormatHTMLRegex:re.Pattern = re.compile(r"\|>>>\((.+?)\)<<<\|")
+		self.FormatHTMLRegex:re.Pattern = re.compile(r"\|<!-->>>\((.+?)\)<<<-->\|")
 		if path: self.loadHTML(path)
 
 	def setRegex(self, new_re:str) -> None:
