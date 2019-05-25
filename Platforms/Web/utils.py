@@ -7,18 +7,26 @@ class HTMLFormatter(object):
 		Loades, contains and manipulates HTML files
 		if template == True, the content can only be loaded initially and won't be changed by replace
 	"""
+	def __str__(self) -> str:
+		return self.content
+
+	def __repr__(self) -> str:
+		return f"<{self.__class__.__name__} from file: {self.path}>"
+
 	def __init__(self, path:str = None, template:bool=False):
 		self.content:str = None
+		self.path:str = path
 		self.template:bool=template
 		self.FormatHTMLRegex:re.Pattern = re.compile(r"\|<!-->>>\((.+?)\)<<<-->\|")
-		if path: self.loadHTML(path)
+		if self.path: self.loadHTML(self.path)
 
 	def setRegex(self, new_re:str) -> None:
 		self.FormatHTMLRegex = re.compile(new_re)
 
 	def loadHTML(self, path:str) -> None:
 		try:
-			self.content = open(path, 'r').read()
+			self.path = path
+			self.content = open(self.path, 'r').read()
 		except FileNotFoundError:
 			raise FileNotFoundError(f"Could not find: {path}")
 		except Exception as e:
