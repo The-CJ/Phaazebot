@@ -6,7 +6,7 @@ import html
 from aiohttp.web import Request, Response
 from Platforms.Web.utils import HTMLFormatter
 
-async def NotFound(self:"WebIndex", Request:Request, msg:str="") -> Response:
+async def notFound(self:"WebIndex", Request:Request, msg:str="") -> Response:
 	req_str:str = html.escape("Not Found: "+Request.path)
 
 	self.Web.BASE.Logger.debug(f"(Web) 404: {Request.path}", require="web:404")

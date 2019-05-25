@@ -41,9 +41,19 @@ class WebIndex(object):
 			)
 
 	def addRoutes(self) -> None:
-		self.Web.router.add_route('*', '/{x:.*}', self.NotFound)
+
+		# web contents (js, css, img)
+		self.Web.router.add_route('GET', '/img{file:.*}', self.serveImg)
+		self.Web.router.add_route('GET', '/css{file:.*}', self.serveCss)
+		self.Web.router.add_route('GET', '/js{file:.*}', self.serveJs)
+
+		# unknown path (404)
+		self.Web.router.add_route('*', '/{x:.*}', self.notFound)
 
 	# utils
 
+	# web contents
+	from .Processing.webcontent import (serveCss, serveJs, serveImg)
+
 	# errors
-	from .Processing.errors import NotFound
+	from .Processing.errors import notFound
