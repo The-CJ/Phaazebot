@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import html
 from aiohttp.web import Request, Response
-from Platforms.Web.utils import HTMLFormatter
+from Utils.Classes.htmlformatter import HTMLFormatter
 
 async def notFound(self:"WebIndex", Request:Request, msg:str="") -> Response:
 	req_str:str = html.escape("Not Found: "+Request.path)
