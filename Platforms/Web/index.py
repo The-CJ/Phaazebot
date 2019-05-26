@@ -33,7 +33,7 @@ class WebIndex(object):
 				content_type='application/json'
 			)
 		except Exception as e:
-			self.Web.BASE.Logger.error(f"(Web) Error in request {str(e)}")
+			self.Web.BASE.Logger.error(f"(Web) Error in request: {str(e)}")
 			return self.response(
 				status=500,
 				body=json.dumps( dict(msg=str(e), status=500) ),
@@ -63,7 +63,7 @@ class WebIndex(object):
 		self.Web.router.add_route('GET', '/js{file:.*}', self.serveJs)
 
 	def addWebAccountRoutes(self) -> None:
-		self.Web.router.add_route('GET', '/account', self.notFound)
+		self.Web.router.add_route('GET', '/account', self.accountMain)
 		self.Web.router.add_route('GET', '/account/create', self.notFound)
 		self.Web.router.add_route('GET', '/account/login', self.notFound)
 
@@ -71,9 +71,13 @@ class WebIndex(object):
 		pass
 
 	from .Processing.mainsite import mainSite
+	from .Processing.Account.accountmain import accountMain
 
 	# web contents
 	from .Processing.webcontent import (serveCss, serveJs, serveImg, serveFavicon)
 
 	# errors
 	from .Processing.errors import notFound
+
+	# utils
+	from .utils import getUserInfo

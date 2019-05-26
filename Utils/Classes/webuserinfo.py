@@ -56,53 +56,53 @@ class WebUserInfo(object):
 	# getter
 	async def getFromSystem(self) -> None:
 		self.__session = self.kwargs.get("phaaze_session", None)
-		if self.__session: return self.viaSession()
+		if self.__session: return await self.viaSession()
 		self.__token = self.kwargs.get("phaaze_token", None)
-		if self.__session: return self.via__token()
+		if self.__session: return await self.via__token()
 		self.__username = self.kwargs.get("phaaze_username", None)
 		self.__password = self.kwargs.get("phaaze_password", None)
-		if self.__password and self.__username: return self.viaLogin()
+		if self.__password and self.__username: return await self.viaLogin()
 
 	async def getFromCookies(self) -> None:
 		self.__session = self.WebRequest.cookies.get("phaaze_session", None)
-		if self.__session: return self.viaSession()
+		if self.__session: return await self.viaSession()
 		self.__token = self.WebRequest.cookies.get("phaaze_token", None)
-		if self.__session: return self.via__token()
+		if self.__session: return await self.via__token()
 		# this makes no sense, but ok
 		self.__username = self.WebRequest.cookies.get("phaaze_username", None)
 		self.__password = self.WebRequest.cookies.get("phaaze_password", None)
-		if self.__password and self.__username: return self.viaLogin()
+		if self.__password and self.__username: return await self.viaLogin()
 
 	async def getFromHeader(self) -> None:
 		self.__session = self.WebRequest.headers.get("phaaze_session", None)
-		if self.__session: return self.viaSession()
+		if self.__session: return await self.viaSession()
 		self.__token = self.WebRequest.headers.get("phaaze_token", None)
-		if self.__session: return self.via__token()
+		if self.__session: return await self.via__token()
 		# this makes no sense, but ok
 		self.__username = self.WebRequest.headers.get("phaaze_username", None)
 		self.__password = self.WebRequest.headers.get("phaaze_password", None)
-		if self.__password and self.__username: return self.viaLogin()
+		if self.__password and self.__username: return await self.viaLogin()
 
 	async def getFromGet(self) -> None:
 		self.__session = self.WebRequest.query.get("phaaze_session", None)
-		if self.__session: return self.viaSession()
+		if self.__session: return await self.viaSession()
 		self.__token = self.WebRequest.query.get("phaaze_token", None)
-		if self.__session: return self.via__token()
+		if self.__session: return await self.via__token()
 		self.__username = self.WebRequest.query.get("phaaze_username", None)
 		self.__password = self.WebRequest.query.get("phaaze_password", None)
-		if self.__password and self.__username: return self.viaLogin()
+		if self.__password and self.__username: return await self.viaLogin()
 
 	async def getFromJson(self) -> None:
 		try: Json:dict = await self.WebRequest.json()
 		except: return
 
 		self.__session = Json.get("phaaze_session", None)
-		if self.__session: return self.viaSession()
+		if self.__session: return await self.viaSession()
 		self.__token = Json.get("phaaze_token", None)
-		if self.__session: return self.via__token()
+		if self.__session: return await self.via__token()
 		self.__username = Json.get("phaaze_username", None)
 		self.__password = Json.get("phaaze_password", None)
-		if self.__password and self.__username: return self.viaLogin()
+		if self.__password and self.__username: return await self.viaLogin()
 
 	async def getFromMultipart(self) -> None:
 		self.BASE.Logger.debug("Someone tryed to auth with multipart content", require="web:debug")
@@ -113,12 +113,12 @@ class WebUserInfo(object):
 		except: return
 
 		self.__session = Post.get("phaaze_session", None)
-		if self.__session: return self.viaSession()
+		if self.__session: return await self.viaSession()
 		self.__token = Post.get("phaaze_token", None)
-		if self.__session: return self.via__token()
+		if self.__session: return await self.via__token()
 		self.__username = Post.get("phaaze_username", None)
 		self.__password = Post.get("phaaze_password", None)
-		if self.__password and self.__username: return self.viaLogin()
+		if self.__password and self.__username: return await self.viaLogin()
 
 	# checker
 	async def viaToken(self) -> None:
@@ -140,7 +140,7 @@ class WebUserInfo(object):
 				fields=["name"]
 			)
 		)
-		return self.dbRequest(dbr)
+		return await self.dbRequest(dbr)
 
 	async def viaSession(self) -> None:
 		self.tryed = True
@@ -161,7 +161,7 @@ class WebUserInfo(object):
 				)
 			)
 		)
-		return self.dbRequest(dbr)
+		return await self.dbRequest(dbr)
 
 	async def dbRequest(self, db_req:dict) -> None:
 
