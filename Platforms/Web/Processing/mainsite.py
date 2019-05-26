@@ -20,6 +20,6 @@ async def mainSite(self:"WebIndex", Request:Request) -> Response:
 
 	return self.response(
 		body=site,
-		status=404,
+		status=200,
 		content_type='text/html'
 	)

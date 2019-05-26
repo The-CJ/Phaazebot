@@ -35,7 +35,9 @@
 
 /* account/login button */
 #account_field {
-	border-radius: 5em;
+	border-radius: 7.5em;
+	padding: 1em;
+	line-height: 0;
 }
 #account_field::after {
 	display: none;
@@ -48,7 +50,7 @@
 	content: "Account"
 }
 #account_field:hover::after {
-	display: inline;
+	display: contents;
 }
 
 /*global message animations*/
