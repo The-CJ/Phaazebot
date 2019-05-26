@@ -66,12 +66,12 @@ async def noFileDefined(cls:"WebIndex") -> Response:
 	return cls.response(
 		status=400,
 		content_type='application/json',
-		text=json.dumps( dict( error="no_file_defined",status=400 ) )
+		body=json.dumps( dict( error="no_file_defined",status=400 ) )
 	)
 
 async def fileNotFound(cls:"WebIndex", file_name:str) -> Response:
 	return cls.response(
 		status=404,
 		content_type='application/json',
-		text=json.dumps( dict( error="file_not_found", status=404, file=file_name ) )
+		body=json.dumps( dict( error="file_not_found", status=404, file=file_name ) )
 	)
