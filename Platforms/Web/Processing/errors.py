@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import html
 from aiohttp.web import Request, Response
 from Utils.Classes.htmlformatter import HTMLFormatter
+from Platforms.Web.utils import getNavbar
 
 async def notFound(self:"WebIndex", Request:Request, msg:str="") -> Response:
 	req_str:str = html.escape("Not Found: "+Request.path)
@@ -18,6 +19,7 @@ async def notFound(self:"WebIndex", Request:Request, msg:str="") -> Response:
 		replace_empty = True,
 
 		title = "Phaaze | Not Found",
+		header = getNavbar(),
 		main = Site404.content
 	)
 

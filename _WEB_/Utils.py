@@ -60,5 +60,3 @@ def format_html(self, html_string, **values):
 		html_string = html_string.replace(hit.group(0), str(rep))
 
 	return html_string
-
-
