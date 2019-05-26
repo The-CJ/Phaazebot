@@ -6,3 +6,17 @@ function showEmail() {
     trigger:"hover"
   }).popover()
 }
+
+SessionManager = new (class SessionManager {
+  constructor() {
+  }
+
+  login() {
+
+  }
+  logout() {
+
+  }
+})()
+
+// load finished, add events
