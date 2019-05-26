@@ -16,10 +16,10 @@ class WebUserInfo(object):
 		self.WebRequest:Request = WebRequest
 		self.kwargs:Any = kwargs
 
-		self.session:str = ""
-		self.token:str = ""
-		self.username:str = ""
-		self.password:str = ""
+		self.__session:str = ""
+		self.__token:str = ""
+		self.__username:str = ""
+		self.__password:str = ""
 
 		self.found:bool = False
 		self.tryed:bool = False
@@ -53,54 +53,54 @@ class WebUserInfo(object):
 
 	# getter
 	async def getFromSystem(self) -> None:
-		self.session = self.kwargs.get("phaaze_session", None)
-		if self.session: return self.viaSession()
-		self.token = self.kwargs.get("phaaze_token", None)
-		if self.session: return self.viaToken()
-		self.username = self.kwargs.get("phaaze_username", None)
-		self.password = self.kwargs.get("phaaze_password", None)
-		if self.password and self.username: return self.viaLogin()
+		self.__session = self.kwargs.get("phaaze_session", None)
+		if self.__session: return self.viaSession()
+		self.__token = self.kwargs.get("phaaze___token", None)
+		if self.__session: return self.via__token()
+		self.__username = self.kwargs.get("phaaze___username", None)
+		self.__password = self.kwargs.get("phaaze___password", None)
+		if self.__password and self.__username: return self.viaLogin()
 
 	async def getFromCookies(self) -> None:
-		self.session = self.WebRequest.cookies.get("phaaze_session", None)
-		if self.session: return self.viaSession()
-		self.token = self.WebRequest.cookies.get("phaaze_token", None)
-		if self.session: return self.viaToken()
+		self.__session = self.WebRequest.cookies.get("phaaze_session", None)
+		if self.__session: return self.viaSession()
+		self.__token = self.WebRequest.cookies.get("phaaze___token", None)
+		if self.__session: return self.via__token()
 		# this makes no sense, but ok
-		self.username = self.WebRequest.cookies.get("phaaze_username", None)
-		self.password = self.WebRequest.cookies.get("phaaze_password", None)
-		if self.password and self.username: return self.viaLogin()
+		self.__username = self.WebRequest.cookies.get("phaaze___username", None)
+		self.__password = self.WebRequest.cookies.get("phaaze___password", None)
+		if self.__password and self.__username: return self.viaLogin()
 
 	async def getFromHeader(self) -> None:
-		self.session = self.WebRequest.headers.get("phaaze_session", None)
-		if self.session: return self.viaSession()
-		self.token = self.WebRequest.headers.get("phaaze_token", None)
-		if self.session: return self.viaToken()
+		self.__session = self.WebRequest.headers.get("phaaze_session", None)
+		if self.__session: return self.viaSession()
+		self.__token = self.WebRequest.headers.get("phaaze___token", None)
+		if self.__session: return self.via__token()
 		# this makes no sense, but ok
-		self.username = self.WebRequest.headers.get("phaaze_username", None)
-		self.password = self.WebRequest.headers.get("phaaze_password", None)
-		if self.password and self.username: return self.viaLogin()
+		self.__username = self.WebRequest.headers.get("phaaze___username", None)
+		self.__password = self.WebRequest.headers.get("phaaze___password", None)
+		if self.__password and self.__username: return self.viaLogin()
 
 	async def getFromGet(self) -> None:
-		self.session = self.WebRequest.query.get("phaaze_session", None)
-		if self.session: return self.viaSession()
-		self.token = self.WebRequest.query.get("phaaze_token", None)
-		if self.session: return self.viaToken()
-		self.username = self.WebRequest.query.get("phaaze_username", None)
-		self.password = self.WebRequest.query.get("phaaze_password", None)
-		if self.password and self.username: return self.viaLogin()
+		self.__session = self.WebRequest.query.get("phaaze_session", None)
+		if self.__session: return self.viaSession()
+		self.__token = self.WebRequest.query.get("phaaze___token", None)
+		if self.__session: return self.via__token()
+		self.__username = self.WebRequest.query.get("phaaze___username", None)
+		self.__password = self.WebRequest.query.get("phaaze___password", None)
+		if self.__password and self.__username: return self.viaLogin()
 
 	async def getFromJson(self) -> None:
 		try: Json:dict = await self.WebRequest.json()
 		except: return
 
-		self.session = Json.get("phaaze_session", None)
-		if self.session: return self.viaSession()
-		self.token = Json.get("phaaze_token", None)
-		if self.session: return self.viaToken()
-		self.username = Json.get("phaaze_username", None)
-		self.password = Json.get("phaaze_password", None)
-		if self.password and self.username: return self.viaLogin()
+		self.__session = Json.get("phaaze_session", None)
+		if self.__session: return self.viaSession()
+		self.__token = Json.get("phaaze___token", None)
+		if self.__session: return self.via__token()
+		self.__username = Json.get("phaaze___username", None)
+		self.__password = Json.get("phaaze___password", None)
+		if self.__password and self.__username: return self.viaLogin()
 
 	async def getFromMultipart(self) -> None:
 		self.BASE.Logger.debug("Someone tryed to auth with multipart content", require="web:debug")
@@ -110,16 +110,16 @@ class WebUserInfo(object):
 		try: Post:dict = await self.WebRequest.post()
 		except: return
 
-		self.session = Post.get("phaaze_session", None)
-		if self.session: return self.viaSession()
-		self.token = Post.get("phaaze_token", None)
-		if self.session: return self.viaToken()
-		self.username = Post.get("phaaze_username", None)
-		self.password = Post.get("phaaze_password", None)
-		if self.password and self.username: return self.viaLogin()
+		self.__session = Post.get("phaaze_session", None)
+		if self.__session: return self.viaSession()
+		self.__token = Post.get("phaaze___token", None)
+		if self.__session: return self.via__token()
+		self.__username = Post.get("phaaze___username", None)
+		self.__password = Post.get("phaaze___password", None)
+		if self.__password and self.__username: return self.viaLogin()
 
 	# checker
-	async def viaToken(self) -> None:
+	async def viatoken(self) -> None:
 		pass
 
 	async def viaLogin(self) -> None:
