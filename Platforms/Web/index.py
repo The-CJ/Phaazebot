@@ -41,17 +41,34 @@ class WebIndex(object):
 			)
 
 	def addRoutes(self) -> None:
+		self.addWebRoutes()
+		self.addAPIRoutes()
+
+		# favicon
+		self.Web.router.add_route('*', '/favicon.ico', self.serveFavicon)
+
+		# unknown path (404)
+		self.Web.router.add_route('*', '/{x:.*}', self.notFound)
+
+	def addWebRoutes(self) -> None:
 		# main site
 		self.Web.router.add_route('GET', '/', self.mainSite)
-		self.Web.router.add_route('GET', '/favicon.ico', self.serveFavicon)
+
+		# /account*
+		self.addWebAccountRoutes()
 
 		# web contents (js, css, img)
 		self.Web.router.add_route('GET', '/img{file:.*}', self.serveImg)
 		self.Web.router.add_route('GET', '/css{file:.*}', self.serveCss)
 		self.Web.router.add_route('GET', '/js{file:.*}', self.serveJs)
 
-		# unknown path (404)
-		self.Web.router.add_route('*', '/{x:.*}', self.notFound)
+	def addWebAccountRoutes(self) -> None:
+		self.Web.router.add_route('GET', '/account', self.notFound)
+		self.Web.router.add_route('GET', '/account/create', self.notFound)
+		self.Web.router.add_route('GET', '/account/login', self.notFound)
+
+	def addAPIRoutes(self) -> None:
+		pass
 
 	from .Processing.mainsite import mainSite
 
