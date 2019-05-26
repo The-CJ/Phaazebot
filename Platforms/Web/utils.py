@@ -1,14 +1,18 @@
 from Utils.Classes.htmlformatter import HTMLFormatter
 
 def getNavbar(active:str="", user_info=None) -> HTMLFormatter:
-	navbar:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Navbar/default.html")
+	Navbar:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Navbar/default.html")
 
+	Navbar.replace(login_button=getLoginButton(user_info=user_info))
 
+	Navbar.setRegex(r"\{selected_(.+?)\}")
+	Navbar.replace(replace_empty=True, **{active:"active"})
 
-	navbar.setRegex(r"\{selected_(.+?)\}")
-	navbar.replace(replace_empty=True, **{active:"active"})
+	return Navbar
 
-	return navbar
+def getLoginButton(user_info=None) -> HTMLFormatter:
+	Button:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Button/account.html")
+	field_replace:str = "loggedin" if user_info else ""
+	Button.replace(is_logged_in=field_replace)
 
-def getButton() -> HTMLFormatter:
-	pass
+	return Button

@@ -33,12 +33,22 @@
 	text-transform: none;
 }
 
-.text-shadow-black {
-	text-shadow:
-		1px  1px 1px black,
-		1px -1px 1px black,
-		-1px  1px 1px black,
-		-1px -1px 1px black;
+/* account/login button */
+#account_field {
+	border-radius: 5em;
+}
+#account_field::after {
+	display: none;
+	transition: .5s;
+	content: "Login";
+	position: relative;
+	overflow: hidden;
+}
+#account_field.loggedin::after {
+	content: "Account"
+}
+#account_field:hover::after {
+	display: inline;
 }
 
 /*global message animations*/
