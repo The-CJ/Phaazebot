@@ -2,7 +2,9 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
 	from main import Phaazebot
 
+import json
 from aiohttp.web import Request
+from Utils.password import password
 
 class WebUserInfo(object):
 	"""
@@ -119,14 +121,53 @@ class WebUserInfo(object):
 		if self.__password and self.__username: return self.viaLogin()
 
 	# checker
-	async def viatoken(self) -> None:
-		pass
+	async def viaToken(self) -> None:
+		self.tryed = True
+		self.BASE.Logger.debug("Someone tryed to auth with token", require="web:debug")
+		return None
 
 	async def viaLogin(self) -> None:
-		pass
+		self.tryed = True
+		self.__password = password(self.__password)
+		dbr:dict = dict(
+			of="user",
+			store="user",
+			where=f"user['username'] == {self.__username} and user['password'] == {self.__password}",
+			join=dict(
+				of="role",
+				store="role",
+				where="role['id'] in user['role']",
+				fields=["name"]
+			)
+		)
+		return self.dbRequest(dbr)
 
 	async def viaSession(self) -> None:
-		pass
+		self.tryed = True
+		dbr:dict = dict(
+			of="session/phaaze",
+			store="session",
+			where=f'session["session"] == {json.dumps(self.__session)}',
+			limit=1,
+			join=dict(
+				of="user",
+				store="user",
+				where="session['user_id'] == user['id']",
+				join=dict(
+					of="role",
+					store="role",
+					where="role['id'] in user['role']",
+					fields=["name"]
+				)
+			)
+		)
+		return self.dbRequest(dbr)
+
+	async def dbRequest(self, db_req:dict) -> None:
+
+		res:dict = self.BASE.PhaazeDB.select(**db_req)
+
+		print(res)
 
 	# finish
 	async def finishUser(self) -> None:
