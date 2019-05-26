@@ -61,6 +61,10 @@ async def serveImg(self:"WebIndex", Request:Request) -> Response:
 		body=file_content
 	)
 
+async def serveFavicon(self:"WebIndex", Request:Request) -> Response:
+	Request.match_info["file"] = "/img/favicon.ico"
+	return await self.serveImg(Request)
+
 # error handling
 async def noFileDefined(cls:"WebIndex") -> Response:
 	return cls.response(

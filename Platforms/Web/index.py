@@ -43,6 +43,7 @@ class WebIndex(object):
 	def addRoutes(self) -> None:
 		# main site
 		self.Web.router.add_route('GET', '/', self.mainSite)
+		self.Web.router.add_route('GET', '/favicon.ico', self.serveFavicon)
 
 		# web contents (js, css, img)
 		self.Web.router.add_route('GET', '/img{file:.*}', self.serveImg)
@@ -55,7 +56,7 @@ class WebIndex(object):
 	from .Processing.mainsite import mainSite
 
 	# web contents
-	from .Processing.webcontent import (serveCss, serveJs, serveImg)
+	from .Processing.webcontent import (serveCss, serveJs, serveImg, serveFavicon)
 
 	# errors
 	from .Processing.errors import notFound
