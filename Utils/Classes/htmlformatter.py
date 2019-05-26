@@ -17,7 +17,7 @@ class HTMLFormatter(object):
 		self.content:str = None
 		self.path:str = path
 		self.template:bool=template
-		self.FormatHTMLRegex:re.Pattern = re.compile(r"\|<!-->>>\((.+?)\)<<<-->\|")
+		self.FormatHTMLRegex:re.Pattern = re.compile(r"\|<!--#\((.+?)\)#-->\|")
 		if self.path: self.loadHTML(self.path)
 
 	def setRegex(self, new_re:str) -> None:
