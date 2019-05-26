@@ -2,40 +2,44 @@
   <i class="fas fa-user-circle"></i>
 </button>
 
-<div class="modal fade" id="login_form" onsubmit="alert('ee')">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
 
-      <div class="modal-header text-center">
-        <h4 class="modal-title">Sign in</h4>
-        <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
-      </div>
+<div class="modal fade" id="login_form">
+  <form onsubmit="SessionManager.login()">
 
-      <div class="modal-body">
-        <div class="md-form">
-          <i class="fas fa-user-circle prefix grey-text"></i>
-          <input type="email" id="phaaze_email_or_username" class="form-control">
-          <label for="phaaze_email_or_username">Username or E-mail</label>
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Sign in</h4>
+          <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
         </div>
 
-        <div class="md-form">
-          <i class="fas fa-lock prefix grey-text"></i>
-          <input type="password" id="phaaze_password" class="form-control">
-          <label for="defaultForm-pass">Password</label>
+        <div class="modal-body text-black">
+          <div class="md-form">
+            <i class="fas fa-user-circle prefix grey-text"></i>
+            <input type="email" id="phaaze_email_or_username" class="form-control">
+            <label for="phaaze_email_or_username">Username or E-mail</label>
+          </div>
+          <div class="md-form">
+            <i class="fas fa-lock prefix grey-text"></i>
+            <input type="password" id="phaaze_password" class="form-control">
+            <label for="defaultForm-pass">Password</label>
+          </div>
         </div>
-      </div>
 
-      <div class="modal-footer center-item-col">
-        <div>
-          <button class="btn btn-default" type="submit">Login</button>
-          <a href="/register">
-            <button class="btn btn-secondary" type="button">Register</button>
-          </a>
+        <div class="modal-footer center-item-col">
+          <div>
+            <button class="btn btn-default" type="submit">Login</button>
+            <a href="/register">
+              <button class="btn btn-secondary" type="button">Register</button>
+            </a>
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
-  </div>
+
+  </form>
 </div>
 
 <!-- <script type="text/javascript"> -->

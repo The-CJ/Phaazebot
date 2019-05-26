@@ -52,6 +52,11 @@
 #account_field:hover::after {
 	display: contents;
 }
+#login_form input {
+	margin: 0 2.5em;
+	color: black;
+	border-bottom: 1px solid #000;
+}
 
 /*global message animations*/
 
