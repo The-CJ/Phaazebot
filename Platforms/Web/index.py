@@ -13,12 +13,12 @@ class WebIndex(object):
 		self.Web.middlewares.append(self.middleware_handler)
 		self.HTMLRoot:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/root.html", template=True)
 
-	def response(self, status:int=200, content_type:str=None, body:Any=None, **kwargs:Any) -> Response:
+	def response(self, status:int=200, content_type:str=None, **kwargs:Any) -> Response:
 		already_set_header:dict = kwargs.get('headers', dict())
 		kwargs['headers'] = already_set_header
 		kwargs['headers']['server'] =f"PhaazeOS v{self.Web.BASE.version}"
 
-		return Response(status=status, content_type=content_type, body=body, **kwargs)
+		return Response(status=status, content_type=content_type, **kwargs)
 
 	@middleware
 	async def middleware_handler(self, Request:Request, handler:Coroutine) -> Response:
