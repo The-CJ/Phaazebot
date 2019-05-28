@@ -167,6 +167,7 @@ class WebUserInfo(object):
 
 		res:dict = self.BASE.PhaazeDB.select(**db_req)
 
+		print("TODO: store user data after success")
 		print(res)
 
 	# finish
