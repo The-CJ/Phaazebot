@@ -10,8 +10,8 @@ CONTENTFOLDER_JS = "Platforms/Web/Content/Js"
 CONTENTFOLDER_IMG = "Platforms/Web/Content/Img"
 
 # content serve functions
-async def serveCss(self:"WebIndex", Request:Request) -> Response:
-	file_location:str = Request.match_info.get("file", None)
+async def serveCss(self:"WebIndex", WebRequest:Request) -> Response:
+	file_location:str = WebRequest.match_info.get("file", None)
 	if not file_location: return noFileDefined(self)
 
 	file_location = file_location.replace("..","").strip("/")
@@ -27,8 +27,8 @@ async def serveCss(self:"WebIndex", Request:Request) -> Response:
 		body=file_content
 	)
 
-async def serveJs(self:"WebIndex", Request:Request) -> Response:
-	file_location:str = Request.match_info.get("file", None)
+async def serveJs(self:"WebIndex", WebRequest:Request) -> Response:
+	file_location:str = WebRequest.match_info.get("file", None)
 	if not file_location: return noFileDefined(self)
 
 	file_location = file_location.replace("..","").strip("/")
@@ -44,8 +44,8 @@ async def serveJs(self:"WebIndex", Request:Request) -> Response:
 		body=file_content
 	)
 
-async def serveImg(self:"WebIndex", Request:Request) -> Response:
-	file_location:str = Request.match_info.get("file", None)
+async def serveImg(self:"WebIndex", WebRequest:Request) -> Response:
+	file_location:str = WebRequest.match_info.get("file", None)
 	if not file_location: return noFileDefined(self)
 
 	file_location = file_location.replace("..","").strip("/")
@@ -61,9 +61,9 @@ async def serveImg(self:"WebIndex", Request:Request) -> Response:
 		body=file_content
 	)
 
-async def serveFavicon(self:"WebIndex", Request:Request) -> Response:
-	Request.match_info["file"] = "/img/favicon.ico"
-	return await self.serveImg(Request)
+async def serveFavicon(self:"WebIndex", WebRequest:Request) -> Response:
+	WebRequest.match_info["file"] = "/img/favicon.ico"
+	return await self.serveImg(WebRequest)
 
 # error handling
 async def noFileDefined(cls:"WebIndex") -> Response:

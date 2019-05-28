@@ -21,9 +21,9 @@ class WebIndex(object):
 		return Response(status=status, content_type=content_type, **kwargs)
 
 	@middleware
-	async def middleware_handler(self, Request:Request, handler:Coroutine) -> Response:
+	async def middleware_handler(self, WebRequest:Request, handler:Coroutine) -> Response:
 		try:
-			response:Response = await handler(Request)
+			response:Response = await handler(WebRequest)
 			return response
 
 		except HTTPException as HTTPEx:

@@ -7,10 +7,10 @@ from aiohttp.web import Request, Response
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Platforms.Web.utils import getNavbar
 
-async def notFound(self:"WebIndex", Request:Request, msg:str="") -> Response:
-	req_str:str = html.escape("Not Found: "+Request.path)
+async def notFound(self:"WebIndex", WebRequest:Request, msg:str="") -> Response:
+	req_str:str = html.escape("Not Found: "+WebRequest.path)
 
-	self.Web.BASE.Logger.debug(f"(Web) 404: {Request.path}", require="web:404")
+	self.Web.BASE.Logger.debug(f"(Web) 404: {WebRequest.path}", require="web:404")
 
 	Site404:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/pageNotFound.html")
 	Site404.replace(msg=msg, path=req_str)

@@ -6,7 +6,7 @@ from aiohttp.web import Request, Response
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Platforms.Web.utils import getNavbar
 
-async def mainSite(self:"WebIndex", Request:Request) -> Response:
+async def mainSite(self:"WebIndex", WebRequest:Request) -> Response:
 
 	MainSite:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/main.html")
 

@@ -23,13 +23,13 @@ def getLoginButton(UserInfo:WebUserInfo=None) -> HTMLFormatter:
 
 	return Button
 
-async def getUserInfo(self:"WebIndex", Request:Request, **kwargs:Any) -> WebUserInfo:
-	if hasattr(Request, "UserInfo"):
-		self.Web.BASE.Logger.debug(f"(Web) Used stored infos: {str(Request.UserInfo)}", require="web:debug")
-		return Request.UserInfo
+async def getUserInfo(self:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:
+	if hasattr(WebRequest, "UserInfo"):
+		self.Web.BASE.Logger.debug(f"(Web) Used stored infos: {str(WebRequest.UserInfo)}", require="web:debug")
+		return WebRequest.UserInfo
 
-	UserInfo:WebUserInfo = WebUserInfo(self.Web.BASE, Request, **kwargs)
+	UserInfo:WebUserInfo = WebUserInfo(self.Web.BASE, WebRequest, **kwargs)
 	await UserInfo.auth()
-	Request.UserInfo = UserInfo
+	WebRequest.UserInfo = UserInfo
 
-	return Request.UserInfo
+	return WebRequest.UserInfo
