@@ -65,13 +65,14 @@ class WebIndex(object):
 	def addWebAccountRoutes(self) -> None:
 		self.Web.router.add_route('GET', '/account', self.accountMain)
 		self.Web.router.add_route('GET', '/account/create', self.notFound)
-		self.Web.router.add_route('GET', '/account/login', self.notFound)
+		self.Web.router.add_route('GET', '/account/login', self.accountLogin)
 
 	def addAPIRoutes(self) -> None:
 		pass
 
 	from .Processing.mainsite import mainSite
 	from .Processing.Account.accountmain import accountMain
+	from .Processing.Account.accountlogin import accountLogin
 
 	# web contents
 	from .Processing.webcontent import (serveCss, serveJs, serveImg, serveFavicon)

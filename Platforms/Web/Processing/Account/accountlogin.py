@@ -6,15 +6,15 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Web.utils import getNavbar
 
-async def accountMain(self:"WebIndex", WebRequest:Request) -> Response:
+async def accountLogin(self:"WebIndex", WebRequest:Request) -> Response:
 	UserInfo:WebUserInfo = await self.getUserInfo(WebRequest)
 
-	if not UserInfo.found: return await self.accountLogin(WebRequest)
+	print(UserInfo)
 
 	site:str = self.HTMLRoot.replace(
 		replace_empty = True,
 
-		title = "Phaaze | Account",
+		title = "Phaaze | Login",
 		header = getNavbar()
 	)
 
