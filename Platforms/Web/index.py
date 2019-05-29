@@ -10,7 +10,7 @@ class WebIndex(object):
 	""" Contains all functions for the web to call """
 	def __init__(self, Web:"PhaazebotWeb"):
 		self.Web:"PhaazebotWeb" = Web
-		self.Web.middlewares.append(self.middleware_handler)
+		self.Web.middlewares.append(self.middlewareHandler)
 		self.HTMLRoot:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/root.html", template=True)
 
 	def response(self, status:int=200, content_type:str=None, **kwargs:Any) -> Response:
@@ -21,7 +21,7 @@ class WebIndex(object):
 		return Response(status=status, content_type=content_type, **kwargs)
 
 	@middleware
-	async def middleware_handler(self, WebRequest:Request, handler:Coroutine) -> Response:
+	async def middlewareHandler(self, WebRequest:Request, handler:Coroutine) -> Response:
 		try:
 			response:Response = await handler(WebRequest)
 			return response
