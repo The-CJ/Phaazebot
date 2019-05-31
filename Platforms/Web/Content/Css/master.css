@@ -42,12 +42,9 @@
 #account_field::after {
 	display: none;
 	transition: .5s;
-	content: "Login";
+	content: "Accounts";
 	position: relative;
 	overflow: hidden;
-}
-#account_field.loggedin::after {
-	content: "Account"
 }
 #account_field:hover::after {
 	display: contents;

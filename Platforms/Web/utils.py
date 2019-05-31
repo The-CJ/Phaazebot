@@ -18,8 +18,6 @@ def getNavbar(active:str="", UserInfo:WebUserInfo=None) -> HTMLFormatter:
 
 def getLoginButton(UserInfo:WebUserInfo=None) -> HTMLFormatter:
 	Button:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Button/account.html")
-	field_replace:str = "loggedin" if UserInfo else ""
-	Button.replace(is_logged_in=field_replace)
 
 	return Button
 
