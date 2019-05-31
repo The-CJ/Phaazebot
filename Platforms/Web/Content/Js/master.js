@@ -10,6 +10,12 @@ function showEmail() {
 SessionManager = new (class SessionManager {
   constructor() {
   }
+  showAccountPanel() {
+    $('#login_form').modal('show');
+    $('#login_form [table]').hide();
+    $('#login_form [table=all]').show();
+
+  }
 
   login() {
 

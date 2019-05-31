@@ -1,14 +1,46 @@
-<button type="button" class="btn btn-primary center-item-row" id="account_field" onclick="$('#login_form').modal('show')">
+<button type="button" class="btn btn-primary center-item-row" id="account_field" onclick="SessionManager.showAccountPanel()">
   <i class="fas fa-user-circle"></i>
 </button>
 
 
 <div class="modal fade" id="login_form">
-  <form onsubmit="SessionManager.login()">
+  <div class="modal-dialog" role="document">
 
-    <div class="modal-dialog" role="document">
+    <div table="all">
+
       <div class="modal-content">
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Choose Platform</h4>
+          <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
+        </div>
 
+        <div class="modal-body text-black">
+          <div class="center-item-row">
+            <div class="platform">
+              <img src="/img/favicon.ico" alt="logo" width="35">
+            </div>
+            <h2>Phaaze</h2>
+          </div>
+          <div class="center-item-row">
+            <div class="platform">
+              <h1><i class="fab fa-discord"></i></h1>
+            </div>
+            <h2>Discord</h2>
+          </div>
+          <div class="center-item-row">
+            <div class="platform">
+              <h1><i class="fab fa-twitch"></i></h1>
+            </div>
+            <h2>Twitch</h2>
+          </div>
+        </div>
+
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+
+    <div table="phaaze">
+      <div class="modal-content">
         <div class="modal-header text-center">
           <h4 class="modal-title">Sign in</h4>
           <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
@@ -35,9 +67,8 @@
             </a>
           </div>
         </div>
-
       </div>
     </div>
 
-  </form>
+  </div>
 </div>
