@@ -30,4 +30,6 @@ async def getUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUs
 	await UserInfo.auth()
 	WebRequest.UserInfo = UserInfo
 
+	print(WebRequest.UserInfo)
+
 	return WebRequest.UserInfo

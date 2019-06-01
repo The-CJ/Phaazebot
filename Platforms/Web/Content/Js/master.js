@@ -7,7 +7,7 @@ function showEmail() {
   }).popover()
 }
 
-SessionManager = new (class SessionManager {
+var SessionManager = new (class SessionManager {
   constructor() {
   }
   showAccountPanel(field="all") {
@@ -31,9 +31,18 @@ SessionManager = new (class SessionManager {
   }
 
   login() {
+    let user = $("#phaaze_email_or_username").val();
+    let password = $("#phaaze_password").val();
+    $.post("/api/account/phaaze/login", {"phaaze_username":user, "phaaze_password":password})
+    .done(function (data) {
+      console.log(data);
+    })
+    .fail(function (data) {
+      console.log(data);
+    })
 
   }
-  logout() {
+  logout(field) {
 
   }
 })()

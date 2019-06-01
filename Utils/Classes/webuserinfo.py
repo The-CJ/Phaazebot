@@ -132,7 +132,7 @@ class WebUserInfo(object):
 		dbr:dict = dict(
 			of="user",
 			store="user",
-			where=f"user['username'] == {self.__username} and user['password'] == {self.__password}",
+			where=f"(user['username'] == {self.__username} or user['email'] == {self.__username}) and user['password'] == {self.__password}",
 			join=dict(
 				of="role",
 				store="role",

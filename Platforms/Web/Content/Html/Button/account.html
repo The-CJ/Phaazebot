@@ -15,24 +15,24 @@
         </div>
 
         <div class="modal-body text-black">
-          <div class="center-item-row btn" style="background: #00ffd0" onclick="SessionManager.showAccountPanel('phaaze')">
-            <div class="platform center-item-row">
+          <div class="center-item-row forced btn" style="background: #00ffd0" onclick="SessionManager.showAccountPanel('phaaze')">
+            <div class="platform center-item-row forced">
               <img src="/img/favicon.ico" alt="logo" width="45">
             </div>
             <div class="col"></div>
             <h2>Phaaze</h2>
             <div class="col"></div>
           </div>
-          <div class="center-item-row text-white btn" style="background: #7289DA" onclick="SessionManager.showAccountPanel('discord')">
-            <div class="platform center-item-row">
+          <div class="center-item-row forced text-white btn" style="background: #7289DA" onclick="SessionManager.showAccountPanel('discord')">
+            <div class="platform center-item-row forced">
               <i class="fab fa-discord"></i>
             </div>
             <div class="col"></div>
             <h2>Discord</h2>
             <div class="col"></div>
           </div>
-          <div class="center-item-row text-white btn" style="background: #6441A4" onclick="SessionManager.showAccountPanel('twitch')">
-            <div class="platform center-item-row">
+          <div class="center-item-row forced text-white btn" style="background: #6441A4" onclick="SessionManager.showAccountPanel('twitch')">
+            <div class="platform center-item-row forced">
               <i class="fab fa-twitch"></i>
             </div>
             <div class="col"></div>
@@ -50,34 +50,36 @@
 
       </div>
       <div loggedin="false" style="display:none;">
-        <div class="modal-content">
-          <div class="modal-header text-center">
-            <h4 class="modal-title">Sign into Phaaze</h4>
-            <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
-          </div>
+        <form action="javascript:SessionManager.login()">
+          <div class="modal-content">
+            <div class="modal-header text-center">
+              <h4 class="modal-title">Sign into Phaaze</h4>
+              <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
+            </div>
 
-          <div class="modal-body text-black">
-            <div class="md-form">
-              <i class="fas fa-user-circle prefix grey-text"></i>
-              <input type="email" id="phaaze_email_or_username" class="form-control">
-              <label for="phaaze_email_or_username">Username or E-mail</label>
+            <div class="modal-body text-black">
+              <div class="md-form">
+                <i class="fas fa-user-circle prefix grey-text"></i>
+                <input type="email" id="phaaze_email_or_username" class="form-control">
+                <label for="phaaze_email_or_username">Username or E-mail</label>
+              </div>
+              <div class="md-form">
+                <i class="fas fa-lock prefix grey-text"></i>
+                <input type="password" id="phaaze_password" class="form-control">
+                <label for="phaaze_password">Password</label>
+              </div>
             </div>
-            <div class="md-form">
-              <i class="fas fa-lock prefix grey-text"></i>
-              <input type="password" id="phaaze_password" class="form-control">
-              <label for="phaaze_password">Password</label>
-            </div>
-          </div>
 
-          <div class="modal-footer center-item-col">
-            <div>
-              <button class="btn btn-default" type="submit">Login</button>
-              <a href="/account/create">
-                <button class="btn btn-secondary" type="button">Register</button>
-              </a>
+            <div class="modal-footer center-item-col">
+              <div>
+                <button class="btn btn-default" type="submit">Login</button>
+                <a href="/account/create">
+                  <button class="btn btn-secondary" type="button">Register</button>
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
 

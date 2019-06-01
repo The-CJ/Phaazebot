@@ -65,7 +65,6 @@ class WebIndex(object):
 	def addWebAccountRoutes(self) -> None:
 		self.Web.router.add_route('GET', '/account', self.accountMain)
 		self.Web.router.add_route('GET', '/account/create', self.accountCreate)
-		self.Web.router.add_route('GET', '/account/login', self.accountLogin)
 
 	def addAPIRoutes(self) -> None:
 		self.addAPIAccountroutes()
@@ -87,7 +86,6 @@ class WebIndex(object):
 	# web
 	from .Processing.mainsite import mainSite
 	from .Processing.Account.accountmain import accountMain
-	from .Processing.Account.accountlogin import accountLogin
 	from .Processing.Account.accountcreate import accountCreate
 
 	# web contents
