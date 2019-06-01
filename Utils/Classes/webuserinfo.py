@@ -8,7 +8,7 @@ from Utils.password import password
 
 class WebUserInfo(object):
 	"""
-		Used for authorisation of a web user request
+		Used for authorisation of a phaaze web user request
 		It should if possible, avoid reading in POST content when not needed
 	 		variable search way:
 			System -> header/cookies -> GET -> POST/JSON
