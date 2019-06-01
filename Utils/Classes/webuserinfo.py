@@ -49,16 +49,17 @@ class WebUserInfo(object):
 		if self.tryed: return
 
 		# after here we need to read the body
-		if self.WebRequest.headers.get("content-type", None) == "application/json":
-			await self.getFromJson()
-			if self.tryed: return
+		if self.WebRequest.method in ["POST"]:
+			if self.WebRequest.headers.get("content-type", None) == "application/json":
+				await self.getFromJson()
+				if self.tryed: return
 
-		if self.WebRequest.headers.get("content-type", "").startswith("multipart/"):
-			await self.getFromMultipart()
-			if self.tryed: return
+			if self.WebRequest.headers.get("content-type", "").startswith("multipart/"):
+				await self.getFromMultipart()
+				if self.tryed: return
 
-		await self.getFromPost()
-		if self.tryed: return
+			await self.getFromPost()
+			if self.tryed: return
 
 	# getter
 	async def getFromSystem(self) -> None:
