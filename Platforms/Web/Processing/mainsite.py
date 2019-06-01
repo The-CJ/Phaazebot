@@ -6,11 +6,11 @@ from aiohttp.web import Request, Response
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Platforms.Web.utils import getNavbar
 
-async def mainSite(self:"WebIndex", WebRequest:Request) -> Response:
+async def mainSite(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	MainSite:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/main.html")
 
-	site:str = self.HTMLRoot.replace(
+	site:str = cls.HTMLRoot.replace(
 		replace_empty = True,
 
 		title = "Phaaze",
@@ -18,7 +18,7 @@ async def mainSite(self:"WebIndex", WebRequest:Request) -> Response:
 		main = MainSite
 	)
 
-	return self.response(
+	return cls.response(
 		body=site,
 		status=200,
 		content_type='text/html'

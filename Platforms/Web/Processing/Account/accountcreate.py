@@ -6,19 +6,19 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Web.utils import getNavbar
 
-async def accountCreate(self:"WebIndex", WebRequest:Request) -> Response:
-	UserInfo:WebUserInfo = await self.getUserInfo(WebRequest)
+async def accountCreate(cls:"WebIndex", WebRequest:Request) -> Response:
+	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
 
-	if UserInfo.found: return await self.accountMain(WebRequest)
+	if UserInfo.found: return await cls.accountMain(WebRequest)
 
-	site:str = self.HTMLRoot.replace(
+	site:str = cls.HTMLRoot.replace(
 		replace_empty = True,
 
 		title = "Phaaze | Account create",
 		header = getNavbar()
 	)
 
-	return self.response(
+	return cls.response(
 		body=site,
 		status=200,
 		content_type='text/html'

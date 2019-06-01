@@ -6,26 +6,26 @@ from .errors import apiMissingAuthorisation, apiNotAllowed, apiMissingValidMetho
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 
-async def apiAccountPhaaze(self:"WebIndex", WebRequest:Request) -> Response:
+async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/phaaze
 	"""
 	method:str = WebRequest.match_info.get("method", None)
-	if not method: return await apiMissingValidMethod(self, WebRequest)
+	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	UserInfo:WebUserInfo = await self.getUserInfo(WebRequest)
+	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
 
 	if not UserInfo.found:
-		return await apiMissingAuthorisation(self, WebRequest)
+		return await apiMissingAuthorisation(cls, WebRequest)
 
-async def apiAccountDiscord(self:"WebIndex", WebRequest:Request) -> Response:
+async def apiAccountDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/discord
 	"""
-	return await apiNotAllowed(self, WebRequest, msg="Under construction")
+	return await apiNotAllowed(cls, WebRequest, msg="Under construction")
 
-async def apiAccountTwitch(self:"WebIndex", WebRequest:Request) -> Response:
+async def apiAccountTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/twitch
 	"""
-	return await apiNotAllowed(self, WebRequest, msg="Under construction")
+	return await apiNotAllowed(cls, WebRequest, msg="Under construction")

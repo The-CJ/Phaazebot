@@ -10,60 +10,60 @@ CONTENTFOLDER_JS = "Platforms/Web/Content/Js"
 CONTENTFOLDER_IMG = "Platforms/Web/Content/Img"
 
 # content serve functions
-async def serveCss(self:"WebIndex", WebRequest:Request) -> Response:
+async def serveCss(cls:"WebIndex", WebRequest:Request) -> Response:
 	file_location:str = WebRequest.match_info.get("file", None)
-	if not file_location: return noFileDefined(self)
+	if not file_location: return noFileDefined(cls)
 
 	file_location = file_location.replace("..","").strip("/")
 
 	try:
 		file_content:bytes = open(f"{CONTENTFOLDER_CSS}/{file_location}", "rb").read()
 	except FileNotFoundError:
-		return await fileNotFound(self, file_location)
+		return await fileNotFound(cls, file_location)
 
-	return self.response(
+	return cls.response(
 		status=200,
 		content_type='text/css',
 		body=file_content
 	)
 
-async def serveJs(self:"WebIndex", WebRequest:Request) -> Response:
+async def serveJs(cls:"WebIndex", WebRequest:Request) -> Response:
 	file_location:str = WebRequest.match_info.get("file", None)
-	if not file_location: return noFileDefined(self)
+	if not file_location: return noFileDefined(cls)
 
 	file_location = file_location.replace("..","").strip("/")
 
 	try:
 		file_content:bytes = open(f"{CONTENTFOLDER_JS}/{file_location}", "rb").read()
 	except FileNotFoundError:
-		return await fileNotFound(self, file_location)
+		return await fileNotFound(cls, file_location)
 
-	return self.response(
+	return cls.response(
 		status=200,
 		content_type='application/json',
 		body=file_content
 	)
 
-async def serveImg(self:"WebIndex", WebRequest:Request) -> Response:
+async def serveImg(cls:"WebIndex", WebRequest:Request) -> Response:
 	file_location:str = WebRequest.match_info.get("file", None)
-	if not file_location: return noFileDefined(self)
+	if not file_location: return noFileDefined(cls)
 
 	file_location = file_location.replace("..","").strip("/")
 
 	try:
 		file_content:bytes = open(f"{CONTENTFOLDER_IMG}/{file_location}", "rb").read()
 	except FileNotFoundError:
-		return await fileNotFound(self, file_location)
+		return await fileNotFound(cls, file_location)
 
-	return self.response(
+	return cls.response(
 		status=200,
 		content_type=mimetypes.guess_type(f"{CONTENTFOLDER_IMG}/{file_location}", strict=True)[0],
 		body=file_content
 	)
 
-async def serveFavicon(self:"WebIndex", WebRequest:Request) -> Response:
+async def serveFavicon(cls:"WebIndex", WebRequest:Request) -> Response:
 	WebRequest.match_info["file"] = "/img/favicon.ico"
-	return await self.serveImg(WebRequest)
+	return await cls.serveImg(WebRequest)
 
 # error handling
 async def noFileDefined(cls:"WebIndex") -> Response:
