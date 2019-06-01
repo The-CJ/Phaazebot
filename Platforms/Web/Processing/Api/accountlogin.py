@@ -3,6 +3,7 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 import datetime
+import json
 from .errors import apiNotAllowed, userNotFound, missingData
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
@@ -33,6 +34,11 @@ async def apiAccountPhaazeLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 		content = dict(last_login=str(datetime.datetime.now()))
 	)
 	cls.Web.BASE.Logger.debug(f"New Login - Session: {session_key} User: {str(UserInfo.username)}", require="api:login")
+	return cls.response(
+		text=json.dumps( dict(phaaze_session=session_key,status=200) ),
+		content_type="application/json",
+		status=200
+	)
 
 async def apiAccountDiscordLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
