@@ -54,9 +54,21 @@
 	color: black;
 	border-bottom: 1px solid #000;
 }
-#login_form .platform h1 {
+#login_form h1, #login_form h2 {
 	margin: 0;
 	padding: 0;
+}
+#login_form .modal-body > .center-item-row {
+	height: 70px;
+	border: 1px solid black;
+}
+#login_form .platform {
+	width: 70px;
+	height: 70px;
+}
+#login_form .platform > * {
+	margin: auto;
+	font-size: 45px;
 }
 
 /*global message animations*/
