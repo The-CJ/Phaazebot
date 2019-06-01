@@ -7,6 +7,9 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 
 async def apiAccountPhaaze(self:"WebIndex", WebRequest:Request) -> Response:
+	"""
+		Default url: /api/account/phaaze
+	"""
 	method:str = WebRequest.match_info.get("method", None)
 	if not method: return await apiMissingValidMethod(self, WebRequest)
 
@@ -16,7 +19,13 @@ async def apiAccountPhaaze(self:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingAuthorisation(self, WebRequest)
 
 async def apiAccountDiscord(self:"WebIndex", WebRequest:Request) -> Response:
+	"""
+		Default url: /api/account/discord
+	"""
 	return await apiNotAllowed(self, WebRequest, msg="Under construction")
 
 async def apiAccountTwitch(self:"WebIndex", WebRequest:Request) -> Response:
+	"""
+		Default url: /api/account/twitch
+	"""
 	return await apiNotAllowed(self, WebRequest, msg="Under construction")
