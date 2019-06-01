@@ -42,12 +42,9 @@
 #account_field::after {
 	display: none;
 	transition: .5s;
-	content: "Login";
+	content: "Accounts";
 	position: relative;
 	overflow: hidden;
-}
-#account_field.loggedin::after {
-	content: "Account"
 }
 #account_field:hover::after {
 	display: contents;
@@ -56,6 +53,10 @@
 	margin: 0 2.5em;
 	color: black;
 	border-bottom: 1px solid #000;
+}
+#login_form .platform h1 {
+	margin: 0;
+	padding: 0;
 }
 
 /*global message animations*/
