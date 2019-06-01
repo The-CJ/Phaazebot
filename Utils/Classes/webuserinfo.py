@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Request
 from Utils.password import password
+from Utils.Classes.undefined import Undefined
 
 class WebUserInfo(object):
 	"""
@@ -26,8 +27,14 @@ class WebUserInfo(object):
 		self.found:bool = False
 		self.tryed:bool = False
 
-		self.role:list = list()
-		self.role_ids:list = list()
+		self.username:str = None
+		self.password:str = None
+		self.email:str = None
+		self.verified:bool = False
+		self.last_login:str = None
+		self.user_id:int = None
+		self.roles:list = None
+		self.role_ids:list = None
 
 	async def auth(self) -> None:
 		await self.getFromSystem()
@@ -122,28 +129,25 @@ class WebUserInfo(object):
 
 	# checker
 	async def viaToken(self) -> None:
-		self.tryed = True
 		self.BASE.Logger.debug("Someone tryed to auth with token", require="web:debug")
 		return None
 
 	async def viaLogin(self) -> None:
-		self.tryed = True
 		self.__password = password(self.__password)
 		dbr:dict = dict(
 			of="user",
 			store="user",
-			where=f"(user['username'] == {self.__username} or user['email'] == {self.__username}) and user['password'] == {self.__password}",
+			where=f"(user['username'] == {json.dumps(self.__username)} or user['email'] == {json.dumps(self.__username)}) and user['password'] == {json.dumps(self.__password)}",
 			join=dict(
 				of="role",
 				store="role",
 				where="role['id'] in user['role']",
-				fields=["name"]
+				fields=["name", "id"]
 			)
 		)
 		return await self.dbRequest(dbr)
 
 	async def viaSession(self) -> None:
-		self.tryed = True
 		dbr:dict = dict(
 			of="session/phaaze",
 			store="session",
@@ -157,19 +161,33 @@ class WebUserInfo(object):
 					of="role",
 					store="role",
 					where="role['id'] in user['role']",
-					fields=["name"]
+					fields=["name", "id"]
 				)
 			)
 		)
 		return await self.dbRequest(dbr)
 
 	async def dbRequest(self, db_req:dict) -> None:
-
+		self.tryed = True
 		res:dict = self.BASE.PhaazeDB.select(**db_req)
 
-		print("TODO: store user data after success")
-		print(res)
+		if int(res.get("hits", 0)) != 1:
+			return
+
+		await self.finishUser(res["data"][0])
 
 	# finish
-	async def finishUser(self) -> None:
-		pass
+	async def finishUser(self, data:dict) -> None:
+		self.found = True
+
+		self.username = data.get("username", Undefined())
+		self.password = data.get("password", Undefined())
+		self.email = data.get("email", Undefined())
+		self.verified = data.get("verified", Undefined())
+		self.last_login = data.get("last_login", Undefined())
+		self.user_id = data.get("id", Undefined())
+		self.roles = []
+		self.role_ids = []
+		for role in data.get("role", []):
+			self.roles.append( role.get("name", None) )
+			self.role_ids.append( role.get("id", None) )
