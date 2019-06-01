@@ -12,7 +12,7 @@ SessionManager = new (class SessionManager {
   }
   showAccountPanel(field="all") {
     $('#login_form').modal('show');
-    $('#login_form [table]').hide();
+    $('#login_form [table], #login_form [table] [loggedin]').hide();
     $('#login_form [table='+field+']').show();
     if (field != "all") {
       this.getAccountInfo(field);
@@ -20,12 +20,13 @@ SessionManager = new (class SessionManager {
   }
 
   getAccountInfo(platform) {
-    $.get("/api/account/"+platform)
+    $.get("/api/account/"+platform+"/get")
     .done(function (data) {
+      $('#login_form [table='+platform+'] [loggedin=true]').show();
       console.log(data);
     })
     .fail(function (data) {
-      console.log(data);
+      $('#login_form [table='+platform+'] [loggedin=false]').show();
     })
   }
 
