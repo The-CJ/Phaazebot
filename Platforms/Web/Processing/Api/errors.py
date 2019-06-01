@@ -16,7 +16,7 @@ async def apiUnknown(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respon
 async def apiNothing(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	cls.Web.BASE.Logger.debug(f"(Web/API) 400: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( dict(error="no_path", status=400, message="Trying to find out the PhaazeAPI?. Try looking at phaaze.net/wiki/api") ),
+		text=json.dumps( dict(error="no_path", status=400, msg="Trying to find out the PhaazeAPI?. Try looking at phaaze.net/wiki/api") ),
 		content_type="application/json",
 		status=400
 	)
@@ -42,4 +42,20 @@ async def apiMissingAuthorisation(cls:"WebIndex", WebRequest:Request, **kwargs:A
 		status=401,
 		text=json.dumps( dict(error="missing_authorisation", status=401) ),
 		content_type="application/json"
+	)
+
+async def userNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+	cls.Web.BASE.Logger.debug(f"(Web/API) User not found", require="api:400")
+	return cls.response(
+		text=json.dumps( dict(error="no_user_found", status=404, msg="no user could be found, check password or username") ),
+		content_type="application/json",
+		status=404
+	)
+
+async def missingData(cls:"WebIndex", WebRequest:Request, msg:str="missing required data", **kwargs:Any) -> Response:
+	cls.Web.BASE.Logger.debug(f"(Web/API) User not found", require="api:400")
+	return cls.response(
+		text=json.dumps( dict(error="missing_data", status=404, msg=msg) ),
+		content_type="application/json",
+		status=404
 	)

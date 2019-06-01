@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
-from .errors import apiMissingAuthorisation, apiNotAllowed
+from .errors import apiNotAllowed, userNotFound, missingData
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 
@@ -14,8 +14,11 @@ async def apiAccountPhaazeLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
 
+	if not UserInfo.tryed:
+		return await missingData(cls, WebRequest)
+
 	if not UserInfo.found:
-		return await apiMissingAuthorisation(cls, WebRequest)
+		return await userNotFound(cls, WebRequest)
 
 async def apiAccountDiscordLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
