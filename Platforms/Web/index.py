@@ -68,8 +68,23 @@ class WebIndex(object):
 		self.Web.router.add_route('GET', '/account/login', self.accountLogin)
 
 	def addAPIRoutes(self) -> None:
-		pass
+		self.addAPIAccountroutes()
+		
+		self.Web.router.add_route('*', '/api{x:/?}', self.apiNothing)
+		self.Web.router.add_route('*', '/api/{x:.+}', self.apiUnknown)
 
+	def addAPIAccountroutes(self) -> None:
+		self.Web.router.add_route('GET', '/api/account/phaaze', self.apiAccountInfoPhaaze)
+		self.Web.router.add_route('GET', '/api/account/discord', self.apiAccountInfoDiscord)
+		self.Web.router.add_route('GET', '/api/account/twitch', self.apiAccountInfoTwitch)
+
+	# api
+	from .Processing.Api.errors import apiNothing, apiUnknown
+
+	# api/account
+	from .Processing.Api.accountinformation import apiAccountInfoPhaaze, apiAccountInfoDiscord, apiAccountInfoTwitch
+
+	# web
 	from .Processing.mainsite import mainSite
 	from .Processing.Account.accountmain import accountMain
 	from .Processing.Account.accountlogin import accountLogin
