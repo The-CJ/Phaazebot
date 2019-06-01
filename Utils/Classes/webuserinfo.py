@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Request
-from Utils.password import password
+from Utils.stringutils import password
 from Utils.Classes.undefined import Undefined
 
 class WebUserInfo(object):

@@ -4,6 +4,9 @@ class Undefined():
 	"""
 	def __init__(self): pass
 
+	def __str__(self): return ""
+	def __int__(self): return 0
+
 	def __eq__(self, value): # ==
 		if type(value) == Undefined: return True
 		return False
