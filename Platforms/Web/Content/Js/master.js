@@ -14,6 +14,19 @@ SessionManager = new (class SessionManager {
     $('#login_form').modal('show');
     $('#login_form [table]').hide();
     $('#login_form [table='+field+']').show();
+    if (field != "all") {
+      this.getAccountInfo(field);
+    }
+  }
+
+  getAccountInfo(platform) {
+    $.get("/api/account/"+platform)
+    .done(function (data) {
+      console.log(data);
+    })
+    .fail(function (data) {
+      console.log(data);
+    })
   }
 
   login() {
@@ -25,3 +38,6 @@ SessionManager = new (class SessionManager {
 })()
 
 // load finished, add events
+$("document").ready(function () {
+
+})
