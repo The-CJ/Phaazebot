@@ -11,6 +11,9 @@ CONTENTFOLDER_IMG = "Platforms/Web/Content/Img"
 
 # content serve functions
 async def serveCss(cls:"WebIndex", WebRequest:Request) -> Response:
+	"""
+		Default url: /css/*
+	"""
 	file_location:str = WebRequest.match_info.get("file", None)
 	if not file_location: return noFileDefined(cls)
 
@@ -28,6 +31,9 @@ async def serveCss(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 
 async def serveJs(cls:"WebIndex", WebRequest:Request) -> Response:
+	"""
+		Default url: /js/*
+	"""
 	file_location:str = WebRequest.match_info.get("file", None)
 	if not file_location: return noFileDefined(cls)
 
@@ -45,6 +51,9 @@ async def serveJs(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 
 async def serveImg(cls:"WebIndex", WebRequest:Request) -> Response:
+	"""
+		Default url: /img/*
+	"""
 	file_location:str = WebRequest.match_info.get("file", None)
 	if not file_location: return noFileDefined(cls)
 

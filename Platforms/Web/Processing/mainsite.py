@@ -7,7 +7,9 @@ from Utils.Classes.htmlformatter import HTMLFormatter
 from Platforms.Web.utils import getNavbar
 
 async def mainSite(cls:"WebIndex", WebRequest:Request) -> Response:
-
+	"""
+		Default url: /
+	"""
 	MainSite:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/main.html")
 
 	site:str = cls.HTMLRoot.replace(

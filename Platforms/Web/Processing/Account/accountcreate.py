@@ -7,6 +7,9 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Web.utils import getNavbar
 
 async def accountCreate(cls:"WebIndex", WebRequest:Request) -> Response:
+	"""
+		Default url: /account/create
+	"""
 	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
 
 	if UserInfo.found: return await cls.accountMain(WebRequest)
