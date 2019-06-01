@@ -2,9 +2,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
+import datetime
 from .errors import apiNotAllowed, userNotFound, missingData
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.stringutils import randomString
 
 async def apiAccountPhaazeLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -19,6 +21,18 @@ async def apiAccountPhaazeLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	if not UserInfo.found:
 		return await userNotFound(cls, WebRequest)
+
+	session_key:str = randomString(size=32)
+	cls.Web.BASE.PhaazeDB.insert(
+		into = "session/phaaze",
+		content = dict(session=session_key, user_id=UserInfo.user_id)
+	)
+	cls.Web.BASE.PhaazeDB.update(
+		of = "user",
+		where = f"inf(data['id']) == int({UserInfo.user_id})",
+		content = dict(last_login=str(datetime.datetime.now()))
+	)
+	cls.Web.BASE.Logger.debug(f"New Login - Session: {session_key} User: {str(UserInfo.username)}", require="api:login")
 
 async def apiAccountDiscordLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
