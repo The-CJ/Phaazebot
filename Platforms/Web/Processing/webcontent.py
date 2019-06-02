@@ -46,7 +46,7 @@ async def serveJs(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	return cls.response(
 		status=200,
-		content_type='application/json',
+		content_type='application/javascript',
 		body=file_content
 	)
 

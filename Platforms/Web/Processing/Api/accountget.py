@@ -20,7 +20,8 @@ async def apiAccountPhaazeGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		username=UserInfo.username,
 		email=UserInfo.email,
 		verified=UserInfo.verified,
-		roles=UserInfo.role_ids,
+		roles=UserInfo.roles,
+		role_ids=UserInfo.role_ids,
 		user_id=UserInfo.user_id,
 		last_login=UserInfo.last_login
 	)

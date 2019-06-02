@@ -20,14 +20,25 @@ var SessionManager = new (class SessionManager {
   }
 
   getAccountInfo(platform) {
+    var SessMan = this;
     $.get("/api/account/"+platform+"/get")
     .done(function (data) {
+      SessMan.displayInfo(platform, data.user);
       $('#login_form [table='+platform+'] [loggedin=true]').show();
-      console.log(data);
     })
     .fail(function (data) {
       $('#login_form [table='+platform+'] [loggedin=false]').show();
     })
+  }
+  displayInfo(platform, data) {
+    $("#current_"+platform+"_username").val(data.username);
+    $("#current_"+platform+"_email").val(data.email);
+    if (platform == "phaaze") {
+      var role_field = $("#user_roles").html("");
+      for (var role of data.roles) {
+        role_field.append( $('<div class="role">').text(role) );
+      }
+    }
   }
 
   login() {
