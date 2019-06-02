@@ -33,7 +33,7 @@
 	text-transform: none;
 }
 
-/* account/login button */
+/* account/login button/form */
 #account_field {
 	border-radius: 7.5em;
 	padding: 1em;
@@ -69,6 +69,20 @@
 #login_form .platform > * {
 	margin: auto;
 	font-size: 45px;
+}
+#login_form #user_roles:empty:after {
+	content: "None";
+}
+#login_form #user_roles > * {
+	padding: 5px;
+	border: 2px solid black;
+	margin: 3px;
+	background: rgba(0, 0, 0, 0.25);
+}
+#login_form #user_roles {
+	overflow-y: auto;
+	overflow-x: visible;
+	max-height: 10em;
 }
 
 /*global message animations*/
