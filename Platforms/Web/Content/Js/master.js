@@ -36,6 +36,7 @@ var SessionManager = new (class SessionManager {
     $.post("/api/account/phaaze/login", {"phaaze_username":user, "phaaze_password":password})
     .done(function (data) {
       CookieManager.set("phaaze_session", data.phaaze_session);
+      $('#login_form').modal('hide');
     })
     .fail(function (data) {
       $("#phaaze_email_or_username").addClass("animated shake");

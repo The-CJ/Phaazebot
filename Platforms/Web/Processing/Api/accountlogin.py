@@ -15,7 +15,7 @@ async def apiAccountPhaazeLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 		looks like all other UserInfo pairs, except this time it should be a post request, leading new information to login,
 		create session and give this to the user
 	"""
-	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
+	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest, force_method="getFromPost")
 
 	if not UserInfo.tryed:
 		return await missingData(cls, WebRequest)

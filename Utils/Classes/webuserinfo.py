@@ -14,10 +14,11 @@ class WebUserInfo(object):
 	 		variable search way:
 			System -> header/cookies -> GET -> POST/JSON
 	"""
-	def __init__(self, BASE:"Phaazebot", WebRequest:Request, **kwargs:Any):
+	def __init__(self, BASE:"Phaazebot", WebRequest:Request, force_method:str=None, **kwargs:Any):
 		self.BASE:"Phaazebot" = BASE
 		self.WebRequest:Request = WebRequest
 		self.kwargs:Any = kwargs
+		self.force_method:str = force_method
 
 		self.__session:str = ""
 		self.__token:str = ""
@@ -37,6 +38,10 @@ class WebUserInfo(object):
 		self.role_ids:list = None
 
 	async def auth(self) -> None:
+		if self.force_method:
+			await getattr(self, self.force_method)()
+			return
+
 		await self.getFromSystem()
 		if self.tryed: return
 
