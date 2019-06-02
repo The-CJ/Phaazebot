@@ -30,7 +30,7 @@ async def apiAccountPhaazeLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 	cls.Web.BASE.PhaazeDB.update(
 		of = "user",
-		where = f"inf(data['id']) == int({UserInfo.user_id})",
+		where = f"int(data['id']) == int({UserInfo.user_id})",
 		content = dict(last_login=str(datetime.datetime.now()))
 	)
 	cls.Web.BASE.Logger.debug(f"New Login - Session: {session_key} User: {str(UserInfo.username)}", require="api:login")
