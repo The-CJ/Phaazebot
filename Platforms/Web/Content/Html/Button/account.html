@@ -47,7 +47,45 @@
 
     <div table="phaaze">
       <div loggedin="true" style="display:none;">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <h4 class="modal-title">Phaaze account</h4>
+            <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
+          </div>
 
+          <div class="modal-body text-black">
+            <div class="md-form">
+              <i class="fas fa-user-circle prefix grey-text"></i>
+              <input type="text" id="current_phaaze_username" class="form-control" placeholder="Your username">
+            </div>
+            <div class="md-form">
+              <i class="far fa-envelope prefix grey-text"></i>
+              <input type="email" id="current_phaaze_email" class="form-control" placeholder="Your e-mail">
+            </div>
+            <div class="md-form">
+              <i class="fas fa-lock prefix grey-text">*</i>
+              <input type="password" id="current_phaaze_password" class="form-control" placeholder="Your current password">
+            </div>
+            <button type="button" class="btn btn-block orange" onclick="$(this).hide();$('#new_password_fields').show()">Set new password</button>
+            <div id="new_password_fields" style="display: none;">
+              <div class="md-form">
+                <i class="fas fa-key prefix grey-text"></i>
+                <input type="password" id="new_phaaze_password" class="form-control" placeholder="New password">
+              </div>
+              <div class="md-form">
+                <i class="fas fa-key prefix grey-text"></i>
+                <input type="password" id="new_phaaze_password2" class="form-control" placeholder="Retype password">
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer center-item-col">
+            <div>
+              <button class="btn btn-primary" type="button">Save</button>
+              <button class="btn btn-danger" type="button">Logout</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div loggedin="false" style="display:none;">
         <form action="javascript:SessionManager.login()">
