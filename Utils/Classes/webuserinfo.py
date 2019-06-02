@@ -171,16 +171,19 @@ class WebUserInfo(object):
 				)
 			)
 		)
-		return await self.dbRequest(dbr)
+		return await self.dbRequest(dbr, unpack_session = True)
 
-	async def dbRequest(self, db_req:dict) -> None:
+	async def dbRequest(self, db_req:dict, unpack_session:bool = False) -> None:
 		self.tryed = True
 		res:dict = self.BASE.PhaazeDB.select(**db_req)
 
 		if int(res.get("hits", 0)) != 1:
 			return
 
-		await self.finishUser(res["data"][0])
+		if unpack_session:
+			await self.finishUser(res["data"][0]["user"][0])
+		else:
+			await self.finishUser(res["data"][0])
 
 	# finish
 	async def finishUser(self, data:dict) -> None:
