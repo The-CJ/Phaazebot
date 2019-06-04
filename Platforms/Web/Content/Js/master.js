@@ -134,13 +134,16 @@ var CookieManager = new (class CookieManager {
 
 var Display = new (class Display {
   constructor() {
-
+    this.color_success = "";
+    this.color_warning = "";
+    this.color_critical = "";
+    this.color_info = "#4285FF";
   }
   showMessage(m) {
     if (m == null) { throw "missing message"; }
     if (m.content == null) { throw "missing message content"; }
     if (m.time == null) { m.time = 10000; }
-    if (m.color == null) { m.color = "#4285FF"; }
+    if (m.color == null) { m.color = this.color_info; }
     if (m.text_color == null) { m.text_color = "#fff"; }
 
     // the main display field is located in the navbar, so its everywere.
@@ -148,14 +151,16 @@ var Display = new (class Display {
 
     var mid = (Math.floor(Math.random()*1000000));
     var message = $('<div class="message" onclick="$(this).remove()"><h1></h1></div>');
+    message.attr("mid", mid);
+    message.css("animation-duration", m.time+"ms");
     var messagebar_raw = $('<div class="messagebar_raw"></div>');
     var messagebar_time_left = $('<div class="messagebar_time_left"></div>');
+    messagebar_time_left.css("animation-duration", m.time+"ms");
 
     // build message
     message.find("h1").text(m.content);
     messagebar_raw.append(messagebar_time_left);
     message.append(messagebar_raw);
-    message.attr("mid", mid);
 
     // add style
     message.css('background', m.color);
@@ -164,9 +169,10 @@ var Display = new (class Display {
     // append and start remove timer
     messagebox.append(message);
 
-    setTimeout(function () {
-      $('[messagebox] > [mid='+mid+']').remove();
-    }, m.time);
+    setTimeout(
+      function () { $('[messagebox] > [mid='+mid+']').remove(); },
+      m.time
+    );
   }
 })()
 

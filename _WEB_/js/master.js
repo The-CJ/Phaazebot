@@ -33,56 +33,6 @@ function upload_file(args, url, success_function, fail_function) {
   request.send(formData);
 }
 
-// utils - screen
-
-function _show_message(content, color, text_color, symbol, link, time) {
-  if (typeof content == "object") {
-    color = content["color"];
-    text_color = content["text_color"];
-    symbol = content["symbol"];
-    link = content["link"];
-    time = content["time"];
-    content = content["content"];
-  }
-
-  // The display field is located in the main navbar, so its everywere.
-  var message_field = $('#_message_field');
-
-  var message = $('<div class="_message" onclick="$(this).remove()"><h1></h1></div>');
-  var message_bar_raw = $('<div class="_message_bar_raw"></div>')
-  var message_bar_time = $('<div class="_message_bar_left"></div>')
-
-  message.find('h1').text(content);
-  message_bar_raw.append(message_bar_time)
-  message.append(message_bar_raw);
-
-  if (time != null) {
-    message_bar_time.css('animation-duration', time+'ms');
-    message.css('animation-duration', time+'ms');
-  } else {
-    time = 10000;
-  }
-
-  if (color != null) {
-    message.css('background', color);
-  } else {
-    message.css('background', '#4285FF');
-  }
-
-  if (text_color != null) {
-    message.css('color', text_color);
-  } else {
-    message.css('color', 'white');
-  }
-
-  message_field.append(message);
-
-  setTimeout(function () {
-    message.remove();
-  }, time);
-
-}
-
 function _show_loading(content) {
   if (!content) {content = "Loading..."}
   var load_spot = $('#_loading');
