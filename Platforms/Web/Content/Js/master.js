@@ -25,6 +25,14 @@ function extractData(o) {
   return data;
 }
 
+function insertData(o, d) {
+  if (typeof o != "object") { o = $(o); }
+  for (var k in d) {
+    try { o.find("[name="+k+"]").val(d[k]); }
+    catch (e) { continue }
+  }
+}
+
 var SessionManager = new (class SessionManager {
   constructor() {
   }
