@@ -7,6 +7,24 @@ function showEmail() {
   }).popover()
 }
 
+function extractData(o) {
+  if (typeof o != "object") { o = $(o); }
+  let data = {};
+  for (f of o.find('[name]')) {
+    f = $(f);
+    let name = f.attr('name');
+    if (f.attr("type") == "checkbox") {
+      if (f.is(":checked")) { data[name] = 1; }
+      else { d[name] = 0; }
+    }
+    else {
+      let value = f.val();
+      data[name] = value;
+    }
+  }
+  return data;
+}
+
 var SessionManager = new (class SessionManager {
   constructor() {
   }
@@ -68,7 +86,14 @@ var SessionManager = new (class SessionManager {
     })
   }
   edit() {
-
+    var data = extractData("#login_form [table=phaaze] [loggedin=true]");
+    $.post("/api/account/phaaze/edit", data)
+    .done(function (data) {
+      console.log(data);
+    })
+    .fail(function (data) {
+      console.log(data);
+    })
   }
 })()
 
@@ -99,7 +124,7 @@ var CookieManager = new (class CookieManager {
   }
 })()
 
-var Display = (class Display {
+var Display = new (class Display {
   constructor() {
 
   }
