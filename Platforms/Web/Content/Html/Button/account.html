@@ -85,8 +85,8 @@
 
           <div class="modal-footer center-item-col">
             <div>
-              <button class="btn btn-primary" type="button">Save</button>
-              <button class="btn btn-danger" type="button">Logout</button>
+              <button class="btn btn-primary" type="button" onclick="SessionManager.edit()">Save</button>
+              <button class="btn btn-danger" type="button" onclick="SessionManager.logout('phaaze')">Logout</button>
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@
             <div class="modal-body text-black">
               <div class="md-form">
                 <i class="fas fa-user-circle prefix grey-text"></i>
-                <input type="email" id="phaaze_email_or_username" class="form-control">
+                <input type="text" id="phaaze_email_or_username" class="form-control">
                 <label for="phaaze_email_or_username">Username or E-mail</label>
               </div>
               <div class="md-form">

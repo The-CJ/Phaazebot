@@ -58,6 +58,16 @@ var SessionManager = new (class SessionManager {
     })
   }
   logout(field) {
+    $.post("/api/account/"+field+"/logout")
+    .done(function (data) {
+      console.log(data);
+      CookieManager.remove("phaaze_session");
+    })
+    .fail(function (data) {
+      console.log(data);
+    })
+  }
+  edit() {
 
   }
 })()
@@ -86,6 +96,15 @@ var CookieManager = new (class CookieManager {
   }
   remove(name) {
     document.cookie = name+"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=\"/\""
+  }
+})()
+
+var Display = (class Display {
+  constructor() {
+
+  }
+  showMessage() {
+
   }
 })()
 
