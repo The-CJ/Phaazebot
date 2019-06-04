@@ -71,7 +71,7 @@ async def serveImg(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 
 async def serveFavicon(cls:"WebIndex", WebRequest:Request) -> Response:
-	WebRequest.match_info["file"] = "/img/favicon.ico"
+	WebRequest.match_info["file"] = "favicon.ico"
 	return await cls.serveImg(WebRequest)
 
 # error handling
