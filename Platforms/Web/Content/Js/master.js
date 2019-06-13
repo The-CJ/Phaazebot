@@ -33,7 +33,7 @@ function insertData(o, d) {
   }
 }
 
-var SessionManager = new (class SessionManager {
+var SessionManager = new (class {
   constructor() {
   }
   showAccountPanel(field="all") {
@@ -73,6 +73,7 @@ var SessionManager = new (class SessionManager {
     $.post("/api/account/phaaze/login", {"phaaze_username":user, "phaaze_password":password})
     .done(function (data) {
       CookieManager.set("phaaze_session", data.phaaze_session);
+      Display.showMessage({'content': 'You successfull logged in!' ,'color':Display.color_success});
       $('#login_form').modal('hide');
     })
     .fail(function (data) {
@@ -86,8 +87,7 @@ var SessionManager = new (class SessionManager {
   logout(field) {
     $.post("/api/account/"+field+"/logout")
     .done(function (data) {
-      console.log(data);
-      CookieManager.remove("phaaze_session");
+      CookieManager.remove(field+"_session");
     })
     .fail(function (data) {
       console.log(data);
@@ -105,7 +105,7 @@ var SessionManager = new (class SessionManager {
   }
 })()
 
-var CookieManager = new (class CookieManager {
+var CookieManager = new (class {
   constructor() {
 
   }
@@ -132,11 +132,11 @@ var CookieManager = new (class CookieManager {
   }
 })()
 
-var Display = new (class Display {
+var Display = new (class {
   constructor() {
-    this.color_success = "";
-    this.color_warning = "";
-    this.color_critical = "";
+    this.color_success = "#38ca35";
+    this.color_warning = "#e7b23c";
+    this.color_critical = "#e83d3d";
     this.color_info = "#4285FF";
   }
   showMessage(m) {
