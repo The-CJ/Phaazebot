@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="/css/site-specific/account/create.css">
+<script src="/js/site-specific/account/create.js" charset="utf-8"></script>
+
+<main>
+	<div class="container text-center white-text">
+
+		<h1>Make a Phaaze account</h1>
+
+		<!-- /api/account/create -->
+		<form class="stylish-color-dark" action="javascript:createAccount()" method="post" id="register_space">
+
+			<div class="center-item-row white-text md-form">
+				<i class="fas fa-user-circle prefix grey-text"></i>
+				<input type="text" name="username" placeholder="Username" class="white-text text-center" required>
+			</div>
+
+			<div class="center-item-row white-text md-form">
+				<i class="far fa-envelope prefix grey-text"></i>
+				<input type="email" name="email" placeholder="E-Mail" class="white-text text-center" required>
+			</div>
+
+			<div class="center-item-row white-text md-form">
+				<i class="fas fa-key prefix grey-text"></i>
+				<input type="password" name="password" placeholder="Password" class="white-text text-center" required>
+				<input type="password" name="password2" placeholder="Retype Password" class="white-text text-center" required>
+			</div>
+
+			<button type="submit" class="btn btn-block indigo">Submit</button>
+		</form>
+
+	</div>
+</main>

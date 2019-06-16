@@ -1,17 +1,17 @@
-form {
+ main form {
   padding: 1em;
 }
 
-form div {
+main form div {
   margin-top: 1em;
 }
-form [type=submit] {
+main form [type=submit] {
   margin-top: 2em;
 }
 
-[name=password], form i {
+main [name=password], form i {
   margin-right: 0.5em;
 }
-[name=password2] {
+main [name=password2] {
   margin-left: 0.5em;
 }
