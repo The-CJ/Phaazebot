@@ -87,9 +87,12 @@ var SessionManager = new (class {
   logout(field) {
     $.post("/api/account/"+field+"/logout")
     .done(function (data) {
+      Display.showMessage({'content': 'You successfull logged out from '+field ,'color':Display.color_success});
       CookieManager.remove(field+"_session");
+      $('#login_form').modal('hide');
     })
     .fail(function (data) {
+      Display.showMessage({'content': 'Unable to logout', 'color':Display.color_critical});
       console.log(data);
     })
   }
