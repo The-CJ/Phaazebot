@@ -1,17 +1,15 @@
- main form {
+#register_space {
   padding: 1em;
 }
-
-main form div {
-  margin-top: 1em;
+main h1 {
+  margin: 1em 0;
 }
-main form [type=submit] {
+#register_space [type=submit] {
   margin-top: 2em;
 }
-
-main [name=password], form i {
+#register_space [name=password] {
   margin-right: 0.5em;
 }
-main [name=password2] {
+#register_space [name=password2] {
   margin-left: 0.5em;
 }

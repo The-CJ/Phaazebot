@@ -3,7 +3,8 @@ function createAccount() {
   $.post('/api/account/create', data).done(function (data) {
     window.location = "/login?new";
   }).fail(function (data) {
-    data = data.responseJSON ? data.responseJSON.msg : "unknown";
-    _show_message(data, "orange");
+    console.log(data);
+    data = data.responseJSON.msg ? data.responseJSON.msg : "unknown";
+    Display.showMessage({"content": data, "color": Display.color_warning});
   })
 }
