@@ -72,7 +72,7 @@ var SessionManager = new (class {
     let password = $("#phaaze_password").val();
     $.post("/api/account/phaaze/login", {"phaaze_username":user, "phaaze_password":password})
     .done(function (data) {
-      CookieManager.set("phaaze_session", data.phaaze_session);
+      CookieManager.set("phaaze_session", data.phaaze_session, data.expire);
       Display.showMessage({'content': 'You successfull logged in!' ,'color':Display.color_success});
       $('#login_form').modal('hide');
     })
@@ -127,11 +127,13 @@ var CookieManager = new (class {
     }
     return "";
   }
-  set(name, value) {
-    document.cookie = name+"="+value+'; Path=/';
+  set(name, value, expire) {
+    if (expire == null) {expire = "";}
+    else { expire = new Date(expire); }
+    document.cookie = name+"="+value+'; expires='+expire+'; Path=/';
   }
   remove(name) {
-    document.cookie = name+"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=\"/\""
+    document.cookie = name+"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/"
   }
 })()
 

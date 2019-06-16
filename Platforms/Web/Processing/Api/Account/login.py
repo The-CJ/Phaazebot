@@ -24,9 +24,11 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await userNotFound(cls, WebRequest)
 
 	session_key:str = randomString(size=32)
+	Expire:datetime.datetime = datetime.datetime.now() + datetime.timedelta(days=30)
+
 	cls.Web.BASE.PhaazeDB.insert(
 		into = "session/phaaze",
-		content = dict(session=session_key, user_id=UserInfo.user_id)
+		content = dict(session=session_key, user_id=UserInfo.user_id, expire=str(Expire) )
 	)
 	cls.Web.BASE.PhaazeDB.update(
 		of = "user",
@@ -35,7 +37,7 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 	cls.Web.BASE.Logger.debug(f"New Login - Session: {session_key} User: {str(UserInfo.username)}", require="api:login")
 	return cls.response(
-		text=json.dumps( dict(phaaze_session=session_key,status=200) ),
+		text=json.dumps( dict(phaaze_session=session_key, status=200, expire=str(Expire)) ),
 		content_type="application/json",
 		status=200
 	)
