@@ -4,8 +4,8 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response, Request
 from .errors import apiNotAllowed, apiMissingValidMethod
-from .accountget import apiAccountPhaazeGet, apiAccountDiscordGet, apiAccountTwitchGet
-from .accountlogin import apiAccountPhaazeLogin, apiAccountDiscordLogin, apiAccountTwitchLogin
+from .Account.get import apiAccountGetPhaaze, apiAccountGetDiscord, apiAccountGetTwitch
+from .Account.login import apiAccountLoginPhaaze, apiAccountLoginDiscord, apiAccountLoginTwitch
 
 async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -15,10 +15,10 @@ async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
 	elif method == "get":
-		return await apiAccountPhaazeGet(cls, WebRequest)
+		return await apiAccountGetPhaaze(cls, WebRequest)
 
 	elif method == "login":
-		return await apiAccountPhaazeLogin(cls, WebRequest)
+		return await apiAccountLoginPhaaze(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
@@ -27,13 +27,13 @@ async def apiAccountDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 		Default url: /api/account/discord
 	"""
 	return await apiNotAllowed(cls, WebRequest, msg="Under construction")
-	return await apiAccountDiscordLogin(cls, WebRequest)
-	return await apiAccountDiscordGet(cls, WebRequest)
+	return await apiAccountLoginDiscord(cls, WebRequest)
+	return await apiAccountGetDiscord(cls, WebRequest)
 
 async def apiAccountTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/twitch
 	"""
 	return await apiNotAllowed(cls, WebRequest, msg="Under construction")
-	return await apiAccountTwitchLogin(cls, WebRequest)
-	return await apiAccountTwitchGet(cls, WebRequest)
+	return await apiAccountLoginTwitch(cls, WebRequest)
+	return await apiAccountGetTwitch(cls, WebRequest)
