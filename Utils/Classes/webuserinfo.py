@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 if TYPE_CHECKING:
 	from main import Phaazebot
 
@@ -7,11 +7,15 @@ from aiohttp.web import Request
 from Utils.stringutils import password
 from Utils.Classes.undefined import Undefined
 
+def forcable(f:Callable) -> Callable:
+	f.__forcable__ = True
+	return f
+
 class WebUserInfo(object):
 	"""
 		Used for authorisation of a phaaze web user request
 		It should if possible, avoid reading in POST content when not needed
-	 		variable search way:
+		variable search way:
 			System -> header/cookies -> GET -> POST/JSON
 	"""
 	def __init__(self, BASE:"Phaazebot", WebRequest:Request, force_method:str=None, **kwargs:Any):
@@ -39,8 +43,9 @@ class WebUserInfo(object):
 
 	async def auth(self) -> None:
 		if self.force_method:
-			await getattr(self, self.force_method)()
-			return
+			func:Callable = getattr(self, self.force_method)
+			if getattr(func, "__forcable__", False):
+				return await func()
 
 		await self.getFromSystem()
 		if self.tryed: return
@@ -67,6 +72,7 @@ class WebUserInfo(object):
 			if self.tryed: return
 
 	# getter
+	@forcable
 	async def getFromSystem(self) -> None:
 		self.__session = self.kwargs.get("phaaze_session", None)
 		if self.__session: return await self.viaSession()
@@ -76,6 +82,7 @@ class WebUserInfo(object):
 		self.__password = self.kwargs.get("phaaze_password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
+	@forcable
 	async def getFromCookies(self) -> None:
 		self.__session = self.WebRequest.cookies.get("phaaze_session", None)
 		if self.__session: return await self.viaSession()
@@ -86,6 +93,7 @@ class WebUserInfo(object):
 		self.__password = self.WebRequest.cookies.get("phaaze_password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
+	@forcable
 	async def getFromHeader(self) -> None:
 		self.__session = self.WebRequest.headers.get("phaaze_session", None)
 		if self.__session: return await self.viaSession()
@@ -96,6 +104,7 @@ class WebUserInfo(object):
 		self.__password = self.WebRequest.headers.get("phaaze_password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
+	@forcable
 	async def getFromGet(self) -> None:
 		self.__session = self.WebRequest.query.get("phaaze_session", None)
 		if self.__session: return await self.viaSession()
@@ -105,6 +114,7 @@ class WebUserInfo(object):
 		self.__password = self.WebRequest.query.get("phaaze_password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
+	@forcable
 	async def getFromJson(self) -> None:
 		try: Json:dict = await self.WebRequest.json()
 		except: return
@@ -117,10 +127,12 @@ class WebUserInfo(object):
 		self.__password = Json.get("phaaze_password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
+	@forcable
 	async def getFromMultipart(self) -> None:
 		self.BASE.Logger.debug("Someone tryed to auth with multipart content", require="web:debug")
 		return None
 
+	@forcable
 	async def getFromPost(self) -> None:
 		try: Post:dict = await self.WebRequest.post()
 		except: return
