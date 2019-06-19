@@ -7,6 +7,7 @@ from .errors import apiNotAllowed, apiMissingValidMethod
 from .Account.get import apiAccountGetPhaaze, apiAccountGetDiscord, apiAccountGetTwitch
 from .Account.login import apiAccountLoginPhaaze, apiAccountLoginDiscord, apiAccountLoginTwitch
 from .Account.logout import apiAccountLogoutPhaaze, apiAccountLogoutDiscord, apiAccountLogoutTwitch
+from .Account.create import apiAccountCreatePhaaze
 
 async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -23,6 +24,9 @@ async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	elif method == "logout":
 		return await apiAccountLogoutPhaaze(cls, WebRequest)
+
+	elif method == "create":
+		return await apiAccountCreatePhaaze(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
