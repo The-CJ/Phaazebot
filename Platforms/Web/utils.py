@@ -31,3 +31,25 @@ async def getUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUs
 	WebRequest.UserInfo = UserInfo
 
 	return WebRequest.UserInfo
+
+async def searchUser(cls:"WebIndex", where:str) -> list:
+	search:dict = dict(
+		of="user",
+		store="user",
+		where=where,
+		join=dict(
+			of="role",
+			store="role",
+			where="role['id'] in user['role']",
+			fields=["name", "id"]
+		)
+	)
+	res:dict = cls.Web.BASE.PhaazeDB.select(**search)
+
+	return_list:list = []
+	for user in res.get("data", []):
+		WebUser:WebUserInfo = WebUserInfo(cls.Web.BASE, None)
+		await WebUser.finishUser(user)
+		return_list.append(WebUser)
+
+	return return_list
