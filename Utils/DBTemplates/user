@@ -6,7 +6,7 @@
 | email                      |                                   | str         |
 | username                   |                                   | str         |
 | password                   |                                   | str         |
-| last_login                 |                                   | str         |
-| role                       | []                                | list        |
+| last_login                 | 2000-01-01 00:00:00               | str         |
+| role                       | []                                | list[int]   |
 | verified                   | False                             | bool        |
 +----------------------------+-----------------------------------+-------------+

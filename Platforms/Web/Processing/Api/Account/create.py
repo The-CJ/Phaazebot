@@ -67,7 +67,7 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 			status=400
 		)
 
-	# everything ok, create
+	# everything ok -> create
 
 	new_user:dict = dict(
 		username= username,
@@ -77,9 +77,12 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 
 	#TODO: need to send email verification
 
-	cls.Web.BASE.Logger.debug(f"(API) Account created: {str(new_user)}", require="api:create")
+	success_resp:dict = cls.Web.BASE.PhaazeDB.insert(into="user", content=new_user)
+	user_id:str = str(success_resp.get('data', {}).get('id', '[N/A]'))
+
+	cls.Web.BASE.Logger.debug(f"(API) Account created: ID: {user_id} - {str(new_user)}", require="api:create")
 	return cls.response(
-		text=json.dumps( dict(debug=Data.content,status=200) ),
+		body=json.dumps( dict(status=200, message="successfull created user", id=user_id, username=username) ),
 		content_type="application/json",
-		status=400
+		status=200
 	)
