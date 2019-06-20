@@ -20,12 +20,12 @@ class WebRequestContent(object):
 	"""
 	def __init__(self, WebRequest:Request, force_method:str=None):
 		self.WebRequest:Request = WebRequest
-		self.success:bool = False
-		self.method:str = None
+		self.loaded:bool = False
 		self.force_method = force_method
 		self.content:dict = dict()
 
 	async def load(self) -> None:
+		self.loaded = True
 		if self.force_method:
 			func:Callable = getattr(self, self.force_method)
 			if getattr(func, "__forcable__", False):
@@ -63,4 +63,5 @@ class WebRequestContent(object):
 		return None
 
 	def get(self, a:str, b:Any = Undefined()) -> Any:
-		return self.__content.get(a, b)
+		if not self.loaded: raise RuntimeError("Content not loaded, call 'await X.load()' before")
+		return self.content.get(a, b)
