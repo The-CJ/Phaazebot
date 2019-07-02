@@ -8,6 +8,7 @@ from .Account.get import apiAccountGetPhaaze, apiAccountGetDiscord, apiAccountGe
 from .Account.login import apiAccountLoginPhaaze, apiAccountLoginDiscord, apiAccountLoginTwitch
 from .Account.logout import apiAccountLogoutPhaaze, apiAccountLogoutDiscord, apiAccountLogoutTwitch
 from .Account.create import apiAccountCreatePhaaze
+from .Account.edit import apiAccountEditPhaaze
 
 async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -27,6 +28,9 @@ async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	elif method == "create":
 		return await apiAccountCreatePhaaze(cls, WebRequest)
+
+	elif method == "edit":
+		return await apiAccountEditPhaaze(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
