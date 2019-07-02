@@ -56,6 +56,7 @@ var SessionManager = new (class {
       $('#login_form [table='+platform+'] [loggedin=false]').show();
     })
   }
+
   displayInfo(platform, data) {
     $("#current_"+platform+"_username").val(data.username);
     $("#current_"+platform+"_email").val(data.email);
@@ -84,6 +85,7 @@ var SessionManager = new (class {
       }, 1000);
     })
   }
+
   logout(field) {
     $.post("/api/account/"+field+"/logout")
     .done(function (data) {
@@ -96,14 +98,16 @@ var SessionManager = new (class {
       console.log(data);
     })
   }
+
   edit() {
     var data = extractData("#login_form [table=phaaze] [loggedin=true]");
     $.post("/api/account/phaaze/edit", data)
     .done(function (data) {
-      console.log(data);
+      Display.showMessage({content:data.msg, color:Display.color_success});
     })
     .fail(function (data) {
-      console.log(data);
+      let msg = data.responseJSON ? data.responseJSON.msg : "unknown"
+      Display.showMessage({content:msg, color:Display.color_critical});
     })
   }
 })()
