@@ -33,6 +33,7 @@ class WebUserInfo(object):
 		self.tryed:bool = False
 
 		self.username:str = None
+		self.username_changed:int = 0
 		self.password:str = None
 		self.email:str = None
 		self.verified:bool = False
@@ -202,6 +203,7 @@ class WebUserInfo(object):
 		self.found = True
 
 		self.username = data.get("username", Undefined())
+		self.username_changed = data.get("username_changed", Undefined())
 		self.password = data.get("password", Undefined())
 		self.email = data.get("email", Undefined())
 		self.verified = data.get("verified", Undefined())

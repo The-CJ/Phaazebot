@@ -5,6 +5,7 @@
 +----------------------------+-----------------------------------+-------------+
 | email                      |                                   | str         |
 | username                   |                                   | str         |
+| username_changed           | 0                                 | int         |
 | password                   |                                   | str         |
 | created_at                 |                                   | str         |
 | changed_at                 |                                   | str         |
