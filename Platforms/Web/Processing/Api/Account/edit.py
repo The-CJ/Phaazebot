@@ -30,7 +30,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not current_password or UserInfo.password != password_function(str(current_password)):
 		return cls.response(
 			status=400,
-			text=json.dumps( dict(error="current_password_wrong", msg="Current password is not current", status=400) ),
+			text=json.dumps( dict(error="current_password_wrong", msg="Current password is not correct", status=400) ),
 			content_type="application/json"
 		)
 
