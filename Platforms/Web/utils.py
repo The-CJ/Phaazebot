@@ -33,6 +33,10 @@ async def getUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUs
 	return WebRequest.UserInfo
 
 async def searchUser(cls:"WebIndex", where:str) -> list:
+	"""
+		Search user via custom 'where' statement (store is 'user')
+		All results get packed into a WebUserInfo object
+	"""
 	search:dict = dict(
 		of="user",
 		store="user",

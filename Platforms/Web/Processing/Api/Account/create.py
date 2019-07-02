@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 import json
 import re
+import datetime
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
@@ -72,6 +73,7 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 	new_user:dict = dict(
 		username= username,
 		password = password_function(password),
+		created_at = str(datetime.datetime.now()),
 		email = email,
 	)
 
