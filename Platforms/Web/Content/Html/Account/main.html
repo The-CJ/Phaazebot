@@ -6,6 +6,40 @@
 
 		<h1>Manage Account</h1>
 
+		<div class="stylish-color-dark" id="manage_field">
+
+			<div class="center-item-row md-form">
+				<i class="fas fa-user-circle prefix grey-text"></i>
+				<input type="text" class="form-control" placeholder="Your username" name="phaaze_username">
+			</div>
+
+			<div class="center-item-row md-form">
+				<i class="far fa-envelope prefix grey-text"></i>
+				<input type="email" class="form-control" placeholder="Your e-mail" name="phaaze_email">
+			</div>
+
+			<div class="center-item-row md-form">
+				<i class="fas fa-lock prefix grey-text" title="needed for changes">*</i>
+				<input type="password" class="form-control" placeholder="Your current password" name="phaaze_password">
+			</div>
+
+			<div new_password_space>
+				<button type="button" class="btn btn-block btn-warning" onclick="showPasswordFields()">Change password</button>
+
+				<div class="center-item-row md-form" style="display: none">
+					<i class="fas fa-key prefix grey-text"></i>
+					<input type="password" class="form-control" placeholder="Your new password" name="phaaze_newpassword">
+				</div>
+
+				<div class="center-item-row md-form" style="display: none">
+					<i class="fas fa-key prefix grey-text"></i>
+					<input type="password" class="form-control" placeholder="Retype your password" name="phaaze_newpassword2">
+				</div>
+			</div>
+			<button type="button" class="btn btn-block btn-primary">Save</button>
+
+		</div>
+
 	</div>
 
 </main>

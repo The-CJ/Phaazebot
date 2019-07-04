@@ -1,0 +1,11 @@
+main h1 {
+  margin: 1em 0;
+}
+
+#manage_field {
+  padding: 1em;
+}
+
+#manage_field button {
+  margin: 5px 0;
+}
