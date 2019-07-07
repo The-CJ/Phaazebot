@@ -81,7 +81,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 				update["username"] = new_username
 
 		# else, it's a diffrent captation
-		else:
+		elif new_username != UserInfo.username:
 			update["username"] = new_username
 
 	if new_email and new_email.lower() != UserInfo.email:
