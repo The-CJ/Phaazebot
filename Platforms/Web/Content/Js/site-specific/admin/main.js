@@ -5,7 +5,7 @@ function evelCommand(command) {
   var r = {
     command: command
   };
-  $.post("/api/admin/module/evaluate", r)
+  $.post("/api/admin/modules/evaluate", r)
     .done(function (data) {
       console.log(data);
     })
