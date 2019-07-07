@@ -40,6 +40,7 @@ class WebIndex(object):
 				content_type='application/json'
 			)
 
+	# start
 	def addRoutes(self) -> None:
 		self.addWebRoutes()
 		self.addAPIRoutes()
@@ -50,6 +51,7 @@ class WebIndex(object):
 		# unknown path (404)
 		self.Web.router.add_route('*', '/{x:.*}', self.notFound)
 
+	# web
 	def addWebRoutes(self) -> None:
 		# main site
 		self.Web.router.add_route('GET', '/', self.mainSite)
@@ -72,18 +74,24 @@ class WebIndex(object):
 
 	def addWebAdminRoutes(self) -> None:
 		self.Web.router.add_route('GET', '/admin', self.adminMain)
-		self.Web.router.add_route('GET', '/admin/modules{x:/?}{module:.*}', self.adminMain)
 
+	# api
 	def addAPIRoutes(self) -> None:
-		self.addAPIAccountroutes()
+		# api/account*
+		self.addAPIAccountRoutes()
+		# api/admin*
+		self.addAPIAdminRoutes()
 
 		self.Web.router.add_route('*', '/api{x:/?}', self.apiNothing)
 		self.Web.router.add_route('*', '/api/{x:.+}', self.apiUnknown)
 
-	def addAPIAccountroutes(self) -> None:
+	def addAPIAccountRoutes(self) -> None:
 		self.Web.router.add_route('*', '/api/account/phaaze{x:/?}{method:.*}', self.apiAccountPhaaze)
 		self.Web.router.add_route('*', '/api/account/discord{x:/?}{method:.*}', self.apiAccountDiscord)
 		self.Web.router.add_route('*', '/api/account/twitch{x:/?}{method:.*}', self.apiAccountTwitch)
+
+	def addAPIAdminRoutes(self) -> None:
+		self.Web.router.add_route('*', '/api/admin/modules{x:/?}{module:.*}', self.apiAdminModules)
 
 	# api
 	from .Processing.Api.errors import apiNothing, apiUnknown
