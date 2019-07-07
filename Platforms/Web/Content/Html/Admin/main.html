@@ -1,0 +1,36 @@
+<link rel="stylesheet" href="/css/site-specific/admin/main.css">
+<script src="/js/site-specific/admin/main.js" charset="utf-8"></script>
+
+<main>
+  <div class="container text-center white-text">
+    <h1>Administration</h1>
+
+    <div buttons>
+      <a href="/admin/manage-user">
+        <button type="button" class="btn btn-block indigo darken-2">User manager</button>
+      </a>
+      <a href="/admin/manage-role">
+        <button type="button" class="btn btn-block indigo darken-3">Role manager</button>
+      </a>
+      <a href="/admin/manage-system">
+        <button type="button" class="btn btn-block indigo darken-2">System manager</button>
+      </a>
+      <a href="/admin/manage-image">
+        <button type="button" class="btn btn-block indigo darken-3">Image manager</button>
+      </a>
+    </div>
+
+    <hr>
+
+    <button type="button" class="btn btn-block btn-danger" onclick="$('#root_console').collapse('toggle')">System Console</button>
+    <div id="root_console" class="collapse">
+      <pre id="result_data"></pre>
+      <form class="center-item-row md-form" action="javascript:alert('ok')" method="post">
+        <span>root@phaazeos >&nbsp;</span>
+        <input type="text" placeholder="eval()" class="white-text" id="eval_command">
+        <button type="submit" class="btn ml-auto grey" style="margin:0;padding:0.5em;" onclick="evalCommand()">→</button>
+      </form>
+    </div>
+
+  </div>
+</main>

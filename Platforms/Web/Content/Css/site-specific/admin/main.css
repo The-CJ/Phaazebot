@@ -1,0 +1,7 @@
+main h1 {
+  margin: 1em 0;
+}
+
+div[buttons] a {
+  margin: 3px 0;
+}
