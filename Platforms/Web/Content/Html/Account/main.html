@@ -7,7 +7,7 @@
 		<h1>Manage Account</h1>
 
 		<h2>General</h2>
-		<div class="stylish-color-dark" id="manage_field">
+		<form class="stylish-color-dark" id="manage_field" action="javascript:saveAccountInfos()">
 
 			<div class="center-item-row md-form">
 				<i class="fas fa-user-circle prefix grey-text"></i>
@@ -37,9 +37,10 @@
 					<input type="password" class="form-control white-text" placeholder="Retype your password" name="newpassword2">
 				</div>
 			</div>
-			<button type="button" class="btn btn-block btn-primary" onclick="saveAccountInfos()">Save</button>
 
-		</div>
+			<button type="submit" class="btn btn-block btn-primary">Save</button>
+
+		</form>
 
 		<h2>Roles</h2>
 		<div class="stylish-color-dark center-item-col" id="role_field"></div>
