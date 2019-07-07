@@ -54,6 +54,9 @@ class WebIndex(object):
 		# main site
 		self.Web.router.add_route('GET', '/', self.mainSite)
 
+		# /admin*
+		self.addWebAdminRoutes()
+
 		# /account*
 		self.addWebAccountRoutes()
 
@@ -66,6 +69,9 @@ class WebIndex(object):
 		self.Web.router.add_route('GET', '/account', self.accountMain)
 		self.Web.router.add_route('GET', '/account/create', self.accountCreate)
 		self.Web.router.add_route('GET', '/account/login', self.accountLogin)
+
+	def addWebAdminRoutes(self) -> None:
+		self.Web.router.add_route('GET', '/admin', self.adminMain)
 
 	def addAPIRoutes(self) -> None:
 		self.addAPIAccountroutes()
@@ -80,8 +86,6 @@ class WebIndex(object):
 
 	# api
 	from .Processing.Api.errors import apiNothing, apiUnknown
-
-	# api/account
 	from .Processing.Api.account import apiAccountPhaaze, apiAccountDiscord, apiAccountTwitch
 
 	# web
@@ -89,6 +93,7 @@ class WebIndex(object):
 	from .Processing.Account.accountmain import accountMain
 	from .Processing.Account.accountcreate import accountCreate
 	from .Processing.Account.accountlogin import accountLogin
+	from .Processing.Admin.adminmain import adminMain
 
 	# web contents
 	from .Processing.webcontent import (serveCss, serveJs, serveImg, serveFavicon)
