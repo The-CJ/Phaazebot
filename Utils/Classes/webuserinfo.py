@@ -42,6 +42,17 @@ class WebUserInfo(object):
 		self.roles:list = None
 		self.role_ids:list = None
 
+	def checkRoles(self, roles:str or list) -> bool:
+		if not roles: return True
+		if type(roles) != list: roles = [roles]
+
+		lower_roles:list = [r.lower() for r in self.roles]
+
+		for role in roles:
+			if role.lower() in lower_roles: return True
+
+		return False
+
 	async def auth(self) -> None:
 		if self.force_method:
 			func:Callable = getattr(self, self.force_method)
