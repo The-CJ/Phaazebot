@@ -38,6 +38,13 @@
 	text-transform: none;
 }
 
+/* element styles */
+pre {
+	border: 1px solid lightgrey;
+	padding: 0.9em;
+	background: rgba(50,50,50,0.5);
+}
+
 /* account/login button/form */
 #account_field {
 	border-radius: 7.5em;
@@ -154,33 +161,4 @@
 		margin: 0 50%;
 		width: 0%;
 	}
-}
-
-/* loading screen */
-
-#_loading {
-	z-index: 10000;
-	position: fixed;
-	top: 0;
-	left: 0;
-}
-
-#_loading > .loading_screen {
-	width: 100vw;
-	height: 100vh;
-	background: rgba(0, 0, 0, 0.75);
-}
-
-#_loading > .loading_screen > .middle {
-	position: relative;
-	margin: 0 auto;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-}
-
-#_loading span {
-	color: white;
-	font-size: 2em;
 }
