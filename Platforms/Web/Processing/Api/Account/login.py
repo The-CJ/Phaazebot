@@ -35,7 +35,7 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		where = f"int(data['id']) == int({UserInfo.user_id})",
 		content = dict(last_login=str(datetime.datetime.now()))
 	)
-	cls.Web.BASE.Logger.debug(f"New Login - Session: {session_key} User: {str(UserInfo.username)}", require="api:login")
+	cls.Web.BASE.Logger.debug(f"(API) New Login - Session: {session_key} User: {str(UserInfo.username)}", require="api:login")
 	return cls.response(
 		text=json.dumps( dict(phaaze_session=session_key, status=200, expire=str(Expire)) ),
 		content_type="application/json",

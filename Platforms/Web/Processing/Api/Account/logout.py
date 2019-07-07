@@ -21,7 +21,7 @@ async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 		where = f"int(data['user_id']) == int({UserInfo.user_id})",
 	)
 
-	cls.Web.BASE.Logger.debug(f"Logout - User: {UserInfo.username}", require="api:logout")
+	cls.Web.BASE.Logger.debug(f"(API) Logout - User: {UserInfo.username}", require="api:logout")
 	return cls.response(
 		text=json.dumps( dict(status=200) ),
 		content_type="application/json",
