@@ -99,7 +99,7 @@ class WebIndex(object):
 	from .Processing.webcontent import (serveCss, serveJs, serveImg, serveFavicon)
 
 	# errors
-	from .Processing.errors import notFound
+	from .Processing.errors import notFound, notAllowed
 
 	# utils
 	from .utils import getUserInfo
