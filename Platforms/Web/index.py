@@ -72,6 +72,7 @@ class WebIndex(object):
 
 	def addWebAdminRoutes(self) -> None:
 		self.Web.router.add_route('GET', '/admin', self.adminMain)
+		self.Web.router.add_route('GET', '/admin/modules{x:/?}{module:.*}', self.adminMain)
 
 	def addAPIRoutes(self) -> None:
 		self.addAPIAccountroutes()
