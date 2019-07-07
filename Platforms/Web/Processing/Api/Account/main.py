@@ -3,12 +3,12 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Response, Request
-from .errors import apiNotAllowed, apiMissingValidMethod
-from .Account.get import apiAccountGetPhaaze, apiAccountGetDiscord, apiAccountGetTwitch
-from .Account.login import apiAccountLoginPhaaze, apiAccountLoginDiscord, apiAccountLoginTwitch
-from .Account.logout import apiAccountLogoutPhaaze, apiAccountLogoutDiscord, apiAccountLogoutTwitch
-from .Account.create import apiAccountCreatePhaaze
-from .Account.edit import apiAccountEditPhaaze
+from ..errors import apiNotAllowed, apiMissingValidMethod
+from .get import apiAccountGetPhaaze, apiAccountGetDiscord, apiAccountGetTwitch
+from .login import apiAccountLoginPhaaze, apiAccountLoginDiscord, apiAccountLoginTwitch
+from .logout import apiAccountLogoutPhaaze, apiAccountLogoutDiscord, apiAccountLogoutTwitch
+from .create import apiAccountCreatePhaaze
+from .edit import apiAccountEditPhaaze
 
 async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
