@@ -5,3 +5,15 @@ main h1 {
 div[buttons] a {
   margin: 3px 0;
 }
+
+div[buttons] button {
+  color: white;
+}
+
+div[buttons] button:hover {
+  color: lightgrey;
+}
+
+#root_console {
+  padding: 0.5em;
+}

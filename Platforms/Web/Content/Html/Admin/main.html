@@ -22,13 +22,15 @@
 
     <hr>
 
-    <button type="button" class="btn btn-block btn-danger" onclick="$('#root_console').collapse('toggle')">System Console</button>
+    <button type="button" class="btn btn-block btn-danger" onclick="$('#root_console').collapse('toggle')">System Console ↓</button>
     <div id="root_console" class="collapse">
       <pre id="result_data" class="text-left"></pre>
-      <form class="center-item-row md-form" action="javascript:alert('ok')" method="post">
-        <span>root@phaazeos >&nbsp;</span>
-        <input type="text" placeholder="eval()" class="white-text" id="eval_command">
-        <button type="submit" class="btn ml-auto grey" style="margin:0;padding:0.5em;" onclick="evalCommand()">→</button>
+      <div class="center-item-col">
+        <button type="button" class="btn btn-warning">Clear</button>
+      </div>
+      <form class="center-item-row" action="javascript:evelCommand()" method="post">
+        <input type="text" placeholder="evaluate command" class="black-text" id="eval_command" style="width: 100%">
+        <button type="submit" class="btn ml-auto grey" style="margin:0;padding:0.5em;">→</button>
       </form>
     </div>
 
