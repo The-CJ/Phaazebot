@@ -1,13 +1,14 @@
-function evelCommand(command) {
+function evalCommand(command) {
   if (command == null) {
     command = $('#eval_command').val();
   }
   var r = {
-    command: command
+    command: command,
   };
+  if ( $("[name=corotine]").is(":checked") ) { r["corotine"] = true; }
   $.post("/api/admin/modules/evaluate", r)
     .done(function (data) {
-      console.log(data);
+      $("#result_data").text(data.result)
     })
     .fail(function (data) {
       let msg = data.responseJSON ? data.responseJSON.error : "unknown";

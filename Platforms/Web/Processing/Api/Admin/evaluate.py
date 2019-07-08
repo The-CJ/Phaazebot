@@ -15,10 +15,15 @@ async def apiAdminModulesEvaluate(cls:"WebIndex", WebRequest:Request, Data:WebRe
 	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
 	if not UserInfo.checkRoles(["superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Superdmin rights required")
 
-	command:str = Data.get("command", "None")
+	command:str = Data.get("command", None)
+	corotine:bool = Data.get("corotine")
+
+	# this is for easyer access
+	locals()["BASE"] = cls.Web.BASE
 
 	try:
 		res:Any = eval(command)
+		if corotine: res = await res
 	except Exception as Fail:
 		res:Any = Fail
 
