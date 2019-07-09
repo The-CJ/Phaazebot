@@ -7,22 +7,22 @@ from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Web.utils import getNavbar
 
-async def adminMain(cls:"WebIndex", WebRequest:Request) -> Response:
+async def adminManageSystem(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /admin
+		Default url: /admin/manage-system
 	"""
 	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
 	if not UserInfo.found: return await cls.accountLogin(WebRequest)
 	if not UserInfo.checkRoles(["admin", "superadmin"]): return await cls.notAllowed(WebRequest, msg="Admin rights required")
 
-	AdminPage:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Admin/main.html")
+	AdminManageSystem:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Admin/manage-system.html")
 
 	site:str = cls.HTMLRoot.replace(
 		replace_empty = True,
 
-		title = "Phaaze | Admin",
+		title = "Phaaze | Admin - Manage system",
 		header = getNavbar(),
-		main = AdminPage
+		main = AdminManageSystem
 	)
 
 	return cls.response(

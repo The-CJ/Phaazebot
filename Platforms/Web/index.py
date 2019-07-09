@@ -74,6 +74,7 @@ class WebIndex(object):
 
 	def addWebAdminRoutes(self) -> None:
 		self.Web.router.add_route('GET', '/admin', self.adminMain)
+		self.Web.router.add_route('GET', '/admin/manage-system', self.adminManageSystem)
 
 	# api
 	def addAPIRoutes(self) -> None:
@@ -104,6 +105,7 @@ class WebIndex(object):
 	from .Processing.Account.accountcreate import accountCreate
 	from .Processing.Account.accountlogin import accountLogin
 	from .Processing.Admin.adminmain import adminMain
+	from .Processing.Admin.adminmanagesystem import adminManageSystem
 
 	# web contents
 	from .Processing.webcontent import (serveCss, serveJs, serveImg, serveFavicon)
