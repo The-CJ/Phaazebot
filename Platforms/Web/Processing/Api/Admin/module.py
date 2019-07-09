@@ -2,18 +2,33 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
+import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from ..errors import apiMissingValidMethod
+from Utils.Classes.webuserinfo import WebUserInfo
+from ..errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/admin/module
 	"""
-	module:str = WebRequest.match_info.get("module", None)
-	if not module: return await apiMissingValidMethod(cls, WebRequest)
+
+	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
+	if not UserInfo.checkRoles(["admin", "superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Superdmin rights required")
 
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	return await apiMissingValidMethod(cls, WebRequest, msg=f"'{module}' is not a known module")
+	module:str = str(Data.get("module"))
+	state:bool = bool(Data.get("state"))
+
+	if not hasattr(cls.Web.BASE.Active, module):
+		return await apiMissingValidMethod(cls, WebRequest, msg=f"module '{module}' not avariable")
+
+	setattr(cls.Web.BASE.Active, module, state)
+
+	return cls.response(
+		body=json.dumps(dict(msg=f"module {module} now: {str(state)}", status=200)),
+		status=200,
+		content_type='application/json'
+	)
