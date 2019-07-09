@@ -3,7 +3,8 @@ function loadStatus() {
   .done(function (data) {
     $("#version").text(data.result.version);
     buildUptime(data.result.uptime);
-    buildModules(data.result.modules)
+    buildModules(data.result.modules);
+    buildDiscord(data.result.discord);
   })
   .fail(function (data) {
     console.log(data);
@@ -27,6 +28,17 @@ function buildModules(modules) {
     Field.find(".value").text(modules[m] ? "Enabled" : "Disabled");
     Field.find(".value").attr("active", modules[m] ? "true" : "false");
     Target.append(Field);
+  }
+}
+
+function buildDiscord(discord) {
+  for (var name in discord) {
+    var Field = $("[part=discord] #" + name);
+    if (name == "bot_avatar_url") {
+      Field.attr("src", discord[name]);
+    } else {
+      Field.text(discord[name]);
+    }
   }
 }
 

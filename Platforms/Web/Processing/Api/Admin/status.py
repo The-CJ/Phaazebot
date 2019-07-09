@@ -46,9 +46,8 @@ def getDiscordStatus(BASE:"Phaazebot") -> dict:
 		bot_id = BASE.Discord.user.id,
 		bot_name = BASE.Discord.user.name,
 		bot_discriminator = BASE.Discord.user.discriminator,
-		bot_avatar_url = BASE.Discord.user.avatar_url,
+		bot_avatar_url = str(BASE.Discord.user.avatar_url)
 	)
-
 	return discord
 
 def getUniqueDiscordMember(guilds:list) -> int:
