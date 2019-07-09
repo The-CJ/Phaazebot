@@ -96,8 +96,13 @@ class DiscordThread(threading.Thread):
 
 			self.loop.run_until_complete( self.BASE.Discord.start(self.BASE.Access.DISCORD_TOKEN, reconnect=True) )
 
+			# we only reach this point when discord is ended gradefull
+			# which means a wanted disconnect,
+			# else it will always call a exception
+			self.BASE.Logger.info("Discord disconnected")
+
 		except discord.errors.LoginFailure as LoginFail:
-			self.BASE.Logger.critical(f"unable to start Discord: {str(LoginFail)}")
+			self.BASE.Logger.critical(f"Unable to start Discord: {str(LoginFail)}")
 			self.BASE.Active.discord = False
 
 		except Exception as e:

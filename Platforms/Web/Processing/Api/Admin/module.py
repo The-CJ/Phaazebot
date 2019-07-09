@@ -6,6 +6,7 @@ import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.management import shutdownModule
 from ..errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -27,6 +28,10 @@ async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	setattr(cls.Web.BASE.Active, module, state)
 	cls.Web.BASE.Logger.warning(f"Module change state: '{module}' now '{state}'")
+
+	# handle state 'False', which means shutdown the module
+	if not state:
+		shutdownModule(cls.Web.BASE, module)
 
 	return cls.response(
 		body=json.dumps(dict(msg=f"state for module: '{module}' is now: {str(state)}", status=200)),
