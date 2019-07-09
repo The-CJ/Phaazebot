@@ -6,7 +6,7 @@ function evalCommand(command) {
     command: command,
   };
   if ( $("[name=corotine]").is(":checked") ) { r["corotine"] = true; }
-  $.post("/api/admin/modules/evaluate", r)
+  $.post("/api/admin/evaluate", r)
     .done(function (data) {
       $("#result_data").text(data.result)
     })

@@ -8,12 +8,15 @@ from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
 from ..errors import apiNotAllowed
 
-async def apiAdminModulesEvaluate(cls:"WebIndex", WebRequest:Request, Data:WebRequestContent={}) -> Response:
+async def apiAdminEvaluate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/admin/modules/evaluate
+		Default url: /api/admin/evaluate
 	"""
 	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
 	if not UserInfo.checkRoles(["superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Superdmin rights required")
+
+	Data:WebRequestContent = WebRequestContent(WebRequest)
+	await Data.load()
 
 	command:str = Data.get("command", None)
 	corotine:bool = Data.get("corotine")

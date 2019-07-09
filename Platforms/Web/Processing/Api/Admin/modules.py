@@ -5,7 +5,6 @@ if TYPE_CHECKING:
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from ..errors import apiMissingValidMethod
-from .evaluate import apiAdminModulesEvaluate
 
 async def apiAdminModules(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -17,8 +16,4 @@ async def apiAdminModules(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	if module == "evaluate":
-		return await apiAdminModulesEvaluate(cls, WebRequest, Data)
-
-	else:
-		return await apiMissingValidMethod(cls, WebRequest, msg=f"'{module}' is not a known module")
+	return await apiMissingValidMethod(cls, WebRequest, msg=f"'{module}' is not a known module")
