@@ -1,0 +1,14 @@
+Please ignore this file to, it a reminder for me what endpoints there are.
+
+/api
+/api/admin
+/api/admin/modules
+/api/admin/modules/evaluate
+/api/account
+/api/account/login
+/api/account/logout
+/api/account/edit
+/api/account/create
+/api/account/get
+
+#
