@@ -6,9 +6,9 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from ..errors import apiMissingValidMethod
 
-async def apiAdminModules(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/admin/modules
+		Default url: /api/admin/module
 	"""
 	module:str = WebRequest.match_info.get("module", None)
 	if not module: return await apiMissingValidMethod(cls, WebRequest)

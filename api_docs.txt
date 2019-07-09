@@ -3,8 +3,8 @@ Please ignore this file to, it a reminder for me what endpoints there are.
 /api
 /api/admin
 /api/admin/status
-/api/admin/modules
-/api/admin/modules/evaluate
+/api/admin/module
+/api/admin/evaluate
 /api/account
 /api/account/login
 /api/account/logout

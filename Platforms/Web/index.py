@@ -92,6 +92,7 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/account/twitch{x:/?}{method:.*}', self.apiAccountTwitch)
 
 	def addAPIAdminRoutes(self) -> None:
+		self.Web.router.add_route('*', '/api/admin/module', self.apiAdminModule)
 		self.Web.router.add_route('*', '/api/admin/evaluate', self.apiAdminEvaluate)
 		self.Web.router.add_route('*', '/api/admin/status', self.apiAdminStatus)
 
@@ -100,6 +101,7 @@ class WebIndex(object):
 	from .Processing.Api.errors import apiNothing, apiUnknown
 	from .Processing.Api.Admin.evaluate import apiAdminEvaluate
 	from .Processing.Api.Admin.status import apiAdminStatus
+	from .Processing.Api.Admin.module import apiAdminModule
 
 	# web
 	from .Processing.mainsite import mainSite
