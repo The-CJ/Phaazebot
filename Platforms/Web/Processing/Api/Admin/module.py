@@ -26,9 +26,10 @@ async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingValidMethod(cls, WebRequest, msg=f"module '{module}' not avariable")
 
 	setattr(cls.Web.BASE.Active, module, state)
+	cls.Web.BASE.Logger.warning(f"Module change state: '{module}' now '{state}'")
 
 	return cls.response(
-		body=json.dumps(dict(msg=f"module {module} now: {str(state)}", status=200)),
+		body=json.dumps(dict(msg=f"state for module: '{module}' is now: {str(state)}", status=200)),
 		status=200,
 		content_type='application/json'
 	)
