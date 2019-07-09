@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response, middleware, HTTPException, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
+from .Processing.Api.errors import apiNotAllowed
 
 class WebIndex(object):
 	""" Contains all functions for the web to call """
@@ -23,6 +24,12 @@ class WebIndex(object):
 	@middleware
 	async def middlewareHandler(self, WebRequest:Request, handler:Coroutine) -> Response:
 		try:
+			if not self.Web.BASE.Active.web:
+				return await apiNotAllowed(self, WebRequest, msg="Web is disabled and will be shutdown soon")
+
+			if not self.Web.BASE.Active.api and WebRequest.path.startswith("/api"):
+				return await apiNotAllowed(self, WebRequest, msg="API endpoint is not enabled")
+
 			response:Response = await handler(WebRequest)
 			return response
 
