@@ -8,3 +8,6 @@ main h1 {
   border: 1px solid white;
   box-shadow: 5px 5px 15px black
 }
+
+[part=phaaze] [modules] button[active=true] { background: #12e400 }
+[part=phaaze] [modules] button[active=false] { background: #ff1700 }

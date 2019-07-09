@@ -5,21 +5,41 @@
   <div class="container text-center white-text">
     <h1>System manager</h1>
 
-    <div class="status-field">
+    <div class="status-field" part="phaaze">
       <h2>Phaaze status</h2>
+      <hr>
+      <div class="row">
+        <div class="col"><h3>Version:</h3></div>
+        <div class="col"><h3 id="version">[N/A]</h3></div>
+      </div>
+      <div class="row">
+        <div class="col"><h3>Uptime:</h3></div>
+        <div class="col"><h3 id="uptime">[N/A]</h3></div>
+      </div>
+      <hr>
+      <div modules></div>
     </div>
 
     <hr>
 
-    <div class="status-field">
+    <div class="status-field" part="discord">
       <h2>Discord status</h2>
     </div>
 
     <hr>
-    
-    <div class="status-field">
+
+    <div class="status-field" part="twitch">
       <h2>Twitch status</h2>
     </div>
 
   </div>
 </main>
+
+<div phantom hidden>
+
+  <div class="row module">
+    <div class="col"><h3 class="name"></h3></div>
+    <div class="col"><button type="button" class="value btn">[N/A]</button></div>
+  </div>
+
+</div>
