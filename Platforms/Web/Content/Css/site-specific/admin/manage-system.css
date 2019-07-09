@@ -11,3 +11,6 @@ main h1 {
 
 [part=phaaze] [modules] button[active=true] { background: #12e400 }
 [part=phaaze] [modules] button[active=false] { background: #ff1700 }
+
+[part=phaaze] [modules] button[active=true]:after { content: "Enabled" }
+[part=phaaze] [modules] button[active=false]:after { content: "Disabled" }

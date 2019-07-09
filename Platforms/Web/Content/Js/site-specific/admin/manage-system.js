@@ -7,6 +7,8 @@ function loadStatus() {
     buildDiscord(data.result.discord);
   })
   .fail(function (data) {
+    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
+    Display.showMessage( {content:msg, color:Display.color_critical} );
     console.log(data);
   })
 }
@@ -25,7 +27,6 @@ function buildModules(modules) {
   for (m in modules) {
     var Field = $("[phantom] > .module").clone();
     Field.find(".name").text(m);
-    Field.find(".value").text(modules[m] ? "Enabled" : "Disabled");
     Field.find(".value").attr("active", modules[m] ? "true" : "false");
     Target.append(Field);
   }
@@ -40,6 +41,31 @@ function buildDiscord(discord) {
       Field.text(discord[name]);
     }
   }
+}
+
+function changeModuleState(HTMLButton) {
+  var btn = $(HTMLButton);
+  let state = (btn.attr("active") == "true") ? true : false;
+  let name = btn.closest(".module").find(".name").text();
+
+  // since we want to change the state, and the current state is a bool, we flip it
+  var new_state = !state;
+
+  let r = {
+    module: name,
+    state: new_state ? "1" : "",
+  };
+
+  $.post("/api/admin/module", r)
+  .done(function (data) {
+    btn.attr("active", new_state);
+    Display.showMessage( {content: data.msg, color:Display.color_success} );
+  })
+  .fail(function (data) {
+    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
+    Display.showMessage( {content:msg, color:Display.color_critical} );
+    console.log(data);
+  })
 }
 
 $("document").ready(function () {
