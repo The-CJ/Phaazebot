@@ -1,3 +1,10 @@
 main h1 {
   margin: 1em 0;
 }
+
+.status-field {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid white;
+  box-shadow: 5px 5px 15px black
+}
