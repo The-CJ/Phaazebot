@@ -2,6 +2,7 @@ Please ignore this file to, it a reminder for me what endpoints there are.
 
 /api
 /api/admin
+/api/admin/status
 /api/admin/modules
 /api/admin/modules/evaluate
 /api/account

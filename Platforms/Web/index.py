@@ -93,11 +93,13 @@ class WebIndex(object):
 
 	def addAPIAdminRoutes(self) -> None:
 		self.Web.router.add_route('*', '/api/admin/modules{x:/?}{module:.*}', self.apiAdminModules)
+		self.Web.router.add_route('*', '/api/admin/status', self.apiAdminStatus)
 
 	# api
 	from .Processing.Api.Account.main import apiAccountPhaaze, apiAccountDiscord, apiAccountTwitch
-	from .Processing.Api.Admin.modules import apiAdminModules
 	from .Processing.Api.errors import apiNothing, apiUnknown
+	from .Processing.Api.Admin.modules import apiAdminModules
+	from .Processing.Api.Admin.status import apiAdminStatus
 
 	# web
 	from .Processing.mainsite import mainSite
