@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import discord
 import asyncio
 import traceback
+from .openchannel import openChannel
 
 class PhaazebotDiscord(discord.Client):
 	def __init__(self, BASE:"Phaazebot"):
@@ -32,11 +33,15 @@ class PhaazebotDiscord(discord.Client):
 		if not self.BASE.IsReady.discord: return
 		if Message.author.bot: return
 
-		#if "phaaze" in Message.content.lower():
-		#	try: await Message.channel.trigger_typing()
-		#	except: pass
+		if "phaaze" in Message.content.lower():
+			try: await Message.channel.trigger_typing()
+			except: pass
 
+		if type(Message.channel) is discord.TextChannel:
+			return await openChannel(self, Message)
 
+		else:
+			print("TODO: " + type(Message.channel))
 
 	async def on_message_delete(self, message):
 		pass
