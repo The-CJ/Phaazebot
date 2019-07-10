@@ -15,11 +15,31 @@ def shutdownModule(BASE:"Phaazebot", module_name:str) -> bool:
 	"""
 	if not hasattr(BASE.Active, module_name): raise AttributeError(f"BASE.Active has no attribute '{module_name}'")
 
+	BASE.Logger.info(f"Got shutdown event for module: '{module_name}'")
+
 	if module_name == "discord":
 		return shutdownModuleDiscord(BASE)
+
+	elif module_name == "web":
+		return shutdownModuleWeb(BASE)
 
 	return False
 
 def shutdownModuleDiscord(BASE:"Phaazebot") -> bool:
-	asyncio.ensure_future(BASE.Discord.logout() , loop=BASE.DiscordLoop)
+	"""
+		shutdown the discord module just means, logout from discord
+		the discord thread will be done after logout
+	"""
+	asyncio.ensure_future(BASE.Discord.logout(), loop=BASE.DiscordLoop)
+	return True
+
+def shutdownModuleWeb(BASE:"Phaazebot") -> bool:
+	"""
+		shutdown the web module means, end all current operations
+		of send a disconnect event to all clients.
+		that should be handled by the functions in on_shutdown
+		from Platform.Web.main_web.PhaazebotWeb
+		the discord thread will be done after logout
+	"""
+	asyncio.ensure_future(BASE.Web.shutdown(), loop=BASE.WebLoop)
 	return True

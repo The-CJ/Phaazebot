@@ -96,7 +96,7 @@ class DiscordThread(threading.Thread):
 
 			self.loop.run_until_complete( self.BASE.Discord.start(self.BASE.Access.DISCORD_TOKEN, reconnect=True) )
 
-			# we only reach this point when discord is ended gradefull
+			# we only reach this point when discord is ended gracefull
 			# which means a wanted disconnect,
 			# else it will always call a exception
 			self.BASE.Logger.info("Discord disconnected")
@@ -127,6 +127,9 @@ class WebThread(threading.Thread):
 			self.BASE.WebLoop:asyncio.AbstractEventLoop = self.loop
 
 			self.BASE.Web.start() # blocking call, takes asyncio.loop
+
+			# we only reach this point when the webserver is ended gracefull
+			self.BASE.Logger.info("Web server shutdown")
 
 		except Exception as e:
 			self.BASE.Logger.error(f"Web Thread crashed: {str(e)}")
