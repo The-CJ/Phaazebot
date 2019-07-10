@@ -26,8 +26,17 @@ class PhaazebotDiscord(discord.Client):
 			await asyncio.sleep(3)
 			await self.on_ready()
 
-	async def on_message(self, message):
-		pass
+	async def on_message(self, Message:discord.Message):
+
+		if Message.author == self.user: return
+		if not self.BASE.IsReady.discord: return
+		if Message.author.bot: return
+
+		#if "phaaze" in Message.content.lower():
+		#	try: await Message.channel.trigger_typing()
+		#	except: pass
+
+
 
 	async def on_message_delete(self, message):
 		pass
