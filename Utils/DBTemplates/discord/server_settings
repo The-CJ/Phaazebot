@@ -1,0 +1,33 @@
++------------------------------------------------------------------------------+
+| DB Container                                                                 |
++----------------------------+-----------------------------------+-------------+
+| Name                       | Default                           | Wanted Type |
++----------------------------+-----------------------------------+-------------+
+| autorole                   | None                              | str         |
+| ban_links                  | False                             | bool        |
+| ban_links_role             | []                                | list        |
+| ban_links_whitelist        | []                                | list        |
+| blacklist                  | []                                | list        |
+| blacklist_punishment       | "leave"                           | str         |
+| disable_chan_custom        | []                                | list        |
+| disable_chan_level         | []                                | list        |
+| disable_chan_normal        | []                                | list        |
+| disable_chan_quotes        | []                                | list        |
+| enable_chan_ai             | []                                | list        |
+| enable_chan_game           | []                                | list        |
+| enable_chan_nsfw           | []                                | list        |
+| leave_chan                 | None                              | str         |
+| leave_msg                  | None                              | str         |
+| level_announce_channel     | None                              | str         |
+| level_custom_message       | None                              | str         |
+| owner_disable_custom       | False                             | bool        |
+| owner_disable_level        | False                             | bool        |
+| owner_disable_mod          | False                             | bool        |
+| owner_disable_normal       | False                             | bool        |
+| server_id                  |                                   | str         |
+| track_channel              | None                              | str         |
+| track_options              | []                                | list        |
+| welcome_chan               | None                              | str         |
+| welcome_msg                | None                              | str         |
+| welcome_msg_priv           | None                              | str         |
++----------------------------+-----------------------------------+-------------+
