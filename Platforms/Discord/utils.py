@@ -5,11 +5,13 @@ if TYPE_CHECKING:
 import discord
 import json
 from Utils.Classes.discordserversettings import DiscordServerSettings
+from Utils.Classes.discordcommand import DiscordCommand
 
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
 	"""
 		Get server settings for a discord server/guild
-		create new one if not prevented
+		create new one if not prevented.
+		Returns a DiscordServerSettings()
 	"""
 	if type(origin) is discord.Message:
 		server_id:str = str(origin.guild.id)
@@ -20,25 +22,26 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message
 	else:
 		server_id:str = origin
 
-	data:dict = cls.BASE.PhaazeDB.select(
+	res:dict = cls.BASE.PhaazeDB.select(
 		of = "discord/server_setting",
 		where = f"data['server_id'] == {json.dumps(server_id)}",
 	)
 
-	if not data['data']:
+	if not res['data']:
 		if prevent_new:
 			return DiscordServerSettings()
 		else:
 			return await makeDiscordSeverSettings(cls, server_id)
 
 	else:
-		return DiscordServerSettings( infos = data["data"][0] )
+		return DiscordServerSettings( infos = res["data"][0] )
 
 async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", server_id:str) -> DiscordServerSettings:
 	"""
 		Makes a new entry in the PhaazeDB for a discord server.
 		since the new version v5+ we dont add a base construct to the db,
-		it should be covered by DB defaults
+		it should be covered by DB defaults.
+		Returns a DiscordServerSettings()
 	"""
 
 	res:dict = cls.BASE.PhaazeDB.insert(
@@ -46,17 +49,18 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", server_id:str) -> Dis
 		content = {"server_id":server_id}
 	)
 
-	if res["status"] == "inserted":
+	if res.get("status", "error") == "inserted":
 		cls.BASE.Logger.info(f"(Discord) New server settings DB entry: {server_id}")
 		return DiscordServerSettings( infos = {} )
 	else:
 		cls.BASE.Logger.critical(f"(Discord) New server settings failed: {server_id}")
 		raise RuntimeError("Creating new DB entry failed")
 
-async def getDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str, trigger:str=None, prevent_new:bool=False):
+async def getDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str, trigger:str=None, prevent_new:bool=False) -> list:
 	"""
 		Get custom commands from a discord server, if trigger = None, get all
-		else only get one associated with trigger
+		else only get one associated with trigger.
+		Returns a list of DiscordCommand()
 	"""
 
 	of = f"discord/commands/commands_{server_id}"
@@ -70,15 +74,30 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str, trigge
 		limit:int = None
 
 	try:
-		data:dict = cls.BASE.PhaazeDB.select(of=of, limit=limit, where=where)
+		res:dict = cls.BASE.PhaazeDB.select(of=of, limit=limit, where=where)
 	except:
-		data:dict = dict()
+		res:dict = dict()
 
-	if data.get("status", "error") == "error":
+	if res.get("status", "error") == "error":
 		if prevent_new:
-			return None
+			return []
 		else:
-			pass # TODO:
+			return await makeDiscordServerCommands(cls, server_id)
 
 	else:
-		return data['data']
+		return [DiscordCommand(x) for x in res["data"]]
+
+async def makeDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str) -> list:
+	"""
+		Create a new DB container for Discord server commands
+	"""
+	name = f"discord/commands/commands_{server_id}"
+	data:dict = cls.BASE.PhaazeDB.create(name=name)
+
+	if data.get("status", "error") == "created":
+		cls.BASE.Logger.info(f"(Discord) New server command container: {server_id}")
+		return []
+
+	else:
+		cls.BASE.Logger.critical(f"(Discord) New server command container failed: {server_id}")
+		raise RuntimeError("Creating new DB container failed")

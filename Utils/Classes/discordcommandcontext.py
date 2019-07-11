@@ -30,3 +30,8 @@ class DiscordCommandContext(object):
 		if not trigger: return False
 
 		result:list = await getDiscordServerCommands(self.Discord, self.Message.guild.id, trigger=trigger)
+
+		if result:
+			self.found = True
+
+		print(result)
