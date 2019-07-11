@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Awaitable
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
@@ -7,8 +7,8 @@ import re
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordcommand import DiscordCommand
+from .commandindex import getDiscordCommandFunction
 from Utils.regex import Discord as ReDiscord
-
 
 async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
 
@@ -30,16 +30,25 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 		There are 2 main stages a command can have,
 		a 'simple' commands that has one clear return from a function
 		and 'complex' commands that may have multiple fields in which single return values from a funcion are inserted
-
 	"""
 
-	FunctionHits = re.search(ReDiscord.CommandFunctionString, Command.content)
-	print(FunctionHits)
-	VarHits = re.search(ReDiscord.CommandVariableString, Command.content)
-	print(VarHits)
+	# it's a 'simple' function
+	# get the associated function and execute it
+	# and return content
+	if not Command.complex:
+		function_str:str = Command.function
+
+		func:Awaitable = getDiscordCommandFunction("simple", function_str)
+
+		return await func(cls, Command, CommandContext)
+
+	else:
+		FunctionHits = re.search(ReDiscord.CommandFunctionString, Command.content)
+		print(FunctionHits)
 
 
-	pass # TODO: x
+		VarHits = re.search(ReDiscord.CommandVariableString, Command.content)
+		print(VarHits)
 
 
 

@@ -7,5 +7,6 @@
 | trigger                    |                                   | str         |
 | uses                       | 0                                 | int         |
 | complex                    | False                             | bool        |
+| function                   | textOnly                          | str         |
 | require                    | 0                                 | int         |
 +----------------------------+-----------------------------------+-------------+

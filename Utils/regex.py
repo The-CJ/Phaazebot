@@ -9,7 +9,7 @@ IsEmail:"re.Pattern" = re.compile(r"^(?P<account>[a-zA-Z0-9_.+-])+@(?P<provider>
 ContainsEmail:"re.Pattern" = re.compile(r"(?P<account>[a-zA-Z0-9_.+-])+@(?P<provider>[a-zA-Z0-9-]+\.[a-zA-Z0-9-.])+")
 
 class Discord(object):
-	CommandFunctionString:"re.Pattern" = re.compile(r"\<\{(?P<function>.+)\}\>")
+	CommandFunctionString:"re.Pattern" = re.compile(r"\<\{(?P<object>.+?)\.(?P<value>.+?)\}\>")
 	CommandVariableString:"re.Pattern" = re.compile(r"\[(?P<name>.+)\]")
 
 class Osu(object):
