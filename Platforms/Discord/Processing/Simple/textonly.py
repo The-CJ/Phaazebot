@@ -8,6 +8,6 @@ from ..formater import formatVars
 
 async def textOnly(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
-	final_content:str = await formatVars(Command, CommandContext)
+	formated_content:str = await formatVars(Command, CommandContext)
 
-	return {"content": final_content}
+	return {"content": formated_content}

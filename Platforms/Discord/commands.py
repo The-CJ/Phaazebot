@@ -44,6 +44,7 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 		return await func(cls, Command, CommandContext)
 
 	else:
+		# TODO: to complex functions
 		FunctionHits = re.search(ReDiscord.CommandFunctionString, Command.content)
 		print(FunctionHits)
 

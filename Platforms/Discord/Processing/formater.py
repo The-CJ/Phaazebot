@@ -8,18 +8,22 @@ async def formatVars(Command:DiscordCommand, CommandContext:DiscordCommandContex
 
 	format_str:str = Command.content
 
-	format_str = format_str.replace("[user-name]", CommandContext.Message.author.name)
-	format_str = format_str.replace("[user-mention]", CommandContext.Message.author.mention)
-	format_str = format_str.replace("[channel-name]", CommandContext.Message.channel.name)
-	format_str = format_str.replace("[channel-mention]", CommandContext.Message.channel.mention)
-	format_str = format_str.replace("[server-name]", CommandContext.Message.guild.name)
-	format_str = format_str.replace("[member-count]", str(CommandContext.Message.guild.member_count))
-	format_str = format_str.replace("[uses]", str(Command.uses))
+	replace_index:dict = {
+		"user-name": CommandContext.Message.author.name,
+		"user-mention": CommandContext.Message.author.mention,
+		"channel-name": CommandContext.Message.channel.name,
+		"channel-mention": CommandContext.Message.channel.mention,
+		"server-name": CommandContext.Message.guild.name,
+		"member-count": str(CommandContext.Message.guild.member_count),
+		"uses": str(Command.uses)
+	}
 
 	VarHits:Iterator = re.finditer(ReDiscord.CommandVariableString, format_str)
-
 	for Match in VarHits:
 		name:str = Match.group("name")
+
+		if name in replace_index:
+			format_str = format_str.replace(Match.group(0), replace_index[name])
 
 		# check for and replace all $0 $4 $5 ...
 		PositionMatch = re.match(r"\$(\d+)", name)
@@ -27,6 +31,6 @@ async def formatVars(Command:DiscordCommand, CommandContext:DiscordCommandContex
 			rep:str = CommandContext.part(int(PositionMatch.group(1)))
 			if not rep: rep = ""
 			format_str = format_str.replace(Match.group(0), rep)
-
+			continue
 
 	return format_str
