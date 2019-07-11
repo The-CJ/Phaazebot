@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 import discord
 from Platforms.Discord.utils import getDiscordServerCommands
+from Utils.Classes.discordcommand import DiscordCommand
 
 class DiscordCommandContext(object):
 	"""
@@ -34,4 +35,10 @@ class DiscordCommandContext(object):
 		if result:
 			self.found = True
 
-		print(result)
+		else:
+			return False
+
+		Command:DiscordCommand = result[0]
+		await Command.increaseUse(self.Discord)
+
+		await self.Message.channel.send( Command.content )

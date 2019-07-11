@@ -85,7 +85,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str, trigge
 			return await makeDiscordServerCommands(cls, server_id)
 
 	else:
-		return [DiscordCommand(x) for x in res["data"]]
+		return [DiscordCommand(x, server_id) for x in res["data"]]
 
 async def makeDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str) -> list:
 	"""
