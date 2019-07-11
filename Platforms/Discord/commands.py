@@ -3,10 +3,11 @@ if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
 import discord
+import re
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordcommand import DiscordCommand
-
+from Utils.regex import Discord as ReDiscord
 
 
 async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
@@ -26,11 +27,17 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 		It takes the placeholder in Command.content and replaces them with the wanted data.
 		That also applies to module/function calls in Command.content.
 
-		Let's say we have 3 stages of a command:
-		1. Insert returns of Function calls
-		2. Insert Variables
-		3. Remove any unfound or failed stuff
+		There are 2 main stages a command can have,
+		a 'simple' commands that has one clear return from a function
+		and 'complex' commands that may have multiple fields in which single return values from a funcion are inserted
+
 	"""
+
+	FunctionHits = re.search(ReDiscord.CommandFunctionString, Command.content)
+	print(FunctionHits)
+	VarHits = re.search(ReDiscord.CommandVariableString, Command.content)
+	print(VarHits)
+
 
 	pass # TODO: x
 

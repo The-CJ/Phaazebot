@@ -6,4 +6,6 @@
 | content                    |                                   | str         |
 | trigger                    |                                   | str         |
 | uses                       | 0                                 | int         |
+| complex                    | False                             | bool        |
+| require                    | 0                                 | int         |
 +----------------------------+-----------------------------------+-------------+

@@ -96,6 +96,7 @@ async def makeDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str) -> li
 
 	if data.get("status", "error") == "created":
 		cls.BASE.Logger.info(f"(Discord) New server command container: {server_id}")
+		# TODO: add default for this new container
 		return []
 
 	else:

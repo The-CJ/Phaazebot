@@ -14,6 +14,8 @@ class DiscordCommand(object):
 		self.trigger:str = data.get("trigger", Undefined())
 		self.content:str = data.get("content", Undefined())
 		self.uses:int = data.get("uses", 0)
+		self.complex:bool = data.get("complex", False)
+		self.require:int = data.get("require", 0)
 
 	async def increaseUse(self, cls:"PhaazebotDiscord", by:int=1) -> None:
 		res:dict = cls.BASE.PhaazeDB.update(
