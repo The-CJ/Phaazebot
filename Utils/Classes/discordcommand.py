@@ -26,4 +26,4 @@ class DiscordCommand(object):
 			cls.BASE.Logger.error(f"(Discord) Increase command use failed")
 			raise RuntimeError("Increasing Discord command use failed")
 
-		cls.BASE.Logger.debug(f"(Discord) Increase command: {self.trigger}")
+		cls.BASE.Logger.debug(f"(Discord) Increase command: {self.trigger}", require="discord:command")

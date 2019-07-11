@@ -17,6 +17,7 @@ class DiscordCommandContext(object):
 		self.Message:discord.Message = Message
 
 		self.found:bool = False
+		self.Command:DiscordCommand = None
 		self.parts:list = Message.content.split()
 
 	def part(self, pos:int) -> str or None:
@@ -38,7 +39,7 @@ class DiscordCommandContext(object):
 		else:
 			return False
 
-		Command:DiscordCommand = result[0]
-		await Command.increaseUse(self.Discord)
+		# it should always be only one entry in the list... i hope
+		self.Command = result[0]
 
-		await self.Message.channel.send( Command.content )
+		return True

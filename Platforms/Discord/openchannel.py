@@ -16,7 +16,7 @@ async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 	if ServerSettings.ban_links or ServerSettings.blacklist:
 		cls.BASE.Logger.info(f"TODO: Blacklist")
 
-	# on execute if its a new message
+	# only execute if its a new message
 	# we need to check this, since on_message_edit calls on_message
 	# so edited messages trigger commands, but not level additions
 	if not Message.edited_at:
