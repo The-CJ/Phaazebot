@@ -17,6 +17,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 	if CommandContext.found:
 		Command:DiscordCommand = CommandContext.Command
+		await Command.increaseUse(cls)
 
 		final_result:dict = await formatCommand(cls, Command, CommandContext)
 		await Message.channel.send(**final_result)
@@ -50,14 +51,4 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 		VarHits = re.search(ReDiscord.CommandVariableString, Command.content)
 		print(VarHits)
 
-
-
-
-
-
-
-
-
-
-
-	return { "content": "-", "embed": None }
+		return { "content": "-", "embed": None }

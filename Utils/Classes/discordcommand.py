@@ -19,10 +19,11 @@ class DiscordCommand(object):
 		self.require:int = data.get("require", 0)
 
 	async def increaseUse(self, cls:"PhaazebotDiscord", by:int=1) -> None:
+		self.uses = self.uses + 1
 		res:dict = cls.BASE.PhaazeDB.update(
 			of = f"discord/commands/commands_{self.server_id}",
 			where = f"int(data['id']) == int({self.command_id})",
-			content = {"uses": self.uses + 1}
+			content = {"uses": self.uses}
 		)
 
 		if res.get("status", "error") == "error":

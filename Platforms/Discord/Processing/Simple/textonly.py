@@ -4,6 +4,10 @@ if TYPE_CHECKING:
 
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
+from ..formater import formatVars
 
 async def textOnly(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
-	return {"content": Command.content}
+
+	final_content:str = await formatVars(Command, CommandContext)
+
+	return {"content": final_content}
