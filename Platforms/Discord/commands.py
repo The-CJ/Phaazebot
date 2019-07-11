@@ -4,7 +4,9 @@ if TYPE_CHECKING:
 
 import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
+from Utils.Classes.discordcommandcontext import DiscordCommandContext
 
 async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
-	pass
-	# insert command contex class thing here
+
+	CommandContext:DiscordCommandContext = DiscordCommandContext(cls, Message)
+	await CommandContext.check()

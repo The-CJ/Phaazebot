@@ -52,3 +52,33 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", server_id:str) -> Dis
 	else:
 		cls.BASE.Logger.critical(f"(Discord) New server settings failed: {server_id}")
 		raise RuntimeError("Creating new DB entry failed")
+
+async def getDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str, trigger:str=None, prevent_new:bool=False):
+	"""
+		Get custom commands from a discord server, if trigger = None, get all
+		else only get one associated with trigger
+	"""
+
+	of = f"discord/commands/commands_{server_id}"
+
+	if trigger:
+		where:str = f"data['trigger'] == {json.dumps(trigger)}"
+		limit:int = 1
+
+	else:
+		where:str = None
+		limit:int = None
+
+	try:
+		data:dict = cls.BASE.PhaazeDB.select(of=of, limit=limit, where=where)
+	except:
+		data:dict = dict()
+
+	if data.get("status", "error") == "error":
+		if prevent_new:
+			return None
+		else:
+			pass # TODO:
+
+	else:
+		return data['data']
