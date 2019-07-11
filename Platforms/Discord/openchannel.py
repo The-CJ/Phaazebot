@@ -6,12 +6,19 @@ import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from .utils import getDiscordSeverSettings
 
-async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> discord.Message:
+async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> discord.Message or None:
 
 	# get server settings
 	ServerSettings:DiscordServerSettings = await getDiscordSeverSettings(cls, Message)
 
-	print(ServerSettings)
-	print(Message.guild.id)
+	# only run blacklist module if links are banned or at least on entry on the blacklist
+	if ServerSettings.ban_links or ServerSettings.blacklist:
+		cls.BASE.Logger.info(f"TODO: Blacklist")
 
-	pass
+	# on execute if its a new message
+	# we need to check this, since on_message_edit calls on_message
+	# so edited messages trigger commands, but not level additions
+	if not Message.edited_at:
+		cls.BASE.Logger.info(f"TODO: Check level stuff")
+
+	cls.BASE.Logger.info(f"TODO: Check commands")

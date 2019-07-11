@@ -37,7 +37,7 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message
 async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", server_id:str) -> DiscordServerSettings:
 	"""
 		Makes a new entry in the PhaazeDB for a discord server.
-		since the new version v5+ we dont add a base contruct to the db,
+		since the new version v5+ we dont add a base construct to the db,
 		it should be covered by DB defaults
 	"""
 
