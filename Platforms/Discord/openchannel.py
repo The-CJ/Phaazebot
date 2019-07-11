@@ -5,8 +5,9 @@ if TYPE_CHECKING:
 import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from .utils import getDiscordSeverSettings
+from .commands import checkCommands
 
-async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> discord.Message or None:
+async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 
 	# get server settings
 	ServerSettings:DiscordServerSettings = await getDiscordSeverSettings(cls, Message)
@@ -21,4 +22,4 @@ async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> discor
 	if not Message.edited_at:
 		cls.BASE.Logger.info(f"TODO: Check level stuff")
 
-	cls.BASE.Logger.info(f"TODO: Check commands")
+	await checkCommands(cls, Message, ServerSettings)

@@ -27,7 +27,7 @@ class PhaazebotDiscord(discord.Client):
 			await asyncio.sleep(3)
 			await self.on_ready()
 
-	async def on_message(self, Message:discord.Message):
+	async def on_message(self, Message:discord.Message) -> None:
 
 		if Message.author == self.user: return
 		if not self.BASE.IsReady.discord: return
@@ -46,8 +46,8 @@ class PhaazebotDiscord(discord.Client):
 	async def on_message_delete(self, message):
 		pass
 
-	async def on_message_edit(self, before, after):
-		pass
+	async def on_message_edit(self, Before:discord.Message, After:discord.Message) -> None:
+		await self.on_message(After)
 
 	#member management
 	async def on_member_join(self, member):
