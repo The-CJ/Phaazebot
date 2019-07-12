@@ -7,6 +7,7 @@ import re
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordcommand import DiscordCommand
+from Utils.Classes.discordpermission import DiscordPermission
 from .commandindex import getDiscordCommandFunction
 from Utils.regex import Discord as ReDiscord
 
@@ -16,7 +17,12 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 	await CommandContext.check()
 
 	if CommandContext.found:
+
 		Command:DiscordCommand = CommandContext.Command
+		Permission:DiscordPermission = DiscordPermission(Message)
+
+		if not Permission.rank >= Command.require: return
+
 		await Command.increaseUse(cls)
 
 		final_result:dict = await formatCommand(cls, Command, CommandContext)
