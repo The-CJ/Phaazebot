@@ -92,13 +92,21 @@ async def makeDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str) -> li
 		Create a new DB container for Discord server commands
 	"""
 	name = f"discord/commands/commands_{server_id}"
-	data:dict = cls.BASE.PhaazeDB.create(name=name)
+	res:dict = cls.BASE.PhaazeDB.create(name=name)
 
-	if data.get("status", "error") == "created":
-		cls.BASE.Logger.info(f"(Discord) New server command container: {server_id}")
-		# TODO: add default for this new container
-		return []
+	if res.get("status", "error") == "created":
+		default:dict = {
+			"content": "",
+			"trigger": "",
+			"uses": 0,
+			"complex": False,
+			"function": "textOnly",
+			"require": 0
+		}
+		res2:dict = cls.BASE.PhaazeDB.default(of=name, content = default)
+		if res2.get("status", "error") == "default set":
+			cls.BASE.Logger.info(f"(Discord) New server command container: {server_id}")
+			return []
 
-	else:
-		cls.BASE.Logger.critical(f"(Discord) New server command container failed: {server_id}")
-		raise RuntimeError("Creating new DB container failed")
+	cls.BASE.Logger.critical(f"(Discord) New server command container failed: {server_id}")
+	raise RuntimeError("Creating new DB container failed")
