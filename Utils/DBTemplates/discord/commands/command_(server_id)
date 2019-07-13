@@ -9,5 +9,6 @@
 | complex                    | False                             | bool        |
 | function                   | textOnly                          | str         |
 | require                    | 0                                 | int         |
+| required_currency          | 0                                 | int         |
 | hidden                     | False                             | bool        |
 +----------------------------+-----------------------------------+-------------+

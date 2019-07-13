@@ -102,6 +102,7 @@ async def makeDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str) -> li
 			"complex": False,
 			"function": "textOnly",
 			"require": 0,
+			"required_currency": 0,
 			"hidden": False
 		}
 		res2:dict = cls.BASE.PhaazeDB.default(of=name, content = default)
