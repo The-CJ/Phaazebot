@@ -47,6 +47,8 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 
 		func:Awaitable = getDiscordCommandFunction("simple", function_str)
 
+		cls.BASE.Logger.debug(f"(Discord) execute command '{func.__name__}'", require="discord:commands")
+
 		return await func(cls, Command, CommandContext)
 
 	else:
