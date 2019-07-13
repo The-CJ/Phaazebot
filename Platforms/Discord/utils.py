@@ -101,7 +101,8 @@ async def makeDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str) -> li
 			"uses": 0,
 			"complex": False,
 			"function": "textOnly",
-			"require": 0
+			"require": 0,
+			"hidden": False
 		}
 		res2:dict = cls.BASE.PhaazeDB.default(of=name, content = default)
 		if res2.get("status", "error") == "default set":

@@ -53,9 +53,7 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 		# TODO: to complex functions
 		FunctionHits = re.search(ReDiscord.CommandFunctionString, Command.content)
 		print(FunctionHits)
-
-
 		VarHits = re.search(ReDiscord.CommandVariableString, Command.content)
 		print(VarHits)
 
-		return { "content": "-", "embed": None }
+		return { "content": "Complex functions are under construction", "embed": None }
