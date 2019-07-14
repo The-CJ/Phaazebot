@@ -6,6 +6,7 @@ import discord
 import json
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordcommand import DiscordCommand
+from Utils.Classes.discordleveluser import DiscordLevelUser
 
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
 	"""
@@ -143,8 +144,7 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", server_id:str, member_i
 			return await makeDiscordServerLevels(cls, server_id)
 
 	else:
-		pass
-		# return [DiscordCommand(x, server_id) for x in res["data"]]
+		return [DiscordLevelUser(x, server_id) for x in res["data"]]
 
 async def makeDiscordServerLevels(cls:"PhaazebotDiscord", server_id:str) -> list:
 	"""
