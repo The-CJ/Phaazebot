@@ -11,7 +11,7 @@ from Utils.Classes.discordpermission import DiscordPermission
 from .commandindex import getDiscordCommandFunction
 from Utils.regex import Discord as ReDiscord
 
-async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
+async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
 	CommandContext:DiscordCommandContext = DiscordCommandContext(cls, Message)
 	await CommandContext.check()
@@ -21,12 +21,17 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		Command:DiscordCommand = CommandContext.Command
 		Permission:DiscordPermission = DiscordPermission(Message)
 
-		if not Permission.rank >= Command.require: return
+		if not Permission.rank >= Command.require: return False
 
 		await Command.increaseUse(cls)
 
 		final_result:dict = await formatCommand(cls, Command, CommandContext)
 		await Message.channel.send(**final_result)
+		
+		return True
+
+	else:
+		return False
 
 async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 	"""

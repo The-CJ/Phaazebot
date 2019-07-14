@@ -15,12 +15,13 @@ async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 
 	# only run blacklist module if links are banned or at least on entry on the blacklist
 	if ServerSettings.ban_links or ServerSettings.blacklist:
-		await checkBlacklist(cls, Message, ServerSettings)
+		executed_punishment = await checkBlacklist(cls, Message, ServerSettings)
+		if executed_punishment: return
 
-	# only execute if its a new message
-	# we need to check this, since on_message_edit calls on_message
-	# so edited messages trigger commands, but not level additions
-	if not Message.edited_at:
+	executed_command:bool = await checkCommands(cls, Message, ServerSettings)
+
+	# only execute if its a new message and its not a command
+	#   we need to check this, since on_message_edit calls on_message
+	#   so edited messages trigger commands, but not level additions
+	if not Message.edited_at and not executed_command:
 		cls.BASE.Logger.info(f"TODO: Check level stuff")
-
-	await checkCommands(cls, Message, ServerSettings)

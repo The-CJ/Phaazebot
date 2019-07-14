@@ -8,12 +8,12 @@ from Utils.regex import ContainsLink
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordpermission import DiscordPermission
 
-async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
+async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
 	PhaazePermissions:discord.Permissions = Message.channel.permissions_for(Message.guild.me)
 
-	if not PhaazePermissions.manage_messages: return
-	if DiscordPermission(Message).rank >= 2: return
+	if not PhaazePermissions.manage_messages: return False
+	if DiscordPermission(Message).rank >= 2: return False
 
 	# if this is True after all checks, punish
 	punish:bool = False
@@ -30,6 +30,10 @@ async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Server
 
 	if punish:
 		await executePunish(cls, Message, ServerSettings, reason=reason)
+		return True
+
+	else:
+		return False
 
 async def checkBanLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
