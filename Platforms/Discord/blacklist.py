@@ -17,15 +17,19 @@ async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Server
 
 	# if this is True after all checks, punish
 	punish:bool = False
+	reason:str = None
 
 	# links are not allowed
 	if ServerSettings.ban_links or True: # NOTE: testing
 		punish = await checkBanLinks(cls, Message, ServerSettings)
+		reason = "ban-links"
 
 	if ServerSettings.blacklist and not punish:
 		punish = await checkWordBlacklist(cls, Message, ServerSettings)
+		reason = "word-blacklist"
 
-	print(punish) # TODO: add punish
+	if punish:
+		await executePunish(cls, Message, ServerSettings, reason=reason)
 
 async def checkBanLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
@@ -61,3 +65,24 @@ async def checkWordBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Se
 		if word.lower() in message_text: return True
 
 	return False
+
+async def executePunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, reason:str = None) -> None:
+	try:
+		if ServerSettings.blacklist_punishment == "delete":
+			await Message.delete()
+
+		elif ServerSettings.blacklist_punishment == "kick":
+			if reason: reason_str:str = f"Triggered by '{reason}' - Message: {Message.content}"
+			else: reason_str:str = None
+
+			await Message.delete()
+			await Message.guild.kick(Message.author, reason=reason_str)
+
+		elif ServerSettings.blacklist_punishment == "ban":
+			if reason: reason_str:str = f"Triggered by '{reason}' - Message: {Message.content}"
+			else: reason_str:str = None
+
+			await Message.guild.ban(Message.author, reason=reason_str, delete_message_days=1)
+
+	except:
+		raise
