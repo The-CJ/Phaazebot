@@ -14,7 +14,7 @@ async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 	ServerSettings:DiscordServerSettings = await getDiscordSeverSettings(cls, Message)
 
 	# only run blacklist module if links are banned or at least on entry on the blacklist
-	if ServerSettings.ban_links or ServerSettings.blacklist or True: # NOTE: testing
+	if ServerSettings.ban_links or ServerSettings.blacklist:
 		await checkBlacklist(cls, Message, ServerSettings)
 
 	# only execute if its a new message
