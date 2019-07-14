@@ -7,6 +7,7 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 from .utils import getDiscordSeverSettings
 from .blacklist import checkBlacklist
 from .commands import checkCommands
+from .levels import checkLevel
 
 async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 
@@ -24,4 +25,4 @@ async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 	#   we need to check this, since on_message_edit calls on_message
 	#   so edited messages trigger commands, but not level additions
 	if not Message.edited_at and not executed_command:
-		cls.BASE.Logger.info(f"TODO: Check level stuff")
+		await checkLevel(cls, Message, ServerSettings)

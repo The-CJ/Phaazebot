@@ -56,6 +56,7 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", server_id:str) -> Dis
 		cls.BASE.Logger.critical(f"(Discord) New server settings failed: {server_id}")
 		raise RuntimeError("Creating new DB entry failed")
 
+
 async def getDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str, trigger:str=None, prevent_new:bool=False) -> list:
 	"""
 		Get custom commands from a discord server, if trigger = None, get all
@@ -63,10 +64,10 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str, trigge
 		Returns a list of DiscordCommand()
 	"""
 
-	of = f"discord/commands/commands_{server_id}"
+	of:str = f"discord/commands/commands_{server_id}"
 
 	if trigger:
-		where:str = f"data['trigger'] == {json.dumps(trigger)}"
+		where:str = f"str(data['trigger']) == str({json.dumps(trigger)})"
 		limit:int = 1
 
 	else:
@@ -91,7 +92,7 @@ async def makeDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str) -> li
 	"""
 		Create a new DB container for Discord server commands
 	"""
-	name = f"discord/commands/commands_{server_id}"
+	name:str = f"discord/commands/commands_{server_id}"
 	res:dict = cls.BASE.PhaazeDB.create(name=name)
 
 	if res.get("status", "error") == "created":
@@ -111,4 +112,58 @@ async def makeDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str) -> li
 			return []
 
 	cls.BASE.Logger.critical(f"(Discord) New server command container failed: {server_id}")
+	raise RuntimeError("Creating new DB container failed")
+
+
+async def getDiscordServerLevels(cls:"PhaazebotDiscord", server_id:str, member_id:str=None, prevent_new:bool=False) -> None:
+	"""
+		Get server levels, if member_id = None, get all
+		else only get one associated with the member_id
+		Returns a list of ---().
+	"""
+	of:str = f"discord/level/level_{server_id}"
+
+	if member_id:
+		where:str = f"str(data['member_id']) == str({json.dumps(member_id)})"
+		limit:int = 1
+
+	else:
+		where:str = None
+		limit:int = None
+
+	try:
+		res:dict = cls.BASE.PhaazeDB.select(of=of, limit=limit, where=where)
+	except:
+		res:dict = dict()
+
+	if res.get("status", "error") == "error":
+		if prevent_new:
+			return []
+		else:
+			return await makeDiscordServerLevels(cls, server_id)
+
+	else:
+		pass
+		# return [DiscordCommand(x, server_id) for x in res["data"]]
+
+async def makeDiscordServerLevels(cls:"PhaazebotDiscord", server_id:str) -> list:
+	"""
+		Create a new DB container for Discord levels
+	"""
+	name:str = f"discord/level/level_{server_id}"
+	res:dict = cls.BASE.PhaazeDB.create(name=name)
+
+	if res.get("status", "error") == "created":
+		default:dict = {
+			"member_id": "",
+			"exp": 0,
+			"edited": False,
+			"medals": []
+		}
+		res2:dict = cls.BASE.PhaazeDB.default(of=name, content = default)
+		if res2.get("status", "error") == "default set":
+			cls.BASE.Logger.info(f"(Discord) New server level container: {server_id}")
+			return []
+
+	cls.BASE.Logger.critical(f"(Discord) New server level container failed: {server_id}")
 	raise RuntimeError("Creating new DB container failed")
