@@ -19,4 +19,21 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 
 	LevelUser:DiscordLevelUser = await getDiscordServerLevels(cls, Message.guild.id, member_id=Message.author.id)
 
+	if not LevelUser:
+		LevelUser = await newUser(cls, Message.guild.id, Message.author.id)
+
 	print(LevelUser)
+
+async def newUser(cls:"PhaazebotDiscord", server_id:str, member_id:str) -> DiscordLevelUser:
+
+	res:dict = cls.BASE.PhaazeDB.insert(
+		into = f"discord/level/level_{server_id}",
+		content = {"member_id": member_id}
+	)
+
+	if res.get("status", "error") == "inserted":
+		cls.BASE.Logger.debug(f"(Discord) New entry into levels: S:{server_id} M:{member_id}", require="discord:level")
+		return DiscordLevelUser( {"member_id": member_id}, server_id )
+	else:
+		cls.BASE.Logger.critical(f"(Discord) New entry into levels failed: S:{server_id}")
+		raise RuntimeError("New entry into levels failed")
