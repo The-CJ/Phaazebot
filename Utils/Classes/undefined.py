@@ -7,10 +7,13 @@ class Undefined():
 	def __str__(self): return ""
 	def __int__(self): return 0
 
-	def __eq__(self, value): # ==
+	# ==
+	def __eq__(self, value):
 		if type(value) == Undefined: return True
 		return False
-	def __ne__(self, value): # !=
+
+	# !=
+	def __ne__(self, value):
 		if type(value) != Undefined: return True
 		return False
 
@@ -21,3 +24,7 @@ class Undefined():
 	def __lt__(self, value): return False # <
 
 	def __bool__(self): return False # if
+
+	# for, in
+	def __iter__(self): return self
+	def __next__(self): raise StopIteration
