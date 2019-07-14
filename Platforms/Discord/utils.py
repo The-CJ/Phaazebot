@@ -116,11 +116,11 @@ async def makeDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str) -> li
 	raise RuntimeError("Creating new DB container failed")
 
 
-async def getDiscordServerLevels(cls:"PhaazebotDiscord", server_id:str, member_id:str=None, prevent_new:bool=False) -> None:
+async def getDiscordServerLevels(cls:"PhaazebotDiscord", server_id:str, member_id:str=None, prevent_new:bool=False) -> list:
 	"""
 		Get server levels, if member_id = None, get all
 		else only get one associated with the member_id
-		Returns a list of ---().
+		Returns a list of DiscordLevelUser().
 	"""
 	of:str = f"discord/level/level_{server_id}"
 

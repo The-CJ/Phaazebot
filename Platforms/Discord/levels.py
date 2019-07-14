@@ -17,10 +17,13 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	if Message.channel.id in ServerSettings.disable_chan_level: return
 	if ServerSettings.owner_disable_level: return
 
-	LevelUser:DiscordLevelUser = await getDiscordServerLevels(cls, Message.guild.id, member_id=Message.author.id)
+	result:list = await getDiscordServerLevels(cls, Message.guild.id, member_id=Message.author.id)
 
-	if not LevelUser:
-		LevelUser = await newUser(cls, Message.guild.id, Message.author.id)
+	if not result:
+		LevelUser:DiscordLevelUser = await newUser(cls, Message.guild.id, Message.author.id)
+	else:
+		# there should be only on in the list
+		LevelUser:DiscordLevelUser = result[0]
 
 	print(LevelUser)
 
