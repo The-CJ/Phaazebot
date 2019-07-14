@@ -8,7 +8,7 @@
 | ban_links_role             | []                                | list        |
 | ban_links_whitelist        | []                                | list        |
 | blacklist                  | []                                | list        |
-| blacklist_punishment       | "leave"                           | str         |
+| blacklist_punishment       | "delete"                          | str         |
 | disable_chan_custom        | []                                | list        |
 | disable_chan_level         | []                                | list        |
 | disable_chan_normal        | []                                | list        |
