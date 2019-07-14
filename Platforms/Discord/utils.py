@@ -51,10 +51,10 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", server_id:str) -> Dis
 	)
 
 	if res.get("status", "error") == "inserted":
-		cls.BASE.Logger.info(f"(Discord) New server settings DB entry: {server_id}")
+		cls.BASE.Logger.info(f"(Discord) New server settings DB entry: S:{server_id}")
 		return DiscordServerSettings( infos = {} )
 	else:
-		cls.BASE.Logger.critical(f"(Discord) New server settings failed: {server_id}")
+		cls.BASE.Logger.critical(f"(Discord) New server settings failed: S:{server_id}")
 		raise RuntimeError("Creating new DB entry failed")
 
 
@@ -109,10 +109,10 @@ async def makeDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str) -> li
 		}
 		res2:dict = cls.BASE.PhaazeDB.default(of=name, content = default)
 		if res2.get("status", "error") == "default set":
-			cls.BASE.Logger.info(f"(Discord) New server command container: {server_id}")
+			cls.BASE.Logger.info(f"(Discord) New server command container: S:{server_id}")
 			return []
 
-	cls.BASE.Logger.critical(f"(Discord) New server command container failed: {server_id}")
+	cls.BASE.Logger.critical(f"(Discord) New server command container failed: S:{server_id}")
 	raise RuntimeError("Creating new DB container failed")
 
 
@@ -162,8 +162,8 @@ async def makeDiscordServerLevels(cls:"PhaazebotDiscord", server_id:str) -> list
 		}
 		res2:dict = cls.BASE.PhaazeDB.default(of=name, content = default)
 		if res2.get("status", "error") == "default set":
-			cls.BASE.Logger.info(f"(Discord) New server level container: {server_id}")
+			cls.BASE.Logger.info(f"(Discord) New server level container: S:{server_id}")
 			return []
 
-	cls.BASE.Logger.critical(f"(Discord) New server level container failed: {server_id}")
+	cls.BASE.Logger.critical(f"(Discord) New server level container failed: S:{server_id}")
 	raise RuntimeError("Creating new DB container failed")

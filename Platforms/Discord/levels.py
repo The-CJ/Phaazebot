@@ -35,5 +35,5 @@ async def newUser(cls:"PhaazebotDiscord", server_id:str, member_id:str) -> Disco
 		cls.BASE.Logger.debug(f"(Discord) New entry into levels: S:{server_id} M:{member_id}", require="discord:level")
 		return DiscordLevelUser( {"member_id": member_id}, server_id )
 	else:
-		cls.BASE.Logger.critical(f"(Discord) New entry into levels failed: S:{server_id}")
+		cls.BASE.Logger.critical(f"(Discord) New entry into levels failed: S:{server_id} M:{member_id}")
 		raise RuntimeError("New entry into levels failed")
