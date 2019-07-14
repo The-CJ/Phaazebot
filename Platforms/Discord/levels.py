@@ -4,6 +4,8 @@ if TYPE_CHECKING:
 
 import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
+from Utils.Classes.discordleveluser import DiscordLevelUser
+from .utils import getDiscordServerLevels
 
 async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
 	"""
@@ -15,4 +17,6 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	if Message.channel.id in ServerSettings.disable_chan_level: return
 	if ServerSettings.owner_disable_level: return
 
-	#
+	LevelUser:DiscordLevelUser = await getDiscordServerLevels(cls, Message.guild.id, member_id=Message.author.id)
+
+	print(LevelUser)
