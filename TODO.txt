@@ -1,0 +1,5 @@
+Stuff i have to do for live version:
+
+- Change DB fields discord/server_setting ["ban_linkes"] -> ["ban_links"]
+- Change DB fields discord/server_setting ["ban_linkes_role"] -> ["ban_links_role"]
+- maybe? Change DB fields discord/level/level_(x) ["medal"] -> ["medals"]
