@@ -12,8 +12,8 @@ async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Server
 
 	PhaazePermissions:discord.Permissions = Message.channel.permissions_for(Message.guild.me)
 
-	# if not PhaazePermissions.manage_messages: return
-	# if DiscordPermission(Message).rank >= 2: return
+	if not PhaazePermissions.manage_messages: return
+	if DiscordPermission(Message).rank >= 2: return
 
 	# if this is True after all checks, punish
 	punish:bool = False
@@ -22,7 +22,10 @@ async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Server
 	if ServerSettings.ban_links or True: # NOTE: testing
 		punish = await checkBanLinks(cls, Message, ServerSettings)
 
-	print(punish)
+	if ServerSettings.blacklist and not punish:
+		punish = await checkWordBlacklist(cls, Message, ServerSettings)
+
+	print(punish) # TODO: add punish
 
 async def checkBanLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
@@ -49,4 +52,12 @@ async def checkBanLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 			return True
 
 	# all links could be found in the whitelist
+	return False
+
+async def checkWordBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+	message_text = Message.content.lower()
+
+	for word in ServerSettings.blacklist:
+		if word.lower() in message_text: return True
+
 	return False
