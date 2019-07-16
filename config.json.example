@@ -6,6 +6,7 @@
   "twitch_admin_token":"secret!..?",
 
   "discord_token":"secret!..?",
+  "discord_secret":"secret!..?",
 
   "osu_api_token":"secret!..?",
 
