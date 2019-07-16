@@ -1,6 +1,6 @@
 {
   "version": "0.0.0",
-  
+
   "twitch_api_token":"secret!..?",
   "twitch_irc_token":"secret!..?",
   "twitch_admin_token":"secret!..?",
@@ -16,6 +16,7 @@
   "mashape_token":"secret!..?",
 
   "phaazedb_token":"secret!..?",
+  "phaazedb_port": 1234,
   "phaazedb_address":"http://127.0.0.1",
 
   "twitter_token":"secret!..?",
@@ -43,6 +44,7 @@
   "discord_level_cooldown":3,
   "discord_quotes_amount":10,
   "discord_addrole_amount":25,
+  "discord_login_link":"https://discordapp.com",
 
   "twitch_timeout_message_cooldown":20,
   "twitch_blacklist_remember_time":180,
