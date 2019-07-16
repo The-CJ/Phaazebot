@@ -24,3 +24,11 @@ async def translateDiscordToken(cls:"Phaazebot", WebRequest:Request) -> dict or 
 
 	res = requests.post(ROOT_URL+"oauth2/token", req, headers)
 	return res.json()
+
+async def getDiscordUser(cls:"Phaazebot", access_token:str) -> dict:
+
+	headers:dict = {"Authorization": f"Bearer {access_token}"}
+
+	res:requests.Response = requests.get(ROOT_URL+"users/@me", headers=headers)
+
+	return res.json()
