@@ -1,0 +1,8 @@
+main h1 {
+  margin: 1em 0;
+}
+
+.server-list:empty::after {
+  content: "HERE";
+  background: red;
+}
