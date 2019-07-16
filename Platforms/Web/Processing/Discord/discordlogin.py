@@ -7,7 +7,7 @@ from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.utils import getNavbar
 
-async def discordLogin(cls:"WebIndex", WebRequest:Request) -> Response:
+async def discordLogin(cls:"WebIndex", WebRequest:Request, msg:str="") -> Response:
 	"""
 		Default url: /discord/login
 	"""
@@ -15,6 +15,13 @@ async def discordLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 	if DiscordUser.found: return await cls.discordMain(WebRequest)
 
 	DiscordLogin:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/login.html")
+	DiscordLogin.replace(
+		replace_empty = True,
+
+		msg = msg,
+		login_link = cls.Web.BASE.VarsStore.DISCORD_LOGIN_LINK
+	)
+
 
 	site:str = cls.HTMLRoot.replace(
 		replace_empty = True,
