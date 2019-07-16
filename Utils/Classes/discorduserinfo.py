@@ -4,8 +4,6 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Request
-from Utils.stringutils import password
-from Utils.Classes.undefined import Undefined
 
 def forcable(f:Callable) -> Callable:
 	f.__forcable__ = True
@@ -15,7 +13,7 @@ class DiscordUserInfo(object):
 	"""
 		Used for authorisation of a discord web user request
 		variable search way:
-			System -> header/cookies -> GET
+			System -> header/cookies
 	"""
 	def __init__(self, BASE:"Phaazebot", WebRequest:Request, force_method:str=None, **kwargs:Any):
 		self.BASE:"Phaazebot" = BASE
@@ -24,7 +22,6 @@ class DiscordUserInfo(object):
 		self.force_method:str = force_method
 
 		self.__session:str = ""
-		self.__code:str = ""
 
 		self.found:bool = False
 		self.tryed:bool = False
@@ -51,34 +48,21 @@ class DiscordUserInfo(object):
 	async def getFromSystem(self) -> None:
 		self.__session = self.kwargs.get("phaaze_discord_session", None)
 		if self.__session: return await self.viaSession()
-		self.__code = self.kwargs.get("code", None)
-		if self.__code: return await self.viaCode()
 
 	@forcable
 	async def getFromCookies(self) -> None:
 		self.__session = self.WebRequest.cookies.get("phaaze_discord_session", None)
 		if self.__session: return await self.viaSession()
-		self.__code = self.WebRequest.cookies.get("code", None)
-		if self.__code: return await self.viaCode()
 
 	@forcable
 	async def getFromHeader(self) -> None:
 		self.__session = self.WebRequest.headers.get("phaaze_discord_session", None)
 		if self.__session: return await self.viaSession()
-		self.__code = self.WebRequest.headers.get("code", None)
-		if self.__code: return await self.viaCode()
 
 	@forcable
 	async def getFromGet(self) -> None:
 		self.__session = self.WebRequest.query.get("phaaze_discord_session", None)
 		if self.__session: return await self.viaSession()
-		self.__code = self.WebRequest.query.get("code", None)
-		if self.__code: return await self.viaCode()
-
-	# checker
-	async def viaCode(self) -> None:
-		self.BASE.Logger.debug("Someone tryed to auth with token", require="web:debug")
-		return None
 
 	async def viaSession(self) -> None:
 		dbr:dict = dict(
