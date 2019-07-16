@@ -5,6 +5,7 @@
   "twitch_irc_token":"secret!..?",
   "twitch_admin_token":"secret!..?",
 
+  "discord_bot_id":"000",
   "discord_token":"secret!..?",
   "discord_secret":"secret!..?",
 

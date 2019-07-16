@@ -98,6 +98,7 @@ class VarsStore(object):
 
 		self.IMAGE_PATH:str = str(config.get('image_path', '_WEB_/img/'))
 
+		self.DISCORD_BOT_ID:str = str(config.get('discord_bot_id', '00000'))
 		self.DISCORD_LOGIN_LINK:str = str(config.get('discord_login_link', '/discord'))
 
 		self.LOGO_OSU:str = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
