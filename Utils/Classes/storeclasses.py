@@ -100,6 +100,7 @@ class VarsStore(object):
 
 		self.DISCORD_BOT_ID:str = str(config.get('discord_bot_id', '00000'))
 		self.DISCORD_LOGIN_LINK:str = str(config.get('discord_login_link', '/discord'))
+		self.DISCORD_REDIRECT_LINK:str = str(config.get('discord_redirect_link', 'localhost'))
 
 		self.LOGO_OSU:str = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
 		self.LOGO_TWITCH:str = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504"

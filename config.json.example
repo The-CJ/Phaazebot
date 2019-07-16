@@ -47,6 +47,7 @@
   "discord_quotes_amount":10,
   "discord_addrole_amount":25,
   "discord_login_link":"https://discordapp.com",
+  "discord_redirect_link":"localhost",
 
   "twitch_timeout_message_cooldown":20,
   "twitch_blacklist_remember_time":180,
