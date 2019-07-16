@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Request
+from Utils.Classes.undefined import Undefined
 
 def forcable(f:Callable) -> Callable:
 	f.__forcable__ = True
@@ -66,36 +67,34 @@ class DiscordUserInfo(object):
 
 	async def viaSession(self) -> None:
 		dbr:dict = dict(
-			of="session/phaaze",
+			of="session/discord",
 			store="session",
 			where=f'session["session"] == {json.dumps(self.__session)}',
 			limit=1,
-			join=dict(
-				of="user",
-				store="user",
-				where="session['user_id'] == user['id']",
-				join=dict(
-					of="role",
-					store="role",
-					where="role['id'] in user['role']",
-					fields=["name", "id"]
-				)
-			)
 		)
-		return await self.dbRequest(dbr, unpack_session = True)
+		return await self.dbRequest(dbr)
 
-	async def dbRequest(self, db_req:dict, unpack_session:bool = False) -> None:
+	async def dbRequest(self, db_req:dict) -> None:
 		self.tryed = True
 		res:dict = self.BASE.PhaazeDB.select(**db_req)
 
 		if int(res.get("hits", 0)) != 1:
 			return
 
-		if unpack_session:
-			await self.finishUser(res["data"][0]["user"][0])
-		else:
-			await self.finishUser(res["data"][0])
+		await self.finishUser(res["data"][0])
 
 	# finish
 	async def finishUser(self, data:dict) -> None:
 		self.found = True
+
+		user:dict = data.get("user_info", dict())
+
+		self.username:str = user.get("username", Undefined())
+		self.verified:str = user.get("verified", Undefined())
+		self.locale:str = user.get("locale", Undefined())
+		self.premium_type:str = user.get("premium_type", Undefined())
+		self.user_id:str = user.get("id", Undefined())
+		self.flags:str = user.get("flags", Undefined())
+		self.avatar:str = user.get("avatar", Undefined())
+		self.discriminator:str = user.get("discriminator", Undefined())
+		self.email:str = user.get("email", Undefined())
