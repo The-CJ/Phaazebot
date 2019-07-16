@@ -1,0 +1,12 @@
+main h1 {
+  margin: 1em 0;
+}
+
+.color-discord {
+  background: #7289DA;
+}
+
+.inner-part {
+  margin-right: .5ch;
+  font-size: 100px;
+}
