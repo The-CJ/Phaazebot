@@ -12,14 +12,15 @@ async def discordLogin(cls:"WebIndex", WebRequest:Request, msg:str="") -> Respon
 	"""
 		Default url: /discord/login
 	"""
-	print(WebRequest.raw_path)
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if DiscordUser.found: return await cls.discordMain(WebRequest)
 
 	# use has a ?code=something -> check login
 	if WebRequest.query.get("code", False):
-		f = await translateDiscordToken(cls.Web.BASE, WebRequest)
-		print(f)
+		data:dict or None = await translateDiscordToken(cls.Web.BASE, WebRequest)
+		if not data: msg = "Login failed..."
+		elif data.get("error", None): msg = "Login failed...."
+		else: return await completeTokenLogin(cls, WebRequest, data)
 
 	DiscordLogin:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/login.html")
 	DiscordLogin.replace(
@@ -42,3 +43,6 @@ async def discordLogin(cls:"WebIndex", WebRequest:Request, msg:str="") -> Respon
 		status=200,
 		content_type='text/html'
 	)
+
+async def completeTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict) -> Response:
+	pass
