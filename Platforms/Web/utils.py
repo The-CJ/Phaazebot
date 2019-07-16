@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 from aiohttp.web import Request
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.discorduserinfo import DiscordUserInfo
 
 def getNavbar(active:str="", UserInfo:WebUserInfo=None) -> HTMLFormatter:
 	Navbar:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Navbar/default.html")
@@ -31,6 +32,17 @@ async def getUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUs
 	WebRequest.UserInfo = UserInfo
 
 	return WebRequest.UserInfo
+
+async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:
+	if hasattr(WebRequest, "DiscordUser"):
+		cls.Web.BASE.Logger.debug(f"(Web) Used stored discord infos: {str(WebRequest.DiscordUser)}", require="web:debug")
+		return WebRequest.DiscordUser
+
+	DiscordUser:DiscordUserInfo = DiscordUserInfo(cls.Web.BASE, WebRequest, **kwargs)
+	await DiscordUser.auth()
+	WebRequest.DiscordUser = DiscordUser
+
+	return WebRequest.DiscordUser
 
 async def searchUser(cls:"WebIndex", where:str) -> list:
 	"""

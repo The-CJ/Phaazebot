@@ -69,6 +69,9 @@ class WebIndex(object):
 		# /account*
 		self.addWebAccountRoutes()
 
+		# /discord*
+		self.addWebDiscordRoutes()
+
 		# web contents (js, css, img)
 		self.Web.router.add_route('GET', '/img{file:.*}', self.serveImg)
 		self.Web.router.add_route('GET', '/css{file:.*}', self.serveCss)
@@ -82,6 +85,10 @@ class WebIndex(object):
 	def addWebAdminRoutes(self) -> None:
 		self.Web.router.add_route('GET', '/admin', self.adminMain)
 		self.Web.router.add_route('GET', '/admin/manage-system', self.adminManageSystem)
+
+	def addWebDiscordRoutes(self) -> None:
+		self.Web.router.add_route('GET', '/discord', self.discordMain)
+		self.Web.router.add_route('GET', '/discord/dashboard/{server_id:\d+}', self.discordMain)
 
 	# api
 	def addAPIRoutes(self) -> None:
@@ -117,6 +124,7 @@ class WebIndex(object):
 	from .Processing.Account.accountlogin import accountLogin
 	from .Processing.Admin.adminmain import adminMain
 	from .Processing.Admin.adminmanagesystem import adminManageSystem
+	from .Processing.Discord.discordmain import discordMain
 
 	# web contents
 	from .Processing.webcontent import serveCss, serveJs, serveImg, serveFavicon
@@ -125,4 +133,4 @@ class WebIndex(object):
 	from .Processing.errors import notFound, notAllowed
 
 	# utils
-	from .utils import getUserInfo
+	from .utils import getUserInfo, getDiscordUserInfo
