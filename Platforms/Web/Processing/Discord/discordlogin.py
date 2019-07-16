@@ -7,21 +7,21 @@ from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.utils import getNavbar
 
-async def discordMain(cls:"WebIndex", WebRequest:Request) -> Response:
+async def discordLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /discord
+		Default url: /discord/login
 	"""
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found: return await cls.discordLogin(WebRequest)
+	if DiscordUser.found: return await cls.discordMain(WebRequest)
 
-	DiscordMain:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/main.html")
+	DiscordLogin:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/login.html")
 
 	site:str = cls.HTMLRoot.replace(
 		replace_empty = True,
 
-		title = "Phaaze | Discord",
+		title = "Phaaze | Discord - Login",
 		header = getNavbar(),
-		main = DiscordMain
+		main = DiscordLogin
 	)
 
 	return cls.response(
