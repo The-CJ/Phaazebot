@@ -102,12 +102,12 @@ async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dic
 		content = save
 	)
 
-	Expire:datetime.datetime = datetime.datetime.now() + datetime.timedelta(days=7)
+	cls.Web.BASE.Logger.debug(f"(API) New Discord Login - Session: {session_key} User: {str(user_info.get('username','[N/A]'))}", require="api:login")
 	if res.get("status", False) == "inserted":
 		return cls.response(
 			status=302,
 			headers = {
-				"Set-Cookie": f"phaaze_discord_session={session_key}; Path=/; expires={Expire.isoformat()};",
+				"Set-Cookie": f"phaaze_discord_session={session_key}; Path=/; Max-Age=604800;",
 				"Location": "/discord"
 			}
 		)
