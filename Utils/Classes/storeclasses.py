@@ -1,4 +1,6 @@
+from typing import Any
 from Utils.config import ConfigParser
+from Utils.Classes.undefined import Undefined
 
 class AccessStore(object):
 	"""
@@ -108,3 +110,45 @@ class VarsStore(object):
 	@property
 	def LOGO(self):
 		return "TODO: return logo"
+
+class GlobalStorage(dict):
+	"""
+		This Class is strange.
+		It suppost to be accessed from other modules via:
+
+		from Utils.Classes.storeclasses import GlobalStorage
+
+		It's something like a global dict.
+		only has three functions: add, get, rem
+	"""
+	def __init__(self):
+		self.__store:dict = dict()
+
+	def add(self, key:str, value:Any) -> None:
+		self.__store[key] = value
+
+	def get(self, key:str, alt:Any=Undefined()) -> Any:
+		return self.__store.get(key, alt)
+
+	def rem(self, key:str, alt:Any=Undefined()) -> Any:
+		return self.__store.pop(key, alt)
+
+	def __setattr__(self, key:str, value:Any) -> None:
+		return self.add(key, value)
+
+	def __getattr__(self, key:str, value:Any) -> Any:
+		return self.get(key, value)
+
+	def __delattr__(self, key:str, value:Any) -> Any:
+		return self.rem(key, value)
+
+	def __setitem__(self, key:str, value:Any) -> None:
+		return self.add(key, value)
+
+	def __getitem__(self, key:str, value:Any) -> Any:
+		return self.get(key, value)
+
+	def __delitem__(self, key:str, value:Any) -> Any:
+		return self.rem(key, value)
+
+GlobalStorage = GlobalStorage()
