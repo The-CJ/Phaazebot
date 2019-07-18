@@ -33,6 +33,16 @@
 	white-space: nowrap;
 }
 
+/* extra colors */
+.color-discord {
+  background: #7289DA;
+}
+.color-phaaze {
+  background: #00FFD0;
+}
+.color-twitch {
+  background: #6441A4;
+}
 /* remove uppercase */
 .btn {
 	text-transform: none;
