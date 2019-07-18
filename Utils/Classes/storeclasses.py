@@ -133,22 +133,4 @@ class GlobalStorage(dict):
 	def rem(self, key:str, alt:Any=Undefined()) -> Any:
 		return self.__store.pop(key, alt)
 
-	def __setattr__(self, key:str, value:Any) -> None:
-		return self.add(key, value)
-
-	def __getattr__(self, key:str, value:Any) -> Any:
-		return self.get(key, value)
-
-	def __delattr__(self, key:str, value:Any) -> Any:
-		return self.rem(key, value)
-
-	def __setitem__(self, key:str, value:Any) -> None:
-		return self.add(key, value)
-
-	def __getitem__(self, key:str, value:Any) -> Any:
-		return self.get(key, value)
-
-	def __delitem__(self, key:str, value:Any) -> Any:
-		return self.rem(key, value)
-
 GlobalStorage = GlobalStorage()

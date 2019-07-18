@@ -1,7 +1,7 @@
 import asyncio
 import time
 import PhaazeDBC
-from Utils.Classes.storeclasses import ActiveStore, VarsStore, AccessStore, LimitStore, IsReadyStore
+from Utils.Classes.storeclasses import ActiveStore, VarsStore, AccessStore, LimitStore, IsReadyStore, GlobalStorage
 from Utils.config import ConfigParser
 from Utils.logger import PhaazeLogger
 from Utils.threads import Mainframe
@@ -74,5 +74,6 @@ class Phaazebot(object):
 		self.Mainframe.start()
 
 if __name__ == '__main__':
-	Phaazebot = Phaazebot()
-	Phaazebot.start()
+	Phaaze = Phaazebot()
+	GlobalStorage.add("Phaazebot", Phaaze)
+	Phaaze.start()

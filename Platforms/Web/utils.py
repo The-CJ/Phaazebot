@@ -6,20 +6,26 @@ from aiohttp.web import Request
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.storeclasses import GlobalStorage
 
-def getNavbar(active:str="", UserInfo:WebUserInfo=None) -> HTMLFormatter:
+def getNavbar(active:str="") -> HTMLFormatter:
 	Navbar:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Navbar/default.html")
 
-	Navbar.replace(login_button=getLoginButton(UserInfo=UserInfo))
+	Navbar.replace(login_button=getLoginButton())
 
 	Navbar.setRegex(r"\{selected_(.+?)\}")
 	Navbar.replace(replace_empty=True, **{active:"active"})
 
 	return Navbar
 
-def getLoginButton(UserInfo:WebUserInfo=None) -> HTMLFormatter:
-	Button:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Button/account.html")
+def getLoginButton() -> HTMLFormatter:
+	try:
+		discord_login_link:str = GlobalStorage.get("Phaazebot").Vars.DISCORD_LOGIN_LINK
+	except:
+		discord_login_link:str = "/discord?error"
 
+	Button:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Button/account.html")
+	Button.replace(replace_empty=True, login_link=discord_login_link)
 	return Button
 
 async def getUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:

@@ -15,7 +15,7 @@
         </div>
 
         <div class="modal-body text-black">
-          <div class="center-item-row forced btn" style="background: #00ffd0" onclick="SessionManager.showAccountPanel('phaaze')">
+          <div class="center-item-row forced btn color-phaaze" onclick="SessionManager.showAccountPanel('phaaze')">
             <div class="platform center-item-row forced">
               <img src="/img/favicon.ico" alt="logo" width="45">
             </div>
@@ -23,7 +23,7 @@
             <h2>Phaaze</h2>
             <div class="col"></div>
           </div>
-          <div class="center-item-row forced text-white btn" style="background: #7289DA" onclick="SessionManager.showAccountPanel('discord')">
+          <div class="center-item-row forced text-white btn color-discord" onclick="SessionManager.showAccountPanel('discord')">
             <div class="platform center-item-row forced">
               <i class="fab fa-discord"></i>
             </div>
@@ -31,7 +31,7 @@
             <h2>Discord</h2>
             <div class="col"></div>
           </div>
-          <div class="center-item-row forced text-white btn" style="background: #6441A4" onclick="SessionManager.showAccountPanel('twitch')">
+          <div class="center-item-row forced text-white btn color-twitch" onclick="SessionManager.showAccountPanel('twitch')">
             <div class="platform center-item-row forced">
               <i class="fab fa-twitch"></i>
             </div>
@@ -122,6 +122,71 @@
             </div>
           </div>
         </form>
+      </div>
+    </div>
+
+    <div table="discord">
+      <div loggedin="true" style="display:none;">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <h4 class="modal-title">Phaaze account</h4>
+            <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
+          </div>
+
+          <div class="modal-body text-black">
+            <h3>General</h3>
+            <div class="md-form">
+              <i class="fas fa-user-circle prefix grey-text"></i>
+              <input type="text" id="current_phaaze_username" class="form-control" placeholder="Your username" name="phaaze_username">
+            </div>
+            <div class="md-form">
+              <i class="far fa-envelope prefix grey-text"></i>
+              <input type="email" id="current_phaaze_email" class="form-control" placeholder="Your e-mail" name="phaaze_email">
+            </div>
+            <div class="md-form">
+              <i class="fas fa-lock prefix grey-text" title="needed for changes">*</i>
+              <input type="password" id="current_phaaze_password" class="form-control" placeholder="Your current password" name="phaaze_password">
+            </div>
+            <button type="button" class="btn btn-block orange" onclick="$(this).hide();$('#new_password_fields').show()">Set new password</button>
+            <div id="new_password_fields" style="display: none;">
+              <div class="md-form">
+                <i class="fas fa-key prefix grey-text"></i>
+                <input type="password" id="new_phaaze_password" class="form-control" placeholder="New password" name="phaaze_newpassword">
+              </div>
+              <div class="md-form">
+                <i class="fas fa-key prefix grey-text"></i>
+                <input type="password" id="new_phaaze_password2" class="form-control" placeholder="Retype password" name="phaaze_newpassword2">
+              </div>
+            </div>
+            <hr>
+            <h3>Roles</h3>
+            <div id="user_roles"></div>
+          </div>
+
+          <div class="modal-footer center-item-col">
+            <div>
+              <button class="btn btn-primary" type="button" onclick="SessionManager.edit()">Save</button>
+              <button class="btn btn-danger" type="button" onclick="SessionManager.logout('phaaze')">Logout</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div loggedin="false" style="display:none;">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <h4 class="modal-title">Log in via Discord</h4>
+            <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
+          </div>
+
+          <div class="modal-body center-item-col">
+            <h5>Head over to Discord and log in</h5>
+            <a class="color-discord inner-part white-text col text-center" href="|<!--#(login_link)#-->|" style="font-size: 75px;">
+              <span><i class="fab fa-discord"></i>Discord</span>
+            </a>
+          </div>
+
+          <div class="modal-footer center-item-col"></div>
+        </div>
       </div>
     </div>
 
