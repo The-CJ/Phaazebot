@@ -20,7 +20,7 @@ async def discordMain(cls:"WebIndex", WebRequest:Request) -> Response:
 		replace_empty = True,
 
 		title = "Phaaze | Discord",
-		header = getNavbar(),
+		header = getNavbar(active="discord"),
 		main = DiscordMain
 	)
 

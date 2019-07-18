@@ -31,7 +31,7 @@ async def discordLogin(cls:"WebIndex", WebRequest:Request, msg:str="") -> Respon
 		replace_empty = True,
 
 		title = "Phaaze | Discord - Login",
-		header = getNavbar(),
+		header = getNavbar(active="discord"),
 		main = DiscordLogin
 	)
 
