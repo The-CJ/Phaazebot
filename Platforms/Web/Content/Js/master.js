@@ -58,13 +58,20 @@ var SessionManager = new (class {
   }
 
   displayInfo(platform, data) {
-    $("#current_"+platform+"_username").val(data.username);
-    $("#current_"+platform+"_email").val(data.email);
     if (platform == "phaaze") {
+      $("#current_phaaze_username").val(data.username);
+      $("#current_phaaze_email").val(data.email);
       var role_field = $("#user_roles").html("");
       for (var role of data.roles) {
         role_field.append( $('<div class="role">').text(role) );
       }
+    }
+    if (platform == "discord") {
+      $("#current_discord_username").val(data.username);
+      $("#current_discord_avatar").attr(
+        "src",
+        "https://cdn.discordapp.com/avatars/"+data.user_id+"/"+data.avatar+"?size=256"
+      );
     }
   }
 

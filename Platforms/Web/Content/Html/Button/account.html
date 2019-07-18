@@ -140,15 +140,13 @@
               <input type="text" id="current_discord_username" class="form-control" readonly>
             </div>
             <div class="center-item-col forced">
-              <img src="" alt="discord_avatar" id="current_discord_avatar">
+              <img src="" alt="discord_avatar" id="current_discord_avatar" height="256" width="256" style="border-radius: 50%; border: 2px solid black;">
             </div>
           </div>
 
-
           <div class="modal-footer center-item-col">
             <div>
-              <button class="btn btn-primary" type="button" onclick="SessionManager.edit()">Save</button>
-              <button class="btn btn-danger" type="button" onclick="SessionManager.logout('phaaze')">Logout</button>
+              <button class="btn btn-danger" type="button" onclick="SessionManager.logout('discord')">Logout</button>
             </div>
           </div>
         </div>
