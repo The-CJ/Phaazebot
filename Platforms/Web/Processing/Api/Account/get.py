@@ -6,6 +6,7 @@ import json
 from ..errors import apiNotAllowed, apiMissingAuthorisation
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.discorduserinfo import DiscordUserInfo
 
 async def apiAccountGetPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -36,7 +37,28 @@ async def apiAccountGetDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/discord/get
 	"""
-	return await apiNotAllowed(cls, WebRequest, msg="Under construction")
+	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
+
+	if not DiscordUser.found:
+		return await apiMissingAuthorisation(cls, WebRequest)
+
+	user:dict = dict(
+		username=DiscordUser.username,
+		verified=DiscordUser.verified,
+		locale=DiscordUser.locale,
+		premium_type=DiscordUser.premium_type,
+		user_id=DiscordUser.user_id,
+		flags=DiscordUser.flags,
+		avatar=DiscordUser.avatar,
+		discriminator=DiscordUser.discriminator,
+		email=DiscordUser.email
+	)
+
+	return cls.response(
+		text=json.dumps( dict(user=user,status=200) ),
+		content_type="application/json",
+		status=200
+	)
 
 async def apiAccountGetTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

@@ -41,12 +41,14 @@ async def apiAccountDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
+	elif method == "get":
+		return await apiAccountGetDiscord(cls, WebRequest)
+
 	elif method == "login":
 		return await apiAccountLoginDiscord(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
-	return await apiAccountGetDiscord(cls, WebRequest)
 	return await apiAccountLoginDiscord(cls, WebRequest)
 	return await apiAccountLogoutDiscord(cls, WebRequest)
 

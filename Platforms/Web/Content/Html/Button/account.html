@@ -129,39 +129,21 @@
       <div loggedin="true" style="display:none;">
         <div class="modal-content">
           <div class="modal-header text-center">
-            <h4 class="modal-title">Phaaze account</h4>
+            <h4 class="modal-title">Discord account</h4>
             <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
           </div>
 
           <div class="modal-body text-black">
-            <h3>General</h3>
+            <h3>Currently logged in as:</h3>
             <div class="md-form">
               <i class="fas fa-user-circle prefix grey-text"></i>
-              <input type="text" id="current_phaaze_username" class="form-control" placeholder="Your username" name="phaaze_username">
+              <input type="text" id="current_discord_username" class="form-control" readonly>
             </div>
-            <div class="md-form">
-              <i class="far fa-envelope prefix grey-text"></i>
-              <input type="email" id="current_phaaze_email" class="form-control" placeholder="Your e-mail" name="phaaze_email">
+            <div class="center-item-col forced">
+              <img src="" alt="discord_avatar" id="current_discord_avatar">
             </div>
-            <div class="md-form">
-              <i class="fas fa-lock prefix grey-text" title="needed for changes">*</i>
-              <input type="password" id="current_phaaze_password" class="form-control" placeholder="Your current password" name="phaaze_password">
-            </div>
-            <button type="button" class="btn btn-block orange" onclick="$(this).hide();$('#new_password_fields').show()">Set new password</button>
-            <div id="new_password_fields" style="display: none;">
-              <div class="md-form">
-                <i class="fas fa-key prefix grey-text"></i>
-                <input type="password" id="new_phaaze_password" class="form-control" placeholder="New password" name="phaaze_newpassword">
-              </div>
-              <div class="md-form">
-                <i class="fas fa-key prefix grey-text"></i>
-                <input type="password" id="new_phaaze_password2" class="form-control" placeholder="Retype password" name="phaaze_newpassword2">
-              </div>
-            </div>
-            <hr>
-            <h3>Roles</h3>
-            <div id="user_roles"></div>
           </div>
+
 
           <div class="modal-footer center-item-col">
             <div>
@@ -178,7 +160,7 @@
             <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
           </div>
 
-          <div class="modal-body center-item-col">
+          <div class="modal-body center-item-col forced">
             <h5>Head over to Discord and log in</h5>
             <a class="color-discord inner-part white-text col text-center" href="|<!--#(login_link)#-->|" style="font-size: 75px;">
               <span><i class="fab fa-discord"></i>Discord</span>
