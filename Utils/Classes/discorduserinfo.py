@@ -24,6 +24,20 @@ class DiscordUserInfo(object):
 
 		self.__session:str = ""
 
+		self.access_token:str = None
+		self.refresh_token:str = None
+		self.scope:str = None
+
+		self.username:str = None
+		self.verified:str = None
+		self.locale:str = None
+		self.premium_type:str = None
+		self.user_id:str = None
+		self.flags:str = None
+		self.avatar:str = None
+		self.discriminator:str = None
+		self.email:str = None
+
 		self.found:bool = False
 		self.tryed:bool = False
 
@@ -86,6 +100,10 @@ class DiscordUserInfo(object):
 	# finish
 	async def finishUser(self, data:dict) -> None:
 		self.found = True
+
+		self.access_token:str = data.get("access_token", Undefined())
+		self.refresh_token:str = data.get("refresh_token", Undefined())
+		self.scope:str = data.get("scope", Undefined())
 
 		user:dict = data.get("user_info", dict())
 
