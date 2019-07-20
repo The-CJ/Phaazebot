@@ -97,7 +97,9 @@ var SessionManager = new (class {
     $.post("/api/account/"+field+"/logout")
     .done(function (data) {
       Display.showMessage({'content': 'You successfull logged out from '+field ,'color':Display.color_success});
-      CookieManager.remove(field+"_session");
+      if (field == "phaaze") { CookieManager.remove("phaaze_session"); }
+      if (field == "discord") { CookieManager.remove("phaaze_discord_session"); }
+      if (field == "twitch") { CookieManager.remove("phaaze_twitch_session"); }
       $('#login_form').modal('hide');
     })
     .fail(function (data) {

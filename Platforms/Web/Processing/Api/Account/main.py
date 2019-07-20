@@ -47,10 +47,11 @@ async def apiAccountDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 	elif method == "login":
 		return await apiAccountLoginDiscord(cls, WebRequest)
 
+	elif method == "logout":
+		return await apiAccountLogoutDiscord(cls, WebRequest)
+
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
-	return await apiAccountLoginDiscord(cls, WebRequest)
-	return await apiAccountLogoutDiscord(cls, WebRequest)
 
 async def apiAccountTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
