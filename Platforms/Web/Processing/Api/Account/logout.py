@@ -39,6 +39,14 @@ async def apiAccountLogoutDiscord(cls:"WebIndex", WebRequest:Request) -> Respons
 	if not DiscordUser.found:
 		return await userNotFound(cls, WebRequest)
 
+	a:str = f"str(data['access_token']) == str({ json.dumps(DiscordUser.access_token) })"
+	b:str = f"str(data['user_info'].get('id', '')) == str({ json.dumps(DiscordUser.user_id) })"
+
+	cls.Web.BASE.PhaazeDB.delete(
+		of = "session/discord",
+		where = f"{a} or {b}"
+	)
+
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Discord Logout - User: {DiscordUser.username}", require="api:logout")
 	return cls.response(
 		text=json.dumps( dict(status=200) ),
