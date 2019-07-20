@@ -33,7 +33,7 @@ async def getDiscordUser(cls:"Phaazebot", access_token:str) -> dict:
 
 	return res.json()
 
-async def getDiscordUserServers(cls:"Phaazebot", access_token:str) -> dict:
+async def getDiscordUserServers(cls:"Phaazebot", access_token:str) -> list:
 
 	headers:dict = {"Authorization": f"Bearer {access_token}"}
 

@@ -3,8 +3,8 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 import json
+import discord
 from aiohttp.web import Response, Request
-# from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Discord.api import getDiscordUserServers
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from ..errors import apiMissingAuthorisation
@@ -21,7 +21,12 @@ async def apiDiscordServers(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	servers:dict = await getDiscordUserServers(cls.Web.BASE, DiscordUser.access_token)
 
-	print(servers)
+	for server in servers:
+		Perm:discord.Permissions = discord.Permissions(permissions=server.get("permissions", 0))
+		if Perm.administrator or Perm.manage_guild:
+			server["manage"] = True
+		else:
+			server["manage"] = False
 
 	return cls.response(
 		body=json.dumps(dict(result=servers, status=200)),
