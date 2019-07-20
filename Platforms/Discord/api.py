@@ -32,3 +32,11 @@ async def getDiscordUser(cls:"Phaazebot", access_token:str) -> dict:
 	res:requests.Response = requests.get(ROOT_URL+"users/@me", headers=headers)
 
 	return res.json()
+
+async def getDiscordUserServers(cls:"Phaazebot", access_token:str) -> dict:
+
+	headers:dict = {"Authorization": f"Bearer {access_token}"}
+
+	res:requests.Response = requests.get(ROOT_URL+"users/@me/guilds", headers=headers)
+
+	return res.json()
