@@ -9,9 +9,9 @@ from Platforms.Discord.api import getDiscordUserServers
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from ..errors import apiMissingAuthorisation
 
-async def apiDiscordServers(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordGuilds(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/servers
+		Default url: /api/discord/guilds
 	"""
 
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
@@ -19,17 +19,17 @@ async def apiDiscordServers(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 
-	servers:dict = await getDiscordUserServers(cls.Web.BASE, DiscordUser.access_token)
+	guilds:dict = await getDiscordUserServers(cls.Web.BASE, DiscordUser.access_token)
 
-	for server in servers:
-		Perm:discord.Permissions = discord.Permissions(permissions=server.get("permissions", 0))
+	for guild in guilds:
+		Perm:discord.Permissions = discord.Permissions(permissions=guild.get("permissions", 0))
 		if Perm.administrator or Perm.manage_guild:
-			server["manage"] = True
+			guild["manage"] = True
 		else:
-			server["manage"] = False
+			guild["manage"] = False
 
 	return cls.response(
-		body=json.dumps(dict(result=servers, status=200)),
+		body=json.dumps(dict(result=guilds, status=200)),
 		status=200,
 		content_type='application/json'
 	)
