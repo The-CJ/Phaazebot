@@ -10,6 +10,8 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Discord.api import translateDiscordToken, getDiscordUser
 from Utils.stringutils import randomString
 
+SESSION_EXPIRE:int = 60*60*24*7 # 1 week
+
 async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/phaaze/login
@@ -25,11 +27,10 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await userNotFound(cls, WebRequest)
 
 	session_key:str = randomString(size=32)
-	Expire:datetime.datetime = datetime.datetime.now() + datetime.timedelta(days=30)
 
 	cls.Web.BASE.PhaazeDB.insert(
 		into = "session/phaaze",
-		content = dict(session=session_key, user_id=UserInfo.user_id, expire=str(Expire) )
+		content = dict(session=session_key, user_id=UserInfo.user_id, created_at=str(datetime.datetime.now()) )
 	)
 	cls.Web.BASE.PhaazeDB.update(
 		of = "user",
@@ -38,7 +39,7 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 	cls.Web.BASE.Logger.debug(f"(API) New Login - Session: {session_key} User: {str(UserInfo.username)}", require="api:login")
 	return cls.response(
-		text=json.dumps( dict(phaaze_session=session_key, status=200, expire=str(Expire)) ),
+		text=json.dumps( dict(phaaze_session=session_key, status=200, expires_in=str(SESSION_EXPIRE)) ),
 		content_type="application/json",
 		status=200
 	)
@@ -107,7 +108,7 @@ async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dic
 		return cls.response(
 			status=302,
 			headers = {
-				"Set-Cookie": f"phaaze_discord_session={session_key}; Path=/; Max-Age=604800;",
+				"Set-Cookie": f"phaaze_discord_session={session_key}; Path=/; Max-Age={SESSION_EXPIRE};",
 				"Location": "/discord"
 			}
 		)
