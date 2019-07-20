@@ -1,15 +1,23 @@
 Please ignore this file to, it a reminder for me what endpoints there are.
 
-/api
-/api/admin
+/api/account/phaaze/create
+
+/api/account/phaaze/edit
+
+/api/account/phaaze/get
+/api/account/discord/get
+/api/account/twitch/get
+
+/api/account/phaaze/login
+/api/account/discord/login
+/api/account/twitch/login
+
+/api/account/phaaze/logout
+/api/account/discord/logout
+/api/account/twitch/logout
+
 /api/admin/status
 /api/admin/module
 /api/admin/evaluate
-/api/account
-/api/account/login
-/api/account/logout
-/api/account/edit
-/api/account/create
-/api/account/get
 
 #
