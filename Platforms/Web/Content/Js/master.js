@@ -149,7 +149,7 @@ var CookieManager = new (class {
     }
   }
   remove(name) {
-    document.cookie = name+"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/"
+    document.cookie = name+"=; Max-Age=-1; Path=/"
   }
 })()
 
