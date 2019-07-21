@@ -20,4 +20,6 @@ Please ignore this file to, it a reminder for me what endpoints there are.
 /api/admin/module
 /api/admin/evaluate
 
+/api/discord/guilds
+
 #

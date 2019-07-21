@@ -8,10 +8,10 @@
     <h1>Select a server</h1>
 
     <h2>Server you can manage</h2>
-    <div id="manageble_servers" class="row text-center server-list"></div>
+    <div id="manageble_servers" class="row text-center guild-list"></div>
 
     <h2>Server you can view</h2>
-    <div id="viewable_servers" class="row text-center server-list"></div>
+    <div id="viewable_servers" class="row text-center guild-list"></div>
 
   </div>
 
@@ -19,13 +19,11 @@
 
 <div hidden phantom>
 
-  <div class="col server">
-    <div class="">
-      <a href="/discord/dashboard/{server_id}">
-        <img height="128" width="128" alt="server_avatar">
-        <span class="name">{server_name}</span>
-      </a>
-    </div>
+  <div class="col guild">
+    <a href="/discord/dashboard/{server_id}" class="center-item-col forced">
+      <img height="128" width="128" alt="server_avatar">
+      <span class="name">{server_name}</span>
+    </a>
   </div>
 
 </div>
