@@ -58,16 +58,21 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", server_id:str) -> Dis
 		raise RuntimeError("Creating new DB entry failed")
 
 
-async def getDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str, trigger:str=None, prevent_new:bool=False) -> list:
+async def getDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str, trigger:str=None, command_id:str or int=None, prevent_new:bool=False) -> list:
 	"""
-		Get custom commands from a discord server, if trigger = None, get all
+		Get custom commands from a discord server, if trigger = None, get all.
 		else only get one associated with trigger.
+		If command_id != None: only get one command associated with id
 		Returns a list of DiscordCommand()
 	"""
 
 	of:str = f"discord/commands/commands_{server_id}"
 
-	if trigger:
+	if command_id:
+		where:str = f"str(data['id']) == str({json.dumps(command_id)})"
+		limit:int = 1
+
+	elif trigger:
 		where:str = f"str(data['trigger']) == str({json.dumps(trigger)})"
 		limit:int = 1
 
