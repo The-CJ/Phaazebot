@@ -22,7 +22,7 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id if guild_id.isdigit() else 0))
 
 	if not Guild:
-		return await discordInvite(cls, WebRequest, msg="Phaaze is not on this Server", guild_id=guild_id)
+		return await discordInvite(cls, WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
 
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found: return await cls.discordLogin(WebRequest)

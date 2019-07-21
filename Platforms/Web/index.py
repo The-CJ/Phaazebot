@@ -89,6 +89,7 @@ class WebIndex(object):
 	def addWebDiscordRoutes(self) -> None:
 		self.Web.router.add_route('GET', '/discord', self.discordMain)
 		self.Web.router.add_route('GET', '/discord/login', self.discordLogin)
+		self.Web.router.add_route('GET', '/discord/invite', self.discordInvite)
 		self.Web.router.add_route('GET', '/discord/dashboard/{guild_id:\d+}', self.discordDashboard)
 
 	# api
@@ -134,6 +135,7 @@ class WebIndex(object):
 	from .Processing.Discord.discordmain import discordMain
 	from .Processing.Discord.discordlogin import discordLogin
 	from .Processing.Discord.discorddashboard import discordDashboard
+	from .Processing.Discord.discordinvite import discordInvite
 
 	# web contents
 	from .Processing.webcontent import serveCss, serveJs, serveImg, serveFavicon
