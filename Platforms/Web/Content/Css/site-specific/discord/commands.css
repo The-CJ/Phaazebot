@@ -2,7 +2,16 @@ main h1 {
   margin: 1em 0;
 }
 
+.command > *, .header > * {
+  margin: 2px;
+}
+
 .header .trigger { background: #293788; }
 .header .content { background: #364287; }
 .header .require { background: #293788; }
 .header .uses { background: #364287; }
+
+.command .trigger { background: #295888; }
+.command .content { background: #365b87; }
+.command .require { background: #295888; }
+.command .uses { background: #365b87; }

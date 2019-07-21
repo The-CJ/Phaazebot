@@ -26,7 +26,8 @@ async def discordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	DiscordCommand:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/commands.html")
 	DiscordCommand.replace(
-		guild_name = html.escape(Guild.name)
+		guild_name = html.escape(Guild.name),
+		guild_id = str(Guild.id)
 	)
 
 	site:str = cls.HTMLRoot.replace(
