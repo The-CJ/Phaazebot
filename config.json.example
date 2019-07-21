@@ -60,8 +60,10 @@
   "trigger_discord":">",
   "trigger_osu":"!",
   "trigger_twitch":"!",
-  "default_twitch_currency":"gold",
-  "default_twitch_currency_multi":"gold",
+  "default_twitch_currency":"Twitch coin",
+  "default_twitch_currency_multi":"Twitch coins",
+  "default_discord_currency":"Discord coin",
+  "default_discord_currency_multi":"Discord coins",
 
   "image_path":"/"
 }
