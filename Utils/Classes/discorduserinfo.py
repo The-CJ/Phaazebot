@@ -3,6 +3,7 @@ if TYPE_CHECKING:
 	from main import Phaazebot
 
 import json
+import datetime
 from aiohttp.web import Request
 from Utils.Classes.undefined import Undefined
 
@@ -80,10 +81,11 @@ class DiscordUserInfo(object):
 		if self.__session: return await self.viaSession()
 
 	async def viaSession(self) -> None:
+		last_week:str = str( datetime.datetime.now() - datetime.timedelta(days=7) )
 		dbr:dict = dict(
 			of="session/discord",
 			store="session",
-			where=f'session["session"] == {json.dumps(self.__session)}',
+			where=f'session["session"] == {json.dumps(self.__session)} and session["created_at"] > {json.dumps(str(last_week))}',
 			limit=1,
 		)
 		return await self.dbRequest(dbr)
