@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 import discord
+import html
 from aiohttp.web import Response, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.discorduserinfo import DiscordUserInfo
@@ -29,7 +30,7 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	DiscordDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/dashboard.html")
 	DiscordDash.replace(
-		guild_name = Guild.name
+		guild_name = html.escape(Guild.name)
 	)
 
 	site:str = cls.HTMLRoot.replace(
