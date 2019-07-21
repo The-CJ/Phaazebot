@@ -3,8 +3,12 @@ main h1 {
 }
 
 .guild-list:empty::after {
-  content: "HERE";
-  background: red;
+  content: "Nothing here...";
+  background: rgba(0, 0, 0, 0.2);
+  width: 100%;
+  border: 5px solid rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  padding: 20px;
 }
 
 .guild-list .guild {
