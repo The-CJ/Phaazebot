@@ -31,8 +31,8 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		cmd:dict = dict(
 			trigger = command.trigger,
 			content = command.content if not command.hidden else None,
+			function = command.function if not command.hidden else None,
 			complex = command.complex,
-			function = command.function,
 			cost = command.required_currency,
 			uses = command.uses,
 			require = command.require,
