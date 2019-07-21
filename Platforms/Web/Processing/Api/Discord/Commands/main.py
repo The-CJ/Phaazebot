@@ -1,15 +1,20 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+	from Platforms.Discord.main_discord import PhaazebotDiscord
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Response, Request
 from .get import apiDiscordCommandsGet
-from Platforms.Web.Processing.Api.errors import apiMissingValidMethod
+from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/discord/commands
 	"""
+
+	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
+	if not PhaazeDiscord: return await apiNotAllowed(cls, WebRequest, msg="Discord module is not active")
+
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
