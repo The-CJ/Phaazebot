@@ -21,5 +21,7 @@ Please ignore this file to, it a reminder for me what endpoints there are.
 /api/admin/evaluate
 
 /api/discord/guilds
+/api/discord/commands
+/api/discord/commands/get
 
 #
