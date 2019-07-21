@@ -117,6 +117,7 @@ class WebIndex(object):
 
 	def addAPIDiscordRoutes(self) -> None:
 		self.Web.router.add_route('*', '/api/discord/guilds', self.apiDiscordGuilds)
+		self.Web.router.add_route('*', '/api/discord/commands{x:/?}{method:.*}', self.apiDiscordCommands)
 
 	# api
 	from .Processing.Api.Account.main import apiAccountPhaaze, apiAccountDiscord, apiAccountTwitch
@@ -125,6 +126,7 @@ class WebIndex(object):
 	from .Processing.Api.Admin.status import apiAdminStatus
 	from .Processing.Api.Admin.module import apiAdminModule
 	from .Processing.Api.Discord.servers import apiDiscordGuilds
+	from .Processing.Api.Discord.Commands.main import apiDiscordCommands
 
 	# web
 	from .Processing.mainsite import mainSite
