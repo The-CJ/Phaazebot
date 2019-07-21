@@ -12,6 +12,8 @@ class DiscordServerSettings(object):
 		self.ban_links_whitelist:list = infos.get("ban_links_whitelist", Undefined())
 		self.blacklist:list = infos.get("blacklist", Undefined())
 		self.blacklist_punishment:str = infos.get("blacklist_punishment", Undefined())
+		self.currency_name:str = infos.get("currency_name", Undefined())
+		self.currency_name_multi:str = infos.get("currency_name_multi", Undefined())
 		self.disable_chan_custom:list = infos.get("disable_chan_custom", Undefined())
 		self.disable_chan_level:list = infos.get("disable_chan_level", Undefined())
 		self.disable_chan_normal:list = infos.get("disable_chan_normal", Undefined())

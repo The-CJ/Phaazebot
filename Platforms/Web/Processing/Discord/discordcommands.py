@@ -7,7 +7,9 @@ import discord
 import html
 from aiohttp.web import Response, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Web.utils import getNavbar
+from Platforms.Discord.utils import getDiscordSeverSettings
 from .discordinvite import discordInvite
 from ..errors import notAllowed
 
@@ -24,10 +26,14 @@ async def discordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Guild:
 		return await discordInvite(cls, WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
 
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(cls.Web.BASE.Discord, guild_id, prevent_new=True)
+
 	DiscordCommand:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/commands.html")
 	DiscordCommand.replace(
 		guild_name = html.escape(Guild.name),
-		guild_id = str(Guild.id)
+		guild_id = str(Guild.id),
+		guild_currency = GuildSettings.currency_name,
+		guild_currency_multi = GuildSettings.currency_name_multi
 	)
 
 	site:str = cls.HTMLRoot.replace(
