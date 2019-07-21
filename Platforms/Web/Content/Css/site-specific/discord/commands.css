@@ -5,6 +5,12 @@ main h1 {
 .command > *, .header > * {
   margin: 2px;
 }
+.command {
+  cursor: pointer;
+}
+.command:hover {
+  background: rgba(0,0,0,0.2);
+}
 
 .header .trigger { background: #293788; }
 .header .content { background: #364287; }

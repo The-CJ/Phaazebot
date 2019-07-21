@@ -26,7 +26,6 @@ function loadCommands() {
       }
 
       $("#command_list").append(Template);
-
     }
 
   })
@@ -43,4 +42,23 @@ function translateRequire(level) {
   if (level == 2) { return "Moderators"; }
   if (level == 3) { return "Server Owner"; }
   if (level >= 4) { return "System"; }
+}
+
+function detailCommand(HTMLCommand) {
+
+  HTMLCommand = $(HTMLCommand);
+
+  var guild_id = $("#guild_id").val();
+  var command_id = HTMLCommand.attr("command-id");
+
+  $.get("/api/discord/commands/get", {guild_id: guild_id, command_id:command_id})
+  .done(function (data) {
+    console.log(data);
+    $("#command_detail").modal("show");
+  })
+  .fail(function (data) {
+    Display.showMessage({content: "Could not load command detail...", color:Display.color_critical});
+    console.log(data);
+  })
+
 }

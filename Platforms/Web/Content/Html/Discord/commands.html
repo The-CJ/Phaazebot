@@ -7,6 +7,8 @@
 
     <h1 id="guild_name">|<!--#(guild_name)#-->|</h1>
     <data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
+    <data value="|<!--#(guild_currency)#-->|" id="guild_currency"></data>
+    <data value="|<!--#(guild_currency_multi)#-->|" id="guild_currency_multi"></data>
 
     <h2>Commands: <span id="command_amount">0</span></h2>
 
@@ -30,7 +32,7 @@
 
 <div phantom hidden>
 
-  <div class="row command" command-id="0">
+  <div class="row command" command-id="0" onclick="detailCommand(this)">
     <div class="col-2 trigger">[N/A]</div>
     <div class="col content">[N/A]</div>
     <div class="col-2 require">[N/A]</div>
@@ -38,4 +40,23 @@
     <div class="col-1 uses">[N/A]</div>
   </div>
 
+</div>
+
+<div class="modal fade" id="command_detail">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Command details</h4>
+        <button type="button" class="close" onclick="$('#command_detail').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+      </div>
+
+      <div class="modal-footer"></div>
+
+    </div>
+  </div>
 </div>
