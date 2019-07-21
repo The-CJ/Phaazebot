@@ -20,6 +20,11 @@ function loadCommands() {
       Template.find(".uses").text(command.uses);
       Template.attr("command-id", command.id);
 
+      if (command.hidden) {
+        Template.find(".content").addClass("hidden");
+        Template.find(".content").attr("title", "Execute the command in the Discord server to see the result.");
+      }
+
       $("#command_list").append(Template);
 
     }

@@ -17,3 +17,8 @@ main h1 {
 .command .require { background: #295888; }
 .command .cost { background: #365b87; }
 .command .uses { background: #365b87; }
+
+.command .content.hidden:after {
+  content: "This command is hidden";
+  color: rgb(142, 142, 142);
+}
