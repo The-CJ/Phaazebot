@@ -1,0 +1,8 @@
+main h1 {
+  margin: 1em 0;
+}
+
+.header .trigger { background: #293788; }
+.header .content { background: #364287; }
+.header .require { background: #293788; }
+.header .uses { background: #364287; }

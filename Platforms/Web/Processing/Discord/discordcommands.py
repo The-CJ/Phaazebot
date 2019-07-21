@@ -7,14 +7,13 @@ import discord
 import html
 from aiohttp.web import Response, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
-from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.utils import getNavbar
 from .discordinvite import discordInvite
 from ..errors import notAllowed
 
-async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
+async def discordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /discord/dashboard/{guild_id:\d+}
+		Default url: /discord/commands/{guild_id:\d+}
 	"""
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	if not PhaazeDiscord: return await notAllowed(cls, WebRequest, msg="Discord module is not active")
@@ -25,20 +24,17 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Guild:
 		return await discordInvite(cls, WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
 
-	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found: return await cls.discordLogin(WebRequest)
-
-	DiscordDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/dashboard.html")
-	DiscordDash.replace(
+	DiscordCommand:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/commands.html")
+	DiscordCommand.replace(
 		guild_name = html.escape(Guild.name)
 	)
 
 	site:str = cls.HTMLRoot.replace(
 		replace_empty = True,
 
-		title = f"Phaaze | Discord - Dashboard: {Guild.name}",
+		title = f"Phaaze | Discord - Commands: {Guild.name}",
 		header = getNavbar(active="discord"),
-		main = DiscordDash
+		main = DiscordCommand
 	)
 
 	return cls.response(
