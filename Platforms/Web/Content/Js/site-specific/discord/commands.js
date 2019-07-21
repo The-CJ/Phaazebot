@@ -53,7 +53,15 @@ function detailCommand(HTMLCommand) {
 
   $.get("/api/discord/commands/get", {guild_id: guild_id, command_id:command_id})
   .done(function (data) {
-    console.log(data);
+    var command = data.result[0];
+    var currency = command.cost == 1 ? $("#guild_currency").val() : $("#guild_currency_multi").val();
+    console.log(command);
+    $("#command_detail [name=trigger]").text(command.trigger);
+    $("#command_detail [name=require]").text( translateRequire(command.require) );
+    $("#command_detail [name=uses]").text( command.uses + " times" );
+    $("#command_detail [name=cost]").text( command.cost + " " + currency );
+
+
     $("#command_detail").modal("show");
   })
   .fail(function (data) {
