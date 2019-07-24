@@ -1,10 +1,10 @@
 import asyncio
 import time
-import PhaazeDBC
 from Utils.Classes.storeclasses import ActiveStore, VarsStore, AccessStore, LimitStore, IsReadyStore, GlobalStorage
 from Utils.config import ConfigParser
 from Utils.logger import PhaazeLogger
 from Utils.threads import Mainframe
+from Utils.Classes.dbconn import DBConn
 
 # platforms
 from Platforms.Discord.main_discord import PhaazebotDiscord
@@ -57,11 +57,11 @@ class Phaazebot(object):
 		self.WorkerLoop:asyncio.AbstractEventLoop = None # Worker object is protected and only gives us the loop in inject
 
 		# connection to phaaze brain
-		self.PhaazeDB:PhaazeDBC.Connection = PhaazeDBC.Connection(
-			address=self.Access.PHAAZEDB_ADDRESS,
-			port=self.Access.PHAAZEDB_PORT,
-			token=self.Access.PHAAZEDB_TOKEN,
-			exception_on_error=True
+		self.PhaazeDB:DBConn = DBConn(
+			host = self.Access.PHAAZEDB_HOST,
+			user = self.Access.PHAAZEDB_USER,
+			passwd = self.Access.PHAAZEDB_PASSWORD,
+			database = self.Access.PHAAZEDB_DATABASE
 		)
 
 		# this runs everthing
