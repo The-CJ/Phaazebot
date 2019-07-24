@@ -21,7 +21,7 @@ class AccessStore(object):
 
 		self.MASHAPE_TOKEN:str = str(config.get('mashape_token', ''))
 
-		self.PHAAZEDB_ADDRESS:str = str(config.get('phaazedb_address', 'localhost'))
+		self.PHAAZEDB_HOST:str = str(config.get('phaazedb_host', 'localhost'))
 		self.PHAAZEDB_USER:str = str(config.get('phaazedb_user', 'phaaze'))
 		self.PHAAZEDB_PASSWORD:str = str(config.get('phaazedb_password', ''))
 		self.PHAAZEDB_DATABASE:str = str(config.get('phaazedb_database', 'phaaze'))

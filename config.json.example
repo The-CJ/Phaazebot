@@ -20,7 +20,7 @@
   "phaazedb_user":"secret!..?",
   "phaazedb_password":"secret!..?",
   "phaazedb_database":"phaaze",
-  "phaazedb_address":"localhost",
+  "phaazedb_host":"localhost",
 
   "twitter_token":"secret!..?",
   "twitter_token_key":"secret!..?",
