@@ -17,9 +17,10 @@
 
   "mashape_token":"secret!..?",
 
-  "phaazedb_token":"secret!..?",
-  "phaazedb_port": 1234,
-  "phaazedb_address":"http://127.0.0.1",
+  "phaazedb_user":"secret!..?",
+  "phaazedb_password":"secret!..?",
+  "phaazedb_database":"phaaze",
+  "phaazedb_address":"localhost",
 
   "twitter_token":"secret!..?",
   "twitter_token_key":"secret!..?",

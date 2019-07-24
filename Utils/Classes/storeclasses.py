@@ -21,9 +21,10 @@ class AccessStore(object):
 
 		self.MASHAPE_TOKEN:str = str(config.get('mashape_token', ''))
 
-		self.PHAAZEDB_ADDRESS:str = str(config.get('phaazedb_address', 'http://127.0.0.1'))
-		self.PHAAZEDB_TOKEN:str = str(config.get('phaazedb_token', ''))
-		self.PHAAZEDB_PORT:str = str(config.get('phaazedb_port', 3000))
+		self.PHAAZEDB_ADDRESS:str = str(config.get('phaazedb_address', 'localhost'))
+		self.PHAAZEDB_USER:str = str(config.get('phaazedb_user', 'phaaze'))
+		self.PHAAZEDB_PASSWORD:str = str(config.get('phaazedb_password', ''))
+		self.PHAAZEDB_DATABASE:str = str(config.get('phaazedb_database', 'phaaze'))
 
 		self.TWITTER_TOKEN:str = str(config.get('twitter_token',''))
 		self.TWITTER_TOKEN_KEY:str = str(config.get('twitter_token_key',''))
