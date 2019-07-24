@@ -37,8 +37,10 @@ class WebUserInfo(object):
 		self.username_changed:int = 0
 		self.password:str = None
 		self.email:str = None
-		self.verified:bool = False
-		self.last_login:str = None
+		self.verified:int = False
+		self.created_at:datetime.datetime = None
+		self.edited_at:datetime.datetime = None
+		self.last_login:datetime.datetime = None
 		self.user_id:int = None
 		self.roles:list = None
 		self.role_ids:list = None
@@ -165,18 +167,14 @@ class WebUserInfo(object):
 
 	async def viaLogin(self) -> None:
 		self.__password = password(self.__password)
-		dbr:dict = dict(
-			of="user",
-			store="user",
-			where=f"(user['username'] == {json.dumps(self.__username)} or user['email'] == {json.dumps(self.__username)}) and user['password'] == {json.dumps(self.__password)}",
-			join=dict(
-				of="role",
-				store="role",
-				where="role['id'] in user['role']",
-				fields=["name", "id"]
-			)
-		)
-		return await self.dbRequest(dbr)
+
+		dbr:str = """
+			SELECT user.*, GROUP_CONCAT(role.name) AS rolenames
+			FROM user JOIN role
+			WHERE user.username = %s AND user.password = %s AND JSON_CONTAINS(user.roles, role.id) GROUP BY user.id"""
+		val:tuple = (self.__username, self.__password)
+
+		return await self.dbRequest(dbr, val)
 
 	async def viaSession(self) -> None:
 		last_week:str = str( datetime.datetime.now() - datetime.timedelta(days=7) )
@@ -199,31 +197,28 @@ class WebUserInfo(object):
 		)
 		return await self.dbRequest(dbr, unpack_session = True)
 
-	async def dbRequest(self, db_req:dict, unpack_session:bool = False) -> None:
+	async def dbRequest(self, db_req:str, values:tuple = None) -> None:
 		self.tryed = True
-		res:dict = self.BASE.PhaazeDB.select(**db_req)
+		res:list = self.BASE.PhaazeDB.query(db_req, values)
 
-		if int(res.get("hits", 0)) != 1:
-			return
+		if not res: return
 
-		if unpack_session:
-			await self.finishUser(res["data"][0]["user"][0])
-		else:
-			await self.finishUser(res["data"][0])
+		await self.finishUser(res[0])
 
 	# finish
 	async def finishUser(self, data:dict) -> None:
 		self.found = True
 
+		self.user_id = data.get("id", Undefined())
 		self.username = data.get("username", Undefined())
 		self.username_changed = data.get("username_changed", Undefined())
 		self.password = data.get("password", Undefined())
 		self.email = data.get("email", Undefined())
 		self.verified = data.get("verified", Undefined())
+
+		self.created_at = data.get("created_at", Undefined())
+		self.edited_atd = data.get("edited_at", Undefined())
 		self.last_login = data.get("last_login", Undefined())
-		self.user_id = data.get("id", Undefined())
-		self.roles = []
-		self.role_ids = []
-		for role in data.get("role", []):
-			self.roles.append( role.get("name", None) )
-			self.role_ids.append( role.get("id", None) )
+
+		self.roles = ( data.get("rolenames", "") ).split(",")
+		self.role_ids = json.loads( data.get("roles", "[]") )
