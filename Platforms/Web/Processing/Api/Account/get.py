@@ -18,13 +18,13 @@ async def apiAccountGetPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingAuthorisation(cls, WebRequest)
 
 	user:dict = dict(
-		username=UserInfo.username,
-		email=UserInfo.email,
-		verified=UserInfo.verified,
-		roles=UserInfo.roles,
-		role_ids=UserInfo.role_ids,
-		user_id=UserInfo.user_id,
-		last_login=UserInfo.last_login
+		username=str( UserInfo.username ),
+		email=str( UserInfo.email ),
+		verified=bool( UserInfo.verified ),
+		roles=list( UserInfo.roles ),
+		role_ids=list( UserInfo.role_ids ),
+		user_id=int( UserInfo.user_id ),
+		last_login=str( UserInfo.last_login )
 	)
 
 	return cls.response(
