@@ -15,9 +15,11 @@ class DBConn(object):
 		"""
 			Querys a SQL command.
 
-			Each query is in thery a transaction,
+			Each query is in theory a transaction,
 			use self.getConnection()
 			to get a own connection object.
+
+			+ gets auto commited
 
 			Then use connection.cursor to make all requests,
 			if finished and everything worked without error,
@@ -45,7 +47,20 @@ class DBConn(object):
 
 		return res
 
-	def updateQuery(self, table:str=None, content:dict=None, where:str=None, where_values:tuple=None, limit:int=None) -> None:
+	def updateQuery(self, table:str=None, content:dict=None, where:str=None, where_values:tuple=None) -> None:
+		"""
+			dict bases, secured update query, all special chars will get replaced by byte safe sql counterpart
+			here a quick example:
+
+			table = "test"
+			content = {"A": "123", "B":"abc", "C":420}
+			where = "A != %s AND C = %s LIMIT 2"
+			where_values = ("12345", 419)
+
+			UPDATE `test` SET `A` = '123', `B` = 'abc', `C` = 420 WHERE A != '12345' AND C = 419 LIMIT 2;
+
+			+ gets auto commited
+		"""
 		if not table or not content or not where: raise AttributeError("'table', 'content' and 'where' must be given")
 
 		# prework
