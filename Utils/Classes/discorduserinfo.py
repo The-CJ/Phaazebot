@@ -3,7 +3,6 @@ if TYPE_CHECKING:
 	from main import Phaazebot
 
 import json
-import datetime
 from aiohttp.web import Request
 from Utils.Classes.undefined import Undefined
 
@@ -81,23 +80,21 @@ class DiscordUserInfo(object):
 		if self.__session: return await self.viaSession()
 
 	async def viaSession(self) -> None:
-		last_week:str = str( datetime.datetime.now() - datetime.timedelta(days=7) )
-		dbr:dict = dict(
-			of="session/discord",
-			store="session",
-			where=f'session["session"] == {json.dumps(self.__session)} and session["created_at"] > {json.dumps(str(last_week))}',
-			limit=1,
-		)
-		return await self.dbRequest(dbr)
+		dbr:str = """
+			SELECT * FROM session_discord
+			WHERE session_discord.created_at > (NOW() - INTERVAL 7 DAY)
+				AND session_discord.session = %s"""
 
-	async def dbRequest(self, db_req:dict) -> None:
+		val:tuple = (self.__session,)
+		return await self.dbRequest(dbr, val)
+
+	async def dbRequest(self, db_req:str, values:tuple = None) -> None:
 		self.tryed = True
-		res:dict = self.BASE.PhaazeDB.select(**db_req)
+		res:list = self.BASE.PhaazeDB.query(db_req, values=values)
 
-		if int(res.get("hits", 0)) != 1:
-			return
+		if not res: return
 
-		await self.finishUser(res["data"][0])
+		await self.finishUser(res[0])
 
 	# finish
 	async def finishUser(self, data:dict) -> None:
@@ -107,7 +104,7 @@ class DiscordUserInfo(object):
 		self.refresh_token:str = data.get("refresh_token", Undefined())
 		self.scope:str = data.get("scope", Undefined())
 
-		user:dict = data.get("user_info", dict())
+		user:dict = json.loads(data.get("user_info", "{}"))
 
 		self.username:str = user.get("username", Undefined())
 		self.verified:str = user.get("verified", Undefined())
