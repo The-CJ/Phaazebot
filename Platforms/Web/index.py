@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 import json
 import traceback
+from Utils.cli import CliArgs
 from aiohttp.web import Response, middleware, HTTPException, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
 from .Processing.Api.errors import apiNotAllowed
@@ -43,9 +44,10 @@ class WebIndex(object):
 		except Exception as e:
 			tb:str = traceback.format_exc()
 			self.Web.BASE.Logger.error(f"(Web) Error in request: {str(e)}\n{tb}")
+			error:str = str(e) if CliArgs.get("debug") == "all" else "Unknown error"
 			return self.response(
 				status=500,
-				body=json.dumps( dict(msg=str(e), status=500) ),
+				body=json.dumps( dict(msg=error, status=500) ),
 				content_type='application/json'
 			)
 
