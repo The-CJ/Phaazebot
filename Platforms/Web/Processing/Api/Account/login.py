@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
-import datetime
 import json
+import traceback
 from ..errors import apiNotAllowed, userNotFound, missingData
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
@@ -82,30 +82,18 @@ async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dic
 	access_token:str = data.get('access_token', None)
 	refresh_token:str = data.get('refresh_token', None)
 	scope:str = data.get('scope', None)
-	created_at:str = str(datetime.datetime.now())
 	user_info:dict = await getDiscordUser(cls.Web.BASE, access_token)
 
 	token_type:str = data.get('token_type', None)
 
-	save:dict = dict(
-		session = session_key,
-		access_token = access_token,
-		refresh_token = refresh_token,
-		scope = scope,
-		created_at = created_at,
-		user_info = user_info
-	)
-
-	# only save if it's different, which it shouldn't
-	if token_type != "Bearer": save["token_type"] = token_type
-
-	res:dict = cls.Web.BASE.PhaazeDB.insert(
-		into = "session/discord",
-		content = save
-	)
-
-	cls.Web.BASE.Logger.debug(f"(API) New Discord Login - Session: {session_key} User: {str(user_info.get('username','[N/A]'))}", require="api:login")
-	if res.get("status", False) == "inserted":
+	try:
+		cls.Web.BASE.PhaazeDB.query("""
+			INSERT INTO session_discord
+			(session, access_token, refresh_token, scope, token_type, user_info)
+			VALUES (%s, %s, %s, %s, %s, %s)""",
+			(session_key, access_token, refresh_token, scope, token_type, json.dumps(user_info))
+		)
+		cls.Web.BASE.Logger.debug(f"(API) New Discord Login - Session: {session_key} User: {str(user_info.get('username','[N/A]'))}", require="api:login")
 		return cls.response(
 			status=302,
 			headers = {
@@ -113,11 +101,10 @@ async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dic
 				"Location": "/discord"
 			}
 		)
-
-	else:
+	except Exception as e:
+		tb:str = traceback.format_exc()
+		cls.Web.BASE.Logger.error(f"(API) Database error: {str(e)}\n{tb}")
 		return cls.response(
 			status=302,
-			headers = {
-				"Location": "/discord/login?error=database"
-			}
+			headers = {"Location": "/discord/login?error=database"}
 		)
