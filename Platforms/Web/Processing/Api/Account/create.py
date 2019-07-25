@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import json
 import re
 import datetime
+import traceback
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
@@ -59,7 +60,7 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 			status=400
 		)
 
-	check:list = await searchUser(cls, f"user['username'].lower() == {json.dumps(username)}.lower() or user['email'].lower() == {json.dumps(email)}.lower()")
+	check:list = await searchUser(cls, "user.username LIKE %s OR user.email LIKE %s", (username, email))
 	if check:
 		cls.Web.BASE.Logger.debug(f"(API) Account create failed, account already taken: {str(username)} - {str(email)}", require="api:create")
 		return cls.response(
@@ -69,22 +70,28 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 		)
 
 	# everything ok -> create
+	try:
+		cls.Web.BASE.PhaazeDB.query("""
+			INSERT INTO user
+			(username, password, email)
+			VALUES (%s, %s, %s)""", (username, password_function(password), email)
+		)
 
-	new_user:dict = dict(
-		username= username,
-		password = password_function(password),
-		created_at = str(datetime.datetime.now()),
-		email = email,
-	)
+		res:list = cls.Web.BASE.PhaazeDB.query("""SELECT id FROM user WHERE username LIKE %s""", (username,))
+		if not res: raise
 
-	#TODO: need to send email verification
-
-	success_resp:dict = cls.Web.BASE.PhaazeDB.insert(into="user", content=new_user)
-	user_id:str = str(success_resp.get('data', {}).get('id', '[N/A]'))
-
-	cls.Web.BASE.Logger.debug(f"(API) Account created: ID: {user_id} - {str(new_user)}", require="api:create")
-	return cls.response(
-		body=json.dumps( dict(status=200, message="successfull created user", id=user_id, username=username) ),
-		content_type="application/json",
-		status=200
-	)
+		user_id:str = res[0]["id"]
+		cls.Web.BASE.Logger.debug(f"(API) Account created: ID: {user_id}", require="api:create")
+		return cls.response(
+			body=json.dumps( dict(status=200, message="successfull created user", id=user_id, username=username) ),
+			content_type="application/json",
+			status=200
+		)
+	except Exception as e:
+		tb:str = traceback.format_exc()
+		cls.Web.BASE.Logger.error(f"(API) Database error: {str(e)}\n{tb}")
+		return cls.response(
+			body=json.dumps( dict(status=400, msg="create user failed") ),
+			content_type="application/json",
+			status=400
+		)

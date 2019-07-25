@@ -170,22 +170,25 @@ class WebUserInfo(object):
 
 		dbr:str = """
 			SELECT user.*, GROUP_CONCAT(role.name)
-			FROM user JOIN role
-			WHERE user.username = %s AND user.password = %s
-				AND JSON_CONTAINS(user.roles, role.id)
+			FROM user
+			LEFT JOIN role
+				ON JSON_CONTAINS(user.roles, role.id)
+			WHERE (user.username = %s AND user.password = %s)
+				OR user.email LIKE %s
 			GROUP BY user.id"""
-		val:tuple = (self.__username, self.__password)
+		val:tuple = (self.__username, self.__password, self.__username)
 
 		return await self.dbRequest(dbr, val)
 
 	async def viaSession(self) -> None:
 		dbr:str = """
 			SELECT user.*, GROUP_CONCAT(role.name) AS rolenames
-			FROM session_phaaze JOIN user JOIN role
+			FROM session_phaaze, user
+			LEFT JOIN role
+				ON JSON_CONTAINS(user.roles, role.id)
 			WHERE session_phaaze.created_at > (NOW() - INTERVAL 7 DAY)
 				AND session_phaaze.session = %s
 				AND session_phaaze.user_id = user.id
-				AND JSON_CONTAINS(user.roles, role.id)
 			GROUP BY user.id"""
 		val:tuple = (self.__session, )
 
@@ -214,5 +217,8 @@ class WebUserInfo(object):
 		self.edited_atd = data.get("edited_at", Undefined())
 		self.last_login = data.get("last_login", Undefined())
 
-		self.roles = ( data.get("rolenames", "") ).split(",")
 		self.role_ids = json.loads( data.get("roles", "[]") )
+
+		r:str or None = data.get("rolenames", "")
+		if r: self.roles = r.split(",")
+		else: self.roles = list()
