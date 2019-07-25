@@ -43,15 +43,15 @@ async def apiAccountGetDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingAuthorisation(cls, WebRequest)
 
 	user:dict = dict(
-		username=DiscordUser.username,
-		verified=DiscordUser.verified,
-		locale=DiscordUser.locale,
-		premium_type=DiscordUser.premium_type,
-		user_id=DiscordUser.user_id,
-		flags=DiscordUser.flags,
-		avatar=DiscordUser.avatar,
-		discriminator=DiscordUser.discriminator,
-		email=DiscordUser.email
+		username=str( DiscordUser.username ),
+		verified=bool( DiscordUser.verified ),
+		locale=str( DiscordUser.locale ),
+		premium_type=str( DiscordUser.premium_type ),
+		user_id=str( DiscordUser.user_id ),
+		flags=str( DiscordUser.flags ),
+		avatar=str( DiscordUser.avatar ),
+		discriminator=str( DiscordUser.discriminator ),
+		email=str( DiscordUser.email )
 	)
 
 	return cls.response(
