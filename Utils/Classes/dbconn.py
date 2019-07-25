@@ -23,18 +23,53 @@ class DBConn(object):
 			if finished and everything worked without error,
 			use connection.commit() to actully save all changes
 		"""
+		# setup
 		DBConn:MySQLConnection = self.getConnection()
-
 		Cursor:MySQLCursorDict = DBConn.cursor(dictionary=True)
+
+		# enable full char support, because i want to
+		Cursor.execute('SET NAMES utf8mb4')
+		Cursor.execute("SET CHARACTER SET utf8mb4")
+		Cursor.execute("SET character_set_connection=utf8mb4")
+
+		# do stuff
 		Cursor.execute(sql, values)
 
+		# read result
 		if Cursor._have_unread_result(): res:list = Cursor.fetchall()
 		else: res:list = []
 
+		# commit and close
 		DBConn.commit()
 		DBConn.close()
 
 		return res
+
+	def updateQuery(self, table:str=None, content:dict=None, where:str=None, where_values:tuple=None, limit:int=None) -> None:
+		if not table or not content or not where: raise AttributeError("'table', 'content' and 'where' must be given")
+
+		# prework
+		setter:str = ", ".join([ f"`{key}` = %s" for key in content ])
+		statement:str = f"""UPDATE `{table}` SET {setter} WHERE {where}"""
+		values:tuple = tuple([content[key] for key in content]) + where_values
+
+		# setup
+		DBConn:MySQLConnection = self.getConnection()
+		Cursor:MySQLCursorDict = DBConn.cursor(dictionary=True)
+
+		# enable full char support, because i want to
+		Cursor.execute('SET NAMES utf8mb4')
+		Cursor.execute("SET CHARACTER SET utf8mb4")
+		Cursor.execute("SET character_set_connection=utf8mb4")
+
+		# do stuff
+		Cursor.execute(statement, values)
+
+		# commit and close
+		DBConn.commit()
+		DBConn.close()
+
+		return
 
 	def getConnection(self) -> MySQLConnection:
 		"""
@@ -48,5 +83,5 @@ class DBConn(object):
 			host = self.host,
 			user = self.user,
 			passwd = self.passwd,
-			database = self.database
+			database = self.database,
 		)
