@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 import json
 import re
+import traceback
 import datetime
 from ..errors import apiMissingAuthorisation
 from aiohttp.web import Response, Request
@@ -34,12 +35,12 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 			content_type="application/json"
 		)
 
-	changed_email = False # if yes, reset valiated and send mail
+	changed_email:bool = False # if yes, reset valiated and send mail
 
-	new_username = Data.get("phaaze_username")
-	new_email = Data.get("phaaze_email")
-	new_password = Data.get("phaaze_newpassword")
-	new_password2 = Data.get("phaaze_newpassword2")
+	new_username:str = Data.get("phaaze_username")
+	new_email:str = Data.get("phaaze_email")
+	new_password:str = Data.get("phaaze_newpassword")
+	new_password2:str = Data.get("phaaze_newpassword2")
 
 	update:dict = dict()
 
@@ -66,7 +67,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	if new_username:
 		# want a new username
 		if new_username.lower() != UserInfo.username.lower():
-			is_occupied:list = await searchUser(cls, f"user['username'].lower() == {json.dumps(new_username)}.lower()")
+			is_occupied:list = await searchUser(cls, "user.username LIKE %s", (new_username,))
 			if is_occupied:
 				# already taken
 				return cls.response(
@@ -80,7 +81,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 				update["username_changed"] = UserInfo.username_changed + 1
 				update["username"] = new_username
 
-		# else, it's a diffrent captation
+		# else, it's a diffrent captation or so
 		elif new_username != UserInfo.username:
 			update["username"] = new_username
 
@@ -92,7 +93,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 				content_type="application/json",
 				status=400
 			)
-		is_occupied:list = await searchUser(cls, f"user['username'].lower() == {json.dumps(new_username)}.lower()")
+		is_occupied:list = await searchUser(cls, "user.email LIKE %s", (new_email,))
 		if is_occupied:
 			# already taken
 			return cls.response(
@@ -114,24 +115,27 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# verification mail
 	if changed_email:
-		cls.Web.BASE.Logger.debug(f"(API) New Email, send new verification mail", require="api:account")
+		cls.Web.BASE.Logger.debug(f"(API) New Email, send new verification mail: {new_email}", require="api:account")
 		# TODO: SEND MAIL
 
-	update["changed_at"] =  str(datetime.datetime.now())
-	res:dict = cls.Web.BASE.PhaazeDB.update(
-		of="user",
-		where=f"int(data['id']) == int({UserInfo.user_id})",
-		content=update
-	)
-	if res.get("hits", 0):
-		cls.Web.BASE.Logger.debug(f"(API) Account edit ({UserInfo.user_id}) : {str(update)} ", require="api:account")
+	update["edited_at"] =  str(datetime.datetime.now())
+
+	try:
+		cls.Web.BASE.PhaazeDB.updateQuery(
+			table = "user",
+			content = update,
+			where = "user.id = %s", where_values = (UserInfo.user_id,)
+		)
+		cls.Web.BASE.Logger.debug(f"(API) Account edit ({UserInfo.user_id}) : {str(update)}", require="api:account")
 		return cls.response(
 			status=200,
 			text=json.dumps( dict(error="successfull_edited", msg="Your account has been successfull edited", status=200) ),
 			content_type="application/json"
 		)
-	else:
-		cls.Web.BASE.Logger.debug(f"(API) Account edit ({UserInfo.user_id}) : {str(update)} ", require="api:account")
+
+	except Exception as e:
+		tb:str = traceback.format_exc()
+		cls.Web.BASE.Logger.error(f"(API) Account edit failed ({UserInfo.user_id}) - {str(e)}\n{tb}")
 		return cls.response(
 			status=500,
 			text=json.dumps( dict(error="edit_failed", msg="Editing you account failed", status=500) ),
