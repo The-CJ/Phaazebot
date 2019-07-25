@@ -50,26 +50,16 @@ async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -
 
 	return WebRequest.DiscordUser
 
-async def searchUser(cls:"WebIndex", where:str) -> list:
+async def searchUser(cls:"WebIndex", where:str, values:tuple = None) -> list:
 	"""
-		Search user via custom 'where' statement (store is 'user')
-		All results get packed into a WebUserInfo object
+		Search user via custom 'where' statement
 	"""
-	search:dict = dict(
-		of="user",
-		store="user",
-		where=where,
-		join=dict(
-			of="role",
-			store="role",
-			where="role['id'] in user['role']",
-			fields=["name", "id"]
-		)
-	)
-	res:dict = cls.Web.BASE.PhaazeDB.select(**search)
+	statement:str = f"SELECT * FROM user WHERE {where}"
+
+	res:list = cls.Web.BASE.PhaazeDB.query(statement, values)
 
 	return_list:list = []
-	for user in res.get("data", []):
+	for user in res:
 		WebUser:WebUserInfo = WebUserInfo(cls.Web.BASE, None)
 		await WebUser.finishUser(user)
 		return_list.append(WebUser)
