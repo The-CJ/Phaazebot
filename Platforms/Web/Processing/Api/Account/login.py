@@ -28,15 +28,16 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	session_key:str = randomString(size=32)
 
-	cls.Web.BASE.PhaazeDB.insert(
-		into = "session/phaaze",
-		content = dict(session=session_key, user_id=UserInfo.user_id, created_at=str(datetime.datetime.now()) )
-	)
-	cls.Web.BASE.PhaazeDB.update(
-		of = "user",
-		where = f"int(data['id']) == int({UserInfo.user_id})",
-		content = dict(last_login=str(datetime.datetime.now()))
-	)
+	cls.Web.BASE.PhaazeDB.query("""
+		INSERT INTO session_phaaze
+		(session, user_id)
+		VALUES (%s, %s)""", (session_key, UserInfo.user_id))
+
+	cls.Web.BASE.PhaazeDB.query("""
+		UPDATE user
+		SET last_login = NOW()
+		WHERE user.id = %s""", (UserInfo.user_id,))
+
 	cls.Web.BASE.Logger.debug(f"(API) New Login - Session: {session_key} User: {str(UserInfo.username)}", require="api:login")
 	return cls.response(
 		text=json.dumps( dict(phaaze_session=session_key, status=200, expires_in=str(SESSION_EXPIRE)) ),
