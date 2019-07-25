@@ -169,37 +169,31 @@ class WebUserInfo(object):
 		self.__password = password(self.__password)
 
 		dbr:str = """
-			SELECT user.*, GROUP_CONCAT(role.name) AS rolenames
+			SELECT user.*, GROUP_CONCAT(role.name)
 			FROM user JOIN role
-			WHERE user.username = %s AND user.password = %s AND JSON_CONTAINS(user.roles, role.id) GROUP BY user.id"""
+			WHERE user.username = %s AND user.password = %s
+				AND JSON_CONTAINS(user.roles, role.id)
+			GROUP BY user.id"""
 		val:tuple = (self.__username, self.__password)
 
 		return await self.dbRequest(dbr, val)
 
 	async def viaSession(self) -> None:
-		last_week:str = str( datetime.datetime.now() - datetime.timedelta(days=7) )
-		dbr:dict = dict(
-			of="session/phaaze",
-			store="session",
-			where=f'session["session"] == {json.dumps(self.__session)} and session["created_at"] > {json.dumps(str(last_week))}',
-			limit=1,
-			join=dict(
-				of="user",
-				store="user",
-				where="session['user_id'] == user['id']",
-				join=dict(
-					of="role",
-					store="role",
-					where="role['id'] in user['role']",
-					fields=["name", "id"]
-				)
-			)
-		)
-		return await self.dbRequest(dbr, unpack_session = True)
+		dbr:str = """
+			SELECT user.*, GROUP_CONCAT(role.name) AS rolenames
+			FROM session_phaaze JOIN user JOIN role
+			WHERE session_phaaze.created_at > (NOW() - INTERVAL 7 DAY)
+				AND session_phaaze.session = %s
+				AND session_phaaze.user_id = user.id
+				AND JSON_CONTAINS(user.roles, role.id)
+			GROUP BY user.id"""
+		val:tuple = (self.__session, )
+
+		return await self.dbRequest(dbr, val)
 
 	async def dbRequest(self, db_req:str, values:tuple = None) -> None:
 		self.tryed = True
-		res:list = self.BASE.PhaazeDB.query(db_req, values)
+		res:list = self.BASE.PhaazeDB.query(db_req, values=values)
 
 		if not res: return
 
