@@ -15,48 +15,46 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message
 		Returns a DiscordServerSettings()
 	"""
 	if type(origin) is discord.Message:
-		server_id:str = str(origin.guild.id)
+		guild_id:str = str(origin.guild.id)
 
 	elif type(origin) is str:
-		server_id:str = str(origin)
+		guild_id:str = str(origin)
 
 	else:
-		server_id:str = origin
+		guild_id:str = origin
 
-	res:dict = cls.BASE.PhaazeDB.select(
-		of = "discord/server_setting",
-		where = f"data['server_id'] == {json.dumps(server_id)}",
+	res:list = cls.BASE.PhaazeDB.query("""
+		SELECT * FROM discord_setting
+		WHERE discord_setting.guild_id = %s""",
+		(guild_id,)
 	)
 
-	if not res['data']:
+	if res:
+		return DiscordServerSettings( infos = res[0] )
+
+	else:
 		if prevent_new:
 			return DiscordServerSettings()
 		else:
-			return await makeDiscordSeverSettings(cls, server_id)
+			return await makeDiscordSeverSettings(cls, guild_id)
 
-	else:
-		return DiscordServerSettings( infos = res["data"][0] )
-
-async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", server_id:str) -> DiscordServerSettings:
+async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", guild_id:str) -> DiscordServerSettings:
 	"""
-		Makes a new entry in the PhaazeDB for a discord server.
-		since the new version v5+ we dont add a base construct to the db,
-		it should be covered by DB defaults.
+		Makes a new entry in the PhaazeDB for a discord server/guild.
 		Returns a DiscordServerSettings()
 	"""
 
-	res:dict = cls.BASE.PhaazeDB.insert(
-		into = "discord/server_setting",
-		content = {"server_id":server_id}
-	)
-
-	if res.get("status", "error") == "inserted":
-		cls.BASE.Logger.info(f"(Discord) New server settings DB entry: S:{server_id}")
+	try:
+		cls.BASE.PhaazeDB.query("""
+			INSERT INTO discord_setting
+			(guild_id)
+			VALUES (%s)""",	(guild_id,)
+		)
+		cls.BASE.Logger.info(f"(Discord) New server settings DB entry: S:{guild_id}")
 		return DiscordServerSettings( infos = {} )
-	else:
-		cls.BASE.Logger.critical(f"(Discord) New server settings failed: S:{server_id}")
+	except:
+		cls.BASE.Logger.critical(f"(Discord) New server settings failed: S:{guild_id}")
 		raise RuntimeError("Creating new DB entry failed")
-
 
 async def getDiscordServerCommands(cls:"PhaazebotDiscord", server_id:str, trigger:str=None, command_id:str or int=None, prevent_new:bool=False) -> list:
 	"""
