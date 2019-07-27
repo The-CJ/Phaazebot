@@ -1,8 +1,12 @@
 .site-panel {
-  height: 100vh;
+  min-height: 100vh;
 }
 .site-panel h4 {
   margin: 0.5em 0;
+}
+
+.main_panel {
+  overflow-y: hidden;
 }
 
 .main-panel [location] {
