@@ -4,7 +4,7 @@ $("document").ready(function () {
 
 function loadDiscordServers() {
 
-  $.get("/api/discord/guilds")
+  $.get("/api/discord/userguilds")
   .done(function (data) {
     for (guild of data.result) {
       var template = $("[phantom] .guild").clone();

@@ -9,9 +9,9 @@ from Platforms.Discord.api import getDiscordUserServers
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from ..errors import apiMissingAuthorisation
 
-async def apiDiscordGuilds(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordUserGuilds(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/guilds
+		Default url: /api/discord/userguilds
 	"""
 
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
