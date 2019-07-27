@@ -1,3 +1,27 @@
-main h1 {
+.site-panel {
+  height: 100vh;
+}
+.site-panel h4 {
+  margin: 0.5em 0;
+}
+
+.main-panel [location] {
+  display: none;
+}
+
+.location-selector {
+  display: block;
+}
+
+.location-selector > * {
   margin: 1em 0;
+}
+
+.location-selector .location {
+  color: white;
+}
+.location-selector .location i {
+  margin-left: 2em;
+  margin-right: 0.75em;
+  width: 1em;
 }

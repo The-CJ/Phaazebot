@@ -1,3 +1,19 @@
+function isEmpty(o) {
+  // null
+  if (o == null) { return true; }
+  // string
+  if (typeof o == "string") { if (o != "") { return false; } }
+  // number
+  if (typeof o == "number") { if (o != 0) { return false; } }
+  // object
+  for (var v in o) {
+    if (o.hasOwnProperty(v)) {
+      return false
+    }
+  }
+  return true;
+}
+
 function showEmail() {
   // i do this, so spam bots don't get the email from the site so easy
   $("#email_icon").popover({
@@ -196,6 +212,51 @@ var Display = new (class {
     );
   }
 })()
+
+var DynamicURL = new (class {
+  constructor() {
+    this.values = {};
+  }
+
+  set(key, value, update=true) {
+    this.values[key] = value;
+    if (update) { this.update(); }
+  }
+
+  get(key) {
+    let value = this.values[key];
+    if (value == null) {
+      value = this.getFromLocation(key);
+    }
+    return value
+  }
+
+  update() {
+    let ucurl = window.location.pathname;
+    let pre = "?";
+
+    for (var key in this.values) {
+      let value = this.values[key];
+      if (isEmpty(value)) { continue; }
+
+      ucurl = ucurl + pre + key + "=" + value;
+      pre = "&";
+
+    }
+    window.history.replaceState('obj', 'newtitle', ucurl);
+  }
+
+  getFromLocation(name) {
+    let url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+  }
+
+})
 
 // load finished, add events
 $("document").ready(function () {

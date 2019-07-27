@@ -30,7 +30,8 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	DiscordDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/dashboard.html")
 	DiscordDash.replace(
-		guild_name = html.escape(Guild.name)
+		guild_name = html.escape(Guild.name),
+		guild_id = Guild.id
 	)
 
 	site:str = cls.HTMLRoot.replace(

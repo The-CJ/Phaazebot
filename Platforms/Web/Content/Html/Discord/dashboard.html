@@ -3,9 +3,45 @@
 
 <main>
 
-  <div class="container text-center white-text">
+  <div class="container-fluid text-center white-text">
 
-    <h1>|<!--#(guild_name)#-->|</h1>
+    <div class="row">
+      <div class="col-2 stylish-color-dark site-panel">
+        <h4>|<!--#(guild_name)#-->|</h4>
+        <data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
+        <hr>
+        <div class="location-selector text-left">
+          <div><a href="#" onclick="DiscordDashboard.loadHome()" class="location"><i class="fas fa-home"></i>Home</a></div>
+          <div><a href="#" onclick="DiscordDashboard.loadConfig()" class="location"><i class="fas fa-cogs"></i>Configuration</a></div>
+          <div><a href="#" onclick="DiscordDashboard.loadCommand()" class="location"><i class="fas fa-terminal"></i>Commands</a></div>
+          <div><a href="#" onclick="DiscordDashboard.loadLevel()" class="location"><i class="fas fa-list-ol"></i>Levels</a></div>
+          <div><a href="#" onclick="DiscordDashboard.loadQuote()" class="location"><i class="fas fa-quote-right"></i>Quotes</a></div>
+        </div>
+      </div>
+      <div class="col main-panel">
+
+        <div location="home">
+          Show much
+        </div>
+
+        <div location="configs">
+          show configs
+        </div>
+
+        <div location="commands">
+          Show Commands
+        </div>
+
+        <div location="levels">
+          Show levels
+        </div>
+
+        <div location="quotes">
+          Quotes oder so
+        </div>
+
+      </div>
+    </div>
 
   </div>
 
