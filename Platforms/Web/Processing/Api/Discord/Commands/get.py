@@ -23,7 +23,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not command_id:
 		command_id = None
 
-	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, prevent_new=True)
+	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
 
 	api_return:list = list()
 	for command in commands:
