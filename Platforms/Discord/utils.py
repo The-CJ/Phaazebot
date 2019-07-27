@@ -86,32 +86,30 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 	else:
 		return []
 
-async def getDiscordServerLevels(cls:"PhaazebotDiscord", server_id:str, member_id:str=None, prevent_new:bool=False) -> list:
+async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None) -> list:
 	"""
 		Get server levels, if member_id = None, get all
 		else only get one associated with the member_id
 		Returns a list of DiscordLevelUser().
 	"""
-	of:str = f"discord/level/level_{server_id}"
+
+	sql:str = """
+		SELECT * FROM discord_level
+		WHERE discord_level.guild_id = %s"""
+
+	values:tuple = (guild_id,)
+
 
 	if member_id:
-		where:str = f"str(data['member_id']) == str({json.dumps(member_id)})"
-		limit:int = 1
+		sql += " AND discord_level.member_id = %s"
+		values += (member_id,)
+
+	res:list = cls.BASE.PhaazeDB.query(sql, values)
+
+	if res:
+		return [DiscordLevelUser(x, guild_id) for x in res]
 
 	else:
-		where:str = None
-		limit:int = None
-
-	res:dict = cls.BASE.PhaazeDB.select(of=of, limit=limit, where=where)
-
-	if res.get("status", "error") == "error":
-		if prevent_new:
-			return []
-		else:
-			return await makeDiscordServerLevels(cls, server_id)
-
-	else:
-		return [DiscordLevelUser(x, server_id) for x in res["data"]]
-
+		return []
 
 # quote get

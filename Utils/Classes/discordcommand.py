@@ -3,8 +3,9 @@ if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 from .undefined import Undefined
+from Utils.Classes.dbcontentclass import DBContentClass
 
-class DiscordCommand(object):
+class DiscordCommand(DBContentClass):
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.server_id}' trigger='{self.trigger}'>"
 

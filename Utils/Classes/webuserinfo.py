@@ -7,12 +7,13 @@ import datetime
 from aiohttp.web import Request
 from Utils.stringutils import password
 from Utils.Classes.undefined import Undefined
+from Utils.Classes.dbcontentclass import DBContentClass
 
 def forcable(f:Callable) -> Callable:
 	f.__forcable__ = True
 	return f
 
-class WebUserInfo(object):
+class WebUserInfo(DBContentClass):
 	"""
 		Used for authorisation of a phaaze web user request
 		It should if possible, avoid reading in POST content when not needed
