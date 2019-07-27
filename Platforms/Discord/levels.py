@@ -3,7 +3,6 @@ if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
 import discord
-import json
 import math
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordleveluser import DiscordLevelUser
@@ -33,27 +32,31 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	if LevelUser.exp >= 0xFFFFF: #=1'048'575
 		LevelUser.exp = 1
 
-	res:dict = cls.BASE.PhaazeDB.update(
-		of = f"discord/level/level_{LevelUser.server_id}",
-		where = f"str(data['member_id']) == str({json.dumps(LevelUser.member_id)})",
-		content = {"exp": LevelUser.exp}
+	cls.BASE.PhaazeDB.query("""
+		UPDATE discord_level
+		SET exp = %s
+		WHERE discord_level.guild_id = %s
+ 			AND discord_level.member_id = %s""",
+		(LevelUser.exp, LevelUser.server_id, LevelUser.member_id)
 	)
 
-	if res.get("status", "error") == "updated":
-		await checkLevelProgress(cls, Message, LevelUser, ServerSettings)
+	await checkLevelProgress(cls, Message, LevelUser, ServerSettings)
 
-async def newUser(cls:"PhaazebotDiscord", server_id:str, member_id:str) -> DiscordLevelUser:
+async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str) -> DiscordLevelUser:
 
-	res:dict = cls.BASE.PhaazeDB.insert(
-		into = f"discord/level/level_{server_id}",
-		content = {"member_id": member_id}
-	)
+	sql:str = """
+		INSERT INTO discord_level
+		(guild_id, member_id)
+		VALUES (%s, %s)
+	"""
+	values:tuple = (guild_id, member_id)
 
-	if res.get("status", "error") == "inserted":
-		cls.BASE.Logger.debug(f"(Discord) New entry into levels: S:{server_id} M:{member_id}", require="discord:level")
-		return DiscordLevelUser( {"member_id": member_id}, server_id )
-	else:
-		cls.BASE.Logger.critical(f"(Discord) New entry into levels failed: S:{server_id} M:{member_id}")
+	try:
+		cls.BASE.PhaazeDB.query(sql, values)
+		cls.BASE.Logger.debug(f"(Discord) New entry into levels: S:{guild_id} M:{member_id}", require="discord:level")
+		return DiscordLevelUser( {"member_id": member_id}, guild_id )
+	except:
+		cls.BASE.Logger.critical(f"(Discord) New entry into levels failed: S:{guild_id} M:{member_id}")
 		raise RuntimeError("New entry into levels failed")
 
 async def checkLevelProgress(cls:"PhaazebotDiscord", Message:discord.Message, LevelUser:DiscordLevelUser, ServerSettings:DiscordServerSettings) -> None:

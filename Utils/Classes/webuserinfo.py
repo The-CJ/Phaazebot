@@ -218,7 +218,7 @@ class WebUserInfo(DBContentClass):
 		self.edited_atd = data.get("edited_at", Undefined())
 		self.last_login = data.get("last_login", Undefined())
 
-		self.role_ids = json.loads( data.get("roles", "[]") )
+		self.role_ids = self.fromJsonField( data.get("roles", "[]") )
 
 		r:str or None = data.get("rolenames", "")
 		if r: self.roles = r.split(",")

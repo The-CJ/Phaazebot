@@ -25,7 +25,7 @@ class DiscordServerSettings(DBContentClass):
 		self.leave_chan:str = infos.get("leave_chan", Undefined())
 		self.leave_msg:str = infos.get("leave_msg", Undefined())
 		self.level_announce_channel:str = infos.get("level_announce_channel", Undefined())
-		self.level_custom_message:str = infos.get("level_custom_message", Undefined())
+		self.level_custom_message:str = infos.get("level_custom_msg", Undefined())
 		self.owner_disable_custom:bool = bool( infos.get("owner_disable_custom", Undefined()) )
 		self.owner_disable_level:bool = bool( infos.get("owner_disable_level", Undefined()) )
 		self.owner_disable_mod:bool = bool( infos.get("owner_disable_mod", Undefined()) )
