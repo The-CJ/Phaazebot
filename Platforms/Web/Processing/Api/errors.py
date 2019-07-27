@@ -73,6 +73,20 @@ async def apiMissingAuthorisation(cls:"WebIndex", WebRequest:Request, **kwargs:A
 		content_type="application/json"
 	)
 
+async def apiWrongData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+	"""
+	default_msg:str = "Wrong data passed"
+	msg:str = kwargs.get("msg", default_msg)
+
+	return cls.response(
+		status=400,
+		text=json.dumps( dict(error="wrong_data", msg=msg, status=400) ),
+		content_type="application/json"
+	)
+
 async def userNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
 		Takes from kwargs:
@@ -98,7 +112,7 @@ async def missingData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respo
 
 	cls.Web.BASE.Logger.debug(f"(Web/API) Missing Data for api request", require="api:400")
 	return cls.response(
-		text=json.dumps( dict(error="missing_data", status=404, msg=msg) ),
+		text=json.dumps( dict(error="missing_data", status=400, msg=msg) ),
 		content_type="application/json",
-		status=404
+		status=400
 	)

@@ -1,18 +1,21 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
+	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
 import discord
 from aiohttp.web import Response, Request
 from Platforms.Discord.api import getDiscordUserServers
 from Utils.Classes.discorduserinfo import DiscordUserInfo
-from ..errors import apiMissingAuthorisation
+from ..errors import apiMissingAuthorisation, apiNotAllowed
 
 async def apiDiscordUserGuilds(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/discord/userguilds
 	"""
+	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
+	if not PhaazeDiscord: return await apiNotAllowed(cls, WebRequest, msg="Discord module is not active")
 
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
 
