@@ -1,4 +1,5 @@
 import json
+from Utils.Classes.undefined import Undefined
 
 class DBContentClass(object):
 	"""
@@ -7,5 +8,6 @@ class DBContentClass(object):
 	"""
 
 	def fromJsonField(self, data:str or bytes or None):
+		if type(data) == Undefined: return data
 		if not data: return None
 		return json.loads(data)
