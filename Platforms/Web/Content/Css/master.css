@@ -54,6 +54,9 @@ pre {
 	padding: 0.9em;
 	background: rgba(50,50,50,0.5);
 }
+nav {
+	height: 5em;
+}
 
 /* account/login button/form */
 #account_field {

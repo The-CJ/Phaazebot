@@ -1,5 +1,8 @@
 .site-panel {
-  min-height: 100vh;
+  min-height: calc(100vh - 5em);
+  position: static;
+  top: 5em;
+  left: 0;
 }
 .site-panel h4 {
   margin: 0.5em 0;
