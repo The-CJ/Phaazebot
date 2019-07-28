@@ -38,9 +38,9 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 		)
 
 	result:dict = dict(
-		id = Guild.id,
+		id = str(Guild.id),
 		name = Guild.name,
-		owner_id = Guild.owner_id,
+		owner_id = str(Guild.owner_id),
 		icon = Guild.icon,
 		banner = Guild.banner,
 		description = Guild.description,

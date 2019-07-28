@@ -1,3 +1,4 @@
+/* panel stuff */
 .site-panel {
   min-height: calc(100vh - 5em);
   position: static;
@@ -7,24 +8,20 @@
 .site-panel h4 {
   margin: 0.5em 0;
 }
-
-.main_panel {
+.main-panel {
+  padding-top: 15px;
   overflow-y: hidden;
 }
-
 .main-panel [location] {
   display: none;
 }
-
 .location-selector {
   display: block;
 }
-
 .location-selector > * {
   margin: 1em 0;
   cursor: pointer;
 }
-
 .location-selector .location {
   color: white;
 }
@@ -32,4 +29,15 @@
   margin-left: 2em;
   margin-right: 0.75em;
   width: 1em;
+}
+
+/* other */
+[location=home] .guild-icon {
+  border: 2px solid black;
+  background: #202225;
+  border-radius: 50%;
+}
+[location=home] .guild-name {
+  margin-left: 1em;
+  font-size: 32px;
 }

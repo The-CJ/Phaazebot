@@ -4,11 +4,28 @@ var DiscordDashboard = new (class {
   loadHome() {
     DynamicURL.set("view", false);
     this.showLocationWindow();
-    alert("Load and Display 'Home' Info");
     var guild_id = $("#guild_id").val();
     $.get("/api/discord/guild", {guild_id: guild_id})
     .done(function (data) {
       console.log(data);
+
+      var guild = data.result;
+      var image_link = "https://cdn.discordapp.com/icons/{guild_id}/{icon}.png?size=128";
+      var image_alt = "https://cdn.discordapp.com/embed/avatars/{icon}.png";
+
+      var image = "";
+
+      if (guild.icon) {
+        image = image_link;
+        image = image.replace("{guild_id}", guild.id);
+        image = image.replace("{icon}", guild.icon);
+      } else {
+        let r = guild.id % 5;
+        image = image_alt;
+        image = image.replace("{icon}", r);
+      }
+      $("#icon").attr("src", image);
+      $("#name").text(guild.name);
     })
     .fail(function (data) {
       console.log(data);
