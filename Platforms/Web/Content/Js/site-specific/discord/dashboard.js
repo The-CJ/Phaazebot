@@ -2,43 +2,57 @@ var DiscordDashboard = new (class {
   constructor() {}
 
   loadHome() {
-    DynamicURL.set("location", false);
+    DynamicURL.set("view", false);
     this.showLocationWindow();
+    alert("Load and Display 'Home' Info");
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/guild", {guild_id: guild_id})
+    .done(function (data) {
+      console.log(data);
+    })
+    .fail(function (data) {
+      console.log(data);
+    })
   }
 
   loadConfig() {
-    DynamicURL.set("location", "configs");
+    DynamicURL.set("view", "configs");
     this.showLocationWindow("configs");
+    alert("Load and Display 'Command' Info");
 
   }
   loadCommand() {
-    DynamicURL.set("location", "commands");
+    DynamicURL.set("view", "commands");
     this.showLocationWindow("commands");
+    alert("Load and Display 'Command' Info");
 
   }
   loadLevel() {
-    DynamicURL.set("location", "levels");
+    DynamicURL.set("view", "levels");
     this.showLocationWindow("levels");
+    alert("Load and Display 'Level' Info");
 
   }
   loadQuote() {
-    DynamicURL.set("location", "quotes");
+    DynamicURL.set("view", "quotes");
     this.showLocationWindow("quotes");
+    alert("Load and Display 'Quote' Info");
 
   }
-  showLocationWindow(location_name) {
-    if ( isEmpty(location_name) ) { location_name = "home"; }
+
+  showLocationWindow(view) {
+    if ( isEmpty(view) ) { view = "home"; }
     $("[location]").hide();
-    $("[location="+location_name+"]").show();
+    $("[location="+view+"]").show();
   }
   restoreView() {
-    var l = DynamicURL.get("location");
+    var l = DynamicURL.get("view");
     this.showLocationWindow(l);
-    if (l == "home") { this.loadHome(); }
-    else if (l == "config") { this.loadConfig(); }
-    else if (l == "command") { this.loadCommand(); }
-    else if (l == "level") { this.loadLevel(); }
-    else if (l == "quote") { this.loadQuote(); }
+    if (l == "home" || !l) { this.loadHome(); }
+    else if (l == "configs") { this.loadConfig(); }
+    else if (l == "commands") { this.loadCommand(); }
+    else if (l == "levels") { this.loadLevel(); }
+    else if (l == "quotes") { this.loadQuote(); }
   }
 })
 

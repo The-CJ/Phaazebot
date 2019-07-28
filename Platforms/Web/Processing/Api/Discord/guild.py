@@ -38,8 +38,19 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 		)
 
 	result:dict = dict(
-		name = [],
-		avatar = []
+		id = Guild.id,
+		name = Guild.name,
+		owner_id = Guild.owner_id,
+		icon = Guild.icon,
+		banner = Guild.banner,
+		description = Guild.description,
+		features = Guild.features,
+		splash = Guild.splash,
+		premium_tier = Guild.premium_tier,
+		premium_subscription_count = Guild.premium_subscription_count,
+		member_count = Guild.member_count,
+		channel_count = len(Guild.channels),
+		roles_count = len(Guild.roles),
 	)
 
 	return cls.response(
