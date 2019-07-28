@@ -18,7 +18,7 @@ DESCRIBE `discord_command`;
 SHOW CREATE TABLE `discord_command`;
 
 CREATE TABLE `discord_command` (
-  `command_id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
   `trigger` varchar(64) NOT NULL,
   `content` varchar(1750) DEFAULT NULL,
@@ -28,6 +28,6 @@ CREATE TABLE `discord_command` (
   `require` int(4) DEFAULT 0,
   `required_currency` int(8) DEFAULT 0,
   `uses` int(8) DEFAULT 0,
-  PRIMARY KEY (`command_id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `guild_id` (`guild_id`,`trigger`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
