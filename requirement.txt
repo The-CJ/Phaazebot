@@ -1,4 +1,5 @@
 cysystemd
+mysql-connector
 discord.py
 requests
 colorama

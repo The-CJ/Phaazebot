@@ -17,4 +17,4 @@ CREATE TABLE `discord_twitch_alert` (
   `discord_channel_id` varchar(128) NOT NULL,
   `twitch_channel_id` varchar(128) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
