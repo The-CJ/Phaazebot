@@ -22,7 +22,7 @@ CREATE TABLE `twitch_command` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `channel_id` varchar(128) NOT NULL,
   `trigger` varchar(64) NOT NULL,
-  `content` varchar(175) DEFAULT NULL,
+  `content` varchar(475) DEFAULT NULL,
   `function` varchar(256) NOT NULL,
   `complex` tinyint(1) DEFAULT 0,
   `hidden` tinyint(1) DEFAULT 0,
