@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from aiohttp.web import Response, Request
 from .get import apiDiscordCommandsGet
 from .create import apiDiscordCommandsCreate
+from .list import apiDiscordCommandsList
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -24,5 +25,8 @@ async def apiDiscordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	elif method == "create":
 		return await apiDiscordCommandsCreate(cls, WebRequest)
+
+	elif method == "list":
+		return await apiDiscordCommandsList(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")

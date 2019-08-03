@@ -19,6 +19,32 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	if not guild_id:
 		return await missingData(cls, WebRequest, msg="missing 'guild_id'")
 
+	trigger:str = Data.get("trigger")
+	if not trigger:
+		return await missingData(cls, WebRequest, msg="missing 'trigger'")
+
+	content:str = str(Data.get("content"))
+	function:str = str(Data.get("function"))
+	complex_:bool = bool(Data.get("complex"))
+	hidden:bool = bool(Data.get("hidden"))
+	require:str = str(Data.get("require"))
+	required_currency:str = str(Data.get("required_currency"))
+
+	cls.Web.BASE.PhaazeDB.query("""
+		INSERT INTO discord_command
+		(`guild_id`, `trigger`, `content`,
+		 `function`, `complex`, `hidden`,
+		 `require`, `required_currency`
+		)
+		VALUES (
+		 %s, %s, %s,
+		 %s, %s, %s,
+		 %s, %s)""",
+		(guild_id, trigger, content,
+		function, complex_, hidden,
+		require, required_currency)
+	)
+
 	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id)
 	print(len(commands))
 

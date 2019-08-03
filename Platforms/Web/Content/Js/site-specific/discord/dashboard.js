@@ -126,6 +126,25 @@ var Commands = new (class {
     $("#command_create").modal("show");
   }
   create() {
+    var r = {
+      "guild_id": $("#guild_id").val(),
+      "trigger": $("#command_create [name=trigger]").val(),
+      "content": $("#command_create [name=content]").val(),
+      "function": $("#command_create [name=function]").val(),
+      "complex": $("#command_create [name=complex]").is(":checked"),
+      "hidden": $("#command_create [name=hidden]").is(":checked"),
+      "require": $("#command_create [name=require]").val(),
+      "required_currency": $("#command_create [name=required_currency]").val()
+    };
+    $.post("/api/discord/commands/create", r)
+    .done(function (data) {
+      console.log(data);
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load commands...", color:Display.color_critical});
+      console.log(data);
+    })
 
   }
 
@@ -152,13 +171,14 @@ var Commands = new (class {
 
   loadCommands(HTMLSelect) {
     var command_type = $(HTMLSelect).val();
-    $.get("/api/discord/commands/types", {command_type: command_type})
+    $.get("/api/discord/commands/list", {command_type: command_type})
     .done(function (data) {
       console.log(data);
+      $("[command-setting]").show();
 
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load command types...", color:Display.color_critical});
+      Display.showMessage({content: "Could not load command list...", color:Display.color_critical});
       console.log(data);
     })
   }
