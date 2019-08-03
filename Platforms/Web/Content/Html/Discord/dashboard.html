@@ -155,10 +155,12 @@
         </div>
 
         <div class="center-item-row md-form">
-          <span class="col text-left">Complex command?</span>
-          <div class="col text-center">
-            <input type="checkbox" name="complex" value="1" style="height:2ch; width:2ch;">
-          </div>
+          <span class="col text-left">What type of command?</span>
+          <select name="require" class="browser-default custom-select" onchange="Commands.loadCommands(this)">
+            <option>Choose a type...</option>
+            <option value="simple">Simple</option>
+            <option value="complex">Complex</option>
+          </select>
         </div>
 
         <hr>
@@ -192,6 +194,7 @@
       </div>
 
       <div class="modal-footer"></div>
+      <div messagebox></div>
 
     </div>
   </div>

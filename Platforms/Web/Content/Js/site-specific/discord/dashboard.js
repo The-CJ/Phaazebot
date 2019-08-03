@@ -149,6 +149,19 @@ var Commands = new (class {
       console.log(data);
     })
   }
+
+  loadCommands(HTMLSelect) {
+    var command_type = $(HTMLSelect).val();
+    $.get("/api/discord/commands/types", {command_type: command_type})
+    .done(function (data) {
+      console.log(data);
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load command types...", color:Display.color_critical});
+      console.log(data);
+    })
+  }
 })
 
 // utils
