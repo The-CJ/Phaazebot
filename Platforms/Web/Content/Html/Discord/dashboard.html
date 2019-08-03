@@ -68,7 +68,7 @@
                 <h4>Commands: <span id="command_amount">[N/A]</span></h4>
               </div>
               <div class="col">
-                <button type="button" class="btn btn-success">New Command</button>
+                <button type="button" class="btn btn-success" onclick="Commands.createModal()">New Command</button>
               </div>
             </div>
 
@@ -102,6 +102,7 @@
 
 </main>
 
+<!-- phantoms -->
 <div phantom hidden>
 
   <div class="row command" command-id="0" onclick="Commands.detail(this)">
@@ -112,4 +113,86 @@
     <div class="col-1 uses">[N/A]</div>
   </div>
 
+</div>
+
+<!-- modals -->
+<div class="modal fade" id="command_create">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">New command</h4>
+        <button type="button" class="close" onclick="$('#command_create').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="center-item-row md-form">
+          <div class="col">
+            <input type="text" name="trigger" placeholder="Word to trigger the command..." style="width: 100%;" class="text-center">
+          </div>
+        </div>
+        <hr>
+        <div class="center-item-row md-form">
+          <span class="col text-left">Can be used by:</span>
+          <select name="require" class="browser-default custom-select">
+            <option value="0">Everyone</option>
+            <option value="1">Regular</option>
+            <option value="2">Moderator</option>
+            <option value="3">Server Owner</option>
+          </select>
+        </div>
+        <div class="center-item-row md-form">
+          <span class="col text-left">Cost to use this command:</span>
+          <input type="text" name="required_currency" value="0">
+        </div>
+
+        <div class="center-item-row md-form">
+          <span class="col text-left">Hidden command?</span>
+          <div class="col text-center">
+            <input type="checkbox" name="hidden" value="1" style="height:2ch; width:2ch;">
+          </div>
+        </div>
+
+        <div class="center-item-row md-form">
+          <span class="col text-left">Complex command?</span>
+          <div class="col text-center">
+            <input type="checkbox" name="complex" value="1" style="height:2ch; width:2ch;">
+          </div>
+        </div>
+
+        <hr>
+
+        <div command-setting="simple">
+
+          <div class="center-item-row md-form">
+            <span class="col text-left">Function:</span>
+            <select name="function" class="browser-default custom-select">
+              <option>Choose a function...</option>
+              <option value="textOnly">Text dummy</option>
+            </select>
+          </div>
+
+          <div extra-command-setting>
+
+            <textarea name="name" rows="5" style="width: 100%"></textarea>
+
+          </div>
+
+        </div>
+
+        <div command-setting="complex">
+
+        </div>
+
+        <hr>
+
+        <button type="button" class="btn btn-block btn-success" onclick="Commands.create()">Submit</button>
+
+      </div>
+
+      <div class="modal-footer"></div>
+
+    </div>
+  </div>
 </div>

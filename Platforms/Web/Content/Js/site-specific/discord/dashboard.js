@@ -122,8 +122,11 @@ var Commands = new (class {
   constructor() {
 
   }
-  add() {
-    
+  createModal() {
+    $("#command_create").modal("show");
+  }
+  create() {
+
   }
 
   detail(HTMLCommandRow) {
@@ -148,6 +151,7 @@ var Commands = new (class {
   }
 })
 
+// utils
 function translateRequire(level) {
   if (level == 0) { return "Everyone"; }
   if (level == 1) { return "Regulars"; }
