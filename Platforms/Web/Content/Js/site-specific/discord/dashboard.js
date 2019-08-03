@@ -118,6 +118,36 @@ var DiscordDashboard = new (class {
   }
 })
 
+var Commands = new (class {
+  constructor() {
+
+  }
+  add() {
+    
+  }
+
+  detail(HTMLCommandRow) {
+    var guild_id = $("guild_id").val();
+    var command_id = $(HTMLCommandRow).attr("command-id");
+    $.get("/api/discord/commands/get", {guild_id: guild_id, command_id:command_id, show_hidden: true})
+    .done(function (data) {
+      var command = data.result[0];
+      var currency = command.cost == 1 ? $("#guild_currency").val() : $("#guild_currency_multi").val();
+      $("#command_detail [name=trigger]").text(command.trigger);
+      $("#command_detail [name=require]").text( translateRequire(command.require) );
+      $("#command_detail [name=uses]").text( command.uses + " times" );
+      $("#command_detail [name=cost]").text( command.cost + " " + currency );
+
+
+      $("#command_detail").modal("show");
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load command detail...", color:Display.color_critical});
+      console.log(data);
+    })
+  }
+})
+
 function translateRequire(level) {
   if (level == 0) { return "Everyone"; }
   if (level == 1) { return "Regulars"; }
