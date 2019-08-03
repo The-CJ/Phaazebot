@@ -51,18 +51,50 @@ var DiscordDashboard = new (class {
     alert("Load and Display 'Command' Info");
 
   }
+
   loadCommand() {
     DynamicURL.set("view", "commands");
     this.showLocationWindow("commands");
-    alert("Load and Display 'Command' Info");
+    var guild_id = $("#guild_id").val();
+
+    $.get("/api/discord/commands/get", {guild_id: guild_id, show_hidden: true})
+    .done(function (data) {
+
+      $("#command_amount").text(data.result.length);
+      var CommandList = $("#command_list").html("");
+
+      for (var command of data.result) {
+        var Template = $("[phantom] .command").clone();
+        Template.find(".trigger").text(command.trigger);
+        Template.find(".content").text(command.content);
+        Template.find(".require").text( translateRequire(command.require) );
+        Template.find(".cost").text(command.cost);
+        Template.find(".uses").text(command.uses);
+        Template.attr("command-id", command.id);
+
+        if (command.hidden) {
+          Template.find(".content").addClass("hidden");
+          Template.find(".content").attr("title", "Execute the command in the Discord server to see the result.");
+        }
+
+        CommandList.append(Template);
+      }
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load commands...", color:Display.color_critical});
+      console.log(data);
+    })
 
   }
+
   loadLevel() {
     DynamicURL.set("view", "levels");
     this.showLocationWindow("levels");
     alert("Load and Display 'Level' Info");
 
   }
+
   loadQuote() {
     DynamicURL.set("view", "quotes");
     this.showLocationWindow("quotes");
@@ -85,6 +117,14 @@ var DiscordDashboard = new (class {
     else if (l == "quotes") { this.loadQuote(); }
   }
 })
+
+function translateRequire(level) {
+  if (level == 0) { return "Everyone"; }
+  if (level == 1) { return "Regulars"; }
+  if (level == 2) { return "Moderators"; }
+  if (level == 3) { return "Server Owner"; }
+  if (level >= 4) { return "System"; }
+}
 
 $("document").ready(function () {
   DiscordDashboard.restoreView();

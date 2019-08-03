@@ -60,7 +60,31 @@
         </div>
 
         <div location="commands">
-          Show Commands
+
+          <div class="container">
+
+            <div class="center-item-row">
+              <div class="col">
+                <h4>Commands: <span id="command_amount">[N/A]</span></h4>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-success">New Command</button>
+              </div>
+            </div>
+
+            <div class="header row">
+              <div class="col-2 trigger">Trigger</div>
+              <div class="col content">Content</div>
+              <div class="col-2 require">Require</div>
+              <div class="col-1 cost">Cost</div>
+              <div class="col-1 uses">Uses</div>
+            </div>
+            <div id="command_list">
+
+            </div>
+
+          </div>
+
         </div>
 
         <div location="levels">
@@ -77,3 +101,15 @@
   </div>
 
 </main>
+
+<div phantom hidden>
+
+  <div class="row command" command-id="0" onclick="detailCommand(this)">
+    <div class="col-2 trigger">[N/A]</div>
+    <div class="col content">[N/A]</div>
+    <div class="col-2 require">[N/A]</div>
+    <div class="col-1 cost">[N/A]</div>
+    <div class="col-1 uses">[N/A]</div>
+  </div>
+
+</div>
