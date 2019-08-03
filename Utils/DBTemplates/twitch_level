@@ -22,8 +22,8 @@ CREATE TABLE `twitch_level` (
   `active` tinyint(1) DEFAULT 0,
   `amount_currency` int(32) DEFAULT 0,
   `amount_time` int(16) DEFAULT 0,
-  `user_name` varchar(128),
-  `user_display_name` varchar(128),
+  `user_name` varchar(128) DEFAULT NULL,
+  `user_display_name` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `channel_id` (`channel_id`, `user_id`)
+  UNIQUE KEY `channel_id` (`channel_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

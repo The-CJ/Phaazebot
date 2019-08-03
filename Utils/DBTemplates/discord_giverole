@@ -1,4 +1,4 @@
-DESCRIBE `discord_autorole`;
+DESCRIBE `discord_giverole`;
 
 +----------+--------------+------+-----+---------+----------------+
 | Field    | Type         | Null | Key | Default | Extra          |
@@ -9,9 +9,9 @@ DESCRIBE `discord_autorole`;
 | role_id  | varchar(128) | NO   |     | NULL    |                |
 +----------+--------------+------+-----+---------+----------------+
 
-SHOW CREATE TABLE `discord_autorole`;
+SHOW CREATE TABLE `discord_giverole`;
 
-CREATE TABLE `discord_autorole` (
+CREATE TABLE `discord_giverole` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
   `trigger` varchar(128) NOT NULL,

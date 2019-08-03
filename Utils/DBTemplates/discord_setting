@@ -9,11 +9,10 @@ DESCRIBE `discord_setting`;
 | ban_links              | tinyint(1)    | YES  |     | 0       |                |
 | ban_links_role         | longtext      | YES  |     | '[]'    |                |
 | ban_links_whitelist    | longtext      | YES  |     | '[]'    |                |
-| blacklist              | longtext      | YES  |     | '[]'    |                |
+| blacklist_words        | longtext      | YES  |     | '[]'    |                |
 | blacklist_punishment   | varchar(32)   | YES  |     | delete  |                |
 | currency_name          | varchar(256)  | YES  |     | NULL    |                |
 | currency_name_multi    | varchar(256)  | YES  |     | NULL    |                |
-| disable_chan_custom    | longtext      | YES  |     | '[]'    |                |
 | disable_chan_level     | longtext      | YES  |     | '[]'    |                |
 | disable_chan_normal    | longtext      | YES  |     | '[]'    |                |
 | disable_chan_quotes    | longtext      | YES  |     | '[]'    |                |
@@ -42,12 +41,11 @@ CREATE TABLE `discord_setting` (
   `autorole_id` varchar(128) DEFAULT NULL,
   `ban_links` tinyint(1) DEFAULT 0,
   `ban_links_role` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`ban_links_role`)),
-  `ban_links_whitelist` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`ban_links_whitelist`)),
-  `blacklist` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`blacklist`)),
+  `ban_links_whitelist` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]',
+  `blacklist_words` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]',
   `blacklist_punishment` varchar(32) DEFAULT 'delete',
   `currency_name` varchar(256) DEFAULT NULL,
   `currency_name_multi` varchar(256) DEFAULT NULL,
-  `disable_chan_custom` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`disable_chan_custom`)),
   `disable_chan_level` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`disable_chan_level`)),
   `disable_chan_normal` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`disable_chan_normal`)),
   `disable_chan_quotes` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`disable_chan_quotes`)),
