@@ -172,17 +172,30 @@ var Commands = new (class {
   }
 
   loadCommands(HTMLSelect) {
+    $("[command-setting]").hide();
     var command_type = $(HTMLSelect).val();
-    $.get("/api/discord/commands/list", {command_type: command_type})
-    .done(function (data) {
-      console.log(data);
-      $("[command-setting]").show();
+    if (command_type == "complex") { $("[command-setting=complex]").show(); return;}
 
-    })
-    .fail(function (data) {
-      Display.showMessage({content: "Could not load command list...", color:Display.color_critical});
-      console.log(data);
-    })
+    if (command_type == "simple") {
+
+      $.get("/api/discord/commands/list", {command_type: command_type})
+      .done(function (data) {
+        var Options = $("#command_create [name=function]").html("");
+        Options.append( $("<option value=''>Choose a function...</option>") );
+        for (var cmd of data.result) {
+          let Opt = $("<option>");
+          Opt.attr("value", cmd.function);
+          Opt.text(cmd.name);
+          Options.append(Opt);
+        }
+        $("[command-setting=simple]").show();
+      })
+      .fail(function (data) {
+        Display.showMessage({content: "Could not load command list...", color:Display.color_critical});
+        console.log(data);
+      })
+
+    }
   }
 })
 

@@ -4,16 +4,26 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
+from Platforms.Discord.commandindex import command_register
 
 async def apiDiscordCommandsList(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/discord/commands/list
 	"""
 
-	# TODO: list all simple commands
+	command_list:list = []
+
+	for cmd in command_register:
+		c:dict = dict(
+			name = cmd["name"],
+			description = cmd["description"],
+			function = cmd["function"].__name__
+		)
+
+		command_list.append(c)
 
 	return cls.response(
-		text=json.dumps( dict(result="", status=200) ),
+		text=json.dumps( dict(result=command_list, status=200) ),
 		content_type="application/json",
 		status=200
 	)
