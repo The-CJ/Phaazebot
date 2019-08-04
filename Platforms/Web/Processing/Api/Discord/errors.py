@@ -75,3 +75,26 @@ async def apiDiscordMissingPermission(cls:"WebIndex", WebRequest:Request, **kwar
 		content_type="application/json",
 		status=400
 	)
+
+async def apiDiscordCommandLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+			limit:str
+	"""
+	res:dict = dict(status=400)
+
+	default_msg:str = "You have hit the limit of commands for this server"
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_COMAMNDS_AMOUNT)
+	if limit:
+		res["limit"] = limit
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many commands: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)

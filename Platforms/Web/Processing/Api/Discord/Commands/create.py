@@ -7,8 +7,8 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData, apiWrongData
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
+from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordCommandLimit
 from Platforms.Discord.utils import getDiscordServerCommands
 
 from Utils.Classes.discorduserinfo import DiscordUserInfo
@@ -32,11 +32,22 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
+	# check limit
+	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id)
+	if len(commands) >= cls.Web.BASE.Limit.DISCORD_COMAMNDS_AMOUNT:
+		return await apiDiscordCommandLimit(cls, WebRequest)
+
+	# get user info
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	if not DiscordUser.found:
+		return await apiMissingAuthorisation(cls, WebRequest)
+
+	# get member
 	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
 	if not CheckMember:
 		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
+	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
@@ -66,8 +77,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 		require, required_currency)
 	)
 
-	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id)
-	print(len(commands))
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new command: S:{guild_id} T:{trigger}", require="discord:commands")
 
 	return cls.response(
 		text=json.dumps( dict(result="", status=200) ),
