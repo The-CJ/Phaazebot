@@ -138,13 +138,14 @@ var Commands = new (class {
     };
     $.post("/api/discord/commands/create", r)
     .done(function (data) {
-      Display.showMessage({content: "Command successfull created", color:Display.color_success});
+      Display.showMessage({content: "Successfull created command: "+data.command, color:Display.color_success});
       $("#command_create").modal("hide");
       DiscordDashboard.loadCommand();
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load commands...", color:Display.color_critical});
       console.log(data);
+      let msg = data.responseJSON ? data.responseJSON.msg : "unknown"
+      Display.showMessage({content: msg, color:Display.color_critical});
     })
 
   }

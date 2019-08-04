@@ -8,10 +8,10 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordCommandLimit
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordCommandLimit, apiDiscordCommandExists
 from Platforms.Discord.utils import getDiscordServerCommands
-
 from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.dbutils import validateDBInput
 
 async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -55,12 +55,19 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	if not trigger:
 		return await missingData(cls, WebRequest, msg="missing 'trigger'")
 
-	content:str = str(Data.get("content"))
-	function:str = str(Data.get("function"))
-	complex_:bool = bool(Data.get("complex"))
-	hidden:bool = bool(Data.get("hidden"))
-	require:str = str(Data.get("require"))
-	required_currency:str = str(Data.get("required_currency"))
+	# only take the first argument, since everything else cant be typed in a cannel
+	trigger = validateDBInput(str, trigger.split(" ")[0])
+
+	res:list = cls.Web.BASE.PhaazeDB.query("""SELECT COUNT(*) as c FROM discord_command WHERE `guild_id` = %s AND `trigger` = %s""", (guild_id, trigger))
+	if res[0]["c"]:
+		return await apiDiscordCommandExists(cls, WebRequest, command=trigger)
+
+	content:str = validateDBInput(str, Data.get("content"))
+	function:str = validateDBInput(str, Data.get("function"))
+	complex_:bool = validateDBInput(bool, Data.get("complex"))
+	hidden:bool = validateDBInput(bool, Data.get("hidden"))
+	require:str = validateDBInput(int, Data.get("require"), 0)
+	required_currency:str = validateDBInput(int, Data.get("required_currency"), 0)
 
 	cls.Web.BASE.PhaazeDB.query("""
 		INSERT INTO discord_command
@@ -80,7 +87,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new command: S:{guild_id} T:{trigger}", require="discord:commands")
 
 	return cls.response(
-		text=json.dumps( dict(result="", status=200) ),
+		text=json.dumps( dict(msg="new command successfull created", command=trigger, status=200) ),
 		content_type="application/json",
 		status=200
 	)
