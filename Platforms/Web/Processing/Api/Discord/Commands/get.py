@@ -56,7 +56,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 				WebRequest,
 				guild_id=guild_id,
 				user_id=DiscordUser.user_id,
-				msg = "'administrator' or 'manage_guild' permission required to show commands with hidden propertys"
+				msg = "'administrator' or 'manage_guild' permission required to show commands with hidden properties"
 			)
 
 	# this point is only reached when command can be hidden or user requested hidden props has authorist
