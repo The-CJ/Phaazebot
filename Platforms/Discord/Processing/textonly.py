@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from ..formater import formatVars
+from .formater import formatVars
 
 async def textOnly(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 

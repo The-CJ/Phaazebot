@@ -1,21 +1,24 @@
 from typing import Awaitable
 
-from .Processing.Simple.register import  simple_register
-from .Processing.Complex.register import complex_register
-from .Processing.Simple.textonly import textOnly as standardCommandFunction
+from .Processing.textonly import textOnly
 
-def getDiscordCommandFunction(function_type:str, command_name:str) -> Awaitable:
+command_register:list = [
+	dict(
+		name = "Text dummy",
+		function = textOnly,
+		description = "A simple text dummy that returns a predefined text",
+	),
+]
+
+
+def getDiscordCommandFunction(command_name:str) -> Awaitable:
 	"""
-		get the associated function to name, else hanbdle it a text only
+		get the associated function to name, else handle it as a text only
 	"""
 	# should not happen
-	if not command_name: return standardCommandFunction
+	if not command_name: return textOnly
 
-	if function_type == "simple":
-		return simple_register.get(command_name, standardCommandFunction)
+	for cmd in command_register:
+		if cmd["function"].__name__ == command_name: return cmd["function"]
 
-	elif function_type == "complex":
-		return complex_register.get(command_name, standardCommandFunction)
-
-	else:
-		return standardCommandFunction
+	return textOnly

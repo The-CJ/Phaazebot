@@ -27,7 +27,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 		final_result:dict = await formatCommand(cls, Command, CommandContext)
 		await Message.channel.send(**final_result)
-		
+
 		return True
 
 	else:
@@ -41,7 +41,7 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 
 		There are 2 main stages a command can have,
 		a 'simple' commands that has one clear return from a function
-		and 'complex' commands that may have multiple fields in which single return values from a funcion are inserted
+		and 'complex' commands that may have multiple fields in which single return values from a function are inserted
 	"""
 
 	# it's a 'simple' function
@@ -50,7 +50,7 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 	if not Command.complex:
 		function_str:str = Command.function
 
-		func:Awaitable = getDiscordCommandFunction("simple", function_str)
+		func:Awaitable = getDiscordCommandFunction(function_str)
 
 		cls.BASE.Logger.debug(f"(Discord) execute command '{func.__name__}'", require="discord:commands")
 
