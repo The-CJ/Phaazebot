@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 from .undefined import Undefined
 from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.storeclasses import GlobalStorage
 
 class DiscordCommand(DBContentClass):
 	def __repr__(self):
@@ -12,12 +13,12 @@ class DiscordCommand(DBContentClass):
 	def __init__(self, data:dict, server_id:str):
 		self.server_id:str = server_id
 		self.command_id:int = data.get("id", Undefined())
+
 		self.trigger:str = data.get("trigger", Undefined())
 		self.complex:bool = data.get("complex", False)
-		self.description:str = self.getDescription()
+		self.function:str = data.get("function", Undefined())
 		self.content:str = data.get("content", Undefined())
 		self.uses:int = data.get("uses", 0)
-		self.function:str = data.get("function", Undefined())
 		self.require:int = data.get("require", 0)
 		self.required_currency:int = data.get("required_currency", 0)
 		self.hidden:bool = data.get("hidden", False)
@@ -32,6 +33,26 @@ class DiscordCommand(DBContentClass):
 
 		cls.BASE.Logger.debug(f"(Discord) Increase command: {self.trigger} -> x{self.uses+by}", require="discord:command")
 
-	def getDescription(self) -> str:
+	@property
+	def name(self) -> str:
 		if self.complex:
-			return 0 # return complex str
+			return "Complex function"
+
+		else:
+			command_register:list = GlobalStorage.get("discord_command_register", [])
+			for cmd in command_register:
+				if cmd["function"].__name__ == self.function: return cmd["name"]
+
+			return "Unknown"
+
+	@property
+	def description(self) -> str:
+		if self.complex:
+			return "This is a complex function, it could be, that this function does a lot of things, or very less, how knows"
+
+		else:
+			command_register:list = GlobalStorage.get("discord_command_register", [])
+			for cmd in command_register:
+				if cmd["function"].__name__ == self.function: return cmd["description"]
+
+			return "Unknown"

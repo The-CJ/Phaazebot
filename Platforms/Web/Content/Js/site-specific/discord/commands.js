@@ -14,7 +14,7 @@ function loadCommands() {
     for (command of data.result) {
       var Template = $("[phantom] .command").clone();
       Template.find(".trigger").text(command.trigger);
-      Template.find(".function").text(command.function ? command.function : "");
+      Template.find(".function").text(command.name ? command.name : "");
       Template.find(".require").text( translateRequire(command.require) );
       Template.find(".cost").text(command.cost);
       Template.find(".uses").text(command.uses);

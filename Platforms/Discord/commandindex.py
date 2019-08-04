@@ -1,4 +1,5 @@
 from typing import Awaitable
+from Utils.Classes.storeclasses import GlobalStorage
 
 from .Processing.textonly import textOnly
 
@@ -10,6 +11,7 @@ command_register:list = [
 	),
 ]
 
+GlobalStorage.add("discord_command_register", command_register)
 
 def getDiscordCommandFunction(command_name:str) -> Awaitable:
 	"""
