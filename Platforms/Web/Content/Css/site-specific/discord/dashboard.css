@@ -50,6 +50,7 @@
 
 [location=commands] .command .trigger { background: #295888; }
 [location=commands] .command .content { background: #365b87; word-break: break-all;}
+[location=commands] .command .content.hidden { background: #665b87 }
 [location=commands] .command .require { background: #295888; }
 [location=commands] .command .cost { background: #365b87; }
 [location=commands] .command .uses { background: #365b87; }

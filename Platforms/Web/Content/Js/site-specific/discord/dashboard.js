@@ -74,7 +74,7 @@ var DiscordDashboard = new (class {
 
         if (command.hidden) {
           Template.find(".content").addClass("hidden");
-          Template.find(".content").attr("title", "Execute the command in the Discord server to see the result.");
+          Template.find(".content").attr("title", "This is a hidden command and can not be viewed via web, without permissions");
         }
 
         CommandList.append(Template);
