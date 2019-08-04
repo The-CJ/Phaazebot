@@ -66,15 +66,15 @@ var DiscordDashboard = new (class {
       for (var command of data.result) {
         var Template = $("[phantom] .command").clone();
         Template.find(".trigger").text(command.trigger);
-        Template.find(".description").text(command.description);
+        Template.find(".function").text(command.function);
         Template.find(".require").text( translateRequire(command.require) );
         Template.find(".cost").text(command.cost);
         Template.find(".uses").text(command.uses);
         Template.attr("command-id", command.id);
 
         if (command.hidden) {
-          Template.find(".description").addClass("hidden");
-          Template.find(".description").attr("title", "This is a hidden command and can not be viewed via web, without permissions");
+          Template.find(".function").addClass("hidden");
+          Template.find(".function").attr("title", "This is a hidden command and can not be viewed via web, without permissions");
         }
 
         CommandList.append(Template);

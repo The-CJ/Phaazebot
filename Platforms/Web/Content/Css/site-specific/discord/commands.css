@@ -13,18 +13,18 @@ main h1 {
 }
 
 .header .trigger { background: #293788; }
-.header .description { background: #364287; }
+.header .function { background: #364287; }
 .header .require { background: #293788; }
 .header .cost { background: #364287; }
 .header .uses { background: #364287; }
 
 .command .trigger { background: #295888; }
-.command .description { background: #365b87; }
+.command .function { background: #365b87; }
 .command .require { background: #295888; }
 .command .cost { background: #365b87; }
 .command .uses { background: #365b87; }
 
-.command .description.hidden:after {
+.command .function.hidden:after {
   content: "This command is hidden";
   color: rgb(142, 142, 142);
 }
