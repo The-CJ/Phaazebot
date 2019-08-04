@@ -66,15 +66,15 @@ var DiscordDashboard = new (class {
       for (var command of data.result) {
         var Template = $("[phantom] .command").clone();
         Template.find(".trigger").text(command.trigger);
-        Template.find(".content").text(command.content);
+        Template.find(".description").text(command.description);
         Template.find(".require").text( translateRequire(command.require) );
         Template.find(".cost").text(command.cost);
         Template.find(".uses").text(command.uses);
         Template.attr("command-id", command.id);
 
         if (command.hidden) {
-          Template.find(".content").addClass("hidden");
-          Template.find(".content").attr("title", "This is a hidden command and can not be viewed via web, without permissions");
+          Template.find(".description").addClass("hidden");
+          Template.find(".description").attr("title", "This is a hidden command and can not be viewed via web, without permissions");
         }
 
         CommandList.append(Template);
@@ -151,7 +151,7 @@ var Commands = new (class {
   }
 
   detail(HTMLCommandRow) {
-    var guild_id = $("guild_id").val();
+    var guild_id = $("#guild_id").val();
     var command_id = $(HTMLCommandRow).attr("command-id");
     $.get("/api/discord/commands/get", {guild_id: guild_id, command_id:command_id, show_hidden: true})
     .done(function (data) {

@@ -22,15 +22,11 @@ class DiscordCommand(DBContentClass):
 		self.hidden:bool = data.get("hidden", False)
 
 	async def increaseUse(self, cls:"PhaazebotDiscord", by:int=1) -> None:
-		self.uses = self.uses + 1
-		res:dict = cls.BASE.PhaazeDB.update(
-			of = f"discord/commands/commands_{self.server_id}",
-			where = f"int(data['id']) == int({self.command_id})",
-			content = {"uses": self.uses}
+		cls.BASE.PhaazeDB.query("""
+			UPDATE discord_command
+			SET uses = uses + %s
+			WHERE id = %s""",
+			(by, self.command_id)
 		)
 
-		if res.get("status", "error") == "error":
-			cls.BASE.Logger.error(f"(Discord) Increase command use failed")
-			raise RuntimeError("Increasing Discord command use failed")
-
-		cls.BASE.Logger.debug(f"(Discord) Increase command: {self.trigger} -> x{self.uses}", require="discord:command")
+		cls.BASE.Logger.debug(f"(Discord) Increase command: {self.trigger} -> x{self.uses+by}", require="discord:command")

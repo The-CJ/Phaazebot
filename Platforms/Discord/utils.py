@@ -75,7 +75,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 		values += (trigger,)
 
 	elif command_id:
-		sql += " AND discord_command.command_id = %s"
+		sql += " AND discord_command.id = %s"
 		values += (command_id,)
 
 	res:list = cls.BASE.PhaazeDB.query(sql, values)
