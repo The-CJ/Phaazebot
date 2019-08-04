@@ -9,6 +9,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 # from Utils.Classes.discorduserinfo import DiscordUserInfo
 from ..errors import apiNotAllowed, missingData, apiWrongData # apiMissingAuthorisation
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
 async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -27,15 +28,10 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not guild_id.isdigit():
 		return await apiWrongData(cls, WebRequest, msg="'guild_id' must be number")
 
-
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 
 	if not Guild:
-		return cls.response(
-			body=json.dumps(dict(msg="could not find a phaaze known guild", status=400)),
-			status=400,
-			content_type='application/json'
-		)
+		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	res:list = cls.Web.BASE.PhaazeDB.query("""
 		SELECT
