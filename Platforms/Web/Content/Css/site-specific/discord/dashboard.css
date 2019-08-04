@@ -41,6 +41,7 @@
   margin-left: 1em;
   font-size: 32px;
 }
+[location=commands] .command:hover { background: rgba(0,0,0,0.2); }
 [location=commands] .command > *, .header > * { margin: 2px; }
 [location=commands] .header .trigger { background: #293788; }
 [location=commands] .header .description { background: #364287; }

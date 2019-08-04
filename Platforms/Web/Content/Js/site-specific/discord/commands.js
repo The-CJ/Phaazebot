@@ -14,15 +14,15 @@ function loadCommands() {
     for (command of data.result) {
       var Template = $("[phantom] .command").clone();
       Template.find(".trigger").text(command.trigger);
-      Template.find(".content").text(command.content);
+      Template.find(".description").text(command.description ? command.description : "");
       Template.find(".require").text( translateRequire(command.require) );
       Template.find(".cost").text(command.cost);
       Template.find(".uses").text(command.uses);
       Template.attr("command-id", command.id);
 
       if (command.hidden) {
-        Template.find(".content").addClass("hidden");
-        Template.find(".content").attr("title", "Execute the command in the Discord server to see the result.");
+        Template.find(".description").addClass("hidden");
+        Template.find(".description").attr("title", "Execute the command in the Discord server to see the result.");
       }
 
       $("#command_list").append(Template);
