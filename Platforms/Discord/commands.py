@@ -64,7 +64,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		await Command.increaseUse(cls)
 
 		# always have a minimum cooldown
-		if Command.cooldown > cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN:
+		if Command.cooldown < cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN:
 			Command.cooldown = cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN
 
 		# add command to cooldown
