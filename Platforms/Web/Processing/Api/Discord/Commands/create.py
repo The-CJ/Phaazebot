@@ -83,7 +83,8 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 
 	cls.Web.BASE.PhaazeDB.query("""
 		INSERT INTO discord_command
-		(`guild_id`, `trigger`, `content`,
+		(
+		 `guild_id`, `trigger`, `content`,
 		 `function`, `complex`, `hidden`,
 		 `require`, `required_currency`
 		)
