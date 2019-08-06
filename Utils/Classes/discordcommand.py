@@ -22,6 +22,7 @@ class DiscordCommand(DBContentClass):
 		self.require:int = data.get("require", 0)
 		self.required_currency:int = data.get("required_currency", 0)
 		self.hidden:bool = data.get("hidden", False)
+		self.cooldown:int = data.get("cooldown", 0)
 
 	async def increaseUse(self, cls:"PhaazebotDiscord", by:int=1) -> None:
 		cls.BASE.PhaazeDB.query("""
