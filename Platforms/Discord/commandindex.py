@@ -2,6 +2,7 @@ from typing import Awaitable
 from Utils.Classes.storeclasses import GlobalStorage
 
 from .Processing.textonly import textOnly
+from .Processing.listcommands import listCommands
 
 command_register:list = [
 	dict(
@@ -10,6 +11,13 @@ command_register:list = [
 		description = "A simple text dummy that returns a predefined text",
 		details = "This command requires a content, this content supports placeholder variables",
 		need_content = True
+	),
+	dict(
+		name = "List commands",
+		function = listCommands,
+		description = "List all commands a server has, also provides a link to the public command website",
+		details = "It only shows the first 20 commands, after that it only says there are more. Else it would be to spammy",
+		need_content = False
 	),
 ]
 
