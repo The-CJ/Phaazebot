@@ -12,6 +12,7 @@ from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, 
 from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.dbutils import validateDBInput
+from Platforms.Discord.commandindex import command_register
 
 async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -20,13 +21,42 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get stuff
 	guild_id:str = Data.get("guild_id")
+	trigger:str = Data.get("trigger")
+	complex_:str = validateDBInput(bool, Data.get("complex"))
+	function:str = validateDBInput(str, Data.get("function"))
+	content:str = validateDBInput(str, Data.get("content"))
+	hidden:str = validateDBInput(bool, Data.get("hidden"))
+	require:str = validateDBInput(int, Data.get("require"), 0)
+	required_currency:str = validateDBInput(int, Data.get("required_currency"), 0)
+
+	# guild id check
 	if not guild_id:
 		return await missingData(cls, WebRequest, msg="missing 'guild_id'")
-
 	if not guild_id.isdigit():
 		return await apiWrongData(cls, WebRequest, msg="'guild_id' must be a number")
 
+	# trigger
+	if not trigger:
+		return await missingData(cls, WebRequest, msg="missing 'trigger'")
+	# only take the first argument, since everything else can't be typed in a cannel
+	trigger = validateDBInput(str, trigger.split(" ")[0])
+
+	# if not complex
+	# check if the function actully exists
+	if complex_ == "0":
+		if not function:
+			return await missingData(cls, WebRequest, msg="missing 'function'")
+		if not function in [cmd["function"].__name__ for cmd in command_register]:
+			return await apiWrongData(cls, WebRequest, msg=f"'{function}' is not a valid value for field 'function'")
+
+	# check if already exists
+	res:list = cls.Web.BASE.PhaazeDB.query("""SELECT COUNT(*) as c FROM discord_command WHERE `guild_id` = %s AND `trigger` = %s""", (guild_id, trigger))
+	if res[0]["c"]:
+		return await apiDiscordCommandExists(cls, WebRequest, command=trigger)
+
+	# get/check discord
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 	if not Guild:
@@ -50,24 +80,6 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
-
-	trigger:str = Data.get("trigger")
-	if not trigger:
-		return await missingData(cls, WebRequest, msg="missing 'trigger'")
-
-	# only take the first argument, since everything else cant be typed in a cannel
-	trigger = validateDBInput(str, trigger.split(" ")[0])
-
-	res:list = cls.Web.BASE.PhaazeDB.query("""SELECT COUNT(*) as c FROM discord_command WHERE `guild_id` = %s AND `trigger` = %s""", (guild_id, trigger))
-	if res[0]["c"]:
-		return await apiDiscordCommandExists(cls, WebRequest, command=trigger)
-
-	content:str = validateDBInput(str, Data.get("content"))
-	function:str = validateDBInput(str, Data.get("function"))
-	complex_:bool = validateDBInput(bool, Data.get("complex"))
-	hidden:bool = validateDBInput(bool, Data.get("hidden"))
-	require:str = validateDBInput(int, Data.get("require"), 0)
-	required_currency:str = validateDBInput(int, Data.get("required_currency"), 0)
 
 	cls.Web.BASE.PhaazeDB.query("""
 		INSERT INTO discord_command

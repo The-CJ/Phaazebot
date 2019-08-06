@@ -131,7 +131,7 @@ var Commands = new (class {
       "trigger": $("#command_create [name=trigger]").val(),
       "content": $("#command_create [name=content]").val(),
       "function": $("#command_create [name=function]").val(),
-      "complex": $("#command_create [name=complex]").is(":checked"),
+      "complex": $("#command_create [name=commandtype]").val() == "complex" ? true : false,
       "hidden": $("#command_create [name=hidden]").is(":checked"),
       "require": $("#command_create [name=require]").val(),
       "required_currency": $("#command_create [name=required_currency]").val()
@@ -178,7 +178,7 @@ var Commands = new (class {
 
     if (command_type == "simple") {
 
-      $.get("/api/discord/commands/list", {command_type: command_type})
+      $.get("/api/discord/commands/list")
       .done(function (data) {
         var Options = $("#command_create [name=function]").html("");
         Options.append( $("<option value=''>Choose a function...</option>") );
