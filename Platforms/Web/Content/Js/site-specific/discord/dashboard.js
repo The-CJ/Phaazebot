@@ -199,7 +199,7 @@ var Commands = new (class {
   }
 
   loadCommandInfo(HTMLSelect) {
-    $("[extra-command-setting]").hide();
+    $("[extra-command-setting], [extra-command-setting] [name=content]").hide();
     var function_ = $(HTMLSelect).val();
     if (isEmpty(function_)) {return;}
 
@@ -214,6 +214,9 @@ var Commands = new (class {
 
       $("[extra-command-setting] [name=description]").text(cmd.description);
       $("[extra-command-setting] [name=details]").text(cmd.details);
+      if (cmd.need_content) {
+        $("[extra-command-setting] [name=content]").show();
+      }
 
       $("[extra-command-setting]").show();
     })

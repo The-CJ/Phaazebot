@@ -8,7 +8,8 @@ command_register:list = [
 		name = "Text dummy",
 		function = textOnly,
 		description = "A simple text dummy that returns a predefined text",
-		details = "The content of this text supports placeholder variables"
+		details = "This command requires a content, this content supports placeholder variables",
+		need_content = True
 	),
 ]
 

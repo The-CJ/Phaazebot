@@ -56,3 +56,4 @@
 [location=commands] .command .cost { background: #365b87; }
 [location=commands] .command .uses { background: #365b87; }
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
+#command_create [extra-command-setting] p { word-break: break-all; white-space: normal;}

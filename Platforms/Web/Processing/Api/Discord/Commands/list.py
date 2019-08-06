@@ -27,7 +27,8 @@ async def apiDiscordCommandsList(cls:"WebIndex", WebRequest:Request) -> Response
 			name = cmd["name"],
 			description = cmd["description"],
 			function = cmd["function"].__name__,
-			details = cmd["details"]
+			details = cmd["details"],
+			need_content = cmd["need_content"]
 		)
 
 		command_list.append(c)
