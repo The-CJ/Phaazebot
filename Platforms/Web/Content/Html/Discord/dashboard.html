@@ -176,14 +176,27 @@
 
           <div class="center-item-row md-form">
             <span class="col text-left">Function:</span>
-            <select name="function" class="browser-default custom-select">
+            <select name="function" class="browser-default custom-select" onchange="Commands.loadCommandInfo(this)">
               <!-- this div gets filled with all possible commands after "simple" is choosen -->
             </select>
           </div>
 
           <div extra-command-setting>
 
-            <textarea name="content" rows="5" style="width: 100%"></textarea>
+            <div class="center-item-row">
+              <h4>Description</h4>
+            </div>
+            <div class="center-item-row">
+              <p name="description">[N/A]</p>
+            </div>
+            <div class="center-item-row">
+              <h4>Details</h4>
+            </div>
+            <div class="center-item-row">
+              <p name="details">[N/A]</p>
+            </div>
+
+            <textarea hidden name="content" rows="5" style="width: 100%"></textarea>
 
           </div>
 

@@ -11,6 +11,7 @@ ContainsEmail:"re.Pattern" = re.compile(r"(?P<account>[a-zA-Z0-9_.+-])+@(?P<prov
 class Discord(object):
 	CommandFunctionString:"re.Pattern" = re.compile(r"\<\{(?P<object>.+?)\.(?P<value>.+?)\}\>")
 	CommandVariableString:"re.Pattern" = re.compile(r"\[(?P<name>.+?)\]")
+	CommandPosString:"re.Pattern" = re.compile(r"\$(?P<pos>\d+)")
 
 class Osu(object):
 	Maplink:"re.Pattern" = re.compile(r"(?P<method>https?://)?osu\.ppy\.sh/(?P<way>b|beatmapsets)/(?P<id1>\d+)(?P<mode>#\w+)?(/(?P<id2>\d+))?")

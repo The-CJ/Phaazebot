@@ -26,7 +26,7 @@ async def formatVars(Command:DiscordCommand, CommandContext:DiscordCommandContex
 			format_str = format_str.replace(Match.group(0), replace_index[name])
 
 		# check for and replace all $0 $4 $5 ...
-		PositionMatch = re.match(r"\$(\d+)", name)
+		PositionMatch = re.match(ReDiscord.CommandPosString, name)
 		if PositionMatch:
 			rep:str = CommandContext.part(int(PositionMatch.group(1)))
 			if not rep: rep = ""

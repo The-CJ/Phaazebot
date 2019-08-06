@@ -197,6 +197,31 @@ var Commands = new (class {
 
     }
   }
+
+  loadCommandInfo(HTMLSelect) {
+    $("[extra-command-setting]").hide();
+    var function_ = $(HTMLSelect).val();
+    if (isEmpty(function_)) {return;}
+
+    $.get("/api/discord/commands/list", {function: function_})
+    .done(function (data) {
+
+      if (data.result.length == 0) {
+        return Display.showMessage({content: "Could not find your selected command...", color:Display.color_critical});
+      }
+
+      var cmd = data.result[0];
+
+      $("[extra-command-setting] [name=description]").text(cmd.description);
+      $("[extra-command-setting] [name=details]").text(cmd.details);
+
+      $("[extra-command-setting]").show();
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load command details...", color:Display.color_critical});
+      console.log(data);
+    })
+  }
 })
 
 // utils
