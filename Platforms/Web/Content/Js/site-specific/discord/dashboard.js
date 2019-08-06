@@ -141,6 +141,9 @@ var Commands = new (class {
       Display.showMessage({content: "Successfull created command: "+data.command, color:Display.color_success});
       $("#command_create").modal("hide");
       DiscordDashboard.loadCommand();
+      // after successfull command, reset modal
+      $("#command_create [clear-after-success]").val(null);
+      $("#command_create [command-setting], #command_create [extra-command-setting]").hide();
     })
     .fail(function (data) {
       console.log(data);
@@ -212,13 +215,13 @@ var Commands = new (class {
 
       var cmd = data.result[0];
 
-      $("[extra-command-setting] [name=description]").text(cmd.description);
-      $("[extra-command-setting] [name=details]").text(cmd.details);
+      $("#command_create [extra-command-setting] [name=description]").text(cmd.description);
+      $("#command_create [extra-command-setting] [name=details]").text(cmd.details);
       if (cmd.need_content) {
-        $("[extra-command-setting] [name=content]").show();
+        $("#command_create [extra-command-setting] [name=content]").show();
       }
 
-      $("[extra-command-setting]").show();
+      $("#command_create [extra-command-setting]").show();
     })
     .fail(function (data) {
       Display.showMessage({content: "Could not load command details...", color:Display.color_critical});
