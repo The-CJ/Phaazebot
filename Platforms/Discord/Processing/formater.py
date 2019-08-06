@@ -18,19 +18,19 @@ async def formatVars(Command:DiscordCommand, CommandContext:DiscordCommandContex
 		"uses": str(Command.uses)
 	}
 
+	# check for and replace all [varname] [varname2] ...
 	VarHits:Iterator = re.finditer(ReDiscord.CommandVariableString, format_str)
-	for Match in VarHits:
-		name:str = Match.group("name")
+	for VarMatch in VarHits:
+		name:str = VarMatch.group("name")
 
 		if name in replace_index:
-			format_str = format_str.replace(Match.group(0), replace_index[name])
+			format_str = format_str.replace(VarMatch.group(0), replace_index[name])
 
-		# check for and replace all $0 $4 $5 ...
-		PositionMatch = re.match(ReDiscord.CommandPosString, name)
-		if PositionMatch:
-			rep:str = CommandContext.part(int(PositionMatch.group(1)))
-			if not rep: rep = ""
-			format_str = format_str.replace(Match.group(0), rep)
-			continue
+	# check for and replace all $0 $4 $5 ...
+	PositionMatch:Iterator = re.finditer(ReDiscord.CommandPosString, format_str)
+	for PosMatch in PositionMatch:
+		rep:str = CommandContext.part(int(PosMatch.group("pos")))
+		if not rep: rep = ""
+		format_str = format_str.replace(PosMatch.group(0), rep)
 
 	return format_str
