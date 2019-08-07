@@ -74,6 +74,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 			uses = command.uses,
 			require = command.require,
 			hidden = command.hidden,
+			cooldown = command.cooldown,
 			id = command.command_id
 		)
 

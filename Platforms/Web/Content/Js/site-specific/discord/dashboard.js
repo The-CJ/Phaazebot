@@ -133,6 +133,7 @@ var Commands = new (class {
       "function": $("#command_create [name=function]").val(),
       "complex": $("#command_create [name=commandtype]").val() == "complex" ? true : false,
       "hidden": $("#command_create [name=hidden]").is(":checked"),
+      "cooldown": $("#command_create [name=cooldown]").val(),
       "require": $("#command_create [name=require]").val(),
       "required_currency": $("#command_create [name=required_currency]").val()
     };

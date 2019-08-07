@@ -162,6 +162,14 @@
         </div>
 
         <div class="center-item-row md-form">
+          <span class="col text-left">Cooldown in sec.</span>
+          <div class="col text-center">
+            <input type="number" name="cooldown" value="10" min="3" max="600" clear-after-success oninput="$('#command_create [name=cooldown_slider]').val(this.value)" style="width:6ch;">
+            <input type="range" name="cooldown_slider" value="10" min="3" max="600" step="1" clear-after-success oninput="$('#command_create [name=cooldown]').val(this.value)">
+          </div>
+        </div>
+
+        <div class="center-item-row md-form">
           <span class="col text-left">What type of command?</span>
           <select name="commandtype" class="browser-default custom-select" onchange="Commands.loadCommands(this)" clear-after-success>
             <option value="">Choose a type...</option>

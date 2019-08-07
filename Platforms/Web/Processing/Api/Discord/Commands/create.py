@@ -28,6 +28,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	function:str = validateDBInput(str, Data.get("function"))
 	content:str = validateDBInput(str, Data.get("content"))
 	hidden:str = validateDBInput(bool, Data.get("hidden"))
+	cooldown:str = validateDBInput(int, Data.get("cooldown"), 0)
 	require:str = validateDBInput(int, Data.get("require"), 0)
 	required_currency:str = validateDBInput(int, Data.get("required_currency"), 0)
 
@@ -86,15 +87,15 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 		(
 		 `guild_id`, `trigger`, `content`,
 		 `function`, `complex`, `hidden`,
-		 `require`, `required_currency`
+		 `require`, `required_currency`, `cooldown`
 		)
 		VALUES (
 		 %s, %s, %s,
 		 %s, %s, %s,
-		 %s, %s)""",
+		 %s, %s, %s)""",
 		(guild_id, trigger, content,
 		function, complex_, hidden,
-		require, required_currency)
+		require, required_currency, cooldown)
 	)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new command: S:{guild_id} T:{trigger}", require="discord:commands")
