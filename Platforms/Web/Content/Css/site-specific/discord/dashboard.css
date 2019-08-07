@@ -58,4 +58,4 @@
 [location=commands] .command .uses { background: #365b87; }
 [location=commands] .command .cooldown { background: #365b87; }
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
-#command_create [extra-command-setting] p { word-break: break-word; white-space: normal;}
+#command_create [extra-command-setting] p { word-break: break-word; white-space: pre-line;}
