@@ -2,22 +2,33 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
+import discord
+from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from Platforms.Discord.utils import getDiscordServerCommands
+from Platforms.Discord.utils import getDiscordServerQuotes
 
 async def showQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
-	command_link:str = f"https://phaaze.net/discord/commands/{Command.server_id}"
-	all_commands:list = await getDiscordServerCommands(cls, Command.server_id)
+	specific_id:str = CommandContext.part(1)
+	if specific_id:
+		if not specific_id.isdigit():
+			specific_id = ""
 
-	finished_str:str = ":link: All commands on this server in one place\n"\
-	f"{command_link}\n"\
-	f"There are {str(len(all_commands))} Command(s) on this server\n"
+	if specific_id:
+		random:bool = False
+	else:
+		random:bool = True
 
-	finished_str += "\n".join( [f"`{C.trigger.replace('`', '')}`" for C in all_commands[:MAX_SHOW_COMMANDS]] )
+	quote:list = await getDiscordServerQuotes(cls, Command.server_id, quote_id=specific_id, random=random, limit=1)
 
-	if len(all_commands) > 20:
-		finished_str += "\n and some more"
+	if not quote and not specific_id:
+		return {"content": ":grey_exclamation: This server don't has any Quotes"}
+	elif not quote and specific_id:
+		return {"content": f":warning: No quote found with id {specific_id} on this server"}
+	else:
+		Quote:DiscordQuote = quote[0]
 
-	return {"content": finished_str}
+		Emb = discord.Embed(description=str(Quote.content))
+		Emb.set_footer(text=f"ID: {str(Quote.quote_id)}")
+		return {"embed": Emb}

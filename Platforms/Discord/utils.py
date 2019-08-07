@@ -3,10 +3,10 @@ if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
 import discord
-import json
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordleveluser import DiscordLevelUser
+from Utils.Classes.discordquote import DiscordQuote
 
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
 	"""
@@ -110,6 +110,39 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 
 	if res:
 		return [DiscordLevelUser(x, guild_id) for x in res]
+
+	else:
+		return []
+
+async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:str=None, random:bool=False, limit:int=0) -> list:
+	"""
+		Get server quotes, if quote_id = None, get all
+		else only get one associated with the quote_id
+		Returns a list of DiscordQuote().
+	"""
+
+	sql:str = """
+		SELECT * FROM discord_quote
+		WHERE discord_quote.guild_id = %s"""
+
+	values:tuple = (guild_id,)
+
+	if quote_id:
+		sql += " AND discord_quote.id = %s"
+		values += (quote_id,)
+
+	if random:
+		sql += " ORDER BY RAND()"
+	else:
+		sql += " ORDER BY id"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+
+	res:list = cls.BASE.PhaazeDB.query(sql, values)
+
+	if res:
+		return [DiscordQuote(x, guild_id) for x in res]
 
 	else:
 		return []
