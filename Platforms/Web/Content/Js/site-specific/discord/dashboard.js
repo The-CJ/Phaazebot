@@ -70,6 +70,7 @@ var DiscordDashboard = new (class {
         Template.find(".require").text( translateRequire(command.require) );
         Template.find(".cost").text(command.cost);
         Template.find(".uses").text(command.uses);
+        Template.find(".cooldown").text(command.cooldown);
         Template.attr("command-id", command.id);
 
         if (command.hidden) {

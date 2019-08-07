@@ -48,6 +48,7 @@
 [location=commands] .header .require { background: #293788; }
 [location=commands] .header .cost { background: #364287; }
 [location=commands] .header .uses { background: #364287; }
+[location=commands] .header .cooldown { background: #364287; }
 
 [location=commands] .command .trigger { background: #295888; }
 [location=commands] .command .function { background: #365b87; word-break: break-word;}
@@ -55,5 +56,6 @@
 [location=commands] .command .require { background: #295888; }
 [location=commands] .command .cost { background: #365b87; }
 [location=commands] .command .uses { background: #365b87; }
+[location=commands] .command .cooldown { background: #365b87; }
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
 #command_create [extra-command-setting] p { word-break: break-word; white-space: normal;}
