@@ -57,11 +57,24 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		# check if command is in cooldown
 		if GDCCS.check(Command): return False
 
+		# get permission object and check with command require
 		Permission:DiscordPermission = DiscordPermission(Message)
-
 		if not Permission.rank >= Command.require: return False
 
-		await Command.increaseUse(cls)
+		# owner disables normal commands serverwide,
+		if ServerSettings.owner_disable_normal and Command.require == 0:
+			# noone except the owner can use them
+			if Permission.rank != 3: return False
+
+		# owner disables regular commands serverwide,
+		if ServerSettings.owner_disable_regular and Command.require == 1:
+			# noone except the owner can use them
+			if Permission.rank != 3: return False
+
+		# owner disables mod commands serverwide,
+		if ServerSettings.owner_disable_mod and Command.require == 2:
+			# noone except the owner can use them
+			if Permission.rank != 3: return False
 
 		# always have a minimum cooldown
 		if Command.cooldown < cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN:
@@ -70,6 +83,10 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		# add command to cooldown
 		GDCCS.cooldown(Command)
 
+		# increase use
+		await Command.increaseUse(cls)
+
+		# throw it to formatCommand and send the return values
 		final_result:dict = await formatCommand(cls, Command, CommandContext)
 		await Message.channel.send(**final_result)
 
