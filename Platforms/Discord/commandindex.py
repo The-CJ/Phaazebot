@@ -4,6 +4,7 @@ from Utils.Classes.storeclasses import GlobalStorage
 from .Processing.textonly import textOnly
 from .Processing.listcommands import listCommands
 from .Processing.showquote import showQuote
+from .Processing.randomchoice import randomChoice
 
 command_register:list = [
 	dict(
@@ -28,6 +29,15 @@ command_register:list = [
 		description = "If not defined otherwise, it returns a random quote from this server",
 		details = "This function takes one 1 optional argument.\n"\
 			"(1) ID of the quote you want.",
+		need_content = False
+	),
+	dict(
+		name = "Random choise",
+		function = randomChoice,
+		description = "Takes all arguments after the command, sepparated by ;\n"\
+			"Gives back one of the splittet content",
+		details = "This function takes everything after the trigger.\n"\
+			"and sepperated by ;",
 		need_content = False
 	),
 ]
