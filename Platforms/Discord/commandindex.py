@@ -6,6 +6,7 @@ from .Processing.listcommands import listCommands
 from .Processing.showquote import showQuote
 from .Processing.randomchoice import randomChoice
 from .Processing.urbandictionary import urbanDictionary
+from .Processing.whois import whois
 
 command_register:list = [
 	dict(
@@ -46,6 +47,15 @@ command_register:list = [
 		function = urbanDictionary,
 		description = "Uses UrbanDictionary to get a difination for your input",
 		details = "This function takes everything after the trigger and tryed to define it",
+		need_content = False
+	),
+	dict(
+		name = "Whois",
+		function = whois,
+		description = "Gives a summary of a user, with everything he has\n"\
+			"(does not include EXP and Currency, these are sepperate commands)",
+		details = "This function takes one 1 optional argument\n"\
+			"(1) Query string to search a user: Name, id, Mention or None for the command caller",
 		need_content = False
 	),
 ]

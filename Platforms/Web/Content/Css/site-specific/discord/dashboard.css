@@ -49,7 +49,6 @@
 [location=commands] .header .cost { background: #364287; }
 [location=commands] .header .uses { background: #364287; }
 [location=commands] .header .cooldown { background: #364287; }
-
 [location=commands] .command .trigger { background: #295888; }
 [location=commands] .command .function { background: #365b87; word-break: break-word;}
 [location=commands] .command .function.hidden { background: #665b87 }

@@ -8,6 +8,7 @@ from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordleveluser import DiscordLevelUser
 from Utils.Classes.discordquote import DiscordQuote
 
+# db management
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
 	"""
 		Get server settings for a discord server/guild
@@ -147,4 +148,29 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 	else:
 		return []
 
-# quote get
+# utility functions
+def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None) -> discord.Member or None:
+	"""
+		Tryes to get a member from a guild, the search input may be,
+		the user name or his id, else None is given
+
+		Also can take Message mentions in account if Message given
+	"""
+
+	# mention
+	if Message:
+		if Message.mentions:
+			return Message.mentions[0]
+
+	search:str = str(search)
+	Member:discord.Member = None
+
+	# id
+	if search.isdigit():
+		Member = Guild.get_member(int(search))
+		if Member: return Member
+
+	# name
+	Member = Guild.get_member_named(search)
+	if Member:
+		return Member
