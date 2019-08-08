@@ -5,6 +5,7 @@ from .Processing.textonly import textOnly
 from .Processing.listcommands import listCommands
 from .Processing.showquote import showQuote
 from .Processing.randomchoice import randomChoice
+from .Processing.urbandictionary import urbanDictionary
 
 command_register:list = [
 	dict(
@@ -38,6 +39,13 @@ command_register:list = [
 			"Gives back one of the splittet content",
 		details = "This function takes everything after the trigger.\n"\
 			"and sepperated by ;",
+		need_content = False
+	),
+	dict(
+		name = "Urban define",
+		function = urbanDictionary,
+		description = "Uses UrbanDictionary to get a difination for your input",
+		details = "This function takes everything after the trigger and tryed to define it",
 		need_content = False
 	),
 ]
