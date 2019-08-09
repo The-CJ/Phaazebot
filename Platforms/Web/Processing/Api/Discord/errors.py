@@ -88,7 +88,7 @@ async def apiDiscordCommandLimit(cls:"WebIndex", WebRequest:Request, **kwargs:di
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_COMAMNDS_AMOUNT)
+	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT)
 	if limit:
 		res["limit"] = limit
 

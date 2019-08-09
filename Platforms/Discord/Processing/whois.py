@@ -71,8 +71,9 @@ async def whois(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:D
 	if Member.activity:
 		if type(Member.activity) == discord.activity.Game:
 			Emb.add_field(name=":game_die: Playing:", value=str(Member.activity),inline=True)
-		# TODO: add other types
-		# Emb.add_field(name=":video_camera: Currently Streaming:",value=user.game.name,inline=True)
+
+		elif type(Member.activity) == discord.activity.Streaming:
+			Emb.add_field(name=":video_camera: Currently Streaming:",value=str(Member.activity),inline=True)
 
 	if Member.bot:
 		Emb.add_field(name=":robot: Bot-account:",value="True",inline=True)

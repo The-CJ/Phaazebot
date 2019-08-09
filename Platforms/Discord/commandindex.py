@@ -4,6 +4,7 @@ from Utils.Classes.storeclasses import GlobalStorage
 from .Processing.textonly import textOnly
 from .Processing.listcommands import listCommands
 from .Processing.showquote import showQuote
+from .Processing.addquote import addQuote
 from .Processing.randomchoice import randomChoice
 from .Processing.urbandictionary import urbanDictionary
 from .Processing.whois import whois
@@ -31,6 +32,15 @@ command_register:list = [
 		description = "If not defined otherwise, it returns a random quote from this server",
 		details = "This function takes one 1 optional argument.\n"\
 			"(1) ID of the quote you want.",
+		need_content = False
+	),
+	dict(
+		name = "Add quote",
+		function = addQuote,
+		description = "Adds a new quote to the server quote list.\n"\
+			"(It's highly recommended to set the requirement higher than Everyone)",
+		details = "This function takes everything after the trigger.\n"\
+			"and makes it the new quote.",
 		need_content = False
 	),
 	dict(
