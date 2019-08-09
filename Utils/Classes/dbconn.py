@@ -39,6 +39,7 @@ class DBConn(object):
 
 		# read result
 		if Cursor._have_unread_result(): res:list = Cursor.fetchall()
+		elif Cursor.lastrowid: res:list = [Cursor.lastrowid]
 		else: res:list = []
 
 		# commit and close
