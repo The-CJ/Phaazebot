@@ -5,6 +5,7 @@ from .Processing.textonly import textOnly
 from .Processing.listcommands import listCommands
 from .Processing.showquote import showQuote
 from .Processing.addquote import addQuote
+from .Processing.removequote import removeQuote
 from .Processing.randomchoice import randomChoice
 from .Processing.urbandictionary import urbanDictionary
 from .Processing.whois import whois
@@ -41,6 +42,15 @@ command_register:list = [
 			"(It's highly recommended to set the requirement higher than Everyone)",
 		details = "This function takes everything after the trigger.\n"\
 			"and makes it the new quote.",
+		need_content = False
+	),
+	dict(
+		name = "Remove quote",
+		function = removeQuote,
+		description = "Removes a quote from the server quote list.\n"\
+			"(It's highly recommended to set the requirement higher than Everyone)",
+		details = "This function takes one 1 required argument.\n"\
+			"[1] The Quote ID to delete.",
 		need_content = False
 	),
 	dict(
