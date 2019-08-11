@@ -9,6 +9,7 @@ from .Processing.removequote import removeQuote
 from .Processing.randomchoice import randomChoice
 from .Processing.urbandictionary import urbanDictionary
 from .Processing.whois import whois
+from .Processing.prunemessages import pruneMessages
 
 command_register:list = [
 	dict(
@@ -76,6 +77,15 @@ command_register:list = [
 			"(does not include EXP and Currency, these are sepperate commands)",
 		details = "This function takes one 1 optional argument\n"\
 			"(1) Query string to search a user: Name, id, Mention or None for the command caller",
+		need_content = False
+	),
+	dict(
+		name = "Prune messages",
+		function = pruneMessages,
+		description = "Deletes multiple messages in a channel.\n"\
+			"By number or member",
+		details = "This function takes one 1 required argument\n"\
+			"[1] Number or query string to search a user",
 		need_content = False
 	),
 ]

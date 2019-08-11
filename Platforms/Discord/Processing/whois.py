@@ -12,7 +12,6 @@ from Platforms.Discord.utils import getDiscordMemberFromString
 async def whois(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
 	Member:discord.Member = None
-	discord.Status
 
 	search_from:str = " ".join([x for x in CommandContext.parts[1:]])
 	# no search use author
