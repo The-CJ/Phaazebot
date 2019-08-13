@@ -3,12 +3,13 @@ if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import discord
-# import datetime
+import datetime
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Platforms.Discord.utils import getDiscordMemberFromString
 
 MAX_PRUNE_AMOUNT:int = 500
+DELETE_VIA_MEMBER:int = 300
 
 async def pruneMessages(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
@@ -31,6 +32,54 @@ async def pruneMessages(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 			return {"content": ":warning: Could not find a member..."}
 
 		return await pruneMessagesByMember(cls, Command, CommandContext, SearchMember)
+
+class PruneCheck(object):
+	"""
+		Used to provide a lookup for prune messages,
+		all messages go through self.check and all messages that should be deleted return true.
+		Following messages should be deleted:
+			# Only delete messages that are in time range of 2 weeks
+			- Inital Message (the message that executed prune)
+			-- If `method` == 1:
+				- all messages
+			-- if `method` == 2:
+				- up to 300 messages of found member as `Member` in channel
+	"""
+	def __init__(self, InitMsg:discord.Message, method:int=0, Member:discord.Member=None):
+		self.InitalMessage:discord.Message = InitMsg
+
+		self.method:int = method
+		self.Member:discord.Member = Member
+
+		self.amount_deleted:int = 0
+		self.amount_to_old:int = 0
+
+		self.MaxAge:datetime.datetime = (datetime.datetime.now() - datetime.timedelta(weeks = 2))
+
+	def check(self, CheckMessage:discord.Message) -> bool:
+		"""
+			checks a message, if anything is wrong,
+			return False, and kee pthe message,
+			else True for delete
+		"""
+		# Inital Message
+		if CheckMessage.id == self.InitalMessage.id:
+			self.amount_deleted += 1
+			return True
+
+		# check for member as author, if not False
+		if self.method == 2:
+			if self.Member.id != CheckMessage.author.id:
+				return False
+
+		# message is too old, skip
+		if CheckMessage.created_at < self.MaxAge:
+			self.amount_to_old += 1
+			return False
+
+		# if not stopped, delete it
+		self.amount_deleted += 1
+		return True
 
 async def pruneMessagesByAmount(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext, amount:int) -> dict:
 	# to much
@@ -55,7 +104,7 @@ async def pruneMessagesByAmount(cls:"PhaazebotDiscord", Command:DiscordCommand, 
 		if (not Res) or (Res.content.lower()) != "yes":
 			return {"content": ":warning: Prune canceled."}
 
-		return {"content": "Should be pruned"}
+	return {"content": "Should be pruned"}
 
 
 async def pruneMessagesByMember(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext, Member:discord.Member) -> dict:
