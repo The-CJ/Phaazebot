@@ -38,17 +38,13 @@ class PruneCheck(object):
 		Used to provide a lookup for prune messages,
 		all messages go through self.check and all messages that should be deleted return true.
 		Following messages should be deleted:
-			# Only delete messages that are in time range of 2 weeks
+			- Only delete messages that are in time range of 2 weeks
 			- Inital Message (the message that executed prune)
-			-- If `method` == 1:
-				- all messages
-			-- if `method` == 2:
-				- up to 300 messages of found member as `Member` in channel
+			- If given a Member, only messages from this member
 	"""
-	def __init__(self, InitMsg:discord.Message, method:int=0, Member:discord.Member=None):
+	def __init__(self, InitMsg:discord.Message, Member:discord.Member=None):
 		self.InitalMessage:discord.Message = InitMsg
 
-		self.method:int = method
 		self.Member:discord.Member = Member
 
 		self.amount_deleted:int = 0
@@ -68,7 +64,7 @@ class PruneCheck(object):
 			return True
 
 		# check for member as author, if not False
-		if self.method == 2:
+		if self.Member:
 			if self.Member.id != CheckMessage.author.id:
 				return False
 
@@ -104,9 +100,29 @@ async def pruneMessagesByAmount(cls:"PhaazebotDiscord", Command:DiscordCommand, 
 		if (not Res) or (Res.content.lower()) != "yes":
 			return {"content": ":warning: Prune canceled."}
 
-	return {"content": "Should be pruned"}
+	PruneChecker:PruneCheck = PruneCheck(InitMsg=CommandContext.Message)
+	deleted_messages:list = await CommandContext.Message.channel.purge(limit=amount+1, check=PruneChecker.check)
 
+	return_msg = f":wastebasket: Deleted the last **{len(deleted_messages)-1}** messages :pencil2:"
+	if PruneChecker.amount_to_old:
+		return_msg += f"\n({PruneChecker.amount_to_old} could not be deleted, because there are older than 14 days)"
+
+	DeleteSuccessMsg:discord.Message = await CommandContext.Message.channel.send(content = return_msg)
+	await DeleteSuccessMsg.delete(delay=10)
+
+	return {}
 
 async def pruneMessagesByMember(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext, Member:discord.Member) -> dict:
 
-	return {"content": "Should be pruned"}
+	PruneChecker:PruneCheck = PruneCheck(InitMsg=CommandContext.Message, Member=Member)
+	deleted_messages:list = await CommandContext.Message.channel.purge(limit=300, check=PruneChecker.check)
+
+	return_msg = f":wastebasket: Deleted the last **{len(deleted_messages)-1}** messages :pencil2:"
+	return_msg += f"\nfrom {Member.name}"
+	if PruneChecker.amount_to_old:
+		return_msg += f"\n({PruneChecker.amount_to_old} could not be deleted, because there are older than 14 days)"
+
+	DeleteSuccessMsg:discord.Message = await CommandContext.Message.channel.send(content = return_msg)
+	await DeleteSuccessMsg.delete(delay=10)
+
+	return {}
