@@ -88,6 +88,12 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 		# throw it to formatCommand and send the return values
 		final_result:dict = await formatCommand(cls, Command, CommandContext)
+
+		if not final_result:
+			# there a commands that not have a direct return value,
+			# but are still valid and successfull
+			return True
+
 		await Message.channel.send(**final_result)
 
 		return True
