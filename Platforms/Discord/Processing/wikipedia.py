@@ -19,9 +19,11 @@ async def searchWikipedia(cls:"PhaazebotDiscord", Command:DiscordCommand, Comman
 		return {"content": ":warning: You need to define something you wanna search for."}
 
 	try:
-		res:dict = requests.get(PATH_SEARCH, {"action": "opensearch", "limit":"7", "search":search}).json()
+		res:list = requests.get(PATH_SEARCH, {"action": "opensearch", "limit":"7", "search":search}).json()
 	except:
 		return {"content": ":warning: Could not connect to Wikipedia, try later again."}
+
+	res:list = removeRefereTo(res)
 
 	# res = ['<search>', [<found titles>], [<found quick-desc>], [<found links>]]
 	if not res[1]:
@@ -89,3 +91,14 @@ async def getSummary(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCont
 	Emb.set_footer(text="Provided by Wikipedia", icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/2000px-Wikipedia-logo-v2.svg.png")
 
 	return {"embed": Emb}
+
+def removeRefereTo(api_result:list) -> list:
+	try:
+		# res = ['<search>', [<found titles>], [<found quick-desc>], [<found links>]]
+		first_description:str = api_result[2][0].lower()
+		if not first_description or first_description.endswith(":"):
+			# a thing not having a description means its a "refere to:" page, ignore these and remove
+			api_result[1].pop(0)
+			api_result[2].pop(0)
+	except:	pass
+	finally: return api_result
