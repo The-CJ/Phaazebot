@@ -26,3 +26,20 @@ def randomString(size:int = 10, pool:list = [1,2,3], extra:str = "") -> str:
 	if 4 in pool: string_pool += string.punctuation
 	key = ''.join(random.choice(string_pool+extra) for x in range(size))
 	return key
+
+def numberToHugeLetter(number:int) -> str:
+	numbers:dict = {
+		"0": ":zero:",
+		"1": ":one:",
+		"2": ":two:",
+		"3": ":three:",
+		"4": ":four:",
+		"5": ":five:",
+		"6": ":six:",
+		"7": ":seven:",
+		"8": ":eight:",
+		"9": ":nine:"
+	}
+
+	number = str(number)
+	return "".join([numbers.get(x, "") for x in number])
