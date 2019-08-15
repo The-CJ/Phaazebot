@@ -10,6 +10,7 @@ from .Processing.randomchoice import randomChoice
 from .Processing.urbandictionary import urbanDictionary
 from .Processing.whois import whois
 from .Processing.prunemessages import pruneMessages
+from .Processing.wikipedia import searchWikipedia
 
 command_register:list = [
 	dict(
@@ -86,6 +87,14 @@ command_register:list = [
 			"By number or member",
 		details = "This function takes one 1 required argument\n"\
 			"[1] Number or query string to search a user",
+		need_content = False
+	),
+	dict(
+		name = "Wikipedia search",
+		function = searchWikipedia,
+		description = "Let's you search through wikipedia.\n"\
+			"Tryes to autocomplete you input (if possible)",
+		details = "This function takes everything after the trigger and search for it",
 		need_content = False
 	),
 ]
