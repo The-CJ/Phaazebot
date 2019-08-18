@@ -11,6 +11,7 @@ from .Processing.urbandictionary import urbanDictionary
 from .Processing.whois import whois
 from .Processing.prunemessages import pruneMessages
 from .Processing.wikipedia import searchWikipedia
+from .Processing.osustatus import osuStats
 
 command_register:list = [
 	dict(
@@ -95,6 +96,16 @@ command_register:list = [
 		description = "Let's you search through wikipedia.\n"\
 			"Tryes to autocomplete you input (if possible)",
 		details = "This function takes everything after the trigger and search for it",
+		need_content = False
+	),
+	dict(
+		name = "osu! statistics",
+		function = osuStats,
+		description = "Returns a summary of a osu!player stats.",
+		details = "This function takes one 1 required argument\n"\
+			"[1] A query string for the user: Name or osu-ID\n"\
+			"Extra Args: include '--ctb', '--taiko' or '--mania' to change search mode\n"\
+			"this arg will be filtered out of the search query",
 		need_content = False
 	),
 ]
