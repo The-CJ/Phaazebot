@@ -104,7 +104,8 @@ command_register:list = [
 		description = "Returns a summary of a osu!player stats.",
 		details = "This function takes one 1 required argument\n"\
 			"[1] A query string for the user: Name or osu-ID\n"\
-			"Extra Args: include '--ctb', '--taiko' or '--mania' to change search mode\n"\
+			"Extra Args: include '--ctb', '--taiko' or '--mania'\n"\
+			"to change search mode\n"\
 			"this arg will be filtered out of the search query",
 		need_content = False
 	),

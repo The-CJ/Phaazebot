@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from main import Phaazebot
 
@@ -19,10 +19,11 @@ class Mainframe(threading.Thread):
 
 		# a new idea, current is the thread that is actully running, after its crashed, use tpl, to generate a new one
 		# making it so and can be looped from a dict
-		self.modules:Dict[str, dict] = dict(
+		self.modules:dict = dict(
 			discord = dict(current=DiscordThread(BASE), tpl=DiscordThread),
 			worker = dict(current=WorkerThread(BASE), tpl=WorkerThread),
 			web = dict(current=WebThread(BASE), tpl=WebThread),
+			osu_irc = dict(current=OsuThread(BASE), tpl=OsuThread),
 		)
 
 	def run(self) -> None:
@@ -133,4 +134,31 @@ class WebThread(threading.Thread):
 
 		except Exception as e:
 			self.BASE.Logger.error(f"Web Thread crashed: {str(e)}")
+			traceback.print_exc()
+
+class OsuThread(threading.Thread):
+	def __init__(self, BASE:"Phaazebot"):
+		super().__init__()
+		self.BASE:"Phaazebot" = BASE
+		self.name:str = "Osu"
+		self.daemon:bool = True
+		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
+
+	def run(self) -> None:
+		try:
+			asyncio.set_event_loop(self.loop)
+			from Platforms.Osu.main_osu import PhaazeOsu
+
+			self.BASE.Osu:PhaazeOsu = PhaazeOsu(self.BASE)
+			self.BASE.OsuLoop:asyncio.AbstractEventLoop = self.loop
+
+			self.loop.run_until_complete( self.BASE.Osu.start(self.BASE.Access.OSU_IRC_TOKEN, reconnect=True) )
+
+			# we only should reach this point when osu is ended gracefull
+			# which means a wanted disconnect,
+			# else it will always call a exception
+			self.BASE.Logger.info("Osu disconnected")
+
+		except Exception as e:
+			self.BASE.Logger.error(f"Osu Thread crashed: {str(e)}")
 			traceback.print_exc()
