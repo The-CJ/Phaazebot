@@ -43,3 +43,25 @@ def numberToHugeLetter(number:int) -> str:
 
 	number = str(number)
 	return "".join([numbers.get(x, "") for x in number])
+
+def prettifyNumbers(number:int or float, ndigits:int=2, sepperator:str="'") -> str:
+	"""
+		Turns a number into a dottet format to make it easyer readable,
+		or make floats to a fix value
+	"""
+
+	if not number: return "0"
+
+	if type(number) == str:
+		try:
+			if ndigits:
+				number = float(number)
+			else:
+				number = int(number)
+		except:
+			return number
+
+	if not ndigits:
+		return ("{:,}".format( number, ndigits )).replace(",", sepperator)
+	else:
+		return ("{:,}".format( round(number, ndigits) )).replace(",", sepperator)

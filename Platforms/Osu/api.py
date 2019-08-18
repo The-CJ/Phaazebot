@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-if TYPE_CHECKING or 1:
+if TYPE_CHECKING:
 	from main import Phaazebot
 
 import requests
