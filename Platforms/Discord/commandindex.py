@@ -12,6 +12,10 @@ from .Processing.whois import whois
 from .Processing.prunemessages import pruneMessages
 from .Processing.wikipedia import searchWikipedia
 from .Processing.osustatus import osuStats
+from .Processing.listassignrole import listAssignRole
+from .Processing.addassignrole import addAssignRole
+from .Processing.removeassignrole import removeAssignRole
+from .Processing.assignrole import assignRole
 
 command_register:list = [
 	dict(
@@ -23,7 +27,7 @@ command_register:list = [
 		need_content = True
 	),
 	dict(
-		name = "List commands",
+		name = "Commands | List",
 		function = listCommands,
 		description = "List all commands a server has, also provides a link to the public command website\n"\
 			"It only shows the first 20 commands, after that it only says there are more. Else it would be to spammy",
@@ -31,7 +35,7 @@ command_register:list = [
 		need_content = False
 	),
 	dict(
-		name = "Show quote",
+		name = "Quote | Show",
 		function = showQuote,
 		description = "If not defined otherwise, it returns a random quote from this server",
 		details = "This function takes one 1 optional argument.\n"\
@@ -39,7 +43,7 @@ command_register:list = [
 		need_content = False
 	),
 	dict(
-		name = "Add quote",
+		name = "Quote | Add",
 		function = addQuote,
 		description = "Adds a new quote to the server quote list.\n"\
 			"(It's highly recommended to set the requirement higher than Everyone)",
@@ -48,7 +52,7 @@ command_register:list = [
 		need_content = False
 	),
 	dict(
-		name = "Remove quote",
+		name = "Quote | Remove",
 		function = removeQuote,
 		description = "Removes a quote from the server quote list.\n"\
 			"(It's highly recommended to set the requirement higher than Everyone)",
@@ -78,16 +82,17 @@ command_register:list = [
 		description = "Gives a summary of a user, with everything he has\n"\
 			"(does not include EXP and Currency, these are sepperate commands)",
 		details = "This function takes one 1 optional argument\n"\
-			"(1) Query string to search a user: Name, id, Mention or None for the command caller",
+			"(1) Query string to search a user: name, mention, ID or None for the command caller",
 		need_content = False
 	),
 	dict(
 		name = "Prune messages",
 		function = pruneMessages,
 		description = "Deletes multiple messages in a channel.\n"\
-			"By number or member",
+			"By number or member\n"\
+			"(It's highly recommended to set the requirement higher than Everyone)",
 		details = "This function takes one 1 required argument\n"\
-			"[1] Number or query string to search a user",
+			"[1] Number or query string to search a user: name, mention or ID",
 		need_content = False
 	),
 	dict(
@@ -99,14 +104,24 @@ command_register:list = [
 		need_content = False
 	),
 	dict(
-		name = "osu! statistics",
+		name = "osu! | Player statistics",
 		function = osuStats,
 		description = "Returns a summary of a osu!player stats.",
-		details = "This function takes one 1 required argument\n"\
-			"[1] A query string for the user: Name or osu-ID\n"\
+		details = "This function takes 1 required argument\n"\
+			"[1] A query string for the user: name or osu-ID\n"\
 			"Extra Args: include '--ctb', '--taiko' or '--mania'\n"\
 			"to change search mode\n"\
 			"this arg will be filtered out of the search query",
+		need_content = False
+	),
+	dict(
+		name = "Assign role | Add",
+		function = addAssignRole,
+		description = "Add's a new entry for assign roles.\n"\
+			"(It's highly recommended to set the requirement higher than Everyone)",
+		details = "This function takes 2 required arguments\n"\
+			"[1] A word as the role-trigger\n"\
+			"[2] A query string for the role: name, mention or ID",
 		need_content = False
 	),
 ]
