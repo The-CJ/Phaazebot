@@ -95,6 +95,7 @@ class DiscordThread(threading.Thread):
 			self.BASE.Discord:PhaazebotDiscord = PhaazebotDiscord(self.BASE)
 			self.BASE.DiscordLoop:asyncio.AbstractEventLoop = self.loop
 
+			self.BASE.IsReady.discord = False
 			self.loop.run_until_complete( self.BASE.Discord.start(self.BASE.Access.DISCORD_TOKEN, reconnect=True) )
 
 			# we only reach this point when discord is ended gracefull
@@ -152,6 +153,7 @@ class OsuThread(threading.Thread):
 			self.BASE.Osu:PhaazeOsu = PhaazeOsu(self.BASE)
 			self.BASE.OsuLoop:asyncio.AbstractEventLoop = self.loop
 
+			self.BASE.IsReady.osu = True
 			self.loop.run_until_complete( self.BASE.Osu.start(token=self.BASE.Access.OSU_IRC_TOKEN, nickname=self.BASE.Access.OSU_IRC_USERNAME, reconnect=True) )
 
 			# we only should reach this point when osu is ended gracefull

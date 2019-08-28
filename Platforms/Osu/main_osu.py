@@ -14,4 +14,4 @@ class PhaazeOsu(osu.Client):
 		self.BASE.IsReady.osu = True
 
 	async def onMessage(self, message):
-		print(message)
+		pass
