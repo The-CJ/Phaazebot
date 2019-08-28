@@ -174,3 +174,24 @@ def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, sear
 	Member = Guild.get_member_named(search)
 	if Member:
 		return Member
+
+def getDiscordRoleFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None) -> discord.Role or None:
+	"""
+		Tryes to get a role from a guild, the search input may be,
+		the role name or the id, else None is given
+
+		Also can take Message role mentions in account if Message given
+	"""
+
+	# mention
+	if Message:
+		if Message.role_mentions:
+			return Message.role_mentions[0]
+
+	search:str = str(search)
+
+	for Ro in Guild.roles:
+		if search.isdigit():
+			if Ro.id == int(search): return Ro
+
+		if Ro.name == search: return Ro
