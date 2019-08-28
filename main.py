@@ -9,6 +9,7 @@ from Utils.Classes.dbconn import DBConn
 # platforms
 from Platforms.Discord.main_discord import PhaazebotDiscord
 from Platforms.Web.main_web import PhaazebotWeb
+from Platforms.Osu.main_osu import PhaazeOsu
 
 class Phaazebot(object):
 	"""
@@ -39,19 +40,19 @@ class Phaazebot(object):
 		# all of these get added by self.Mainframe when started
 		# both the actual working part anda quick link to there running loops, to inject async funtions for them to run
 		# most likly used for the worker, that can calculate time consuming functions or discord because send_message must be caled from this loop
-		self.Discord:PhaazebotDiscord = None
+		self.Discord:PhaazebotDiscord = PhaazebotDiscord(self)
 		self.DiscordLoop:asyncio.AbstractEventLoop = None
 
 		self.Twitch = None
 		self.TwitchLoop:asyncio.AbstractEventLoop = None
 
-		self.Osu = None
+		self.Osu:PhaazeOsu = PhaazeOsu(self)
 		self.OsuLoop:asyncio.AbstractEventLoop = None
 
 		self.Twitter = None
 		self.TwitterLoop:asyncio.AbstractEventLoop = None
 
-		self.Web:PhaazebotWeb = None
+		self.Web:PhaazebotWeb = PhaazebotWeb(self)
 		self.WebLoop:asyncio.AbstractEventLoop = None
 
 		self.WorkerLoop:asyncio.AbstractEventLoop = None # Worker object is protected and only gives us the loop in inject

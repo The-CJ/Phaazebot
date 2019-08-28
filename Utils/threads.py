@@ -152,7 +152,7 @@ class OsuThread(threading.Thread):
 			self.BASE.Osu:PhaazeOsu = PhaazeOsu(self.BASE)
 			self.BASE.OsuLoop:asyncio.AbstractEventLoop = self.loop
 
-			self.loop.run_until_complete( self.BASE.Osu.start(self.BASE.Access.OSU_IRC_TOKEN, reconnect=True) )
+			self.loop.run_until_complete( self.BASE.Osu.start(token=self.BASE.Access.OSU_IRC_TOKEN, nickname=self.BASE.Access.OSU_IRC_USERNAME, reconnect=True) )
 
 			# we only should reach this point when osu is ended gracefull
 			# which means a wanted disconnect,
