@@ -7,6 +7,7 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordleveluser import DiscordLevelUser
 from Utils.Classes.discordquote import DiscordQuote
+from Utils.Classes.discordassignrole import DiscordAssignRole
 
 # db management
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
@@ -144,6 +145,35 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 
 	if res:
 		return [DiscordQuote(x, guild_id) for x in res]
+
+	else:
+		return []
+
+async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:str=None, trigger:str=None) -> list:
+	"""
+		Get server assign roles, if role_id and trigger are None, get all
+		else only get one associated with the role_id or trigger
+		Returns a list of DiscordAssignRole().
+	"""
+
+	sql:str = """
+		SELECT * FROM discord_giverole
+		WHERE discord_giverole.guild_id = %s"""
+
+	values:tuple = (guild_id,)
+
+	if role_id:
+		sql += " AND discord_giverole.role_id = %s"
+		values += (role_id,)
+
+	if trigger:
+		sql += " AND discord_giverole.trigger = %s"
+		values += (trigger,)
+
+	res:list = cls.BASE.PhaazeDB.query(sql, values)
+
+	if res:
+		return [DiscordAssignRole(x, guild_id) for x in res]
 
 	else:
 		return []
