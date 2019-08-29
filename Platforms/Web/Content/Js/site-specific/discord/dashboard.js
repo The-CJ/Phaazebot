@@ -103,6 +103,20 @@ var DiscordDashboard = new (class {
 
   }
 
+  loadTwitchAlert() {
+    DynamicURL.set("view", "twitch_alerts");
+    this.showLocationWindow("twitch_alerts");
+    alert("Load and Display 'Twitch Alert' Info");
+
+  }
+
+  loadAssignRole() {
+    DynamicURL.set("view", "assign_roles");
+    this.showLocationWindow("assign_roles");
+    alert("Load and Display 'Assign Role' Info");
+
+  }
+
   showLocationWindow(view) {
     if ( isEmpty(view) ) { view = "home"; }
     $("[location]").hide();
@@ -116,6 +130,8 @@ var DiscordDashboard = new (class {
     else if (l == "commands") { this.loadCommand(); }
     else if (l == "levels") { this.loadLevel(); }
     else if (l == "quotes") { this.loadQuote(); }
+    else if (l == "twitch_alerts") { this.loadTwitchAlert(); }
+    else if (l == "assign_roles") { this.loadAssignRole(); }
   }
 })
 
