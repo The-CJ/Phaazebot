@@ -124,6 +124,13 @@ command_register:list = [
 			"[2] A query string for the role: name, mention or ID",
 		need_content = False
 	),
+	dict(
+		name = "Assign role | List",
+		function = listAssignRole,
+		description = "Lists all existing assign roles.",
+		details = "This command does not take any arguments",
+		need_content = False
+	),
 ]
 
 GlobalStorage.add("discord_command_register", command_register)
