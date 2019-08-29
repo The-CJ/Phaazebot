@@ -131,6 +131,14 @@ command_register:list = [
 		details = "This command does not take any arguments",
 		need_content = False
 	),
+	dict(
+		name = "Assign role | Remove",
+		function = removeAssignRole,
+		description = "Removes a assign roles.",
+		details = "This function takes 1 required argument\n"\
+			"[1] The role-trigger",
+		need_content = False
+	),
 ]
 
 GlobalStorage.add("discord_command_register", command_register)
