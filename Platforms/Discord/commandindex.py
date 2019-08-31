@@ -17,6 +17,7 @@ from .Processing.addassignrole import addAssignRole
 from .Processing.removeassignrole import removeAssignRole
 from .Processing.assignrole import assignRole
 from .Processing.levelstatus import levelStatus
+from .Processing.levelleaderboard import levelLeaderboard
 
 command_register:list = [
 	dict(
@@ -156,6 +157,14 @@ command_register:list = [
 		description = "Returns current level, exp and medals for a member.",
 		details = "This function takes one 1 optional argument\n"\
 			"(1) Query string to search a user: name, mention, ID or None for the command caller",
+		need_content = False
+	),
+	dict(
+		name = "Level | Leaderboard",
+		function = levelLeaderboard,
+		description = "Returns current level, exp and medals for a member.",
+		details = "This function takes one 1 optional argument\n"\
+			"(1) Number as the lengh for the list, max 15",
 		need_content = False
 	),
 ]
