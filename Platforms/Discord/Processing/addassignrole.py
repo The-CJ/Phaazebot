@@ -11,7 +11,7 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 
 	Perm:discord.Permissions = CommandContext.Message.channel.permissions_for(CommandContext.Message.guild.me)
 	if not Perm.manage_roles:
-		return {"content": ":no_entry_sign: Phaaze don't has a role with the `Manage Roles` Permission."}
+		return {"content": ":no_entry_sign: Phaaze don't has a role with the `Manage Roles` permission."}
 
 	trigger:str = CommandContext.part(1)
 	query_str:str = " ".join( CommandContext.parts[2:] )

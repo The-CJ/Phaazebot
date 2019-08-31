@@ -139,6 +139,15 @@ command_register:list = [
 			"[1] The role-trigger",
 		need_content = False
 	),
+	dict(
+		name = "Assign role | Give/Take",
+		function = assignRole,
+		description = "Gives or takes a role from the user, based on the used preset role-trigger.\n"\
+			"If user has the role, remove it, if not, add it",
+		details = "This function takes 1 required argument\n"\
+			"[1] The role-trigger",
+		need_content = False
+	),
 ]
 
 GlobalStorage.add("discord_command_register", command_register)
