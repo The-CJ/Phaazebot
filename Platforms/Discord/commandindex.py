@@ -16,6 +16,7 @@ from .Processing.listassignrole import listAssignRole
 from .Processing.addassignrole import addAssignRole
 from .Processing.removeassignrole import removeAssignRole
 from .Processing.assignrole import assignRole
+from .Processing.levelstatus import levelStatus
 
 command_register:list = [
 	dict(
@@ -147,6 +148,14 @@ command_register:list = [
 			"If user has the role, remove it, if not, add it",
 		details = "This function takes 1 required argument\n"\
 			"[1] The role-trigger",
+		need_content = False
+	),
+	dict(
+		name = "Level statistics",
+		function = levelStatus,
+		description = "Returns current level, exp and medals.",
+		details = "This function takes one 1 optional argument\n"\
+			"(1) Query string to search a user: name, mention, ID or None for the command caller",
 		need_content = False
 	),
 ]
