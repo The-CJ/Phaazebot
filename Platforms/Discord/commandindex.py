@@ -151,9 +151,9 @@ command_register:list = [
 		need_content = False
 	),
 	dict(
-		name = "Level statistics",
+		name = "Level | Statistics",
 		function = levelStatus,
-		description = "Returns current level, exp and medals.",
+		description = "Returns current level, exp and medals for a member.",
 		details = "This function takes one 1 optional argument\n"\
 			"(1) Query string to search a user: name, mention, ID or None for the command caller",
 		need_content = False

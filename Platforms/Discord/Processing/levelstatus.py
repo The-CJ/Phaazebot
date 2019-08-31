@@ -7,6 +7,7 @@ from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordleveluser import DiscordLevelUser
 from Platforms.Discord.utils import getDiscordServerLevels, getDiscordMemberFromString
+from Platforms.Discord.levels import Calc as LevelCalc
 
 async def levelStatus(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
@@ -40,6 +41,21 @@ async def levelStatus(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 
 	LevelUser:DiscordLevelUser = users.pop(0)
 
-	print(LevelUser)
+	exp_current:int = LevelUser.exp
+	lvl_current:int = LevelCalc.getLevel(exp_current)
+	exp_next:int = LevelCalc.getExp(lvl_current+1)
+	avatar:str = Member.avatar_url if Member.avatar_url else Member.default_avatar_url
 
-	return {"content": ":white_check_mark:"}
+	Emb:discord.Embed = discord.Embed(color=0x00ffdd)
+	Emb.set_author(name=Member.name, icon_url=avatar)
+
+	Emb.add_field(name="Level:", value=f"{lvl_current}", inline=True)
+	Emb.add_field(name="Exp:", value=f"{exp_current} / {exp_next}", inline=True)
+
+	if LevelUser.edited:
+		Emb.add_field(name=":warning: EDITED",value="Exp value got edited.", inline=False)
+
+	if LevelUser.medals:
+		Emb.add_field(name="Medals:",value="\n".join(m for m in LevelUser.medals), inline=False)
+
+	return {"embed": Emb}
