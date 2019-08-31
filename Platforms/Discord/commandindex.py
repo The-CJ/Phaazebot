@@ -134,7 +134,8 @@ command_register:list = [
 	dict(
 		name = "Assign role | Remove",
 		function = removeAssignRole,
-		description = "Removes a assign roles.",
+		description = "Removes a assign roles.\n"\
+			"(It's highly recommended to set the requirement higher than Everyone)",
 		details = "This function takes 1 required argument\n"\
 			"[1] The role-trigger",
 		need_content = False

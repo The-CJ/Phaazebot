@@ -18,7 +18,7 @@ async def apiDiscordCommandsList(cls:"WebIndex", WebRequest:Request) -> Response
 
 	command_list:list = []
 
-	for cmd in command_register:
+	for cmd in sorted(command_register, key=lambda c : c["name"]):
 		# user only wantes a specific command/function to be returned (could result in none)
 		if function:
 			if cmd["function"].__name__ != function: continue
