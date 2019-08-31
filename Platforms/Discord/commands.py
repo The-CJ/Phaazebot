@@ -47,7 +47,7 @@ GDCCS = GDCCS()
 
 async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
-	CommandContext:DiscordCommandContext = DiscordCommandContext(cls, Message)
+	CommandContext:DiscordCommandContext = DiscordCommandContext(cls, Message, Settings=ServerSettings)
 	await CommandContext.check()
 
 	if CommandContext.found:

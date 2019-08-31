@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import discord
 from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discordcommand import DiscordCommand
+from Utils.Classes.discordserversettings import DiscordServerSettings
 
 class DiscordCommandContext(object):
 	"""
@@ -12,12 +13,13 @@ class DiscordCommandContext(object):
 		and tryes to get a command based on the first element in the content
 		split list from the db
 	"""
-	def __init__(self, cls:"PhaazebotDiscord", Message:discord.Message):
+	def __init__(self, cls:"PhaazebotDiscord", Message:discord.Message, Settings:DiscordServerSettings=None):
 		self.Discord:"PhaazebotDiscord" = cls
 		self.Message:discord.Message = Message
 
 		self.found:bool = False
 		self.Command:DiscordCommand = None
+		self.ServerSettings:DiscordServerSettings = Settings
 		self.parts:list = Message.content.split()
 
 	def part(self, pos:int) -> str or None:
