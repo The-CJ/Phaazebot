@@ -90,7 +90,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 	else:
 		return []
 
-async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None) -> list:
+async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None, limit:int=0, order_str:str="ORDER BY id") -> list:
 	"""
 		Get server levels, if member_id = None, get all
 		else only get one associated with the member_id
@@ -103,10 +103,14 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 
 	values:tuple = (guild_id,)
 
-
 	if member_id:
 		sql += " AND discord_level.member_id = %s"
 		values += (member_id,)
+
+	if limit:
+		sql += f" LIMIT {limit}"
+
+	sql += f" {order_str}"
 
 	res:list = cls.BASE.PhaazeDB.query(sql, values)
 
@@ -149,7 +153,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 	else:
 		return []
 
-async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:str=None, trigger:str=None) -> list:
+async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:str=None, trigger:str=None, limit:int=0, order_str:str="ORDER BY id") -> list:
 	"""
 		Get server assign roles, if role_id and trigger are None, get all
 		else only get one associated with the role_id or trigger
@@ -169,6 +173,11 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 	if trigger:
 		sql += " AND discord_giverole.trigger = %s"
 		values += (trigger,)
+
+	if limit:
+		sql += f" LIMIT {limit}"
+
+	sql += f" {order_str}"
 
 	res:list = cls.BASE.PhaazeDB.query(sql, values)
 
