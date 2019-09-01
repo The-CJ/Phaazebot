@@ -3,11 +3,13 @@ if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import discord
+from tabulate import tabulate
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordleveluser import DiscordLevelUser
 from Platforms.Discord.utils import getDiscordServerLevels
 from Platforms.Discord.levels import Calc as LevelCalc
+from Utils.stringutils import prettifyNumbers
 
 DEFAULT_LEADERBOARD_LEN:int = 5
 MAX_LEADERBOARD_LEN:int = 15
@@ -38,9 +40,32 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 	if specific_len > MAX_LEADERBOARD_LEN or not specific_len:
 		return {"content": f":warning: `{specific_len}` is unsupported, length must be between 1 and 15"}
 
-	Command.server_id = "117801129496150019" #debug testing, using R.o.D. data
-	users:list = await getDiscordServerLevels(cls, Command.server_id, limit=specific_len, order_str="ORDER BY exp")
+	users:list = await getDiscordServerLevels(cls, Command.server_id, limit=specific_len, order_str="ORDER BY exp DESC")
 
-	print(users)
+	if not users:
+		return {"content": ":question: Seems like there are no member with level for a leaderboard :("}
 
-	return {"content": "Emb"}
+	# there are less member ín the return than the limit requests, very rare
+	if len(users) < specific_len:
+		specific_len = len(users)
+
+	return_table:list = [ ["#", "|", "LVL", "|", "EXP", "|", "Name"], ["---", "|", "---", "|", "---", "|", "---"] ]
+	rank:int = 1
+	for LevelUser in users:
+		LevelUser:DiscordLevelUser = LevelUser
+
+		e:str = " [EDITED]" if LevelUser.edited else ""
+		lvl:str = prettifyNumbers( LevelCalc.getLevel(LevelUser.exp) )
+		exp:str = prettifyNumbers( LevelUser.exp )
+		Member:discord.Member = CommandContext.Message.guild.get_member( int(LevelUser.member_id) )
+		if Member:
+			user_name:str = Member.name
+		else:
+			user_name:str = "[N/A]"
+
+		return_table.append( [f"#{rank}", "|", lvl, "|", f"{exp}{e}", "|", user_name] )
+		rank += 1
+
+	table:str = tabulate(return_table, tablefmt="plain")
+
+	return {"content": f"**Top: {specific_len} leaderboard** ```{table}```"}
