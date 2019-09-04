@@ -49,8 +49,12 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 	CommandContext:DiscordCommandContext = DiscordCommandContext(cls, Message, Settings=ServerSettings)
 
+	# get permission object
+	AuthorPermission:DiscordPermission = DiscordPermission(Message)
+
 	# direct call via @Phaazebot [command] (rest vars)
-	if Message.guild.me.mention == CommandContext.part(0):
+	# server owner only (for now)
+	if AuthorPermission.rank >= 3 and Message.guild.me.mention == CommandContext.part(0):
 		CommandContext.parts.pop(0)
 
 		command_data:dict = dict(
@@ -76,24 +80,23 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		# check if command is in cooldown
 		if GDCCS.check(Command): return False
 
-		# get permission object and check with command require
-		Permission:DiscordPermission = DiscordPermission(Message)
-		if not Permission.rank >= Command.require: return False
+		# check caller access level and command require level
+		if not AuthorPermission.rank >= Command.require: return False
 
 		# owner disables normal commands serverwide,
 		if ServerSettings.owner_disable_normal and Command.require == 0:
 			# noone except the owner can use them
-			if Permission.rank != 3: return False
+			if AuthorPermission.rank != 3: return False
 
 		# owner disables regular commands serverwide,
 		if ServerSettings.owner_disable_regular and Command.require == 1:
 			# noone except the owner can use them
-			if Permission.rank != 3: return False
+			if AuthorPermission.rank != 3: return False
 
 		# owner disables mod commands serverwide,
 		if ServerSettings.owner_disable_mod and Command.require == 2:
 			# noone except the owner can use them
-			if Permission.rank != 3: return False
+			if AuthorPermission.rank != 3: return False
 
 		# always have a minimum cooldown
 		if Command.cooldown < cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN:
