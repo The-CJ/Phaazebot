@@ -48,6 +48,25 @@ GDCCS = GDCCS()
 async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
 	CommandContext:DiscordCommandContext = DiscordCommandContext(cls, Message, Settings=ServerSettings)
+
+	# direct call via @Phaazebot [command] (rest vars)
+	if Message.guild.me.mention == CommandContext.part(0):
+		CommandContext.parts.pop(0)
+
+		command_data:dict = dict(
+			command_id = 0,
+			function = CommandContext.parts[0],
+			require = 3,
+			cooldown = 5,
+			content = ""
+		)
+
+		Command:DiscordCommand = DiscordCommand(command_data, Message.guild.id)
+		result:dict = await formatCommand(cls, Command, CommandContext)
+		if result: await Message.channel.send(**result)
+		return True
+
+	# a normal call, so we check first
 	await CommandContext.check()
 
 	if CommandContext.found:
@@ -89,12 +108,10 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		# throw it to formatCommand and send the return values
 		final_result:dict = await formatCommand(cls, Command, CommandContext)
 
-		if not final_result:
-			# there a commands that not have a direct return value,
-			# but are still valid and successfull
-			return True
-
-		await Message.channel.send(**final_result)
+		# there a commands that not have a direct return value,
+		# but are still valid and successfull
+		if final_result:
+			await Message.channel.send(**final_result)
 
 		return True
 
