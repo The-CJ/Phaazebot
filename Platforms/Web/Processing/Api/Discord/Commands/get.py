@@ -69,11 +69,11 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 			function = command.function if show_hidden else (command.function if not command.hidden else None),
 			description = command.description if show_hidden else (command.description if not command.hidden else None),
 			content = command.content if show_hidden else (command.content if not command.hidden else None),
-			complex = command.complex,
+			complex = True if command.complex else False,
 			cost = command.required_currency,
 			uses = command.uses,
 			require = command.require,
-			hidden = command.hidden,
+			hidden = True if command.hidden else False,
 			cooldown = command.cooldown,
 			id = command.command_id
 		)
