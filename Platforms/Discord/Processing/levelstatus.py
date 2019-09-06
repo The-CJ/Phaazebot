@@ -8,6 +8,7 @@ from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordleveluser import DiscordLevelUser
 from Platforms.Discord.utils import getDiscordServerLevels, getDiscordMemberFromString
 from Platforms.Discord.levels import Calc as LevelCalc
+from Utils.stringutils import prettifyNumbers
 
 async def levelStatus(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
@@ -44,13 +45,15 @@ async def levelStatus(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 	exp_current:int = LevelUser.exp
 	lvl_current:int = LevelCalc.getLevel(exp_current)
 	exp_next:int = LevelCalc.getExp(lvl_current+1)
+	rank:str = prettifyNumbers(LevelUser.rank) if LevelUser.rank else "[N/A]"
 	avatar:str = Member.avatar_url if Member.avatar_url else Member.default_avatar_url
 
 	Emb:discord.Embed = discord.Embed(color=0x00ffdd)
 	Emb.set_author(name=Member.name, icon_url=avatar)
 
-	Emb.add_field(name="Level:", value=f"{lvl_current}", inline=True)
-	Emb.add_field(name="Exp:", value=f"{exp_current} / {exp_next}", inline=True)
+	Emb.add_field(name="Level:", value=f"{prettifyNumbers(lvl_current)}", inline=True)
+	Emb.add_field(name="Exp:", value=f"{prettifyNumbers(exp_current)} / {prettifyNumbers(exp_next)}", inline=True)
+	Emb.add_field(name="Rank:", value=f"# {rank}", inline=True)
 
 	if LevelUser.edited:
 		Emb.add_field(name=":warning: EDITED",value="Exp value got edited.", inline=False)

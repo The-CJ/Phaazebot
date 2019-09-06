@@ -50,7 +50,6 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 		specific_len = len(users)
 
 	return_table:list = [ ["#", "|", "LVL", "|", "EXP", "|", "Name"], ["---", "|", "---", "|", "---", "|", "---"] ]
-	rank:int = 1
 	for LevelUser in users:
 		LevelUser:DiscordLevelUser = LevelUser
 
@@ -63,8 +62,7 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 		else:
 			user_name:str = "[N/A]"
 
-		return_table.append( [f"#{rank}", "|", lvl, "|", f"{exp}{e}", "|", user_name] )
-		rank += 1
+		return_table.append( [f"#{LevelUser.rank}", "|", lvl, "|", f"{exp}{e}", "|", user_name] )
 
 	table:str = tabulate(return_table, tablefmt="plain")
 
