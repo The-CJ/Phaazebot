@@ -101,8 +101,12 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 	"""
 
 	sql:str = """
-		SELECT * FROM discord_level
-		WHERE discord_level.guild_id = %s"""
+		WITH discord_level AS (
+			SELECT RANK() OVER (ORDER BY exp) AS rank, discord_level.*
+			FROM discord_level
+			WHERE discord_level.guild_id = %s
+		)
+		SELECT * FROM discord_level WHERE 1"""
 
 	values:tuple = (guild_id,)
 
@@ -181,7 +185,7 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 
 	if limit:
 		sql += f" LIMIT {limit}"
-		
+
 	res:list = cls.BASE.PhaazeDB.query(sql, values)
 
 	if res:
