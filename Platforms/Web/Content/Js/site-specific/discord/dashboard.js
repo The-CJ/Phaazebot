@@ -184,7 +184,7 @@ var Commands = new (class {
     if (!confirm("Are you sure you want to delete the command?")) { return; }
     $.post("/api/discord/commands/delete", r)
     .done(function (data) {
-      Display.showMessage({content: "Successfull created command: "+data.command, color:Display.color_success});
+      Display.showMessage({content: "Successfull deleted command: "+data.command, color:Display.color_success});
       $("#command_create").modal("hide");
       DiscordDashboard.loadCommand();
     })

@@ -38,6 +38,12 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	if not guild_id.isdigit():
 		return await apiWrongData(cls, WebRequest, msg="'guild_id' must be a number")
 
+	# trigger
+	if not trigger:
+		return await missingData(cls, WebRequest, msg="missing 'trigger'")
+	# only take the first argument, since everything else can't be typed in a cannel
+	trigger = validateDBInput(str, trigger.split(" ")[0])
+
 	#cooldown
 	if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN <= int(cooldown) <= 600 ):
 		return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
@@ -45,12 +51,6 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	#currency
 	if not int(required_currency) >= 0 :
 		return await apiWrongData(cls, WebRequest, msg="'required_currency' is wrong")
-
-	# trigger
-	if not trigger:
-		return await missingData(cls, WebRequest, msg="missing 'trigger'")
-	# only take the first argument, since everything else can't be typed in a cannel
-	trigger = validateDBInput(str, trigger.split(" ")[0])
 
 	# if not complex
 	# check if the function actully exists
