@@ -7,6 +7,7 @@ from aiohttp.web import Response, Request
 from .get import apiDiscordCommandsGet
 from .create import apiDiscordCommandsCreate
 from .list import apiDiscordCommandsList
+from .delete import apiDiscordCommandsDelete
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -22,6 +23,9 @@ async def apiDiscordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	elif method == "get":
 		return await apiDiscordCommandsGet(cls, WebRequest)
+
+	elif method == "delete":
+		return await apiDiscordCommandsDelete(cls, WebRequest)
 
 	elif method == "create":
 		return await apiDiscordCommandsCreate(cls, WebRequest)

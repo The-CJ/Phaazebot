@@ -176,6 +176,25 @@ var Commands = new (class {
 
   }
 
+  delete() {
+    var r = {
+      "guild_id": $("#guild_id").val(),
+      "trigger": $("#command_create [name=trigger]").val(),
+    };
+    if (!confirm("Are you sure you want to delete the command?")) { return; }
+    $.post("/api/discord/commands/delete", r)
+    .done(function (data) {
+      Display.showMessage({content: "Successfull created command: "+data.command, color:Display.color_success});
+      $("#command_create").modal("hide");
+      DiscordDashboard.loadCommand();
+    })
+    .fail(function (data) {
+      console.log(data);
+      let msg = data.responseJSON ? data.responseJSON.msg : "unknown"
+      Display.showMessage({content: msg, color:Display.color_critical});
+    })
+  }
+
   detail(HTMLCommandRow) {
     var CommandsObj = this;
     var guild_id = $("#guild_id").val();
