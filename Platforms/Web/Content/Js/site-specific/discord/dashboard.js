@@ -140,6 +140,10 @@ var Commands = new (class {
 
   }
   createModal() {
+    $("#command_create [clear-after-success]").val("");
+    $("#command_create [command-setting=simple]").hide();
+    $("#command_create [extra-command-setting], #command_create [extra-command-setting] [name=content]").hide();
+    $("#command_create .modal-title").text("New Command");
     $("#command_create").modal("show");
   }
   create() {
@@ -160,7 +164,7 @@ var Commands = new (class {
       $("#command_create").modal("hide");
       DiscordDashboard.loadCommand();
       // after successfull command, reset modal
-      $("#command_create [clear-after-success]").val(null);
+      $("#command_create [clear-after-success]").val("");
       $("#command_create [command-setting], #command_create [extra-command-setting]").hide();
     })
     .fail(function (data) {
@@ -172,30 +176,44 @@ var Commands = new (class {
   }
 
   detail(HTMLCommandRow) {
+    var CommandsObj = this;
     var guild_id = $("#guild_id").val();
     var command_id = $(HTMLCommandRow).attr("command-id");
     $.get("/api/discord/commands/get", {guild_id: guild_id, command_id:command_id, show_hidden: true})
     .done(function (data) {
       var command = data.result[0];
       var currency = command.cost == 1 ? $("#guild_currency").val() : $("#guild_currency_multi").val();
-      $("#command_detail [name=trigger]").text(command.trigger);
-      $("#command_detail [name=require]").text( translateRequire(command.require) );
-      $("#command_detail [name=uses]").text( command.uses + " times" );
-      $("#command_detail [name=cost]").text( command.cost + " " + currency );
 
+      $("#command_create .modal-title").text("Edit command: "+command.trigger);
+      $("#command_create [name=trigger]").val(command.trigger);
+      $("#command_create [name=require]").val( command.require );
+      $("#command_create [name=required_currency]").val( command.cost );
+      $("#command_create [name=uses]").val( command.uses );
+      $("#command_create [name=cooldown], #command_create [name=cooldown_slider]").val( command.cooldown );
+      $("#command_create [name=commandtype]").val( command.complex ? "complex" : "simple" );
+      if (command.hidden) { $("#command_create [name=hidden]").prop( "checked", true ); }
+      else { $("#command_create [name=hidden]").prop( "checked", false ); }
 
-      $("#command_detail").modal("show");
+      if (!command.complex) {
+        CommandsObj.loadCommands(null, "simple", command.function);
+        CommandsObj.loadCommandInfo(null, command.function);
+      }
+
+      $("#command_create").modal("show");
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load command detail...", color:Display.color_critical});
+      Display.showMessage({content: "Could not load command details...", color:Display.color_critical});
       console.log(data);
     })
   }
 
-  loadCommands(HTMLSelect) {
-    $("[command-setting]").hide();
-    var command_type = $(HTMLSelect).val();
-    if (command_type == "complex") { $("[command-setting=complex]").show(); return;}
+  loadCommands(HTMLSelect, command_type, preselected) {
+    $("#command_create [command-setting]").hide();
+    var command_type = $(HTMLSelect).val() || command_type;
+    if (command_type == "complex") {
+      $("[command-setting=complex]").show();
+      return;
+    }
 
     if (command_type == "simple") {
 
@@ -209,6 +227,7 @@ var Commands = new (class {
           Opt.text(cmd.name);
           Options.append(Opt);
         }
+        if (preselected) { Options.val(preselected); }
         $("[command-setting=simple]").show();
       })
       .fail(function (data) {
@@ -219,9 +238,9 @@ var Commands = new (class {
     }
   }
 
-  loadCommandInfo(HTMLSelect) {
-    $("[extra-command-setting], [extra-command-setting] [name=content]").hide();
-    var function_ = $(HTMLSelect).val();
+  loadCommandInfo(HTMLSelect, preselected) {
+    $("#command_create [extra-command-setting], #command_create [extra-command-setting] [name=content]").hide();
+    var function_ = $(HTMLSelect).val() || preselected;
     if (isEmpty(function_)) {return;}
 
     $.get("/api/discord/commands/list", {function: function_})
