@@ -72,13 +72,13 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 		WHERE discord_command.guild_id = %s"""
 	values:tuple = (guild_id,)
 
-	if trigger:
-		sql += " AND discord_command.trigger = %s"
-		values += (trigger,)
-
-	elif command_id:
+	if command_id:
 		sql += " AND discord_command.id = %s"
 		values += (command_id,)
+
+	elif trigger:
+		sql += " AND discord_command.trigger = %s"
+		values += (trigger,)
 
 	sql += f" {order_str}"
 
