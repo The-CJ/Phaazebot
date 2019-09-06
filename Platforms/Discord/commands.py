@@ -66,7 +66,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		)
 
 		Command:DiscordCommand = DiscordCommand(command_data, Message.guild.id)
-		result:dict = await formatCommand(cls, Command, CommandContext)
+		result:dict = await formatCommand(cls, Command, CommandContext, direct_call=True)
 		if result: await Message.channel.send(**result)
 		return True
 
@@ -121,7 +121,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 	else:
 		return False
 
-async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
+async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext, direct_call:bool=False) -> dict:
 	"""
 		This function is suppost to do everything.
 		It takes the placeholder in Command.content and replaces them with the wanted data.
@@ -139,6 +139,9 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 		function_str:str = Command.function
 
 		func:Awaitable = getDiscordCommandFunction(function_str)
+
+		# this happens if a user enters @phaazebot and then some garbage
+		if direct_call and func.__name__ == "textOnly": return {}
 
 		cls.BASE.Logger.debug(f"(Discord) execute command '{func.__name__}'", require="discord:commands")
 
