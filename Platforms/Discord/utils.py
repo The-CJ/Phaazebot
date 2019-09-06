@@ -102,7 +102,7 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 
 	sql:str = """
 		WITH discord_level AS (
-			SELECT RANK() OVER (ORDER BY exp) AS rank, discord_level.*
+			SELECT RANK() OVER (ORDER BY exp DESC) AS rank, discord_level.*
 			FROM discord_level
 			WHERE discord_level.guild_id = %s
 		)
