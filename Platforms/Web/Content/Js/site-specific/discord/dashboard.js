@@ -144,6 +144,7 @@ var Commands = new (class {
     $("#command_create [command-setting=simple]").hide();
     $("#command_create [extra-command-setting], #command_create [extra-command-setting] [name=content]").hide();
     $("#command_create .modal-title").text("New Command");
+    $("#command_create").attr("mode", "new");
     $("#command_create").modal("show");
   }
   create() {
@@ -199,6 +200,8 @@ var Commands = new (class {
         CommandsObj.loadCommandInfo(null, command.function);
       }
 
+      $("#command_create [extra-command-setting] [name=content]").val(command.content);
+      $("#command_create").attr("mode", "edit");
       $("#command_create").modal("show");
     })
     .fail(function (data) {

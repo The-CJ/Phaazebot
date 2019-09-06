@@ -59,4 +59,7 @@
 
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
+#command_create button[mode] { display: none;}
+#command_create[mode=new] button[mode=new] { display: unset;}
+#command_create[mode=edit] button[mode=edit] { display: unset;}
 #command_create [extra-command-setting] p { word-break: break-word; white-space: pre-line;}

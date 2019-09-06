@@ -134,7 +134,7 @@
 </div>
 
 <!-- modals -->
-<div class="modal fade" id="command_create">
+<div class="modal fade" id="command_create" mode="new">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
 
@@ -227,7 +227,15 @@
 
         <hr>
 
-        <button type="button" class="btn btn-block btn-success" onclick="Commands.create()">Submit</button>
+        <button type="button" class="btn btn-block btn-success" onclick="Commands.create()" mode="new">Submit</button>
+        <div class="row">
+          <div class="col">
+            <button type="button" class="btn btn-block btn-warning black-text" onclick="Commands.edit()" mode="edit">Submit changes</button>
+          </div>
+          <div class="col">
+            <button type="button" class="btn btn-block btn-danger" onclick="Commands.delete()" mode="edit">Delete</button>
+          </div>
+        </div>
 
       </div>
 
