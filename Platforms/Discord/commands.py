@@ -100,6 +100,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 		# always have a minimum cooldown
 		if Command.cooldown < cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN:
+			cls.BASE.Logger.debug(f"(Discord) command cooldown < DISCORD_COMMANDS_COOLDOWN cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
 			Command.cooldown = cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN
 
 		# add command to cooldown
@@ -141,7 +142,9 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 		func:Awaitable = getDiscordCommandFunction(function_str)
 
 		# this happens if a user enters @phaazebot and then some garbage
-		if direct_call and func.__name__ == "textOnly": return {}
+		if direct_call and func.__name__ == "textOnly":
+			cls.BASE.Logger.debug(f"(Discord) direct call failed, user entered: '{function_str}'", require="discord:commands")
+			return {}
 
 		cls.BASE.Logger.debug(f"(Discord) execute command '{func.__name__}'", require="discord:commands")
 
