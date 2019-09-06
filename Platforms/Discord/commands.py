@@ -56,6 +56,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 	# server owner only (for now)
 	if AuthorPermission.rank >= 3 and Message.guild.me.mention == CommandContext.part(0):
 		CommandContext.parts.pop(0)
+		CommandContext.Message.mentions.pop(0)
 
 		command_data:dict = dict(
 			command_id = 0,
