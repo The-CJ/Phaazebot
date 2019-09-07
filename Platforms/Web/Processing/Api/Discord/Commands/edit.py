@@ -46,6 +46,8 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# only take the first argument of trigger, since everything else can't be typed in a channel
 	trigger = trigger.split(" ")[0]
+	if not trigger:
+		return await missingData(cls, WebRequest, msg="missing 'trigger'")
 
 	#cooldown
 	if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN <= int(cooldown) <= 600 ):
