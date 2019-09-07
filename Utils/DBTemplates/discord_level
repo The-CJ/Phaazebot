@@ -9,6 +9,7 @@ DESCRIBE `discord_level`;
 | edited    | tinyint(1)   | YES  |     | 0       |                |
 | exp       | int(8)       | YES  |     | 0       |                |
 | medals    | longtext     | YES  |     | '[]'    |                |
+| on_server | tinyint(1)   | YES  |     | 1       |                |
 +-----------+--------------+------+-----+---------+----------------+
 
 SHOW CREATE TABLE `discord_level`;
@@ -20,6 +21,7 @@ CREATE TABLE `discord_level` (
   `edited` tinyint(1) DEFAULT 0,
   `exp` int(8) DEFAULT 0,
   `medals` longtext DEFAULT '[]',
+  `on_server` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE KEY `guild_id` (`guild_id`,`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
