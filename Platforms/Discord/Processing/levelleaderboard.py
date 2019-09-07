@@ -65,4 +65,4 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 
 	table:str = tabulate(return_table, tablefmt="plain")
 
-	return {"content": f"**Top: {specific_len} leaderboard** ```{table}```"}
+	return {"content": f"**Top: {specific_len} leaderboard** :link: https://phaaze.net/discord/level/{Command.server_id} ```{table}```"}
