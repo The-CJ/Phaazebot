@@ -17,7 +17,7 @@ class HTMLFormatter(object):
 		self.content:str = None
 		self.path:str = path
 		self.template:bool=template
-		self.FormatHTMLRegex:re.Pattern = re.compile(r"\|<!--#\((.+?)\)#-->\|")
+		self.FormatHTMLRegex:"re.Pattern" = re.compile(r"\|<!--#\((.+?)\)#-->\|")
 		if self.path: self.loadHTML(self.path)
 
 	def setRegex(self, new_re:str) -> None:
@@ -32,10 +32,10 @@ class HTMLFormatter(object):
 		except Exception as e:
 			raise Exception("HTMLFormatter raised unknown error: "+str(e))
 
-	def replace(self, replace_empty:bool=False, **values:Any) -> str:
+	def replace(self, replace_empty:bool=False, **values:dict) -> str:
 		"""
 			This function will take all
-			|>>>(kwarg)<<<|   (or other re set by self.setRegex)
+			|<!--#(kwarg)#-->|   (or other re set by self.setRegex)
 			in self.content, and replace kwarg with the right key match from **values
 			else empty string if replace_empty is True
 
