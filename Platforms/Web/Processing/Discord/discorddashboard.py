@@ -43,7 +43,6 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 
 		phantoms = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/phantoms.html"),
 		modals = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/modals.html"),
-
 	)
 
 	site:str = cls.HTMLRoot.replace(
