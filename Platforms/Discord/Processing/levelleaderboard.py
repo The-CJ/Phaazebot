@@ -51,7 +51,6 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 
 	return_table:list = [ ["#", "|", "LVL", "|", "EXP", "|", "Name"], ["---", "|", "---", "|", "---", "|", "---"] ]
 	for LevelUser in users:
-		LevelUser:DiscordLevelUser = LevelUser
 
 		e:str = " [EDITED]" if LevelUser.edited else ""
 		lvl:str = prettifyNumbers( LevelCalc.getLevel(LevelUser.exp) )
