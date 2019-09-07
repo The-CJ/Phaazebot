@@ -123,6 +123,7 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/discord/guild', self.apiDiscordGuild)
 		self.Web.router.add_route('*', '/api/discord/userguilds', self.apiDiscordUserGuilds)
 		self.Web.router.add_route('*', '/api/discord/commands{x:/?}{method:.*}', self.apiDiscordCommands)
+		self.Web.router.add_route('*', '/api/discord/configs{x:/?}{method:.*}', self.apiDiscordConfigs)
 
 	# api
 	from .Processing.Api.Account.main import apiAccountPhaaze, apiAccountDiscord, apiAccountTwitch
@@ -133,6 +134,7 @@ class WebIndex(object):
 	from .Processing.Api.Discord.guild import apiDiscordGuild
 	from .Processing.Api.Discord.userguilds import apiDiscordUserGuilds
 	from .Processing.Api.Discord.Commands.main import apiDiscordCommands
+	from .Processing.Api.Discord.Configs.main import apiDiscordConfigs
 
 	# web
 	from .Processing.mainsite import mainSite
