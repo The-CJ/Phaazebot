@@ -140,6 +140,7 @@ var Commands = new (class {
   constructor() {
 
   }
+
   createModal() {
     $("#command_create [clear-after-success]").val("");
     $("#command_create [command-setting=simple]").hide();
@@ -196,6 +197,32 @@ var Commands = new (class {
     })
   }
 
+  edit() {
+    var r = {
+      "guild_id": $("#guild_id").val(),
+      "command_id": $("#command_create [name=command_id]").val(),
+      "trigger": $("#command_create [name=trigger]").val(),
+      "content": $("#command_create [name=content]").val(),
+      "function": $("#command_create [name=function]").val(),
+      "complex": $("#command_create [name=commandtype]").val() == "complex" ? true : false,
+      "hidden": $("#command_create [name=hidden]").is(":checked"),
+      "cooldown": $("#command_create [name=cooldown]").val(),
+      "require": $("#command_create [name=require]").val(),
+      "required_currency": $("#command_create [name=required_currency]").val()
+    };
+    $.post("/api/discord/commands/edit", r)
+    .done(function (data) {
+      Display.showMessage({content: "Successfull edited command: "+data.command, color:Display.color_success});
+      $("#command_create").modal("hide");
+      DiscordDashboard.loadCommand();
+    })
+    .fail(function (data) {
+      console.log(data);
+      let msg = data.responseJSON ? data.responseJSON.msg : "unknown"
+      Display.showMessage({content: msg, color:Display.color_critical});
+    })
+  }
+
   detail(HTMLCommandRow) {
     var CommandsObj = this;
     var guild_id = $("#guild_id").val();
@@ -203,9 +230,9 @@ var Commands = new (class {
     $.get("/api/discord/commands/get", {guild_id: guild_id, command_id:command_id, show_hidden: true})
     .done(function (data) {
       var command = data.result[0];
-      var currency = command.cost == 1 ? $("#guild_currency").val() : $("#guild_currency_multi").val();
 
       $("#command_create .modal-title").text("Edit command: "+command.trigger);
+      $("#command_create [name=command_id]").val(command.id);
       $("#command_create [name=trigger]").val(command.trigger);
       $("#command_create [name=require]").val( command.require );
       $("#command_create [name=required_currency]").val( command.cost );

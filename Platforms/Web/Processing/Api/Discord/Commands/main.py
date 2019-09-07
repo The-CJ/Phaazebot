@@ -8,6 +8,7 @@ from .get import apiDiscordCommandsGet
 from .create import apiDiscordCommandsCreate
 from .list import apiDiscordCommandsList
 from .delete import apiDiscordCommandsDelete
+from .edit import apiDiscordCommandsEdit
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -29,6 +30,9 @@ async def apiDiscordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	elif method == "create":
 		return await apiDiscordCommandsCreate(cls, WebRequest)
+
+	elif method == "edit":
+		return await apiDiscordCommandsEdit(cls, WebRequest)
 
 	elif method == "list":
 		return await apiDiscordCommandsList(cls, WebRequest)
