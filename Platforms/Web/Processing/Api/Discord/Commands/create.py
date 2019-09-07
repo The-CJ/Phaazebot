@@ -61,8 +61,8 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 			return await apiWrongData(cls, WebRequest, msg=f"'{function}' is not a valid value for field 'function'")
 
 	# check if already exists
-	res:list = cls.Web.BASE.PhaazeDB.query("""SELECT COUNT(*) as c FROM discord_command WHERE `guild_id` = %s AND `trigger` = %s""", (guild_id, trigger))
-	if res[0]["c"]:
+	res:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger = trigger)
+	if res:
 		return await apiDiscordCommandExists(cls, WebRequest, command=trigger)
 
 	# get/check discord
