@@ -117,6 +117,7 @@ var DiscordDashboard = new (class {
 
   }
 
+  // utils
   showLocationWindow(view) {
     if ( isEmpty(view) ) { view = "home"; }
     $("[location]").hide();

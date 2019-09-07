@@ -28,10 +28,22 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found: return await cls.discordLogin(WebRequest)
 
-	DiscordDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/dashboard.html")
+	DiscordDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/main.html")
 	DiscordDash.replace(
 		guild_name = html.escape(Guild.name),
-		guild_id = Guild.id
+		guild_id = Guild.id,
+
+		location_home = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_home.html"),
+		location_configs = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs.html"),
+		location_commands = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands.html"),
+		location_levels = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_levels.html"),
+		location_quotes = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_quotes.html"),
+		location_twitch_alerts = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_twitch_alerts.html"),
+		location_assign_roles = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_assign_roles.html"),
+
+		phantoms = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/phantoms.html"),
+		modals = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/modals.html"),
+
 	)
 
 	site:str = cls.HTMLRoot.replace(

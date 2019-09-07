@@ -22,95 +22,19 @@
       </div>
       <div class="col main-panel">
 
-        <div location="home">
+        |<!--#(location_home)#-->|
 
-          <div class="center-item-col">
-            <div class="center-item-row">
-              <img class="guild-icon" src="" alt="discord_icon" id="icon" height="128" width="128">
-              <span class="guild-name" id="name"></span>
-            </div>
-          </div>
-          <h1 hidden><i>I don't know what to display here...</i></h1>
+        |<!--#(location_configs)#-->|
 
-          <hr>
-          <div class="row"><div class="col"><h2>Server Stats</h2></div></div>
-          <div class="row">
-            <div class="col"><h3><span id="member_count">[N/A]</span> Member</h3></div>
-            <div class="col"><h3><span id="role_count">[N/A]</span> Roles</h3></div>
-          </div>
-          <div class="row">
-            <div class="col"><h3><span id="premium_subscription_count">[N/A]</span> Nitro Booster</h3></div>
-            <div class="col"><h3><span id="channel_count">[N/A]</span> Channel</h3></div>
-          </div>
+        |<!--#(location_commands)#-->|
 
-          <hr>
-          <div class="row"><div class="col"><h2>Stats</h2></div></div>
-          <div class="row">
-            <div class="col"><h3><span id="command_count">[N/A]</span> Commands</h3></div>
-            <div class="col"><h3><span id="quote_count">[N/A]</span> Quotes</h3></div>
-          </div>
-          <div class="row">
-            <div class="col"><h3><span id="twitch_alert_count">[N/A]</span> Twitch Alerts</h3></div>
-            <div class="col"><h3><span id="level_count">[N/A]</span> Level Entrys</h3></div>
-          </div>
+        |<!--#(location_levels)#-->|
 
-        </div>
+        |<!--#(location_quotes)#-->|
 
-        <div location="configs">
-          show configs
-        </div>
+        |<!--#(location_twitch_alerts)#-->|
 
-        <div location="commands">
-
-          <div class="container">
-
-            <div class="center-item-row">
-              <div class="col">
-                <h4>Commands: <span id="command_amount">[N/A]</span></h4>
-              </div>
-              <div class="col">
-                <button type="button" class="btn btn-success" onclick="Commands.createModal()">New Command</button>
-              </div>
-            </div>
-
-            <div class="center-item-row md-form">
-              <span>Public command page for this server:</span>
-              <div class="col">
-                <input type="text" value="https://phaaze.net/discord/commands/|<!--#(guild_id)#-->|" readonly class="white-text text-center" style="width: 100%;">
-              </div>
-            </div>
-
-            <div class="header row">
-              <div class="col-2 trigger">Trigger</div>
-              <div class="col function">Function</div>
-              <div class="col-2 require">Require</div>
-              <div class="col-1 cost">Cost</div>
-              <div class="col-1 uses">Uses</div>
-              <div class="col-1 uses">Cooldown</div>
-            </div>
-            <div id="command_list">
-
-            </div>
-
-          </div>
-
-        </div>
-
-        <div location="levels">
-          Show levels
-        </div>
-
-        <div location="quotes">
-          Quotes oder so
-        </div>
-
-        <div location="twitch_alerts">
-          Twitch oder so
-        </div>
-
-        <div location="assign_roles">
-          Roles oder so
-        </div>
+        |<!--#(location_assign_roles)#-->|
 
       </div>
     </div>
