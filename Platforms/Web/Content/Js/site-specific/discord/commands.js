@@ -60,6 +60,8 @@ function detailCommand(HTMLCommand) {
     $("#command_detail [name=require]").text( translateRequire(command.require) );
     $("#command_detail [name=uses]").text( command.uses + " times" );
     $("#command_detail [name=cost]").text( command.cost + " " + currency );
+    $("#command_detail [name=name]").text( command.name ? command.name : "(Hidden Command)" );
+    $("#command_detail [name=description]").text( command.description ? command.description : "Execute the command in the Discord server to see the result." );
 
 
     $("#command_detail").modal("show");

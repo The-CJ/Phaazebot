@@ -28,3 +28,7 @@ main h1 {
   content: "This command is hidden";
   color: rgb(142, 142, 142);
 }
+
+#command_detail [name=name], #command_detail [name=description] {
+  word-break: break-word; white-space: pre-line;
+}
