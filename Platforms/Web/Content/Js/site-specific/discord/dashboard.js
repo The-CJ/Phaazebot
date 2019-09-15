@@ -48,7 +48,17 @@ var DiscordDashboard = new (class {
   loadConfig() {
     DynamicURL.set("view", "configs");
     this.showLocationWindow("configs");
-    alert("Load and Display 'Command' Info");
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+
+      console.log(data);
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load configs...", color:Display.color_critical});
+      console.log(data);
+    })
 
   }
 

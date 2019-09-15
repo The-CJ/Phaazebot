@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Response, Request
-# from .get import apiDiscordCommandsGet
+from .get import apiDiscordConfigsGet
 # from .create import apiDiscordCommandsCreate
 # from .list import apiDiscordCommandsList
 # from .delete import apiDiscordCommandsDelete
@@ -22,9 +22,9 @@ async def apiDiscordConfigs(cls:"WebIndex", WebRequest:Request) -> Response:
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	# elif method == "get":
-	# 	return await apiDiscordCommandsGet(cls, WebRequest)
-    #
+	elif method == "get":
+		return await apiDiscordConfigsGet(cls, WebRequest)
+
 	# elif method == "delete":
 	# 	return await apiDiscordCommandsDelete(cls, WebRequest)
     #
