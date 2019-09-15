@@ -24,7 +24,7 @@ async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Server
 		punish = await checkBanLinks(cls, Message, ServerSettings)
 		reason = "ban-links"
 
-	if ServerSettings.blacklist and not punish:
+	if ServerSettings.blacklist_words and not punish:
 		punish = await checkWordBlacklist(cls, Message, ServerSettings)
 		reason = "word-blacklist"
 
@@ -65,7 +65,7 @@ async def checkBanLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 async def checkWordBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 	message_text = Message.content.lower()
 
-	for word in ServerSettings.blacklist:
+	for word in ServerSettings.blacklist_words:
 		if word.lower() in message_text: return True
 
 	return False
