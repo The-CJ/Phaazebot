@@ -7,11 +7,15 @@ class DiscordServerSettings(DBContentClass):
 	"""
 	def __init__(self, infos:dict = {}):
 
+		self.__found = False
+		if infos:
+			self.__found = True
+
 		self.autorole:str = infos.get("autorole", Undefined())
 		self.ban_links:bool = bool( infos.get("ban_links", Undefined()) )
 		self.ban_links_role:list = self.fromJsonField( infos.get("ban_links_role", Undefined()) )
 		self.ban_links_whitelist:list = self.fromJsonField( infos.get("ban_links_whitelist", Undefined()) )
-		self.blacklist:list = self.fromJsonField( infos.get("blacklist", Undefined()) )
+		self.blacklist_words:list = self.fromJsonField( infos.get("blacklist_words", Undefined()) )
 		self.blacklist_punishment:str = infos.get("blacklist_punishment", Undefined())
 		self.currency_name:str = infos.get("currency_name", Undefined())
 		self.currency_name_multi:str = infos.get("currency_name_multi", Undefined())
@@ -36,3 +40,12 @@ class DiscordServerSettings(DBContentClass):
 		self.welcome_chan:str = infos.get("welcome_chan", Undefined())
 		self.welcome_msg:str = infos.get("welcome_msg", Undefined())
 		self.welcome_msg_priv:str = infos.get("welcome_msg_priv", Undefined())
+
+	def __bool__(self):
+		return self.__found
+
+	def __repr__(self):
+		if self.__found:
+			return f"<{self.__class__.__name__} guild_id='{self.server_id}'>"
+		else:
+			return f"<{self.__class__.__name__} Empty configs>"
