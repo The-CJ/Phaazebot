@@ -1,3 +1,37 @@
 <div location="configs">
-  show configs
+
+  <div class="container">
+
+    <h3 id="config_master">Master Controlls</h3>
+    <span>Master configs can only be edited by the server owner, all of them have serverwide impact.</span>
+
+    <hr>
+
+    <div class="center-item-row">
+
+      <div class="col">
+        <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
+          <p>Normal Commands</p>
+          <button type="submit" class="btn toggle-value reverse" name="owner_disable_normal" value="x">Click to </button>
+        </form>
+      </div>
+
+      <div class="col">
+        <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
+          <p>Regular Commands</p>
+          <button type="submit" class="btn toggle-value reverse" name="owner_disable_regular" value="x">Click to </button>
+        </form>
+      </div>
+
+      <div class="col">
+        <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
+          <p>Moderator Commands</p>
+          <button type="submit" class="btn toggle-value reverse" name="owner_disable_mod" value="x">Click to </button>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
 </div>

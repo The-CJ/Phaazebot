@@ -53,8 +53,11 @@ var DiscordDashboard = new (class {
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
 
-      console.log("TODO:");
-      console.log(data);
+      console.log(data.result);
+
+      // insert current data
+      insertData("[location=configs]", data.result);
+
 
     })
     .fail(function (data) {
@@ -346,6 +349,26 @@ var Commands = new (class {
       console.log(data);
     })
   }
+})
+
+var Configs = new(class {
+  constructor() {
+
+  }
+
+  updateField(HTMLForm) {
+    console.log(HTMLForm);
+  }
+
+  updateToogleField(HTMLForm) {
+    console.log($(HTMLForm));
+    console.log(extractData($(HTMLForm)));
+  }
+
+  update(new_configs) {
+
+  }
+
 })
 
 // utils
