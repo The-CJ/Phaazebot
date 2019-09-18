@@ -1,5 +1,8 @@
 var DiscordDashboard = new (class {
-  constructor() {}
+  constructor() {
+    this.channels = [];
+    this.roles = [];
+  }
 
   loadHome() {
     DynamicURL.set("view", false);
@@ -7,8 +10,6 @@ var DiscordDashboard = new (class {
     var guild_id = $("#guild_id").val();
     $.get("/api/discord/guild", {guild_id: guild_id})
     .done(function (data) {
-      console.log(data);
-
       var guild = data.result;
       var image_link = "https://cdn.discordapp.com/icons/{guild_id}/{icon}.png?size=128";
       var image_alt = "https://cdn.discordapp.com/embed/avatars/{icon}.png";
@@ -52,6 +53,7 @@ var DiscordDashboard = new (class {
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
 
+      console.log("TODO:");
       console.log(data);
 
     })
@@ -128,11 +130,30 @@ var DiscordDashboard = new (class {
   }
 
   // utils
+  loadGeneralInfo() {
+    var DashO = this;
+    var guild_id = $("#guild_id").val();
+    // same api call as in loadHome, but why not
+    $.get("/api/discord/guild", {guild_id: guild_id})
+    .done(function (data) {
+
+      DashO.channels = data.result.channels;
+      DashO.roles = data.result.roles;
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Error loading general informations...", color:Display.color_critical});
+      console.log(data);
+    })
+  }
+
+  // view utils
   showLocationWindow(view) {
     if ( isEmpty(view) ) { view = "home"; }
     $("[location]").hide();
     $("[location="+view+"]").show();
   }
+
   restoreView() {
     var l = DynamicURL.get("view");
     this.showLocationWindow(l);
@@ -337,5 +358,6 @@ function translateRequire(level) {
 }
 
 $("document").ready(function () {
+  DiscordDashboard.loadGeneralInfo();
   DiscordDashboard.restoreView();
 })
