@@ -1,3 +1,8 @@
+$("document").ready(function () {
+  DiscordDashboard.loadGeneralInfo();
+  DiscordDashboard.restoreView();
+})
+
 var DiscordDashboard = new (class {
   constructor() {
     this.channels = [];
@@ -361,12 +366,32 @@ var Configs = new(class {
   }
 
   updateToogleField(HTMLForm) {
-    console.log($(HTMLForm));
-    console.log(extractData($(HTMLForm)));
+    var extracted_data = extractData($(HTMLForm));
+    var update_request = {};
+
+    for (var key in extracted_data) {
+      var value = extracted_data[key];
+      var opposite_value = oppositeValue(value);
+      update_request[key] = opposite_value;
+    }
+
+    this.update(update_request);
   }
 
   update(new_configs) {
+    var guild_id = $("#guild_id").val();
+    new_configs["guild_id"] = guild_id
 
+    $.get("/api/discord/configs/edit", new_configs)
+    .done(function (data) {
+
+      console.log(data);
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Error updating configs...", color:Display.color_critical});
+      console.log(data);
+    })
   }
 
 })
@@ -379,8 +404,3 @@ function translateRequire(level) {
   if (level == 3) { return "Server Owner"; }
   if (level >= 4) { return "System"; }
 }
-
-$("document").ready(function () {
-  DiscordDashboard.loadGeneralInfo();
-  DiscordDashboard.restoreView();
-})

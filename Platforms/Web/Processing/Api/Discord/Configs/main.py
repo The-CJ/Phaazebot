@@ -5,10 +5,7 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response, Request
 from .get import apiDiscordConfigsGet
-# from .create import apiDiscordCommandsCreate
-# from .list import apiDiscordCommandsList
-# from .delete import apiDiscordCommandsDelete
-# from .edit import apiDiscordCommandsEdit
+from .edit import apiDiscordConfigsEdit
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordConfigs(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -25,16 +22,7 @@ async def apiDiscordConfigs(cls:"WebIndex", WebRequest:Request) -> Response:
 	elif method == "get":
 		return await apiDiscordConfigsGet(cls, WebRequest)
 
-	# elif method == "delete":
-	# 	return await apiDiscordCommandsDelete(cls, WebRequest)
-    #
-	# elif method == "create":
-	# 	return await apiDiscordCommandsCreate(cls, WebRequest)
-    #
-	# elif method == "edit":
-	# 	return await apiDiscordCommandsEdit(cls, WebRequest)
-    #
-	# elif method == "list":
-	# 	return await apiDiscordCommandsList(cls, WebRequest)
+	elif method == "edit":
+		return await apiDiscordConfigsEdit(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
