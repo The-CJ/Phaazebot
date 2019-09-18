@@ -56,8 +56,24 @@ async def apiDiscordConfigsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		ban_links_whitelist = Configs.ban_links_whitelist,
 		blacklist_words = Configs.blacklist_words,
 		blacklist_punishment = Configs.blacklist_punishment,
-
-
+		currency_name = Configs.currency_name,
+		currency_name_multi = Configs.currency_name_multi,
+		disable_chan_level = Configs.disable_chan_level,
+		disable_chan_normal = Configs.disable_chan_normal,
+		disable_chan_quotes = Configs.disable_chan_quotes,
+		enable_chan_game = Configs.enable_chan_game,
+		enable_chan_nsfw = Configs.enable_chan_nsfw,
+		level_announce_channel = Configs.level_announce_channel,
+		level_custom_message = Configs.level_custom_message,
+		owner_disable_level = Configs.owner_disable_level,
+		owner_disable_normal = Configs.owner_disable_normal,
+		owner_disable_regular = Configs.owner_disable_regular,
+		owner_disable_mod = Configs.owner_disable_mod,
+		track_channel = Configs.track_channel,
+		track_options = Configs.track_options,
+		welcome_chan = Configs.welcome_chan,
+		welcome_msg = Configs.welcome_msg,
+		welcome_msg_priv = Configs.welcome_msg_priv,
 	)
 
 	return cls.response(

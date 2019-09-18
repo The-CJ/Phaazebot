@@ -19,7 +19,6 @@ class DiscordServerSettings(DBContentClass):
 		self.blacklist_punishment:str = infos.get("blacklist_punishment", Undefined())
 		self.currency_name:str = infos.get("currency_name", Undefined())
 		self.currency_name_multi:str = infos.get("currency_name_multi", Undefined())
-		self.disable_chan_custom:list = self.fromJsonField( infos.get("disable_chan_custom", Undefined()) )
 		self.disable_chan_level:list = self.fromJsonField( infos.get("disable_chan_level", Undefined()) )
 		self.disable_chan_normal:list = self.fromJsonField( infos.get("disable_chan_normal", Undefined()) )
 		self.disable_chan_quotes:list = self.fromJsonField( infos.get("disable_chan_quotes", Undefined()) )
