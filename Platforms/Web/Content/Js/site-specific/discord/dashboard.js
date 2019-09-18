@@ -385,7 +385,7 @@ var Configs = new(class {
     $.get("/api/discord/configs/edit", new_configs)
     .done(function (data) {
 
-      console.log(data);
+      insertData("[location=configs]", data.changes);
 
     })
     .fail(function (data) {
