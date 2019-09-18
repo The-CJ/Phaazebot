@@ -49,6 +49,24 @@ function insertData(o, d) {
   }
 }
 
+function oppositeValue(v) {
+  if (typeof v == "object") { throw "can't switch object type"; }
+  else if (typeof v == "boolean") { return !v }
+  else if (typeof v == "number") { return v * -1 }
+  else if (typeof v == "string") {
+    // if string, interpret values for a bool type
+
+    // the strings "0", "false" and "" are often used to represent a false statement, so return true
+    if (v == "0" || v == "false" || !v) { return true; }
+    // everything else is true in string language
+    else { return false; }
+  }
+  else {
+    throw "unknown object handler";
+  }
+
+}
+
 var SessionManager = new (class {
   constructor() {
   }
