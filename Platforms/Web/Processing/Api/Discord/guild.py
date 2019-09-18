@@ -55,7 +55,9 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 		premium_subscription_count = Guild.premium_subscription_count,
 		member_count = Guild.member_count,
 		channel_count = len(Guild.channels),
+		channels = getAPIChannelList(Guild.channels),
 		role_count = len(Guild.roles),
+		roles = getAPIRoleList(Guild.roles),
 		command_count = stats_info.get("command_count", 0),
 		quote_count = stats_info.get("quote_count", 0),
 		twitch_alert_count = stats_info.get("twitch_alert_count", 0),
@@ -67,3 +69,43 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 		status=200,
 		content_type='application/json'
 	)
+
+def getAPIRoleList(roles:list) -> list:
+	formated_roles:list = list()
+
+	for role in roles:
+		r:dict = dict(
+			id = str(role.id),
+			name = role.name
+		)
+
+		r["managed"] = True if role.managed else False
+
+		formated_roles.append(r)
+
+	return formated_roles
+
+def getAPIChannelList(channels:list) -> list:
+	formated_channels:list = list()
+
+	for channel in channels:
+		c:dict = dict(
+			id = str(channel.id),
+			name = channel.name,
+		)
+
+		if type(channel) is discord.TextChannel:
+			c["channel_type"] = "text"
+
+		elif type(channel) is discord.VoiceChannel:
+			c["channel_type"] = "voice"
+
+		elif type(channel) is discord.CategoryChannel:
+			c["channel_type"] = "category"
+
+		else:
+			c["channel_type"] = "unknown"
+
+		formated_channels.append(c)
+
+	return formated_channels
