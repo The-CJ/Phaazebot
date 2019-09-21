@@ -71,6 +71,7 @@ async def checkWordBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Se
 	return False
 
 async def executePunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, reason:str = None) -> None:
+	ServerSettings.blacklist_punishment = checkBlacklistPunishmentString(ServerSettings.blacklist_punishment)
 	try:
 		if ServerSettings.blacklist_punishment == "delete":
 			await Message.delete()
@@ -90,3 +91,10 @@ async def executePunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 	except:
 		raise
+
+def checkBlacklistPunishmentString(p:str) -> str:
+	p = p.lower()
+	if p in ["delete","kick","ban"]:
+		return p
+	else:
+		return "delete"
