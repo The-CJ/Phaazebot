@@ -383,10 +383,11 @@ var Configs = new(class {
     var guild_id = $("#guild_id").val();
     new_configs["guild_id"] = guild_id
 
-    $.get("/api/discord/configs/edit", new_configs)
+    $.post("/api/discord/configs/edit", new_configs)
     .done(function (data) {
 
       insertData("[location=configs]", data.changes);
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
 
     })
     .fail(function (data) {

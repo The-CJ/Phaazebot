@@ -11,21 +11,73 @@
       <div class="center-item-row">
 
         <div class="col">
-          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
-            <p>Ban links</p>
-            <button type="submit" class="btn toggle-value" name="ban_links" value="x">Click to </button>
-          </form>
+          <div class="content-box config-box">
+            <p>Blacklist</p>
+            <div class="config-info"><span>word in message = punishment</span></div>
+            <button type="button" class="btn btn-block btn-primary">Open word blacklist</button>
+          </div>
         </div>
+
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Exception roles</p>
+            <div class="config-info"><span>These will bypass punishment</span></div>
+            <button type="button" class="btn btn-block btn-primary">Open role list</button>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Ban links</p>
+            <form onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
+              <button type="submit" class="btn btn-block toggle-value" name="ban_links" value="x">Click to </button>
+            </form>
+            <button type="button" class="btn btn-block btn-primary">Open link whitelist</button>
+          </div>
+        </div>
+
+      </div>
+      <div class="center-item-row">
 
         <div class="col">
           <form class="content-box config-box" onsubmit="javascript:Configs.updateField(this)" action="javascript:" method="post">
             <p>Punishment level</p>
+            <div class="config-info"><span>In case someone go against the rules, what should happen?<span></div>
             <select class="custom-select" name="blacklist_punishment">
               <option value="delete">Just delete the message</option>
               <option value="kick">Delete the message and kick the author</option>
               <option value="ban">Delete the message and ban the author</option>
             </select>
             <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <h3 id="config_events">Automated event messages</h3>
+    <div>
+      <span>There are some events, that can be used to announce some automated messages.</span>
+
+      <hr>
+
+      <div class="center-item-row">
+
+        <div class="col">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
+            <p>Welcome message</p>
+            <div class="config-info"><span>Get's triggered everytime a member joins<span></div>
+            <textarea class="config-textbox-input" name="welcome_msg" rows="5"></textarea>
+            <button type="submit" class="btn btn-block btn-primary">Save</button>
+          </form>
+        </div>
+
+        <div class="col">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
+            <p>Leave message</p>
+            <div class="config-info"><span>Get's triggered everytime a member leaves :c<span></div>
+            <textarea class="config-textbox-input" name="leave_msg" rows="5"></textarea>
+            <button type="submit" class="btn btn-block btn-primary">Save</button>
           </form>
         </div>
 
@@ -45,21 +97,21 @@
         <div class="col">
           <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
             <p>Normal Commands</p>
-            <button type="submit" class="btn toggle-value reverse" name="owner_disable_normal" value="x">Click to </button>
+            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_normal" value="x">Click to </button>
           </form>
         </div>
 
         <div class="col">
           <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
             <p>Regular Commands</p>
-            <button type="submit" class="btn toggle-value reverse" name="owner_disable_regular" value="x">Click to </button>
+            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_regular" value="x">Click to </button>
           </form>
         </div>
 
         <div class="col">
           <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
             <p>Moderator Commands</p>
-            <button type="submit" class="btn toggle-value reverse" name="owner_disable_mod" value="x">Click to </button>
+            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_mod" value="x">Click to </button>
           </form>
         </div>
 

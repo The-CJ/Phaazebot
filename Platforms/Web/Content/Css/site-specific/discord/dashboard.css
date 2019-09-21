@@ -58,7 +58,8 @@
 [location=commands] .command .uses { background: #365b87; }
 [location=commands] .command .cooldown { background: #365b87; }
 
-[location=configs] .config-box { padding: 5px; }
+[location=configs] .config-box { padding: 5px; margin-bottom: 1em; }
+[location=configs] .config-box .btn { margin: unset; }
 [location=configs] .btn.toggle-value[value=x] {background: #696969; }
 [location=configs] .btn.toggle-value[value=true] {background: #00c851; }
 [location=configs] .btn.toggle-value[value=false] {background: #ff3547; }
@@ -70,6 +71,8 @@
 [location=configs] .btn.toggle-value.reverse[value=true]::after {content: "Enable"; }
 [location=configs] .btn.toggle-value.reverse[value=false]::after {content: "Disable"; }
 [location=configs] .btn.config-save { margin-top: 1em; }
+[location=configs] .config-info { padding: .84rem 2.14rem; font-size: .81rem; } /* same as btn */
+[location=configs] .config-textbox-input { width: 100%; }
 
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
