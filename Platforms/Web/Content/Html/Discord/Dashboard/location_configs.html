@@ -2,37 +2,70 @@
 
   <div class="container">
 
-    <h3 id="config_master">Master Controlls</h3>
-    <span>Master configs can only be edited by the server owner, all of them have serverwide impact.</span>
-    <br>
-    <span>A disabled command group can only be used by the server owner and noone else.<span>
+    <h3 id="config_blacklist">Chat management</h3>
+    <div>
+      <span>Disallow links, blacklist words and punish members that go agains it.</span>
 
-    <hr>
+      <hr>
 
-    <div class="center-item-row">
+      <div class="center-item-row">
 
-      <div class="col">
-        <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
-          <p>Normal Commands</p>
-          <button type="submit" class="btn toggle-value reverse" name="owner_disable_normal" value="x">Click to </button>
-        </form>
+        <div class="col">
+          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
+            <p>Ban links</p>
+            <button type="submit" class="btn toggle-value" name="ban_links" value="x">Click to </button>
+          </form>
+        </div>
+
+        <div class="col">
+          <form class="content-box config-box" onsubmit="javascript:Configs.updateField(this)" action="javascript:" method="post">
+            <p>Punishment level</p>
+            <select class="custom-select" name="blacklist_punishment">
+              <option value="delete">Just delete the message</option>
+              <option value="kick">Delete the message and kick the author</option>
+              <option value="ban">Delete the message and ban the author</option>
+            </select>
+            <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
+          </form>
+        </div>
+
       </div>
-
-      <div class="col">
-        <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
-          <p>Regular Commands</p>
-          <button type="submit" class="btn toggle-value reverse" name="owner_disable_regular" value="x">Click to </button>
-        </form>
-      </div>
-
-      <div class="col">
-        <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
-          <p>Moderator Commands</p>
-          <button type="submit" class="btn toggle-value reverse" name="owner_disable_mod" value="x">Click to </button>
-        </form>
-      </div>
-
     </div>
+
+    <h3 id="config_master">Master controlls</h3>
+    <div>
+      <span>Master configs can only be edited by the server owner, all of them have serverwide impact.</span>
+      <br>
+      <span>A disabled command group can only be used by the server owner and noone else.<span>
+
+      <hr>
+
+      <div class="center-item-row">
+
+        <div class="col">
+          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
+            <p>Normal Commands</p>
+            <button type="submit" class="btn toggle-value reverse" name="owner_disable_normal" value="x">Click to </button>
+          </form>
+        </div>
+
+        <div class="col">
+          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
+            <p>Regular Commands</p>
+            <button type="submit" class="btn toggle-value reverse" name="owner_disable_regular" value="x">Click to </button>
+          </form>
+        </div>
+
+        <div class="col">
+          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:" method="post">
+            <p>Moderator Commands</p>
+            <button type="submit" class="btn toggle-value reverse" name="owner_disable_mod" value="x">Click to </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
 
   </div>
 

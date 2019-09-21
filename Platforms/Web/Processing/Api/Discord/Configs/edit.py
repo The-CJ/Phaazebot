@@ -14,6 +14,7 @@ from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from Utils.Classes.undefined import Undefined
+from Platforms.Discord.blacklist import checkBlacklistPunishmentString
 from Utils.dbutils import validateDBInput
 
 async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -61,6 +62,19 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# changes["x"] = true
 	# db_changes["x"] = "1"
 
+	# ban_links
+	value:str or Undefined = Data.get("ban_links")
+	if type(value) is not Undefined:
+		db_changes["ban_links"] = validateDBInput(bool, value)
+		changes["ban_links"] = True if db_changes["ban_links"] == "1" else False
+
+	# blacklist_punishment
+	value:str or Undefined = Data.get("blacklist_punishment")
+	if type(value) is not Undefined:
+		value = checkBlacklistPunishmentString(value)
+		db_changes["blacklist_punishment"] = validateDBInput(str, value)
+		changes["blacklist_punishment"] = db_changes["blacklist_punishment"]
+
 	# owner_disable_normal
 	value:str or Undefined = Data.get("owner_disable_normal")
 	if type(value) is not Undefined:
@@ -78,6 +92,9 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if type(value) is not Undefined:
 		db_changes["owner_disable_mod"] = validateDBInput(bool, value)
 		changes["owner_disable_mod"] = True if db_changes["owner_disable_mod"] == "1" else False
+
+	if not db_changes:
+		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
 
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_setting",

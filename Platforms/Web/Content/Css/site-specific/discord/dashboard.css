@@ -69,7 +69,7 @@
 [location=configs] .btn.toggle-value.reverse[value=false] {background: #00c851; }
 [location=configs] .btn.toggle-value.reverse[value=true]::after {content: "Enable"; }
 [location=configs] .btn.toggle-value.reverse[value=false]::after {content: "Disable"; }
-
+[location=configs] .btn.config-save { margin-top: 1em; }
 
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}

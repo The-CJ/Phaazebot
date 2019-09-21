@@ -362,7 +362,8 @@ var Configs = new(class {
   }
 
   updateField(HTMLForm) {
-    console.log(HTMLForm);
+    var extracted_data = extractData($(HTMLForm));
+    this.update(extracted_data);
   }
 
   updateToogleField(HTMLForm) {
@@ -389,7 +390,8 @@ var Configs = new(class {
 
     })
     .fail(function (data) {
-      Display.showMessage({content: "Error updating configs...", color:Display.color_critical});
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error updating configs..."
+      Display.showMessage({content: msg, color:Display.color_critical});
       console.log(data);
     })
   }
