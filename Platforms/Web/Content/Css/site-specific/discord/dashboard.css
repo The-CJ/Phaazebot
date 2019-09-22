@@ -73,6 +73,7 @@
 [location=configs] .btn.config-save { margin-top: 1em; }
 [location=configs] .config-info { padding: .84rem 2.14rem; font-size: .81rem; } /* same as btn */
 [location=configs] .config-textbox-input { width: 100%; }
+[location=configs] .config-token-btn { position: absolute; top: 1px; right: 1px; }
 
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
