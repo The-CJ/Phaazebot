@@ -148,11 +148,37 @@ var DiscordDashboard = new (class {
       DashO.channels = data.result.channels;
       DashO.roles = data.result.roles;
 
+      DashO.loadDiscordChannel(data.result.channels);
+
     })
     .fail(function (data) {
       Display.showMessage({content: "Error loading general informations...", color:Display.color_critical});
       console.log(data);
     })
+  }
+
+  loadDiscordChannel(channel_list) {
+    var HTMLSelectList = $("select[discord-channel]");
+    for (var HTMLSelect of HTMLSelectList) {
+      HTMLSelect = $(HTMLSelect).html("");
+
+      var only_type = HTMLSelect.attr("discord-channel");
+      if ( HTMLSelect.attr("discord-channel-none") )  {
+        HTMLSelect.append("<option value=''>(None)</option>");
+      }
+      for (var channel of channel_list) {
+        var name = channel.name;
+        if (only_type) {
+          if (only_type != channel.channel_type) { continue; }
+          if (channel.channel_type == "text") { name = "#" + name;  }
+        }
+
+        var Option = $("<option>");
+        Option.attr("value", channel.id);
+        Option.text(name);
+        HTMLSelect.append(Option);
+      }
+    }
   }
 
   // view utils
