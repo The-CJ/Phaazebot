@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData
+from Platforms.Web.Processing.Api.errors import missingData, apiWrongData
 from Platforms.Discord.utils import getDiscordSeverSettings
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserinfo import DiscordUserInfo
@@ -75,6 +75,26 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		db_changes["blacklist_punishment"] = validateDBInput(str, value)
 		changes["blacklist_punishment"] = db_changes["blacklist_punishment"]
 
+	# leave_chan
+	value:str or Undefined = Data.get("leave_chan")
+	if type(value) is not Undefined:
+		error:bool = False
+		if value == "": pass
+		elif value.isdigit():
+			Chan:discord.abc.Messageable = discord.utils.get(Guild.channels, id=int(value))
+			if type(Chan) != discord.TextChannel:
+				error = True
+			else:
+				value = Chan.id
+		else:
+			error = True
+
+		if error:
+			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
+
+		db_changes["leave_chan"] = validateDBInput(str, value)
+		changes["leave_chan"] = db_changes["leave_chan"]
+
 	# leave_msg
 	value:str or Undefined = Data.get("leave_msg")
 	if type(value) is not Undefined:
@@ -99,6 +119,26 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		db_changes["owner_disable_mod"] = validateDBInput(bool, value)
 		changes["owner_disable_mod"] = True if db_changes["owner_disable_mod"] == "1" else False
 
+	# welcome_chan
+	value:str or Undefined = Data.get("welcome_chan")
+	if type(value) is not Undefined:
+		error:bool = False
+		if value == "": pass
+		elif value.isdigit():
+			Chan:discord.abc.Messageable = discord.utils.get(Guild.channels, id=int(value))
+			if type(Chan) != discord.TextChannel:
+				error = True
+			else:
+				value = Chan.id
+		else:
+			error = True
+
+		if error:
+			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
+
+		db_changes["welcome_chan"] = validateDBInput(str, value)
+		changes["welcome_chan"] = db_changes["welcome_chan"]
+
 	# welcome_msg
 	value:str or Undefined = Data.get("welcome_msg")
 	if type(value) is not Undefined:
@@ -114,6 +154,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not db_changes:
 		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
 
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Config Update: S:{guild_id} {str(db_changes)}", require="discord:configs")
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_setting",
 		content = db_changes,
