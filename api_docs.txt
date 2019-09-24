@@ -1,27 +1,31 @@
 Please ignore this file to, it a reminder for me what endpoints there are.
 
 /api/account/phaaze/create
-
 /api/account/phaaze/edit
-
 /api/account/phaaze/get
-/api/account/discord/get
-/api/account/twitch/get
-
 /api/account/phaaze/login
-/api/account/discord/login
-/api/account/twitch/login
-
 /api/account/phaaze/logout
+
+/api/account/discord/get
+/api/account/discord/login
 /api/account/discord/logout
+
+/api/account/twitch/get
+/api/account/twitch/login
 /api/account/twitch/logout
 
-/api/admin/status
-/api/admin/module
 /api/admin/evaluate
+/api/admin/module
+/api/admin/status
 
-/api/discord/guilds
-/api/discord/commands
+/api/discord/commands/create
+/api/discord/commands/delete
+/api/discord/commands/edit
 /api/discord/commands/get
+/api/discord/commands/list
 
-#
+/api/discord/configs/edit
+/api/discord/configs/get
+
+/api/discord/guild
+/api/discord/userguilds
