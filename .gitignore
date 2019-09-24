@@ -1,13 +1,5 @@
+*.swp
 __pycache__
+.ropeproject
 config.json*
 !config.json.example
-.ropeproject
-_WEB_/css/bootstrap.css
-_WEB_/css/materialize.css
-_WEB_/css/mdb.css
-_WEB_/js/bootstrap.js
-_WEB_/js/materialize.js
-_WEB_/js/mdb.js
-_WEB_/img/*
-!_WEB_/img/*.py
-*.swp
