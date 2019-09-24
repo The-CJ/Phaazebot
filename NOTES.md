@@ -11,5 +11,9 @@
 ### kwargs
 ```
 # set logging type
---logging = [console, systemd]
+--logging=(console, systemd)
+
+# set debug outputs
+--debug=require
+// require can be found at any debug print call, "all" gives everything
 ```
