@@ -1,5 +1,6 @@
-$("document").ready(function () {
+$("document").ready(async function () {
   DiscordDashboard.loadGeneralInfo();
+  await sleep(250);
   DiscordDashboard.restoreView();
 })
 
