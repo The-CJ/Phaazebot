@@ -67,7 +67,7 @@
       <div class="center-item-row">
 
         <div class="col">
-          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
             <div class="center-item-col">
               <p>Welcome message</p>
               <div class="config-info"><span>Get's triggered everytime a member joins<span></div>
@@ -83,7 +83,7 @@
         </div>
 
         <div class="col">
-          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
             <div class="center-item-col">
               <p>Leave message</p>
               <div class="config-info"><span>Get's triggered everytime a member leaves :c<span></div>
@@ -103,11 +103,12 @@
       <div class="center-item-row">
 
         <div class="col">
-          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
             <p>Private welcome message</p>
             <div class="config-info"><span>Get's triggered with "Welcome message", except it is sent to the member via DM<span></div>
             <textarea class="config-textbox-input" name="welcome_msg_priv" rows="5"></textarea>
             <button type="submit" class="btn btn-block btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary config-token-btn" onclick="alert('TODO token')">Token</button>
           </form>
         </div>
 
@@ -148,7 +149,6 @@
 
       </div>
     </div>
-
 
   </div>
 

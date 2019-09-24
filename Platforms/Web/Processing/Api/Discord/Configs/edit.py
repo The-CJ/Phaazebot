@@ -75,6 +75,12 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		db_changes["blacklist_punishment"] = validateDBInput(str, value)
 		changes["blacklist_punishment"] = db_changes["blacklist_punishment"]
 
+	# leave_msg
+	value:str or Undefined = Data.get("leave_msg")
+	if type(value) is not Undefined:
+		db_changes["leave_msg"] = validateDBInput(str, value)
+		changes["leave_msg"] = db_changes["leave_msg"]
+
 	# owner_disable_normal
 	value:str or Undefined = Data.get("owner_disable_normal")
 	if type(value) is not Undefined:
@@ -92,6 +98,18 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if type(value) is not Undefined:
 		db_changes["owner_disable_mod"] = validateDBInput(bool, value)
 		changes["owner_disable_mod"] = True if db_changes["owner_disable_mod"] == "1" else False
+
+	# welcome_msg
+	value:str or Undefined = Data.get("welcome_msg")
+	if type(value) is not Undefined:
+		db_changes["welcome_msg"] = validateDBInput(str, value)
+		changes["welcome_msg"] = db_changes["welcome_msg"]
+
+	# welcome_msg_priv
+	value:str or Undefined = Data.get("welcome_msg_priv")
+	if type(value) is not Undefined:
+		db_changes["welcome_msg_priv"] = validateDBInput(str, value)
+		changes["welcome_msg_priv"] = db_changes["welcome_msg_priv"]
 
 	if not db_changes:
 		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
