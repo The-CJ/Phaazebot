@@ -149,7 +149,7 @@ var DiscordDashboard = new (class {
       DashO.channels = data.result.channels;
       DashO.roles = data.result.roles;
 
-      DashO.loadDiscordChannel(data.result.channels);
+      DashO.buildDiscordChannel(data.result.channels);
 
     })
     .fail(function (data) {
@@ -158,7 +158,7 @@ var DiscordDashboard = new (class {
     })
   }
 
-  loadDiscordChannel(channel_list) {
+  buildDiscordChannel(channel_list) {
     var HTMLSelectList = $("select[discord-channel]");
     for (var HTMLSelect of HTMLSelectList) {
       HTMLSelect = $(HTMLSelect).html("");
@@ -413,7 +413,7 @@ var Configs = new(class {
     $.post("/api/discord/configs/edit", new_configs)
     .done(function (data) {
 
-      insertData("[location=configs]", data.changes);
+      insertData("[location=configs]", data.changes, true);
       Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
 
     })

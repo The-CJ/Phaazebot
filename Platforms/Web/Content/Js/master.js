@@ -45,10 +45,10 @@ function extractData(o) {
   return data;
 }
 
-function insertData(o, d) {
+function insertData(o, d, to_string=false) {
   if (typeof o != "object") { o = $(o); }
   for (var k in d) {
-    try { o.find("[name="+k+"]").val(d[k]); }
+    try { o.find("[name="+k+"]").val( (to_string && !d[k]) ? "" : d[k] ); }
     catch (e) { continue }
   }
 }
