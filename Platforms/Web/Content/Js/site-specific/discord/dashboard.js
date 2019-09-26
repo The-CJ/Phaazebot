@@ -187,6 +187,22 @@ var DiscordDashboard = new (class {
     if ( isEmpty(view) ) { view = "home"; }
     $("[location]").hide();
     $("[location="+view+"]").show();
+    this.toggleSitePanel("hide");
+  }
+
+  toggleSitePanel(state) {
+    if (isEmpty(state)) {
+      state = $(".site-panel").hasClass("show");
+      state = state ? "hide" : "show";
+    }
+    if (state == "hide") {
+      $(".site-panel").removeClass("show");
+      $(".site-panel-btn").removeClass("show");
+    }
+    if (state == "show") {
+      $(".site-panel").addClass("show");
+      $(".site-panel-btn").addClass("show");
+    }
   }
 
   restoreView() {
