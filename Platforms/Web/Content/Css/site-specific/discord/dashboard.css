@@ -8,6 +8,34 @@
 .site-panel h4 {
   margin: 0.5em 0;
 }
+
+.site-panel-btn {
+  display: none;
+  position: fixed;
+  left: 2px;
+  bottom: 2px;
+  z-index: 2;
+  border-radius: 7.5em;
+  padding: 1em;
+  line-height: 0;
+}
+
+@media (max-width: 1100px) {
+  .site-panel {
+    position: absolute;
+    display: none;
+    width: 50vw;
+    max-width: unset;
+    z-index: 1;
+    float: unset;
+    border-right: 2px solid black;
+  }
+  .site-panel-btn {
+    display: block;
+  }
+}
+.site-panel.show { display: unset; }
+
 .main-panel {
   padding-top: 15px;
   overflow-y: hidden;
