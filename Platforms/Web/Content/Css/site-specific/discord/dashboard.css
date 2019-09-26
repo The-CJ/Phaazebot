@@ -81,3 +81,11 @@
 #command_create[mode=new] button[mode=new] { display: unset;}
 #command_create[mode=edit] button[mode=edit] { display: unset;}
 #command_create [extra-command-setting] p { word-break: break-word; white-space: pre-line;}
+
+#token_modal_help .example { color: white; background: grey; }
+#token_modal_help .clickable { color: #262798; background: #8aa6af9c; padding: 2px; cursor: pointer; }
+#token_modal_help .tokenlist { padding: 0 1em; }
+#token_modal_help .tokenlist .token { padding: 1px; }
+#token_modal_help .tokenlist .token .key { padding-right: 2px; background: #aaaaaaaa; text-align: right;}
+#token_modal_help .tokenlist .token .value { padding-left: 2px; text-align: left;}
+#token_modal_help .modal-body { max-height: 50vh; overflow-y: auto; }

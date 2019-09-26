@@ -111,3 +111,75 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="token_modal_help">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Token</h4>
+        <button type="button" class="close" onclick="$('#token_modal_help').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="row">
+          <div class="col">
+            <p>Tokens are placeholder that get replaced with informations the the message is given out.</p>
+            <p>e.g.: </p>
+            <pre class="example">Hello [user-mention], please read <#rules#></pre>
+            <p>Will be: </p>
+            <pre class="example">Hello <span class="clickable">@NewUserName</span>, please read <span class="clickable">#rules</span></pre>
+            <span>Note: using <#rules#> will make a <span class="clickable">clickable</span> channel mention,<br></span>
+            <span>If you just use #rules it will be normal text.</span>
+          </div>
+        </div>
+
+        <h3>Token list</h3>
+        <table class="tokenlist">
+          <tr class="token welcome leave priv_welcome">
+            <td class="key">[user-name]</td>
+            <td class="value">The User name</td>
+          </tr>
+          <tr class="token welcome leave">
+            <td class="key">[user-mention]</td>
+            <td class="value">A <span class="clickable">@mention</span> of the name</td>
+          </tr>
+          <tr class="token welcome leave">
+            <td class="key">[channel-name]</td>
+            <td class="value">The name of the event channel of the name</td>
+          </tr>
+          <tr class="token welcome leave">
+            <td class="key">[channel-mention]</td>
+            <td class="value">A <span class="clickable">#mention</span> of the event channel</td>
+          </tr>
+          <tr class="token welcome leave priv_welcome">
+            <td class="key">[server-name]</td>
+            <td class="value">Event server name</td>
+          </tr>
+          <tr class="token welcome leave priv_welcome">
+            <td class="key">[member-count]</td>
+            <td class="value">Current event server member count</td>
+          </tr>
+          <tr>
+            <td colspan="2"><h3>Special token list</h3></td>
+          </tr>
+          <tr class="token welcome leave priv_welcome">
+            <td class="key"><#name#></td>
+            <td class="value">Channel mention of channel associated with name*</td>
+          </tr>
+          <tr class="token welcome leave priv_welcome">
+            <td class="key"><#!id!#></td>
+            <td class="value">Channel mention of channel associated with id*</td>
+          </tr>
+          <tr class="token welcome leave priv_welcome">
+            <td colspan="2">* = if none found replace with: (unknown)</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="modal-footer"></div>
+
+    </div>
+  </div>
+</div>
