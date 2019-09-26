@@ -434,3 +434,11 @@ function translateRequire(level) {
   if (level == 3) { return "Server Owner"; }
   if (level >= 4) { return "System"; }
 }
+
+function showTokenHelp(field) {
+  if (isEmpty(field)) { field = ""; }
+  else { field = "."+field; }
+  $("#token_modal_help .token").hide();
+  $("#token_modal_help .token"+field).show();
+  $("#token_modal_help").modal("show");
+}
