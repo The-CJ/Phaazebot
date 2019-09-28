@@ -452,7 +452,7 @@ var Configs = new(class {
     this.update(req);
 
     var i = this.blacklist.indexOf(word);
-    this.blacklist.pop(i);
+    this.blacklist.splice(i, 1);
     this.buildWordBlacklist(this.blacklist);
   }
 

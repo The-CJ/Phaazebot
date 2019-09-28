@@ -197,6 +197,7 @@ async def singleActionBlacklist(cls:"WebIndex", WebRequest:Request, action:str, 
 			where_values = (guild_id,)
 		)
 
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Blacklist Update: S:{guild_id} - add: {action_word}", require="discord:configs")
 		return cls.response(
 			text=json.dumps( dict(msg="blacklist successfull updated", add=action_word, status=200) ),
 			content_type="application/json",
@@ -215,6 +216,7 @@ async def singleActionBlacklist(cls:"WebIndex", WebRequest:Request, action:str, 
 					where_values = (guild_id,)
 				)
 
+				cls.Web.BASE.Logger.debug(f"(API/Discord) Blacklist Update: S:{guild_id} - rem: {action_word}", require="discord:configs")
 				return cls.response(
 					text=json.dumps( dict(msg="blacklist successfull updated", remove=action_word, status=200) ),
 					content_type="application/json",
