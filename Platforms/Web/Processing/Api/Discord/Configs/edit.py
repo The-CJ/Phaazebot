@@ -189,7 +189,19 @@ async def singleActionBlacklist(cls:"WebIndex", WebRequest:Request, action:str, 
 		return await missingData(cls, WebRequest, msg="missing field 'blacklist_word'")
 
 	if action == "add":
-		return await apiWrongData(cls, WebRequest, msg="TODO add")
+		Configs.blacklist_words.append(action_word.lower())
+		cls.Web.BASE.PhaazeDB.updateQuery(
+			table = "discord_setting",
+			content = {"blacklist_words": json.dumps(Configs.blacklist_words) },
+			where = "discord_setting.guild_id = %s",
+			where_values = (guild_id,)
+		)
+
+		return cls.response(
+			text=json.dumps( dict(msg="blacklist successfull updated", add=action_word, status=200) ),
+			content_type="application/json",
+			status=200
+		)
 
 	elif action == "remove":
 		for word in Configs.blacklist_words:

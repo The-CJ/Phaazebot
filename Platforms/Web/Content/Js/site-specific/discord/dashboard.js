@@ -401,20 +401,16 @@ var Commands = new (class {
 
 var Configs = new(class {
   constructor() {
-
+    this.blacklist = [];
   }
 
   showWordBlacklist() {
+    var ConfigsO = this;
     var guild_id = $("#guild_id").val();
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
-
-      var EntryList = $("#config_modal_blacklist_words .wordbanlist").html("");
-      for (var entry of data.result.blacklist_words) {
-        var EntryRow = $("[phantom] .blacklistword").clone();
-        EntryRow.find(".word").text(entry);
-        EntryList.append(EntryRow);
-      }
+      ConfigsO.blacklist = data.result.blacklist_words;
+      ConfigsO.buildWordBlacklist(data.result.blacklist_words);
       $("#config_modal_blacklist_words").modal("show");
     })
     .fail(function (data) {
@@ -422,6 +418,27 @@ var Configs = new(class {
       Display.showMessage({content: msg, color:Display.color_critical});
       console.log(data);
     })
+  }
+
+  buildWordBlacklist(blacklist_words) {
+    var EntryList = $("#config_modal_blacklist_words .wordbanlist").html("");
+    for (var entry of blacklist_words) {
+      var EntryRow = $("[phantom] .blacklistword").clone();
+      EntryRow.find(".word").text(entry);
+      EntryList.append(EntryRow);
+    }
+  }
+
+  addToBlacklist() {
+    var new_word = $("#new_blacklistword").val();
+    var req = {
+      "blacklist_word": new_word,
+      "blacklist_action": "add"
+    };
+    this.update(req);
+    $("#new_blacklistword").val("");
+    this.blacklist.push(new_word.toLowerCase());
+    this.buildWordBlacklist(this.blacklist);
   }
 
   removeFromBlacklist(HTMLButton) {
@@ -433,7 +450,10 @@ var Configs = new(class {
       "blacklist_action": "remove"
     };
     this.update(req);
-    Entry.remove();
+
+    var i = this.blacklist.indexOf(word);
+    this.blacklist.pop(i);
+    this.buildWordBlacklist(this.blacklist);
   }
 
   updateField(HTMLForm) {
