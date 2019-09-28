@@ -411,8 +411,8 @@ var Configs = new(class {
 
       var EntryList = $("#config_modal_blacklist_words .wordbanlist").html("");
       for (var entry of data.result.blacklist_words) {
-        var EntryRow = $("<div class='row word'></div>");
-
+        var EntryRow = $("[phantom] .blacklistword").clone();
+        EntryRow.find(".word").text(entry);
         EntryList.append(EntryRow);
       }
       $("#config_modal_blacklist_words").modal("show");
@@ -422,6 +422,18 @@ var Configs = new(class {
       Display.showMessage({content: msg, color:Display.color_critical});
       console.log(data);
     })
+  }
+
+  removeFromBlacklist(HTMLButton) {
+    var Entry = $(HTMLButton).closest(".blacklistword");
+    var word = Entry.find(".word").text();
+
+    var req = {
+      "blacklist_word": word,
+      "blacklist_action": "remove"
+    };
+    this.update(req);
+    Entry.remove();
   }
 
   updateField(HTMLForm) {

@@ -129,4 +129,5 @@
 #token_modal_help .modal-body { max-height: 50vh; overflow-y: auto; }
 
 #config_modal_blacklist_words .wordbanlist { padding: 1em; }
+#config_modal_blacklist_words .wordbanlist .blacklistword { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
 #config_modal_blacklist_words .wordbanlist:empty:after { content: "(None)"; }

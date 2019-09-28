@@ -53,6 +53,11 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Configs:
 		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find configs for this guild")
 
+	# single actions
+	action:str or Undefined = Data.get("blacklist_action")
+	if action:
+		return await singleActionBlacklist(cls, WebRequest, action, Data, Configs)
+
 	changes:dict = dict()
 	db_changes:dict = dict()
 
@@ -167,3 +172,45 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		content_type="application/json",
 		status=200
 	)
+
+async def singleActionBlacklist(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings) -> Response:
+	"""
+		Default url: /api/discord/configs/edit?blacklist_action=something
+	"""
+	guild_id:str = Data.get("guild_id")
+	action = action.lower()
+	action_word:str = Data.get("blacklist_word")
+
+	if not guild_id:
+		# should never happen
+		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+
+	if not action_word:
+		return await missingData(cls, WebRequest, msg="missing field 'blacklist_word'")
+
+	if action == "add":
+		return await apiWrongData(cls, WebRequest, msg="TODO add")
+
+	elif action == "remove":
+		for word in Configs.blacklist_words:
+			if action_word == word.lower():
+				Configs.blacklist_words.remove(word)
+
+				cls.Web.BASE.PhaazeDB.updateQuery(
+					table = "discord_setting",
+					content = {"blacklist_words": json.dumps(Configs.blacklist_words) },
+					where = "discord_setting.guild_id = %s",
+					where_values = (guild_id,)
+				)
+
+				return cls.response(
+					text=json.dumps( dict(msg="blacklist successfull updated", remove=action_word, status=200) ),
+					content_type="application/json",
+					status=200
+				)
+
+		return await apiWrongData(cls, WebRequest, msg=f"can't remove '{action_word}', it's currently not in the blacklist")
+
+
+	else:
+		return await apiWrongData(cls, WebRequest)
