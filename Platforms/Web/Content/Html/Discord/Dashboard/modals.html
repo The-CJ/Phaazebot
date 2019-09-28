@@ -183,3 +183,39 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="config_modal_blacklist_words">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Blacklist</h4>
+        <button type="button" class="close" onclick="$('#config_modal_blacklist_words').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="row">
+          <div class="col">
+            <p>Pretty easy to unserstand, if any word of the blacklist is found in the message, execute the punishment</p>
+            <span>Note:</span><br>
+            <span>Every word and or phase is case insensitive</span><br>
+            <span>Means:</span><br>
+            <span>The word "ass" gets found in "I play a br<b>ass</b> instrument"</span><br>
+            <span>and by this will get a punishment</span>
+          </div>
+        </div>
+
+        <hr>
+        <div class="md-form">
+          <input type="text" id="new_blacklistword" class="form-control">
+          <label for="new_blacklistword">New entry:</label>
+        </div>
+        <hr>
+        <div class="wordbanlist"></div>
+
+      <div class="modal-footer"></div>
+
+    </div>
+  </div>
+</div>

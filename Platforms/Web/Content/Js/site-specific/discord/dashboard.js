@@ -404,6 +404,26 @@ var Configs = new(class {
 
   }
 
+  showWordBlacklist() {
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+
+      var EntryList = $("#config_modal_blacklist_words .wordbanlist").html("");
+      for (var entry of data.result.blacklist_words) {
+        var EntryRow = $("<div class='row word'></div>");
+
+        EntryList.append(EntryRow);
+      }
+      $("#config_modal_blacklist_words").modal("show");
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading word blacklist..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
+  }
+
   updateField(HTMLForm) {
     var extracted_data = extractData($(HTMLForm));
     this.update(extracted_data);
