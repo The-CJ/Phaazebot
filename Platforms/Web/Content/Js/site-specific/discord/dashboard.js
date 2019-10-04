@@ -402,6 +402,7 @@ var Commands = new (class {
 var Configs = new(class {
   constructor() {
     this.blacklist = [];
+    this.whitelist = [];
   }
 
   // links
@@ -410,7 +411,7 @@ var Configs = new(class {
     var guild_id = $("#guild_id").val();
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.blacklist = data.result.ban_links_whitelist;
+      ConfigsO.whitelist = data.result.ban_links_whitelist;
       ConfigsO.buildLinkWhitelist(data.result.ban_links_whitelist);
       $("#config_modal_whitelist_links").modal("show");
     })
@@ -420,6 +421,7 @@ var Configs = new(class {
       console.log(data);
     })
   }
+
   buildLinkWhitelist(blacklist_words) {
     var EntryList = $("#config_modal_whitelist_links .linkwhitelist").html("");
     for (var entry of blacklist_words) {
@@ -428,6 +430,20 @@ var Configs = new(class {
       EntryList.append(EntryRow);
     }
   }
+
+  addToLinkWhitelist() {
+    var new_link = $("#new_whitelistlink").val();
+    if (isEmpty(new_link)) { return; }
+    var req = {
+      "linkwhitelist_link": new_link,
+      "linkwhitelist_action": "add"
+    };
+    this.update(req);
+    $("#new_whitelistlink").val("");
+    this.whitelist.push(new_link.toLowerCase());
+    this.buildLinkWhitelist(this.whitelist);
+  }
+
 
   // blacklist
   showWordBlacklist() {
@@ -459,8 +475,8 @@ var Configs = new(class {
     var new_word = $("#new_blacklistword").val();
     if (isEmpty(new_word)) { return; }
     var req = {
-      "blacklist_word": new_word,
-      "blacklist_action": "add"
+      "wordblacklist_word": new_word,
+      "wordblacklist_action": "add"
     };
     this.update(req);
     $("#new_blacklistword").val("");
@@ -473,8 +489,8 @@ var Configs = new(class {
     var word = Entry.find(".word").text();
 
     var req = {
-      "blacklist_word": word,
-      "blacklist_action": "remove"
+      "wordblacklist_word": word,
+      "wordblacklist_action": "remove"
     };
     this.update(req);
 
