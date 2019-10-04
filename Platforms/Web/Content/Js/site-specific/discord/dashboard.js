@@ -444,6 +444,20 @@ var Configs = new(class {
     this.buildLinkWhitelist(this.whitelist);
   }
 
+  removeFromLinkWhitelist(HTMLButton) {
+    var Entry = $(HTMLButton).closest(".whitelistlink");
+    var link = Entry.find(".link").text();
+
+    var req = {
+      "linkwhitelist_link": link,
+      "linkwhitelist_action": "remove"
+    };
+    this.update(req);
+
+    var i = this.whitelist.indexOf(link);
+    this.whitelist.splice(i, 1);
+    this.buildLinkWhitelist(this.whitelist);
+  }
 
   // blacklist
   showWordBlacklist() {
