@@ -404,6 +404,32 @@ var Configs = new(class {
     this.blacklist = [];
   }
 
+  // links
+  showLinkWhitelist() {
+    var ConfigsO = this;
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+      ConfigsO.blacklist = data.result.ban_links_whitelist;
+      ConfigsO.buildLinkWhitelist(data.result.ban_links_whitelist);
+      $("#config_modal_whitelist_links").modal("show");
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading word link whitelist..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
+  }
+  buildLinkWhitelist(blacklist_words) {
+    var EntryList = $("#config_modal_whitelist_links .linkwhitelist").html("");
+    for (var entry of blacklist_words) {
+      var EntryRow = $("[phantom] .whitelistlink").clone();
+      EntryRow.find(".link").text(entry);
+      EntryList.append(EntryRow);
+    }
+  }
+
+  // blacklist
   showWordBlacklist() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
@@ -431,6 +457,7 @@ var Configs = new(class {
 
   addToBlacklist() {
     var new_word = $("#new_blacklistword").val();
+    if (isEmpty(new_word)) { return; }
     var req = {
       "blacklist_word": new_word,
       "blacklist_action": "add"

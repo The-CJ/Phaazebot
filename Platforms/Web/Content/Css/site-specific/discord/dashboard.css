@@ -131,3 +131,7 @@
 #config_modal_blacklist_words .wordbanlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
 #config_modal_blacklist_words .wordbanlist .blacklistword { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
 #config_modal_blacklist_words .wordbanlist:empty:after { content: "(None)"; }
+
+#config_modal_whitelist_links .linkwhitelist { padding: 1em; max-height: 40vh; overflow-y: auto; }
+#config_modal_whitelist_links .linkwhitelist .whitelistlink { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
+#config_modal_whitelist_links .linkwhitelist:empty:after { content: "(None)"; }

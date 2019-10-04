@@ -221,3 +221,39 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="config_modal_whitelist_links">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Blacklist</h4>
+        <button type="button" class="close" onclick="$('#config_modal_whitelist_links').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="row">
+          <div class="col">
+            <p>By default every link gets punished, but here you can define <a href="https://en.wikipedia.org/wiki/Regular_expression" style="color: blue;" target="_blank">regular expressions</a> that are allowed.</p>
+            <span>e.g:</span><br>
+            <span>If you ban links, but want to allow all google links, including all subdomains.<span><br>
+            <span>You add this: <span style="color:red">^.*google.com$</span></span>
+          </div>
+        </div>
+
+        <hr>
+        <form class="md-form" action="javascript:void(0)" onsubmit="javascript:Configs.addToLinkWhitelist()">
+          <input type="text" id="new_whitelistlink" class="form-control">
+          <label for="new_whitelistlink">New entry:</label>
+        </form>
+        <hr>
+        <div class="linkwhitelist"></div>
+
+      </div>
+
+      <div class="modal-footer"></div>
+      <div messagebox></div>
+    </div>
+  </div>
+</div>
