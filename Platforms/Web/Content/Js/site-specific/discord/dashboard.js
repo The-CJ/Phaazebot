@@ -264,6 +264,14 @@ var DiscordDashboard = new (class {
     }
   }
 
+  getDiscordChannelByID(id) {
+
+  }
+
+  getDiscordRoleByID(id) {
+    return "TODO";
+  }
+
   // view utils
   showLocationWindow(view) {
     if ( isEmpty(view) ) { view = "home"; }
@@ -634,7 +642,8 @@ var Configs = new(class {
     var EntryList = $("#config_modal_exeption_roles .exceptionrolelist").html("");
     for (var entry of exceptionroles_roles) {
       var EntryRow = $("[phantom] .exceptionrole").clone();
-      EntryRow.find(".name").text(entry);
+      EntryRow.find("[role-id]").val(entry);
+      EntryRow.find(".name").text( DiscordDashboard.getDiscordRoleByID(entry) );
       EntryList.append(EntryRow);
     }
   }
@@ -659,6 +668,23 @@ var Configs = new(class {
     this.update(req, successfunc, failfunc);
   }
 
+  removeFromExecptionRoles(HTMLButton) {
+    var Entry = $(HTMLButton).closest(".exceptionrole");
+    var role_id = Entry.find("[role-id]").val();
+
+    var req = {
+      "exceptionrole_id": role_id,
+      "exceptionrole_action": "remove"
+    };
+    var ConfigsO = this;
+    this.update(req, function () {
+      var i = ConfigsO.except_roleslist.indexOf(role_id);
+      ConfigsO.except_roleslist.splice(i, 1);
+      ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
+    });
+  }
+
+  // update utils
   updateField(HTMLForm) {
     var extracted_data = extractData($(HTMLForm));
     this.update(extracted_data);
