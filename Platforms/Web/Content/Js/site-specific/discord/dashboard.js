@@ -495,7 +495,7 @@ var Configs = new(class {
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
       ConfigsO.whitelist = data.result.ban_links_whitelist;
-      ConfigsO.buildLinkWhitelist(data.result.ban_links_whitelist);
+      ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
       $("#config_modal_whitelist_links").modal("show");
     })
     .fail(function (data) {
@@ -505,9 +505,9 @@ var Configs = new(class {
     })
   }
 
-  buildLinkWhitelist(blacklist_words) {
+  buildLinkWhitelist(whitelist_links) {
     var EntryList = $("#config_modal_whitelist_links .linkwhitelist").html("");
-    for (var entry of blacklist_words) {
+    for (var entry of whitelist_links) {
       var EntryRow = $("[phantom] .whitelistlink").clone();
       EntryRow.find(".link").text(entry);
       EntryList.append(EntryRow);
@@ -558,7 +558,7 @@ var Configs = new(class {
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
       ConfigsO.blacklist = data.result.blacklist_words;
-      ConfigsO.buildWordBlacklist(data.result.blacklist_words);
+      ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
       $("#config_modal_blacklist_words").modal("show");
     })
     .fail(function (data) {
@@ -620,6 +620,7 @@ var Configs = new(class {
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
       ConfigsO.except_roleslist = data.result.ban_links_role;
+      ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
       $("#config_modal_exeption_roles").modal("show");
     })
     .fail(function (data) {
@@ -627,6 +628,15 @@ var Configs = new(class {
       Display.showMessage({content: msg, color:Display.color_critical});
       console.log(data);
     })
+  }
+
+  buildExecptionRoles(exceptionroles_roles) {
+    var EntryList = $("#config_modal_exeption_roles .exceptionrolelist").html("");
+    for (var entry of exceptionroles_roles) {
+      var EntryRow = $("[phantom] .exceptionrole").clone();
+      EntryRow.find(".name").text(entry);
+      EntryList.append(EntryRow);
+    }
   }
 
   addToExecptionRoles() {
