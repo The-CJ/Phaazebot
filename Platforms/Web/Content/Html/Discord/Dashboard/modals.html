@@ -282,12 +282,15 @@
         </div>
 
         <hr>
+        <span>Only non-managed roles are shown</span><br>
+        <span>Adding @everyone is not a good idea... i think?</span>
         <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToExecptionRoles()">
-          <select class="custom-select" name="new_exceptionrole" discord-role discord-role-none="true"></select>
+          <select class="custom-select" id="new_exceptionrole" discord-role discord-role-none="true"></select>
           <div class="input-group-append">
             <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
           </div>
         </form>
+        <span>Select a role you want to add.</span>
         <hr>
         <div class="exceptionrolelist"></div>
 

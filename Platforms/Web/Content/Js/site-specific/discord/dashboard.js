@@ -485,6 +485,7 @@ var Configs = new(class {
   constructor() {
     this.blacklist = [];
     this.whitelist = [];
+    this.except_roleslist = [];
   }
 
   // links
@@ -618,6 +619,7 @@ var Configs = new(class {
     var guild_id = $("#guild_id").val();
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
+      ConfigsO.except_roleslist = data.result.ban_links_role;
       $("#config_modal_exeption_roles").modal("show");
     })
     .fail(function (data) {
@@ -625,6 +627,26 @@ var Configs = new(class {
       Display.showMessage({content: msg, color:Display.color_critical});
       console.log(data);
     })
+  }
+
+  addToExecptionRoles() {
+    var new_role_id = $("#new_exceptionrole").val();
+    if (isEmpty(new_role_id)) { return; }
+    var req = {
+      "exceptionrole_id": new_role_id,
+      "exceptionrole_action": "add"
+    };
+    var ConfigsO = this;
+    var successfunc = function() {
+      $("#new_exceptionrole").val("");
+      ConfigsO.except_roleslist.push(new_role_id.toLowerCase());
+      ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
+    }
+    var failfunc = function () {
+      $("#new_exceptionrole").val("");
+    }
+
+    this.update(req, successfunc, failfunc);
   }
 
   updateField(HTMLForm) {
