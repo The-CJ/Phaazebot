@@ -312,7 +312,7 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		return await apiWrongData(cls, WebRequest, msg="'role_id' must be digit")
 
 	ActionRole:discord.Role = CurrentGuild.get_role(int(role_id))
-	if not ActionRole:
+	if not ActionRole and action == "add":
 		return await apiDiscordRoleNotFound(cls, WebRequest, role_id=role_id, guild_id=CurrentGuild.id)
 
 	if action == "add":
@@ -335,26 +335,24 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		)
 
 	elif action == "remove":
-		for role in Configs.ban_links_role:
-			if role_id == role:
-				Configs.ban_links_role.remove(role)
+		if role_id not in Configs.ban_links_role:
+			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{role_id}', is currently not added")
 
-				cls.Web.BASE.PhaazeDB.updateQuery(
-					table = "discord_setting",
-					content = {"ban_links_role": json.dumps(Configs.ban_links_role) },
-					where = "discord_setting.guild_id = %s",
-					where_values = (guild_id,)
-				)
+		Configs.ban_links_role.remove(str(role_id))
 
-				cls.Web.BASE.Logger.debug(f"(API/Discord) Exception role list Update: S:{guild_id} - rem: {role_id}", require="discord:configs")
-				return cls.response(
-					text=json.dumps( dict(msg="exception role list successfull updated", remove=role_id, status=200) ),
-					content_type="application/json",
-					status=200
-				)
+		cls.Web.BASE.PhaazeDB.updateQuery(
+			table = "discord_setting",
+			content = {"ban_links_role": json.dumps(Configs.ban_links_role) },
+			where = "discord_setting.guild_id = %s",
+			where_values = (guild_id,)
+		)
 
-		return await apiWrongData(cls, WebRequest, msg=f"can't remove '{role_id}' is currently not added")
-
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Exception role list Update: S:{guild_id} - rem: {role_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="exception role list successfull updated", remove=role_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
 
 	else:
 		return await apiWrongData(cls, WebRequest)
