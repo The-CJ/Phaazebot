@@ -149,7 +149,7 @@ var DiscordDashboard = new (class {
       DashO.channels = data.result.channels;
       DashO.roles = data.result.roles;
 
-      DashO.buildDiscordChannel(data.result.channels);
+      DashO.buildDiscordChannelSelect({"channel_list":data.result.channels});
 
     })
     .fail(function (data) {
@@ -158,7 +158,60 @@ var DiscordDashboard = new (class {
     })
   }
 
-  buildDiscordChannel(channel_list) {
+  buildDiscordChannelSelect(x) {
+    // fill a select HTML Object with discord channels.
+    // the setting can be taken from the html element or from the function call
+    // function call is dominant
+
+    // used field in object x
+    // x["channel_list"] :: a list of `channel objects` {"id":"123456", "name":"something", "channel_type":"text"}
+    // x["target"] :: a list of jquery select elements, or a string for a jquery search   [Default: "select[discord-channel]"]
+    // x["include_none"] :: bool, if true, include a <option value=''>(None)</option> at first [Default: false]
+    //   also true if Select HTML element has attribute: discord-channel-none=true
+    // x["only_type"] :: string, if not emtpy, only list the matching types [Default: ""]
+    //   also set by using the attribute: discord-channel=text   or   discord-channel=voice
+
+    var HTMLSelectList = null;
+
+    var channel_list = x["channel_list"]; if (isEmpty(channel_list)) {throw "empty channel_list";}
+    var include_none = x["include_none"];
+    var only_type = x["only_type"];
+    var target = x["target"];
+    if (target == undefined) { HTMLSelectList = $("select[discord-channel]"); }
+    else if (typeof target == "string") { HTMLSelectList = $(target); }
+    if (isEmpty(HTMLSelectList)) { throw "no targets"; }
+
+    for (var HTMLSelect of HTMLSelectList) {
+      // clear first
+      HTMLSelect = $(HTMLSelect).html("");
+
+      // per element vars
+      var element_only_type = only_type == undefined ? HTMLSelect.attr("discord-channel") : only_type;
+      var element_include_none = include_none == undefined ? HTMLSelect.attr("discord-channel-none") : include_none;
+
+      // include a none?
+      if ( element_include_none ) { HTMLSelect.append("<option value=''>(None)</option>"); }
+
+      for (var channel of channel_list) {
+        // make copy of name, since we keep the channellist untouched
+        var name = channel.name;
+        var id = channel.id;
+
+        // only type?
+        if (element_only_type) {
+          if (element_only_type != channel.channel_type) { continue; }
+        }
+
+        // special format
+        if (channel.channel_type == "text") { name = "#" + name;  }
+
+        var Option = $("<option>");
+        Option.text(name);
+        Option.attr("value", id);
+        HTMLSelect.append(Option);
+      }
+    }
+  }
     var HTMLSelectList = $("select[discord-channel]");
     for (var HTMLSelect of HTMLSelectList) {
       HTMLSelect = $(HTMLSelect).html("");
