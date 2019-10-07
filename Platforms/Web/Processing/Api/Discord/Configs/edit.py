@@ -12,7 +12,7 @@ from Platforms.Discord.utils import getDiscordSeverSettings
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordRoleNotFound
 from Utils.Classes.undefined import Undefined
 from Platforms.Discord.blacklist import checkBlacklistPunishmentString
 from Utils.dbutils import validateDBInput
@@ -61,6 +61,10 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	action:str or Undefined = Data.get("linkwhitelist_action")
 	if action:
 		return await singleActionLinkWhitelist(cls, WebRequest, action, Data, Configs)
+
+	action:str or Undefined = Data.get("exceptionrole_action")
+	if action:
+		return await singleActionExceptionRole(cls, WebRequest, action, Data, Configs, Guild)
 
 	changes:dict = dict()
 	db_changes:dict = dict()
@@ -284,6 +288,72 @@ async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:s
 				)
 
 		return await apiWrongData(cls, WebRequest, msg=f"can't remove '{action_link}', it's currently not in the link whitelist")
+
+
+	else:
+		return await apiWrongData(cls, WebRequest)
+
+async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
+	"""
+		Default url: /api/discord/configs/edit?exceptionrole_action=something
+	"""
+	guild_id:str = Data.get("guild_id")
+	action = action.lower()
+	role_id:str = Data.get("exceptionrole_id", "").strip(" ").strip("\n")
+
+	if not guild_id:
+		# should never happen
+		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+
+	if not role_id:
+		return await missingData(cls, WebRequest, msg="missing or invalid field 'role_id'")
+
+	if not role_id.isdigit():
+		return await apiWrongData(cls, WebRequest, msg="'role_id' must be digit")
+
+	ActionRole:discord.Role = CurrentGuild.get_role(int(role_id))
+	if not ActionRole:
+		return await apiDiscordRoleNotFound(cls, WebRequest, role_id=role_id, guild_id=CurrentGuild.id)
+
+	if action == "add":
+		if ActionRole.id in Configs.ban_links_role:
+			return await apiWrongData(cls, WebRequest, msg=f"'{ActionRole.name}' is already added")
+
+		Configs.ban_links_role.append(role_id)
+		cls.Web.BASE.PhaazeDB.updateQuery(
+			table = "discord_setting",
+			content = {"ban_links_role": json.dumps(Configs.ban_links_role) },
+			where = "discord_setting.guild_id = %s",
+			where_values = (guild_id,)
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Exception role list Update: S:{guild_id} - add: {role_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="exception role list successfull updated", add=role_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	elif action == "remove":
+		for role in Configs.ban_links_role:
+			if role_id == role:
+				Configs.ban_links_role.remove(role)
+
+				cls.Web.BASE.PhaazeDB.updateQuery(
+					table = "discord_setting",
+					content = {"ban_links_role": json.dumps(Configs.ban_links_role) },
+					where = "discord_setting.guild_id = %s",
+					where_values = (guild_id,)
+				)
+
+				cls.Web.BASE.Logger.debug(f"(API/Discord) Exception role list Update: S:{guild_id} - rem: {role_id}", require="discord:configs")
+				return cls.response(
+					text=json.dumps( dict(msg="exception role list successfull updated", remove=role_id, status=200) ),
+					content_type="application/json",
+					status=200
+				)
+
+		return await apiWrongData(cls, WebRequest, msg=f"can't remove '{role_id}' is currently not added")
 
 
 	else:
