@@ -27,7 +27,7 @@ async def apiDiscordMemberNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:
 			user_id:str
 			guild_id:str
 	"""
-	res:dict = dict(status=400)
+	res:dict = dict(status=404)
 
 	default_msg:str = "could not find a valid member on this guild"
 	msg:str = kwargs.get("msg", default_msg)
@@ -41,11 +41,39 @@ async def apiDiscordMemberNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:
 	if guild_id:
 		res["guild_id"] = guild_id
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Member not Found: {WebRequest.path}", require="api:400")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Member not Found: {WebRequest.path}", require="api:404")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",
-		status=400
+		status=404
+	)
+
+async def apiDiscordRoleNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+			role_id:str
+			guild_id:str
+	"""
+	res:dict = dict(status=404)
+
+	default_msg:str = "could not find a valid role on this guild"
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	role_id:str = kwargs.get("role_id", "")
+	if role_id:
+		res["role_id"] = role_id
+
+	guild_id:str = kwargs.get("guild_id", "")
+	if guild_id:
+		res["guild_id"] = guild_id
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Role not Found: {WebRequest.path}", require="api:404")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=404
 	)
 
 async def apiDiscordMissingPermission(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
