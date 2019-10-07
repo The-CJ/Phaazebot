@@ -316,7 +316,7 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		return await apiDiscordRoleNotFound(cls, WebRequest, role_id=role_id, guild_id=CurrentGuild.id)
 
 	if action == "add":
-		if ActionRole.id in Configs.ban_links_role:
+		if str(ActionRole.id) in Configs.ban_links_role:
 			return await apiWrongData(cls, WebRequest, msg=f"'{ActionRole.name}' is already added")
 
 		Configs.ban_links_role.append(role_id)
