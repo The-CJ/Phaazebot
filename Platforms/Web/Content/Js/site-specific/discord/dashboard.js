@@ -438,10 +438,12 @@ var Configs = new(class {
       "linkwhitelist_link": new_link,
       "linkwhitelist_action": "add"
     };
-    this.update(req);
-    $("#new_whitelistlink").val("");
-    this.whitelist.push(new_link.toLowerCase());
-    this.buildLinkWhitelist(this.whitelist);
+    var ConfigsO = this;
+    this.update(req, function() {
+      $("#new_whitelistlink").val("");
+      ConfigsO.whitelist.push(new_link.toLowerCase());
+      ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
+    });
   }
 
   removeFromLinkWhitelist(HTMLButton) {
@@ -452,11 +454,13 @@ var Configs = new(class {
       "linkwhitelist_link": link,
       "linkwhitelist_action": "remove"
     };
-    this.update(req);
+    var ConfigsO = this;
+    this.update(req, function () {
+      var i = ConfigsO.whitelist.indexOf(link);
+      ConfigsO.whitelist.splice(i, 1);
+      ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
+    });
 
-    var i = this.whitelist.indexOf(link);
-    this.whitelist.splice(i, 1);
-    this.buildLinkWhitelist(this.whitelist);
   }
 
   // blacklist
@@ -492,10 +496,12 @@ var Configs = new(class {
       "wordblacklist_word": new_word,
       "wordblacklist_action": "add"
     };
-    this.update(req);
-    $("#new_blacklistword").val("");
-    this.blacklist.push(new_word.toLowerCase());
-    this.buildWordBlacklist(this.blacklist);
+    var ConfigsO = this;
+    this.update(req, function() {
+      $("#new_blacklistword").val("");
+      ConfigsO.blacklist.push(new_word.toLowerCase());
+      ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
+    });
   }
 
   removeFromBlacklist(HTMLButton) {
@@ -506,11 +512,12 @@ var Configs = new(class {
       "wordblacklist_word": word,
       "wordblacklist_action": "remove"
     };
-    this.update(req);
-
-    var i = this.blacklist.indexOf(word);
-    this.blacklist.splice(i, 1);
-    this.buildWordBlacklist(this.blacklist);
+    var ConfigsO = this;
+    this.update(req, function () {
+      var i = ConfigsO.blacklist.indexOf(word);
+      ConfigsO.blacklist.splice(i, 1);
+      ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
+    });
   }
 
   updateField(HTMLForm) {
@@ -531,7 +538,7 @@ var Configs = new(class {
     this.update(update_request);
   }
 
-  update(new_configs) {
+  update(new_configs, success_function, fail_function) {
     var guild_id = $("#guild_id").val();
     new_configs["guild_id"] = guild_id
 
@@ -541,11 +548,14 @@ var Configs = new(class {
       insertData("[location=configs]", data.changes, true);
       Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
 
+      if (success_function) { success_function.call() }
+
     })
     .fail(function (data) {
       let msg = data.responseJSON ? data.responseJSON.msg : "Error updating configs..."
       Display.showMessage({content: msg, color:Display.color_critical});
       console.log(data);
+      if (fail_function) { fail_function.call() }
     })
   }
 
