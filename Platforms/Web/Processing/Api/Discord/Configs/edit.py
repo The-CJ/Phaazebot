@@ -183,7 +183,7 @@ async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 	guild_id:str = Data.get("guild_id")
 	action = action.lower()
-	action_word:str = Data.get("wordblacklist_word")
+	action_word:str = Data.get("wordblacklist_word", "").strip(" ").strip("\n")
 
 	if not guild_id:
 		# should never happen
@@ -239,7 +239,7 @@ async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 	guild_id:str = Data.get("guild_id")
 	action = action.lower()
-	action_link:str = Data.get("linkwhitelist_link")
+	action_link:str = Data.get("linkwhitelist_link", "").strip(" ").strip("\n")
 
 	if not guild_id:
 		# should never happen
