@@ -265,11 +265,17 @@ var DiscordDashboard = new (class {
   }
 
   getDiscordChannelByID(id) {
-
+    for (var channel of this.channels) {
+      if (channel.id == id) { return channel; }
+    }
+    return null;
   }
 
   getDiscordRoleByID(id) {
-    return "TODO";
+    for (var role of this.roles) {
+      if (role.id == id) { return role; }
+    }
+    return null;
   }
 
   // view utils
@@ -642,8 +648,9 @@ var Configs = new(class {
     var EntryList = $("#config_modal_exeption_roles .exceptionrolelist").html("");
     for (var entry of exceptionroles_roles) {
       var EntryRow = $("[phantom] .exceptionrole").clone();
+      var role = DiscordDashboard.getDiscordRoleByID(entry);
       EntryRow.find("[role-id]").val(entry);
-      EntryRow.find(".name").text( DiscordDashboard.getDiscordRoleByID(entry) );
+      EntryRow.find(".name").text( role ? role.name : "(DELETED ROLE)" );
       EntryList.append(EntryRow);
     }
   }
