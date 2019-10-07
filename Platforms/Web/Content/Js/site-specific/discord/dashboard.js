@@ -149,7 +149,8 @@ var DiscordDashboard = new (class {
       DashO.channels = data.result.channels;
       DashO.roles = data.result.roles;
 
-      DashO.buildDiscordChannelSelect({"channel_list":data.result.channels});
+      DashO.buildDiscordChannelSelect({"channel_list":DashO.channels});
+      DashO.buildDiscordRolesSelect({"role_list":DashO.roles})
 
     })
     .fail(function (data) {
@@ -212,24 +213,52 @@ var DiscordDashboard = new (class {
       }
     }
   }
-    var HTMLSelectList = $("select[discord-channel]");
+
+  buildDiscordRolesSelect(x) {
+    // fill a select HTML Object with discord roles.
+    // the setting can be taken from the html element or from the function call
+    // function call is dominant
+
+    // used field in object x
+    // x["role_list"] :: a list of `role objects` {"id":"123456", "name":"something", "managed":false}
+    // x["target"] :: a list of jquery select elements, or a string for a jquery search   [Default: "select[discord-role]"]
+    // x["include_none"] :: bool, if true, include a <option value=''>(None)</option> at first [Default: false]
+    //   also true if Select HTML element has attribute: discord-role-none=true
+    // x["show_managed"] :: bool, if true, include managed roles in the select [Default: false]
+    //   also true if Select HTML element has attribute: discord-role-managed=true
+
+    var HTMLSelectList = null;
+
+    var role_list = x["role_list"]; if (isEmpty(role_list)) {throw "empty role_list";}
+    var include_none = x["include_none"];
+    var show_managed = x["show_managed"];
+    var target = x["target"];
+    if (target == undefined) { HTMLSelectList = $("select[discord-role]"); }
+    else if (typeof target == "string") { HTMLSelectList = $(target); }
+    if (isEmpty(HTMLSelectList)) { throw "no targets"; }
+
     for (var HTMLSelect of HTMLSelectList) {
+      // clear first
       HTMLSelect = $(HTMLSelect).html("");
 
-      var only_type = HTMLSelect.attr("discord-channel");
-      if ( HTMLSelect.attr("discord-channel-none") )  {
-        HTMLSelect.append("<option value=''>(None)</option>");
-      }
-      for (var channel of channel_list) {
-        var name = channel.name;
-        if (only_type) {
-          if (only_type != channel.channel_type) { continue; }
-          if (channel.channel_type == "text") { name = "#" + name;  }
-        }
+      // per element vars
+      var element_show_managed = show_managed == undefined ? HTMLSelect.attr("discord-role-managed") : show_managed;
+      var element_include_none = include_none == undefined ? HTMLSelect.attr("discord-role-none") : include_none;
+
+      // include a none?
+      if ( element_include_none ) { HTMLSelect.append("<option value=''>(None)</option>"); }
+
+      for (var role of role_list) {
+        // make copy of name, since we keep the rolelist untouched
+        var name = role.name;
+        var id = role.id;
+
+        // managed role?
+        if (!element_show_managed && role.managed) { continue; }
 
         var Option = $("<option>");
-        Option.attr("value", channel.id);
         Option.text(name);
+        Option.attr("value", id);
         HTMLSelect.append(Option);
       }
     }
