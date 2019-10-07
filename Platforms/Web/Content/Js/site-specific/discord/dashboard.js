@@ -651,6 +651,11 @@ var Configs = new(class {
       var role = DiscordDashboard.getDiscordRoleByID(entry);
       EntryRow.find("[role-id]").val(entry);
       EntryRow.find(".name").text( role ? role.name : "(DELETED ROLE)" );
+      if (isEmpty(role)) {
+        EntryRow.addClass("deleted");
+        EntryRow.attr("title", "This role is deleted on the server and can be deleted here as well without any worries");
+      }
+
       EntryList.append(EntryRow);
     }
   }

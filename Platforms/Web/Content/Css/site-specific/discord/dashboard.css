@@ -138,4 +138,5 @@
 
 #config_modal_exeption_roles .exceptionrolelist { padding: 1em; max-height: 40vh; overflow-y: auto; }
 #config_modal_exeption_roles .exceptionrolelist .exceptionrole { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
+#config_modal_exeption_roles .exceptionrolelist .exceptionrole.deleted { background-color: #ccaaaaaa; }
 #config_modal_exeption_roles .exceptionrolelist:empty:after { content: "(None)"; }
