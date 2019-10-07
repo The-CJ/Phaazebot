@@ -207,9 +207,12 @@
         </div>
 
         <hr>
-        <form class="md-form" action="javascript:void(0)" onsubmit="javascript:Configs.addToBlacklist()">
+        <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToBlacklist()">
           <input type="text" id="new_blacklistword" class="form-control">
           <label for="new_blacklistword">New entry:</label>
+          <div class="input-group-append">
+            <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+          </div>
         </form>
         <hr>
         <div class="wordbanlist"></div>
@@ -243,9 +246,12 @@
         </div>
 
         <hr>
-        <form class="md-form" action="javascript:void(0)" onsubmit="javascript:Configs.addToLinkWhitelist()">
+        <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToLinkWhitelist()">
           <input type="text" id="new_whitelistlink" class="form-control">
           <label for="new_whitelistlink">New entry:</label>
+          <div class="input-group-append">
+            <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+          </div>
         </form>
         <hr>
         <div class="linkwhitelist"></div>
