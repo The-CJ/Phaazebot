@@ -439,11 +439,16 @@ var Configs = new(class {
       "linkwhitelist_action": "add"
     };
     var ConfigsO = this;
-    this.update(req, function() {
+    var successfunc = function () {
       $("#new_whitelistlink").val("");
       ConfigsO.whitelist.push(new_link.toLowerCase());
       ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
-    });
+    }
+    var failfunc = function() {
+      $("#new_whitelistlink").val("");
+    }
+
+    this.update(req, successfunc, failfunc);
   }
 
   removeFromLinkWhitelist(HTMLButton) {
@@ -497,11 +502,16 @@ var Configs = new(class {
       "wordblacklist_action": "add"
     };
     var ConfigsO = this;
-    this.update(req, function() {
+    var successfunc = function() {
       $("#new_blacklistword").val("");
       ConfigsO.blacklist.push(new_word.toLowerCase());
       ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
-    });
+    }
+    var failfunc = function () {
+      $("#new_blacklistword").val("");
+    }
+
+    this.update(req, successfunc, failfunc);
   }
 
   removeFromBlacklist(HTMLButton) {
