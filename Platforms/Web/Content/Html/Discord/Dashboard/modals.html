@@ -263,3 +263,39 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="config_modal_exeption_roles">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Blacklist</h4>
+        <button type="button" class="close" onclick="$('#config_modal_exeption_roles').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="row">
+          <div class="col">
+            <span>A member who has at least one of these roles will have full immunity to the blacklist-, link ban- and punishment-system</span>
+          </div>
+        </div>
+
+        <hr>
+        <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToExecptionRoles()">
+          <input type="text" id="new_exceptionrole" class="form-control">
+          <label for="new_exceptionrole">New entry:</label>
+          <div class="input-group-append">
+            <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+          </div>
+        </form>
+        <hr>
+        <div class="exceptionrolelist"></div>
+
+      </div>
+
+      <div class="modal-footer"></div>
+      <div messagebox></div>
+    </div>
+  </div>
+</div>

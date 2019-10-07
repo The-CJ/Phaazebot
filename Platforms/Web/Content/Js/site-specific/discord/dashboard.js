@@ -530,6 +530,21 @@ var Configs = new(class {
     });
   }
 
+  // roles
+  showExecptionRoles() {
+    var ConfigsO = this;
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+      $("#config_modal_exeption_roles").modal("show");
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading execption roles..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
+  }
+
   updateField(HTMLForm) {
     var extracted_data = extractData($(HTMLForm));
     this.update(extracted_data);
