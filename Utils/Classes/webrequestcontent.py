@@ -64,14 +64,34 @@ class WebRequestContent(object):
 		return None
 
 	def get(self, a:str, b:Any = Undefined()) -> Any:
-		# get any value from the stored content
+		"""
+			get any value from the stored content
+		"""
 		if not self.loaded: raise RuntimeError("Content not loaded, call 'await X.load()' before")
 		return self.content.get(a, b)
 
+	def getStr(self, x:str, alternativ:str, must_be_digit:bool=False, transform:str=None) -> str:
+		"""
+			get a value as string.
+			test for attributes (must_*), if one failes, return alternativ
+			else return found values and apply all wanted functions
+		"""
+		value:str or Undefined = self.get(x)
+		if type(value) is Undefined: return alternativ
+
+		if must_be_digit and not value.isdigit(): return alternativ
+
+		if transform == "lower": return value.lower()
+		elif transform == "upper": return value.upper()
+		else: return value
+
 	def getInt(self, x:str, alternativ:int, min_x:int=-math.inf, max_x:int=math.inf) -> int:
-		# get a value as a int.
-		# if convertion is not possible
-		# or the found value is not in min < X < max
+		"""
+			get a value as a int.
+			if convertion is not possible
+			or the found value is not in min < X < max
+			return alternativ
+		"""
 
 		value:str or Undefined = self.get(x)
 		if type(value) is Undefined: return alternativ
