@@ -197,12 +197,13 @@
 
         <div class="row">
           <div class="col">
-            <p>Pretty easy to unserstand, if any word of the blacklist is found in the message, execute the punishment</p>
+            <p>Pretty easy to unserstand, everything is handled via <a href="https://en.wikipedia.org/wiki/Regular_expression" style="color: blue;" target="_blank">regular expressions</a></p>
+            <span>If any Regex is found in the message, execute the punishment</span>
             <span>Note:</span><br>
-            <span>Every word and or phase is case insensitive</span><br>
-            <span>Means:</span><br>
-            <span>The word "ass" gets found in "I play a br<b>ass</b> instrument"</span><br>
-            <span>and by this will get a punishment</span>
+            <span>The message is lowered before checking, so:</span><br>
+            <span>"Hello there my name is CreAtIvU53R1337"</span><br>
+            <span>will be: </span><br>
+            <span>"hello there my name is creativu53r1337"</span>
           </div>
         </div>
 

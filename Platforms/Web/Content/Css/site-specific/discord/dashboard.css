@@ -124,7 +124,7 @@
 #token_modal_help .clickable { color: #262798; background: #8aa6af9c; padding: 2px; cursor: pointer; }
 #token_modal_help .tokenlist { padding: 0 1em; }
 #token_modal_help .tokenlist .token { padding: 1px; }
-#token_modal_help .tokenlist .token .key { padding-right: 2px; background: #aaaaaaaa; text-align: right;}
+#token_modal_help .tokenlist .token .key { padding-right: 2px; background: #aaaaaaaa; text-align: center;}
 #token_modal_help .tokenlist .token .value { padding-left: 2px; text-align: left;}
 #token_modal_help .modal-body { max-height: 50vh; overflow-y: auto; }
 
