@@ -26,7 +26,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	current_password:str = Data.get("phaaze_password")
+	current_password:str = Data.getStr("phaaze_password", "")
 
 	if not current_password or UserInfo.password != password_function(str(current_password)):
 		return cls.response(
@@ -37,10 +37,10 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	changed_email:bool = False # if yes, reset valiated and send mail
 
-	new_username:str = Data.get("phaaze_username")
-	new_email:str = Data.get("phaaze_email")
-	new_password:str = Data.get("phaaze_newpassword")
-	new_password2:str = Data.get("phaaze_newpassword2")
+	new_username:str = Data.getStr("phaaze_username", "")
+	new_email:str = Data.getStr("phaaze_email", "")
+	new_password:str = Data.getStr("phaaze_newpassword", "")
+	new_password2:str = Data.getStr("phaaze_newpassword2", "")
 
 	update:dict = dict()
 

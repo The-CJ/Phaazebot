@@ -31,10 +31,10 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	username:str = Data.get("username")
-	email:str = Data.get("email")
-	password:str = Data.get("password")
-	password2:str = Data.get("password2")
+	username:str = Data.getStr("username", "")
+	email:str = Data.getStr("email", "")
+	password:str = Data.getStr("password", "")
+	password2:str = Data.getStr("password2", "")
 
 	if password != password2:
 		cls.Web.BASE.Logger.debug(f"(API) Account create failed, passwords don't match", require="api:create")

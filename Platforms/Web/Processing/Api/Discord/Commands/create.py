@@ -22,39 +22,37 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	await Data.load()
 
 	# get stuff
-	guild_id:str = Data.get("guild_id")
-	trigger:str = Data.get("trigger")
-	complex_:str = validateDBInput(bool, Data.get("complex"))
-	function:str = validateDBInput(str, Data.get("function"))
-	content:str = validateDBInput(str, Data.get("content"))
-	hidden:str = validateDBInput(bool, Data.get("hidden"))
-	cooldown:str = validateDBInput(int, Data.get("cooldown"), 0)
-	require:str = validateDBInput(int, Data.get("require"), 0)
-	required_currency:str = validateDBInput(int, Data.get("required_currency"), 0)
+	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+	trigger:str = Data.getStr("trigger", "")
+	complex_:bool = Data.getBool("complex", False)
+	function:str = Data.getStr("function", "")
+	content:str = Data.getStr("content", "")
+	hidden:str = Data.getBool("hidden", False)
+	cooldown:int = Data.getInt("cooldown", cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN)
+	require:int = Data.getInt("require", 0)
+	required_currency:int = Data.getInt("required_currency", 0)
 
 	# guild id check
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing 'guild_id'")
-	if not guild_id.isdigit():
-		return await apiWrongData(cls, WebRequest, msg="'guild_id' must be a number")
+		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	# trigger
 	if not trigger:
 		return await missingData(cls, WebRequest, msg="missing 'trigger'")
 	# only take the first argument trigger, since everything else can't be typed in a channel
-	trigger = validateDBInput(str, trigger.split(" ")[0])
+	trigger = trigger.split(" ")[0]
 
 	#cooldown
-	if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN <= int(cooldown) <= 600 ):
+	if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN <= cooldown <= 600 ):
 		return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
 
 	#currency
-	if not int(required_currency) >= 0 :
+	if not required_currency >= 0 :
 		return await apiWrongData(cls, WebRequest, msg="'required_currency' is wrong")
 
 	# if not complex
 	# check if the function actully exists
-	if complex_ == "0":
+	if complex_:
 		if not function:
 			return await missingData(cls, WebRequest, msg="missing 'function'")
 		if not function in [cmd["function"].__name__ for cmd in command_register]:

@@ -20,8 +20,8 @@ async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	module:str = str(Data.get("module"))
-	state:bool = bool(Data.get("state"))
+	module:str = Data.getStr("module", "x")
+	state:bool = Data.getBool("state", False)
 
 	if not hasattr(cls.Web.BASE.Active, module):
 		return await apiMissingValidMethod(cls, WebRequest, msg=f"module '{module}' not avariable")

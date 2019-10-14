@@ -19,8 +19,8 @@ async def apiAdminEvaluate(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	command:str = Data.get("command", None)
-	corotine:bool = Data.get("corotine")
+	command:str = Data.getStr("command", "")
+	corotine:bool = Data.getBool("corotine", False)
 
 	# this is for easyer access
 	locals()["BASE"] = cls.Web.BASE
