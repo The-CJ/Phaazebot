@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any, Callable
 if TYPE_CHECKING:
 	pass
 
+import math
 from aiohttp.web import Request
 from .undefined import Undefined
 
@@ -63,5 +64,20 @@ class WebRequestContent(object):
 		return None
 
 	def get(self, a:str, b:Any = Undefined()) -> Any:
+		# get any value from the stored content
 		if not self.loaded: raise RuntimeError("Content not loaded, call 'await X.load()' before")
 		return self.content.get(a, b)
+
+	def getInt(self, x:str, alternativ:int, min_x:int=-math.inf, max_x:int=math.inf) -> int:
+		# get a value as a int.
+		# if convertion is not possible
+		# or the found value is not in min < X < max
+
+		value:str or Undefined = self.get(x)
+		if type(value) is Undefined: return alternativ
+
+		try:
+			value:int = int(value)
+			if not (min_x < x < max_x): return alternativ
+		except:
+			return alternativ
