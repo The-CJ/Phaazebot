@@ -9,7 +9,6 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import missingData
 from Platforms.Discord.utils import getDiscordServerLevels
-from Utils.Classes.discordleveluser import DiscordLevelUser
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
 DEFAULT_LIMIT:int = 50
@@ -35,8 +34,8 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	limit:str = str(Data.get("limit", DEFAULT_LIMIT))
 	if limit and not limit.isdigit():
 		return await missingData(cls, WebRequest, msg="invalid 'limit'")
-		if int(limit) > MAX_LIMIT:
-			return await missingData(cls, WebRequest, msg=f"'limit' to high, max = {MAX_LIMIT}")
+	if int(limit) > MAX_LIMIT:
+		return await missingData(cls, WebRequest, msg=f"'limit' to high, max = {MAX_LIMIT}")
 	limit:int = int(limit or DEFAULT_LIMIT)
 
 	# offset
@@ -50,10 +49,29 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	if member_id and not member_id.isdigit():
 		return await missingData(cls, WebRequest, msg="invalid 'member_id'")
 
-	levels:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset)
+	# one member
+	member_id:str = Data.get("member_id")
+	if member_id and not member_id.isdigit():
+		return await missingData(cls, WebRequest, msg="invalid 'member_id'")
 
+	order:str = Data.get("order", "").lower()
+	if order == "exp":
+		order = "ORDER BY `exp`"
+	elif order == "id":
+		order = "ORDER BY `id`"
+	elif order == "member_id":
+		order = "ORDER BY `member_id`"
+	else:
+		order = "ORDER BY `rank`"
+
+	levels:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order)
+
+	# stop it
 	if not levels:
-		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find levels for this guild")
+		if member_id:
+			return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find a level for this user")
+		else:
+			return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find levels for this guild")
 
 	return_list:list = list()
 
@@ -65,6 +83,8 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 			edited = True if LevelUser.edited else False,
 			medals = LevelUser.medals
 		)
+
+
 
 		return_list.append(level_user)
 
