@@ -12,7 +12,6 @@ from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
-from Utils.dbutils import validateDBInput
 
 async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -21,22 +20,19 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	guild_id:str = Data.get("guild_id")
+	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing 'guild_id'")
+		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	command_id:str = Data.get("command_id")
-	if not command_id:
-		command_id = None
-
+	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
 	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
 
-	show_hidden:bool = True if validateDBInput(bool, Data.get("show_hidden")) == "1" else False
+	show_hidden:bool = Data.getBool("show_hidden", False)
 	if show_hidden:
 		# user requested to get full information about commands, requires authorisation
 

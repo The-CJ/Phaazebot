@@ -11,7 +11,6 @@ from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiMi
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordCommandLimit, apiDiscordCommandExists
 from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discorduserinfo import DiscordUserInfo
-from Utils.dbutils import validateDBInput
 from Platforms.Discord.commandindex import command_register
 
 async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -59,7 +58,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 			return await apiWrongData(cls, WebRequest, msg=f"'{function}' is not a valid value for field 'function'")
 
 	# check if already exists
-	res:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger = trigger)
+	res:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger=trigger)
 	if res:
 		return await apiDiscordCommandExists(cls, WebRequest, command=trigger)
 
