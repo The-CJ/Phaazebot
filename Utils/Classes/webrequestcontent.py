@@ -70,6 +70,18 @@ class WebRequestContent(object):
 		if not self.loaded: raise RuntimeError("Content not loaded, call 'await X.load()' before")
 		return self.content.get(a, b)
 
+	def getBool(self, x:str, alternativ:bool) -> bool:
+		"""
+			get a value as bool.
+			Flase = "0", "false", "False", ""
+			True = Everything else
+		"""
+		value:str or Undefined = self.get(x)
+		if type(value) is Undefined: return alternativ
+
+		if value in ["0", "false", "False", ""]: return False
+		else: return True
+
 	def getStr(self, x:str, alternativ:str, must_be_digit:bool=False, transform:str=None) -> str:
 		"""
 			get a value as string.
@@ -89,7 +101,7 @@ class WebRequestContent(object):
 		"""
 			get a value as a int.
 			if convertion is not possible
-			or the found value is not in min < X < max
+			or the found value is not in min <= X <= max
 			return alternativ
 		"""
 
@@ -98,6 +110,9 @@ class WebRequestContent(object):
 
 		try:
 			value:int = int(value)
-			if not (min_x < x < max_x): return alternativ
+			if min_x <= value <= max_x:
+				return value
+			else:
+				return alternativ
 		except:
 			return alternativ
