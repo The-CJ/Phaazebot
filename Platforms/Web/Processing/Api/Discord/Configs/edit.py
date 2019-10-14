@@ -197,7 +197,7 @@ async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:s
 		return await missingData(cls, WebRequest, msg="missing field 'blacklist_word'")
 
 	if action == "add":
-		Configs.blacklist_words.append(action_word.lower())
+		Configs.blacklist_words.append(action_word)
 		cls.Web.BASE.PhaazeDB.updateQuery(
 			table = "discord_setting",
 			content = {"blacklist_words": json.dumps(Configs.blacklist_words) },
