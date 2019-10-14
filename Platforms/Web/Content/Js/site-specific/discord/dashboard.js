@@ -113,7 +113,18 @@ var DiscordDashboard = new (class {
   loadLevel() {
     DynamicURL.set("view", "levels");
     this.showLocationWindow("levels");
-    alert("Load and Display 'Level' Info");
+    var guild_id = $("#guild_id").val();
+
+    $.get("/api/discord/levels/get", {guild_id: guild_id})
+    .done(function (data) {
+
+      console.log(data);
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load levels...", color:Display.color_critical});
+      console.log(data);
+    })
 
   }
 
@@ -303,7 +314,6 @@ var DiscordDashboard = new (class {
 
   restoreView() {
     var l = DynamicURL.get("view");
-    this.showLocationWindow(l);
     if (l == "home" || !l) { this.loadHome(); }
     else if (l == "configs") { this.loadConfig(); }
     else if (l == "commands") { this.loadCommand(); }
@@ -737,6 +747,12 @@ var Configs = new(class {
   }
 
 })
+
+var Levels = new(class {
+  constructor() {
+
+  }
+});
 
 // utils
 function translateRequire(level) {
