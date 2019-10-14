@@ -18,7 +18,7 @@ async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 	if ServerSettings.ban_links or ServerSettings.blacklist_words:
 		executed_punishment = await checkBlacklist(cls, Message, ServerSettings)
 		if executed_punishment:
-			cls.BASE.Logger.debug(f"(Discord) executed blacklist punishment guild_id={Message.guild.id}", require="discord:blacklist")
+			cls.BASE.Logger.debug(f"(Discord) executed blacklist punishment guild_id={Message.guild.id} punish={ServerSettings.blacklist_punishment}", require="discord:blacklist")
 			return
 
 	executed_command:bool = await checkCommands(cls, Message, ServerSettings)
