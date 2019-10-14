@@ -21,9 +21,9 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	guild_id:str = Data.get("guild_id")
+	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing 'guild_id'")
+		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -31,30 +31,21 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# limit
-	limit:str = str(Data.get("limit", DEFAULT_LIMIT))
-	if limit and not limit.isdigit():
-		return await missingData(cls, WebRequest, msg="invalid 'limit'")
-	if int(limit) > MAX_LIMIT:
-		return await missingData(cls, WebRequest, msg=f"'limit' to high, max = {MAX_LIMIT}")
-	limit:int = int(limit or DEFAULT_LIMIT)
+	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
+	if limit == None:
+		return await missingData(cls, WebRequest, msg=f"invalid 'limit', min=1, max={MAX_LIMIT}")
 
 	# offset
-	offset:str = str(Data.get("offset", 0))
-	if offset and not offset.isdigit():
-		return await missingData(cls, WebRequest, msg="invalid 'offset'")
-	offset:int = int(offset)
+	offset:int = Data.getInt("offset", 0, min_x=0)
 
 	# one member
-	member_id:str = Data.get("member_id")
-	if member_id and not member_id.isdigit():
-		return await missingData(cls, WebRequest, msg="invalid 'member_id'")
+	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
 
-	# one member
-	member_id:str = Data.get("member_id")
-	if member_id and not member_id.isdigit():
-		return await missingData(cls, WebRequest, msg="invalid 'member_id'")
+	# with names
+	named:bool = Data.getBool("named", False)
 
-	order:str = Data.get("order", "").lower()
+	# order by
+	order:str = Data.getStr("order", "", transform="lower")
 	if order == "exp":
 		order = "ORDER BY `exp`"
 	elif order == "id":
@@ -84,12 +75,14 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 			medals = LevelUser.medals
 		)
 
-
+		if named:
+			Mem:discord.Member = Guild.get_member(int(LevelUser.member_id))
+			level_user["username"] = Mem.name if Mem else "[N/A]"
 
 		return_list.append(level_user)
 
 	return cls.response(
-		text=json.dumps( dict(result=return_list, limit=limit, offset=offset, status=200) ),
+		text=json.dumps( dict(result=return_list, limit=limit, offset=offset, named=named, status=200) ),
 		content_type="application/json",
 		status=200
 	)
