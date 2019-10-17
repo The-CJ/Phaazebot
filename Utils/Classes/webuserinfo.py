@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, Any, Callable
 if TYPE_CHECKING:
 	from main import Phaazebot
 
-import json
 import datetime
 from aiohttp.web import Request
 from Utils.stringutils import password
