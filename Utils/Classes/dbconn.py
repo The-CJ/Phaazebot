@@ -87,6 +87,45 @@ class DBConn(object):
 
 		return
 
+	def insertQuery(self, table:str=None, content:dict=None) -> None:
+		"""
+			dict bases, secured insert query, all special chars will get replaced by byte safe sql counterpart
+			here a quick example:
+
+			table = "test"
+			content = {"A": "123", "B":"abc", "C":420}
+
+			INSERT INTO `test` (`A`, `B`, `C`) VALUES ('123', 'abc', 420);
+
+			+ gets auto commited
+		"""
+		if not table or not content: raise AttributeError("'table', and 'content' must be given")
+
+		# prework
+		keys:str = ", ".join(f"`{key}`" for key in content)
+		value_holder:str = ", ".join("%s" for key in content)
+		values:tuple = tuple(content[key] for key in content)
+
+		statement:str = f"""INSERT INTO `{table}` ({keys}) VALUES ({value_holder})"""
+
+		# setup
+		DBConn:MySQLConnection = self.getConnection()
+		Cursor:MySQLCursorDict = DBConn.cursor(dictionary=True)
+
+		# enable full char support, because i want to
+		Cursor.execute('SET NAMES utf8mb4')
+		Cursor.execute("SET CHARACTER SET utf8mb4")
+		Cursor.execute("SET character_set_connection=utf8mb4")
+
+		# do stuff
+		Cursor.execute(statement, values)
+
+		# commit and close
+		DBConn.commit()
+		DBConn.close()
+
+		return
+
 	def getConnection(self) -> MySQLConnection:
 		"""
 			Returns a connection for the db,
