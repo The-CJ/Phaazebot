@@ -110,14 +110,18 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 			return await apiWrongData(cls, WebRequest, msg=f"'{function}' is not a valid value for field 'function'")
 
 		db_update["complex"] = validateDBInput(bool, complex_)
-		update["complex"] = complex_
 		db_update["function"] = validateDBInput(str, function)
+		update["complex"] = complex_
 		update["function"] = function
 
 	if complex_ and not function:
 		# it is complex, we need a content
 		if not update.get("content", False):
 			return await apiWrongData(cls, WebRequest, msg=f"'complex' is true, but missing 'content'")
+
+		db_update["complex"] = validateDBInput(bool, complex_)
+		db_update["function"] = ""
+		update["complex"] = complex_
 
 	# all checks done, authorise the user
 	# get/check discord
