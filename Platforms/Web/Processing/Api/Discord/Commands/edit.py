@@ -13,6 +13,7 @@ from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordcommand import DiscordCommand
 from Platforms.Discord.commandindex import command_register
+from Utils.dbutils import validateDBInput
 
 async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -23,7 +24,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	command_id:str = Data.getStr("command_id", "0", must_be_digit=True)
+	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
 
 	# guild id check
 	if not guild_id:
@@ -42,75 +43,83 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# after this point we have a existing command
 	# check all possible values if it should be edited
+	# db_update is for the database
+	# update is the return for the user
+	db_update:dict = dict()
 	update:dict = dict()
 
 	# change trigger?
-	trigger:str = Data.getStr("trigger", "")
-	if trigger:
+	value:str = Data.getStr("trigger", None)
+	if value != None:
 		# only take the first argument of trigger, since everything else can't be typed in a channel
-		trigger = trigger.split(" ")[0]
-		if not trigger:
+		value = value.split(" ")[0]
+		if not value:
 			# should never happen
 			return await missingData(cls, WebRequest, msg="missing 'trigger'")
 
 		# check if there is another command with the trigger that wants to be set, that is NOT the one currently editing
-		check_double_trigger:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger=trigger)
+		check_double_trigger:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger=value)
 		if check_double_trigger:
 			CommandToCheck:DiscordCommand = check_double_trigger.pop()
 			if str(CommandToCheck.command_id) != str(CurrentEditCommand.command_id):
-				return await apiDiscordCommandExists(cls, WebRequest, command=trigger)
+				return await apiDiscordCommandExists(cls, WebRequest, command=value)
 
-		update["trigger"] = trigger
+		db_update["trigger"] = validateDBInput(str, value)
+		update["trigger"] = value
 
 	# change cooldown
-	cooldown:int = Data.getInt("cooldown", None, min_x=0)
-	if cooldown != None:
+	value:int = Data.getInt("cooldown", None, min_x=0)
+	if value != None:
 		# wants a invalid cooldown
-		if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN <= cooldown <= cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX ):
+		if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN <= value <= cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX ):
 			return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
 
-		update["cooldown"] = cooldown
+		db_update["cooldown"] = validateDBInput(int, value)
+		update["cooldown"] = value
 
 	# change currency
-	required_currency:int = Data.getInt("required_currency", None, min_x=0)
-	if required_currency != None:
-		update["required_currency"] = required_currency
+	value:int = Data.getInt("required_currency", None, min_x=0)
+	if value != None:
+		db_update["required_currency"] = validateDBInput(int, value)
+		update["required_currency"] = value
 
 	# change require
-	require:int = Data.getInt("require", None, min_x=0)
-	if require != None :
-		update["require"] = require
+	value:int = Data.getInt("require", None, min_x=0)
+	if value != None :
+		db_update["require"] = validateDBInput(int, value)
+		update["require"] = value
 
 	# change content
-	content:str = Data.getStr("content", None)
-	if content != None:
-		update["content"] = content
+	value:str = Data.getStr("content", None)
+	if value != None:
+		db_update["content"] = validateDBInput(str, value)
+		update["content"] = value
 
 	# change hidden
-	hidden:bool = Data.getBool("hidden", None)
-	if hidden != None:
-		update["hidden"] = hidden
+	value:bool = Data.getBool("hidden", None)
+	if value != None:
+		db_update["hidden"] = validateDBInput(bool, value)
+		update["hidden"] = value
 
 	# change function
-	complex_:bool = Data.getBool("complex", False)
-	function:str = Data.getStr("function", "")
-	if not complex_:
+	complex_:bool = Data.getBool("complex", None)
+	function:str = Data.getStr("function", None)
+	if not complex_ and function != None:
 		# it its not complex, we need a function
-		if not function:
-			return await missingData(cls, WebRequest, msg="missing 'function'")
 		if not function in [cmd["function"].__name__ for cmd in command_register]:
 			return await apiWrongData(cls, WebRequest, msg=f"'{function}' is not a valid value for field 'function'")
 
+		db_update["complex"] = validateDBInput(bool, complex_)
 		update["complex"] = complex_
+		db_update["function"] = validateDBInput(str, function)
 		update["function"] = function
 
-	else:
+	if complex_ and not function:
 		# it is complex, we need a content
-		if not content:
+		if not update.get("content", False):
 			return await apiWrongData(cls, WebRequest, msg=f"'complex' is true, but missing 'content'")
 
 	# all checks done, authorise the user
-
 	# get/check discord
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -136,15 +145,15 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_command",
-		content = update,
+		content = db_update,
 		where = "discord_command.guild_id = %s AND discord_command.id = %s",
 		where_values = (guild_id, command_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Edited command: S:{guild_id} T:{trigger} U:{str(update)}", require="discord:commands")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Edited command: S:{guild_id} C:{command_id} U:{str(update)}", require="discord:commands")
 
 	return cls.response(
-		text=json.dumps( dict(msg="new command successfull edited", command=trigger, status=200) ),
+		text=json.dumps( dict(msg="new command successfull edited", command=CurrentEditCommand.trigger, changes=update, status=200) ),
 		content_type="application/json",
 		status=200
 	)
