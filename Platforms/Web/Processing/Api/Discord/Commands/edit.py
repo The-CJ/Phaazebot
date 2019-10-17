@@ -48,7 +48,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		return await missingData(cls, WebRequest, msg="missing 'trigger'")
 
 	#cooldown
-	if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN <= int(cooldown) <= 600 ):
+	if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN <= int(cooldown) <= 600 ):
 		return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
 
 	#currency

@@ -27,7 +27,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	function:str = Data.getStr("function", "")
 	content:str = Data.getStr("content", "")
 	hidden:str = Data.getBool("hidden", False)
-	cooldown:int = Data.getInt("cooldown", cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN)
+	cooldown:int = Data.getInt("cooldown", cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN)
 	require:int = Data.getInt("require", 0)
 	required_currency:int = Data.getInt("required_currency", 0)
 
@@ -42,7 +42,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	trigger = trigger.split(" ")[0]
 
 	#cooldown
-	if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN <= cooldown <= 600 ):
+	if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN <= cooldown <= 600 ):
 		return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
 
 	#currency
