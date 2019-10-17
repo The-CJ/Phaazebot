@@ -104,6 +104,10 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 			cls.BASE.Logger.debug(f"(Discord) command cooldown < DISCORD_COMMANDS_COOLDOWN cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
 			Command.cooldown = cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN
 
+		if Command.cooldown > cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX:
+			cls.BASE.Logger.debug(f"(Discord) command cooldown > DISCORD_COMMANDS_COOLDOWN_MAX cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
+			Command.cooldown = cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX
+
 		# add command to cooldown
 		GDCCS.cooldown(Command)
 
