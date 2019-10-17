@@ -8,11 +8,10 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordCommandLimit, apiDiscordCommandNotExists, apiDiscordCommandExists
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordCommandNotExists, apiDiscordCommandExists
 from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordcommand import DiscordCommand
-from Utils.dbutils import validateDBInput
 from Platforms.Discord.commandindex import command_register
 
 async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -23,26 +22,25 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 	await Data.load()
 
 	# get stuff
-	guild_id:str = Data.get("guild_id")
-	command_id:str = Data.get("command_id")
-	trigger:str = validateDBInput(str, Data.get("trigger"))
-	complex_:str = validateDBInput(bool, Data.get("complex"))
-	function:str = validateDBInput(str, Data.get("function"))
-	content:str = validateDBInput(str, Data.get("content"))
-	hidden:str = validateDBInput(bool, Data.get("hidden"))
-	cooldown:str = validateDBInput(int, Data.get("cooldown"), 0)
-	require:str = validateDBInput(int, Data.get("require"), 0)
-	required_currency:str = validateDBInput(int, Data.get("required_currency"), 0)
+	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
+
+	trigger:str = Data.getStr("trigger", "")
+	complex_:bool = Data.getBool("complex", False)
+	function:str = Data.getStr("function", "")
+	content:str = Data.getStr("content", "")
+	hidden:bool = Data.getBool("hidden", False)
+	cooldown:int = Data.getInt("cooldown", 0, min_x=0)
+	require:int = Data.getInt("require", 0, min_x=0)
+	required_currency:int = Data.getInt("required_currency", 0, min_x=0)
 
 	# guild id check
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing 'guild_id'")
-	if not guild_id.isdigit():
-		return await apiWrongData(cls, WebRequest, msg="'guild_id' must be a number")
+		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	# check command id
 	if not command_id:
-		return await missingData(cls, WebRequest, msg="missing 'command_id'")
+		return await missingData(cls, WebRequest, msg="missing or invalid 'command_id'")
 
 	# only take the first argument of trigger, since everything else can't be typed in a channel
 	trigger = trigger.split(" ")[0]
@@ -54,12 +52,12 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
 
 	#currency
-	if not int(required_currency) >= 0 :
+	if not required_currency >= 0 :
 		return await apiWrongData(cls, WebRequest, msg="'required_currency' is wrong")
 
 	# if not complex
 	# check if the function actully exists
-	if complex_ == "0":
+	if not complex_:
 		if not function:
 			return await missingData(cls, WebRequest, msg="missing 'function'")
 		if not function in [cmd["function"].__name__ for cmd in command_register]:
@@ -82,11 +80,6 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
-
-	# check limit
-	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id)
-	if len(commands) >= cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT:
-		return await apiDiscordCommandLimit(cls, WebRequest)
 
 	# get user info
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
