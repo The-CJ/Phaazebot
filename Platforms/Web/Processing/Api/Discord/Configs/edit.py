@@ -24,9 +24,9 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	guild_id:str = Data.get("guild_id")
+	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing 'guild_id'")
+		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -54,15 +54,15 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find configs for this guild")
 
 	# single actions
-	action:str or Undefined = Data.get("wordblacklist_action")
+	action:str or Undefined = Data.getStr("wordblacklist_action", "")
 	if action:
 		return await singleActionWordBlacklist(cls, WebRequest, action, Data, Configs)
 
-	action:str or Undefined = Data.get("linkwhitelist_action")
+	action:str or Undefined = Data.getStr("linkwhitelist_action", "")
 	if action:
 		return await singleActionLinkWhitelist(cls, WebRequest, action, Data, Configs)
 
-	action:str or Undefined = Data.get("exceptionrole_action")
+	action:str or Undefined = Data.getStr("exceptionrole_action", "")
 	if action:
 		return await singleActionExceptionRole(cls, WebRequest, action, Data, Configs, Guild)
 
@@ -76,21 +76,21 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# db_changes["x"] = "1"
 
 	# ban_links
-	value:str or Undefined = Data.get("ban_links")
-	if type(value) is not Undefined:
+	value:bool = Data.getBool("ban_links", None)
+	if value != Undefined:
 		db_changes["ban_links"] = validateDBInput(bool, value)
-		changes["ban_links"] = True if db_changes["ban_links"] == "1" else False
+		changes["ban_links"] = value
 
 	# blacklist_punishment
-	value:str or Undefined = Data.get("blacklist_punishment")
-	if type(value) is not Undefined:
+	value:bool = Data.getBool("blacklist_punishment", None)
+	if value != None:
 		value = checkBlacklistPunishmentString(value)
 		db_changes["blacklist_punishment"] = validateDBInput(str, value)
-		changes["blacklist_punishment"] = db_changes["blacklist_punishment"]
+		changes["blacklist_punishment"] = value
 
 	# leave_chan
-	value:str or Undefined = Data.get("leave_chan")
-	if type(value) is not Undefined:
+	value:str = Data.getStr("leave_chan", None)
+	if value != None:
 		error:bool = False
 		if value == "": pass
 		elif value.isdigit():
@@ -106,35 +106,35 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
 
 		db_changes["leave_chan"] = validateDBInput(str, value)
-		changes["leave_chan"] = db_changes["leave_chan"]
+		changes["leave_chan"] = value
 
 	# leave_msg
-	value:str or Undefined = Data.get("leave_msg")
-	if type(value) is not Undefined:
+	value:str = Data.getStr("leave_msg", None)
+	if value != None:
 		db_changes["leave_msg"] = validateDBInput(str, value)
-		changes["leave_msg"] = db_changes["leave_msg"]
+		changes["leave_msg"] = value
 
 	# owner_disable_normal
-	value:str or Undefined = Data.get("owner_disable_normal")
-	if type(value) is not Undefined:
+	value:bool = Data.getBool("owner_disable_normal", None)
+	if value != None:
 		db_changes["owner_disable_normal"] = validateDBInput(bool, value)
-		changes["owner_disable_normal"] = True if db_changes["owner_disable_normal"] == "1" else False
+		changes["owner_disable_normal"] = value
 
 	# owner_disable_regular
-	value:str or Undefined = Data.get("owner_disable_regular")
-	if type(value) is not Undefined:
+	value:bool = Data.getBool("owner_disable_regular", None)
+	if value != None:
 		db_changes["owner_disable_regular"] = validateDBInput(bool, value)
-		changes["owner_disable_regular"] = True if db_changes["owner_disable_regular"] == "1" else False
+		changes["owner_disable_regular"] = value
 
 	# owner_disable_mod
-	value:str or Undefined = Data.get("owner_disable_mod")
-	if type(value) is not Undefined:
+	value:bool = Data.getBool("owner_disable_mod", None)
+	if value != None:
 		db_changes["owner_disable_mod"] = validateDBInput(bool, value)
-		changes["owner_disable_mod"] = True if db_changes["owner_disable_mod"] == "1" else False
+		changes["owner_disable_mod"] = value
 
 	# welcome_chan
-	value:str or Undefined = Data.get("welcome_chan")
-	if type(value) is not Undefined:
+	value:str = Data.getStr("welcome_chan", None)
+	if value != None:
 		error:bool = False
 		if value == "": pass
 		elif value.isdigit():
@@ -150,19 +150,19 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
 
 		db_changes["welcome_chan"] = validateDBInput(str, value)
-		changes["welcome_chan"] = db_changes["welcome_chan"]
+		changes["welcome_chan"] = value
 
 	# welcome_msg
-	value:str or Undefined = Data.get("welcome_msg")
-	if type(value) is not Undefined:
+	value:str or Undefined = Data.get("welcome_msg", None)
+	if value != None:
 		db_changes["welcome_msg"] = validateDBInput(str, value)
-		changes["welcome_msg"] = db_changes["welcome_msg"]
+		changes["welcome_msg"] = value
 
 	# welcome_msg_priv
-	value:str or Undefined = Data.get("welcome_msg_priv")
-	if type(value) is not Undefined:
+	value:str or Undefined = Data.get("welcome_msg_priv", None)
+	if value != None:
 		db_changes["welcome_msg_priv"] = validateDBInput(str, value)
-		changes["welcome_msg_priv"] = db_changes["welcome_msg_priv"]
+		changes["welcome_msg_priv"] = value
 
 	if not db_changes:
 		return await missingData(cls, WebRequest, msg="No changes, please add at least one")

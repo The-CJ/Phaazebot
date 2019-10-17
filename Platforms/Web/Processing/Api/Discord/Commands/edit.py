@@ -132,7 +132,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
 	if not update:
-		return await apiWrongData(cls, WebRequest, msg=f"no changes requested")
+		return await apiWrongData(cls, WebRequest, msg=f"No changes, please add at least one")
 
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_command",
