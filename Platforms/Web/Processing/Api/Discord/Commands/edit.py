@@ -38,7 +38,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 	if not commands:
 		return await apiDiscordCommandNotExists(cls, WebRequest, command_id=command_id)
 
-	CurrentEditCommand:DiscordCommand = commands[0]
+	CurrentEditCommand:DiscordCommand = commands.pop()
 
 	# after this point we have a existing command
 	# check all possible values if it should be edited
@@ -56,7 +56,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		# check if there is another command with the trigger that wants to be set, that is NOT the one currently editing
 		check_double_trigger:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger=trigger)
 		if check_double_trigger:
-			CommandToCheck:DiscordCommand = check_double_trigger[0]
+			CommandToCheck:DiscordCommand = check_double_trigger.pop()
 			if str(CommandToCheck.command_id) != str(CurrentEditCommand.command_id):
 				return await apiDiscordCommandExists(cls, WebRequest, command=trigger)
 

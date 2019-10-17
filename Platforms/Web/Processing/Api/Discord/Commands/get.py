@@ -20,7 +20,10 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required vars
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
+
 	if not guild_id:
 		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
@@ -29,7 +32,6 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
 	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
 
 	show_hidden:bool = Data.getBool("show_hidden", False)
