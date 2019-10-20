@@ -59,11 +59,8 @@ var DiscordDashboard = new (class {
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
 
-      console.log(data.result);
-
       // insert current data
       insertData("[location=configs]", data.result);
-
 
     })
     .fail(function (data) {
@@ -115,10 +112,28 @@ var DiscordDashboard = new (class {
     this.showLocationWindow("levels");
     var guild_id = $("#guild_id").val();
 
-    $.get("/api/discord/levels/get", {guild_id: guild_id})
+    $.get("/api/discord/levels/get", {guild_id: guild_id, named:true})
     .done(function (data) {
 
       console.log(data);
+      var LevelList = $("#level_list").html("");
+
+      for (var level of data.result) {
+        var Template = $("[phantom] .level").clone();
+        Template.find(".rank").text(level.rank);
+        Template.find(".level").text(level.level);
+        Template.find(".exp").text(level.exp);
+        Template.find(".name").text( level.username );
+        Template.find(".medals").text(level.medals.length);
+        Template.attr("member-id", level.member_id);
+
+        if (level.edited) {
+          Template.find(".exp").addClass("edited");
+          Template.find(".exp").attr("title", "This member got edited, the stats can be wrong");
+        }
+
+        LevelList.append(Template);
+      }
 
     })
     .fail(function (data) {

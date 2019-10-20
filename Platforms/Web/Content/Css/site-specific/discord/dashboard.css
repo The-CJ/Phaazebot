@@ -80,7 +80,7 @@
 }
 
 [location=commands] .command:hover { background: rgba(0,0,0,0.2); }
-[location=commands] .command > *, .header > * { margin: 2px; }
+[location=commands] .command > *, [location=commands] .header > * { margin: 2px; }
 [location=commands] .header .trigger { background: #293788; }
 [location=commands] .header .function { background: #364287; }
 [location=commands] .header .require { background: #293788; }
@@ -111,6 +111,18 @@
 [location=configs] .config-info { padding: .84rem 2.14rem; font-size: .81rem; } /* same as btn */
 [location=configs] .config-textbox-input { width: 100%; }
 [location=configs] .config-token-btn { position: absolute; top: 1px; right: 1px; }
+
+[location=levels] .level > *, [location=levels] .header > * { margin: 2px; }
+[location=levels] .header .rank { background: #293788; }
+[location=levels] .header .lvl { background: #364287; }
+[location=levels] .header .exp { background: #293788; }
+[location=levels] .header .member { background: #364287; }
+[location=levels] .header .medals { background: #293788; }
+[location=levels] .level .rank { background: #295888; }
+[location=levels] .level .lvl { background: #365b87;}
+[location=levels] .level .exp { background: #295888 }
+[location=levels] .level .member { background: #365b87; }
+[location=levels] .level .medals { background: #295888; }
 
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
