@@ -11,22 +11,27 @@ from Utils.Classes.storeclasses import GlobalStorage
 def getNavbar(active:str="") -> HTMLFormatter:
 	Navbar:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Navbar/default.html")
 
-	Navbar.replace(login_button=getLoginButton())
+	Navbar.replace(
+		account_modal=getAccountModal()
+	)
 
 	Navbar.setRegex(r"\{selected_(.+?)\}")
 	Navbar.replace(replace_empty=True, **{active:"active"})
 
 	return Navbar
 
-def getLoginButton() -> HTMLFormatter:
+def getAccountModal() -> HTMLFormatter:
 	try:
 		discord_login_link:str = GlobalStorage.get("Phaazebot").Vars.DISCORD_LOGIN_LINK
 	except:
 		discord_login_link:str = "/discord?error"
 
-	Button:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Button/account.html")
-	Button.replace(replace_empty=True, login_link=discord_login_link)
-	return Button
+	AccountModal:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Modal/account.html")
+	AccountModal.replace(
+		replace_empty=True,
+		discord_login_link=discord_login_link
+	)
+	return AccountModal
 
 async def getUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:
 	if hasattr(WebRequest, "UserInfo"):
