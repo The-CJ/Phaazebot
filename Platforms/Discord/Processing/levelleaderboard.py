@@ -6,7 +6,6 @@ import discord
 from tabulate import tabulate
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from Utils.Classes.discordleveluser import DiscordLevelUser
 from Platforms.Discord.utils import getDiscordServerLevels
 from Platforms.Discord.levels import Calc as LevelCalc
 from Utils.stringutils import prettifyNumbers
@@ -65,4 +64,4 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 
 	table:str = tabulate(return_table, tablefmt="plain")
 
-	return {"content": f"**Top: {specific_len} leaderboard** :link: https://phaaze.net/discord/level/{Command.server_id} ```{table}```"}
+	return {"content": f"**Top: {specific_len} leaderboard** :link: {cls.BASE.Vars.WEB_ROOT}/discord/level/{Command.server_id} ```{table}```"}

@@ -21,7 +21,7 @@ async def apiNothing(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respon
 		Takes from kwargs:
 			msg:str
 	"""
-	default_msg:str = "Trying to find out the PhaazeAPI?. Try looking at https://phaaze.net/wiki/api"
+	default_msg:str = f"Trying to find out the PhaazeAPI?. Try looking at {cls.Web.BASE.Vars.WEB_ROOT}/wiki/api"
 	msg:str = kwargs.get("msg", default_msg)
 
 	cls.Web.BASE.Logger.debug(f"(API) 400: {WebRequest.path}", require="api:400")
