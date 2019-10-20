@@ -10,6 +10,7 @@ from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import missingData
 from Platforms.Discord.utils import getDiscordServerLevels
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
+from Platforms.Discord.levels import Calc as LevelCalc
 
 DEFAULT_LIMIT:int = 50
 MAX_LIMIT:int = 100
@@ -41,8 +42,8 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	# one member
 	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
 
-	# with names
-	named:bool = Data.getBool("named", False)
+	# with names, avatar hash etc.
+	detailed:bool = Data.getBool("detailed", False)
 
 	# order by
 	order:str = Data.getStr("order", "", transform="lower")
@@ -75,14 +76,16 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 			medals = LevelUser.medals
 		)
 
-		if named:
+		if detailed:
 			Mem:discord.Member = Guild.get_member(int(LevelUser.member_id))
 			level_user["username"] = Mem.name if Mem else "[N/A]"
+			level_user["avatar"] = Mem.avatar if Mem else None
+			level_user["level"] = LevelCalc.getLevel(LevelUser.exp)
 
 		return_list.append(level_user)
 
 	return cls.response(
-		text=json.dumps( dict(result=return_list, limit=limit, offset=offset, named=named, status=200) ),
+		text=json.dumps( dict(result=return_list, limit=limit, offset=offset, detailed=detailed, status=200) ),
 		content_type="application/json",
 		status=200
 	)

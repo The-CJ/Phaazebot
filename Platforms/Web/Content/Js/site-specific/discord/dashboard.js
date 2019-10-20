@@ -112,7 +112,7 @@ var DiscordDashboard = new (class {
     this.showLocationWindow("levels");
     var guild_id = $("#guild_id").val();
 
-    $.get("/api/discord/levels/get", {guild_id: guild_id, named:true})
+    $.get("/api/discord/levels/get", {guild_id: guild_id, detailed:true})
     .done(function (data) {
 
       console.log(data);
@@ -120,10 +120,12 @@ var DiscordDashboard = new (class {
 
       for (var level of data.result) {
         var Template = $("[phantom] .level").clone();
+        var avatar = "https://cdn.discordapp.com/avatars/"+level.member_id+"/"+level.avatar+"?size=32";
         Template.find(".rank").text(level.rank);
-        Template.find(".level").text(level.level);
+        Template.find(".lvl").text(level.level);
         Template.find(".exp").text(level.exp);
         Template.find(".name").text( level.username );
+        Template.find(".avatar").attr("src", avatar);
         Template.find(".medals").text(level.medals.length);
         Template.attr("member-id", level.member_id);
 

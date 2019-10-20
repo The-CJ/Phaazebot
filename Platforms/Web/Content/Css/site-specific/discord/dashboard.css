@@ -122,6 +122,8 @@
 [location=levels] .level .lvl { background: #365b87;}
 [location=levels] .level .exp { background: #295888 }
 [location=levels] .level .member { background: #365b87; }
+[location=levels] .level .member .avatar { border-radius: 50%; }
+[location=levels] .level .member .name { margin-left: 1em; }
 [location=levels] .level .medals { background: #295888; }
 
 /* modals */
