@@ -768,6 +768,24 @@ var Levels = new(class {
   constructor() {
 
   }
+
+  detail(HTMLCommandRow) {
+    var LevelObj = this;
+    var guild_id = $("#guild_id").val();
+    var member_id = $(HTMLCommandRow).attr("member-id");
+    $.get("/api/discord/levels/get", {guild_id: guild_id, member_id:member_id, detailed: true})
+    .done(function (data) {
+      var level = data.result[0];
+
+      console.log(level);
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load level details...", color:Display.color_critical});
+      console.log(data);
+    })
+  }
+
 });
 
 // utils
