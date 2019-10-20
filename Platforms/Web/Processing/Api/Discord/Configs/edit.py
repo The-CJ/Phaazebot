@@ -77,7 +77,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# ban_links
 	value:bool = Data.getBool("ban_links", None)
-	if value != Undefined:
+	if value != None:
 		db_changes["ban_links"] = validateDBInput(bool, value)
 		changes["ban_links"] = value
 
