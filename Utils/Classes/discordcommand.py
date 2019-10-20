@@ -32,7 +32,7 @@ class DiscordCommand(DBContentClass):
 			(by, self.command_id)
 		)
 
-		cls.BASE.Logger.debug(f"(Discord) Increase command: {self.trigger} -> x{self.uses+by}", require="discord:command")
+		cls.BASE.Logger.debug(f"(Discord) Increase command: {self.trigger} ({self.command_id}) -> x{self.uses+by}", require="discord:command")
 
 	@property
 	def name(self) -> str:
