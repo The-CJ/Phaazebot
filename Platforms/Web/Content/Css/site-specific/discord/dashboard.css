@@ -79,6 +79,7 @@
   font-size: 32px;
 }
 
+[location=commands] .command { cursor: pointer;; }
 [location=commands] .command:hover { background: rgba(0,0,0,0.2); }
 [location=commands] .command > *, [location=commands] .header > * { margin: 2px; }
 [location=commands] .header .trigger { background: #293788; }
@@ -112,6 +113,8 @@
 [location=configs] .config-textbox-input { width: 100%; }
 [location=configs] .config-token-btn { position: absolute; top: 1px; right: 1px; }
 
+[location=levels] .level { cursor: pointer;; }
+[location=levels] .level:hover { background: rgba(0,0,0,0.2); }
 [location=levels] .level > *, [location=levels] .header > * { margin: 2px; }
 [location=levels] .header .rank { background: #293788; }
 [location=levels] .header .lvl { background: #364287; }

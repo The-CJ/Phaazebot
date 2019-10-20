@@ -115,7 +115,6 @@ var DiscordDashboard = new (class {
     $.get("/api/discord/levels/get", {guild_id: guild_id, detailed:true})
     .done(function (data) {
 
-      console.log(data);
       var LevelList = $("#level_list").html("");
 
       for (var level of data.result) {
