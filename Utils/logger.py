@@ -1,5 +1,7 @@
 import logging
+import os
 import sys
+import inspect
 from Utils.cli import CliArgs
 try: from cysystemd.journal import JournaldLogHandler
 except ImportError:	pass
@@ -25,10 +27,10 @@ class PhaazeLoggerFormatter(logging.Formatter):
 class PhaazeLogger(object):
 	""" Logger for project, sends to systemd or console """
 	def __init__(self):
-		self.Log = logging.getLogger("Phaazebot")
+		self.Log:logging.Logger = logging.getLogger("Phaazebot")
 		self.Log.setLevel(logging.DEBUG)
-		self.Formatter = PhaazeLoggerFormatter("[%(levelname)s]: %(message)s")
-		self.active_debugs = [a.lower() for a in CliArgs.get("debug", "").split(",")]
+		self.Formatter:PhaazeLoggerFormatter = PhaazeLoggerFormatter("[%(levelname)s]: %(message)s")
+		self.active_debugs:list = [a.lower() for a in CliArgs.get("debug", "").split(",")]
 
 		self.logging_type:str = CliArgs.get("logging" , "console")
 
@@ -58,10 +60,14 @@ class PhaazeLogger(object):
 		self.Log.critical(msg)
 
 	def debug(self, msg:str, require:str="all") -> None:
-		show = False
+		show:bool = False
 		for ad in self.active_debugs:
 			if ad == "all": show = True; break
 			if require == ad: show = True; break
 			if require.split(":")[0] == ad: show = True; break
 
-		if show: self.Log.debug(msg)
+		if show:
+			Caller:inspect.Traceback = inspect.getframeinfo(inspect.stack()[1][0])
+
+			location:str = Caller.filename.replace(os.getcwd(), "")
+			self.Log.debug(f"{location}:{Caller.lineno} | {msg}")
