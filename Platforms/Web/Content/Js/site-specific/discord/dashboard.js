@@ -73,38 +73,7 @@ var DiscordDashboard = new (class {
   loadCommand() {
     DynamicURL.set("view", "commands");
     this.showLocationWindow("commands");
-    var guild_id = $("#guild_id").val();
-
-    $.get("/api/discord/commands/get", {guild_id: guild_id, show_hidden: true})
-    .done(function (data) {
-
-      $("#command_amount").text(data.result.length);
-      var CommandList = $("#command_list").html("");
-
-      for (var command of data.result) {
-        var Template = $("[phantom] .command").clone();
-        Template.find(".trigger").text(command.trigger);
-        Template.find(".function").text(command.name);
-        Template.find(".require").text( translateRequire(command.require) );
-        Template.find(".cost").text(command.cost);
-        Template.find(".uses").text(command.uses);
-        Template.find(".cooldown").text(command.cooldown);
-        Template.attr("command-id", command.id);
-
-        if (command.hidden) {
-          Template.find(".function").addClass("hidden");
-          Template.find(".function").attr("title", "This is a hidden command and can not be viewed via web, without permissions");
-        }
-
-        CommandList.append(Template);
-      }
-
-    })
-    .fail(function (data) {
-      Display.showMessage({content: "Could not load commands...", color:Display.color_critical});
-      console.log(data);
-    })
-
+    Commands.show();
   }
 
   loadLevel() {
@@ -314,6 +283,40 @@ var Commands = new (class {
 
   }
 
+  show() {
+    var guild_id = $("#guild_id").val();
+
+    $.get("/api/discord/commands/get", {guild_id: guild_id, show_hidden: true})
+    .done(function (data) {
+
+      $("#command_amount").text(data.result.length);
+      var CommandList = $("#command_list").html("");
+
+      for (var command of data.result) {
+        var Template = $("[phantom] .command").clone();
+        Template.find(".trigger").text(command.trigger);
+        Template.find(".function").text(command.name);
+        Template.find(".require").text( translateRequire(command.require) );
+        Template.find(".cost").text(command.cost);
+        Template.find(".uses").text(command.uses);
+        Template.find(".cooldown").text(command.cooldown);
+        Template.attr("command-id", command.id);
+
+        if (command.hidden) {
+          Template.find(".function").addClass("hidden");
+          Template.find(".function").attr("title", "This is a hidden command and can not be viewed via web, without permissions");
+        }
+
+        CommandList.append(Template);
+      }
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load commands...", color:Display.color_critical});
+      console.log(data);
+    })
+  }
+
   createModal() {
     $("#command_create [clear-after-success]").val("");
     $("#command_create [command-setting=simple]").hide();
@@ -322,9 +325,12 @@ var Commands = new (class {
     $("#command_create").attr("mode", "new");
     $("#command_create").modal("show");
   }
+
   create() {
+    var CommandsObj = this;
+    var guild_id = $("#guild_id").val();
     var r = {
-      "guild_id": $("#guild_id").val(),
+      "guild_id": guild_id,
       "trigger": $("#command_create [name=trigger]").val(),
       "content": $("#command_create [name=content]").val(),
       "function": $("#command_create [name=function]").val(),
@@ -334,11 +340,12 @@ var Commands = new (class {
       "require": $("#command_create [name=require]").val(),
       "required_currency": $("#command_create [name=required_currency]").val()
     };
+
     $.post("/api/discord/commands/create", r)
     .done(function (data) {
       Display.showMessage({content: "Successfull created command: "+data.command, color:Display.color_success});
       $("#command_create").modal("hide");
-      DiscordDashboard.loadCommand();
+      CommandsObj.show();
       // after successfull command, reset modal
       $("#command_create [clear-after-success]").val("");
       $("#command_create [command-setting], #command_create [extra-command-setting]").hide();
@@ -352,16 +359,20 @@ var Commands = new (class {
   }
 
   delete() {
+    var CommandsObj = this;
+    var guild_id = $("#guild_id").val();
     var r = {
-      "guild_id": $("#guild_id").val(),
+      "guild_id": guild_id,
       "trigger": $("#command_create [name=trigger]").val(),
     };
+
     if (!confirm("Are you sure you want to delete the command?")) { return; }
+
     $.post("/api/discord/commands/delete", r)
     .done(function (data) {
       Display.showMessage({content: "Successfull deleted command: "+data.command, color:Display.color_success});
       $("#command_create").modal("hide");
-      DiscordDashboard.loadCommand();
+      CommandsObj.show();
     })
     .fail(function (data) {
       console.log(data);
@@ -371,8 +382,10 @@ var Commands = new (class {
   }
 
   edit() {
+    var CommandsObj = this;
+    var guild_id = $("#guild_id").val();
     var r = {
-      "guild_id": $("#guild_id").val(),
+      "guild_id": guild_id,
       "command_id": $("#command_create [name=command_id]").val(),
       "trigger": $("#command_create [name=trigger]").val(),
       "content": $("#command_create [name=content]").val(),
@@ -383,11 +396,12 @@ var Commands = new (class {
       "require": $("#command_create [name=require]").val(),
       "required_currency": $("#command_create [name=required_currency]").val()
     };
+
     $.post("/api/discord/commands/edit", r)
     .done(function (data) {
       Display.showMessage({content: "Successfull edited command: "+data.command, color:Display.color_success});
       $("#command_create").modal("hide");
-      DiscordDashboard.loadCommand();
+      CommandsObj.show();
     })
     .fail(function (data) {
       console.log(data);
@@ -400,6 +414,7 @@ var Commands = new (class {
     var CommandsObj = this;
     var guild_id = $("#guild_id").val();
     var command_id = $(HTMLCommandRow).attr("command-id");
+
     $.get("/api/discord/commands/get", {guild_id: guild_id, command_id:command_id, show_hidden: true})
     .done(function (data) {
       var command = data.result[0];
