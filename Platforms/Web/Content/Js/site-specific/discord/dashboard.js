@@ -55,19 +55,7 @@ var DiscordDashboard = new (class {
   loadConfig() {
     DynamicURL.set("view", "configs");
     this.showLocationWindow("configs");
-    var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
-    .done(function (data) {
-
-      // insert current data
-      insertData("[location=configs]", data.result);
-
-    })
-    .fail(function (data) {
-      Display.showMessage({content: "Could not load configs...", color:Display.color_critical});
-      console.log(data);
-    })
-
+    Configs.show();
   }
 
   loadCommand() {
@@ -510,6 +498,22 @@ var Configs = new(class {
     this.blacklist = [];
     this.whitelist = [];
     this.except_roleslist = [];
+  }
+
+  show() {
+    var guild_id = $("#guild_id").val();
+    
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+
+      // insert current data
+      insertData("[location=configs]", data.result);
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load configs...", color:Display.color_critical});
+      console.log(data);
+    })
   }
 
   // links
