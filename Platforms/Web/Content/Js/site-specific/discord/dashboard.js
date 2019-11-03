@@ -107,42 +107,10 @@ var DiscordDashboard = new (class {
 
   }
 
-  loadLevel(search_query) {
-    search_query = search_query ? search_query : "";
+  loadLevel() {
     DynamicURL.set("view", "levels");
     this.showLocationWindow("levels");
-    var guild_id = $("#guild_id").val();
-
-    $.get("/api/discord/levels/get", {guild_id: guild_id, detailed:true, search:search_query})
-    .done(function (data) {
-
-      var LevelList = $("#level_list").html("");
-
-      for (var level of data.result) {
-        var Template = $("[phantom] .level").clone();
-        var avatar = "https://cdn.discordapp.com/avatars/"+level.member_id+"/"+level.avatar+"?size=32";
-        Template.find(".rank").text(level.rank);
-        Template.find(".lvl").text(level.level);
-        Template.find(".exp").text(level.exp);
-        Template.find(".name").text( level.username );
-        Template.find(".avatar").attr("src", avatar);
-        Template.find(".medals").text(level.medals.length);
-        Template.attr("member-id", level.member_id);
-
-        if (level.edited) {
-          Template.find(".exp").addClass("edited");
-          Template.find(".exp").attr("title", "This member got edited, the stats can be wrong");
-        }
-
-        LevelList.append(Template);
-      }
-
-    })
-    .fail(function (data) {
-      Display.showMessage({content: "Could not load levels...", color:Display.color_critical});
-      console.log(data);
-    })
-
+    Levels.show();
   }
 
   loadQuote() {
@@ -770,9 +738,38 @@ var Levels = new(class {
 
   }
 
-  searchForm() {
-    var x = extractData("#level_search");
-    DiscordDashboard.loadLevel(x["query"]);
+  show(x={}) {
+    var guild_id = $("#guild_id").val();
+    var offset = x["offset"] ? x["offset"] : 0;
+
+    $.get("/api/discord/levels/get", {guild_id: guild_id, detailed:true, offset:offset})
+    .done(function (data) {
+      var LevelList = $("#level_list").html("");
+
+      for (var level of data.result) {
+        var Template = $("[phantom] .level").clone();
+        var avatar = "https://cdn.discordapp.com/avatars/"+level.member_id+"/"+level.avatar+"?size=32";
+        Template.find(".rank").text(level.rank);
+        Template.find(".lvl").text(level.level);
+        Template.find(".exp").text(level.exp);
+        Template.find(".name").text( level.username );
+        Template.find(".avatar").attr("src", avatar);
+        Template.find(".medals").text(level.medals.length);
+        Template.attr("member-id", level.member_id);
+
+        if (level.edited) {
+          Template.find(".exp").addClass("edited");
+          Template.find(".exp").attr("title", "This member got edited, the stats can be wrong");
+        }
+
+        LevelList.append(Template);
+      }
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load levels...", color:Display.color_critical});
+      console.log(data);
+    })
   }
 
   detail(HTMLCommandRow) {

@@ -9,24 +9,11 @@
       </div>
     </div>
 
-    <form class="content-box md-form" action="javascript:void(0)" onsubmit="javascript:Levels.searchForm()" id="level_search">
-      <div class="center-item-col">
-        <div class="col"><h3>Search</h3></div>
-      </div>
-      <div class="center-item-row">
-        <div class="col">
-          <input type="text" name="query" class="white-text text-center" style="width: 100%;" placeholder="Member name or Member id">
-        </div>
-        <div class="col">
-          <div class="center-item-row">
-            <button type="button" name="button" class="btn btn-secondary icon-btn"><i class="fas fa-arrow-left"></i></button>
-            <span>Page: <span class="index">0</span>  </span>
-            <button type="button" name="button" class="btn btn-secondary icon-btn"><i class="fas fa-arrow-right"></i></button>
-            <button type="submit" name="button" class="btn btn-primary icon-btn ml-auto"><i class="fas fa-search"></i></button>
-          </div>
-        </div>
-      </div>
-    </form>
+    <div class="center-item-row" id="level_pages">
+      <button onclick="Levels.prevPage()" type="button" name="button" class="btn btn-secondary icon-btn"><i class="fas fa-arrow-left"></i></button>
+      <span>Page: <span class="index">0</span></span>
+      <button onclick="Levels.nextPage()" type="button" name="button" class="btn btn-secondary icon-btn"><i class="fas fa-arrow-right"></i></button>
+    </div>
 
     <div class="header row">
       <div class="col-1 rank">Rank</div>
