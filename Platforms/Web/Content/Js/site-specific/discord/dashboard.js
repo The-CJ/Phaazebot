@@ -800,13 +800,21 @@ var Levels = new(class {
     })
   }
 
-  prevPage() {
-    this.offset -= (this.results_per_page);
+  prevPage(first) {
+    if (first) {
+      this.offset = 0;
+    } else {
+      this.offset -= (this.results_per_page);
+    }
     this.show({offset:this.offset});
   }
 
-  nextPage() {
-    this.offset += (this.results_per_page);
+  nextPage(last) {
+    if (last) {
+      this.offset = parseInt(this.total / this.results_per_page) * this.results_per_page;
+    } else {
+      this.offset += (this.results_per_page);
+    }
     this.show({offset:this.offset});
   }
 
