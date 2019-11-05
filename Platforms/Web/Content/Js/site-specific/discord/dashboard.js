@@ -850,7 +850,12 @@ var Levels = new(class {
       var level = data.result[0];
 
       console.log(level);
+
+      var avatar = discordAvatar(level.member_id, level.avatar, 128);
+      $("#level_modal_edit img").attr("src", avatar);
+
       insertData("#level_modal_edit", level);
+
       $("#level_modal_edit").modal("show");
 
     })

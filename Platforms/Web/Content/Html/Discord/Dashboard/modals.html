@@ -241,7 +241,7 @@
           <div class="col">
             <p>By default every link gets punished, but here you can define <a href="https://en.wikipedia.org/wiki/Regular_expression" style="color: blue;" target="_blank">regular expressions</a> that are allowed.</p>
             <span>e.g:</span><br>
-            <span>If you ban links, but want to allow all google links, including all subdomains.<span><br>
+            <span>If you ban links, but want to allow all google links, including all subdomains.</span><br>
             <span>You add this: <span style="color:red">^.*google.com$</span></span>
           </div>
         </div>
@@ -294,6 +294,63 @@
         <span>Select a role you want to add.</span>
         <hr>
         <div class="exceptionrolelist"></div>
+
+      </div>
+
+      <div class="modal-footer"></div>
+      <div messagebox></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="level_modal_edit">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Level edit</h4>
+        <button type="button" class="close" onclick="$('#level_modal_edit').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <!-- avatar -->
+        <div class="center-item-row md-form forced">
+          <img src="" alt="member_avatar" style="border-radius: 50%; border: 2px solid black; height: 128px; width: 128px;">
+          <input disabled type="text" name="username" style="width: 100%; margin-left: 5px;" class="text-center">
+        </div>
+
+        <hr>
+
+        <!-- exp -->
+        <div class="center-item-row forced">
+          <div class="col-3">
+            <span>EXP:</span>
+          </div>
+          <div class="col-9 md-form">
+            <input type="number" name="exp" style="width: 100%;" class="text-center">
+          </div>
+        </div>
+
+        <!-- level -->
+        <div class="center-item-row forced">
+          <div class="col-3">
+            <span>Level:</span>
+          </div>
+          <div class="col-9 md-form forced">
+            <input disabled type="text" name="level" style="width: 100%;" class="text-center">
+          </div>
+        </div>
+
+        <!-- notes -->
+        <div class="center-item-row forced">
+          <div class="col" style="white-space: unset">
+            <span><sub><i>Level is calculated by EXP</i></sub></span>
+          </div>
+        </div>
+
+        <hr>
+
 
       </div>
 
