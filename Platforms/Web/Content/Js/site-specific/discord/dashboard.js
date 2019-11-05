@@ -781,7 +781,7 @@ var Levels = new(class {
         Template.find(".lvl").text(level.level);
         Template.find(".exp").text(level.exp);
         Template.find(".name").text( level.username );
-        Template.find(".avatar").attr("src", avatar);
+        Template.find(".avatar").attr("src", level.avatar ? avatar : defaultDiscordAvatar(level.member_id));
         Template.find(".medals").text(level.medals.length);
         Template.attr("member-id", level.member_id);
 
@@ -867,4 +867,8 @@ function showTokenHelp(field) {
   $("#token_modal_help .token").hide();
   $("#token_modal_help .token"+field).show();
   $("#token_modal_help").modal("show");
+}
+
+function defaultDiscordAvatar(member_id) {
+  return "https://cdn.discordapp.com/embed/avatars/" + (parseInt(member_id) % 5) + ".png";
 }
