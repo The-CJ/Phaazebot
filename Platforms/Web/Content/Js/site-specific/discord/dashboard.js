@@ -776,12 +776,13 @@ var Levels = new(class {
 
       for (var level of data.result) {
         var Template = $("[phantom] .level").clone();
-        var avatar = "https://cdn.discordapp.com/avatars/"+level.member_id+"/"+level.avatar+"?size=32";
+        var avatar = discordAvatar(level.member_id, level.avatar);
+
         Template.find(".rank").text(level.rank);
         Template.find(".lvl").text(level.level);
         Template.find(".exp").text(level.exp);
         Template.find(".name").text( level.username );
-        Template.find(".avatar").attr("src", level.avatar ? avatar : defaultDiscordAvatar(level.member_id));
+        Template.find(".avatar").attr("src", avatar);
         Template.find(".medals").text(level.medals.length);
         Template.attr("member-id", level.member_id);
 
@@ -849,7 +850,8 @@ var Levels = new(class {
       var level = data.result[0];
 
       console.log(level);
-      alert("TODO: level detail");
+      insertData("#level_modal_edit", level);
+      $("#level_modal_edit").modal("show");
 
     })
     .fail(function (data) {
@@ -877,6 +879,10 @@ function showTokenHelp(field) {
   $("#token_modal_help").modal("show");
 }
 
-function defaultDiscordAvatar(member_id) {
-  return "https://cdn.discordapp.com/embed/avatars/" + (parseInt(member_id) % 5) + ".png";
+function discordAvatar(member_id, avatar_hash, size=32) {
+  if (avatar_hash) {
+    return "https://cdn.discordapp.com/avatars/"+member_id+"/"+avatar_hash+"?size="+size;
+  } else {
+    return "https://cdn.discordapp.com/embed/avatars/" + (parseInt(member_id) % 5) + ".png";
+  }
 }
