@@ -502,7 +502,7 @@ var Configs = new(class {
 
   show() {
     var guild_id = $("#guild_id").val();
-    
+
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
 
@@ -754,15 +754,24 @@ var Configs = new(class {
 
 var Levels = new(class {
   constructor() {
-
+    this.results_per_page = 50;
+    this.offset = 0;
+    this.total = 0;
   }
 
   show(x={}) {
+    var LevelO = this;
     var guild_id = $("#guild_id").val();
     var offset = x["offset"] ? x["offset"] : 0;
 
-    $.get("/api/discord/levels/get", {guild_id: guild_id, detailed:true, offset:offset})
+    $.get("/api/discord/levels/get", {guild_id: guild_id, detailed:true, offset:offset, limit:this.results_per_page})
     .done(function (data) {
+
+      // store a copy of the current number of entrys
+      LevelO.total = data.total;
+      LevelO.offset = data.offset;
+      LevelO.updatePageIndexButtons();
+
       var LevelList = $("#level_list").html("");
 
       for (var level of data.result) {
@@ -789,6 +798,38 @@ var Levels = new(class {
       Display.showMessage({content: "Could not load levels...", color:Display.color_critical});
       console.log(data);
     })
+  }
+
+  prevPage() {
+    this.offset -= (this.results_per_page);
+    this.show({offset:this.offset});
+  }
+
+  nextPage() {
+    this.offset += (this.results_per_page);
+    this.show({offset:this.offset});
+  }
+
+  updatePageIndexButtons() {
+    var current_page = (this.offset / this.results_per_page) + 1;
+    var max_pages = parseInt((this.total / this.results_per_page) + 1)
+
+    $("#level_pages .index").text(current_page);
+
+    // no more prev pages
+    if (current_page <= 1) {
+      $("#level_pages .prev").attr("disabled", true);
+    } else {
+      $("#level_pages .prev").attr("disabled", false);
+    }
+
+    // no more next pages
+    if (current_page >= max_pages) {
+      $("#level_pages .next").attr("disabled", true);
+    } else {
+      $("#level_pages .next").attr("disabled", false);
+    }
+
   }
 
   detail(HTMLCommandRow) {
