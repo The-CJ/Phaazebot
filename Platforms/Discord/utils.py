@@ -130,6 +130,18 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 	else:
 		return []
 
+async def getDiscordServerLevelAmount(cls:"PhaazebotDiscord", guild_id:str) -> int:
+
+	sql:str = """
+		SELECT COUNT(*) AS I FROM discord_level
+		WHERE discord_level.on_server = 1 AND discord_level.guild_id = %s"""
+
+	values:tuple = (guild_id,)
+
+	res:list = cls.BASE.PhaazeDB.query(sql, values)
+
+	return res[0]["I"]
+
 async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:str=None, random:bool=False, limit:int=0) -> list:
 	"""
 		Get server quotes, if quote_id = None, get all
