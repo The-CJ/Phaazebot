@@ -187,7 +187,7 @@ async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	action_word:str = Data.getStr("wordblacklist_word", "").strip(" ").strip("\n")
+	action_word:str = Data.getStr("wordblacklist_word", "").strip(" ").strip("\n").replace(";;;", "") # ;;; is the sql sepperator
 
 	if not guild_id:
 		# should never happen
@@ -237,7 +237,7 @@ async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	action_link:str = Data.getStr("linkwhitelist_link", "").strip(" ").strip("\n")
+	action_link:str = Data.getStr("linkwhitelist_link", "").strip(" ").strip("\n").replace(";;;", "")
 
 	if not guild_id:
 		# should never happen
@@ -287,7 +287,7 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	role_id:str = Data.getStr("exceptionrole_id", "").strip(" ").strip("\n")
+	role_id:str = Data.getStr("exceptionrole_id", "", must_be_digit=True).strip(" ").strip("\n")
 
 	if not guild_id:
 		# should never happen
@@ -295,9 +295,6 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 
 	if not role_id:
 		return await missingData(cls, WebRequest, msg="missing or invalid field 'role_id'")
-
-	if not role_id.isdigit():
-		return await apiWrongData(cls, WebRequest, msg="'role_id' must be digit")
 
 	ActionRole:discord.Role = CurrentGuild.get_role(int(role_id))
 	if not ActionRole and action == "add":
