@@ -863,6 +863,9 @@ var Levels = new(class {
         EntryList.append(EntryRow);
       }
 
+      // edited?
+      $("#level_modal_edit [name=exp]").attr("edited", level.edited ? "true" : "false");
+
       insertData("#level_modal_edit", level);
 
       $("#level_modal_edit").attr("edit-member", level.member_id);
