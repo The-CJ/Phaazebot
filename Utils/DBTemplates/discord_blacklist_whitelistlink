@@ -14,6 +14,5 @@ CREATE TABLE `discord_blacklist_whitelistlink` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
   `link` varchar(512) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `guild_id` (`guild_id`,`link`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
