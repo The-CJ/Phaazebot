@@ -338,13 +338,9 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		if role_id not in Configs.blacklist_whitelistroles:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{role_id}', is currently not added")
 
-		Configs.blacklist_whitelistroles.remove(str(role_id))
-
-		cls.Web.BASE.PhaazeDB.updateQuery(
-			table = "discord_setting",
-			content = {"blacklist_whitelistroles": json.dumps(Configs.blacklist_whitelistroles) },
-			where = "discord_setting.guild_id = %s",
-			where_values = (guild_id,)
+		cls.Web.BASE.PhaazeDB.query("""
+			DELETE FROM `discord_blacklist_whitelistrole` WHERE `guild_id` = %s AND `role_id` = %s""",
+			(guild_id, role_id)
 		)
 
 		cls.Web.BASE.Logger.debug(f"(API/Discord) Exception role list Update: S:{guild_id} - rem: {role_id}", require="discord:configs")
