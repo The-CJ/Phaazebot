@@ -12,7 +12,7 @@ class DiscordServerSettings(DBContentClass):
 			self.__found = True
 
 		self.autorole_id:str = infos.get("autorole_id", Undefined())
-		self.ban_links:bool = bool( infos.get("ban_links", Undefined()) )
+		self.blacklist_ban_links:bool = bool( infos.get("blacklist_ban_links", Undefined()) )
 		self.ban_links_role:list = self.fromJsonField( infos.get("ban_links_role", Undefined()) )
 		self.ban_links_whitelist:list = self.fromJsonField( infos.get("ban_links_whitelist", Undefined()) )
 		self.blacklist_words:list = self.fromJsonField( infos.get("blacklist_words", Undefined()) )

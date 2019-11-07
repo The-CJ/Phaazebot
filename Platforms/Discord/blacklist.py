@@ -20,7 +20,7 @@ async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Server
 	reason:str = None
 
 	# links are not allowed
-	if ServerSettings.ban_links:
+	if ServerSettings.blacklist_ban_links:
 		punish = await checkBanLinks(cls, Message, ServerSettings)
 		reason = "ban-links"
 

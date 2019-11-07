@@ -75,11 +75,11 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# changes["x"] = true
 	# db_changes["x"] = "1"
 
-	# ban_links
-	value:bool = Data.getBool("ban_links", None)
+	# blacklist_ban_links
+	value:bool = Data.getBool("blacklist_ban_links", None)
 	if value != None:
-		db_changes["ban_links"] = validateDBInput(bool, value)
-		changes["ban_links"] = value
+		db_changes["blacklist_ban_links"] = validateDBInput(bool, value)
+		changes["blacklist_ban_links"] = value
 
 	# blacklist_punishment
 	value:bool = Data.getBool("blacklist_punishment", None)

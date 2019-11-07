@@ -6,7 +6,7 @@ DESCRIBE `discord_setting`;
 | id                     | int(11)       | NO   | PRI | NULL    | auto_increment |
 | guild_id               | varchar(128)  | NO   | UNI | NULL    |                |
 | autorole_id            | varchar(128)  | YES  |     | NULL    |                |
-| ban_links              | tinyint(1)    | YES  |     | 0       |                |
+| blacklist_ban_links    | tinyint(1)    | YES  |     | 0       |                |
 | ban_links_role         | longtext      | YES  |     | '[]'    |                | REPLACED
 | ban_links_whitelist    | longtext      | YES  |     | '[]'    |                |
 | blacklist_words        | longtext      | YES  |     | '[]'    |                |
@@ -40,7 +40,7 @@ CREATE TABLE `discord_setting` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
   `autorole_id` varchar(128) DEFAULT NULL,
-  `ban_links` tinyint(1) DEFAULT 0,
+  `blacklist_ban_links` tinyint(1) DEFAULT 0,
   `ban_links_role` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`ban_links_role`)),
   `ban_links_whitelist` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]',
   `blacklist_words` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]',
