@@ -31,7 +31,9 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message
 			(SELECT GROUP_CONCAT(`discord_blacklist_whitelistrole`.`role_id` SEPARATOR ',') FROM `discord_blacklist_whitelistrole` WHERE `discord_blacklist_whitelistrole`.`guild_id` = `discord_setting`.`guild_id`)
 				AS `blacklist_whitelistroles`,
 			(SELECT GROUP_CONCAT(`discord_blacklist_whitelistlink`.`link` SEPARATOR ";;;") FROM `discord_blacklist_whitelistlink` WHERE `discord_blacklist_whitelistlink`.`guild_id` = `discord_setting`.`guild_id`)
-				AS `blacklist_whitelistlinks`
+				AS `blacklist_whitelistlinks`,
+			(SELECT GROUP_CONCAT(`discord_blacklist_blacklistword`.`word` SEPARATOR ";;;") FROM `discord_blacklist_blacklistword` WHERE `discord_blacklist_blacklistword`.`guild_id` = `discord_setting`.`guild_id`)
+				AS `blacklist_blacklistwords`
 
 		FROM `discord_setting`
 		WHERE `discord_setting`.`guild_id` = %s

@@ -197,12 +197,12 @@ async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:s
 		return await missingData(cls, WebRequest, msg="missing field 'blacklist_word'")
 
 	if action == "add":
-		Configs.blacklist_words.append(action_word)
-		cls.Web.BASE.PhaazeDB.updateQuery(
-			table = "discord_setting",
-			content = {"blacklist_words": json.dumps(Configs.blacklist_words) },
-			where = "discord_setting.guild_id = %s",
-			where_values = (guild_id,)
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "discord_blacklist_blacklistword",
+			content = {
+				"word": action_word,
+				"guild_id": guild_id
+			}
 		)
 
 		cls.Web.BASE.Logger.debug(f"(API/Discord) Word Blacklist Update: S:{guild_id} - add: {action_word}", require="discord:configs")
@@ -213,26 +213,20 @@ async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:s
 		)
 
 	elif action == "remove":
-		for word in Configs.blacklist_words:
-			if action_word == word.lower():
-				Configs.blacklist_words.remove(word)
+		if action_word not in Configs.blacklist_blacklistwords:
+			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{action_word}', it's currently not in the word blacklist")
 
-				cls.Web.BASE.PhaazeDB.updateQuery(
-					table = "discord_setting",
-					content = {"blacklist_words": json.dumps(Configs.blacklist_words) },
-					where = "discord_setting.guild_id = %s",
-					where_values = (guild_id,)
-				)
+		cls.Web.BASE.PhaazeDB.query("""
+			DELETE FROM `discord_blacklist_blacklistword` WHERE `guild_id` = %s AND `word` = %s""",
+			(guild_id, action_word)
+		)
 
-				cls.Web.BASE.Logger.debug(f"(API/Discord) Word Blacklist Update: S:{guild_id} - rem: {action_word}", require="discord:configs")
-				return cls.response(
-					text=json.dumps( dict(msg="word blacklist successfull updated", remove=action_word, status=200) ),
-					content_type="application/json",
-					status=200
-				)
-
-		return await apiWrongData(cls, WebRequest, msg=f"can't remove '{action_word}', it's currently not in the word blacklist")
-
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Word Blacklist Update: S:{guild_id} - rem: {action_word}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="word blacklist successfull updated", remove=action_word, status=200) ),
+			content_type="application/json",
+			status=200
+		)
 
 	else:
 		return await apiWrongData(cls, WebRequest)
