@@ -7,7 +7,6 @@ DESCRIBE `discord_setting`;
 | guild_id               | varchar(128)  | NO   | UNI | NULL    |                |
 | autorole_id            | varchar(128)  | YES  |     | NULL    |                |
 | blacklist_ban_links    | tinyint(1)    | YES  |     | 0       |                |
-| blacklist_words        | longtext      | YES  |     | '[]'    |                |
 | blacklist_punishment   | varchar(32)   | YES  |     | delete  |                |
 | currency_name          | varchar(256)  | YES  |     | NULL    |                |
 | currency_name_multi    | varchar(256)  | YES  |     | NULL    |                |
@@ -39,7 +38,6 @@ CREATE TABLE `discord_setting` (
   `guild_id` varchar(128) NOT NULL,
   `autorole_id` varchar(128) DEFAULT NULL,
   `blacklist_ban_links` tinyint(1) DEFAULT 0,
-  `blacklist_words` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]',
   `blacklist_punishment` varchar(32) DEFAULT 'delete',
   `currency_name` varchar(256) DEFAULT NULL,
   `currency_name_multi` varchar(256) DEFAULT NULL,
