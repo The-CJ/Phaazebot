@@ -14,7 +14,7 @@ class DiscordServerSettings(DBContentClass):
 		self.autorole_id:str = infos.get("autorole_id", Undefined())
 		self.blacklist_ban_links:bool = bool( infos.get("blacklist_ban_links", Undefined()) )
 		self.blacklist_whitelistroles:list = self.fromStringList( infos.get("blacklist_whitelistroles", Undefined()) )
-		self.ban_links_whitelist:list = self.fromJsonField( infos.get("ban_links_whitelist", Undefined()) )
+		self.blacklist_whitelistlinks:list = self.fromStringList( infos.get("blacklist_whitelistlinks", Undefined()), ";;;" )
 		self.blacklist_words:list = self.fromJsonField( infos.get("blacklist_words", Undefined()) )
 		self.blacklist_punishment:str = infos.get("blacklist_punishment", Undefined())
 		self.currency_name:str = infos.get("currency_name", Undefined())
