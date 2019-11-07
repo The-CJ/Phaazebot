@@ -253,12 +253,12 @@ async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:s
 		return await missingData(cls, WebRequest, msg="missing field 'linkwhitelist_link'")
 
 	if action == "add":
-		Configs.ban_links_whitelist.append(action_link.lower())
-		cls.Web.BASE.PhaazeDB.updateQuery(
-			table = "discord_setting",
-			content = {"ban_links_whitelist": json.dumps(Configs.ban_links_whitelist) },
-			where = "discord_setting.guild_id = %s",
-			where_values = (guild_id,)
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "discord_blacklist_whitelistlink",
+			content = {
+				"link": action_link,
+				"guild_id": guild_id
+			}
 		)
 
 		cls.Web.BASE.Logger.debug(f"(API/Discord) Link Whitelist Update: S:{guild_id} - add: {action_link}", require="discord:configs")
@@ -269,26 +269,20 @@ async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:s
 		)
 
 	elif action == "remove":
-		for link in Configs.ban_links_whitelist:
-			if action_link == link.lower():
-				Configs.ban_links_whitelist.remove(link)
+		if action_link not in Configs.blacklist_whitelistlinks:
+			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{action_link}', it's currently not in the link whitelist")
 
-				cls.Web.BASE.PhaazeDB.updateQuery(
-					table = "discord_setting",
-					content = {"ban_links_whitelist": json.dumps(Configs.ban_links_whitelist) },
-					where = "discord_setting.guild_id = %s",
-					where_values = (guild_id,)
-				)
+		cls.Web.BASE.PhaazeDB.query("""
+			DELETE FROM `discord_blacklist_whitelistlink` WHERE `guild_id` = %s AND `link` = %s""",
+			(guild_id, action_link)
+		)
 
-				cls.Web.BASE.Logger.debug(f"(API/Discord) Link Whitelist Update: S:{guild_id} - rem: {action_link}", require="discord:configs")
-				return cls.response(
-					text=json.dumps( dict(msg="link whitelist successfull updated", remove=action_link, status=200) ),
-					content_type="application/json",
-					status=200
-				)
-
-		return await apiWrongData(cls, WebRequest, msg=f"can't remove '{action_link}', it's currently not in the link whitelist")
-
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Link Whitelist Update: S:{guild_id} - rem: {action_link}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="link whitelist successfull updated", remove=action_link, status=200) ),
+			content_type="application/json",
+			status=200
+		)
 
 	else:
 		return await apiWrongData(cls, WebRequest)
