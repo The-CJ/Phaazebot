@@ -522,7 +522,7 @@ var Configs = new(class {
     var guild_id = $("#guild_id").val();
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.whitelist = data.result.ban_links_whitelist;
+      ConfigsO.whitelist = data.result.blacklist_whitelistlinks;
       ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
       $("#config_modal_whitelist_links").modal("show");
     })

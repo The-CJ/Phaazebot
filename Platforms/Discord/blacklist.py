@@ -49,7 +49,7 @@ async def checkBanLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		allowed = False
 
 		# check all whitelisted link regex
-		for allowed_link in ServerSettings.ban_links_whitelist:
+		for allowed_link in ServerSettings.blacklist_whitelistlinks:
 			# link is whitelisted, allow it, break allowed_link search
 			if re.search(allowed_link, found_link.group(0)):
 				allowed = True
