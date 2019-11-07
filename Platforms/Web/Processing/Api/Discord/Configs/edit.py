@@ -316,13 +316,13 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		return await apiDiscordRoleNotFound(cls, WebRequest, role_id=role_id, guild_id=CurrentGuild.id)
 
 	if action == "add":
-		if str(ActionRole.id) in Configs.ban_links_role:
+		if str(ActionRole.id) in Configs.blacklist_whitelistroles:
 			return await apiWrongData(cls, WebRequest, msg=f"'{ActionRole.name}' is already added")
 
-		Configs.ban_links_role.append(role_id)
+		Configs.blacklist_whitelistroles.append(role_id)
 		cls.Web.BASE.PhaazeDB.updateQuery(
 			table = "discord_setting",
-			content = {"ban_links_role": json.dumps(Configs.ban_links_role) },
+			content = {"blacklist_whitelistroles": json.dumps(Configs.blacklist_whitelistroles) },
 			where = "discord_setting.guild_id = %s",
 			where_values = (guild_id,)
 		)
@@ -335,14 +335,14 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		)
 
 	elif action == "remove":
-		if role_id not in Configs.ban_links_role:
+		if role_id not in Configs.blacklist_whitelistroles:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{role_id}', is currently not added")
 
-		Configs.ban_links_role.remove(str(role_id))
+		Configs.blacklist_whitelistroles.remove(str(role_id))
 
 		cls.Web.BASE.PhaazeDB.updateQuery(
 			table = "discord_setting",
-			content = {"ban_links_role": json.dumps(Configs.ban_links_role) },
+			content = {"blacklist_whitelistroles": json.dumps(Configs.blacklist_whitelistroles) },
 			where = "discord_setting.guild_id = %s",
 			where_values = (guild_id,)
 		)

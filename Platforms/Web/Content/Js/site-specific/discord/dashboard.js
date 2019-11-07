@@ -647,7 +647,7 @@ var Configs = new(class {
     var guild_id = $("#guild_id").val();
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.except_roleslist = data.result.ban_links_role;
+      ConfigsO.except_roleslist = data.result.blacklist_whitelistroles;
       ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
       $("#config_modal_exeption_roles").modal("show");
     })

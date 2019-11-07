@@ -38,7 +38,7 @@ async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Server
 async def checkBanLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
 	# check if user has a role that is allowed to post links
-	if any( [True if role.id in ServerSettings.ban_links_role else False for role in Message.author.roles] ): return False
+	if any( [True if role.id in ServerSettings.blacklist_whitelistroles else False for role in Message.author.roles] ): return False
 
 	found_links:iter = re.finditer(ContainsLink, Message.content)
 
