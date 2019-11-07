@@ -185,9 +185,9 @@ async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 		Default url: /api/discord/configs/edit?wordblacklist_action=something
 	"""
-	guild_id:str = Data.get("guild_id")
+	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	action_word:str = Data.get("wordblacklist_word", "").strip(" ").strip("\n")
+	action_word:str = Data.getStr("wordblacklist_word", "").strip(" ").strip("\n")
 
 	if not guild_id:
 		# should never happen
@@ -235,9 +235,9 @@ async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 		Default url: /api/discord/configs/edit?linkwhitelist_action=something
 	"""
-	guild_id:str = Data.get("guild_id")
+	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	action_link:str = Data.get("linkwhitelist_link", "").strip(" ").strip("\n")
+	action_link:str = Data.getStr("linkwhitelist_link", "").strip(" ").strip("\n")
 
 	if not guild_id:
 		# should never happen
@@ -285,9 +285,9 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 		Default url: /api/discord/configs/edit?exceptionrole_action=something
 	"""
-	guild_id:str = Data.get("guild_id")
+	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	role_id:str = Data.get("exceptionrole_id", "").strip(" ").strip("\n")
+	role_id:str = Data.getStr("exceptionrole_id", "").strip(" ").strip("\n")
 
 	if not guild_id:
 		# should never happen
