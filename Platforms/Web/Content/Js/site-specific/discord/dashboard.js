@@ -731,7 +731,7 @@ var Configs = new(class {
 
   update(new_configs, success_function, fail_function) {
     var guild_id = $("#guild_id").val();
-    new_configs["guild_id"] = guild_id
+    new_configs["guild_id"] = guild_id;
 
     $.post("/api/discord/configs/edit", new_configs)
     .done(function (data) {
@@ -872,6 +872,43 @@ var Levels = new(class {
     .fail(function (data) {
       Display.showMessage({content: "Could not load level details...", color:Display.color_critical});
       console.log(data);
+    })
+  }
+
+  editExp() {
+    var c = confirm("Editing the exp will leave a permanent [EDITED] mark, unless resettet to 0. Be carefull. Want to continue?");
+    if (!c) { return; }
+
+    var new_exp = $("#level_modal_edit [name=exp]").val();
+    this.update( {exp: new_exp} );
+  }
+
+  addMedal() {
+    var new_medal = $("#new_medal").val();
+    if (isEmpty(new_medal)) { return; }
+
+    this.update();
+  }
+
+  update(level_update, success_function, fail_function) {
+    var guild_id = $("#guild_id").val();
+    level_update["guild_id"] = guild_id;
+    var member_id = $("#level_modal_edit").attr("edit-member");
+    level_update["member_id"] = member_id;
+
+    $.post("/api/discord/levels/edit", level_update)
+    .done(function (data) {
+
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+
+      if (success_function) { success_function.call() }
+
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error updating levels..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+      if (fail_function) { fail_function.call() }
     })
   }
 

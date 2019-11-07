@@ -329,9 +329,12 @@
           <div class="col-3">
             <span>EXP:</span>
           </div>
-          <div class="col-9 md-form">
-            <input type="number" name="exp" style="width: 100%;" class="text-center">
-          </div>
+          <form class="col-9 md-form input-group" action="javascript:void(0)" onsubmit="javascript:Levels.editExp()">
+            <input type="number" name="exp" class="form-control text-center">
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-danger m-0 px-3 py-2"><i class="fas fa-save"></i></button>
+            </div>
+          </form>
         </div>
 
         <!-- level -->
