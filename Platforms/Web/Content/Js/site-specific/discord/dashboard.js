@@ -851,8 +851,17 @@ var Levels = new(class {
 
       console.log(level);
 
+      // set avatar
       var avatar = discordAvatar(level.member_id, level.avatar, 128);
       $("#level_modal_edit img").attr("src", avatar);
+
+      // insert medals
+      var EntryList = $("#level_modal_edit .medallist").html("");
+      for (var entry of level.medals) {
+        var EntryRow = $("[phantom] .medal").clone();
+        EntryRow.find(".name").text( entry );
+        EntryList.append(EntryRow);
+      }
 
       insertData("#level_modal_edit", level);
 
