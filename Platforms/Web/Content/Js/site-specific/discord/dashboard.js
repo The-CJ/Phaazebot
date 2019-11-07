@@ -876,7 +876,7 @@ var Levels = new(class {
   }
 
   editExp() {
-    var c = confirm("Editing the exp will leave a permanent [EDITED] mark, unless resettet to 0. Be carefull. Want to continue?");
+    var c = confirm("Editing the exp will leave a permanent [EDITED] mark, unless resettet to 0, be carefull. Want to continue?");
     if (!c) { return; }
 
     var new_exp = $("#level_modal_edit [name=exp]").val();
