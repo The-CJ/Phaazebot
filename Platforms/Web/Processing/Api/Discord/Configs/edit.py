@@ -319,12 +319,12 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		if str(ActionRole.id) in Configs.blacklist_whitelistroles:
 			return await apiWrongData(cls, WebRequest, msg=f"'{ActionRole.name}' is already added")
 
-		Configs.blacklist_whitelistroles.append(role_id)
-		cls.Web.BASE.PhaazeDB.updateQuery(
-			table = "discord_setting",
-			content = {"blacklist_whitelistroles": json.dumps(Configs.blacklist_whitelistroles) },
-			where = "discord_setting.guild_id = %s",
-			where_values = (guild_id,)
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "discord_blacklist_whitelistrole",
+			content = {
+				"role_id": ActionRole.id,
+				"guild_id": guild_id
+			}
 		)
 
 		cls.Web.BASE.Logger.debug(f"(API/Discord) Exception role list Update: S:{guild_id} - add: {role_id}", require="discord:configs")
