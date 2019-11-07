@@ -585,7 +585,7 @@ var Configs = new(class {
     var guild_id = $("#guild_id").val();
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.blacklist = data.result.blacklist_words;
+      ConfigsO.blacklist = data.result.blacklist_blacklistwords;
       ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
       $("#config_modal_blacklist_words").modal("show");
     })
@@ -596,9 +596,9 @@ var Configs = new(class {
     })
   }
 
-  buildWordBlacklist(blacklist_words) {
+  buildWordBlacklist(blacklist_blacklistwords) {
     var EntryList = $("#config_modal_blacklist_words .wordbanlist").html("");
-    for (var entry of blacklist_words) {
+    for (var entry of blacklist_blacklistwords) {
       var EntryRow = $("[phantom] .blacklistword").clone();
       EntryRow.find(".word").text(entry);
       EntryList.append(EntryRow);

@@ -54,7 +54,7 @@ async def apiDiscordConfigsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		blacklist_ban_links = Configs.blacklist_ban_links,
 		blacklist_whitelistroles = Configs.blacklist_whitelistroles,
 		blacklist_whitelistlinks = Configs.blacklist_whitelistlinks,
-		blacklist_words = Configs.blacklist_words,
+		blacklist_blacklistwords = Configs.blacklist_blacklistwords,
 		blacklist_punishment = Configs.blacklist_punishment,
 		currency_name = Configs.currency_name,
 		currency_name_multi = Configs.currency_name_multi,
