@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response, Request
 from .get import apiDiscordLevelsGet
+from .edit import apiDiscordLevelsEdit
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordLevels(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -20,5 +21,8 @@ async def apiDiscordLevels(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	elif method == "get":
 		return await apiDiscordLevelsGet(cls, WebRequest)
+
+	elif method == "edit":
+		return await apiDiscordLevelsEdit(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
