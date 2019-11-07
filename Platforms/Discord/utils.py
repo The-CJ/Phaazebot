@@ -26,8 +26,15 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message
 		guild_id:str = origin
 
 	res:list = cls.BASE.PhaazeDB.query("""
-		SELECT * FROM discord_setting
-		WHERE discord_setting.guild_id = %s""",
+		SELECT
+			`discord_setting`.*,
+			GROUP_CONCAT(`discord_blacklist_whitelistrole`.`role_id`) AS blacklist_whitelistroles
+
+		FROM `discord_setting`
+		LEFT JOIN `discord_blacklist_whitelistrole` ON `discord_blacklist_whitelistrole`.`guild_id` = `discord_setting`.`guild_id`
+
+		WHERE `discord_setting`.`guild_id` = %s
+		GROUP BY `discord_setting`.`guild_id`""",
 		(guild_id,)
 	)
 

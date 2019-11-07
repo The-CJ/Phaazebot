@@ -11,7 +11,7 @@ class DiscordServerSettings(DBContentClass):
 		if infos:
 			self.__found = True
 
-		self.autorole:str = infos.get("autorole", Undefined())
+		self.autorole_id:str = infos.get("autorole_id", Undefined())
 		self.ban_links:bool = bool( infos.get("ban_links", Undefined()) )
 		self.ban_links_role:list = self.fromJsonField( infos.get("ban_links_role", Undefined()) )
 		self.ban_links_whitelist:list = self.fromJsonField( infos.get("ban_links_whitelist", Undefined()) )

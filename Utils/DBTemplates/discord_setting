@@ -7,7 +7,7 @@ DESCRIBE `discord_setting`;
 | guild_id               | varchar(128)  | NO   | UNI | NULL    |                |
 | autorole_id            | varchar(128)  | YES  |     | NULL    |                |
 | ban_links              | tinyint(1)    | YES  |     | 0       |                |
-| ban_links_role         | longtext      | YES  |     | '[]'    |                |
+| ban_links_role         | longtext      | YES  |     | '[]'    |                | REPLACED
 | ban_links_whitelist    | longtext      | YES  |     | '[]'    |                |
 | blacklist_words        | longtext      | YES  |     | '[]'    |                |
 | blacklist_punishment   | varchar(32)   | YES  |     | delete  |                |
