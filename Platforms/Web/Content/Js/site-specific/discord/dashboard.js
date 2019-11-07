@@ -865,6 +865,7 @@ var Levels = new(class {
 
       insertData("#level_modal_edit", level);
 
+      $("#level_modal_edit").attr("edit-member", level.member_id);
       $("#level_modal_edit").modal("show");
 
     })

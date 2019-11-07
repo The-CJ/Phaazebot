@@ -303,7 +303,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="level_modal_edit">
+<div class="modal fade" id="level_modal_edit" edit-member="">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
 
@@ -356,6 +356,13 @@
         <h4 class="text-center">Medals</h4>
 
         <!-- medals -->
+        <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Levels.addMedal()">
+          <input type="text" id="new_medal" class="form-control">
+          <label for="new_medal">New entry:</label>
+          <div class="input-group-append">
+            <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+          </div>
+        </form>
         <div class="medallist"></div>
 
 
