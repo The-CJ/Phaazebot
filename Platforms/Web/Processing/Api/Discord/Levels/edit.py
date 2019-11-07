@@ -13,6 +13,7 @@ from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from Utils.dbutils import validateDBInput
+from Utils.Classes.undefined import Undefined
 
 async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -55,17 +56,9 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find a level for this user")
 
 	# single actions
-	# action:str or Undefined = Data.getStr("wordblacklist_action", "")
+	# action:str or Undefined = Data.getStr("medal_action", "")
 	# if action:
-	# 	return await singleActionWordBlacklist(cls, WebRequest, action, Data, Configs)
-	#
-	# action:str or Undefined = Data.getStr("linkwhitelist_action", "")
-	# if action:
-	# 	return await singleActionLinkWhitelist(cls, WebRequest, action, Data, Configs)
-	#
-	# action:str or Undefined = Data.getStr("exceptionrole_action", "")
-	# if action:
-	# 	return await singleActionExceptionRole(cls, WebRequest, action, Data, Configs, Guild)
+	# 	return await singleActionMedal(cls, WebRequest, action, Data, Guild)
 
 	changes:dict = dict()
 	db_changes:dict = dict()
@@ -76,7 +69,7 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# changes["x"] = true
 	# db_changes["x"] = "1"
 
-	# ban_links
+	# exp
 	value:int = Data.getInt("exp", None, min_x=0)
 	if value != None:
 		db_changes["exp"] = validateDBInput(int, value)
