@@ -499,6 +499,9 @@ var Configs = new(class {
     this.whitelist = [];
     this.except_roleslist = [];
     this.disable_chan_level = [];
+    this.disable_chan_quote = [];
+    this.disable_chan_normal = [];
+    this.disable_chan_regular = [];
   }
 
   show() {
@@ -782,7 +785,19 @@ var Configs = new(class {
 
   // disable quote
   showDisableChanQuote() {
-
+    var ConfigsO = this;
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+      ConfigsO.disable_chan_quote = data.result.disabled_quotechannels;
+      ConfigsO.buildDisableChanQuote(ConfigsO.disable_chan_quote);
+      $("#config_modal_disable_chan_quote").modal("show");
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading quote channels..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
   }
 
   buildDisableChanQuote(channel_list) {
@@ -799,7 +814,19 @@ var Configs = new(class {
 
   // disable normal
   showDisableChanNormal() {
-
+    var ConfigsO = this;
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+      ConfigsO.disable_chan_normal = data.result.disabled_normalchannels;
+      ConfigsO.buildDisableChanNormal(ConfigsO.disable_chan_normal);
+      $("#config_modal_disable_chan_normal").modal("show");
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading normal channels..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
   }
 
   buildDisableChanNormal(channel_list) {
@@ -816,7 +843,19 @@ var Configs = new(class {
 
   // disable regular
   showDisableChanRegular() {
-
+    var ConfigsO = this;
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+      ConfigsO.disable_chan_regular = data.result.disabled_regularchannels;
+      ConfigsO.buildDisableChanRegular(ConfigsO.disable_chan_regular);
+      $("#config_modal_disable_chan_regular").modal("show");
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading regular channels..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
   }
 
   buildDisableChanRegular(channel_list) {
