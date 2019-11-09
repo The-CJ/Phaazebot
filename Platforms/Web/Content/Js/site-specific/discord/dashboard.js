@@ -731,7 +731,7 @@ var Configs = new(class {
   buildDisableChanLevel(execption_channels) {
     var EntryList = $("#config_modal_disable_chan_level .disablechanlevellist").html("");
     for (var entry of execption_channels) {
-      var EntryRow = $("[phantom] .exceptionrole").clone();
+      var EntryRow = $("[phantom] .disablechanlevel").clone();
       var role = DiscordDashboard.getDiscordRoleByID(entry);
       EntryRow.find("[role-id]").val(entry);
       EntryRow.find(".name").text( role ? role.name : "(DELETED CHANNEL)" );
@@ -764,7 +764,7 @@ var Configs = new(class {
     this.update(req, successfunc, failfunc);
   }
 
-  removeFromExecptionRoles(HTMLButton) {
+  removeFromDisableChanLevel(HTMLButton) {
 
   }
 
