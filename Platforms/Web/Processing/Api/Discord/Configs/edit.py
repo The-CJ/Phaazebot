@@ -201,14 +201,14 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		changes["welcome_chan"] = value
 
 	# welcome_msg
-	value:str or Undefined = Data.get("welcome_msg", None)
+	value:str or Undefined = Data.getStr("welcome_msg", None)
 	if value != None:
 		if value == "": value = None
 		db_changes["welcome_msg"] = validateDBInput(str, value, allow_null=True)
 		changes["welcome_msg"] = value
 
 	# welcome_msg_priv
-	value:str or Undefined = Data.get("welcome_msg_priv", None)
+	value:str or Undefined = Data.getStr("welcome_msg_priv", None)
 	if value != None:
 		if value == "": value = None
 		db_changes["welcome_msg_priv"] = validateDBInput(str, value, allow_null=True)
