@@ -498,6 +498,7 @@ var Configs = new(class {
     this.blacklist = [];
     this.whitelist = [];
     this.except_roleslist = [];
+    this.disable_chan_level = [];
   }
 
   show() {
@@ -708,6 +709,27 @@ var Configs = new(class {
       ConfigsO.except_roleslist.splice(i, 1);
       ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
     });
+  }
+
+  // level
+  showDisableChanLevel() {
+    var ConfigsO = this;
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+      ConfigsO.disable_chan_level = data.result.disable_chan_level;
+      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
+      $("#config_modal_disable_chan_level").modal("show");
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading execption channels..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
+  }
+
+  buildDisableChanLevel(execption_channels) {
+    console.log(execption_channels);
   }
 
   // update utils
