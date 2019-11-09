@@ -1,34 +1,34 @@
 DESCRIBE `discord_setting`;
 
-+------------------------+---------------+------+-----+---------+----------------+
-| Field                  | Type          | Null | Key | Default | Extra          |
-+------------------------+---------------+------+-----+---------+----------------+
-| id                     | int(11)       | NO   | PRI | NULL    | auto_increment |
-| guild_id               | varchar(128)  | NO   | UNI | NULL    |                |
-| autorole_id            | varchar(128)  | YES  |     | NULL    |                |
-| blacklist_ban_links    | tinyint(1)    | YES  |     | 0       |                |
-| blacklist_punishment   | varchar(32)   | YES  |     | delete  |                |
-| currency_name          | varchar(256)  | YES  |     | NULL    |                |
-| currency_name_multi    | varchar(256)  | YES  |     | NULL    |                |
-| disable_chan_normal    | longtext      | YES  |     | '[]'    |                |
-| disable_chan_quotes    | longtext      | YES  |     | '[]'    |                |
-| enable_chan_game       | longtext      | YES  |     | '[]'    |                |
-| enable_chan_nsfw       | longtext      | YES  |     | '[]'    |                |
-| leave_chan             | varchar(128)  | YES  |     | NULL    |                |
-| leave_msg              | varchar(1750) | YES  |     | NULL    |                |
-| level_announce_channel | varchar(128)  | YES  |     | NULL    |                |
-| level_custom_msg       | varchar(1750) | YES  |     | NULL    |                |
-| owner_disable_custom   | tinyint(1)    | YES  |     | 0       |                |
-| owner_disable_level    | tinyint(1)    | YES  |     | 0       |                |
-| owner_disable_mod      | tinyint(1)    | YES  |     | 0       |                |
-| owner_disable_regular  | tinyint(1)    | YES  |     | 0       |                |
-| owner_disable_normal   | tinyint(1)    | YES  |     | 0       |                |
-| track_channel          | varchar(128)  | YES  |     | NULL    |                |
-| track_options          | longtext      | YES  |     | '[]'    |                |
-| welcome_chan           | varchar(128)  | YES  |     | NULL    |                |
-| welcome_msg            | varchar(1750) | YES  |     | NULL    |                |
-| welcome_msg_priv       | varchar(1750) | YES  |     | NULL    |                |
-+------------------------+---------------+------+-----+---------+----------------+
++-----------------------+---------------+------+-----+---------+----------------+
+| Field                 | Type          | Null | Key | Default | Extra          |
++-----------------------+---------------+------+-----+---------+----------------+
+| id                    | int(11)       | NO   | PRI | NULL    | auto_increment |
+| guild_id              | varchar(128)  | NO   | UNI | NULL    |                |
+| autorole_id           | varchar(128)  | YES  |     | NULL    |                |
+| blacklist_ban_links   | tinyint(1)    | YES  |     | 0       |                |
+| blacklist_punishment  | varchar(32)   | YES  |     | delete  |                |
+| currency_name         | varchar(256)  | YES  |     | NULL    |                |
+| currency_name_multi   | varchar(256)  | YES  |     | NULL    |                |
+| disable_chan_normal   | longtext      | YES  |     | '[]'    |                |
+| disable_chan_quotes   | longtext      | YES  |     | '[]'    |                |
+| enable_chan_game      | longtext      | YES  |     | '[]'    |                |
+| enable_chan_nsfw      | longtext      | YES  |     | '[]'    |                |
+| leave_chan            | varchar(128)  | YES  |     | NULL    |                |
+| leave_msg             | varchar(1750) | YES  |     | NULL    |                |
+| level_announce_chan   | varchar(128)  | YES  |     | NULL    |                |
+| level_custom_msg      | varchar(1750) | YES  |     | NULL    |                |
+| owner_disable_custom  | tinyint(1)    | YES  |     | 0       |                |
+| owner_disable_level   | tinyint(1)    | YES  |     | 0       |                |
+| owner_disable_mod     | tinyint(1)    | YES  |     | 0       |                |
+| owner_disable_normal  | tinyint(1)    | YES  |     | 0       |                |
+| track_channel         | varchar(128)  | YES  |     | NULL    |                |
+| track_options         | longtext      | YES  |     | '[]'    |                |
+| welcome_chan          | varchar(128)  | YES  |     | NULL    |                |
+| welcome_msg           | varchar(1750) | YES  |     | NULL    |                |
+| welcome_msg_priv      | varchar(1750) | YES  |     | NULL    |                |
+| owner_disable_regular | tinyint(1)    | YES  |     | 0       |                |
++-----------------------+---------------+------+-----+---------+----------------+
 
 SHOW CREATE TABLE `discord_setting`;
 
@@ -46,7 +46,7 @@ CREATE TABLE `discord_setting` (
   `enable_chan_nsfw` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`enable_chan_nsfw`)),
   `leave_chan` varchar(128) DEFAULT NULL,
   `leave_msg` varchar(1750) DEFAULT NULL,
-  `level_announce_channel` varchar(128) DEFAULT NULL,
+  `level_announce_chan` varchar(128) DEFAULT NULL,
   `level_custom_msg` varchar(1750) DEFAULT NULL,
   `owner_disable_custom` tinyint(1) DEFAULT 0,
   `owner_disable_level` tinyint(1) DEFAULT 0,

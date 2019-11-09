@@ -63,7 +63,7 @@ async def apiDiscordConfigsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		disable_chan_quotes = Configs.disable_chan_quotes,
 		enable_chan_game = Configs.enable_chan_game,
 		enable_chan_nsfw = Configs.enable_chan_nsfw,
-		level_announce_channel = Configs.level_announce_channel,
+		level_announce_chan = Configs.level_announce_chan,
 		level_custom_msg = Configs.level_custom_msg,
 		leave_msg = Configs.leave_msg,
 		leave_chan = Configs.leave_chan,

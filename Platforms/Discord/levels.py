@@ -71,8 +71,8 @@ async def announceLevelUp(cls:"PhaazebotDiscord", Message:discord.Message, Level
 
 	LevelChannel:discord.TextChannel = None
 
-	if ServerSettings.level_announce_channel:
-		LevelChannel = discord.utils.get(Message.guild.channels, id=int(ServerSettings.level_announce_channel))
+	if ServerSettings.level_announce_chan:
+		LevelChannel = discord.utils.get(Message.guild.channels, id=int(ServerSettings.level_announce_chan))
 	if not LevelChannel:
 		LevelChannel = Message.channel
 

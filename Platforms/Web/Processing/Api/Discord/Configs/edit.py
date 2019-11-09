@@ -130,6 +130,26 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		db_changes["level_custom_msg"] = validateDBInput(str, value)
 		changes["level_custom_msg"] = value
 
+	# level_announce_chan
+	value:str = Data.getStr("level_announce_chan", None, must_be_digit=True)
+	if value != None:
+		error:bool = False
+		if value == "": pass
+		elif value.isdigit():
+			Chan:discord.abc.Messageable = discord.utils.get(Guild.channels, id=int(value))
+			if type(Chan) != discord.TextChannel:
+				error = True
+			else:
+				value = Chan.id
+		else:
+			error = True
+
+		if error:
+			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
+
+		db_changes["level_announce_chan"] = validateDBInput(str, value)
+		changes["level_announce_chan"] = value
+
 	# owner_disable_level
 	value:bool = Data.getBool("owner_disable_level", None)
 	if value != None:
