@@ -765,7 +765,19 @@ var Configs = new(class {
   }
 
   removeFromDisableChanLevel(HTMLButton) {
+    var Entry = $(HTMLButton).closest(".disablechanlevel");
+    var channel_id = Entry.find("[channel-id]").val();
 
+    var req = {
+      "disable_chan_level_id": channel_id,
+      "disable_chan_level_action": "remove"
+    };
+    var ConfigsO = this;
+    this.update(req, function () {
+      var i = ConfigsO.disable_chan_level.indexOf(channel_id);
+      ConfigsO.disable_chan_level.splice(i, 1);
+      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
+    });
   }
 
   // update utils
