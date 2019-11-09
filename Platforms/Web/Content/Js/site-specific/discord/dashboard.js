@@ -729,7 +729,43 @@ var Configs = new(class {
   }
 
   buildDisableChanLevel(execption_channels) {
-    console.log(execption_channels);
+    var EntryList = $("#config_modal_disable_chan_level .disablechanlevellist").html("");
+    for (var entry of execption_channels) {
+      var EntryRow = $("[phantom] .exceptionrole").clone();
+      var role = DiscordDashboard.getDiscordRoleByID(entry);
+      EntryRow.find("[role-id]").val(entry);
+      EntryRow.find(".name").text( role ? role.name : "(DELETED CHANNEL)" );
+      if (isEmpty(role)) {
+        EntryRow.addClass("deleted");
+        EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
+      }
+
+      EntryList.append(EntryRow);
+    }
+  }
+
+  addToDisableChanLevel() {
+    var new_channel_id = $("#new_disable_chan_level").val();
+    if (isEmpty(new_channel_id)) { return; }
+    var req = {
+      "disable_chan_level_id": new_channel_id,
+      "disable_chan_level_action": "add"
+    };
+    var ConfigsO = this;
+    var successfunc = function() {
+      $("#new_disable_chan_level").val("");
+      ConfigsO.disable_chan_level.push(new_role_id.toLowerCase());
+      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
+    }
+    var failfunc = function () {
+      $("#new_disable_chan_level").val("");
+    }
+
+    this.update(req, successfunc, failfunc);
+  }
+
+  removeFromExecptionRoles(HTMLButton) {
+
   }
 
   // update utils
