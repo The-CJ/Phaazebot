@@ -732,10 +732,10 @@ var Configs = new(class {
     var EntryList = $("#config_modal_disable_chan_level .disablechanlevellist").html("");
     for (var entry of execption_channels) {
       var EntryRow = $("[phantom] .disablechanlevel").clone();
-      var role = DiscordDashboard.getDiscordRoleByID(entry);
-      EntryRow.find("[role-id]").val(entry);
-      EntryRow.find(".name").text( role ? role.name : "(DELETED CHANNEL)" );
-      if (isEmpty(role)) {
+      var channel = DiscordDashboard.getDiscordChannelByID(entry);
+      EntryRow.find("[channel-id]").val(entry);
+      EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
+      if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
       }
@@ -754,7 +754,7 @@ var Configs = new(class {
     var ConfigsO = this;
     var successfunc = function() {
       $("#new_disable_chan_level").val("");
-      ConfigsO.disable_chan_level.push(new_role_id.toLowerCase());
+      ConfigsO.disable_chan_level.push(new_channel_id.toLowerCase());
       ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
     }
     var failfunc = function () {
