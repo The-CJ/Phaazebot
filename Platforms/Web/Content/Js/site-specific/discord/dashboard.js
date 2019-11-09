@@ -728,9 +728,9 @@ var Configs = new(class {
     })
   }
 
-  buildDisableChanLevel(execption_channels) {
+  buildDisableChanLevel(channel_list) {
     var EntryList = $("#config_modal_disable_chan_level .disablechanlevellist").html("");
-    for (var entry of execption_channels) {
+    for (var entry of channel_list) {
       var EntryRow = $("[phantom] .disablechanlevel").clone();
       var channel = DiscordDashboard.getDiscordChannelByID(entry);
       EntryRow.find("[channel-id]").val(entry);
@@ -778,6 +778,57 @@ var Configs = new(class {
       ConfigsO.disable_chan_level.splice(i, 1);
       ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
     });
+  }
+
+  // disable quote
+  showDisableChanQuote() {
+
+  }
+
+  buildDisableChanQuote(channel_list) {
+
+  }
+
+  addToDisableChanQuote() {
+
+  }
+
+  removeFromDisableChanQuote(HTMLButton) {
+
+  }
+
+  // disable normal
+  showDisableChanNormal() {
+
+  }
+
+  buildDisableChanNormal(channel_list) {
+
+  }
+
+  addToDisableChanNormal() {
+
+  }
+
+  removeFromDisableChanNormal(HTMLButton) {
+
+  }
+
+  // disable regular
+  showDisableChanRegular() {
+
+  }
+
+  buildDisableChanRegular(channel_list) {
+
+  }
+
+  addToDisableChanRegular() {
+
+  }
+
+  removeFromDisableChanRegular(HTMLButton) {
+
   }
 
   // update utils
