@@ -748,8 +748,8 @@ var Configs = new(class {
     var new_channel_id = $("#new_disable_chan_level").val();
     if (isEmpty(new_channel_id)) { return; }
     var req = {
-      "disable_chan_level_id": new_channel_id,
-      "disable_chan_level_action": "add"
+      "disabled_levelchan_id": new_channel_id,
+      "disabled_levelchan_action": "add"
     };
     var ConfigsO = this;
     var successfunc = function() {
@@ -769,8 +769,8 @@ var Configs = new(class {
     var channel_id = Entry.find("[channel-id]").val();
 
     var req = {
-      "disable_chan_level_id": channel_id,
-      "disable_chan_level_action": "remove"
+      "disabled_levelchan_id": channel_id,
+      "disabled_levelchan_action": "remove"
     };
     var ConfigsO = this;
     this.update(req, function () {

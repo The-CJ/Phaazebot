@@ -72,7 +72,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if action:
 		return await singleActionExceptionRole(cls, WebRequest, action, Data, Configs, Guild)
 
-	action:str or Undefined = Data.getStr("disable_chan_level_action", "")
+	action:str or Undefined = Data.getStr("disabled_levelchan_action", "")
 	if action:
 		return await singleActionDisableLevelChannel(cls, WebRequest, action, Data, Configs, Guild)
 
@@ -386,11 +386,11 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 
 async def singleActionDisableLevelChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
 	"""
-		Default url: /api/discord/configs/edit?disable_chan_level_action=something
+		Default url: /api/discord/configs/edit?disabled_levelchan_action=something
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	channel_id:str = Data.getStr("disable_chan_level_id", "", must_be_digit=True).strip(" ").strip("\n")
+	channel_id:str = Data.getStr("disabled_levelchan_id", "", must_be_digit=True).strip(" ").strip("\n")
 
 	if not guild_id:
 		# should never happen
