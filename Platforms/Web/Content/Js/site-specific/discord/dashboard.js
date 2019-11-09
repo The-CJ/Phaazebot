@@ -805,7 +805,23 @@ var Configs = new(class {
   }
 
   addToDisableChanQuote() {
+    var new_channel_id = $("#new_disable_chan_quote").val();
+    if (isEmpty(new_channel_id)) { return; }
+    var req = {
+      "disabled_quotechan_id": new_channel_id,
+      "disabled_quotechan_action": "add"
+    };
+    var ConfigsO = this;
+    var successfunc = function() {
+      $("#new_disable_chan_quote").val("");
+      ConfigsO.disable_chan_level.push(new_channel_id.toLowerCase());
+      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
+    }
+    var failfunc = function () {
+      $("#new_disable_chan_quote").val("");
+    }
 
+    this.update(req, successfunc, failfunc);
   }
 
   removeFromDisableChanQuote(HTMLButton) {
@@ -834,7 +850,23 @@ var Configs = new(class {
   }
 
   addToDisableChanNormal() {
+    var new_channel_id = $("#new_disable_chan_normal").val();
+    if (isEmpty(new_channel_id)) { return; }
+    var req = {
+      "disabled_normalchan_id": new_channel_id,
+      "disabled_normalchan_action": "add"
+    };
+    var ConfigsO = this;
+    var successfunc = function() {
+      $("#new_disable_chan_normal").val("");
+      ConfigsO.disable_chan_level.push(new_channel_id.toLowerCase());
+      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
+    }
+    var failfunc = function () {
+      $("#new_disable_chan_normal").val("");
+    }
 
+    this.update(req, successfunc, failfunc);
   }
 
   removeFromDisableChanNormal(HTMLButton) {
@@ -863,7 +895,23 @@ var Configs = new(class {
   }
 
   addToDisableChanRegular() {
+    var new_channel_id = $("#new_disable_chan_regular").val();
+    if (isEmpty(new_channel_id)) { return; }
+    var req = {
+      "disabled_regularchan_id": new_channel_id,
+      "disabled_regularchan_action": "add"
+    };
+    var ConfigsO = this;
+    var successfunc = function() {
+      $("#new_disable_chan_regular").val("");
+      ConfigsO.disable_chan_level.push(new_channel_id.toLowerCase());
+      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
+    }
+    var failfunc = function () {
+      $("#new_disable_chan_regular").val("");
+    }
 
+    this.update(req, successfunc, failfunc);
   }
 
   removeFromDisableChanRegular(HTMLButton) {
