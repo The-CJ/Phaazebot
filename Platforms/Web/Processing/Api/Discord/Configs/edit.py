@@ -60,31 +60,31 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find configs for this guild")
 
 	# single actions
-	action:str or Undefined = Data.getStr("wordblacklist_action", "")
+	action:str = Data.getStr("wordblacklist_action", "")
 	if action:
 		return await singleActionWordBlacklist(cls, WebRequest, action, Data, Configs)
 
-	action:str or Undefined = Data.getStr("linkwhitelist_action", "")
+	action:str = Data.getStr("linkwhitelist_action", "")
 	if action:
 		return await singleActionLinkWhitelist(cls, WebRequest, action, Data, Configs)
 
-	action:str or Undefined = Data.getStr("exceptionrole_action", "")
+	action:str = Data.getStr("exceptionrole_action", "")
 	if action:
 		return await singleActionExceptionRole(cls, WebRequest, action, Data, Configs, Guild)
 
-	action:str or Undefined = Data.getStr("disabled_levelchan_action", "")
+	action:str = Data.getStr("disabled_levelchan_action", "")
 	if action:
 		return await singleActionDisableLevelChannel(cls, WebRequest, action, Data, Configs, Guild)
 
-	action:str or Undefined = Data.getStr("disabled_quotechan_action", "")
+	action:str = Data.getStr("disabled_quotechan_action", "")
 	if action:
 		return await singleActionDisableQuoteChannel(cls, WebRequest, action, Data, Configs, Guild)
 
-	action:str or Undefined = Data.getStr("disabled_normalchan_action", "")
+	action:str = Data.getStr("disabled_normalchan_action", "")
 	if action:
 		return await singleActionDisableNormalChannel(cls, WebRequest, action, Data, Configs, Guild)
 
-	action:str or Undefined = Data.getStr("disabled_regularchan_action", "")
+	action:str = Data.getStr("disabled_regularchan_action", "")
 	if action:
 		return await singleActionDisableRegularChannel(cls, WebRequest, action, Data, Configs, Guild)
 
