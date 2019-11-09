@@ -20,8 +20,9 @@ class DiscordServerSettings(DBContentClass):
 		self.currency_name:str = infos.get("currency_name", Undefined())
 		self.currency_name_multi:str = infos.get("currency_name_multi", Undefined())
 		self.disabled_levelchannels:list = self.fromStringList( infos.get("disabled_levelchannels", Undefined()) )
-		self.disable_chan_normal:list = self.fromJsonField( infos.get("disable_chan_normal", Undefined()) ) #TODO: <--
-		self.disable_chan_quotes:list = self.fromJsonField( infos.get("disable_chan_quotes", Undefined()) )
+		self.disabled_quotechannels:list = self.fromStringList( infos.get("disabled_quotechannels", Undefined()) )
+		self.disabled_normalchannels:list = self.fromStringList( infos.get("disabled_normalchannels", Undefined()) )
+		self.disabled_regularchannels:list = self.fromStringList( infos.get("disabled_regularchannels", Undefined()) )
 		self.enable_chan_ai:list = self.fromJsonField( infos.get("enable_chan_ai", Undefined()) )
 		self.enable_chan_game:list = self.fromJsonField( infos.get("enable_chan_game", Undefined()) )
 		self.enable_chan_nsfw:list = self.fromJsonField( infos.get("enable_chan_nsfw", Undefined()) )
