@@ -320,7 +320,7 @@
     <div class="modal-content">
 
       <div class="modal-header text-center">
-        <h4 class="modal-title">Disable level channels</h4>
+        <h4 class="modal-title">Disable level in channels</h4>
         <button type="button" class="close" onclick="$('#config_modal_disable_chan_level').modal('hide')"><span>&times;</span></button>
       </div>
 
@@ -342,6 +342,114 @@
         <span>Select a channel you want to add.</span>
         <hr>
         <div class="disablechanlevellist"></div>
+
+      </div>
+
+      <div class="modal-footer"></div>
+      <div messagebox></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="config_modal_disable_chan_quote">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Disable quote in channels</h4>
+        <button type="button" class="close" onclick="$('#config_modal_disable_chan_quote').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="row">
+          <div class="col">
+            <span>Asking quotes in this channel is prevented</span>
+          </div>
+        </div>
+
+        <hr>
+        <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToDisableChanQuote()">
+          <select class="custom-select" id="new_disable_chan_quote" discord-channel="text"></select>
+          <div class="input-group-append">
+            <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+          </div>
+        </form>
+        <span>Select a channel you want to add.</span>
+        <hr>
+        <div class="disablechanquotelist"></div>
+
+      </div>
+
+      <div class="modal-footer"></div>
+      <div messagebox></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="config_modal_disable_chan_normal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Disable normal commands in channels</h4>
+        <button type="button" class="close" onclick="$('#config_modal_disable_chan_normal').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="row">
+          <div class="col">
+            <span>All commands with a require of "Everyone" is prevented</span>
+          </div>
+        </div>
+
+        <hr>
+        <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToDisableChanNormal()">
+          <select class="custom-select" id="new_disable_chan_normal" discord-channel="text"></select>
+          <div class="input-group-append">
+            <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+          </div>
+        </form>
+        <span>Select a channel you want to add.</span>
+        <hr>
+        <div class="disablechannormallist"></div>
+
+      </div>
+
+      <div class="modal-footer"></div>
+      <div messagebox></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="config_modal_disable_chan_regular">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Disable regular commands in channels</h4>
+        <button type="button" class="close" onclick="$('#config_modal_disable_chan_regular').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="row">
+          <div class="col">
+            <span>All commands with a require of "Regular" is prevented</span>
+          </div>
+        </div>
+
+        <hr>
+        <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToDisableChanRegular()">
+          <select class="custom-select" id="new_disable_chan_regular" discord-channel="text"></select>
+          <div class="input-group-append">
+            <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+          </div>
+        </form>
+        <span>Select a channel you want to add.</span>
+        <hr>
+        <div class="disablechanregularlist"></div>
 
       </div>
 
