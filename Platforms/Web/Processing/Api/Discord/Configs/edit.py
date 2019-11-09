@@ -131,7 +131,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		changes["level_custom_msg"] = value
 
 	# level_announce_chan
-	value:str = Data.getStr("level_announce_chan", None, must_be_digit=True)
+	value:str = Data.getStr("level_announce_chan", None)
 	if value != None:
 		error:bool = False
 		if value == "": pass

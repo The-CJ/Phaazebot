@@ -139,7 +139,20 @@
             </div>
             <textarea class="config-textbox-input" name="level_custom_msg" rows="5"></textarea>
             <button type="submit" class="btn btn-block btn-primary">Save</button>
-            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('priv_welcome')">Token</button>
+            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('level')">Token</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="center-item-row">
+        <div class="col">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
+            <p>Level-up channel</p>
+            <div class="config-info">
+              <span>By default, the message will appear in the same channel the user typed, but this can be overwritten, so all level ups go into one channel</span>
+            </div>
+            <select class="custom-select" name="level_announce_chan" discord-channel="text" discord-channel-none="true"></select>
+            <button type="submit" class="btn btn-block btn-primary">Save</button>
           </form>
         </div>
       </div>
