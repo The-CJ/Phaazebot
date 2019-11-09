@@ -76,6 +76,34 @@ async def apiDiscordRoleNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:di
 		status=404
 	)
 
+async def apiDiscordChannelNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+			channel_id:str
+			guild_id:str
+	"""
+	res:dict = dict(status=404)
+
+	default_msg:str = "could not find a valid channel on this guild"
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	channel_id:str = kwargs.get("channel_id", "")
+	if channel_id:
+		res["channel_id"] = channel_id
+
+	guild_id:str = kwargs.get("guild_id", "")
+	if guild_id:
+		res["guild_id"] = guild_id
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Channel not Found: {WebRequest.path}", require="api:404")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=404
+	)
+
 async def apiDiscordMissingPermission(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
 		Takes from kwargs:

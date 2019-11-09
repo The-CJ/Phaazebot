@@ -12,7 +12,13 @@ from Platforms.Discord.utils import getDiscordSeverSettings
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordRoleNotFound
+from Platforms.Web.Processing.Api.Discord.errors import (
+	apiDiscordGuildUnknown,
+	apiDiscordMemberNotFound,
+	apiDiscordMissingPermission,
+	apiDiscordRoleNotFound,
+	apiDiscordChannelNotFound
+)
 from Utils.Classes.undefined import Undefined
 from Platforms.Discord.blacklist import checkBlacklistPunishmentString
 from Utils.dbutils import validateDBInput
@@ -65,6 +71,10 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	action:str or Undefined = Data.getStr("exceptionrole_action", "")
 	if action:
 		return await singleActionExceptionRole(cls, WebRequest, action, Data, Configs, Guild)
+
+	action:str or Undefined = Data.getStr("disable_chan_level_action", "")
+	if action:
+		return await singleActionDisableLevelChannel(cls, WebRequest, action, Data, Configs, Guild)
 
 	changes:dict = dict()
 	db_changes:dict = dict()
@@ -300,7 +310,7 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not role_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid field 'role_id'")
+		return await missingData(cls, WebRequest, msg="missing or invalid field 'exceptionrole_id'")
 
 	ActionRole:discord.Role = CurrentGuild.get_role(int(role_id))
 	if not ActionRole and action == "add":
@@ -337,6 +347,63 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		cls.Web.BASE.Logger.debug(f"(API/Discord) Exception role list Update: S:{guild_id} - rem: {role_id}", require="discord:configs")
 		return cls.response(
 			text=json.dumps( dict(msg="exception role list successfull updated", remove=role_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	else:
+		return await apiWrongData(cls, WebRequest)
+
+async def singleActionDisableLevelChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
+	"""
+		Default url: /api/discord/configs/edit?disable_chan_level_action=something
+	"""
+	guild_id:str = Data.getStr("guild_id", "")
+	action = action.lower()
+	channel_id:str = Data.getStr("disable_chan_level_id", "", must_be_digit=True).strip(" ").strip("\n")
+
+	if not guild_id:
+		# should never happen
+		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+
+	if not channel_id:
+		return await missingData(cls, WebRequest, msg="missing or invalid field 'disable_chan_level_id'")
+
+	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
+	if not ActionChannel and action == "add":
+		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+
+	if action == "add":
+		if str(ActionChannel.id) in Configs.disabled_levelchannels:
+			return await apiWrongData(cls, WebRequest, msg=f"'{ActionChannel.name}' is already added")
+
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "discord_disabled_levelchannel",
+			content = {
+				"channel_id": ActionChannel.id,
+				"guild_id": guild_id
+			}
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Disabled level channel list Update: S:{guild_id} - add: {channel_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="disabled level channel list successfull updated", add=channel_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	elif action == "remove":
+		if channel_id not in Configs.disabled_levelchannels:
+			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
+
+		cls.Web.BASE.PhaazeDB.query("""
+			DELETE FROM `discord_disabled_levelchannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
+			(guild_id, channel_id)
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Disabled level channel list Update: S:{guild_id} - rem: {channel_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="disabled level channel list successfull updated", remove=channel_id, status=200) ),
 			content_type="application/json",
 			status=200
 		)
