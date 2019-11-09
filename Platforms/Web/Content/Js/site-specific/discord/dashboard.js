@@ -837,7 +837,19 @@ var Configs = new(class {
   }
 
   removeFromDisableChanQuote(HTMLButton) {
+    var Entry = $(HTMLButton).closest(".disablechanquote");
+    var channel_id = Entry.find("[channel-id]").val();
 
+    var req = {
+      "disabled_quotechan_id": channel_id,
+      "disabled_quotechan_action": "remove"
+    };
+    var ConfigsO = this;
+    this.update(req, function () {
+      var i = ConfigsO.disable_chan_quote.indexOf(channel_id);
+      ConfigsO.disable_chan_quote.splice(i, 1);
+      ConfigsO.buildDisableChanQuote(ConfigsO.disable_chan_quote);
+    });
   }
 
   // disable normal
@@ -894,7 +906,19 @@ var Configs = new(class {
   }
 
   removeFromDisableChanNormal(HTMLButton) {
+    var Entry = $(HTMLButton).closest(".disablechannormal");
+    var channel_id = Entry.find("[channel-id]").val();
 
+    var req = {
+      "disabled_normalchan_id": channel_id,
+      "disabled_normalchan_action": "remove"
+    };
+    var ConfigsO = this;
+    this.update(req, function () {
+      var i = ConfigsO.disable_chan_normal.indexOf(channel_id);
+      ConfigsO.disable_chan_normal.splice(i, 1);
+      ConfigsO.buildDisableChanNormal(ConfigsO.disable_chan_normal);
+    });
   }
 
   // disable regular
@@ -951,7 +975,19 @@ var Configs = new(class {
   }
 
   removeFromDisableChanRegular(HTMLButton) {
+    var Entry = $(HTMLButton).closest(".disablechanregular");
+    var channel_id = Entry.find("[channel-id]").val();
 
+    var req = {
+      "disabled_regularchan_id": channel_id,
+      "disabled_regularchan_action": "remove"
+    };
+    var ConfigsO = this;
+    this.update(req, function () {
+      var i = ConfigsO.disable_chan_regular.indexOf(channel_id);
+      ConfigsO.disable_chan_regular.splice(i, 1);
+      ConfigsO.buildDisableChanRegular(ConfigsO.disable_chan_regular);
+    });
   }
 
   // update utils
