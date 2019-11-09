@@ -80,6 +80,14 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if action:
 		return await singleActionDisableQuoteChannel(cls, WebRequest, action, Data, Configs, Guild)
 
+	action:str or Undefined = Data.getStr("disabled_normalchan_action", "")
+	if action:
+		return await singleActionDisableNormalChannel(cls, WebRequest, action, Data, Configs, Guild)
+
+	action:str or Undefined = Data.getStr("disabled_regularchan_action", "")
+	if action:
+		return await singleActionDisableRegularChannel(cls, WebRequest, action, Data, Configs, Guild)
+
 	changes:dict = dict()
 	db_changes:dict = dict()
 
@@ -465,7 +473,7 @@ async def singleActionDisableQuoteChannel(cls:"WebIndex", WebRequest:Request, ac
 		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
 
 	if action == "add":
-		if str(ActionChannel.id) in Configs.disabled_levelchannels:
+		if str(ActionChannel.id) in Configs.disabled_quotechannels:
 			return await apiWrongData(cls, WebRequest, msg=f"'{ActionChannel.name}' is already added")
 
 		cls.Web.BASE.PhaazeDB.insertQuery(
@@ -484,7 +492,7 @@ async def singleActionDisableQuoteChannel(cls:"WebIndex", WebRequest:Request, ac
 		)
 
 	elif action == "remove":
-		if channel_id not in Configs.disabled_levelchannels:
+		if channel_id not in Configs.disabled_quotechannels:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
 
 		cls.Web.BASE.PhaazeDB.query("""
@@ -495,6 +503,120 @@ async def singleActionDisableQuoteChannel(cls:"WebIndex", WebRequest:Request, ac
 		cls.Web.BASE.Logger.debug(f"(API/Discord) Disabled quote channel list Update: S:{guild_id} - rem: {channel_id}", require="discord:configs")
 		return cls.response(
 			text=json.dumps( dict(msg="disabled quote channel list successfull updated", remove=channel_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	else:
+		return await apiWrongData(cls, WebRequest)
+
+async def singleActionDisableNormalChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
+	"""
+		Default url: /api/discord/configs/edit?disabled_normalchan_action=something
+	"""
+	guild_id:str = Data.getStr("guild_id", "")
+	action = action.lower()
+	channel_id:str = Data.getStr("disabled_normalchan_id", "", must_be_digit=True).strip(" ").strip("\n")
+
+	if not guild_id:
+		# should never happen
+		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+
+	if not channel_id:
+		return await missingData(cls, WebRequest, msg="missing or invalid field 'disabled_normalchan_id'")
+
+	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
+	if not ActionChannel and action == "add":
+		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+
+	if action == "add":
+		if str(ActionChannel.id) in Configs.disabled_normalchannels:
+			return await apiWrongData(cls, WebRequest, msg=f"'{ActionChannel.name}' is already added")
+
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "discord_disabled_normalchannel",
+			content = {
+				"channel_id": ActionChannel.id,
+				"guild_id": guild_id
+			}
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Disabled normal channel list Update: S:{guild_id} - add: {channel_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="disabled normal channel list successfull updated", add=channel_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	elif action == "remove":
+		if channel_id not in Configs.disabled_normalchannels:
+			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
+
+		cls.Web.BASE.PhaazeDB.query("""
+			DELETE FROM `discord_disabled_normalchannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
+			(guild_id, channel_id)
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Disabled normal channel list Update: S:{guild_id} - rem: {channel_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="disabled normal channel list successfull updated", remove=channel_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	else:
+		return await apiWrongData(cls, WebRequest)
+
+async def singleActionDisableRegularChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
+	"""
+		Default url: /api/discord/configs/edit?disabled_regularchan_action=something
+	"""
+	guild_id:str = Data.getStr("guild_id", "")
+	action = action.lower()
+	channel_id:str = Data.getStr("disabled_regularchan_id", "", must_be_digit=True).strip(" ").strip("\n")
+
+	if not guild_id:
+		# should never happen
+		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+
+	if not channel_id:
+		return await missingData(cls, WebRequest, msg="missing or invalid field 'disabled_regularchan_id'")
+
+	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
+	if not ActionChannel and action == "add":
+		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+
+	if action == "add":
+		if str(ActionChannel.id) in Configs.disabled_regularchannels:
+			return await apiWrongData(cls, WebRequest, msg=f"'{ActionChannel.name}' is already added")
+
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "discord_disabled_regularchannel",
+			content = {
+				"channel_id": ActionChannel.id,
+				"guild_id": guild_id
+			}
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Disabled normal channel list Update: S:{guild_id} - add: {channel_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="disabled normal channel list successfull updated", add=channel_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	elif action == "remove":
+		if channel_id not in Configs.disabled_regularchannels:
+			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
+
+		cls.Web.BASE.PhaazeDB.query("""
+			DELETE FROM `discord_disabled_regularchannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
+			(guild_id, channel_id)
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Disabled normal channel list Update: S:{guild_id} - rem: {channel_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="disabled normal channel list successfull updated", remove=channel_id, status=200) ),
 			content_type="application/json",
 			status=200
 		)
