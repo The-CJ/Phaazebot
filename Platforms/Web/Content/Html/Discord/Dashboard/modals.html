@@ -137,42 +137,54 @@
 
         <h3>Token list</h3>
         <table class="tokenlist">
-          <tr class="token welcome leave priv_welcome">
+          <tr class="token welcome leave priv_welcome level">
             <td class="key">[user-name]</td>
             <td class="value">The User name</td>
           </tr>
-          <tr class="token welcome leave">
+          <tr class="token welcome leave level">
             <td class="key">[user-mention]</td>
             <td class="value">A <span class="clickable">@mention</span> of the name</td>
           </tr>
-          <tr class="token welcome leave">
+          <tr class="token welcome leave level">
             <td class="key">[channel-name]</td>
             <td class="value">The name of the event channel of the name</td>
           </tr>
-          <tr class="token welcome leave">
+          <tr class="token welcome leave level">
             <td class="key">[channel-mention]</td>
             <td class="value">A <span class="clickable">#mention</span> of the event channel</td>
           </tr>
-          <tr class="token welcome leave priv_welcome">
+          <tr class="token welcome leave priv_welcome level">
             <td class="key">[server-name]</td>
             <td class="value">Event server name</td>
           </tr>
-          <tr class="token welcome leave priv_welcome">
+          <tr class="token welcome leave priv_welcome level">
             <td class="key">[member-count]</td>
             <td class="value">Current event server member count</td>
+          </tr>
+          <tr class="token level">
+            <td class="key">[lvl]</td>
+            <td class="value">The users level</td>
+          </tr>
+          <tr class="token level">
+            <td class="key">[exp]</td>
+            <td class="value">The user exp</td>
+          </tr>
+          <tr class="token level">
+            <td class="key">[rank]</td>
+            <td class="value">The users rank baed on exp</td>
           </tr>
           <tr>
             <td colspan="2"><h3>Special token list</h3></td>
           </tr>
-          <tr class="token welcome leave priv_welcome">
+          <tr class="token welcome leave priv_welcome level">
             <td class="key"><#name#></td>
             <td class="value">Channel mention of channel associated with name*</td>
           </tr>
-          <tr class="token welcome leave priv_welcome">
+          <tr class="token welcome leave priv_welcome level">
             <td class="key"><#!id!#></td>
             <td class="value">Channel mention of channel associated with id*</td>
           </tr>
-          <tr class="token welcome leave priv_welcome">
+          <tr class="token welcome leave priv_welcome level">
             <td colspan="2">* = if none found replace with: (unknown)</td>
           </tr>
         </table>
