@@ -108,14 +108,14 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 			if type(Chan) != discord.TextChannel:
 				error = True
 			else:
-				value = Chan.id
+				value = str(Chan.id)
 		else:
 			error = True
 
 		if error:
 			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
 
-		db_changes["leave_chan"] = validateDBInput(str, value)
+		db_changes["leave_chan"] = validateDBInput(str, value, allow_null=True)
 		changes["leave_chan"] = value
 
 	# leave_msg
@@ -134,20 +134,20 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	value:str = Data.getStr("level_announce_chan", None)
 	if value != None:
 		error:bool = False
-		if value == "": pass
+		if value == "": value = None
 		elif value.isdigit():
 			Chan:discord.abc.Messageable = discord.utils.get(Guild.channels, id=int(value))
 			if type(Chan) != discord.TextChannel:
 				error = True
 			else:
-				value = Chan.id
+				value = str(Chan.id)
 		else:
 			error = True
 
 		if error:
 			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
 
-		db_changes["level_announce_chan"] = validateDBInput(str, value)
+		db_changes["level_announce_chan"] = validateDBInput(str, value, allow_null=True)
 		changes["level_announce_chan"] = value
 
 	# owner_disable_level
@@ -184,14 +184,14 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 			if type(Chan) != discord.TextChannel:
 				error = True
 			else:
-				value = Chan.id
+				value = str(Chan.id)
 		else:
 			error = True
 
 		if error:
 			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
 
-		db_changes["welcome_chan"] = validateDBInput(str, value)
+		db_changes["welcome_chan"] = validateDBInput(str, value, allow_null=True)
 		changes["welcome_chan"] = value
 
 	# welcome_msg
