@@ -18,7 +18,6 @@ DESCRIBE `discord_setting`;
 | leave_msg             | varchar(1750) | YES  |     | NULL    |                |
 | level_announce_chan   | varchar(128)  | YES  |     | NULL    |                |
 | level_custom_msg      | varchar(1750) | YES  |     | NULL    |                |
-| owner_disable_custom  | tinyint(1)    | YES  |     | 0       |                |
 | owner_disable_level   | tinyint(1)    | YES  |     | 0       |                |
 | owner_disable_mod     | tinyint(1)    | YES  |     | 0       |                |
 | owner_disable_normal  | tinyint(1)    | YES  |     | 0       |                |
@@ -48,7 +47,6 @@ CREATE TABLE `discord_setting` (
   `leave_msg` varchar(1750) DEFAULT NULL,
   `level_announce_chan` varchar(128) DEFAULT NULL,
   `level_custom_msg` varchar(1750) DEFAULT NULL,
-  `owner_disable_custom` tinyint(1) DEFAULT 0,
   `owner_disable_level` tinyint(1) DEFAULT 0,
   `owner_disable_mod` tinyint(1) DEFAULT 0,
   `owner_disable_regular` tinyint(1) DEFAULT 0,
