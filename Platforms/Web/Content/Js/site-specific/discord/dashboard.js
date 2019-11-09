@@ -711,7 +711,7 @@ var Configs = new(class {
     });
   }
 
-  // level
+  // disable level
   showDisableChanLevel() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
