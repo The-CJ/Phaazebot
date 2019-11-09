@@ -17,7 +17,7 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 
 	# TODO: Cooldown
 
-	if Message.channel.id in ServerSettings.disable_chan_level: return
+	if Message.channel.id in ServerSettings.disabled_levelchannels: return
 	if ServerSettings.owner_disable_level: return
 
 	result:list = await getDiscordServerLevels(cls, Message.guild.id, member_id=Message.author.id)

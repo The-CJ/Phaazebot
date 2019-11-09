@@ -717,7 +717,7 @@ var Configs = new(class {
     var guild_id = $("#guild_id").val();
     $.get("/api/discord/configs/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.disable_chan_level = data.result.disable_chan_level;
+      ConfigsO.disable_chan_level = data.result.disabled_levelchannels;
       ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
       $("#config_modal_disable_chan_level").modal("show");
     })

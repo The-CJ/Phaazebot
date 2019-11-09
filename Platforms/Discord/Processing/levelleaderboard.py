@@ -23,7 +23,7 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 		return {}
 
 	# same as above just for a a specific channel
-	if CommandContext.Message.channel.id in CommandContext.ServerSettings.disable_chan_level:
+	if CommandContext.Message.channel.id in CommandContext.ServerSettings.disabled_levelchannels:
 		return {}
 
 	specific_len:str = CommandContext.part(1)

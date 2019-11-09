@@ -10,7 +10,6 @@ DESCRIBE `discord_setting`;
 | blacklist_punishment   | varchar(32)   | YES  |     | delete  |                |
 | currency_name          | varchar(256)  | YES  |     | NULL    |                |
 | currency_name_multi    | varchar(256)  | YES  |     | NULL    |                |
-| disable_chan_level     | longtext      | YES  |     | '[]'    |                |
 | disable_chan_normal    | longtext      | YES  |     | '[]'    |                |
 | disable_chan_quotes    | longtext      | YES  |     | '[]'    |                |
 | enable_chan_game       | longtext      | YES  |     | '[]'    |                |
@@ -41,7 +40,6 @@ CREATE TABLE `discord_setting` (
   `blacklist_punishment` varchar(32) DEFAULT 'delete',
   `currency_name` varchar(256) DEFAULT NULL,
   `currency_name_multi` varchar(256) DEFAULT NULL,
-  `disable_chan_level` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`disable_chan_level`)),
   `disable_chan_normal` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`disable_chan_normal`)),
   `disable_chan_quotes` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`disable_chan_quotes`)),
   `enable_chan_game` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`enable_chan_game`)),

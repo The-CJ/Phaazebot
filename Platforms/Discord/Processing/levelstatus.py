@@ -20,7 +20,7 @@ async def levelStatus(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 		return {}
 
 	# same as above just for a a specific channel
-	if CommandContext.Message.channel.id in CommandContext.ServerSettings.disable_chan_level:
+	if CommandContext.Message.channel.id in CommandContext.ServerSettings.disabled_levelchannels:
 		return {}
 
 	Member:discord.Member = None
