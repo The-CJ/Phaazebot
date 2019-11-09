@@ -144,38 +144,39 @@
 #token_modal_help .tokenlist .token .value { padding-left: 2px; text-align: left;}
 #token_modal_help .modal-body { max-height: 50vh; overflow-y: auto; }
 
-#config_modal_blacklist_words .wordbanlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
-#config_modal_blacklist_words .wordbanlist .blacklistword { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
-#config_modal_blacklist_words .wordbanlist:empty:after { content: "(None)"; }
+#config_modal_blacklist_words .wordbanlist,
+#config_modal_whitelist_links .linkwhitelist,
+#config_modal_exeption_roles .exceptionrolelist,
+#config_modal_disable_chan_level .disablechanlevellist,
+#config_modal_disable_chan_quote .disablechanquotelist,
+#config_modal_disable_chan_normal .disablechannormallist,
+#config_modal_disable_chan_regular .disablechanregularlist
+  { padding: 1em; max-height: 40vh; overflow-y: auto; }
 
-#config_modal_whitelist_links .linkwhitelist { padding: 1em; max-height: 40vh; overflow-y: auto; }
-#config_modal_whitelist_links .linkwhitelist .whitelistlink { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
-#config_modal_whitelist_links .linkwhitelist:empty:after { content: "(None)"; }
+#config_modal_blacklist_words .wordbanlist .blacklistword,
+#config_modal_whitelist_links .linkwhitelist .whitelistlink,
+#config_modal_exeption_roles .exceptionrolelist .exceptionrole,
+#config_modal_disable_chan_level .disablechanlevellist .disablechanlevel,
+#config_modal_disable_chan_quote .disablechanquotelist .disablechanquote,
+#config_modal_disable_chan_normal .disablechannormallist .disablechannormal,
+#config_modal_disable_chan_regular .disablechanregularlist .disablechanregular
+  { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
 
-#config_modal_exeption_roles .exceptionrolelist { padding: 1em; max-height: 40vh; overflow-y: auto; }
-#config_modal_exeption_roles .exceptionrolelist .exceptionrole { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
-#config_modal_exeption_roles .exceptionrolelist .exceptionrole.deleted { background-color: #ccaaaaaa; }
-#config_modal_exeption_roles .exceptionrolelist:empty:after { content: "(None)"; }
+#config_modal_exeption_roles .exceptionrolelist .exceptionrole.deleted,
+#config_modal_disable_chan_level .disablechanlevellist .disablechanlevel.deleted,
+#config_modal_disable_chan_quote .disablechanquotelist .disablechanquote.deleted,
+#config_modal_disable_chan_normal .disablechannormallist .disablechannormal.deleted,
+#config_modal_disable_chan_regular .disablechanregularlist .disablechanregular.deleted
+  { background-color: #ccaaaaaa; }
 
-#config_modal_disable_chan_level .disablechanlevellist { padding: 1em; max-height: 40vh; overflow-y: auto; }
-#config_modal_disable_chan_level .disablechanlevellist .disablechanlevel { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
-#config_modal_disable_chan_level .disablechanlevellist .disablechanlevel.deleted { background-color: #ccaaaaaa; }
-#config_modal_disable_chan_level .disablechanlevellist:empty:after { content: "(None)"; }
-
-#config_modal_disable_chan_quote .disablechanquotelist { padding: 1em; max-height: 40vh; overflow-y: auto; }
-#config_modal_disable_chan_quote .disablechanquotelist .disablechanquote { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
-#config_modal_disable_chan_quote .disablechanquotelist .disablechanquote.deleted { background-color: #ccaaaaaa; }
-#config_modal_disable_chan_quote .disablechanquotelist:empty:after { content: "(None)"; }
-
-#config_modal_disable_chan_normal .disablechannormallist { padding: 1em; max-height: 40vh; overflow-y: auto; }
-#config_modal_disable_chan_normal .disablechannormallist .disablechannormal { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
-#config_modal_disable_chan_normal .disablechannormallist .disablechannormal.deleted { background-color: #ccaaaaaa; }
-#config_modal_disable_chan_normal .disablechannormallist:empty:after { content: "(None)"; }
-
-#config_modal_disable_chan_regular .disablechanregularlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
-#config_modal_disable_chan_regular .disablechanregularlist .disablechanregular { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
-#config_modal_disable_chan_regular .disablechanregularlist .disablechanregular.deleted { background-color: #ccaaaaaa; }
-#config_modal_disable_chan_regular .disablechanregularlist:empty:after { content: "(None)"; }
+#config_modal_blacklist_words .wordbanlist:empty:after,
+#config_modal_whitelist_links .linkwhitelist:empty:after,
+#config_modal_exeption_roles .exceptionrolelist:empty:after,
+#config_modal_disable_chan_level .disablechanlevellist:empty:after,
+#config_modal_disable_chan_quote .disablechanquotelist:empty:after,
+#config_modal_disable_chan_normal .disablechannormallist:empty:after,
+#config_modal_disable_chan_regular .disablechanregularlist:empty:after
+  { content: "(None)"; }
 
 #level_modal_edit [name=exp][edited=true] { background-color: #eeaaaaaa; }
 #level_modal_edit .medallist { padding: 0 1em; }
