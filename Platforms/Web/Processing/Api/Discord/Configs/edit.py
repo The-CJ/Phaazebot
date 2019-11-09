@@ -121,13 +121,15 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# leave_msg
 	value:str = Data.getStr("leave_msg", None)
 	if value != None:
-		db_changes["leave_msg"] = validateDBInput(str, value)
+		if value == "": value = None
+		db_changes["leave_msg"] = validateDBInput(str, value, allow_null=True)
 		changes["leave_msg"] = value
 
 	# level_custom_msg
 	value:str = Data.getStr("level_custom_msg", None)
 	if value != None:
-		db_changes["level_custom_msg"] = validateDBInput(str, value)
+		if value == "": value = None
+		db_changes["level_custom_msg"] = validateDBInput(str, value, allow_null=True)
 		changes["level_custom_msg"] = value
 
 	# level_announce_chan
@@ -197,13 +199,15 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# welcome_msg
 	value:str or Undefined = Data.get("welcome_msg", None)
 	if value != None:
-		db_changes["welcome_msg"] = validateDBInput(str, value)
+		if value == "": value = None
+		db_changes["welcome_msg"] = validateDBInput(str, value, allow_null=True)
 		changes["welcome_msg"] = value
 
 	# welcome_msg_priv
 	value:str or Undefined = Data.get("welcome_msg_priv", None)
 	if value != None:
-		db_changes["welcome_msg_priv"] = validateDBInput(str, value)
+		if value == "": value = None
+		db_changes["welcome_msg_priv"] = validateDBInput(str, value, allow_null=True)
 		changes["welcome_msg_priv"] = value
 
 	if not db_changes:
