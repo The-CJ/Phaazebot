@@ -20,7 +20,7 @@ class DiscordServerSettings(DBContentClass):
 		self.currency_name:str = infos.get("currency_name", Undefined())
 		self.currency_name_multi:str = infos.get("currency_name_multi", Undefined())
 		self.disabled_levelchannels:list = self.fromStringList( infos.get("disabled_levelchannels", Undefined()) )
-		self.disable_chan_normal:list = self.fromJsonField( infos.get("disable_chan_normal", Undefined()) )
+		self.disable_chan_normal:list = self.fromJsonField( infos.get("disable_chan_normal", Undefined()) ) #TODO: <--
 		self.disable_chan_quotes:list = self.fromJsonField( infos.get("disable_chan_quotes", Undefined()) )
 		self.enable_chan_ai:list = self.fromJsonField( infos.get("enable_chan_ai", Undefined()) )
 		self.enable_chan_game:list = self.fromJsonField( infos.get("enable_chan_game", Undefined()) )
@@ -28,7 +28,7 @@ class DiscordServerSettings(DBContentClass):
 		self.leave_chan:str = infos.get("leave_chan", Undefined())
 		self.leave_msg:str = infos.get("leave_msg", Undefined())
 		self.level_announce_channel:str = infos.get("level_announce_channel", Undefined())
-		self.level_custom_message:str = infos.get("level_custom_msg", Undefined())
+		self.level_custom_msg:str = infos.get("level_custom_msg", Undefined())
 		self.owner_disable_level:bool = bool( infos.get("owner_disable_level", Undefined()) )
 		self.owner_disable_normal:bool = bool( infos.get("owner_disable_normal", Undefined()) )
 		self.owner_disable_regular:bool = bool( infos.get("owner_disable_regular", Undefined()) )

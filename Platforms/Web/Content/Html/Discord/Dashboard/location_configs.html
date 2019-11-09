@@ -126,9 +126,23 @@
 
     <h3 id="config_level">Level config</h3>
     <div>
-      <span>Level execptions, announce channel and custom messages<span>
+      <span>Level execptions, announce channel and custom messages</span>
 
       <hr>
+
+      <div class="center-item-row">
+        <div class="col">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
+            <p>Custom level-up message</p>
+            <div class="config-info">
+              <span>Message that appears on level up</span>
+            </div>
+            <textarea class="config-textbox-input" name="level_custom_msg" rows="5"></textarea>
+            <button type="submit" class="btn btn-block btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('priv_welcome')">Token</button>
+          </form>
+        </div>
+      </div>
 
       <div class="center-item-row">
         <div class="col">

@@ -124,6 +124,12 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		db_changes["leave_msg"] = validateDBInput(str, value)
 		changes["leave_msg"] = value
 
+	# level_custom_msg
+	value:str = Data.getStr("level_custom_msg", None)
+	if value != None:
+		db_changes["level_custom_msg"] = validateDBInput(str, value)
+		changes["level_custom_msg"] = value
+
 	# owner_disable_level
 	value:bool = Data.getBool("owner_disable_level", None)
 	if value != None:

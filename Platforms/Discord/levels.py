@@ -77,8 +77,8 @@ async def announceLevelUp(cls:"PhaazebotDiscord", Message:discord.Message, Level
 		LevelChannel = Message.channel
 
 	level_message:str = None
-	if ServerSettings.level_custom_message != None:
-		level_message = ServerSettings.level_custom_message
+	if ServerSettings.level_custom_msg != None:
+		level_message = ServerSettings.level_custom_msg
 	else:
 		level_message = DEFAULT_LEVEL_MESSAGE
 
