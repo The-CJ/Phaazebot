@@ -10,10 +10,6 @@ DESCRIBE `discord_setting`;
 | blacklist_punishment  | varchar(32)   | YES  |     | delete  |                |
 | currency_name         | varchar(256)  | YES  |     | NULL    |                |
 | currency_name_multi   | varchar(256)  | YES  |     | NULL    |                |
-| disable_chan_normal   | longtext      | YES  |     | '[]'    |                |
-| disable_chan_quotes   | longtext      | YES  |     | '[]'    |                |
-| enable_chan_game      | longtext      | YES  |     | '[]'    |                |
-| enable_chan_nsfw      | longtext      | YES  |     | '[]'    |                |
 | leave_chan            | varchar(128)  | YES  |     | NULL    |                |
 | leave_msg             | varchar(1750) | YES  |     | NULL    |                |
 | level_announce_chan   | varchar(128)  | YES  |     | NULL    |                |
@@ -39,10 +35,6 @@ CREATE TABLE `discord_setting` (
   `blacklist_punishment` varchar(32) DEFAULT 'delete',
   `currency_name` varchar(256) DEFAULT NULL,
   `currency_name_multi` varchar(256) DEFAULT NULL,
-  `disable_chan_normal` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`disable_chan_normal`)),
-  `disable_chan_quotes` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`disable_chan_quotes`)),
-  `enable_chan_game` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`enable_chan_game`)),
-  `enable_chan_nsfw` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`enable_chan_nsfw`)),
   `leave_chan` varchar(128) DEFAULT NULL,
   `leave_msg` varchar(1750) DEFAULT NULL,
   `level_announce_chan` varchar(128) DEFAULT NULL,
