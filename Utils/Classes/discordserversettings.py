@@ -23,7 +23,6 @@ class DiscordServerSettings(DBContentClass):
 		self.disabled_quotechannels:list = self.fromStringList( infos.get("disabled_quotechannels", Undefined()) )
 		self.disabled_normalchannels:list = self.fromStringList( infos.get("disabled_normalchannels", Undefined()) )
 		self.disabled_regularchannels:list = self.fromStringList( infos.get("disabled_regularchannels", Undefined()) )
-		self.enable_chan_ai:list = self.fromJsonField( infos.get("enable_chan_ai", Undefined()) )
 		self.enable_chan_game:list = self.fromJsonField( infos.get("enable_chan_game", Undefined()) )
 		self.enable_chan_nsfw:list = self.fromJsonField( infos.get("enable_chan_nsfw", Undefined()) )
 		self.leave_chan:str = infos.get("leave_chan", Undefined())
