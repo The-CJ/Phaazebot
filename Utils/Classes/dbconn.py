@@ -5,11 +5,12 @@ class DBConn(object):
 	"""
 		Should handle all incomming requests
 	"""
-	def __init__(self, host:str="localhost", user:str="root", passwd:str="...", database:str=None):
-		self.host:str = host
-		self.user:str = user
-		self.passwd:str = passwd
-		self.database:str = database
+	def __init__(self, host:str="localhost", port:str or int=3306, user:str="root", passwd:str="...", database:str=None):
+		self.host:str = str(host)
+		self.port:str = str(port)
+		self.user:str = str(user)
+		self.passwd:str = str(passwd)
+		self.database:str = str(database)
 
 	def query(self, sql:str, values:tuple or list = None) -> list:
 		"""
@@ -136,6 +137,7 @@ class DBConn(object):
 		"""
 		return connect(
 			host = self.host,
+			port = self.port,
 			user = self.user,
 			passwd = self.passwd,
 			database = self.database,
