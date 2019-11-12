@@ -1,11 +1,15 @@
 from mysql.connector.cursor import MySQLCursorDict
 from mysql.connector import connect, MySQLConnection
+from mysql.connector.pooling import MySQLConnectionPool, PooledMySQLConnection
 
 class DBConn(object):
 	"""
 		Should handle all incomming requests
 	"""
 	def __init__(self, host:str="localhost", port:str or int=3306, user:str="root", passwd:str="...", database:str=None):
+		self.pool:MySQLConnectionPool = None
+		self.CurrentConn:PooledMySQLConnection = None
+
 		self.host:str = str(host)
 		self.port:str = str(port)
 		self.user:str = str(user)
@@ -14,38 +18,46 @@ class DBConn(object):
 
 	def query(self, sql:str, values:tuple or list = None) -> list:
 		"""
-			Querys a SQL command.
+			Querys a SQL command. Using a MySQLCursorDict.
+			query made via this function get auto commited
+
+			Tryes to return values based on the status the Cursor have after finish.
+
+			Return cases
+				Does cursor has unread result?
+				If yes, its probly a SELECT query
+				> Fetch all and return list of dict
+				>> use .selectQuery() to ensure SELECT return
+
+				Does cursor have a lastrowid?
+				If yes, its probly a INSERT query
+				> Return list with one element, the new row id
+				>> use .insertQuery() to ensure new row id
 
 			Each query is in theory a transaction,
-			use self.getConnection()
-			to get a own connection object.
+			use .getConnection() to get a own connection object.
 
-			+ gets auto commited
-
-			Then use connection.cursor to make all requests,
-			if finished and everything worked without error,
-			use connection.commit() to actully save all changes
+				Then use connection.cursor to get a cursor,
+				then make all requests with cursor.execute.
+				If finished and everything worked without error,
+				use connection.commit() to actully save all changes
+				or connection.rollback() if needed.
 		"""
 		# setup
-		DBConn:MySQLConnection = self.getConnection()
-		Cursor:MySQLCursorDict = DBConn.cursor(dictionary=True)
-
-		# enable full char support, because i want to
-		Cursor.execute('SET NAMES utf8mb4')
-		Cursor.execute("SET CHARACTER SET utf8mb4")
-		Cursor.execute("SET character_set_connection=utf8mb4")
+		Conn:PooledMySQLConnection = self.getConnection()
+		Cursor:MySQLCursorDict = Conn.cursor(dictionary=True)
 
 		# do stuff
 		Cursor.execute(sql, values)
 
-		# read result
+		# read and quess result
 		if Cursor._have_unread_result(): res:list = Cursor.fetchall()
 		elif Cursor.lastrowid: res:list = [Cursor.lastrowid]
 		else: res:list = []
 
 		# commit and close
-		DBConn.commit()
-		DBConn.close()
+		Conn.commit()
+		Conn.close()
 
 		return res
 
@@ -127,15 +139,35 @@ class DBConn(object):
 
 		return
 
-	def getConnection(self) -> MySQLConnection:
+	def getConnection(self, new:bool=False) -> PooledMySQLConnection:
 		"""
-			Returns a connection for the db,
+			Returns a connection from the pool, (creates pool if none present)
 			that can be used for transactions
-			all changes can be undone by connection.rollback()
+			all changes can be undone with .rollback()
 
-			finish a connection with commit() and close()
+			finish a writing transactions with .commit()
 		"""
-		return connect(
+
+		# reuse current connection
+		if self.CurrentConn != None and not new:
+			return self.CurrentConn
+
+		# make pool
+		if self.pool == None:
+			self.generatePool()
+
+		# inital pool is empty, restock
+		if self.pool._cnx_queue.empty():
+			self.pool.add_connection()
+
+		# enable full char support
+		self.CurrentConn = self.pool.get_connection()
+		self.CurrentConn.set_charset_collation('utf8mb4')
+		return self.CurrentConn
+
+	def generatePool(self) -> None:
+		self.pool = MySQLConnectionPool(
+			pool_size = 3,
 			host = self.host,
 			port = self.port,
 			user = self.user,
