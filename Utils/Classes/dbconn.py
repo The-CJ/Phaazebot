@@ -64,6 +64,8 @@ class DBConn(object):
 		"""
 			Pretty much the same as a normal .query()
 			except it ensures a list with sets return
+
+			Returns a list of result sets.
 		"""
 		# setup
 		Conn:MySQLConnection = self.getConnection()
@@ -73,14 +75,36 @@ class DBConn(object):
 		Cursor.execute(sql, values)
 
 		# gather stuff
-		res:list =  Cursor.fetchall()
+		res:list = Cursor.fetchall()
 
 		# close?, commit is not necessary in a select
 		if not self.mass_request: Conn.close()
 
 		return res
 
-	def updateQuery(self, table:str=None, content:dict=None, where:str=None, where_values:tuple=None) -> None:
+	def deleteQuery(self, sql:str, values:tuple = None) -> list:
+		"""
+			Pretty much the same as a normal .query()
+			except it ensures a int return
+
+			Returns the number of affected rows.
+		"""
+		# setup
+		Conn:MySQLConnection = self.getConnection()
+		Cursor:MySQLCursorDict = Conn.cursor(dictionary=True)
+
+		# do stuff
+		Cursor.execute(sql, values)
+
+		# gather stuff
+		res:list = Cursor.fetchall()
+
+		# close?, commit is not necessary in a select
+		if not self.mass_request: Conn.close()
+
+		return res
+
+	def updateQuery(self, table:str=None, content:dict=None, where:str=None, where_values:tuple=()) -> int:
 		"""
 			dict bases, secured update query,
 			all special chars will get replaced by byte safe sql counterpart
@@ -94,6 +118,8 @@ class DBConn(object):
 			where_values = ("12345", 419)
 
 			UPDATE `test` SET `A` = '123', `B` = 'abc', `C` = 420 WHERE A != '12345' AND C = 419 LIMIT 2;
+
+			Returns the number of affected rows.
 		"""
 		if not table or not content or not where: raise AttributeError("'table', 'content' and 'where' must be given")
 
@@ -109,13 +135,13 @@ class DBConn(object):
 		# do stuff
 		Cursor.execute(statement, values)
 
-		# commit and close
+		# commit and close?
 		Conn.commit()
-		Conn.close()
+		if not self.mass_request: Conn.close()
 
-		return
+		return Cursor.rowcount
 
-	def insertQuery(self, table:str=None, content:dict=None) -> None:
+	def insertQuery(self, table:str=None, content:dict=None) -> int:
 		"""
 			dict bases, secured insert query,
 			all special chars will get replaced by byte safe sql counterpart
@@ -127,6 +153,8 @@ class DBConn(object):
 			content = {"A": "123", "B":"abc", "C":420}
 
 			INSERT INTO `test` (`A`, `B`, `C`) VALUES ('123', 'abc', 420);
+
+			Returns
 		"""
 		if not table or not content: raise AttributeError("'table', and 'content' must be given")
 
@@ -146,9 +174,9 @@ class DBConn(object):
 
 		# commit and close
 		Conn.commit()
-		Conn.close()
+		if not self.mass_request: Conn.close()
 
-		return
+		return Cursor.lastrowid
 
 	def getConnection(self) -> MySQLConnection:
 		"""
@@ -196,12 +224,3 @@ class DBConn(object):
 			a stored instance of a mass request connection can timeout if left unused.
 		"""
 		self.mass_request = state
-
-
-D = DBConn(host="phaaze.net", user="phaazebotdev", passwd="phaazedev-passwd", database="phaazedev")
-D.setMassRequest(True)
-for x in range(1):
-	print( D.selectQuery("SELECT * FROM discord_level WHERE exp = %s", (8,)) )
-	print( D.selectQuery("SELECT * FROM discord_level WHERE exp = %s", (888888,)) )
-
-	# print( D.query("DESCRIBE %s", [("wiki",),("wiki",),("wiki",),("wiki",),("wiki",)]) )
