@@ -459,6 +459,79 @@
   </div>
 </div>
 
+<div class="modal fade" id="config_modal_enable_chan_game">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Enable game commands in channels</h4>
+        <button type="button" class="close" onclick="$('#config_modal_enable_chan_game').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="row">
+          <div class="col">
+            <span>Enables all game commands in selected channels</span>
+          </div>
+        </div>
+
+        <hr>
+        <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToEnableChanGame()">
+          <select class="custom-select" id="new_enable_chan_game" discord-channel="text"></select>
+          <div class="input-group-append">
+            <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+          </div>
+        </form>
+        <span>Select a channel you want to add.</span>
+        <hr>
+        <div class="enablechangamelist"></div>
+
+      </div>
+
+      <div class="modal-footer"></div>
+      <div messagebox></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="config_modal_enable_chan_nsfw">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Enable NSFW commands in channels</h4>
+        <button type="button" class="close" onclick="$('#config_modal_enable_chan_nsfw').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="row">
+          <div class="col">
+            <span>Enables all NSFW commands in selected channels,</span><br>
+            <span>You may still watch for yourself that all member in your server follow the <a target="_blank" href="https://discordapp.com/terms" style="color:blue">Discord TOS</a></span>
+          </div>
+        </div>
+
+        <hr>
+        <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToEnableChanNSFW()">
+          <select class="custom-select" id="new_enable_chan_nsfw" discord-channel="text"></select>
+          <div class="input-group-append">
+            <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+          </div>
+        </form>
+        <span>Select a channel you want to add.</span>
+        <hr>
+        <div class="enablechannsfwlist"></div>
+
+      </div>
+
+      <div class="modal-footer"></div>
+      <div messagebox></div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="level_modal_edit" edit-member="">
   <div class="modal-dialog" role="document">
     <div class="modal-content">

@@ -502,6 +502,8 @@ var Configs = new(class {
     this.disable_chan_quote = [];
     this.disable_chan_normal = [];
     this.disable_chan_regular = [];
+    this.enable_chan_game = [];
+    this.enable_chan_nsfw = [];
   }
 
   show() {
@@ -989,6 +991,92 @@ var Configs = new(class {
       ConfigsO.buildDisableChanRegular(ConfigsO.disable_chan_regular);
     });
   }
+
+  // enable game
+  showEnableChanGame() {
+    var ConfigsO = this;
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+      ConfigsO.enable_chan_game = data.result.enabled_gamechannels;
+      ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
+      $("#config_modal_enable_chan_game").modal("show");
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading game channels..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
+  }
+
+  buildEnableChanGame(channel_list) {
+    console.log(channel_list);
+  }
+
+  addToEnableChanGame() {
+    var new_channel_id = $("#new_enable_chan_game").val();
+    if (isEmpty(new_channel_id)) { return; }
+    var req = {
+      "enabled_gamechan_id": new_channel_id,
+      "enabled_gamechan_action": "add"
+    };
+    var ConfigsO = this;
+    var successfunc = function() {
+      $("#new_enable_chan_game").val("");
+      ConfigsO.enable_chan_game.push(new_channel_id.toLowerCase());
+      ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
+    }
+    var failfunc = function () {
+      $("#new_enable_chan_game").val("");
+    }
+
+    this.update(req, successfunc, failfunc);
+  }
+
+  removeFromEnableChanGame(HTMLButton) {}
+
+  // enable nsfw
+  showEnableChanNSFW() {
+    var ConfigsO = this;
+    var guild_id = $("#guild_id").val();
+    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    .done(function (data) {
+      ConfigsO.enable_chan_nsfw = data.result.enabled_nsfwchannels;
+      ConfigsO.buildEnableChanNSFW(ConfigsO.enable_chan_nsfw);
+      $("#config_modal_enable_chan_nsfw").modal("show");
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading nsfw channels..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
+  }
+
+  buildEnableChanNSFW(channel_list) {
+    console.log(channel_list);
+  }
+
+  addToEnableChanNSFW() {
+    var new_channel_id = $("#new_enable_chan_nsfw").val();
+    if (isEmpty(new_channel_id)) { return; }
+    var req = {
+      "enabled_nsfwchan_id": new_channel_id,
+      "enabled_nsfwchan_action": "add"
+    };
+    var ConfigsO = this;
+    var successfunc = function() {
+      $("#new_enable_chan_nsfw").val("");
+      ConfigsO.enable_chan_nsfw.push(new_channel_id.toLowerCase());
+      ConfigsO.buildEnableChanNSFW(ConfigsO.enable_chan_nsfw);
+    }
+    var failfunc = function () {
+      $("#new_enable_chan_nsfw").val("");
+    }
+
+    this.update(req, successfunc, failfunc);
+  }
+
+  removeFromEnableChanNSFW(HTMLButton) {}
 
   // update utils
   updateField(HTMLForm) {

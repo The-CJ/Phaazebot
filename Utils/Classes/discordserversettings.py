@@ -24,7 +24,7 @@ class DiscordServerSettings(DBContentClass):
 		self.disabled_normalchannels:list = self.fromStringList( infos.get("disabled_normalchannels", Undefined()) )
 		self.disabled_regularchannels:list = self.fromStringList( infos.get("disabled_regularchannels", Undefined()) )
 		self.enabled_gamechannels:list = self.fromStringList( infos.get("enabled_gamechannels", Undefined()) )
-		self.enabled_nsfwchannels:list = self.fromJsonField( infos.get("enabled_nsfwchannels", Undefined()) )
+		self.enabled_nsfwchannels:list = self.fromStringList( infos.get("enabled_nsfwchannels", Undefined()) )
 		self.leave_chan:str = infos.get("leave_chan", Undefined())
 		self.leave_msg:str = infos.get("leave_msg", Undefined())
 		self.level_announce_chan:str = infos.get("level_announce_chan", Undefined())
