@@ -12,6 +12,9 @@ class PhaazebotDiscord(discord.Client):
 		super().__init__()
 		self.BASE:"Phaazebot" = BASE
 
+	def __bool__(self):
+		return self.BASE.IsReady.discord
+
 	async def on_ready(self) -> None:
 		try:
 			await self.change_presence(

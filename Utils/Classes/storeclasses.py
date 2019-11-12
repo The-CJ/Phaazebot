@@ -54,15 +54,16 @@ class ActiveStore(object):
 
 class IsReadyStore(object):
 	"""
-		Containes the state if something s ready or not
+		Containes the state if something is ready or not
 		all start False, turn True when connected
 	"""
 	def __init__(self):
-		self.discord = False
-		self.twitch = False
-		self.osu = False
-		self.twitter = False
-		self.youtube = False
+		self.web:bool = False
+		self.discord:bool = False
+		self.twitch:bool = False
+		self.osu:bool = False
+		self.twitter:bool = False
+		self.youtube:bool = False
 
 class LimitStore(object):
 	"""

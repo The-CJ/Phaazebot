@@ -17,6 +17,9 @@ class PhaazebotWeb(web.Application):
 		self.SSLContext:ssl.SSLContext = None
 		self.Index:WebIndex = None
 
+	def __bool__(self):
+		return self.BASE.IsReady.web
+
 	def setupSSL(self) -> None:
 		if CliArgs.get("http", "test") == "live":
 			self.port:int = 443

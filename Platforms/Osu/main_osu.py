@@ -9,6 +9,9 @@ class PhaazeOsu(osu.Client):
 		super().__init__()
 		self.BASE:"Phaazebot" = BASE
 
+	def __bool__(self):
+		return self.BASE.IsReady.osu
+
 	async def onReady(self):
 		self.BASE.Logger.info("osu! connected")
 		self.BASE.IsReady.osu = True
