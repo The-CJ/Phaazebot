@@ -1010,7 +1010,19 @@ var Configs = new(class {
   }
 
   buildEnableChanGame(channel_list) {
-    console.log(channel_list);
+    var EntryList = $("#config_modal_enable_chan_game .enablechangamelist").html("");
+    for (var entry of channel_list) {
+      var EntryRow = $("[phantom] .enablechangame").clone();
+      var channel = DiscordDashboard.getDiscordChannelByID(entry);
+      EntryRow.find("[channel-id]").val(entry);
+      EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
+      if (isEmpty(channel)) {
+        EntryRow.addClass("deleted");
+        EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
+      }
+
+      EntryList.append(EntryRow);
+    }
   }
 
   addToEnableChanGame() {
@@ -1054,6 +1066,19 @@ var Configs = new(class {
 
   buildEnableChanNSFW(channel_list) {
     console.log(channel_list);
+    var EntryList = $("#config_modal_enable_chan_nsfw .enablechannsfwlist").html("");
+    for (var entry of channel_list) {
+      var EntryRow = $("[phantom] .enablechannsfw").clone();
+      var channel = DiscordDashboard.getDiscordChannelByID(entry);
+      EntryRow.find("[channel-id]").val(entry);
+      EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
+      if (isEmpty(channel)) {
+        EntryRow.addClass("deleted");
+        EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
+      }
+
+      EntryList.append(EntryRow);
+    }
   }
 
   addToEnableChanNSFW() {
