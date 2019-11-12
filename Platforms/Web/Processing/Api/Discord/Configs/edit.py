@@ -88,6 +88,14 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if action:
 		return await singleActionDisableRegularChannel(cls, WebRequest, action, Data, Configs, Guild)
 
+	action:str = Data.getStr("enabled_gamechan_action", "")
+	if action:
+		return await singleActionEnabledGameChannel(cls, WebRequest, action, Data, Configs, Guild)
+
+	action:str = Data.getStr("enabled_nsfwchan_action", "")
+	if action:
+		return await singleActionEnabledNSFWChannel(cls, WebRequest, action, Data, Configs, Guild)
+
 	changes:dict = dict()
 	db_changes:dict = dict()
 
@@ -617,6 +625,120 @@ async def singleActionDisableRegularChannel(cls:"WebIndex", WebRequest:Request, 
 		cls.Web.BASE.Logger.debug(f"(API/Discord) Disabled normal channel list Update: S:{guild_id} - rem: {channel_id}", require="discord:configs")
 		return cls.response(
 			text=json.dumps( dict(msg="disabled normal channel list successfull updated", remove=channel_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	else:
+		return await apiWrongData(cls, WebRequest)
+
+async def singleActionEnabledGameChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
+	"""
+		Default url: /api/discord/configs/edit?enabled_gamechan_action=something
+	"""
+	guild_id:str = Data.getStr("guild_id", "")
+	action = action.lower()
+	channel_id:str = Data.getStr("enabled_gamechan_id", "", must_be_digit=True).strip(" ").strip("\n")
+
+	if not guild_id:
+		# should never happen
+		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+
+	if not channel_id:
+		return await missingData(cls, WebRequest, msg="missing or invalid field 'enabled_gamechan_id'")
+
+	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
+	if not ActionChannel and action == "add":
+		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+
+	if action == "add":
+		if str(ActionChannel.id) in Configs.enabled_gamechannels:
+			return await apiWrongData(cls, WebRequest, msg=f"'{ActionChannel.name}' is already added")
+
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "discord_enabled_gamechannel",
+			content = {
+				"channel_id": ActionChannel.id,
+				"guild_id": guild_id
+			}
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Enabled game channel list Update: S:{guild_id} - add: {channel_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="enabled game channel list successfull updated", add=channel_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	elif action == "remove":
+		if channel_id not in Configs.enabled_gamechannels:
+			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
+
+		cls.Web.BASE.PhaazeDB.query("""
+			DELETE FROM `discord_enabled_gamechannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
+			(guild_id, channel_id)
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Enabled game channel list Update: S:{guild_id} - rem: {channel_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="enabled game channel list successfull updated", remove=channel_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	else:
+		return await apiWrongData(cls, WebRequest)
+
+async def singleActionEnabledNSFWChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
+	"""
+		Default url: /api/discord/configs/edit?enabled_nsfwchan_action=something
+	"""
+	guild_id:str = Data.getStr("guild_id", "")
+	action = action.lower()
+	channel_id:str = Data.getStr("enabled_nsfwchan_id", "", must_be_digit=True).strip(" ").strip("\n")
+
+	if not guild_id:
+		# should never happen
+		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+
+	if not channel_id:
+		return await missingData(cls, WebRequest, msg="missing or invalid field 'enabled_nsfwchan_id'")
+
+	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
+	if not ActionChannel and action == "add":
+		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+
+	if action == "add":
+		if str(ActionChannel.id) in Configs.enabled_nsfwchannels:
+			return await apiWrongData(cls, WebRequest, msg=f"'{ActionChannel.name}' is already added")
+
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "discord_enabled_nsfwchannel",
+			content = {
+				"channel_id": ActionChannel.id,
+				"guild_id": guild_id
+			}
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Enabled nsfw channel list Update: S:{guild_id} - add: {channel_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="enabled nsfw channel list successfull updated", add=channel_id, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	elif action == "remove":
+		if channel_id not in Configs.enabled_nsfwchannels:
+			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
+
+		cls.Web.BASE.PhaazeDB.query("""
+			DELETE FROM `discord_enabled_nsfwchannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
+			(guild_id, channel_id)
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Enabled nsfw channel list Update: S:{guild_id} - rem: {channel_id}", require="discord:configs")
+		return cls.response(
+			text=json.dumps( dict(msg="enabled nsfw channel list successfull updated", remove=channel_id, status=200) ),
 			content_type="application/json",
 			status=200
 		)
