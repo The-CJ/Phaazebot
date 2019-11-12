@@ -15,7 +15,7 @@ class DBConn(object):
 		self.mass_request:bool = False
 		self.MassRequestConn:MySQLConnection = None
 
-	def query(self, sql:str, values:tuple or list = None) -> list:
+	def query(self, sql:str, values:tuple = None) -> list:
 		"""
 			Querys a SQL command. Using a MySQLCursorDict.
 			query made via this function get auto commited
@@ -37,7 +37,7 @@ class DBConn(object):
 			use .getConnection() to get a own connection object.
 
 				Then use connection.cursor to get a cursor,
-				then make all requests with cursor.execute.
+				then make all requests with cursor.execute()
 				If finished and everything worked without error,
 				use connection.commit() to actully save all changes
 				or connection.rollback() if needed.
@@ -54,9 +54,29 @@ class DBConn(object):
 		elif Cursor.lastrowid: res:list = [Cursor.lastrowid]
 		else: res:list = []
 
-		# commit and close
+		# commit and close?
 		Conn.commit()
-		Conn.close()
+		if not self.mass_request: Conn.close()
+
+		return res
+
+	def selectQuery(self, sql:str, values:tuple = None) -> list:
+		"""
+			Pretty much the same as a normal .query()
+			except it ensures a list with sets return
+		"""
+		# setup
+		Conn:MySQLConnection = self.getConnection()
+		Cursor:MySQLCursorDict = Conn.cursor(dictionary=True)
+
+		# do stuff
+		Cursor.execute(sql, values)
+
+		# gather stuff
+		res:list =  Cursor.fetchall()
+
+		# close?, commit is not necessary in a select
+		if not self.mass_request: Conn.close()
 
 		return res
 
@@ -176,3 +196,12 @@ class DBConn(object):
 			a stored instance of a mass request connection can timeout if left unused.
 		"""
 		self.mass_request = state
+
+
+D = DBConn(host="phaaze.net", user="phaazebotdev", passwd="phaazedev-passwd", database="phaazedev")
+D.setMassRequest(True)
+for x in range(1):
+	print( D.selectQuery("SELECT * FROM discord_level WHERE exp = %s", (8,)) )
+	print( D.selectQuery("SELECT * FROM discord_level WHERE exp = %s", (888888,)) )
+
+	# print( D.query("DESCRIBE %s", [("wiki",),("wiki",),("wiki",),("wiki",),("wiki",)]) )
