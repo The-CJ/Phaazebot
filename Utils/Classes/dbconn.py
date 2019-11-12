@@ -1,20 +1,19 @@
 from mysql.connector.cursor import MySQLCursorDict
 from mysql.connector import MySQLConnection
-from mysql.connector.pooling import MySQLConnectionPool, PooledMySQLConnection
 
 class DBConn(object):
 	"""
 		Should handle all incomming requests
 	"""
 	def __init__(self, host:str="localhost", port:str or int=3306, user:str="root", passwd:str="...", database:str=None):
-		self.pool:MySQLConnectionPool = None
-		self.CurrentConn:PooledMySQLConnection = None
-
 		self.host:str = str(host)
 		self.port:str = str(port)
 		self.user:str = str(user)
 		self.passwd:str = str(passwd)
 		self.database:str = str(database)
+
+		self.mass_request:bool = False
+		self.MassRequestConn:MySQLConnection = None
 
 	def query(self, sql:str, values:tuple or list = None) -> list:
 		"""
@@ -44,7 +43,7 @@ class DBConn(object):
 				or connection.rollback() if needed.
 		"""
 		# setup
-		Conn:PooledMySQLConnection = self.getConnection()
+		Conn:MySQLConnection = self.getConnection()
 		Cursor:MySQLCursorDict = Conn.cursor(dictionary=True)
 
 		# do stuff
@@ -131,38 +130,49 @@ class DBConn(object):
 
 		return
 
-	def getConnection(self, new:bool=False) -> PooledMySQLConnection:
+	def getConnection(self) -> MySQLConnection:
 		"""
-			Returns a connection from the pool, (creates pool if none present)
+			Returns a connection, (could be a used one if .mass_request is True)
 			that can be used for transactions
 			all changes can be undone with .rollback()
 
 			finish a writing transactions with .commit()
 		"""
 
-		# reuse current connection
-		if self.CurrentConn != None and not new:
-			return self.CurrentConn
+		if self.mass_request:
+			if self.MassRequestConn != None:
+				return self.MassRequestConn
+			else:
+				self.MassRequestConn = self.createConnection()
+				return self.MassRequestConn
 
-		# make pool
-		if self.pool == None:
-			self.generatePool()
+		return self.createConnection()
 
-		# inital pool is empty, restock
-		if self.pool._cnx_queue.empty():
-			self.pool.add_connection()
-
-		# enable full char support
-		self.CurrentConn = self.pool.get_connection()
-		self.CurrentConn.set_charset_collation('utf8mb4')
-		return self.CurrentConn
-
-	def generatePool(self) -> None:
-		self.pool = MySQLConnectionPool(
-			pool_size = 3,
+	def createConnection(self) -> MySQLConnection:
+		"""
+			same as .getConnection execpt it's always a new connection
+			.getConnection could also be a already used one because .mass_request is True
+		"""
+		Conn:MySQLConnection = MySQLConnection(
 			host = self.host,
 			port = self.port,
 			user = self.user,
 			passwd = self.passwd,
 			database = self.database,
 		)
+
+		# enable full char support
+		Conn.set_charset_collation("utf8mb4")
+
+		return Conn
+
+	def setMassRequest(self, state:bool) -> None:
+		"""
+			Mass requests will hold a connection open, after any other operation in this class.
+			It will still be commited but not closed.
+			This will increase the speed but making the entire class Threading unsave.
+			Its recommended to make a new DBConn() object and enable mass request in this.
+
+			a stored instance of a mass request connection can timeout if left unused.
+		"""
+		self.mass_request = state
