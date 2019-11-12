@@ -1045,7 +1045,21 @@ var Configs = new(class {
     this.update(req, successfunc, failfunc);
   }
 
-  removeFromEnableChanGame(HTMLButton) {}
+  removeFromEnableChanGame(HTMLButton) {
+    var Entry = $(HTMLButton).closest(".enablechangame");
+    var channel_id = Entry.find("[channel-id]").val();
+
+    var req = {
+      "enabled_gamechan_id": channel_id,
+      "enabled_gamechan_action": "remove"
+    };
+    var ConfigsO = this;
+    this.update(req, function () {
+      var i = ConfigsO.enable_chan_game.indexOf(channel_id);
+      ConfigsO.enable_chan_game.splice(i, 1);
+      ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
+    });
+  }
 
   // enable nsfw
   showEnableChanNSFW() {
@@ -1101,7 +1115,21 @@ var Configs = new(class {
     this.update(req, successfunc, failfunc);
   }
 
-  removeFromEnableChanNSFW(HTMLButton) {}
+  removeFromEnableChanNSFW(HTMLButton) {
+    var Entry = $(HTMLButton).closest(".enablechannsfw");
+    var channel_id = Entry.find("[channel-id]").val();
+
+    var req = {
+      "enabled_nsfwchan_id": channel_id,
+      "enabled_nsfwchan_action": "remove"
+    };
+    var ConfigsO = this;
+    this.update(req, function () {
+      var i = ConfigsO.enable_chan_nsfw.indexOf(channel_id);
+      ConfigsO.enable_chan_nsfw.splice(i, 1);
+      ConfigsO.buildEnableChanNSFW(ConfigsO.enable_chan_nsfw);
+    });
+  }
 
   // update utils
   updateField(HTMLForm) {
