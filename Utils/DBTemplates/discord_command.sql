@@ -1,3 +1,4 @@
+/*
 DESCRIBE `discord_command`;
 
 +-------------------+---------------+------+-----+---------+----------------+
@@ -15,8 +16,9 @@ DESCRIBE `discord_command`;
 | uses              | int(8)        | YES  |     | 0       |                |
 | cooldown          | int(8)        | YES  |     | 10      |                |
 +-------------------+---------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `discord_command`;
+-- SHOW CREATE TABLE `discord_command`;
 
 CREATE TABLE `discord_command` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

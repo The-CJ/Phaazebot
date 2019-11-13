@@ -1,18 +1,20 @@
-DESCRIBE `discord_blacklist_blacklistword`;
+/*
+DESCRIBE `discord_blacklist_whitelistlink`;
 
 +----------+--------------+------+-----+---------+----------------+
 | Field    | Type         | Null | Key | Default | Extra          |
 +----------+--------------+------+-----+---------+----------------+
 | id       | int(11)      | NO   | PRI | NULL    | auto_increment |
 | guild_id | varchar(128) | NO   | MUL | NULL    |                |
-| word     | varchar(512) | NO   |     | NULL    |                |
+| link     | varchar(512) | NO   |     | NULL    |                |
 +----------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `discord_blacklist_blacklistword`;
+-- SHOW CREATE TABLE `discord_blacklist_whitelistlink`;
 
-CREATE TABLE `discord_blacklist_blacklistword` (
+CREATE TABLE `discord_blacklist_whitelistlink` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
-  `word` varchar(512) NOT NULL,
+  `link` varchar(512) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

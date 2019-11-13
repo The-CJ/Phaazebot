@@ -1,3 +1,4 @@
+/*
 DESCRIBE `discord_quote`;
 
 +----------+---------------+------+-----+---------+----------------+
@@ -7,8 +8,9 @@ DESCRIBE `discord_quote`;
 | guild_id | varchar(128)  | NO   |     | NULL    |                |
 | content  | varchar(1750) | YES  |     | NULL    |                |
 +----------+---------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `discord_quote`;
+-- SHOW CREATE TABLE `discord_quote`;
 
 CREATE TABLE `discord_quote` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

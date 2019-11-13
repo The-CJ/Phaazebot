@@ -1,3 +1,4 @@
+/*
 DESCRIBE `twitch_setting`;
 
 +----------------------------+--------------+------+-----+---------+----------------+
@@ -26,8 +27,9 @@ DESCRIBE `twitch_setting`;
 | osurequestformat_osu       | varchar(475) | YES  |     | NULL    |                |
 | osurequestformat_twtich    | varchar(475) | YES  |     | NULL    |                |
 +----------------------------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `twitch_setting`;
+-- SHOW CREATE TABLE `twitch_setting`;
 
 CREATE TABLE `twitch_setting` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

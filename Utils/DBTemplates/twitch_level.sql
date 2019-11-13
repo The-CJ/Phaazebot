@@ -1,3 +1,4 @@
+/*
 DESCRIBE `twitch_level`;
 
 +-------------------+--------------+------+-----+---------+----------------+
@@ -12,8 +13,9 @@ DESCRIBE `twitch_level`;
 | user_name         | varchar(128) | YES  |     | NULL    |                |
 | user_display_name | varchar(128) | YES  |     | NULL    |                |
 +-------------------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `twitch_level`;
+-- SHOW CREATE TABLE `twitch_level`;
 
 CREATE TABLE `twitch_level` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

@@ -1,3 +1,4 @@
+/*
 DESCRIBE `discord_disabled_normalchannel`;
 
 +------------+--------------+------+-----+---------+----------------+
@@ -7,8 +8,9 @@ DESCRIBE `discord_disabled_normalchannel`;
 | guild_id   | varchar(128) | NO   | MUL | NULL    |                |
 | channel_id | varchar(128) | NO   |     | NULL    |                |
 +------------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `discord_disabled_normalchannel`;
+-- SHOW CREATE TABLE `discord_disabled_normalchannel`;
 
 CREATE TABLE `discord_disabled_normalchannel` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

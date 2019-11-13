@@ -1,18 +1,21 @@
-DESCRIBE `twitch_quote`;
+/*
+DESCRIBE `discord_disabled_quotechannel`;
 
 +------------+--------------+------+-----+---------+----------------+
 | Field      | Type         | Null | Key | Default | Extra          |
 +------------+--------------+------+-----+---------+----------------+
 | id         | int(11)      | NO   | PRI | NULL    | auto_increment |
+| guild_id   | varchar(128) | NO   | MUL | NULL    |                |
 | channel_id | varchar(128) | NO   |     | NULL    |                |
-| content    | varchar(475) | YES  |     | NULL    |                |
 +------------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `twitch_quote`;
+-- SHOW CREATE TABLE `discord_disabled_quotechannel`;
 
-CREATE TABLE `twitch_quote` (
+CREATE TABLE `discord_disabled_quotechannel` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `guild_id` varchar(128) NOT NULL,
   `channel_id` varchar(128) NOT NULL,
-  `content` varchar(475) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `guild_id` (`guild_id`,`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,3 +1,4 @@
+/*
 DESCRIBE `session_discord`;
 
 +---------------+--------------+------+-----+---------------------+----------------+
@@ -12,8 +13,9 @@ DESCRIBE `session_discord`;
 | token_type    | varchar(64)  | YES  |     | Bearer              |                |
 | user_info     | longtext     | YES  |     | '{}'                |                |
 +---------------+--------------+------+-----+---------------------+----------------+
+*/
 
-SHOW CREATE TABLE `session_discord`;
+-- SHOW CREATE TABLE `session_discord`;
 
 CREATE TABLE `session_discord` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

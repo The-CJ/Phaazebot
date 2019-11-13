@@ -1,3 +1,4 @@
+/*
 DESCRIBE `twitch_known_bot`;
 
 +--------+--------------+------+-----+---------+----------------+
@@ -7,8 +8,9 @@ DESCRIBE `twitch_known_bot`;
 | name   | varchar(128) | YES  | UNI | NULL    |                |
 | bot_id | varchar(128) | YES  | UNI | NULL    |                |
 +--------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `twitch_known_bot`;
+-- SHOW CREATE TABLE `twitch_known_bot`;
 
 CREATE TABLE `twitch_known_bot` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

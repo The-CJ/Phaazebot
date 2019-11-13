@@ -1,3 +1,4 @@
+/*
 DESCRIBE `role`;
 
 +----------------+--------------+------+-----+---------+----------------+
@@ -8,8 +9,9 @@ DESCRIBE `role`;
 | name           | varchar(64)  | YES  | UNI | NULL    |                |
 | description    | varchar(512) | YES  |     | NULL    |                |
 +----------------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `role`;
+-- SHOW CREATE TABLE `role`;
 
 CREATE TABLE `role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

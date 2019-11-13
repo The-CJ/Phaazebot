@@ -1,3 +1,4 @@
+/*
 DESCRIBE `discord_setting`;
 
 +-----------------------+---------------+------+-----+---------+----------------+
@@ -24,8 +25,9 @@ DESCRIBE `discord_setting`;
 | welcome_msg_priv      | varchar(1750) | YES  |     | NULL    |                |
 | owner_disable_regular | tinyint(1)    | YES  |     | 0       |                |
 +-----------------------+---------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `discord_setting`;
+-- SHOW CREATE TABLE `discord_setting`;
 
 CREATE TABLE `discord_setting` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

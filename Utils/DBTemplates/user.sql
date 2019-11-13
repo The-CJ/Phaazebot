@@ -1,3 +1,4 @@
+/*
 DESCRIBE `user`;
 
 +------------------+--------------+------+-----+---------------------+----------------+
@@ -14,8 +15,9 @@ DESCRIBE `user`;
 | roles            | longtext     | YES  |     | '[]'                |                |
 | username_changed | int(8)       | YES  |     | 0                   |                |
 +------------------+--------------+------+-----+---------------------+----------------+
+*/
 
-SHOW CREATE TABLE `user`;
+-- SHOW CREATE TABLE `user`;
 
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

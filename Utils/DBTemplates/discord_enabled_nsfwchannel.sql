@@ -1,4 +1,5 @@
-DESCRIBE `discord_disabled_levelchannel`;
+/*
+DESCRIBE `discord_enabled_nsfwchannel`;
 
 +------------+--------------+------+-----+---------+----------------+
 | Field      | Type         | Null | Key | Default | Extra          |
@@ -7,10 +8,11 @@ DESCRIBE `discord_disabled_levelchannel`;
 | guild_id   | varchar(128) | NO   | MUL | NULL    |                |
 | channel_id | varchar(128) | NO   |     | NULL    |                |
 +------------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `discord_disabled_levelchannel`;
+-- SHOW CREATE TABLE `discord_enabled_nsfwchannel`;
 
-CREATE TABLE `discord_disabled_levelchannel` (
+CREATE TABLE `discord_enabled_nsfwchannel` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
   `channel_id` varchar(128) NOT NULL,

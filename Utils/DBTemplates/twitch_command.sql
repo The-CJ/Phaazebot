@@ -1,3 +1,4 @@
+/*
 DESCRIBE `twitch_command`;
 
 +-------------------+--------------+------+-----+---------+----------------+
@@ -15,8 +16,9 @@ DESCRIBE `twitch_command`;
 | uses              | int(8)       | YES  |     | 0       |                |
 | cooldown          | int(8)       | YES  |     | 10      |                |
 +-------------------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `twitch_command`;
+-- SHOW CREATE TABLE `twitch_command`;
 
 CREATE TABLE `twitch_command` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

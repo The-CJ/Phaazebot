@@ -1,18 +1,23 @@
-DESCRIBE `discord_blacklist_whitelistlink`;
+/*
+DESCRIBE `discord_giverole`;
 
 +----------+--------------+------+-----+---------+----------------+
 | Field    | Type         | Null | Key | Default | Extra          |
 +----------+--------------+------+-----+---------+----------------+
 | id       | int(11)      | NO   | PRI | NULL    | auto_increment |
 | guild_id | varchar(128) | NO   | MUL | NULL    |                |
-| link     | varchar(512) | NO   |     | NULL    |                |
+| trigger  | varchar(128) | NO   |     | NULL    |                |
+| role_id  | varchar(128) | NO   |     | NULL    |                |
 +----------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `discord_blacklist_whitelistlink`;
+-- SHOW CREATE TABLE `discord_giverole`;
 
-CREATE TABLE `discord_blacklist_whitelistlink` (
+CREATE TABLE `discord_giverole` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
-  `link` varchar(512) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+  `trigger` varchar(128) NOT NULL,
+  `role_id` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `guild_id` (`guild_id`,`trigger`,`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,3 +1,4 @@
+/*
 DESCRIBE `discord_twitch_alert`;
 
 +--------------------+--------------+------+-----+---------+----------------+
@@ -8,8 +9,9 @@ DESCRIBE `discord_twitch_alert`;
 | discord_channel_id | varchar(128) | NO   |     | NULL    |                |
 | twitch_channel_id  | varchar(128) | NO   |     | NULL    |                |
 +--------------------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `discord_twitch_alert`;
+-- SHOW CREATE TABLE `discord_twitch_alert`;
 
 CREATE TABLE `discord_twitch_alert` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

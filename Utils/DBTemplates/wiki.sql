@@ -1,3 +1,4 @@
+/*
 DESCRIBE `wiki`;
 
 +------------+--------------+------+-----+---------------------+----------------+
@@ -14,8 +15,9 @@ DESCRIBE `wiki`;
 | edited_at  | datetime     | YES  |     | NULL                |                |
 | edited_by  | int(8)       | YES  |     | NULL                |                |
 +------------+--------------+------+-----+---------------------+----------------+
+*/
 
-SHOW CREATE TABLE `wiki`;
+-- SHOW CREATE TABLE `wiki`;
 
 CREATE TABLE `wiki` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

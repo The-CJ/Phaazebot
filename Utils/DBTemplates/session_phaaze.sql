@@ -1,3 +1,4 @@
+/*
 DESCRIBE `session_phaaze`;
 
 +------------+--------------+------+-----+---------------------+----------------+
@@ -8,8 +9,9 @@ DESCRIBE `session_phaaze`;
 | user_id    | int(11)      | YES  |     | NULL                |                |
 | created_at | datetime     | YES  |     | current_timestamp() |                |
 +------------+--------------+------+-----+---------------------+----------------+
+*/
 
-SHOW CREATE TABLE `session_phaaze`;
+-- SHOW CREATE TABLE `session_phaaze`;
 
 CREATE TABLE `session_phaaze` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

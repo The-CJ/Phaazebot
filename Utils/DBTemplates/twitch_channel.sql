@@ -1,3 +1,4 @@
+/*
 DESCRIBE `twitch_channel`;
 
 +--------------+--------------+------+-----+---------+----------------+
@@ -11,8 +12,9 @@ DESCRIBE `twitch_channel`;
 | live         | tinyint(1)   | YES  |     | 0       |                |
 | managed      | tinyint(1)   | YES  |     | 0       |                |
 +--------------+--------------+------+-----+---------+----------------+
+*/
 
-SHOW CREATE TABLE `twitch_channel`;
+-- SHOW CREATE TABLE `twitch_channel`;
 
 CREATE TABLE `twitch_channel` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
