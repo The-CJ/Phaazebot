@@ -8,7 +8,7 @@ DESCRIBE `discord_level`;
 | guild_id  | varchar(128) | NO   | MUL | NULL    |                |
 | member_id | varchar(128) | NO   |     | NULL    |                |
 | edited    | tinyint(1)   | YES  |     | 0       |                |
-| xp        | int(8)       | YES  |     | 0       |                |
+| exp       | int(8)       | YES  |     | 0       |                |
 | medals    | longtext     | YES  |     | '[]'    |                |
 | on_server | tinyint(1)   | YES  |     | 1       |                |
 +-----------+--------------+------+-----+---------+----------------+
@@ -21,7 +21,7 @@ CREATE TABLE `discord_level` (
   `guild_id` varchar(128) NOT NULL,
   `member_id` varchar(128) NOT NULL,
   `edited` tinyint(1) DEFAULT 0,
-  `xp` int(8) DEFAULT 0,
+  `exp` int(8) DEFAULT 0,
   `medals` longtext DEFAULT '[]',
   `on_server` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id`),
