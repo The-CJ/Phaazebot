@@ -20,6 +20,35 @@ async def apiDiscordGuildUnknown(cls:"WebIndex", WebRequest:Request, **kwargs:di
 		status=400
 	)
 
+async def apiDiscordMissingPermission(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+			user_id:str
+			guild_id:str
+	"""
+	res:dict = dict(status=400)
+
+	default_msg:str = "missing 'administrator' or 'manage_guild' permission"
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	user_id:str = kwargs.get("user_id", "")
+	if user_id:
+		res["user_id"] = user_id
+
+	guild_id:str = kwargs.get("guild_id", "")
+	if guild_id:
+		res["guild_id"] = guild_id
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Missing Permission: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)
+
+# not found
 async def apiDiscordMemberNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
 		Takes from kwargs:
@@ -104,57 +133,7 @@ async def apiDiscordChannelNotFound(cls:"WebIndex", WebRequest:Request, **kwargs
 		status=404
 	)
 
-async def apiDiscordMissingPermission(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
-	"""
-		Takes from kwargs:
-			msg:str
-			user_id:str
-			guild_id:str
-	"""
-	res:dict = dict(status=400)
-
-	default_msg:str = "missing 'administrator' or 'manage_guild' permission"
-	msg:str = kwargs.get("msg", default_msg)
-	res["msg"] = msg
-
-	user_id:str = kwargs.get("user_id", "")
-	if user_id:
-		res["user_id"] = user_id
-
-	guild_id:str = kwargs.get("guild_id", "")
-	if guild_id:
-		res["guild_id"] = guild_id
-
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Missing Permission: {WebRequest.path}", require="api:400")
-	return cls.response(
-		text=json.dumps( res ),
-		content_type="application/json",
-		status=400
-	)
-
-async def apiDiscordCommandLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
-	"""
-		Takes from kwargs:
-			msg:str
-			limit:str
-	"""
-	res:dict = dict(status=400)
-
-	default_msg:str = "You have hit the limit of commands for this server"
-	msg:str = kwargs.get("msg", default_msg)
-	res["msg"] = msg
-
-	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT)
-	if limit:
-		res["limit"] = limit
-
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many commands: {WebRequest.path}", require="api:400")
-	return cls.response(
-		text=json.dumps( res ),
-		content_type="application/json",
-		status=400
-	)
-
+# non exists
 async def apiDiscordCommandExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
 		Takes from kwargs:
@@ -195,6 +174,53 @@ async def apiDiscordCommandNotExists(cls:"WebIndex", WebRequest:Request, **kwarg
 		res["command"] = command
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Command not found: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)
+
+# limits
+async def apiDiscordCommandLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+			limit:str
+	"""
+	res:dict = dict(status=400)
+
+	default_msg:str = "You have hit the limit of commands for this server"
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT)
+	if limit:
+		res["limit"] = limit
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many commands: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)
+
+async def apiDiscordLevelMedalLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+			limit:str
+	"""
+	res:dict = dict(status=400)
+
+	default_msg:str = "You have hit the limit of medals for this member"
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_LEVEL_MEDAL_AMOUNT)
+	if limit:
+		res["limit"] = limit
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many medals: {WebRequest.path}", require="api:400")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",
