@@ -12,7 +12,6 @@ DESCRIBE `user`;
 | created_at       | datetime     | YES  |     | current_timestamp() |                |
 | edited_at        | datetime     | YES  |     | NULL                |                |
 | last_login       | datetime     | YES  |     | NULL                |                |
-| roles            | longtext     | YES  |     | '[]'                |                |
 | username_changed | int(8)       | YES  |     | 0                   |                |
 +------------------+--------------+------+-----+---------------------+----------------+
 */
@@ -21,14 +20,13 @@ DESCRIBE `user`;
 
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(64) CHARACTER SET utf8mb4 DEFAULT NULL,
-  `email` varchar(128) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `username` varchar(64) DEFAULT NULL,
+  `email` varchar(128) DEFAULT NULL,
   `verified` tinyint(1) DEFAULT 0,
-  `password` varchar(256) CHARACTER SET utf8mb4 NOT NULL,
+  `password` varchar(256) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `edited_at` datetime DEFAULT NULL,
   `last_login` datetime DEFAULT NULL,
-  `roles` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`roles`)),
   `username_changed` int(8) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
