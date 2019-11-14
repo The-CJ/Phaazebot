@@ -82,7 +82,7 @@ class DBConn(object):
 
 		return res
 
-	def deleteQuery(self, sql:str, values:tuple = None) -> list:
+	def deleteQuery(self, sql:str, values:tuple = None) -> int:
 		"""
 			Pretty much the same as a normal .query()
 			except it ensures a int return
@@ -96,13 +96,10 @@ class DBConn(object):
 		# do stuff
 		Cursor.execute(sql, values)
 
-		# gather stuff
-		res:list = Cursor.fetchall()
-
 		# close?, commit is not necessary in a select
 		if not self.mass_request: Conn.close()
 
-		return res
+		return int(Cursor.rowcount)
 
 	def updateQuery(self, table:str=None, content:dict=None, where:str=None, where_values:tuple=()) -> int:
 		"""
@@ -139,7 +136,7 @@ class DBConn(object):
 		Conn.commit()
 		if not self.mass_request: Conn.close()
 
-		return Cursor.rowcount
+		return int(Cursor.rowcount)
 
 	def insertQuery(self, table:str=None, content:dict=None) -> int:
 		"""
