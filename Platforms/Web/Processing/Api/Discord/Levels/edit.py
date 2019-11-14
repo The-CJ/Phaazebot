@@ -152,7 +152,23 @@ async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data
 		)
 
 	elif action == "remove":
-		pass
+		if medal_name not in CurrentLevelUser.medals:
+			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{medal_name}', is currently not added")
+
+		cls.Web.BASE.PhaazeDB.deleteQuery("""
+			DELETE FROM `discord_level_medal`
+			WHERE `guild_id` = %s
+				AND `member_id` = %s
+				AND `name` = %s""",
+			(guild_id, member_id, medal_name)
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Level Medal Update: S:{guild_id} M:{member_id} - rem: {medal_name}", require="discord:level")
+		return cls.response(
+			text=json.dumps( dict(msg="level medals update successfull updated", rem=medal_name, status=200) ),
+			content_type="application/json",
+			status=200
+		)
 
 	else:
 		return await apiWrongData(cls, WebRequest)
