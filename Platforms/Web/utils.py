@@ -59,7 +59,17 @@ async def searchUser(cls:"WebIndex", where:str, values:tuple = None) -> list:
 	"""
 		Search user via custom 'where' statement
 	"""
-	statement:str = f"SELECT * FROM user WHERE {where}"
+	statement:str = f"""
+		SELECT
+			`user`.*,
+			GROUP_CONCAT(`role`.`name` SEPARATOR ';;;')
+		FROM `user`
+		LEFT JOIN `user_has_role`
+			ON `user_has_role`.`user_id` = `user`.`id`
+		LEFT JOIN `role`
+			ON `role`.`id` = `user_has_role`.`role_id`
+		WHERE {where}
+		GROUP BY `user`.`id`"""
 
 	res:list = cls.Web.BASE.PhaazeDB.query(statement, values)
 
