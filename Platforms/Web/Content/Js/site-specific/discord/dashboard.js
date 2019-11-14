@@ -1290,8 +1290,8 @@ var Levels = new(class {
       // in this case the owner has the option to remove this user
       // NOTE: if member name themself "[N/A]" there can be removed even duh there are on the server.
       //       that is a wanted feature since a owner can do this at any time, via a API request
-      //       So kids, dont be dumb and call yourself '[N/A]' or you may get deleted
-      if (level["username"] == "[N/A]") {
+      //       So kids, dont be dumb and call yourself '[N/A]' and delete your avatar or you may get deleted
+      if (level["username"] == "[N/A]" && level["avatar"] == null) {
         $("#level_modal_edit [name=on_server]").show();
       } else {
         $("#level_modal_edit [name=on_server]").hide();
@@ -1376,7 +1376,7 @@ var Levels = new(class {
       $("#level_modal_edit").modal("hide");
       LevelO.show({offset:LevelO.offset});
     }
-    this.update(req);
+    this.update(req, suc);
   }
 
   update(level_update, success_function, fail_function) {
