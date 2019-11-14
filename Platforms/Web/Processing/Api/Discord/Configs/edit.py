@@ -19,7 +19,7 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordRoleNotFound,
 	apiDiscordChannelNotFound
 )
-from Utils.Classes.undefined import Undefined, UNDEFINED
+from Utils.Classes.undefined import UNDEFINED
 from Platforms.Discord.blacklist import checkBlacklistPunishmentString
 from Utils.dbutils import validateDBInput
 
