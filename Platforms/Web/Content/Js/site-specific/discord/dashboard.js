@@ -1277,12 +1277,7 @@ var Levels = new(class {
       $("#level_modal_edit img").attr("src", avatar);
 
       // insert medals
-      var EntryList = $("#level_modal_edit .medallist").html("");
-      for (var entry of level.medals) {
-        var EntryRow = $("[phantom] .medal").clone();
-        EntryRow.find(".name").text( entry );
-        EntryList.append(EntryRow);
-      }
+      LevelObj.buildDetailMedal(level.medals);
 
       // edited?
       $("#level_modal_edit [name=exp]").attr("edited", level.edited ? "true" : "false");
@@ -1303,6 +1298,15 @@ var Levels = new(class {
     })
   }
 
+  buildDetailMedal(medal_list) {
+    var EntryList = $("#level_modal_edit .medallist").html("");
+    for (var entry of medal_list) {
+      var EntryRow = $("[phantom] .medal").clone();
+      EntryRow.find(".name").text( entry );
+      EntryList.append(EntryRow);
+    }
+  }
+
   editExp() {
     var c = confirm("Editing the exp will leave a permanent [EDITED] mark, unless resettet to 0, be carefull. Want to continue?");
     if (!c) { return; }
@@ -1315,7 +1319,12 @@ var Levels = new(class {
     var new_medal = $("#new_medal").val();
     if (isEmpty(new_medal)) { return; }
 
-    this.update();
+    var req = {
+      "medal_name": new_medal,
+      "medal_action": "add"
+    };
+
+    this.update(req);
   }
 
   update(level_update, success_function, fail_function) {
