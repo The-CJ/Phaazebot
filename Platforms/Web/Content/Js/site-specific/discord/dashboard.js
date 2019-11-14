@@ -1287,6 +1287,10 @@ var Levels = new(class {
       // edited?
       $("#level_modal_edit [name=exp]").attr("edited", level.edited ? "true" : "false");
 
+      // better format, aka lazy format
+      level["display_rank"] = (level["rank"] ? "Rank: #"+level["rank"] : "Rank: [N/A]");
+      level["display_id"] = (level["rank"] ? "ID: "+level["member_id"] : "ID: [N/A]");
+
       insertData("#level_modal_edit", level);
 
       $("#level_modal_edit").attr("edit-member", level.member_id);
