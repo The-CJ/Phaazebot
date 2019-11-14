@@ -78,8 +78,8 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# db_changes["x"] = "1"
 
 	# exp
-	value:int = Data.getInt("exp", None, min_x=0)
-	if value != None:
+	value:int = Data.getInt("exp", UNDEFINED, min_x=0)
+	if value != UNDEFINED:
 		db_changes["exp"] = validateDBInput(int, value)
 		changes["exp"] = value
 
@@ -89,6 +89,15 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		else:
 			db_changes["edited"] = validateDBInput(bool, False)
 			changes["edited"] = False
+
+	# on_server
+	value:bool = Data.getBool("on_server", UNDEFINED)
+	if value != UNDEFINED:
+		if not Guild.owner == CheckMember:
+			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'on_server' require server owner")
+
+		db_changes["on_server"] = validateDBInput(bool, value)
+		changes["on_server"] = value
 
 	if not db_changes:
 		return await missingData(cls, WebRequest, msg="No changes, please add at least one")

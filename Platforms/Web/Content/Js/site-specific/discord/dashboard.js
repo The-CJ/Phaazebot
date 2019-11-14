@@ -1271,8 +1271,6 @@ var Levels = new(class {
     .done(function (data) {
       var level = data.result[0];
 
-      console.log(level);
-
       // set avatar
       var avatar = discordAvatar(level.member_id, level.avatar, 128);
       $("#level_modal_edit img").attr("src", avatar);
@@ -1287,6 +1285,17 @@ var Levels = new(class {
       // better format, aka lazy format
       level["display_rank"] = (level["rank"] ? "Rank: #"+level["rank"] : "Rank: [N/A]");
       level["display_id"] = (level["rank"] ? "ID: "+level["member_id"] : "ID: [N/A]");
+
+      // if name is [N/A], that could mean the user is not on the server, but phaaze did not catch the event to remove him,
+      // in this case the owner has the option to remove this user
+      // NOTE: if member name themself "[N/A]" there can be removed even duh there are on the server.
+      //       that is a wanted feature since a owner can do this at any time, via a API request
+      //       So kids, dont be dumb and call yourself '[N/A]' or you may get deleted
+      if (level["username"] == "[N/A]") {
+        $("#level_modal_edit [name=on_server]").show();
+      } else {
+        $("#level_modal_edit [name=on_server]").hide();
+      }
 
       insertData("#level_modal_edit", level);
 
@@ -1351,6 +1360,23 @@ var Levels = new(class {
       LevelO.current_user_medal.splice(i, 1);
       LevelO.buildDetailMedal(LevelO.current_user_medal);
     });
+  }
+
+  setOnServerFalse() {
+    var c = confirm("It seems, this member is not on the server anymore and Phaaze did not catch this.\n"+
+      "Do you want to set this member to a inactive state?\n"+
+      "(This action can not be undone until the member joins the server again)");
+    if (!c) { return; }
+
+    var req = {
+      "on_server": false
+    };
+    var LevelO = this;
+    var suc = function () {
+      $("#level_modal_edit").modal("hide");
+      LevelO.show({offset:LevelO.offset});
+    }
+    this.update(req);
   }
 
   update(level_update, success_function, fail_function) {
