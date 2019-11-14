@@ -10,6 +10,7 @@ from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import missingData, apiWrongData
 from Platforms.Discord.utils import getDiscordServerLevels
 from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.discordleveluser import DiscordLevelUser
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from Utils.dbutils import validateDBInput
@@ -55,10 +56,12 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not level:
 		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find a level for this user")
 
+	CurrentLevelUser:DiscordLevelUser = level[0]
+
 	# single actions
 	action:str = Data.getStr("medal_action", UNDEFINED)
 	if action:
-		return await singleActionMedal(cls, WebRequest, action, Data, Guild)
+		return await singleActionMedal(cls, WebRequest, action, Data, CurrentLevelUser)
 
 	changes:dict = dict()
 	db_changes:dict = dict()
@@ -81,7 +84,7 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		else:
 			db_changes["edited"] = validateDBInput(bool, False)
 			changes["edited"] = False
-			
+
 	if not db_changes:
 		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
 
@@ -99,7 +102,7 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		status=200
 	)
 
-async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Guild:discord.Guild) -> Response:
+async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, CurrentLevelUser:DiscordLevelUser) -> Response:
 	"""
 		Default url: /api/discord/levels/edit?medal_action=something
 	"""
@@ -118,6 +121,9 @@ async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data
 		return await missingData(cls, WebRequest, msg="missing or invalid 'member_id'")
 
 	if action == "add":
+		if medal_name in CurrentLevelUser.medals:
+			return await apiWrongData(cls, WebRequest, msg=f"'{medal_name}' is already added")
+
 		cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "discord_level_medal",
 			content = {
