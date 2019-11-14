@@ -19,7 +19,7 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordRoleNotFound,
 	apiDiscordChannelNotFound
 )
-from Utils.Classes.undefined import Undefined
+from Utils.Classes.undefined import Undefined, UNDEFINED
 from Platforms.Discord.blacklist import checkBlacklistPunishmentString
 from Utils.dbutils import validateDBInput
 
@@ -106,23 +106,23 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# db_changes["x"] = "1"
 
 	# blacklist_ban_links
-	value:bool = Data.getBool("blacklist_ban_links", None)
-	if value != None:
+	value:bool = Data.getBool("blacklist_ban_links", UNDEFINED)
+	if value != UNDEFINED:
 		db_changes["blacklist_ban_links"] = validateDBInput(bool, value)
 		changes["blacklist_ban_links"] = value
 
 	# blacklist_punishment
-	value:str = Data.getStr("blacklist_punishment", None)
-	if value != None:
+	value:str = Data.getStr("blacklist_punishment", UNDEFINED)
+	if value != UNDEFINED:
 		value = checkBlacklistPunishmentString(value)
 		db_changes["blacklist_punishment"] = validateDBInput(str, value)
 		changes["blacklist_punishment"] = value
 
 	# leave_chan
-	value:str = Data.getStr("leave_chan", None)
-	if value != None:
+	value:str = Data.getStr("leave_chan", UNDEFINED)
+	if value != UNDEFINED:
 		error:bool = False
-		if value == "": pass
+		if not value: value = None
 		elif value.isdigit():
 			Chan:discord.abc.Messageable = discord.utils.get(Guild.channels, id=int(value))
 			if type(Chan) != discord.TextChannel:
@@ -139,24 +139,24 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		changes["leave_chan"] = value
 
 	# leave_msg
-	value:str = Data.getStr("leave_msg", None)
-	if value != None:
-		if value == "": value = None
+	value:str = Data.getStr("leave_msg", UNDEFINED)
+	if value != UNDEFINED:
+		if not value: value = None
 		db_changes["leave_msg"] = validateDBInput(str, value, allow_null=True)
 		changes["leave_msg"] = value
 
 	# level_custom_msg
-	value:str = Data.getStr("level_custom_msg", None)
-	if value != None:
-		if value == "": value = None
+	value:str = Data.getStr("level_custom_msg", UNDEFINED)
+	if value != UNDEFINED:
+		if not value: value = None
 		db_changes["level_custom_msg"] = validateDBInput(str, value, allow_null=True)
 		changes["level_custom_msg"] = value
 
 	# level_announce_chan
-	value:str = Data.getStr("level_announce_chan", None)
-	if value != None:
+	value:str = Data.getStr("level_announce_chan", UNDEFINED)
+	if value != UNDEFINED:
 		error:bool = False
-		if value == "": value = None
+		if not value: value = None
 		elif value.isdigit():
 			Chan:discord.abc.Messageable = discord.utils.get(Guild.channels, id=int(value))
 			if type(Chan) != discord.TextChannel:
@@ -173,34 +173,34 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		changes["level_announce_chan"] = value
 
 	# owner_disable_level
-	value:bool = Data.getBool("owner_disable_level", None)
-	if value != None:
+	value:bool = Data.getBool("owner_disable_level", UNDEFINED)
+	if value != UNDEFINED:
 		db_changes["owner_disable_level"] = validateDBInput(bool, value)
 		changes["owner_disable_level"] = value
 
 	# owner_disable_normal
-	value:bool = Data.getBool("owner_disable_normal", None)
-	if value != None:
+	value:bool = Data.getBool("owner_disable_normal", UNDEFINED)
+	if value != UNDEFINED:
 		db_changes["owner_disable_normal"] = validateDBInput(bool, value)
 		changes["owner_disable_normal"] = value
 
 	# owner_disable_regular
-	value:bool = Data.getBool("owner_disable_regular", None)
-	if value != None:
+	value:bool = Data.getBool("owner_disable_regular", UNDEFINED)
+	if value != UNDEFINED:
 		db_changes["owner_disable_regular"] = validateDBInput(bool, value)
 		changes["owner_disable_regular"] = value
 
 	# owner_disable_mod
-	value:bool = Data.getBool("owner_disable_mod", None)
-	if value != None:
+	value:bool = Data.getBool("owner_disable_mod", UNDEFINED)
+	if value != UNDEFINED:
 		db_changes["owner_disable_mod"] = validateDBInput(bool, value)
 		changes["owner_disable_mod"] = value
 
 	# welcome_chan
-	value:str = Data.getStr("welcome_chan", None)
-	if value != None:
+	value:str = Data.getStr("welcome_chan", UNDEFINED)
+	if value != UNDEFINED:
 		error:bool = False
-		if value == "": pass
+		if not value: value = None
 		elif value.isdigit():
 			Chan:discord.abc.Messageable = discord.utils.get(Guild.channels, id=int(value))
 			if type(Chan) != discord.TextChannel:
@@ -217,16 +217,16 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		changes["welcome_chan"] = value
 
 	# welcome_msg
-	value:str or Undefined = Data.getStr("welcome_msg", None)
-	if value != None:
-		if value == "": value = None
+	value:str = Data.getStr("welcome_msg", UNDEFINED)
+	if value != UNDEFINED:
+		if not value: value = None
 		db_changes["welcome_msg"] = validateDBInput(str, value, allow_null=True)
 		changes["welcome_msg"] = value
 
 	# welcome_msg_priv
-	value:str or Undefined = Data.getStr("welcome_msg_priv", None)
-	if value != None:
-		if value == "": value = None
+	value:str = Data.getStr("welcome_msg_priv", UNDEFINED)
+	if value != UNDEFINED:
+		if not value: value = None
 		db_changes["welcome_msg_priv"] = validateDBInput(str, value, allow_null=True)
 		changes["welcome_msg_priv"] = value
 
