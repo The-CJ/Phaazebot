@@ -35,10 +35,11 @@ class WebRequestContent(object):
 		await self.unpackGet()
 
 		if self.WebRequest.method in ["POST"]:
-			if self.WebRequest.headers.get("content-type", None) == "application/json":
+			content_type:str = self.WebRequest.headers.get("content-type", "")
+			if content_type == "application/json":
 				await self.unpackJson()
 
-			elif self.WebRequest.headers.get("content-type", "").startswith("multipart/"):
+			elif content_type.startswith("multipart/"):
 				await self.unpackMultipart()
 
 			else:
@@ -55,8 +56,11 @@ class WebRequestContent(object):
 
 	@forcable
 	async def unpackJson(self) -> None:
-		json_content:dict = await self.WebRequest.post()
-		self.content = {**self.content, **json_content}
+		try:
+			json_content:dict = await self.WebRequest.json()
+			self.content = {**self.content, **json_content}
+		except:
+			pass
 
 	@forcable
 	async def unpackMultipart(self) -> None:
