@@ -15,4 +15,4 @@ class DiscordLevelUser(DBContentClass):
 		self.rank:int = data.get("rank", Undefined())
 		self.exp:int = int( data.get("exp", 0) )
 		self.edited:bool = bool( data.get("edited", False) )
-		self.medals:list = self.fromJsonField( data.get("medals", Undefined()) )
+		self.medals:list = self.fromStringList( data.get("medals", Undefined() ), ";;;" )

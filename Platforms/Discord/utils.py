@@ -124,11 +124,19 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 
 	sql:str = """
 		WITH discord_level AS (
-			SELECT RANK() OVER (ORDER BY exp DESC) AS rank, discord_level.*
-			FROM discord_level
-			WHERE discord_level.on_server = 1 AND discord_level.guild_id = %s
+			SELECT
+				`discord_level`.*,
+				GROUP_CONCAT(`discord_level_medal`.`name` SEPARATOR ';;;') AS `medals`,
+				RANK() OVER (ORDER BY `exp` DESC) AS `rank`
+			FROM `discord_level`
+			LEFT JOIN `discord_level_medal`
+				ON `discord_level_medal`.`guild_id` = `discord_level`.`guild_id`
+					AND `discord_level_medal`.`member_id` = `discord_level`.`member_id`
+			WHERE `discord_level`.`on_server` = 1
+				AND `discord_level`.`guild_id` = %s
+			GROUP BY `discord_level`.`guild_id`, `discord_level`.`member_id`
 		)
-		SELECT * FROM discord_level WHERE 1"""
+		SELECT * FROM `discord_level` WHERE 1"""
 
 	values:tuple = (guild_id,)
 
