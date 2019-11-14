@@ -22,7 +22,6 @@ async def apiAccountGetPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		email=str( UserInfo.email ),
 		verified=bool( UserInfo.verified ),
 		roles=list( UserInfo.roles ),
-		role_ids=list( UserInfo.role_ids ),
 		user_id=int( UserInfo.user_id ),
 		last_login=str( UserInfo.last_login )
 	)

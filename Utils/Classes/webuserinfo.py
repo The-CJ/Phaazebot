@@ -43,7 +43,6 @@ class WebUserInfo(DBContentClass):
 		self.last_login:datetime.datetime = None
 		self.user_id:int = None
 		self.roles:list = None
-		self.role_ids:list = None
 
 	def checkRoles(self, roles:str or list) -> bool:
 		if not roles: return True
@@ -182,14 +181,19 @@ class WebUserInfo(DBContentClass):
 
 	async def viaSession(self) -> None:
 		dbr:str = """
-			SELECT user.*, GROUP_CONCAT(role.name) AS rolenames
-			FROM session_phaaze, user
-			LEFT JOIN role
-				ON JSON_CONTAINS(user.roles, role.id)
-			WHERE session_phaaze.created_at > (NOW() - INTERVAL 7 DAY)
-				AND session_phaaze.session = %s
-				AND session_phaaze.user_id = user.id
-			GROUP BY user.id"""
+			SELECT
+				`user`.*,
+				GROUP_CONCAT(`role`.`name` SEPARATOR ';;;') AS `roles`
+			FROM session_phaaze
+			JOIN `user`
+				ON `user`.`id` = `session_phaaze`.`user_id`
+			LEFT JOIN `user_has_role`
+				ON `user_has_role`.`user_id` = `user`.`id`
+			LEFT JOIN `role`
+				ON `role`.`id` = `user_has_role`.`role_id`
+			WHERE `session_phaaze`.`created_at` > (NOW() - INTERVAL 7 DAY)
+				AND `session_phaaze`.`session` = %s
+			GROUP BY `user`.`id`"""
 		val:tuple = (self.__session, )
 
 		return await self.dbRequest(dbr, val)
@@ -214,11 +218,7 @@ class WebUserInfo(DBContentClass):
 		self.verified = data.get("verified", Undefined())
 
 		self.created_at = data.get("created_at", Undefined())
-		self.edited_atd = data.get("edited_at", Undefined())
+		self.edited_at = data.get("edited_at", Undefined())
 		self.last_login = data.get("last_login", Undefined())
 
-		self.role_ids = self.fromJsonField( data.get("roles", "[]") )
-
-		r:str or None = data.get("rolenames", "")
-		if r: self.roles = r.split(",")
-		else: self.roles = list()
+		self.roles = self.fromStringList( data.get("roles", ''), ";;;" )
