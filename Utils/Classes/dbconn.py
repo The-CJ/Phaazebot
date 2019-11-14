@@ -96,7 +96,8 @@ class DBConn(object):
 		# do stuff
 		Cursor.execute(sql, values)
 
-		# close?, commit is not necessary in a select
+		# commit and close?
+		Conn.commit()
 		if not self.mass_request: Conn.close()
 
 		return int(Cursor.rowcount)
