@@ -1178,6 +1178,7 @@ var Levels = new(class {
     this.results_per_page = 50;
     this.offset = 0;
     this.total = 0;
+    this.current_user_medal = [];
   }
 
   show(x={}) {
@@ -1277,7 +1278,8 @@ var Levels = new(class {
       $("#level_modal_edit img").attr("src", avatar);
 
       // insert medals
-      LevelObj.buildDetailMedal(level.medals);
+      LevelObj.current_user_medal = level.medals;
+      LevelObj.buildDetailMedal(LevelObj.current_user_medal);
 
       // edited?
       $("#level_modal_edit [name=exp]").attr("edited", level.edited ? "true" : "false");
@@ -1323,8 +1325,16 @@ var Levels = new(class {
       "medal_name": new_medal,
       "medal_action": "add"
     };
-
-    this.update(req);
+    var LevelO = this;
+    var successfunc = function() {
+      $("#new_medal").val("");
+      LevelO.current_user_medal.push(new_medal);
+      LevelO.buildDetailMedal(LevelO.current_user_medal);
+    }
+    var failfunc = function () {
+      $("#new_medal").val("");
+    }
+    this.update(req, successfunc, failfunc);
   }
 
   update(level_update, success_function, fail_function) {
