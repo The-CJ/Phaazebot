@@ -81,6 +81,9 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		else:
 			db_changes["edited"] = validateDBInput(bool, False)
 			changes["edited"] = False
+			
+	if not db_changes:
+		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Level Update: S:{guild_id} M:{member_id} {str(db_changes)}", require="discord:levels")
 	cls.Web.BASE.PhaazeDB.updateQuery(
@@ -113,3 +116,26 @@ async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data
 	if not member_id:
 		# should never happen
 		return await missingData(cls, WebRequest, msg="missing or invalid 'member_id'")
+
+	if action == "add":
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "discord_level_medal",
+			content = {
+				"guild_id": guild_id,
+				"member_id": member_id,
+				"name": medal_name
+			}
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API/Discord) Level Medal Update: S:{guild_id} M:{member_id} - add: {medal_name}", require="discord:level")
+		return cls.response(
+			text=json.dumps( dict(msg="level medals update successfull updated", add=medal_name, status=200) ),
+			content_type="application/json",
+			status=200
+		)
+
+	elif action == "remove":
+		pass
+
+	else:
+		return await apiWrongData(cls, WebRequest)
