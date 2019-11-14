@@ -13,7 +13,7 @@ from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from Utils.dbutils import validateDBInput
-from Utils.Classes.undefined import Undefined
+from Utils.Classes.undefined import UNDEFINED
 
 async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -56,9 +56,9 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find a level for this user")
 
 	# single actions
-	# action:str or Undefined = Data.getStr("medal_action", "")
-	# if action:
-	# 	return await singleActionMedal(cls, WebRequest, action, Data, Guild)
+	action:str = Data.getStr("medal_action", UNDEFINED)
+	if action:
+		return await singleActionMedal(cls, WebRequest, action, Data, Guild)
 
 	changes:dict = dict()
 	db_changes:dict = dict()
@@ -95,3 +95,21 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		content_type="application/json",
 		status=200
 	)
+
+async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Guild:discord.Guild) -> Response:
+	"""
+		Default url: /api/discord/levels/edit?medal_action=something
+	"""
+	guild_id:str = Data.getStr("guild_id", "")
+	member_id:str = Data.getStr("member_id", "")
+
+	action = action.lower()
+	medal_name:str = Data.getStr("medal_name", "").strip(" ").strip("\n")
+
+	if not guild_id:
+		# should never happen
+		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+
+	if not member_id:
+		# should never happen
+		return await missingData(cls, WebRequest, msg="missing or invalid 'member_id'")
