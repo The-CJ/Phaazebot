@@ -175,24 +175,32 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# owner_disable_level
 	value:bool = Data.getBool("owner_disable_level", UNDEFINED)
 	if value != UNDEFINED:
+		if not Guild.owner == CheckMember:
+			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_level' require server owner")
 		db_changes["owner_disable_level"] = validateDBInput(bool, value)
 		changes["owner_disable_level"] = value
 
 	# owner_disable_normal
 	value:bool = Data.getBool("owner_disable_normal", UNDEFINED)
 	if value != UNDEFINED:
+		if not Guild.owner == CheckMember:
+			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_normal' require server owner")
 		db_changes["owner_disable_normal"] = validateDBInput(bool, value)
 		changes["owner_disable_normal"] = value
 
 	# owner_disable_regular
 	value:bool = Data.getBool("owner_disable_regular", UNDEFINED)
 	if value != UNDEFINED:
+		if not Guild.owner == CheckMember:
+			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_regular' require server owner")
 		db_changes["owner_disable_regular"] = validateDBInput(bool, value)
 		changes["owner_disable_regular"] = value
 
 	# owner_disable_mod
 	value:bool = Data.getBool("owner_disable_mod", UNDEFINED)
 	if value != UNDEFINED:
+		if not Guild.owner == CheckMember:
+			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_mod' require server owner")
 		db_changes["owner_disable_mod"] = validateDBInput(bool, value)
 		changes["owner_disable_mod"] = value
 
