@@ -1337,6 +1337,22 @@ var Levels = new(class {
     this.update(req, successfunc, failfunc);
   }
 
+  removeMedal(HTMLButton) {
+    var Entry = $(HTMLButton).closest(".medal");
+    var medal_name = Entry.find(".name").text();
+
+    var req = {
+      "medal_name": medal_name,
+      "medal_action": "remove"
+    };
+    var LevelO = this;
+    this.update(req, function () {
+      var i = LevelO.current_user_medal.indexOf(medal_name);
+      LevelO.current_user_medal.splice(i, 1);
+      LevelO.buildDetailMedal(LevelO.current_user_medal);
+    });
+  }
+
   update(level_update, success_function, fail_function) {
     var guild_id = $("#guild_id").val();
     level_update["guild_id"] = guild_id;
