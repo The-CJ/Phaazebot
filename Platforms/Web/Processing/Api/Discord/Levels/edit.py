@@ -120,6 +120,9 @@ async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data
 		# should never happen
 		return await missingData(cls, WebRequest, msg="missing or invalid 'member_id'")
 
+	if not medal_name:
+		return await missingData(cls, WebRequest, msg="missing 'medal_name'")
+
 	if action == "add":
 		if medal_name in CurrentLevelUser.medals:
 			return await apiWrongData(cls, WebRequest, msg=f"'{medal_name}' is already added")
