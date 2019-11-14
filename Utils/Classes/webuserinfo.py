@@ -168,14 +168,21 @@ class WebUserInfo(DBContentClass):
 		self.__password = password(self.__password)
 
 		dbr:str = """
-			SELECT user.*, GROUP_CONCAT(role.name)
-			FROM user
-			LEFT JOIN role
-				ON JSON_CONTAINS(user.roles, role.id)
-			WHERE (user.username = %s AND user.password = %s)
-				OR user.email LIKE %s
-			GROUP BY user.id"""
-		val:tuple = (self.__username, self.__password, self.__username)
+			SELECT
+				`user`.*,
+				GROUP_CONCAT(`role`.`name` SEPARATOR ';;;') AS `roles`
+			FROM `user`
+			LEFT JOIN `user_has_role`
+				ON `user_has_role`.`user_id` = `user`.`id`
+			LEFT JOIN `role`
+				ON `role`.`id` = `user_has_role`.`role_id`
+			WHERE `user`.`password` = %s
+				AND (
+					`user`.`username` = %s
+					OR LOWER(`user`.`email`) = LOWER(%s)
+				)
+			GROUP BY `user`.`id`"""
+		val:tuple = (self.__password, self.__username, self.__username)
 
 		return await self.dbRequest(dbr, val)
 
