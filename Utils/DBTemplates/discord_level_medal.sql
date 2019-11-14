@@ -19,7 +19,7 @@ CREATE TABLE `discord_level_medal` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
   `member_id` varchar(128) NOT NULL,
-  `name` tinyint(1) DEFAULT 0,
+  `name` varchar(512) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `guild_id` (`guild_id`,`member_id`, `name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
