@@ -12,7 +12,12 @@ from Platforms.Discord.utils import getDiscordServerLevels
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordleveluser import DiscordLevelUser
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
+from Platforms.Web.Processing.Api.Discord.errors import (
+	apiDiscordGuildUnknown,
+	apiDiscordMemberNotFound,
+	apiDiscordMissingPermission,
+	apiDiscordLevelMedalLimit
+)
 from Utils.dbutils import validateDBInput
 from Utils.Classes.undefined import UNDEFINED
 
@@ -126,6 +131,9 @@ async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data
 	if action == "add":
 		if medal_name in CurrentLevelUser.medals:
 			return await apiWrongData(cls, WebRequest, msg=f"'{medal_name}' is already added")
+
+		if len(CurrentLevelUser.medals) >= cls.Web.BASE.Limit.DISCORD_LEVEL_MEDAL_AMOUNT:
+			return await apiDiscordLevelMedalLimit(cls, WebRequest)
 
 		cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "discord_level_medal",

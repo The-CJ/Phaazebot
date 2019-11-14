@@ -45,6 +45,7 @@
   "discord_custom_commands_amount":100,
   "discord_custom_commands_cooldown":3,
   "discord_level_cooldown":3,
+  "discord_level_medal_amount":50,
   "discord_quotes_amount":10,
   "discord_addrole_amount":25,
   "discord_login_link":"https://discordapp.com",
