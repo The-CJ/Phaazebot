@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-if TYPE_CHECKING:
+if TYPE_CHECKING or 1:
 	from main import Phaazebot
 
 import discord
@@ -53,11 +53,23 @@ class PhaazebotDiscord(discord.Client):
 		await self.on_message(After)
 
 	#member management
-	async def on_member_join(self, member):
-		pass
+	async def on_member_join(self, Member:discord.Member) -> None:
+		# set member active, if there was a known entry
+		self.BASE.PhaazeDB.updateQuery(
+			table = "discord_level",
+			content = {"on_server":"1"},
+			where = "guild_id = %s AND member_id = %s",
+			where_values = (Member.guild.id, Member.id)
+		)
 
-	async def on_member_remove(self, member):
-		pass
+	async def on_member_remove(self, Member:discord.Member) -> None:
+		# set member inactive
+		self.BASE.PhaazeDB.updateQuery(
+			table = "discord_level",
+			content = {"on_server":"0"},
+			where = "guild_id = %s AND member_id = %s",
+			where_values = (Member.guild.id, Member.id)
+		)
 
 	async def on_member_ban(self, member):
 		pass
