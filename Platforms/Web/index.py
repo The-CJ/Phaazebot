@@ -89,6 +89,7 @@ class WebIndex(object):
 	def addWebAdminRoutes(self) -> None:
 		self.Web.router.add_route('GET', '/admin', self.adminMain)
 		self.Web.router.add_route('GET', '/admin/manage-system', self.adminManageSystem)
+		self.Web.router.add_route('GET', '/admin/manage-role', self.adminManageRole)
 
 	def addWebDiscordRoutes(self) -> None:
 		self.Web.router.add_route('GET', '/discord', self.discordMain)
@@ -145,6 +146,7 @@ class WebIndex(object):
 	from .Processing.Account.accountlogin import accountLogin
 	from .Processing.Admin.adminmain import adminMain
 	from .Processing.Admin.adminmanagesystem import adminManageSystem
+	from .Processing.Admin.adminmanagerole import adminManageRole
 	from .Processing.Discord.discordmain import discordMain
 	from .Processing.Discord.discordlogin import discordLogin
 	from .Processing.Discord.discorddashboard import discordDashboard
