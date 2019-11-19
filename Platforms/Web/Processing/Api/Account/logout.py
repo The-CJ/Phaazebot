@@ -12,18 +12,18 @@ async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 	"""
 		Default url: /api/account/phaaze/logout
 	"""
-	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
+	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
 
-	if not UserInfo.found:
+	if not WebUser.found:
 		return await userNotFound(cls, WebRequest, msg="Not logged in")
 
 	cls.Web.BASE.PhaazeDB.query("""
 		DELETE FROM session_phaaze
 		WHERE session_phaaze.user_id = %s""",
-		(UserInfo.user_id,)
+		(WebUser.user_id,)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API) Logout - User: {UserInfo.username}", require="api:logout")
+	cls.Web.BASE.Logger.debug(f"(API) Logout - User: {WebUser.username}", require="api:logout")
 	return cls.response(
 		text=json.dumps( dict(status=200) ),
 		content_type="application/json",

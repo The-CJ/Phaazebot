@@ -12,8 +12,8 @@ async def accountCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 		Default url: /account/create
 	"""
 	# already logged in
-	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
-	if UserInfo.found: return await cls.accountMain(WebRequest)
+	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
+	if WebUser.found: return await cls.accountMain(WebRequest)
 
 	CreatePage:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Account/create.html")
 

@@ -11,8 +11,8 @@ async def accountLogin(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /account/login
 	"""
-	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
-	if UserInfo.found: return await cls.accountMain(WebRequest)
+	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
+	if WebUser.found: return await cls.accountMain(WebRequest)
 
 	AccountLogin:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Account/login.html")
 

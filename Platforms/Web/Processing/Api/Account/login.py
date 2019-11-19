@@ -15,15 +15,15 @@ SESSION_EXPIRE:int = 60*60*24*7 # 1 week
 async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/phaaze/login
-		looks like all other UserInfo pairs, except this time it should be a post request, leading new information to login,
+		looks like all other WebUser pairs, except this time it should be a post request, leading new information to login,
 		create session and give this to the user
 	"""
-	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest, force_method="getFromPost")
+	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest, force_method="getFromPost")
 
-	if not UserInfo.tryed:
+	if not WebUser.tryed:
 		return await missingData(cls, WebRequest)
 
-	if not UserInfo.found:
+	if not WebUser.found:
 		return await userNotFound(cls, WebRequest)
 
 	session_key:str = randomString(size=32)
@@ -31,14 +31,14 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	cls.Web.BASE.PhaazeDB.query("""
 		INSERT INTO session_phaaze
 		(session, user_id)
-		VALUES (%s, %s)""", (session_key, UserInfo.user_id))
+		VALUES (%s, %s)""", (session_key, WebUser.user_id))
 
 	cls.Web.BASE.PhaazeDB.query("""
 		UPDATE user
 		SET last_login = NOW()
-		WHERE user.id = %s""", (UserInfo.user_id,))
+		WHERE user.id = %s""", (WebUser.user_id,))
 
-	cls.Web.BASE.Logger.debug(f"(API) New Login - Session: {session_key} User: {str(UserInfo.username)}", require="api:login")
+	cls.Web.BASE.Logger.debug(f"(API) New Login - Session: {session_key} User: {str(WebUser.username)}", require="api:login")
 	return cls.response(
 		text=json.dumps( dict(phaaze_session=session_key, status=200, expires_in=str(SESSION_EXPIRE)) ),
 		content_type="application/json",

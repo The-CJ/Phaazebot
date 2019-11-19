@@ -18,9 +18,9 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/phaaze/edit
 	"""
-	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
+	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
 
-	if not UserInfo.found:
+	if not WebUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 
 	Data:WebRequestContent = WebRequestContent(WebRequest)
@@ -28,7 +28,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	current_password:str = Data.getStr("phaaze_password", "")
 
-	if not current_password or UserInfo.password != password_function(str(current_password)):
+	if not current_password or WebUser.password != password_function(str(current_password)):
 		return cls.response(
 			status=400,
 			text=json.dumps( dict(error="current_password_wrong", msg="Current password is not correct", status=400) ),
@@ -66,7 +66,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	if new_username:
 		# want a new username
-		if new_username.lower() != UserInfo.username.lower():
+		if new_username.lower() != WebUser.username.lower():
 			is_occupied:list = await searchUser(cls, "user.username LIKE %s", (new_username,))
 			if is_occupied:
 				# already taken
@@ -78,14 +78,14 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 			else:
 				# username is free, add to update and add one to username_changed,
 				# maybe i do something later with it
-				update["username_changed"] = UserInfo.username_changed + 1
+				update["username_changed"] = WebUser.username_changed + 1
 				update["username"] = new_username
 
 		# else, it's a diffrent captation or so
-		elif new_username != UserInfo.username:
+		elif new_username != WebUser.username:
 			update["username"] = new_username
 
-	if new_email and new_email.lower() != UserInfo.email:
+	if new_email and new_email.lower() != WebUser.email:
 		if re.match(IsEmail, new_email) == None:
 			# does not look like a email
 			return cls.response(
@@ -124,9 +124,9 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		cls.Web.BASE.PhaazeDB.updateQuery(
 			table = "user",
 			content = update,
-			where = "user.id = %s", where_values = (UserInfo.user_id,)
+			where = "user.id = %s", where_values = (WebUser.user_id,)
 		)
-		cls.Web.BASE.Logger.debug(f"(API) Account edit ({UserInfo.user_id}) : {str(update)}", require="api:account")
+		cls.Web.BASE.Logger.debug(f"(API) Account edit ({WebUser.user_id}) : {str(update)}", require="api:account")
 		return cls.response(
 			status=200,
 			text=json.dumps( dict(error="successfull_edited", msg="Your account has been successfull edited", status=200) ),
@@ -135,7 +135,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	except Exception as e:
 		tb:str = traceback.format_exc()
-		cls.Web.BASE.Logger.error(f"(API) Account edit failed ({UserInfo.user_id}) - {str(e)}\n{tb}")
+		cls.Web.BASE.Logger.error(f"(API) Account edit failed ({WebUser.user_id}) - {str(e)}\n{tb}")
 		return cls.response(
 			status=500,
 			text=json.dumps( dict(error="edit_failed", msg="Editing you account failed", status=500) ),

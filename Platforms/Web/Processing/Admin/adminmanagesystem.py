@@ -11,9 +11,9 @@ async def adminManageSystem(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /admin/manage-system
 	"""
-	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
-	if not UserInfo.found: return await cls.accountLogin(WebRequest)
-	if not UserInfo.checkRoles(["admin", "superadmin"]): return await cls.notAllowed(WebRequest, msg="Admin rights required")
+	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
+	if not WebUser.found: return await cls.accountLogin(WebRequest)
+	if not WebUser.checkRoles(["admin", "superadmin"]): return await cls.notAllowed(WebRequest, msg="Admin rights required")
 
 	AdminManageSystem:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Admin/manage-system.html")
 

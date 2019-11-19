@@ -18,10 +18,10 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 		Default url: /api/account/phaaze/create
 	"""
 
-	UserInfo:WebUserInfo = await cls.getUserInfo(WebRequest)
+	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
 
-	if UserInfo.found:
-		cls.Web.BASE.Logger.debug(f"(API) Account create already exists - User ID: {UserInfo.user_id}", require="api:create")
+	if WebUser.found:
+		cls.Web.BASE.Logger.debug(f"(API) Account create already exists - User ID: {WebUser.user_id}", require="api:create")
 		return cls.response(
 			body=json.dumps( dict(error="aleady_logged_in", status=400, msg="no registion needed, already logged in") ),
 			content_type="application/json",

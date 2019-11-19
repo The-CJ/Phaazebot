@@ -51,15 +51,15 @@ async def getUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUs
 			phaaze_password
 	"""
 
-	if hasattr(WebRequest, "UserInfo"):
-		cls.Web.BASE.Logger.debug(f"(Web) Used stored infos: {str(WebRequest.UserInfo)}", require="web:debug")
-		return WebRequest.UserInfo
+	if hasattr(WebRequest, "WebUser"):
+		cls.Web.BASE.Logger.debug(f"(Web) Used stored infos: {str(WebRequest.WebUser)}", require="web:debug")
+		return WebRequest.WebUser
 
-	UserInfo:WebUserInfo = WebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
-	await UserInfo.auth()
-	WebRequest.UserInfo = UserInfo
+	WebUser:WebUserInfo = WebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
+	await WebUser.auth()
+	WebRequest.WebUser = WebUser
 
-	return WebRequest.UserInfo
+	return WebRequest.WebUser
 
 async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> DiscordUserInfo:
 	"""
