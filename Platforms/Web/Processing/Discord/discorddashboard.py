@@ -41,7 +41,7 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 		phantoms = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/phantoms.html"),
 		modals = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/modals.html"),
 	)
-	# make it twice since, after the first time, how all included locations also will have replaceable items
+	# make it twice, since some included locations also have replaceable items
 	DiscordDash.replace(
 		guild_name = html.escape(Guild.name),
 		guild_id = Guild.id,
