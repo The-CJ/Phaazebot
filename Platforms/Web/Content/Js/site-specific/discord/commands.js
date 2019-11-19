@@ -15,7 +15,7 @@ function loadCommands() {
       var Template = $("[phantom] .command").clone();
       Template.find(".trigger").text(command.trigger);
       Template.find(".function").text(command.name ? command.name : "");
-      Template.find(".require").text( translateRequire(command.require) );
+      Template.find(".require").text( discordTranslateRequire(command.require) );
       Template.find(".cost").text(command.cost);
       Template.find(".uses").text(command.uses);
       Template.attr("command-id", command.id);
@@ -36,14 +36,6 @@ function loadCommands() {
 
 }
 
-function translateRequire(level) {
-  if (level == 0) { return "Everyone"; }
-  if (level == 1) { return "Regulars"; }
-  if (level == 2) { return "Moderators"; }
-  if (level == 3) { return "Server Owner"; }
-  if (level >= 4) { return "System"; }
-}
-
 function detailCommand(HTMLCommand) {
 
   HTMLCommand = $(HTMLCommand);
@@ -57,7 +49,7 @@ function detailCommand(HTMLCommand) {
     var currency = command.cost == 1 ? $("#guild_currency").val() : $("#guild_currency_multi").val();
     console.log(command);
     $("#command_detail [name=trigger]").text(command.trigger);
-    $("#command_detail [name=require]").text( translateRequire(command.require) );
+    $("#command_detail [name=require]").text( discordTranslateRequire(command.require) );
     $("#command_detail [name=uses]").text( command.uses + " times" );
     $("#command_detail [name=cost]").text( command.cost + " " + currency );
     $("#command_detail [name=name]").text( command.name ? command.name : "(Hidden Command)" );

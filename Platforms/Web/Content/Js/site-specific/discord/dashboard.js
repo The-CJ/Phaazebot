@@ -284,7 +284,7 @@ var Commands = new (class {
         var Template = $("[phantom] .command").clone();
         Template.find(".trigger").text(command.trigger);
         Template.find(".function").text(command.name);
-        Template.find(".require").text( translateRequire(command.require) );
+        Template.find(".require").text( discordTranslateRequire(command.require) );
         Template.find(".cost").text(command.cost);
         Template.find(".uses").text(command.uses);
         Template.find(".cooldown").text(command.cooldown);
@@ -1404,14 +1404,6 @@ var Levels = new(class {
 });
 
 // utils
-function translateRequire(level) {
-  if (level == 0) { return "Everyone"; }
-  if (level == 1) { return "Regulars"; }
-  if (level == 2) { return "Moderators"; }
-  if (level == 3) { return "Server Owner"; }
-  if (level >= 4) { return "System"; }
-}
-
 function showTokenHelp(field) {
   if (isEmpty(field)) { field = ""; }
   else { field = "."+field; }
