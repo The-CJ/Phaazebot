@@ -9,6 +9,11 @@ from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.storeclasses import GlobalStorage
 
 def getNavbar(active:str="") -> HTMLFormatter:
+	"""
+		get the upper nav bar html,
+		with all applied styles based on current location
+	"""
+
 	Navbar:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Navbar/default.html")
 
 	Navbar.replace(
@@ -34,6 +39,18 @@ def getAccountModal() -> HTMLFormatter:
 	return AccountModal
 
 async def getUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:
+	"""
+		Tryes to get a WebUser, takes get, post, and cookie in process
+		kwargs are given to WebUserInfo
+
+		WebUserInfo kwargs:
+			force_method
+			phaaze_session
+			phaaze_token
+			phaaze_username
+			phaaze_password
+	"""
+
 	if hasattr(WebRequest, "UserInfo"):
 		cls.Web.BASE.Logger.debug(f"(Web) Used stored infos: {str(WebRequest.UserInfo)}", require="web:debug")
 		return WebRequest.UserInfo
@@ -45,6 +62,15 @@ async def getUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUs
 	return WebRequest.UserInfo
 
 async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> DiscordUserInfo:
+	"""
+		Tryes to get a DiscordUser, takes get, post, and cookie in process
+		kwargs are given to DiscordUserInfo
+
+		DiscordUserInfo kwargs:
+			force_method
+			phaaze_discord_session
+	"""
+
 	if hasattr(WebRequest, "DiscordUser"):
 		cls.Web.BASE.Logger.debug(f"(Web) Used stored discord infos: {str(WebRequest.DiscordUser)}", require="web:debug")
 		return WebRequest.DiscordUser
