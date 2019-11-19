@@ -10,10 +10,14 @@ def password(passwd:str) -> str:
 	password:str = hashlib.sha256(passwd.encode("UTF-8")).hexdigest()
 	return password
 
-def randomString(size:int = 10, pool:list = [1,2,3], extra:str = "") -> str:
+def randomString(size:int = 10, pool:list = [1,2,3], extra:str = "", remove:str=".`'\"") -> str:
 	"""
 		returns a random generated string by size
-		based on the allowd char pool, extra cahrs can be passed by 'extra'
+		based on the allowd char pool,
+		extra chars can be passed by 'extra', removed via 'remove'
+		(remove first, then add extra)
+
+		Pools:
 		1 - digits
 		2 - uppercase chars
 		3 - lowerchase chars
@@ -24,7 +28,15 @@ def randomString(size:int = 10, pool:list = [1,2,3], extra:str = "") -> str:
 	if 2 in pool: string_pool += string.ascii_uppercase
 	if 3 in pool: string_pool += string.ascii_lowercase
 	if 4 in pool: string_pool += string.punctuation
-	key = ''.join(random.choice(string_pool+extra) for x in range(size))
+
+	# remove unwanted
+	for char in remove:
+		string_pool = string_pool.replace(char, "")
+
+	# add extra
+	string_pool += extra
+
+	key = ''.join(random.choice(string_pool) for x in range(size))
 	return key
 
 def numberToHugeLetter(number:int) -> str:
