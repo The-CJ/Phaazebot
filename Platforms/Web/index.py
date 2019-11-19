@@ -16,7 +16,7 @@ class WebIndex(object):
 		self.Web.middlewares.append(self.middlewareHandler)
 		self.HTMLRoot:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/root.html", template=True)
 
-	def response(self, status:int=200, content_type:str=None, **kwargs:Any) -> Response:
+	def response(self, status:int=200, content_type:str=None, **kwargs:dict) -> Response:
 		already_set_header:dict = kwargs.get('headers', dict())
 		kwargs['headers'] = already_set_header
 		kwargs['headers']['server'] =f"PhaazeOS v{self.Web.BASE.version}"
