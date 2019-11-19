@@ -1198,7 +1198,7 @@ var Levels = new(class {
 
       for (var level of data.result) {
         var Template = $("[phantom] .level").clone();
-        var avatar = discordAvatar(level.member_id, level.avatar);
+        var avatar = discordUserAvatar(level.member_id, level.avatar);
 
         Template.find(".rank").text(level.rank);
         Template.find(".lvl").text(level.level);
@@ -1272,7 +1272,7 @@ var Levels = new(class {
       var level = data.result[0];
 
       // set avatar
-      var avatar = discordAvatar(level.member_id, level.avatar, 128);
+      var avatar = discordUserAvatar(level.member_id, level.avatar, 128);
       $("#level_modal_edit img").attr("src", avatar);
 
       // insert medals
@@ -1418,12 +1418,4 @@ function showTokenHelp(field) {
   $("#token_modal_help .token").hide();
   $("#token_modal_help .token"+field).show();
   $("#token_modal_help").modal("show");
-}
-
-function discordAvatar(member_id, avatar_hash, size=32) {
-  if (avatar_hash) {
-    return "https://cdn.discordapp.com/avatars/"+member_id+"/"+avatar_hash+"?size="+size;
-  } else {
-    return "https://cdn.discordapp.com/embed/avatars/" + (parseInt(member_id) % 5) + ".png";
-  }
 }
