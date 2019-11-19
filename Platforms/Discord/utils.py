@@ -25,7 +25,7 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message
 	else:
 		guild_id:str = origin
 
-	res:list = cls.BASE.PhaazeDB.query("""
+	res:list = cls.BASE.PhaazeDB.selectQuery("""
 		SELECT
 			`discord_setting`.*,
 			(SELECT GROUP_CONCAT(`discord_blacklist_whitelistrole`.`role_id` SEPARATOR ',') FROM `discord_blacklist_whitelistrole` WHERE `discord_blacklist_whitelistrole`.`guild_id` = `discord_setting`.`guild_id`)
@@ -107,7 +107,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 	if limit:
 		sql += f" LIMIT {limit}"
 
-	res:list = cls.BASE.PhaazeDB.query(sql, values)
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
 		return [DiscordCommand(x, guild_id) for x in res]
@@ -152,7 +152,7 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 	if offset:
 		sql += f" OFFSET {offset}"
 
-	res:list = cls.BASE.PhaazeDB.query(sql, values)
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
 		return [DiscordLevelUser(x, guild_id) for x in res]
@@ -168,7 +168,7 @@ async def getDiscordServerLevelAmount(cls:"PhaazebotDiscord", guild_id:str) -> i
 
 	values:tuple = (guild_id,)
 
-	res:list = cls.BASE.PhaazeDB.query(sql, values)
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	return res[0]["I"]
 
@@ -197,7 +197,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 	if limit:
 		sql += f" LIMIT {limit}"
 
-	res:list = cls.BASE.PhaazeDB.query(sql, values)
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
 		return [DiscordQuote(x, guild_id) for x in res]
