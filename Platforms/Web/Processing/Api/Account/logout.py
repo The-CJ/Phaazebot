@@ -12,7 +12,7 @@ async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 	"""
 		Default url: /api/account/phaaze/logout
 	"""
-	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
+	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
 
 	if not WebUser.found:
 		return await userNotFound(cls, WebRequest, msg="Not logged in")

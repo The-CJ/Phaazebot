@@ -18,7 +18,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/phaaze/edit
 	"""
-	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
+	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
 
 	if not WebUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)

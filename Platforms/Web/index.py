@@ -158,4 +158,4 @@ class WebIndex(object):
 	from .Processing.errors import notFound, notAllowed
 
 	# utils
-	from .utils import getUserInfo, getDiscordUserInfo
+	from .utils import getWebUserInfo, getDiscordUserInfo

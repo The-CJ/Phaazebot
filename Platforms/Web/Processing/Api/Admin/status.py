@@ -14,7 +14,7 @@ async def apiAdminStatus(cls:"WebIndex", WebRequest:Request, Data:WebRequestCont
 	"""
 		Default url: /api/admin/status
 	"""
-	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
+	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.checkRoles(["admin", "superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Admin rights required")
 
 	BASE:"Phaazebot" = cls.Web.BASE

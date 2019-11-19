@@ -12,7 +12,7 @@ async def apiAccountGetPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/phaaze/get
 	"""
-	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
+	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
 
 	if not WebUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)

@@ -14,7 +14,7 @@ async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 		Default url: /api/admin/module
 	"""
 
-	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
+	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.checkRoles(["admin", "superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Admin rights required")
 
 	Data:WebRequestContent = WebRequestContent(WebRequest)

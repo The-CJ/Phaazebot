@@ -13,7 +13,7 @@ async def apiAdminEvaluate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/admin/evaluate
 	"""
-	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
+	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.checkRoles(["superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Superadmin rights required")
 
 	Data:WebRequestContent = WebRequestContent(WebRequest)

@@ -38,7 +38,7 @@ def getAccountModal() -> HTMLFormatter:
 	)
 	return AccountModal
 
-async def getUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:
+async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:
 	"""
 		Tryes to get a WebUser, takes get, post, and cookie in process
 		kwargs are given to WebUserInfo

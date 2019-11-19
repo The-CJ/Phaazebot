@@ -18,7 +18,7 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		looks like all other WebUser pairs, except this time it should be a post request, leading new information to login,
 		create session and give this to the user
 	"""
-	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest, force_method="getFromPost")
+	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest, force_method="getFromPost")
 
 	if not WebUser.tryed:
 		return await missingData(cls, WebRequest)

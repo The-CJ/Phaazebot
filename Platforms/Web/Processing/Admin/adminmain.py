@@ -11,7 +11,7 @@ async def adminMain(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /admin
 	"""
-	WebUser:WebUserInfo = await cls.getUserInfo(WebRequest)
+	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.found: return await cls.accountLogin(WebRequest)
 	if not WebUser.checkRoles(["admin", "superadmin"]): return await cls.notAllowed(WebRequest, msg="Admin rights required")
 
