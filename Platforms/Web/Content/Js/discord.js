@@ -6,6 +6,14 @@ function discordUserAvatar(member_id, avatar_hash, size=32) {
   }
 }
 
+function discordGuildAvatar(guild_id, icon_hash, size=32) {
+  if (guild_id) {
+    return "https://cdn.discordapp.com/icons/"+guild_id+"/"+icon_hash+"?size="+size;
+  } else {
+    return "https://cdn.discordapp.com/embed/avatars/" + (parseInt(guild_id) % 5) + ".png";
+  }
+}
+
 function discordTranslateRequire(level) {
   if (level == 0) { return "Everyone"; }
   if (level == 1) { return "Regulars"; }

@@ -17,20 +17,8 @@ var DiscordDashboard = new (class {
     $.get("/api/discord/guild", {guild_id: guild_id})
     .done(function (data) {
       var guild = data.result;
-      var image_link = "https://cdn.discordapp.com/icons/{guild_id}/{icon}.png?size=128";
-      var image_alt = "https://cdn.discordapp.com/embed/avatars/{icon}.png";
 
-      var image = "";
-
-      if (guild.icon) {
-        image = image_link;
-        image = image.replace("{guild_id}", guild.id);
-        image = image.replace("{icon}", guild.icon);
-      } else {
-        let r = guild.id % 5;
-        image = image_alt;
-        image = image.replace("{icon}", r);
-      }
+      var image = discordGuildAvatar(guild.id, guild.icon, 128);
       $("#icon").attr("src", image);
       $("#name").text(guild.name);
 
@@ -284,7 +272,7 @@ var Commands = new (class {
         var Template = $("[phantom] .command").clone();
         Template.find(".trigger").text(command.trigger);
         Template.find(".function").text(command.name);
-        Template.find(".require").text( discordTranslateRequire(command.require) );
+        Template.find(".require").text( translateRequire(command.require) );
         Template.find(".cost").text(command.cost);
         Template.find(".uses").text(command.uses);
         Template.find(".cooldown").text(command.cooldown);
