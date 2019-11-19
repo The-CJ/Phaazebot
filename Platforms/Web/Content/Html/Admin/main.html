@@ -24,7 +24,7 @@
 
     <button type="button" class="btn btn-block btn-danger" onclick="$('#root_console').collapse('toggle')">System Console ↓</button>
     <div id="root_console" class="collapse stylish-color-dark">
-      <pre id="result_data" class="text-left text-white"></pre>
+      <pre id="result_data" class="text-left text-white">[Output]</pre>
       <div class="center-item-row">
         <label class="btn btn-primary center-item-row">
           <span>Run as corotine &nbsp;</span>
@@ -32,8 +32,8 @@
         </label>
       </div>
       <span>Avariable variables:</span><br>
-      <span><b>cls</b>:WebIndex, <b>WebRequest</b>:Request, <b>Data</b>:WebRequestContent</span><br>
-      <span><b>BASE</b>:Phaazebot</span>
+      <span><b>cls</b>:WebIndex, <b>WebRequest</b>:Request, <b>Data</b>:WebRequestContent, <b>BASE</b>:Phaazebot</span><br>
+      <span><b>SUPERBASE</b>: GlobalStorage</span>
       <form action="javascript:evalCommand()" method="post">
         <div class="center-item-row">
           <input type="text" placeholder="evaluate command" class="black-text" id="eval_command" style="width: 100%">
