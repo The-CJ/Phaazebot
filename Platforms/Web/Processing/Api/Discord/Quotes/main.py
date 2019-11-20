@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Response, Request
-# from .get import apiDiscordQuoteGet
+from .get import apiDiscordQuotesGet
 # from .edit import apiDiscordQuoteEdit
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
@@ -20,6 +20,6 @@ async def apiDiscordQuotes(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
 	# elif method == "get":
-		# return await apiDiscordLevelsEdit(cls, WebRequest)
+	# 	return await apiDiscordQuoteGet(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
