@@ -1409,7 +1409,7 @@ var Quotes = new (class {
         var Template = $("[phantom] .quote").clone();
 
         // Template.find(".name").text( level.username );
-        Template.find(".content").val(quote.content);
+        Template.find("[name=content]").val(quote.content);
         Template.attr("quote-id", quote.id);
 
         QuoteList.append(Template);
@@ -1423,7 +1423,14 @@ var Quotes = new (class {
   }
 
   startEdit(HTMLButton) {
-    
+    var Quote = $(HTMLButton).closest(".quote");
+
+    // hide controll group 1
+    Quote.find(".controls.one").hide();
+
+    // show control group 2 and make text field editable
+    Quote.find(".controls.two").show();
+    Quote.find("[name=content]").attr("readonly", null);
   }
 
   endEdit(HTMLButton) {
