@@ -126,6 +126,7 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/discord/commands{x:/?}{method:.*}', self.apiDiscordCommands)
 		self.Web.router.add_route('*', '/api/discord/configs{x:/?}{method:.*}', self.apiDiscordConfigs)
 		self.Web.router.add_route('*', '/api/discord/levels{x:/?}{method:.*}', self.apiDiscordLevels)
+		self.Web.router.add_route('*', '/api/discord/quote{x:/?}{method:.*}', self.apiDiscordQuotes)
 
 	# api
 	from .Processing.Api.Account.main import apiAccountPhaaze, apiAccountDiscord, apiAccountTwitch
@@ -138,6 +139,7 @@ class WebIndex(object):
 	from .Processing.Api.Discord.Commands.main import apiDiscordCommands
 	from .Processing.Api.Discord.Configs.main import apiDiscordConfigs
 	from .Processing.Api.Discord.Levels.main import apiDiscordLevels
+	from .Processing.Api.Discord.Quotes.main import apiDiscordQuotes
 
 	# web
 	from .Processing.mainsite import mainSite
