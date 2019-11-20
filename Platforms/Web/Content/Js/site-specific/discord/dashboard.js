@@ -1458,6 +1458,30 @@ var Quotes = new (class {
   }
 
   startDelete(HTMLButton) {
+    var c = confirm("Are you sure you want to delete this quote?");
+    if (!c) {return;}
+
+    var Quote = $(HTMLButton).closest(".quote");
+
+    var guild_id = $("#guild_id").val();
+    var quote_id = Quote.attr("quote-id");
+
+    var req = {
+      "guild_id": guild_id,
+      "quote_id": quote_id
+    };
+
+    $.post("/api/discord/quotes/delete", req)
+    .done(function (data) {
+
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error updating quote..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
 
   }
 
