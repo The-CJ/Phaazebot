@@ -14,6 +14,8 @@ from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.undefined import UNDEFINED
 
+MAX_QUOTE_SIZE:int = 1750
+
 async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/discord/quotes/edit
@@ -32,7 +34,7 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not quote_id:
 		return await missingData(cls, WebRequest, msg="missing or invalid 'quote_id'")
 
-	if content == "":
+	if content == "" or len(content) > MAX_QUOTE_SIZE:
 		return await missingData(cls, WebRequest, msg="missing or invalid 'content'")
 
 	# check if quote exists before edit
