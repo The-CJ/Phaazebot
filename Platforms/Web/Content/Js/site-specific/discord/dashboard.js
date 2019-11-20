@@ -1403,32 +1403,21 @@ var Quotes = new (class {
     $.get("/api/discord/quotes/get", {guild_id: guild_id})
     .done(function (data) {
 
-      // store a copy of the current number of entrys
-      var LevelList = $("#level_list").html("");
+      var QuoteList = $("#quote_list").html("");
 
-      for (var level of data.result) {
-        var Template = $("[phantom] .level").clone();
-        var avatar = discordUserAvatar(level.member_id, level.avatar);
+      for (var quote of data.result) {
+        var Template = $("[phantom] .quote").clone();
 
-        Template.find(".rank").text(level.rank);
-        Template.find(".lvl").text(level.level);
-        Template.find(".exp").text(level.exp);
-        Template.find(".name").text( level.username );
-        Template.find(".avatar").attr("src", avatar);
-        Template.find(".medals").text(level.medals.length);
-        Template.attr("member-id", level.member_id);
+        // Template.find(".name").text( level.username );
+        Template.find(".content").val(quote.content);
+        Template.attr("quote-id", quote.id);
 
-        if (level.edited) {
-          Template.find(".exp").addClass("edited");
-          Template.find(".exp").attr("title", "This member got edited, the stats can be wrong");
-        }
-
-        LevelList.append(Template);
+        QuoteList.append(Template);
       }
 
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load levels...", color:Display.color_critical});
+      Display.showMessage({content: "Could not load quotes...", color:Display.color_critical});
       console.log(data);
     })
   }

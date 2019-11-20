@@ -129,6 +129,17 @@
 [location=levels] .level .member .name { margin-left: 1em; }
 [location=levels] .level .medals { background: #295888; }
 
+[location=quotes] .quote { margin: 5px 0; }
+[location=quotes] .quote [name=content] {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 10px;
+  resize: none;
+}
+
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
 #command_create button[mode] { display: none;}

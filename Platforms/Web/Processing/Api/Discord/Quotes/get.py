@@ -40,7 +40,6 @@ async def apiDiscordQuotesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	return_list:list = list()
 
 	for QuoteData in quotes:
-		QuoteData:DiscordQuote = QuoteData
 		quote:dict = dict(
 			content = QuoteData.content,
 			id = QuoteData.quote_id,
