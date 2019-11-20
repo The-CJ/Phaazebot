@@ -1486,7 +1486,33 @@ var Quotes = new (class {
   }
 
   startSave(HTMLButton) {
+    var Quote = $(HTMLButton).closest(".quote");
 
+    // get all vars
+    var guild_id = $("#guild_id").val();
+    var quote_id = Quote.attr("quote-id");
+    var quote_content = Quote.find("[name=content]").val();
+
+    var req = {
+      "guild_id": guild_id,
+      "quote_id": quote_id,
+      "content": quote_content
+    };
+
+    $.post("/api/discord/quotes/edit", req)
+    .done(function (data) {
+
+      Quote.find(".controls.one").show();
+      Quote.find("[name=content]").attr("readonly", true);
+      Quote.find(".controls.two").hide();
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+
+    })
+    .fail(function (data) {
+      let msg = data.responseJSON ? data.responseJSON.msg : "Error updating quote..."
+      Display.showMessage({content: msg, color:Display.color_critical});
+      console.log(data);
+    })
   }
 })
 
