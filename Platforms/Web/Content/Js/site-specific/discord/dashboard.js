@@ -1474,6 +1474,7 @@ var Quotes = new (class {
     $.post("/api/discord/quotes/delete", req)
     .done(function (data) {
 
+      Quote.remove();
       Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
 
     })
@@ -1482,7 +1483,6 @@ var Quotes = new (class {
       Display.showMessage({content: msg, color:Display.color_critical});
       console.log(data);
     })
-
   }
 
   startSave(HTMLButton) {
