@@ -139,6 +139,10 @@
   padding: 10px;
   resize: none;
 }
+[location=quotes] .quote [name=content]:not([readonly]) {
+  background: #00000050;
+  border-left: 2px solid red;
+}
 
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
