@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from aiohttp.web import Response, Request
 from .get import apiDiscordQuotesGet
 # from .edit import apiDiscordQuoteEdit
+from .delete import apiDiscordQuotesDelete
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordQuotes(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -21,5 +22,8 @@ async def apiDiscordQuotes(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	elif method == "get":
 		return await apiDiscordQuotesGet(cls, WebRequest)
+
+	elif method == "delete":
+		return await apiDiscordQuotesDelete(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
