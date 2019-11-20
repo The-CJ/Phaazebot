@@ -26,6 +26,8 @@ async def apiDiscordQuotes(cls:"WebIndex", WebRequest:Request) -> Response:
 	elif method == "edit":
 		return await apiDiscordQuotesEdit(cls, WebRequest)
 
+	# TODO: Create Quote via API
+
 	elif method == "delete":
 		return await apiDiscordQuotesDelete(cls, WebRequest)
 
