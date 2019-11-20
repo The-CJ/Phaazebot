@@ -1421,6 +1421,22 @@ var Quotes = new (class {
       console.log(data);
     })
   }
+
+  startEdit(HTMLButton) {
+    
+  }
+
+  endEdit(HTMLButton) {
+
+  }
+
+  startDelete(HTMLButton) {
+
+  }
+
+  startSave(HTMLButton) {
+
+  }
 })
 
 // utils
