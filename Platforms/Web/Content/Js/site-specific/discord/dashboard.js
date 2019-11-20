@@ -272,7 +272,7 @@ var Commands = new (class {
         var Template = $("[phantom] .command").clone();
         Template.find(".trigger").text(command.trigger);
         Template.find(".function").text(command.name);
-        Template.find(".require").text( translateRequire(command.require) );
+        Template.find(".require").text( discordTranslateRequire(command.require) );
         Template.find(".cost").text(command.cost);
         Template.find(".uses").text(command.uses);
         Template.find(".cooldown").text(command.cooldown);
