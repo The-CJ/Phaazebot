@@ -19,7 +19,7 @@ async def apiDiscordQuotes(cls:"WebIndex", WebRequest:Request) -> Response:
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	# elif method == "get":
-	# 	return await apiDiscordQuoteGet(cls, WebRequest)
+	elif method == "get":
+		return await apiDiscordQuotesGet(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
