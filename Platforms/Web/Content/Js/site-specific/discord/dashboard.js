@@ -1392,7 +1392,7 @@ var Levels = new(class {
 
 var Quotes = new (class {
   constructor() {
-
+    this.temporarily_quote_content = {};
   }
 
   show(x={}) {
@@ -1425,6 +1425,11 @@ var Quotes = new (class {
   startEdit(HTMLButton) {
     var Quote = $(HTMLButton).closest(".quote");
 
+    // stage content ins temp.
+    var quote_id = Quote.attr("quote-id");
+    var quote_content = Quote.find("[name=content]").val();
+    this.temporarily_quote_content[quote_id] = quote_content;
+
     // hide controll group 1
     Quote.find(".controls.one").hide();
 
@@ -1434,7 +1439,22 @@ var Quotes = new (class {
   }
 
   endEdit(HTMLButton) {
+    var Quote = $(HTMLButton).closest(".quote");
 
+    // edit is ended without save, restore old content
+    var quote_id = Quote.attr("quote-id");
+    var content = this.temporarily_quote_content[quote_id];
+    if (!isEmpty(content)) {
+      Quote.find("[name=content]").val(content);
+      delete this.temporarily_quote_content[quote_id];
+    }
+
+    // hide controll group 2
+    Quote.find(".controls.two").hide();
+
+    // show control group 1 and make text field uneditable
+    Quote.find(".controls.one").show();
+    Quote.find("[name=content]").attr("readonly", true);
   }
 
   startDelete(HTMLButton) {
