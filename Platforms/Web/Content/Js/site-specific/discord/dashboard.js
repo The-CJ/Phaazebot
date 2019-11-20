@@ -61,8 +61,7 @@ var DiscordDashboard = new (class {
   loadQuote() {
     DynamicURL.set("view", "quotes");
     this.showLocationWindow("quotes");
-    alert("Load and Display 'Quote' Info");
-
+    Quotes.show();
   }
 
   loadTwitchAlert() {
@@ -1390,6 +1389,50 @@ var Levels = new(class {
   }
 
 });
+
+var Quotes = new (class {
+  constructor() {
+
+  }
+
+  show(x={}) {
+    var QuoteO = this;
+    var guild_id = $("#guild_id").val();
+    // var offset = x["offset"] ? x["offset"] : 0; // NOTE: do i need this?
+
+    $.get("/api/discord/quotes/get", {guild_id: guild_id})
+    .done(function (data) {
+
+      // store a copy of the current number of entrys
+      var LevelList = $("#level_list").html("");
+
+      for (var level of data.result) {
+        var Template = $("[phantom] .level").clone();
+        var avatar = discordUserAvatar(level.member_id, level.avatar);
+
+        Template.find(".rank").text(level.rank);
+        Template.find(".lvl").text(level.level);
+        Template.find(".exp").text(level.exp);
+        Template.find(".name").text( level.username );
+        Template.find(".avatar").attr("src", avatar);
+        Template.find(".medals").text(level.medals.length);
+        Template.attr("member-id", level.member_id);
+
+        if (level.edited) {
+          Template.find(".exp").addClass("edited");
+          Template.find(".exp").attr("title", "This member got edited, the stats can be wrong");
+        }
+
+        LevelList.append(Template);
+      }
+
+    })
+    .fail(function (data) {
+      Display.showMessage({content: "Could not load levels...", color:Display.color_critical});
+      console.log(data);
+    })
+  }
+})
 
 // utils
 function showTokenHelp(field) {

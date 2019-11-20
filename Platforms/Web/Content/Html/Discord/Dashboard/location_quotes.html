@@ -1,3 +1,28 @@
 <div location="quotes">
-  Quotes oder so
+  <div class="container-fluid">
+
+    <div class="center-item-row md-form">
+      <span>Public quote page for this server:</span>
+      <div class="col">
+        <input type="text" value="|<!--#(web_root)#-->|/discord/quotes/|<!--#(guild_id)#-->|" readonly class="white-text text-center" style="width: 100%;">
+      </div>
+    </div>
+
+    <div class="center-item-row" id="quote_pages" hidden>
+      <button onclick="Levels.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+      <button onclick="Levels.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+      <span>Page: <span class="index">0</span></span>
+      <button onclick="Levels.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+      <button onclick="Levels.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+    </div>
+
+    <div class="header row" hidden>
+      <div class="col-3 number">Number</div>
+      <div class="col-9 content">Content</div>
+    </div>
+    <div id="quote_list">
+      <!-- all quotes go here -->
+    </div>
+
+  </div>
 </div>
