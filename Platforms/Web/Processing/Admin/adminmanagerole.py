@@ -20,7 +20,7 @@ async def adminManageRole(cls:"WebIndex", WebRequest:Request) -> Response:
 	site:str = cls.HTMLRoot.replace(
 		replace_empty = True,
 
-		title = "Phaaze | Admin - Manage role",
+		title = "Phaaze | Admin - Role manager",
 		header = getNavbar(),
 		main = AdminManageSystem
 	)
