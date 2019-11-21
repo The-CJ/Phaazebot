@@ -6,11 +6,10 @@ if TYPE_CHECKING:
 import json
 import time
 from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
 from ..errors import apiNotAllowed
 
-async def apiAdminStatus(cls:"WebIndex", WebRequest:Request, Data:WebRequestContent={}) -> Response:
+async def apiAdminStatus(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/admin/status
 	"""
