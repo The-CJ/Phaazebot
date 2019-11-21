@@ -10,7 +10,7 @@ from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
 from ..errors import apiNotAllowed, apiMissingValidMethod
 
-async def apiAdminRole(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAdminRoles(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/admin/roles
 	"""
@@ -21,27 +21,27 @@ async def apiAdminRole(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
 	elif method == "get":
-		return await apiAdminRoleGet(cls, WebRequest)
+		return await apiAdminRolesGet(cls, WebRequest)
 
 	elif method == "edit":
-		return await apiAdminRoleEdit(cls, WebRequest)
+		return await apiAdminRolesEdit(cls, WebRequest)
 
 	elif method == "create":
-		return await apiAdminRoleCreate(cls, WebRequest)
+		return await apiAdminRolesCreate(cls, WebRequest)
 
 	elif method == "delete":
-		return await apiAdminRoleDelete(cls, WebRequest)
+		return await apiAdminRolesDelete(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
-async def apiAdminRoleGet(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAdminRolesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	pass
 
-async def apiAdminRoleEdit(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	pass
 
-async def apiAdminRoleCreate(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAdminRolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	pass
 
-async def apiAdminRoleDelete(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAdminRolesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	pass
