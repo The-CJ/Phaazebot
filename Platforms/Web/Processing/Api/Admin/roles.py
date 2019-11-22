@@ -8,6 +8,8 @@ import time
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.webrole import WebRole
+from Utils.Classes.undefined import UNDEFINED
 from ..errors import apiNotAllowed, apiMissingValidMethod
 
 async def apiAdminRoles(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -35,7 +37,39 @@ async def apiAdminRoles(cls:"WebIndex", WebRequest:Request) -> Response:
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
 async def apiAdminRolesGet(cls:"WebIndex", WebRequest:Request) -> Response:
-	pass
+	"""
+		Default url: /api/admin/roles/get
+	"""
+	Data:WebRequestContent = WebRequestContent(WebRequest)
+	await Data.load()
+
+	sql:str = "SELECT * FROM `role`"
+	values:tuple = ()
+
+	# only show one?
+	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
+	if role_id:
+		sql += " WHERE `role`.`id` = %s"
+		values += (role_id,)
+
+	res:list = cls.Web.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return_list:list = list()
+	for r in res:
+		Role:WebRole = WebRole(r)
+		role:dict = dict(
+			id = Role.id,
+			name = Role.name,
+			description = Role.description if Role.description else "",
+			can_be_removed = Role.can_be_removed
+		)
+		return_list.append( role )
+
+	return cls.response(
+		text=json.dumps( dict(result=return_list, status=200) ),
+		content_type="application/json",
+		status=200
+	)
 
 async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	pass
