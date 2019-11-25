@@ -57,6 +57,7 @@ function editRole(HTMLElement) {
 function saveRole() {
 
   var req = extractData("#edit_create_role[mode=edit]");
+  req["role_id"] = req["id"];
 
   $.post("/api/admin/roles/edit", req)
   .done(function (data) {

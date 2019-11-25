@@ -10,7 +10,8 @@ from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.undefined import UNDEFINED
-from ..errors import apiNotAllowed, apiMissingValidMethod
+from Utils.dbutils import validateDBInput
+from ..errors import apiNotAllowed, apiMissingValidMethod, missingData
 
 async def apiAdminRoles(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -74,7 +75,38 @@ async def apiAdminRolesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 
 async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
-	pass
+	Data:WebRequestContent = WebRequestContent(WebRequest)
+	await Data.load()
+
+	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
+	if not role_id:
+		return await missingData(cls, WebRequest, msg="missing or invalid 'role_id'")
+
+	db_changes:dict = dict()
+	changes:dict = dict()
+
+	# description
+	value:str = Data.getStr("description", UNDEFINED)
+	if value != UNDEFINED:
+		db_changes["description"] = validateDBInput(str, value)
+		changes["description"] = value
+
+	if not db_changes:
+		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
+
+	cls.Web.BASE.Logger.debug(f"(API) Role update: R:{role_id} {str(db_changes)}", require="api:admin")
+	cls.Web.BASE.PhaazeDB.updateQuery(
+		table = "role",
+		content = db_changes,
+		where = "role.id = %s",
+		where_values = (role_id,)
+	)
+
+	return cls.response(
+		text=json.dumps( dict(msg="role successfull updated", changes=changes, status=200) ),
+		content_type="application/json",
+		status=200
+	)
 
 async def apiAdminRolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	pass
