@@ -34,7 +34,6 @@ function editRole(HTMLElement) {
 
     var role = data.result[0];
 
-    $("#edit_create_role").attr("role-id", role.id);
     $("#edit_create_role").attr("mode", "edit");
 
     $("#edit_create_role").find("[name=id]").val(role.id);
@@ -56,5 +55,20 @@ function editRole(HTMLElement) {
 }
 
 function saveRole() {
+
+  var req = extractData("#edit_create_role[mode=edit]");
+
+  $.post("/api/admin/roles/edit", req)
+  .done(function (data) {
+
+    console.log(data);
+
+  })
+
+  .fail(function (data) {
+    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
+    Display.showMessage( {content:msg, color:Display.color_critical} );
+    console.log(data);
+  });
 
 }
