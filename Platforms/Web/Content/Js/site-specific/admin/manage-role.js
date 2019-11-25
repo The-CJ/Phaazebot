@@ -25,3 +25,36 @@ function getRoles() {
     console.log(data);
   })
 }
+
+function editRole(HTMLElement) {
+  var role_id = $(HTMLElement).attr("role-id");
+
+  $.get("/api/admin/roles/get", {role_id: role_id})
+  .done(function (data) {
+
+    var role = data.result[0];
+
+    $("#edit_create_role").attr("role-id", role.id);
+    $("#edit_create_role").attr("mode", "edit");
+
+    $("#edit_create_role").find("[name=id]").val(role.id);
+    $("#edit_create_role").find("[name=id]").closest(".row").show();
+
+    $("#edit_create_role").find("[name=name]").val(role.name);
+    $("#edit_create_role").find("[name=name]").attr("readonly", true);
+
+    $("#edit_create_role").find("[name=description]").val(role.description);
+
+    $("#edit_create_role").modal("show");
+  })
+
+  .fail(function (data) {
+    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
+    Display.showMessage( {content:msg, color:Display.color_critical} );
+    console.log(data);
+  });
+}
+
+function saveRole() {
+
+}

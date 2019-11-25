@@ -2,9 +2,14 @@ main h1 {
   margin: 1em 0;
 }
 
-.role > .row { margin: .25em; padding:.5em; background: #0052d6; }
 .role [can_be_removed=true] { display: none; }
 .role [can_be_removed=false] { display: block; }
 
+#role_list > .role > .row {
+  margin: .25em;
+  padding: .5em;
+  background: #0052d6;
+  cursor: pointer;
+}
 #role_list .role:nth-child(even) > .row {background: #0046b8; }
 #role_list { padding: 1em; }
