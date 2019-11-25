@@ -10,10 +10,10 @@ def password(passwd:str) -> str:
 	password:str = hashlib.sha256(passwd.encode("UTF-8")).hexdigest()
 	return password
 
-def randomString(size:int = 10, pool:list = [1,2,3], extra:str = "", remove:str=".`'\"") -> str:
+def randomString(size:int = 10, pool:list = [1,2,3], extra:str = "", remove:str=",`'") -> str:
 	"""
 		returns a random generated string by size
-		based on the allowd char pool,
+		based on the allowed char pool,
 		extra chars can be passed by 'extra', removed via 'remove'
 		(remove first, then add extra)
 
