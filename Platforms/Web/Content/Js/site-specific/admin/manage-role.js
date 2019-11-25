@@ -6,7 +6,13 @@ function getRoles() {
   $.get("/api/admin/roles/get")
   .done(function (data) {
 
-    console.log(data);
+    var RoleList = $("#role_list").html("");
+
+    for (var role of data.result) {
+      var Template = $("[phantom] .role").clone();
+
+      RoleList.append(Template);
+    }
 
   })
   .fail(function (data) {
