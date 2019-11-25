@@ -11,6 +11,9 @@ function getRoles() {
     for (var role of data.result) {
       var Template = $("[phantom] .role").clone();
 
+      Template.find(".name").text(role.name);
+      Template.find("[can_be_removed]").attr("can_be_removed", role.can_be_removed ? "true" : "false");
+
       RoleList.append(Template);
     }
 

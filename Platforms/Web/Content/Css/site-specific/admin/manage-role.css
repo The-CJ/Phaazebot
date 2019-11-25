@@ -1,3 +1,6 @@
 main h1 {
   margin: 1em 0;
 }
+
+.role [can_be_removed=true] { display: none; }
+.role [can_be_removed=false] { display: block; }
