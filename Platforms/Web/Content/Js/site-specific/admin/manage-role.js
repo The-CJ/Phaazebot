@@ -67,13 +67,11 @@ function editRole() {
     $("#edit_create_role").modal("hide");
 
   })
-
   .fail(function (data) {
     let msg = data.responseJSON ? data.responseJSON.error : "unknown";
     Display.showMessage( {content:msg, color:Display.color_critical} );
     console.log(data);
   });
-
 }
 
 function showCreate() {
@@ -85,4 +83,22 @@ function showCreate() {
   $("#edit_create_role").find("[name=name]").attr("readonly", false);
 
   $("#edit_create_role").modal("show");
+}
+
+function createRole() {
+
+  var req = extractData("#edit_create_role");
+  $.post("/api/admin/roles/create", req)
+  .done(function (data) {
+
+    Display.showMessage( {content:data.msg, color:Display.color_success} );
+    $("#edit_create_role").modal("hide");
+
+  })
+  .fail(function (data) {
+    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
+    Display.showMessage( {content:msg, color:Display.color_critical} );
+    console.log(data);
+  });
+
 }
