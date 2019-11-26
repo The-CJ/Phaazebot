@@ -35,7 +35,7 @@ function extractData(o) {
     let name = f.attr('name');
     if (f.attr("type") == "checkbox") {
       if (f.is(":checked")) { data[name] = 1; }
-      else { d[name] = 0; }
+      else { data[name] = 0; }
     }
     else {
       let value = f.val();
