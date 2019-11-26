@@ -35,6 +35,7 @@ function editRole(HTMLElement) {
     var role = data.result[0];
 
     $("#edit_create_role").attr("mode", "edit");
+    $("#edit_create_role .modal-title").text("Edit role:");
 
     $("#edit_create_role").find("[name=id]").val(role.id);
     $("#edit_create_role").find("[name=id]").closest(".row").show();
@@ -62,7 +63,8 @@ function saveRole() {
   $.post("/api/admin/roles/edit", req)
   .done(function (data) {
 
-    console.log(data);
+    Display.showMessage( {content:data.msg, color:Display.color_success} );
+    $("#edit_create_role").modal("hide");
 
   })
 
