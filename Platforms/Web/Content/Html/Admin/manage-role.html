@@ -4,6 +4,7 @@
 <main>
   <div class="container text-center white-text">
     <h1>Role manager</h1>
+    <button type="button" class="btn btn-primary" onclick="showCreate()">New</button>
     <div id="role_list"></div>
   </div>
 </main>
@@ -49,7 +50,8 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-block btn-success" onclick="saveRole()">Save</button>
+        <button edit type="button" class="btn btn-block btn-success" onclick="saveRole()">Save</button>
+        <button create type="button" class="btn btn-block btn-success" onclick="createRole()">Create</button>
       </div>
 
       <div messagebox></div>

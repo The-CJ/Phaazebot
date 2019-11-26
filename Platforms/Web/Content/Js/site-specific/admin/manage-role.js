@@ -75,3 +75,14 @@ function saveRole() {
   });
 
 }
+
+function showCreate() {
+  $("#edit_create_role").attr("mode", "create");
+  $("#edit_create_role .modal-title").text("Create role:");
+
+  $("#edit_create_role").find("[name=id]").closest(".row").hide();
+  $("#edit_create_role").find("input, textarea").val("");
+  $("#edit_create_role").find("[name=name]").attr("readonly", false);
+
+  $("#edit_create_role").modal("show");
+}
