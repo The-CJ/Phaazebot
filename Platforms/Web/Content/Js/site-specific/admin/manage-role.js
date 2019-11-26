@@ -45,6 +45,10 @@ function detailRole(HTMLElement) {
 
     $("#edit_create_role").find("[name=description]").val(role.description);
 
+    if (!role.can_be_removed) {
+      $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", true);
+    }
+
     $("#edit_create_role").modal("show");
   })
 
@@ -81,6 +85,7 @@ function showCreate() {
   $("#edit_create_role").find("[name=id]").closest(".row").hide();
   $("#edit_create_role").find("input, textarea").val("");
   $("#edit_create_role").find("[name=name]").attr("readonly", false);
+  $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);
 
   $("#edit_create_role").modal("show");
 }
