@@ -26,7 +26,7 @@ function getRoles() {
   })
 }
 
-function editRole(HTMLElement) {
+function detailRole(HTMLElement) {
   var role_id = $(HTMLElement).attr("role-id");
 
   $.get("/api/admin/roles/get", {role_id: role_id})
@@ -55,7 +55,7 @@ function editRole(HTMLElement) {
   });
 }
 
-function saveRole() {
+function editRole() {
 
   var req = extractData("#edit_create_role[mode=edit]");
   req["role_id"] = req["id"];
