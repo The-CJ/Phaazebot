@@ -91,6 +91,15 @@ async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		db_changes["description"] = validateDBInput(str, value)
 		changes["description"] = value
 
+	# can_be_removed
+	value:bool = Data.getBool("can_be_removed", UNDEFINED)
+	if value != UNDEFINED:
+		# this value can only be set to 0
+		# if the user gives a 1, meaning to make it removeable... we just ignore it
+		if not value:
+			db_changes["can_be_removed"] = validateDBInput(bool, value)
+			changes["can_be_removed"] = value
+
 	if not db_changes:
 		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
 

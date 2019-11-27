@@ -73,6 +73,7 @@ function editRole() {
 
     Display.showMessage( {content:data.msg, color:Display.color_success} );
     $("#edit_create_role").modal("hide");
+    getRoles();
 
   })
   .fail(function (data) {
@@ -102,6 +103,7 @@ function createRole() {
 
     Display.showMessage( {content:data.msg, color:Display.color_success} );
     $("#edit_create_role").modal("hide");
+    getRoles();
 
   })
   .fail(function (data) {
