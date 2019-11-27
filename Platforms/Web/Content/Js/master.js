@@ -245,11 +245,12 @@ var Display = new (class {
     this.color_warning = "#e7b23c";
     this.color_critical = "#e83d3d";
     this.color_info = "#4285FF";
+    this.default_time = 10000;
   }
   showMessage(m) {
     if (m == null) { throw "missing message"; }
     if (m.content == null) { throw "missing message content"; }
-    if (m.time == null) { m.time = 10000; }
+    if (m.time == null) { m.time = this.default_time; }
     if (m.color == null) { m.color = this.color_info; }
     if (m.text_color == null) { m.text_color = "#fff"; }
 
