@@ -15,7 +15,7 @@ async def apiDiscordGuildUnknown(cls:"WebIndex", WebRequest:Request, **kwargs:di
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) 400: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( dict(status=400, msg=msg) ),
+		text=json.dumps( dict(status=400, msg=msg, error="discord_guild_unknown") ),
 		content_type="application/json",
 		status=400
 	)
@@ -27,7 +27,7 @@ async def apiDiscordMissingPermission(cls:"WebIndex", WebRequest:Request, **kwar
 			user_id:str
 			guild_id:str
 	"""
-	res:dict = dict(status=400)
+	res:dict = dict(status=400, error="discord_missing_permission")
 
 	default_msg:str = "missing 'administrator' or 'manage_guild' permission"
 	msg:str = kwargs.get("msg", default_msg)
@@ -56,7 +56,7 @@ async def apiDiscordMemberNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:
 			user_id:str
 			guild_id:str
 	"""
-	res:dict = dict(status=404)
+	res:dict = dict(status=404, error="discord_member_not_found")
 
 	default_msg:str = "could not find a valid member on this guild"
 	msg:str = kwargs.get("msg", default_msg)
@@ -84,7 +84,7 @@ async def apiDiscordRoleNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:di
 			role_id:str
 			guild_id:str
 	"""
-	res:dict = dict(status=404)
+	res:dict = dict(status=404, error="discord_role_not_found")
 
 	default_msg:str = "could not find a valid role on this guild"
 	msg:str = kwargs.get("msg", default_msg)
@@ -112,7 +112,7 @@ async def apiDiscordChannelNotFound(cls:"WebIndex", WebRequest:Request, **kwargs
 			channel_id:str
 			guild_id:str
 	"""
-	res:dict = dict(status=404)
+	res:dict = dict(status=404, error="discord_channel_not_found")
 
 	default_msg:str = "could not find a valid channel on this guild"
 	msg:str = kwargs.get("msg", default_msg)
@@ -140,7 +140,7 @@ async def apiDiscordCommandExists(cls:"WebIndex", WebRequest:Request, **kwargs:d
 			msg:str
 			command:str
 	"""
-	res:dict = dict(status=400)
+	res:dict = dict(status=400, error="discord_command_exists")
 
 	default_msg:str = "This command trigger already exists"
 	msg:str = kwargs.get("msg", default_msg)
@@ -163,7 +163,7 @@ async def apiDiscordCommandNotExists(cls:"WebIndex", WebRequest:Request, **kwarg
 			msg:str
 			command:str
 	"""
-	res:dict = dict(status=400)
+	res:dict = dict(status=400, error="discord_command_not_exists")
 
 	default_msg:str = "No command has been found"
 	msg:str = kwargs.get("msg", default_msg)
@@ -186,7 +186,7 @@ async def apiDiscordQuotesNotExists(cls:"WebIndex", WebRequest:Request, **kwargs
 			msg:str
 			quote_id:str
 	"""
-	res:dict = dict(status=400)
+	res:dict = dict(status=400, error="discord_quote_not_exists")
 
 	default_msg:str = "No quote has been found"
 	msg:str = kwargs.get("msg", default_msg)
@@ -210,7 +210,7 @@ async def apiDiscordCommandLimit(cls:"WebIndex", WebRequest:Request, **kwargs:di
 			msg:str
 			limit:str
 	"""
-	res:dict = dict(status=400)
+	res:dict = dict(status=400, error="discord_command_limit")
 
 	default_msg:str = "You have hit the limit of commands for this server"
 	msg:str = kwargs.get("msg", default_msg)
@@ -233,7 +233,7 @@ async def apiDiscordLevelMedalLimit(cls:"WebIndex", WebRequest:Request, **kwargs
 			msg:str
 			limit:str
 	"""
-	res:dict = dict(status=400)
+	res:dict = dict(status=400, error="discord_medal_limit")
 
 	default_msg:str = "You have hit the limit of medals for this member"
 	msg:str = kwargs.get("msg", default_msg)
