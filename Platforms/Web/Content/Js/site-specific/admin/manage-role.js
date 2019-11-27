@@ -46,7 +46,11 @@ function detailRole(HTMLElement) {
     $("#edit_create_role").find("[name=description]").val(role.description);
 
     if (!role.can_be_removed) {
+      $("#edit_create_role").find("[name=can_be_removed]").prop("checked", false);
       $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", true);
+    } else {
+      $("#edit_create_role").find("[name=can_be_removed]").prop("checked", true);
+      $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);
     }
 
     $("#edit_create_role").modal("show");
@@ -101,7 +105,7 @@ function createRole() {
 
   })
   .fail(function (data) {
-    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
+    let msg = data.responseJSON ? data.responseJSON.msg : "unknown";
     Display.showMessage( {content:msg, color:Display.color_critical} );
     console.log(data);
   });
