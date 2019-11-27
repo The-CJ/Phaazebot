@@ -20,12 +20,9 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	guild_id:str = Data.get("guild_id")
+	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing 'guild_id'")
-
-	if not guild_id.isdigit():
-		return await apiWrongData(cls, WebRequest, msg="'guild_id' must be number")
+		return await missingData(cls, WebRequest, msg="invalid or missing 'guild_id'")
 
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 
