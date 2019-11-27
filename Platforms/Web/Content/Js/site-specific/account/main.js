@@ -15,8 +15,7 @@ function saveAccountInfos() {
     getAccountInfos();
   })
   .fail(function (data) {
-    let msg = data.responseJSON ? data.responseJSON.msg : "unknown"
-    Display.showMessage({content:msg, color:Display.color_critical});
+    generalAPIErrorHandler( {data:data, msg:"Editing failed"} );
   })
 }
 
@@ -36,9 +35,7 @@ function getAccountInfos() {
     }
   })
   .fail(function (data) {
-    console.log(data);
-    let msg = "Could not load account infomations";
-    Display.showMessage({ content: msg, color: Display.color_critical });
+    generalAPIErrorHandler( {data:data, msg:"Could not load account infomations"} );
   })
 }
 

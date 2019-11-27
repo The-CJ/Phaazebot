@@ -189,8 +189,7 @@ var SessionManager = new (class {
       $('#login_form').modal('hide');
     })
     .fail(function (data) {
-      Display.showMessage({'content': 'Unable to logout', 'color':Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"Unable to logout"} );
     })
   }
 
@@ -201,8 +200,7 @@ var SessionManager = new (class {
       Display.showMessage({content:data.msg, color:Display.color_success});
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "unknown"
-      Display.showMessage({content:msg, color:Display.color_critical});
+      generalAPIErrorHandler( {data:data, msg:"Editing failed."} );
     })
   }
 })()

@@ -11,7 +11,6 @@ function evalCommand(command) {
       $("#result_data").text(data.result)
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.error : "unknown";
-      Display.showMessage( {content:msg, color:Display.color_critical} );
+      generalAPIErrorHandler( {data:data} );
     })
 }

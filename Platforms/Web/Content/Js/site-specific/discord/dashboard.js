@@ -36,7 +36,7 @@ var DiscordDashboard = new (class {
 
     })
     .fail(function (data) {
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"loading informations failed"} );
     })
   }
 
@@ -94,8 +94,7 @@ var DiscordDashboard = new (class {
 
     })
     .fail(function (data) {
-      Display.showMessage({content: "Error loading general informations...", color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"Error loading general informations"} );
     })
   }
 
@@ -287,8 +286,7 @@ var Commands = new (class {
 
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load commands...", color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"Could not load commands"} );
     })
   }
 
@@ -326,9 +324,7 @@ var Commands = new (class {
       $("#command_create [command-setting], #command_create [extra-command-setting]").hide();
     })
     .fail(function (data) {
-      console.log(data);
-      let msg = data.responseJSON ? data.responseJSON.msg : "unknown"
-      Display.showMessage({content: msg, color:Display.color_critical});
+      generalAPIErrorHandler( {data:data, msg:"command creation failed"} );
     })
 
   }
@@ -350,9 +346,7 @@ var Commands = new (class {
       CommandsObj.show();
     })
     .fail(function (data) {
-      console.log(data);
-      let msg = data.responseJSON ? data.responseJSON.msg : "unknown"
-      Display.showMessage({content: msg, color:Display.color_critical});
+      generalAPIErrorHandler( {data:data, msg:"command delete failed"} );
     })
   }
 
@@ -379,9 +373,7 @@ var Commands = new (class {
       CommandsObj.show();
     })
     .fail(function (data) {
-      console.log(data);
-      let msg = data.responseJSON ? data.responseJSON.msg : "unknown"
-      Display.showMessage({content: msg, color:Display.color_critical});
+      generalAPIErrorHandler( {data:data, msg:"command edit failed"} );
     })
   }
 
@@ -415,8 +407,7 @@ var Commands = new (class {
       $("#command_create").modal("show");
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load command details...", color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"could not load command details"} );
     })
   }
 
@@ -444,8 +435,7 @@ var Commands = new (class {
         $("[command-setting=simple]").show();
       })
       .fail(function (data) {
-        Display.showMessage({content: "Could not load command list...", color:Display.color_critical});
-        console.log(data);
+        generalAPIErrorHandler( {data:data, msg:"could ould not load command list"} );
       })
 
     }
@@ -474,8 +464,7 @@ var Commands = new (class {
       $("#command_create [extra-command-setting]").show();
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load command details...", color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"could not load command details"} );
     })
   }
 })
@@ -504,8 +493,7 @@ var Configs = new(class {
 
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load configs...", color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"could not load configs"} );
     })
   }
 
@@ -520,9 +508,7 @@ var Configs = new(class {
       $("#config_modal_whitelist_links").modal("show");
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading word link whitelist..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error loading word link whitelist"} );
     })
   }
 
@@ -583,9 +569,7 @@ var Configs = new(class {
       $("#config_modal_blacklist_words").modal("show");
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading word blacklist..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error loading word blacklist"} );
     })
   }
 
@@ -645,9 +629,7 @@ var Configs = new(class {
       $("#config_modal_exeption_roles").modal("show");
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading execption roles..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error loading execption roles"} );
     })
   }
 
@@ -714,9 +696,7 @@ var Configs = new(class {
       $("#config_modal_disable_chan_level").modal("show");
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading execption channels..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error loading execption channels"} );
     })
   }
 
@@ -783,9 +763,7 @@ var Configs = new(class {
       $("#config_modal_disable_chan_quote").modal("show");
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading quote channels..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error loading quote channels"} );
     })
   }
 
@@ -852,9 +830,7 @@ var Configs = new(class {
       $("#config_modal_disable_chan_normal").modal("show");
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading normal channels..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error loading normal channels"} );
     })
   }
 
@@ -921,9 +897,7 @@ var Configs = new(class {
       $("#config_modal_disable_chan_regular").modal("show");
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading regular channels..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error loading regular channels"} );
     })
   }
 
@@ -990,9 +964,7 @@ var Configs = new(class {
       $("#config_modal_enable_chan_game").modal("show");
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading game channels..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error loading game channels"} );
     })
   }
 
@@ -1059,9 +1031,7 @@ var Configs = new(class {
       $("#config_modal_enable_chan_nsfw").modal("show");
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error loading nsfw channels..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error loading nsfw channels"} );
     })
   }
 
@@ -1151,9 +1121,7 @@ var Configs = new(class {
 
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error updating configs..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error updating configs"} );
       if (fail_function) { fail_function.call() }
     })
   }
@@ -1205,8 +1173,7 @@ var Levels = new(class {
 
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load levels...", color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"could not load levels"} );
     })
   }
 
@@ -1381,9 +1348,7 @@ var Levels = new(class {
 
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error updating levels..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error updating levels"} );
       if (fail_function) { fail_function.call() }
     })
   }
@@ -1417,8 +1382,7 @@ var Quotes = new (class {
 
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load quotes...", color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"could not load quotes"} );
     })
   }
 
@@ -1479,9 +1443,7 @@ var Quotes = new (class {
 
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error updating quote..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error deleting quote"} );
     })
   }
 
@@ -1509,9 +1471,7 @@ var Quotes = new (class {
 
     })
     .fail(function (data) {
-      let msg = data.responseJSON ? data.responseJSON.msg : "Error updating quote..."
-      Display.showMessage({content: msg, color:Display.color_critical});
-      console.log(data);
+      generalAPIErrorHandler( {data:data, msg:"error updating quote"} );
     })
   }
 })

@@ -37,8 +37,7 @@ function loadDiscordServers() {
     }
   })
   .fail(function (data) {
-    Display.showMessage({content: "Could not load your Discord guilds...", color:Display.color_critical});
-    console.log(data);
+    generalAPIErrorHandler( {data:data, msg:"could not load your Discord guilds"} );
   })
 
 }

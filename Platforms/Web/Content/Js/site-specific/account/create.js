@@ -5,8 +5,6 @@ function createAccount() {
   $.post('/api/account/phaaze/create', data).done(function (data) {
     window.location = "/account/login?new";
   }).fail(function (data) {
-    console.log(data);
-    data = data.responseJSON.msg ? data.responseJSON.msg : "unknown";
-    Display.showMessage({"content": data, "color": Display.color_warning});
+    generalAPIErrorHandler( {data:data, msg:"Creation failed", color:Display.color_warning} );
   })
 }

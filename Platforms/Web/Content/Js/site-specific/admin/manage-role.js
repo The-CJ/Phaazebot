@@ -20,9 +20,7 @@ function getRoles() {
 
   })
   .fail(function (data) {
-    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
-    Display.showMessage( {content:msg, color:Display.color_critical} );
-    console.log(data);
+    generalAPIErrorHandler( {data:data, msg:"can't load roles"} );
   })
 }
 
@@ -57,9 +55,7 @@ function detailRole(HTMLElement) {
   })
 
   .fail(function (data) {
-    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
-    Display.showMessage( {content:msg, color:Display.color_critical} );
-    console.log(data);
+    generalAPIErrorHandler( {data:data, msg:"can't load role"} );
   });
 }
 
@@ -77,9 +73,7 @@ function editRole() {
 
   })
   .fail(function (data) {
-    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
-    Display.showMessage( {content:msg, color:Display.color_critical} );
-    console.log(data);
+    generalAPIErrorHandler( {data:data, msg:"edit role failed"} );
   });
 }
 
@@ -107,9 +101,7 @@ function createRole() {
 
   })
   .fail(function (data) {
-    let msg = data.responseJSON ? data.responseJSON.msg : "unknown";
-    Display.showMessage( {content:msg, color:Display.color_critical} );
-    console.log(data);
+    generalAPIErrorHandler( {data:data, msg:"role create failed"} );
   });
 
 }

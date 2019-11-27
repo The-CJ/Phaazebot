@@ -7,9 +7,7 @@ function loadStatus() {
     buildDiscord(data.result.discord);
   })
   .fail(function (data) {
-    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
-    Display.showMessage( {content:msg, color:Display.color_critical} );
-    console.log(data);
+    generalAPIErrorHandler( {data:data, msg:"loading status failed"} );
   })
 }
 
@@ -62,9 +60,7 @@ function changeModuleState(HTMLButton) {
     Display.showMessage( {content: data.msg, color:Display.color_success} );
   })
   .fail(function (data) {
-    let msg = data.responseJSON ? data.responseJSON.error : "unknown";
-    Display.showMessage( {content:msg, color:Display.color_critical} );
-    console.log(data);
+    generalAPIErrorHandler( {data:data, msg:"changing status failed"} );
   })
 }
 

@@ -30,8 +30,7 @@ function loadCommands() {
 
   })
   .fail(function (data) {
-    Display.showMessage({content: "Could not load commands...", color:Display.color_critical});
-    console.log(data);
+    generalAPIErrorHandler( {data:data, msg:"could not load commands"} );
   })
 
 }
@@ -59,8 +58,7 @@ function detailCommand(HTMLCommand) {
     $("#command_detail").modal("show");
   })
   .fail(function (data) {
-    Display.showMessage({content: "Could not load command detail...", color:Display.color_critical});
-    console.log(data);
+    generalAPIErrorHandler( {data:data, msg:"could not load command detail"} );
   })
 
 }

@@ -13,7 +13,6 @@ function loginAccount() {
     setTimeout(function () {
       $("#login_space [name=phaaze_username], #login_space [name=phaaze_password]").removeClass("animated shake");
     }, 1000);
-    data = data.responseJSON.msg ? data.responseJSON.msg : "unknown";
-    Display.showMessage({"content": data, "color": Display.color_warning});
+    generalAPIErrorHandler( {data:data, msg:"Login failed", color:Display.color_warning} );
   })
 }
