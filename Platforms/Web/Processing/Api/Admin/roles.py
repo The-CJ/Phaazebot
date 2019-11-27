@@ -11,7 +11,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from ..errors import apiNotAllowed, apiMissingValidMethod, missingData
+from ..errors import apiNotAllowed, apiMissingValidMethod, missingData, apiWrongData
 
 async def apiAdminRoles(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -109,7 +109,38 @@ async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 
 async def apiAdminRolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
-	pass
+	Data:WebRequestContent = WebRequestContent(WebRequest)
+	await Data.load()
+
+	name:str = Data.getStr("name", "")
+	description:str = Data.getStr("description", "")
+	can_be_removed:bool = Data.getBool("can_be_removed", True)
+
+	if not name:
+		return await missingData(cls, WebRequest, msg="missing or invalid 'name'")
+
+	res:list = cls.Web.BASE.PhaazeDB.selectQuery(
+		"SELECT COUNT(*) AS `i` FROM `role` WHERE LOWER(`role`.`name`) = %s",
+		(name,)
+	)
+
+	if res[0]['i'] != 0:
+		return await apiWrongData(cls, WebRequest, msg=f"role '{name}' already exists")
+
+	cls.Web.BASE.PhaazeDB.insertQuery(
+		table = "role",
+		content = dict(
+			name = name,
+			description = description,
+			can_be_removed = validateDBInput(bool, can_be_removed)
+		)
+	)
+
+	return cls.response(
+		text=json.dumps( dict(msg="role successfull created", role=name, status=200) ),
+		content_type="application/json",
+		status=200
+	)
 
 async def apiAdminRolesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	pass
