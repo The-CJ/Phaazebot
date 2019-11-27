@@ -41,11 +41,12 @@ class WebUserInfo(DBContentClass):
 		self.created_at:datetime.datetime = None
 		self.edited_at:datetime.datetime = None
 		self.last_login:datetime.datetime = None
-		self.user_id:int = None
-		self.roles:list = None
+		self.user_id:int = -1
+		self.roles:list = []
 
 	def checkRoles(self, roles:str or list) -> bool:
 		if not roles: return True
+		if not self.roles: return False
 		if type(roles) != list: roles = [roles]
 
 		lower_roles:list = [r.lower() for r in self.roles]
