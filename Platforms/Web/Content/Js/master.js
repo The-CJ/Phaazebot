@@ -78,6 +78,47 @@ function oppositeValue(v) {
 
 }
 
+function generalAPIErrorHandler(x={}) {
+  // it does what you whould think it does,
+  // give this function the data object from a $.get .post .etc...
+  // and it will give you a display message,
+  // with the message, or at least the error... mostly
+  // also sends stuff to debug log
+
+  // message content priority
+  // server message -> alternativ message -> server error code -> "Unknown"
+
+  // x : data :: jquery response
+  // x : msg :: str
+  // x : color :: str
+  // x : time :: int
+  // x : no_message :: bool
+
+  var data = x["data"] ? x["data"] : null;
+  var color = x["color"] ? x["color"] : Display.color_critical;
+  var time = x["time"] ? x["time"] : this.default_time;
+  var alt_msg = x["msg"] ? x["msg"] : null;
+
+  // most likely alwys is true, since this is a ERROR function
+  if (data.responseJSON) { data = data.responseJSON; }
+
+  var final_message = null;
+
+  // server gave us a 'msg'
+  if (data.msg) { final_message = data.msg; }
+  // server has not 'msg' but user gave one
+  else if (alt_msg) { final_message = data.alt_msg; }
+  // no 'msg' at all take server 'error'
+  else if (alt_msg) { final_message = data.error; }
+  // no 'msg' or 'error'... means "unknown"
+  else { final_message = "Unknown error"; }
+
+  if (!x["no_message"]) {
+    Display.showMessage( {content:final_message, color:color, time:time} );
+  }
+  console.log(data);
+}
+
 var SessionManager = new (class {
   constructor() {
   }
