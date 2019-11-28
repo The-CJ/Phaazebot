@@ -107,7 +107,7 @@ function generalAPIErrorHandler(x={}) {
   // server gave us a 'msg'
   if (data.msg) { final_message = data.msg; }
   // server has not 'msg' but user gave one
-  else if (alt_msg) { final_message = data.alt_msg; }
+  else if (alt_msg) { final_message = alt_msg; }
   // no 'msg' at all take server 'error'
   else if (alt_msg) { final_message = data.error; }
   // no 'msg' or 'error'... means "unknown"
