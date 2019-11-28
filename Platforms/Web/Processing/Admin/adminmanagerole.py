@@ -15,14 +15,14 @@ async def adminManageRole(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not WebUser.found: return await cls.accountLogin(WebRequest)
 	if not WebUser.checkRoles(["admin", "superadmin"]): return await cls.notAllowed(WebRequest, msg="Admin rights required")
 
-	AdminManageSystem:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Admin/manage-role.html")
+	AdminManageRole:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Admin/manage-role.html")
 
 	site:str = cls.HTMLRoot.replace(
 		replace_empty = True,
 
 		title = "Phaaze | Admin - Role manager",
 		header = getNavbar(),
-		main = AdminManageSystem
+		main = AdminManageRole
 	)
 
 	return cls.response(
