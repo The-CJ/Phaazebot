@@ -4,17 +4,24 @@
 <main>
   <div class="container text-center white-text">
     <h1>User manager</h1>
-    <button type="button" class="btn btn-primary" onclick="alert('x')">X</button>
+    <button type="button" class="btn btn-primary" onclick="$('#edit_create_user').modal('show')">X</button>
     <div id="user_list"></div>
   </div>
 </main>
 
 <div phantom hidden>
 
+  <div class="user" user-id="0" onclick="detailUser(this)">
+    <div class="row">
+      <div class="col-1"><span class="id">[N/A]</span></div>
+      <div class="col"><span class="name">[N/A]</span></div>
+    </div>
+  </div>
+
 </div>
 
-<div class="modal modal-fluid fade" id="edit_create_user" mode="edit/create">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="edit_create_user" mode="edit/create">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
 
       <div class="modal-header text-center">
