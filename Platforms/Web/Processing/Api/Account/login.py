@@ -20,7 +20,7 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest, force_method="getFromPost")
 
-	if not WebUser.tryed:
+	if not WebUser.tried:
 		return await missingData(cls, WebRequest)
 
 	if not WebUser.found:

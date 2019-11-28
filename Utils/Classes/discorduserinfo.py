@@ -39,7 +39,7 @@ class DiscordUserInfo(object):
 		self.email:str = None
 
 		self.found:bool = False
-		self.tryed:bool = False
+		self.tried:bool = False
 
 	async def auth(self) -> None:
 		if self.force_method:
@@ -48,15 +48,15 @@ class DiscordUserInfo(object):
 				return await func()
 
 		await self.getFromSystem()
-		if self.tryed: return
+		if self.tried: return
 
 		await self.getFromCookies()
-		if self.tryed: return
+		if self.tried: return
 		await self.getFromHeader()
-		if self.tryed: return
+		if self.tried: return
 
 		await self.getFromGet()
-		if self.tryed: return
+		if self.tried: return
 
 	# getter
 	@forcable
@@ -89,7 +89,7 @@ class DiscordUserInfo(object):
 		return await self.dbRequest(dbr, val)
 
 	async def dbRequest(self, db_req:str, values:tuple = None) -> None:
-		self.tryed = True
+		self.tried = True
 		res:list = self.BASE.PhaazeDB.query(db_req, values=values)
 
 		if not res: return

@@ -31,7 +31,7 @@ class WebUserInfo(DBContentClass):
 		self.__password:str = ""
 
 		self.found:bool = False
-		self.tryed:bool = False
+		self.tried:bool = False
 
 		self.username:str = None
 		self.username_changed:int = 0
@@ -45,7 +45,7 @@ class WebUserInfo(DBContentClass):
 		self.roles:list = []
 
 	def __repr__(self):
-		if not self.tryed:
+		if not self.tried and not self.found:
 			return f"<{self.__class__.__name__} - Not yet tried to resolve>"
 
 		if not self.found:
@@ -72,28 +72,28 @@ class WebUserInfo(DBContentClass):
 				return await func()
 
 		await self.getFromSystem()
-		if self.tryed: return
+		if self.tried: return
 
 		await self.getFromCookies()
-		if self.tryed: return
+		if self.tried: return
 		await self.getFromHeader()
-		if self.tryed: return
+		if self.tried: return
 
 		await self.getFromGet()
-		if self.tryed: return
+		if self.tried: return
 
 		# after here we need to read the body
 		if self.WebRequest.method in ["POST"]:
 			if self.WebRequest.headers.get("content-type", None) == "application/json":
 				await self.getFromJson()
-				if self.tryed: return
+				if self.tried: return
 
 			if self.WebRequest.headers.get("content-type", "").startswith("multipart/"):
 				await self.getFromMultipart()
-				if self.tryed: return
+				if self.tried: return
 
 			await self.getFromPost()
-			if self.tryed: return
+			if self.tried: return
 
 	# getter
 	@forcable
@@ -153,7 +153,7 @@ class WebUserInfo(DBContentClass):
 
 	@forcable
 	async def getFromMultipart(self) -> None:
-		self.BASE.Logger.debug("Someone tryed to auth with multipart content", require="web:debug")
+		self.BASE.Logger.debug("Someone tried to auth with multipart content", require="web:debug")
 		return None
 
 	@forcable
@@ -171,7 +171,7 @@ class WebUserInfo(DBContentClass):
 
 	# checker
 	async def viaToken(self) -> None:
-		self.BASE.Logger.debug("Someone tryed to auth with token", require="web:debug")
+		self.BASE.Logger.debug("Someone tried to auth with token", require="web:debug")
 		return None
 
 	async def viaLogin(self) -> None:
@@ -216,7 +216,7 @@ class WebUserInfo(DBContentClass):
 		return await self.dbRequest(dbr, val)
 
 	async def dbRequest(self, db_req:str, values:tuple = None) -> None:
-		self.tryed = True
+		self.tried = True
 		res:list = self.BASE.PhaazeDB.query(db_req, values=values)
 
 		if not res: return

@@ -75,7 +75,7 @@ command_register:list = [
 		name = "Urban define",
 		function = urbanDictionary,
 		description = "Uses UrbanDictionary to get a difination for your input",
-		details = "This function takes everything after the trigger and tryed to define it",
+		details = "This function takes everything after the trigger and tried to define it",
 		need_content = False
 	),
 	dict(
