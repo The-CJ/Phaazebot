@@ -6,11 +6,13 @@ div[buttons] a {
   margin: 3px 0;
 }
 
-div[buttons] button {
+div[buttons] > a > button {
   color: white;
+  background: #0052d6;
 }
+div[buttons] > a:nth-child(even) > button { background: #0046b8; }
 
-div[buttons] button:hover {
+div[buttons] > a > button:hover {
   color: lightgrey;
 }
 
