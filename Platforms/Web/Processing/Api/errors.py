@@ -87,6 +87,20 @@ async def apiWrongData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Resp
 		content_type="application/json"
 	)
 
+async def apiNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+	"""
+	default_msg:str = "No data found"
+	msg:str = kwargs.get("msg", default_msg)
+
+	return cls.response(
+		status=400,
+		text=json.dumps( dict(error="not_found", msg=msg, status=400) ),
+		content_type="application/json"
+	)
+
 async def userNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
 		Takes from kwargs:

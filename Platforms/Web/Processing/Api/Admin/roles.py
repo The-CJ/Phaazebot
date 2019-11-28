@@ -11,7 +11,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from ..errors import apiNotAllowed, apiMissingValidMethod, missingData, apiWrongData
+from ..errors import apiNotAllowed, apiMissingValidMethod, missingData, apiWrongData, apiNotFound
 
 async def apiAdminRoles(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -82,8 +82,27 @@ async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not role_id:
 		return await missingData(cls, WebRequest, msg="missing or invalid 'role_id'")
 
+	res:list = cls.Web.BASE.PhaazeDB.selectQuery(
+		"SELECT * FROM `role` WHERE `role`.`id` = %s",
+		(role_id,)
+	)
+
+	if not res:
+		return await apiWrongData(cls, WebRequest, msg=f"could not find role")
+
+	CurrentRole:WebRole = WebRole( res.pop(0) )
+
 	db_changes:dict = dict()
 	changes:dict = dict()
+
+	# name
+	value:str = Data.getStr("name", UNDEFINED)
+	if value != UNDEFINED:
+		# only allow role name change as long the role is removable,
+		# because based on name... a rename whould be a delete... got it?
+		if CurrentRole.can_be_removed:
+			db_changes["name"] = validateDBInput(str, value)
+			changes["name"] = value
 
 	# description
 	value:str = Data.getStr("description", UNDEFINED)
