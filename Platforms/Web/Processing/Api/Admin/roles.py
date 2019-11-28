@@ -152,4 +152,33 @@ async def apiAdminRolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 
 async def apiAdminRolesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
-	pass
+	Data:WebRequestContent = WebRequestContent(WebRequest)
+	await Data.load()
+
+	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
+	if not role_id:
+		return await missingData(cls, WebRequest, msg="missing or invalid 'role_id'")
+
+	res:list = cls.Web.BASE.PhaazeDB.selectQuery(
+		"SELECT `name`, `can_be_removed` FROM `role` WHERE `role`.`id` = %s",
+		(role_id,)
+	)
+
+	if not res:
+		return await apiWrongData(cls, WebRequest, msg=f"could not find role")
+
+	role:dict = res.pop(0)
+
+	if not role["can_be_removed"]:
+		return await apiWrongData(cls, WebRequest, msg=f"'{role['name']}' cannot be removed")
+
+	cls.Web.BASE.PhaazeDB.deleteQuery(
+		"DELETE FROM `role` WHERE `role`.`id` = %s",
+		(role_id,)
+	)
+
+	return cls.response(
+		text=json.dumps( dict(msg="role successfull deleted", role=role['name'], status=200) ),
+		content_type="application/json",
+		status=200
+	)
