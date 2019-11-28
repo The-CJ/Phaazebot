@@ -44,6 +44,15 @@ class WebUserInfo(DBContentClass):
 		self.user_id:int = -1
 		self.roles:list = []
 
+	def __repr__(self):
+		if not self.tryed:
+			return f"<{self.__class__.__name__} - Not yet tried to resolve>"
+
+		if not self.found:
+			return f"<{self.__class__.__name__} - Not found/Unknown user>"
+
+		return f"<{self.__class__.__name__} id='{self.user_id}' name='{self.username}'>"
+
 	def checkRoles(self, roles:str or list) -> bool:
 		if not roles: return True
 		if not self.roles: return False
