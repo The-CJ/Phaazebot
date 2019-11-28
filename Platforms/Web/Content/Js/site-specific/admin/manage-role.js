@@ -46,9 +46,11 @@ function detailRole(HTMLElement) {
     if (!role.can_be_removed) {
       $("#edit_create_role").find("[name=can_be_removed]").prop("checked", false);
       $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", true);
+      $("#edit_create_role button[remove]").hide();
     } else {
       $("#edit_create_role").find("[name=can_be_removed]").prop("checked", true);
       $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);
+      $("#edit_create_role button[remove]").show();
     }
 
     $("#edit_create_role").modal("show");
@@ -104,4 +106,24 @@ function createRole() {
     generalAPIErrorHandler( {data:data, msg:"role create failed"} );
   });
 
+}
+
+function removeRole() {
+  var req = extractData("#edit_create_role");
+  req["role_id"] = req["id"];
+  
+  var c = confirm("Sure you want to delete role '"+req["name"]+"'?");
+  if (!c) { return; }
+
+  $.post("/api/admin/roles/delete", req)
+  .done(function (data) {
+
+    Display.showMessage( {content:data.msg, color:Display.color_success} );
+    $("#edit_create_role").modal("hide");
+    getRoles();
+
+  })
+  .fail(function (data) {
+    generalAPIErrorHandler( {data:data, msg:"role delete failed"} );
+  });
 }

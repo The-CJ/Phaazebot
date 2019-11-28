@@ -54,14 +54,16 @@
               <input type="checkbox" name="can_be_removed" checked>
               <span>Can be removed</span>
             </label>
+            <button remove type="button" class="btn btn-block btn-danger" onclick="removeRole()">Remove</button>
           </div>
         </div>
+
 
       </div>
 
       <div class="modal-footer">
+        <button create type="button" class="btn btn-block btn-success" onclick="createRole()">Create</button><br>
         <button edit type="button" class="btn btn-block btn-success" onclick="editRole()">Save</button>
-        <button create type="button" class="btn btn-block btn-success" onclick="createRole()">Create</button>
       </div>
 
       <div messagebox></div>
