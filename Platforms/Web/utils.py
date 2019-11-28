@@ -90,7 +90,7 @@ async def searchUser(cls:"WebIndex", where:str, values:tuple = None) -> list:
 	statement:str = f"""
 		SELECT
 			`user`.*,
-			GROUP_CONCAT(`role`.`name` SEPARATOR ';;;')
+			GROUP_CONCAT(`role`.`name` SEPARATOR ';;;') AS `roles`
 		FROM `user`
 		LEFT JOIN `user_has_role`
 			ON `user_has_role`.`user_id` = `user`.`id`
