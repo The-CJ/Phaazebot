@@ -39,17 +39,18 @@ function detailRole(HTMLElement) {
     $("#edit_create_role").find("[name=id]").closest(".row").show();
 
     $("#edit_create_role").find("[name=name]").val(role.name);
-    $("#edit_create_role").find("[name=name]").attr("readonly", true);
 
     $("#edit_create_role").find("[name=description]").val(role.description);
 
     if (!role.can_be_removed) {
       $("#edit_create_role").find("[name=can_be_removed]").prop("checked", false);
       $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", true);
+      $("#edit_create_role").find("[name=name]").attr("readonly", true);
       $("#edit_create_role button[remove]").hide();
     } else {
       $("#edit_create_role").find("[name=can_be_removed]").prop("checked", true);
       $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);
+      $("#edit_create_role").find("[name=name]").attr("readonly", false);
       $("#edit_create_role button[remove]").show();
     }
 
@@ -111,7 +112,7 @@ function createRole() {
 function removeRole() {
   var req = extractData("#edit_create_role");
   req["role_id"] = req["id"];
-  
+
   var c = confirm("Sure you want to delete role '"+req["name"]+"'?");
   if (!c) { return; }
 
