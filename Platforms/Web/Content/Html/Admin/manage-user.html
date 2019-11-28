@@ -1,0 +1,36 @@
+<link rel="stylesheet" href="/css/site-specific/admin/manage-user.css">
+<script src="/js/site-specific/admin/manage-user.js" charset="utf-8"></script>
+
+<main>
+  <div class="container text-center white-text">
+    <h1>User manager</h1>
+    <button type="button" class="btn btn-primary" onclick="alert('x')">X</button>
+    <div id="user_list"></div>
+  </div>
+</main>
+
+<div phantom hidden>
+
+</div>
+
+<div class="modal modal-fluid fade" id="edit_create_user" mode="edit/create">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">[N/A]</h4>
+        <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+      </div>
+
+      <div class="modal-footer">
+        <button create type="button" class="btn btn-block btn-success" onclick="createUser()">Create</button><br>
+        <button edit type="button" class="btn btn-block btn-success" onclick="editUser()">Save</button>
+      </div>
+
+      <div messagebox></div>
+    </div>
+  </div>
+</div>
