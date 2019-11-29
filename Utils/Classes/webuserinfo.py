@@ -53,6 +53,11 @@ class WebUserInfo(DBContentClass):
 
 		return f"<{self.__class__.__name__} id='{self.user_id}' name='{self.username}'>"
 
+	def toJSON(self) -> dict:
+		""" Returns a json save representation of all values for API, storage, etc... """
+		# TODO: work this
+		return dict()
+
 	def checkRoles(self, roles:str or list) -> bool:
 		if not roles: return True
 		if not self.roles: return False
