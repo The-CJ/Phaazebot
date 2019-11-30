@@ -50,7 +50,7 @@ class DiscordUserInfo(object):
 
 		return f"<{self.__class__.__name__} id='{self.user_id}' name='{self.username}'>"
 
-	def toJSON(self) -> dict:
+	def toJSON(self, token:bool=False, scope:bool=False) -> dict:
 		""" Returns a json save dict representation of all values for API, storage, etc... """
 
 		j:dict = dict()
@@ -64,6 +64,13 @@ class DiscordUserInfo(object):
 		j["flags"] = self.flags
 		j["avatar"] = self.avatar
 		j["discriminator"] = self.discriminator
+
+		if token:
+			j["access_token"] = self.access_token
+			j["refresh_token"] = self.refresh_token
+
+		if scope:
+			j["scope"] = self.scope
 
 		return j
 
