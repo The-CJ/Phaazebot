@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from aiohttp.web import Response, Request
 from .get import apiDiscordQuotesGet
 from .edit import apiDiscordQuotesEdit
+from .create import apiDiscordQuotesCreate
 from .delete import apiDiscordQuotesDelete
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
@@ -26,7 +27,8 @@ async def apiDiscordQuotes(cls:"WebIndex", WebRequest:Request) -> Response:
 	elif method == "edit":
 		return await apiDiscordQuotesEdit(cls, WebRequest)
 
-	# TODO: Create Quote via API
+	elif method == "create":
+		return await apiDiscordQuotesCreate(cls, WebRequest)
 
 	elif method == "delete":
 		return await apiDiscordQuotesDelete(cls, WebRequest)
