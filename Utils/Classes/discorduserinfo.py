@@ -28,18 +28,44 @@ class DiscordUserInfo(object):
 		self.refresh_token:str = None
 		self.scope:str = None
 
-		self.username:str = None
-		self.verified:str = None
-		self.locale:str = None
-		self.premium_type:str = None
 		self.user_id:str = None
-		self.flags:str = None
+		self.username:str = None
+		self.email:str = None
+		self.verified:bool = False
+		self.locale:str = None
+		self.premium_type:int = None
+		self.flags:int = None
 		self.avatar:str = None
 		self.discriminator:str = None
-		self.email:str = None
 
 		self.found:bool = False
 		self.tried:bool = False
+
+	def __repr__(self):
+		if not self.tried and not self.found:
+			return f"<{self.__class__.__name__} - Not yet tried to resolve>"
+
+		if not self.found:
+			return f"<{self.__class__.__name__} - Not found/Unknown user>"
+
+		return f"<{self.__class__.__name__} id='{self.user_id}' name='{self.username}'>"
+
+	def toJSON(self) -> dict:
+		""" Returns a json save dict representation of all values for API, storage, etc... """
+
+		j:dict = dict()
+
+		j["user_id"] = str(self.user_id)
+		j["username"] = self.username
+		j["email"] = self.email
+		j["verified"] = self.verified
+		j["locale"] = self.locale
+		j["premium_type"] = self.premium_type
+		j["flags"] = self.flags
+		j["avatar"] = self.avatar
+		j["discriminator"] = self.discriminator
+
+		return j
 
 	async def auth(self) -> None:
 		if self.force_method:
@@ -106,12 +132,12 @@ class DiscordUserInfo(object):
 
 		user:dict = json.loads(data.get("user_info", "{}"))
 
-		self.username:str = user.get("username", Undefined())
-		self.verified:str = user.get("verified", Undefined())
-		self.locale:str = user.get("locale", Undefined())
-		self.premium_type:str = user.get("premium_type", Undefined())
-		self.user_id:str = user.get("id", Undefined())
-		self.flags:str = user.get("flags", Undefined())
-		self.avatar:str = user.get("avatar", Undefined())
-		self.discriminator:str = user.get("discriminator", Undefined())
-		self.email:str = user.get("email", Undefined())
+		self.username = user.get("username", Undefined())
+		self.verified = user.get("verified", Undefined())
+		self.locale = user.get("locale", Undefined())
+		self.premium_type = user.get("premium_type", Undefined())
+		self.user_id = user.get("id", Undefined())
+		self.flags = user.get("flags", Undefined())
+		self.avatar = user.get("avatar", Undefined())
+		self.discriminator = user.get("discriminator", Undefined())
+		self.email = user.get("email", Undefined())
