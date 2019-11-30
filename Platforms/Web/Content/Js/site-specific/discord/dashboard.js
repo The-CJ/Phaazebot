@@ -1357,6 +1357,7 @@ var Levels = new(class {
 
 var Quotes = new (class {
   constructor() {
+    this.amount = 0;
     this.temporarily_quote_content = {};
   }
 
@@ -1368,6 +1369,8 @@ var Quotes = new (class {
     $.get("/api/discord/quotes/get", {guild_id: guild_id})
     .done(function (data) {
 
+      QuoteO.amount = data.result.length;
+      $("#quote_amount").text(QuoteO.amount);
       var QuoteList = $("#quote_list").html("");
 
       for (var quote of data.result) {
@@ -1426,6 +1429,7 @@ var Quotes = new (class {
     if (!c) {return;}
 
     var Quote = $(HTMLButton).closest(".quote");
+    var QuoteO = this;
 
     var guild_id = $("#guild_id").val();
     var quote_id = Quote.attr("quote-id");
@@ -1438,6 +1442,8 @@ var Quotes = new (class {
     $.post("/api/discord/quotes/delete", req)
     .done(function (data) {
 
+      QuoteO.amount -= 1;
+      $("#quote_amount").text(QuoteO.amount);
       Quote.remove();
       Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
 
