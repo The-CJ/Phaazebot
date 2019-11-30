@@ -37,7 +37,7 @@ class WebUserInfo(DBContentClass):
 		self.username_changed:int = 0
 		self.password:str = None
 		self.email:str = None
-		self.verified:int = False
+		self.verified:bool = False
 		self.created_at:datetime.datetime = None
 		self.edited_at:datetime.datetime = None
 		self.last_login:datetime.datetime = None
@@ -53,10 +53,27 @@ class WebUserInfo(DBContentClass):
 
 		return f"<{self.__class__.__name__} id='{self.user_id}' name='{self.username}'>"
 
-	def toJSON(self) -> dict:
-		""" Returns a json save representation of all values for API, storage, etc... """
-		# TODO: work this
-		return dict()
+	def toJSON(self, dates:bool=True, password:bool=False) -> dict:
+		""" Returns a json save dict representation of all values for API, storage, etc... """
+
+		j:dict = dict()
+
+		j["user_id"] = str(self.user_id)
+		j["username"] = self.username
+		j["username_changed"] = self.username_changed
+		j["email"] = self.email
+		j["verified"] = self.verified
+		j["roles"] = self.roles
+
+		if dates:
+			j["created_at"] = str(self.created_at)
+			j["edited_at"] = str(self.edited_at)
+			j["last_login"] = str(self.last_login)
+
+		if password:
+			j["password"] = self.password
+
+		return j
 
 	def checkRoles(self, roles:str or list) -> bool:
 		if not roles: return True
@@ -237,7 +254,7 @@ class WebUserInfo(DBContentClass):
 		self.username_changed = data.get("username_changed", Undefined())
 		self.password = data.get("password", Undefined())
 		self.email = data.get("email", Undefined())
-		self.verified = data.get("verified", Undefined())
+		self.verified = bool( data.get("verified", Undefined()) )
 
 		self.created_at = data.get("created_at", Undefined())
 		self.edited_at = data.get("edited_at", Undefined())

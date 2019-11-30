@@ -17,17 +17,8 @@ async def apiAccountGetPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not WebUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 
-	user:dict = dict(
-		username=str( WebUser.username ),
-		email=str( WebUser.email ),
-		verified=bool( WebUser.verified ),
-		roles=list( WebUser.roles ),
-		user_id=int( WebUser.user_id ),
-		last_login=str( WebUser.last_login )
-	)
-
 	return cls.response(
-		text=json.dumps( dict(user=user,status=200) ),
+		text=json.dumps( dict(user=WebUser.toJSON(), status=200) ),
 		content_type="application/json",
 		status=200
 	)

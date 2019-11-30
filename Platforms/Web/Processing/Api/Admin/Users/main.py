@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 from aiohttp.web import Response, Request
 from .get import apiAdminUsersGet
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
+from Utils.Classes.webuserinfo import WebUserInfo
 
 async def apiAdminUsers(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
