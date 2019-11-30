@@ -9,14 +9,13 @@ function getUser() {
     var UserList = $("#user_list").html("");
 
     for (var user of data.result) {
-      console.log(user);
-      // var Template = $("[phantom] .role").clone();
+      var Template = $("[phantom] .user").clone();
 
-      // Template.attr("role-id", role.id);
-      // Template.find(".name").text(role.name);
-      // Template.find("[can_be_removed]").attr("can_be_removed", role.can_be_removed ? "true" : "false");
+      Template.attr("user-id", user.user_id);
+      Template.find(".id").text(user.user_id);
+      Template.find(".name").text(user.username);
 
-      // RoleList.append(Template);
+      UserList.append(Template);
     }
 
   })
