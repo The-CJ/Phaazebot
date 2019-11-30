@@ -68,13 +68,8 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	return_list:list = list()
 
 	for LevelUser in levels:
-		level_user:dict = dict(
-			member_id = LevelUser.member_id,
-			rank = LevelUser.rank,
-			exp = LevelUser.exp,
-			edited = True if LevelUser.edited else False,
-			medals = LevelUser.medals
-		)
+		
+		level_user:dict = LevelUser.toJSON()
 
 		if detailed:
 			Mem:discord.Member = Guild.get_member(int(LevelUser.member_id))
