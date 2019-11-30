@@ -1474,6 +1474,29 @@ var Quotes = new (class {
       generalAPIErrorHandler( {data:data, msg:"error updating quote"} );
     })
   }
+
+  startNewModal() {
+    $("#quote_modal_new").modal("show");
+  }
+
+  startNew() {
+
+    var QuoteO = this;
+    var req = extractData("#quote_modal_new");
+    req["guild_id"] = $("#guild_id").val();
+
+    $.post("/api/discord/quotes/create", req)
+    .done(function (data) {
+
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#quote_modal_new").modal("hide");
+      QuoteO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error updating quote"} );
+    })
+  }
 })
 
 // utils
