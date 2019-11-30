@@ -143,6 +143,7 @@
   background: #00000050;
   border-left: 2px solid red;
 }
+[location=quotes] .quote .quote-id { color: grey; }
 
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
