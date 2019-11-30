@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.errors import missingData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordQuoteLimit
 from Platforms.Discord.utils import getDiscordServerQuotes
 from Utils.Classes.discorduserinfo import DiscordUserInfo
