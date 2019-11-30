@@ -28,15 +28,20 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	session_key:str = randomString(size=32)
 
-	cls.Web.BASE.PhaazeDB.query("""
-		INSERT INTO session_phaaze
-		(session, user_id)
-		VALUES (%s, %s)""", (session_key, WebUser.user_id))
+	cls.Web.BASE.PhaazeDB.insertQuery(
+		table = "session_phaaze",
+		content = dict(
+			session = session_key,
+			user_id = WebUser.user_id
+		)
+	)
 
 	cls.Web.BASE.PhaazeDB.query("""
-		UPDATE user
-		SET last_login = NOW()
-		WHERE user.id = %s""", (WebUser.user_id,))
+		UPDATE `user`
+		SET `last_login` = NOW()
+		WHERE `user`.`id` = %s""",
+		(WebUser.user_id,)
+	)
 
 	cls.Web.BASE.Logger.debug(f"(API) New Login - Session: {session_key} User: {str(WebUser.username)}", require="api:login")
 	return cls.response(
@@ -79,20 +84,25 @@ async def apiAccountLoginTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict) -> Response:
 
 	session_key:str = randomString(size=32)
-	access_token:str = data.get('access_token', None)
-	refresh_token:str = data.get('refresh_token', None)
-	scope:str = data.get('scope', None)
+	access_token:str = data.get('access_token', "")
+	refresh_token:str = data.get('refresh_token', "")
+	scope:str = data.get('scope', "")
+	token_type:str = data.get('token_type', None)
 	user_info:dict = await getDiscordUser(cls.Web.BASE, access_token)
 
-	token_type:str = data.get('token_type', None)
-
 	try:
-		cls.Web.BASE.PhaazeDB.query("""
-			INSERT INTO session_discord
-			(session, access_token, refresh_token, scope, token_type, user_info)
-			VALUES (%s, %s, %s, %s, %s, %s)""",
-			(session_key, access_token, refresh_token, scope, token_type, json.dumps(user_info))
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "session_discord",
+			content = dict(
+				session = session_key,
+				access_token = access_token,
+				refresh_token = refresh_token,
+				scope = scope,
+				token_type = token_type,
+				user_info = json.dumps(user_info)
+			)
 		)
+
 		cls.Web.BASE.Logger.debug(f"(API) New Discord Login - Session: {session_key} User: {str(user_info.get('username','[N/A]'))}", require="api:login")
 		return cls.response(
 			status=302,
