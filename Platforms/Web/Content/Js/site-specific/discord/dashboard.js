@@ -1378,7 +1378,7 @@ var Quotes = new (class {
 
         // Template.find(".name").text( level.username );
         Template.find("[name=content]").val(quote.content);
-        Template.attr("quote-id", quote.id);
+        Template.attr("quote-id", quote.quote_id);
 
         QuoteList.append(Template);
       }
