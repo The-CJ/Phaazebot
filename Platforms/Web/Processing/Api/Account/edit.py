@@ -28,7 +28,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	current_password:str = Data.getStr("phaaze_password", "")
 
-	if not current_password or WebUser.password != password_function(str(current_password)):
+	if not current_password or WebUser.password != password_function(current_password):
 		return cls.response(
 			status=400,
 			text=json.dumps( dict(error="current_password_wrong", msg="Current password is not correct", status=400) ),
@@ -67,7 +67,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	if new_username:
 		# want a new username
 		if new_username.lower() != WebUser.username.lower():
-			is_occupied:list = await searchUser(cls, "user.username LIKE %s", (new_username,))
+			is_occupied:list = await searchUser(cls, "LOWER(`user`.`username`) = LOWER(%s)", (new_username,))
 			if is_occupied:
 				# already taken
 				return cls.response(
@@ -118,18 +118,19 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		cls.Web.BASE.Logger.debug(f"(API) New Email, send new verification mail: {new_email}", require="api:account")
 		# TODO: SEND MAIL
 
-	update["edited_at"] =  str(datetime.datetime.now())
+	update["edited_at"] = str(datetime.datetime.now())
 
 	try:
 		cls.Web.BASE.PhaazeDB.updateQuery(
 			table = "user",
 			content = update,
-			where = "user.id = %s", where_values = (WebUser.user_id,)
+			where = "user.id = %s",
+			where_values = (WebUser.user_id,)
 		)
 		cls.Web.BASE.Logger.debug(f"(API) Account edit ({WebUser.user_id}) : {str(update)}", require="api:account")
 		return cls.response(
 			status=200,
-			text=json.dumps( dict(error="successfull_edited", msg="Your account has been successfull edited", status=200) ),
+			text=json.dumps( dict(error="successfull_edited", msg="Your account has been successfull edited", changes=update, status=200) ),
 			content_type="application/json"
 		)
 
