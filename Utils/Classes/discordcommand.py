@@ -18,14 +18,40 @@ class DiscordCommand(DBContentClass):
 		self.uses:int = data.get("uses", 0)
 		self.require:int = data.get("require", 0)
 		self.required_currency:int = data.get("required_currency", 0)
-		self.hidden:bool = data.get("hidden", False)
+		self.hidden:bool = bool( data.get("hidden", False) )
 		self.cooldown:int = data.get("cooldown", 0)
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.server_id}' trigger='{self.trigger}'>"
 
-	def toJSON(self) -> dict:
-		pass
+	def toJSON(self, show_hidden:bool=False) -> dict:
+		""" Returns a json save dict representation of all values for API, storage, etc... """
+
+		j:dict = dict()
+
+		j["command_id"] = self.command_id
+		j["trigger"] = str(self.trigger)
+		j["complex"] = self.complex
+		j["uses"] = self.uses
+		j["require"] = self.require
+		j["cost"] = self.required_currency
+		j["cooldown"] = self.cooldown
+		j["hidden"] = self.hidden
+
+		if show_hidden or not self.hidden:
+			j["function"] = self.function
+			j["content"] = self.content
+			j["name"] = self.name
+			j["description"] = self.description
+
+		else:
+			j["function"] = None
+			j["content"] = None
+			j["name"] = None
+			j["description"] = None
+
+
+		return j
 
 	async def increaseUse(self, cls:"PhaazebotDiscord", by:int=1) -> None:
 		cls.BASE.PhaazeDB.query("""

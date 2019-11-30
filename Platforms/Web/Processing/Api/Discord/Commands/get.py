@@ -59,24 +59,8 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# this point is only reached when command can be hidden or user requested hidden props has authorist
 	api_return:list = list()
-	for command in commands:
-
-		cmd:dict = dict(
-			trigger = command.trigger,
-			name = command.name if show_hidden else (command.name if not command.hidden else None),
-			function = command.function if show_hidden else (command.function if not command.hidden else None),
-			description = command.description if show_hidden else (command.description if not command.hidden else None),
-			content = command.content if show_hidden else (command.content if not command.hidden else None),
-			complex = True if command.complex else False,
-			cost = command.required_currency,
-			uses = command.uses,
-			require = command.require,
-			hidden = True if command.hidden else False,
-			cooldown = command.cooldown,
-			id = command.command_id
-		)
-
-		api_return.append(cmd)
+	for Command in commands:
+		api_return.append(Command.toJSON(show_hidden=show_hidden))
 
 	return cls.response(
 		text=json.dumps( dict(result=api_return, status=200) ),
