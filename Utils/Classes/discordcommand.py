@@ -7,9 +7,6 @@ from Utils.Classes.dbcontentclass import DBContentClass
 from Utils.Classes.storeclasses import GlobalStorage
 
 class DiscordCommand(DBContentClass):
-	def __repr__(self):
-		return f"<{self.__class__.__name__} server='{self.server_id}' trigger='{self.trigger}'>"
-
 	def __init__(self, data:dict, server_id:str):
 		self.server_id:str = server_id
 		self.command_id:int = data.get("id", Undefined())
@@ -24,11 +21,17 @@ class DiscordCommand(DBContentClass):
 		self.hidden:bool = data.get("hidden", False)
 		self.cooldown:int = data.get("cooldown", 0)
 
+	def __repr__(self):
+		return f"<{self.__class__.__name__} server='{self.server_id}' trigger='{self.trigger}'>"
+
+	def toJSON(self) -> dict:
+		pass
+
 	async def increaseUse(self, cls:"PhaazebotDiscord", by:int=1) -> None:
 		cls.BASE.PhaazeDB.query("""
-			UPDATE discord_command
-			SET uses = uses + %s
-			WHERE id = %s""",
+			UPDATE `discord_command`
+			SET `uses` = `uses` + %s
+			WHERE `id` = %s""",
 			(by, self.command_id)
 		)
 
