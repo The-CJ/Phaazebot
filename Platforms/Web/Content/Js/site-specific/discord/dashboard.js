@@ -274,7 +274,7 @@ var Commands = new (class {
         Template.find(".cost").text(command.cost);
         Template.find(".uses").text(command.uses);
         Template.find(".cooldown").text(command.cooldown);
-        Template.attr("command-id", command.id);
+        Template.attr("command-id", command.command_id);
 
         if (command.hidden) {
           Template.find(".function").addClass("hidden");
@@ -387,7 +387,7 @@ var Commands = new (class {
       var command = data.result[0];
 
       $("#command_create .modal-title").text("Edit command: "+command.trigger);
-      $("#command_create [name=command_id]").val(command.id);
+      $("#command_create [name=command_id]").val(command.command_id);
       $("#command_create [name=trigger]").val(command.trigger);
       $("#command_create [name=require]").val( command.require );
       $("#command_create [name=required_currency]").val( command.cost );

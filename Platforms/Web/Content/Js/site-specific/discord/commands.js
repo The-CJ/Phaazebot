@@ -18,7 +18,7 @@ function loadCommands() {
       Template.find(".require").text( discordTranslateRequire(command.require) );
       Template.find(".cost").text(command.cost);
       Template.find(".uses").text(command.uses);
-      Template.attr("command-id", command.id);
+      Template.attr("command-id", command.command_id);
 
       if (command.hidden) {
         Template.find(".function").addClass("hidden");
