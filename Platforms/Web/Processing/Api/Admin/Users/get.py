@@ -4,14 +4,20 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
+from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.utils import searchUser
 
 async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/admin/users/get
 	"""
+	Data:WebRequestContent = WebRequestContent(WebRequest)
+	await Data.load()
 
-	users:list = await searchUser(cls, where="1=1")
+	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
+	where:str = f"`user`.`id` = {user_id}" if user_id else "1=1"
+
+	users:list = await searchUser(cls, where=where)
 
 	return_list:list = list()
 
