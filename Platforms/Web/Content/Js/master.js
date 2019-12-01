@@ -54,7 +54,14 @@ function insertData(o, d, to_string=false) {
         if (typeof v == "boolean") { v = v ? "true" : "false"; }
         if (!v) { v = ""; }
       }
-      o.find("[name="+k+"]").val( v );
+      for (var f of o.find("[name="+k+"]")) {
+        f = $(f);
+        if (f.attr("type") == "checkbox") {
+          if ( v ) { f.prop("checked", true) } else { f.prop("checked", false) }
+        } else {
+          f.val( v );
+        }
+      }
     }
     catch (e) { continue }
   }
