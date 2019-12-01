@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response, Request
 from .get import apiAdminUsersGet
+from .edit import apiAdminUsersEdit
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 from Utils.Classes.webuserinfo import WebUserInfo
 
@@ -21,8 +22,7 @@ async def apiAdminUsers(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiAdminUsersGet(cls, WebRequest)
 
 	elif method == "edit":
-		pass
-		# return await apiAdminRolesEdit(cls, WebRequest)
+		return await apiAdminUsersEdit(cls, WebRequest)
 
 	elif method == "create":
 		pass
