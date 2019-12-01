@@ -19,6 +19,13 @@
     </div>
   </div>
 
+  <div class="center-item-row forced role">
+    <div class="col name"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="removeUserRole(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
 </div>
 
 <div class="modal fade" id="edit_create_user" mode="edit/create">
@@ -37,8 +44,13 @@
         </div>
 
         <div class="row md-form">
-          <div class="col"><span>Name:</span></div>
+          <div class="col"><span>Username:</span></div>
           <div class="col-8"><input type="text" name="username" placeholder="User name" style="width: 100%;"></div>
+        </div>
+
+        <div class="row md-form">
+          <div class="col"><span>Username changed:</span></div>
+          <div class="col-8"><input type="text" name="username_changed" readonly style="width: 100%;"></div>
         </div>
 
         <div class="row md-form">
@@ -53,12 +65,40 @@
           <div class="col-8">
             <label class="checkbox-container">
               <input type="checkbox" name="verified">
-              <span></span>
             </label>
           </div>
         </div>
 
         <div class="row md-form">
+          <div class="col"><span>Created:</span></div>
+          <div class="col-8"><input type="text" name="created_at" style="width: 100%;" readonly></div>
+        </div>
+
+        <div class="row md-form">
+          <div class="col"><span>Last edit:</span></div>
+          <div class="col-8"><input type="text" name="edited_at" style="width: 100%;" readonly></div>
+        </div>
+
+        <div class="row md-form">
+          <div class="col"><span>Last login:</span></div>
+          <div class="col-8"><input type="text" name="last_login" style="width: 100%;" readonly></div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <h4>Roles:</h4>
+            
+            <div class="center-item-row forced">
+              <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:addUserRole()">
+                <select class="custom-select" id="new_user_role"></select>
+                <div class="input-group-append">
+                  <button type="submit" class="btn btn-primary m-0 px-3 py-2">+</button>
+                </div>
+              </form>
+            </div>
+
+            <div id="user_role_list"></div>
+          </div>
         </div>
 
       </div>
