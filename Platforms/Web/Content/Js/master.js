@@ -57,7 +57,7 @@ function insertData(o, d, to_string=false) {
       for (var f of o.find("[name="+k+"]")) {
         f = $(f);
         if (f.attr("type") == "checkbox") {
-          if ( v ) { f.prop("checked", true) } else { f.prop("checked", false) }
+          if ( oppositeValue(v) ) { f.prop("checked", false) } else { f.prop("checked", true) }
         } else {
           f.val( v );
         }
@@ -73,7 +73,6 @@ function oppositeValue(v) {
   else if (typeof v == "number") { return v * -1 }
   else if (typeof v == "string") {
     // if string, interpret values for a bool type
-
     // the strings "0", "false" and "" are often used to represent a false statement, so return true
     if (v == "0" || v == "false" || !v) { return true; }
     // everything else is true in string language
