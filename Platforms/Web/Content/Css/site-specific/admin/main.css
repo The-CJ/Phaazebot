@@ -8,9 +8,9 @@ div[buttons] a {
 
 div[buttons] > a > button {
   color: white;
-  background: #0052d6;
+  background: var(--color-listelement-odd);
 }
-div[buttons] > a:nth-child(even) > button { background: #0046b8; }
+div[buttons] > a:nth-child(even) > button { background: var(--color-listelement-even); }
 
 div[buttons] > a > button:hover {
   color: lightgrey;

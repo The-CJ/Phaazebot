@@ -8,10 +8,10 @@ main h1 {
 #role_list > .role > .row {
   margin: .25em;
   padding: .5em;
-  background: #0052d6;
+  background: var(--color-listelement-odd);
   cursor: pointer;
 }
-#role_list .role:nth-child(even) > .row {background: #0046b8; }
+#role_list .role:nth-child(even) > .row {background: var(--color-listelement-even); }
 #role_list { padding: 1em; }
 #edit_create_role .modal-footer button { display: none; }
 #edit_create_role[mode=edit] .modal-footer button[edit] { display: block; }

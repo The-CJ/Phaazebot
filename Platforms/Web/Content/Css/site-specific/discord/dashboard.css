@@ -18,11 +18,9 @@
   border-radius: 7.5em;
   padding: 1em;
   line-height: 0;
-  background-color: #0085ff;
   color: white;
 }
 .site-panel-btn.show {
-  background-color: #c4c4c4;
   color: black;
 }
 
@@ -70,7 +68,7 @@
 /* locations */
 [location=home] .guild-icon {
   border: 2px solid black;
-  background: #202225;
+  background-color: #202225;
   border-radius: 50%;
 }
 [location=home] .guild-name {
@@ -81,53 +79,45 @@
 [location=commands] .command { cursor: pointer;; }
 [location=commands] .command:hover { background: rgba(0,0,0,0.2); }
 [location=commands] .command > *, [location=commands] .header > * { margin: 2px; }
-[location=commands] .header .trigger { background: #293788; }
-[location=commands] .header .function { background: #364287; }
-[location=commands] .header .require { background: #293788; }
-[location=commands] .header .cost { background: #364287; }
-[location=commands] .header .uses { background: #364287; }
-[location=commands] .header .cooldown { background: #364287; }
-[location=commands] .command .trigger { background: #295888; }
-[location=commands] .command .function { background: #365b87; word-break: break-word;}
+[location=commands] .header > div { background-color: var(--color-listelement-odd); }
+[location=commands] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
+[location=commands] .command > div { background-color: var(--color-sub-listelement-odd); }
+[location=commands] .command > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
 [location=commands] .command .function.hidden { background: #665b87 }
-[location=commands] .command .require { background: #295888; }
-[location=commands] .command .cost { background: #365b87; }
-[location=commands] .command .uses { background: #365b87; }
-[location=commands] .command .cooldown { background: #365b87; }
 
 [location=configs] .config-box { padding: 5px; margin-bottom: 1em; }
 [location=configs] .config-box .btn { margin: unset; }
-[location=configs] .btn.toggle-value[value=x] {background: #696969; }
-[location=configs] .btn.toggle-value[value=true] {background: #00c851; }
-[location=configs] .btn.toggle-value[value=false] {background: #ff3547; }
-[location=configs] .btn.toggle-value[value=x]::after {content: "-----"; }
-[location=configs] .btn.toggle-value[value=true]::after {content: "Disable"; }
-[location=configs] .btn.toggle-value[value=false]::after {content: "Enable"; }
-[location=configs] .btn.toggle-value.reverse[value=true] {background: #ff3547; }
-[location=configs] .btn.toggle-value.reverse[value=false] {background: #00c851; }
-[location=configs] .btn.toggle-value.reverse[value=true]::after {content: "Enable"; }
-[location=configs] .btn.toggle-value.reverse[value=false]::after {content: "Disable"; }
+[location=configs] .btn.toggle-value[value=x] {background-color: #696969; }
+[location=configs] .btn.toggle-value[value=true], [location=configs] .btn.toggle-value.reverse[value=false] {
+  background-color: var(--color-boolish-green);
+}
+[location=configs] .btn.toggle-value[value=false], [location=configs] .btn.toggle-value.reverse[value=true] {
+  background-color: var(--color-boolish-red);
+}
+[location=configs] .btn.toggle-value[value]::after {
+  content: "-----";
+}
+[location=configs] .btn.toggle-value[value=true]::after, [location=configs] .btn.toggle-value.reverse[value=false]::after {
+  content: "Disable";
+}
+[location=configs] .btn.toggle-value[value=false]::after, [location=configs] .btn.toggle-value.reverse[value=true]::after {
+  content: "Enable";
+}
 [location=configs] .btn.config-save { margin-top: 1em; }
 [location=configs] .config-info { padding: .84rem 2.14rem; font-size: .81rem; } /* same as btn */
 [location=configs] .config-textbox-input { width: 100%; }
 [location=configs] .config-token-btn { position: absolute; top: 1px; right: 1px; }
 
-[location=levels] .level { cursor: pointer;; }
+[location=levels] .level { cursor: pointer; }
 [location=levels] .level:hover { background: rgba(0,0,0,0.2); }
 [location=levels] .level > *, [location=levels] .header > * { margin: 2px; }
-[location=levels] .header .rank { background: #293788; }
-[location=levels] .header .lvl { background: #364287; }
-[location=levels] .header .exp { background: #293788; }
-[location=levels] .header .member { background: #364287; }
-[location=levels] .header .medals { background: #293788; }
-[location=levels] .level .rank { background: #295888; }
-[location=levels] .level .lvl { background: #365b87;}
-[location=levels] .level .exp { background: #295888 }
+[location=levels] .header > div { background-color: var(--color-listelement-odd); }
+[location=levels] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
+[location=levels] .level > div { background-color: var(--color-sub-listelement-odd); }
+[location=levels] .level > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
 [location=levels] .level .exp.edited { background: #665b87; }
-[location=levels] .level .member { background: #365b87; }
 [location=levels] .level .member .avatar { border-radius: 50%; }
 [location=levels] .level .member .name { margin-left: 1em; }
-[location=levels] .level .medals { background: #295888; }
 
 [location=quotes] .quote { margin: 5px 0; }
 [location=quotes] .quote [name=content] {

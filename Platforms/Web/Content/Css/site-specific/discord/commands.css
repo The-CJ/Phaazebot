@@ -12,21 +12,15 @@ main h1 {
   background: rgba(0,0,0,0.2);
 }
 
-.header .trigger { background: #293788; }
-.header .function { background: #364287; }
-.header .require { background: #293788; }
-.header .cost { background: #364287; }
-.header .uses { background: #364287; }
+.header div { background: var(--color-listelement-odd); }
+.header div:nth-child(even) { background: var(--color-listelement-even); }
 
-.command .trigger { background: #295888; }
-.command .function { background: #365b87; }
-.command .require { background: #295888; }
-.command .cost { background: #365b87; }
-.command .uses { background: #365b87; }
+.command div { background: var(--color-sub-listelement-odd); }
+.command div:nth-child(even) { background: var(--color-sub-listelement-even); }
 
 .command .function.hidden:after {
   content: "This command is hidden";
-  color: rgb(142, 142, 142);
+  color: grey;
 }
 
 #command_detail [name=name], #command_detail [name=description] {
