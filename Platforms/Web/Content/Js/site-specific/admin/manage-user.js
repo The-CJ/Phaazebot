@@ -23,6 +23,7 @@ function loadUserRoles() {
 
 }
 
+// user
 function getUser() {
   $.get("/api/admin/users/get")
   .done(function (data) {
@@ -67,5 +68,28 @@ function detailUser(HTMLElement) {
   })
   .fail(function (data) {
     generalAPIErrorHandler( {data:data, msg:"can't load user"} );
+  })
+}
+
+// user roles
+function removeUserRole(HTMLButton) {
+  HTMLButton = $(HTMLButton);
+  var role_name = HTMLButton.closest(".role").find(".name").text();
+  var user_id = HTMLButton.closest(".modal").find("[name=user_id]").val();
+
+  var req = {
+    user_id: user_id,
+    role: role_name,
+    roleaction: "remove"
+  };
+
+  $.post("/api/admin/users/edit", req)
+  .done(function (data) {
+
+    console.log(data);
+
+  })
+  .fail(function (data) {
+    generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
   })
 }
