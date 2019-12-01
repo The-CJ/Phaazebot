@@ -57,14 +57,7 @@ async def apiAdminRolesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	return_list:list = list()
 
 	for Role in res:
-		api_role:dict = dict(
-			id = Role.id,
-			name = Role.name,
-			description = Role.description if Role.description else "",
-			can_be_removed = Role.can_be_removed
-		)
-
-		return_list.append( api_role )
+		return_list.append( Role.toJSON() )
 
 	return cls.response(
 		text=json.dumps( dict(result=return_list, status=200) ),

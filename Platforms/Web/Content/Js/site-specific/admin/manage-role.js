@@ -11,7 +11,7 @@ function getRoles() {
     for (var role of data.result) {
       var Template = $("[phantom] .role").clone();
 
-      Template.attr("role-id", role.id);
+      Template.attr("role-id", role.role_id);
       Template.find(".name").text(role.name);
       Template.find("[can_be_removed]").attr("can_be_removed", role.can_be_removed ? "true" : "false");
 
@@ -35,8 +35,8 @@ function detailRole(HTMLElement) {
     $("#edit_create_role").attr("mode", "edit");
     $("#edit_create_role .modal-title").text("Edit role:");
 
-    $("#edit_create_role").find("[name=id]").val(role.id);
-    $("#edit_create_role").find("[name=id]").closest(".row").show();
+    $("#edit_create_role").find("[name=role_id]").val(role.id);
+    $("#edit_create_role").find("[name=role_id]").closest(".row").show();
 
     $("#edit_create_role").find("[name=name]").val(role.name);
 
@@ -65,7 +65,6 @@ function detailRole(HTMLElement) {
 function editRole() {
 
   var req = extractData("#edit_create_role[mode=edit]");
-  req["role_id"] = req["id"];
 
   $.post("/api/admin/roles/edit", req)
   .done(function (data) {
@@ -84,7 +83,7 @@ function showCreate() {
   $("#edit_create_role").attr("mode", "create");
   $("#edit_create_role .modal-title").text("Create role:");
 
-  $("#edit_create_role").find("[name=id]").closest(".row").hide();
+  $("#edit_create_role").find("[name=role_id]").closest(".row").hide();
   $("#edit_create_role").find("input, textarea").val("");
   $("#edit_create_role").find("[name=name]").attr("readonly", false);
   $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);
@@ -111,7 +110,6 @@ function createRole() {
 
 function removeRole() {
   var req = extractData("#edit_create_role");
-  req["role_id"] = req["id"];
 
   var c = confirm("Sure you want to delete role '"+req["name"]+"'?");
   if (!c) { return; }
