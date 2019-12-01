@@ -46,8 +46,14 @@ function getUser() {
   })
 }
 
-function detailUser(HTMLElement) {
-  var user_id = $(HTMLElement).attr("user-id");
+function detailUser(HTMLElement, overwrite_user_id) {
+  var user_id;
+  if (HTMLElement) {
+    var user_id = $(HTMLElement).attr("user-id");
+  } else {
+    user_id = overwrite_user_id;
+  }
+
 
   $.get("/api/admin/users/get", {user_id:user_id})
   .done(function (data) {
@@ -71,7 +77,42 @@ function detailUser(HTMLElement) {
   })
 }
 
+function editUser() {
+  var req = extractData("#edit_create_user");
+  $.post("/api/admin/users/edit", req)
+  .done(function (data) {
+
+    Display.showMessage( {content:data.msg, color:Display.color_success} );
+    $("#edit_create_user").modal("hide");
+    getUser();
+
+  })
+  .fail(function (data) {
+    generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
+  })
+}
+
 // user roles
+function addUserRole() {
+  var user_id = $("#edit_create_user [name=user_id]").val();
+  var role_id = $("#new_user_role").val();
+  var req = {
+    user_id: user_id,
+    userrole_action: "add",
+    userrole_role: role_id,
+  };
+  $.post("/api/admin/users/edit", req)
+  .done(function (data) {
+
+    Display.showMessage( {content:data.msg, color:Display.color_success} );
+    detailUser(null, user_id)
+
+  })
+  .fail(function (data) {
+    generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
+  })
+}
+
 function removeUserRole(HTMLButton) {
   HTMLButton = $(HTMLButton);
   var role_name = HTMLButton.closest(".role").find(".name").text();
@@ -79,14 +120,15 @@ function removeUserRole(HTMLButton) {
 
   var req = {
     user_id: user_id,
-    role: role_name,
-    roleaction: "remove"
+    userrole_action: "remove",
+    userrole_role: role_name,
   };
 
   $.post("/api/admin/users/edit", req)
   .done(function (data) {
 
-    console.log(data);
+    Display.showMessage( {content:data.msg, color:Display.color_success} );
+    detailUser(null, user_id)
 
   })
   .fail(function (data) {
