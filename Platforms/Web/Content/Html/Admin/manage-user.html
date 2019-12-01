@@ -30,8 +30,37 @@
         <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
       </div>
 
-      <div class="modal-body text-black">
-        
+      <div class="modal-body">
+        <div class="row md-form">
+          <div class="col"><span>ID:</span></div>
+          <div class="col-8"><input type="text" name="user_id" readonly style="width: 100%;"></div>
+        </div>
+
+        <div class="row md-form">
+          <div class="col"><span>Name:</span></div>
+          <div class="col-8"><input type="text" name="username" placeholder="User name" style="width: 100%;"></div>
+        </div>
+
+        <div class="row md-form">
+          <div class="col"><span>E-Mail:</span></div>
+          <div class="col-8"><input type="text" name="email" placeholder="User email" style="width: 100%;"></div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <span>Verified:</span>
+          </div>
+          <div class="col-8">
+            <label class="checkbox-container">
+              <input type="checkbox" name="verified">
+              <span></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="row md-form">
+        </div>
+
       </div>
 
       <div class="modal-footer">

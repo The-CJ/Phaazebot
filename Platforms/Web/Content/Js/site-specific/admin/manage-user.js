@@ -34,8 +34,7 @@ function detailUser(HTMLElement) {
     $("#edit_create_user .modal-title").text("Edit user: "+data.username);
     $("#edit_create_user").attr("mode", "edit");
 
-
-
+    insertData("#edit_create_user", data);
 
     console.log(data);
     $("#edit_create_user").modal("show");
