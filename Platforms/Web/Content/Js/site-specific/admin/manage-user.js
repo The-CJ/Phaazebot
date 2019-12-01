@@ -20,6 +20,28 @@ function getUser() {
 
   })
   .fail(function (data) {
+    generalAPIErrorHandler( {data:data, msg:"can't load users"} );
+  })
+}
+
+function detailUser(HTMLElement) {
+  var user_id = $(HTMLElement).attr("user-id");
+
+  $.get("/api/admin/users/get", {user_id:user_id})
+  .done(function (data) {
+    data = data.result.shift();
+
+    $("#edit_create_user .modal-title").text("Edit user: "+data.username);
+    $("#edit_create_user").attr("mode", "edit");
+
+
+
+
+    console.log(data);
+    $("#edit_create_user").modal("show");
+
+  })
+  .fail(function (data) {
     generalAPIErrorHandler( {data:data, msg:"can't load user"} );
   })
 }

@@ -9,3 +9,7 @@ main h1 {
   cursor: pointer;
 }
 #user_list .user:nth-child(even) > .row {background: var(--color-listelement-even); }
+
+#edit_create_user .modal-footer button { display: none; }
+#edit_create_user[mode=edit] .modal-footer button[edit] { display:block; }
+#edit_create_user[mode=save] .modal-footer button[save] { display:block; }
