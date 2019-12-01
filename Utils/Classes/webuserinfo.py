@@ -66,9 +66,9 @@ class WebUserInfo(DBContentClass):
 		j["roles"] = self.roles
 
 		if dates:
-			j["created_at"] = str(self.created_at)
-			j["edited_at"] = str(self.edited_at)
-			j["last_login"] = str(self.last_login)
+			j["created_at"] = str(self.created_at) if self.created_at else None
+			j["edited_at"] = str(self.edited_at) if self.edited_at else None
+			j["last_login"] = str(self.last_login) if self.last_login else None
 
 		if password:
 			j["password"] = self.password
