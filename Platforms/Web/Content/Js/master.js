@@ -52,7 +52,7 @@ function insertData(o, d, to_string=false) {
       var v = d[k];
       if (to_string) {
         if (typeof v == "boolean") { v = v ? "true" : "false"; }
-        if (!v) { v = ""; }
+        else if (v == null) { v = ""; }
       }
       for (var f of o.find("[name="+k+"]")) {
         f = $(f);
