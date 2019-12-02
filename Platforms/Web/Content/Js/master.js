@@ -27,10 +27,47 @@ function showEmail() {
   }).popover()
 }
 
+function resetInput(o) {
+  // o = JQuery object | str
+
+  // 'o' is the target, in which all [name] elements get looped
+  // and filled with a "neutral" state,
+  // means empty strings in input fields and unchecked checkboxes
+
+  // checkbox can be overwritten by [checked]
+  // input fields can be overwritten by there [value] attribute
+  // does not edit <data> elements!
+  if (typeof o != "object") { o = $(o); }
+  for (var f of o.find('[name]')) {
+    f = $(f);
+
+    // ignore data elements
+    if ( f.is("data") ) { continue; }
+
+    // is checkbox
+    if (f.attr("type") == "checkbox") {
+      f.prop( "checked", (f.is("[checked]") ? true : false) );
+    }
+    // any other type of element
+    else {
+      var pre_val = f.attr("value");
+      f.val( pre_val ? pre_val : "" );
+    }
+  }
+}
+
 function extractData(o) {
+  // o = JQuery object | str
+
+  // 'o' is the target, in which all [name] elements get looped
+  // and there .val() is stored with there attr('name') as this key
+  // multiple same names overwrite each other, last one counts
+
+  // if element is [type=checkbox] then data[name],
+  // is 0 or 1 based on checked prop
   if (typeof o != "object") { o = $(o); }
   let data = {};
-  for (f of o.find('[name]')) {
+  for (var f of o.find('[name]')) {
     f = $(f);
     let name = f.attr('name');
     if (f.attr("type") == "checkbox") {
@@ -46,6 +83,19 @@ function extractData(o) {
 }
 
 function insertData(o, d, to_string=false) {
+  // o = JQuery object | str
+  // d = object
+  // to_string = bool :: false
+
+  // 'o' is the target, in this target all keys of 'd' get searched
+  // every matching [name=d_key] element, it inserts d[key]
+
+  // if matching element is a [type=checkbox]:
+  // element gets prop 'checked' set based on boolish interpretion of d[key]
+
+  // to_string ensures content input by all types, except 'null'
+  // which will be convertet to a empty string
+
   if (typeof o != "object") { o = $(o); }
   for (var k in d) {
     try {
