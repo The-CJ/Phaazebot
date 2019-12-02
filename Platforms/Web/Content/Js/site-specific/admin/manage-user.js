@@ -99,6 +99,23 @@ function showCreate() {
   $("#edit_create_user").modal("show");
 }
 
+function createUser() {
+
+  var req = extractData("#edit_create_user");
+  $.post("/api/admin/users/create", req)
+  .done(function (data) {
+
+    Display.showMessage( {content:data.msg, color:Display.color_success} );
+    $("#edit_create_user").modal("hide");
+    getUser();
+
+  })
+  .fail(function (data) {
+    generalAPIErrorHandler( {data:data, msg:"can't create user roles"} );
+  })
+
+}
+
 // user roles
 function addUserRole() {
   var user_id = $("#edit_create_user [name=user_id]").val();
