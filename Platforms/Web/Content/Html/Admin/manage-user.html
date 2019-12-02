@@ -4,7 +4,7 @@
 <main>
   <div class="container text-center white-text">
     <h1>User manager</h1>
-    <button type="button" class="btn btn-primary" onclick="$('#edit_create_user').modal('show')">Create | TODO</button>
+    <button type="button" class="btn btn-primary" onclick="showCreate()">Create user</button>
     <div id="user_list"></div>
   </div>
 </main>
@@ -38,7 +38,7 @@
       </div>
 
       <div class="modal-body">
-        <div class="row md-form">
+        <div class="row md-form" dont-show="create">
           <div class="col"><span>ID:</span></div>
           <div class="col-8"><input type="text" name="user_id" readonly style="width: 100%;"></div>
         </div>
@@ -64,27 +64,27 @@
           </div>
           <div class="col-8">
             <label class="checkbox-container">
-              <input type="checkbox" name="verified">
+              <input type="checkbox" name="verified" checked>
             </label>
           </div>
         </div>
 
-        <div class="row md-form">
+        <div class="row md-form" dont-show="create">
           <div class="col"><span>Created:</span></div>
           <div class="col-8"><input type="text" name="created_at" style="width: 100%;" readonly></div>
         </div>
 
-        <div class="row md-form">
+        <div class="row md-form" dont-show="create">
           <div class="col"><span>Last edit:</span></div>
           <div class="col-8"><input type="text" name="edited_at" style="width: 100%;" readonly></div>
         </div>
 
-        <div class="row md-form">
+        <div class="row md-form" dont-show="create">
           <div class="col"><span>Last login:</span></div>
           <div class="col-8"><input type="text" name="last_login" style="width: 100%;" readonly></div>
         </div>
 
-        <div class="row">
+        <div class="row" dont-show="create">
           <div class="col">
             <h4>Roles:</h4>
 

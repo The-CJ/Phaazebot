@@ -92,6 +92,13 @@ function editUser() {
   })
 }
 
+function showCreate() {
+  resetInput("#edit_create_user");
+  $("#edit_create_user .modal-title").text("Create new user");
+  $("#edit_create_user").attr("mode", "create");
+  $("#edit_create_user").modal("show");
+}
+
 // user roles
 function addUserRole() {
   var user_id = $("#edit_create_user [name=user_id]").val();
