@@ -17,9 +17,9 @@ async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 	if not WebUser.found:
 		return await userNotFound(cls, WebRequest, msg="Not logged in")
 
-	cls.Web.BASE.PhaazeDB.query("""
-		DELETE FROM session_phaaze
-		WHERE session_phaaze.user_id = %s""",
+	cls.Web.BASE.PhaazeDB.deleteQuery("""
+		DELETE FROM `session_phaaze`
+		WHERE `session_phaaze`.`user_id` = %s""",
 		(WebUser.user_id,)
 	)
 
@@ -41,9 +41,9 @@ async def apiAccountLogoutDiscord(cls:"WebIndex", WebRequest:Request) -> Respons
 		return await userNotFound(cls, WebRequest, msg="Not logged in")
 
 	cls.Web.BASE.PhaazeDB.query("""
-		DELETE FROM session_discord
-		WHERE session_discord.access_token = %s
-			OR JSON_EXTRACT(session_discord.user_info, "$.id") = %s""",
+		DELETE FROM `session_discord`
+		WHERE `session_discord`.`access_token` = %s
+			OR JSON_EXTRACT(`session_discord`.`user_info`, "$.id") = %s""",
 		(DiscordUser.access_token, DiscordUser.user_id)
 	)
 

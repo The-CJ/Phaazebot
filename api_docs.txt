@@ -25,6 +25,11 @@ Please ignore this file to, it a reminder for me what endpoints there are.
 /api/admin/roles/create
 /api/admin/roles/edit
 /api/admin/roles/delete
+/api/admin/users
+/api/admin/users/create
+/api/admin/users/delete
+/api/admin/users/edit
+/api/admin/users/get
 
 /api/discord/commands
 /api/discord/commands/create
