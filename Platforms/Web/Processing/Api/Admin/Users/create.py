@@ -9,6 +9,7 @@ from Utils.Classes.webrole import WebRole
 from Platforms.Web.Processing.Api.errors import missingData
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
+from Utils.stringutils import password as password_function
 
 async def apiAdminUsersCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -23,13 +24,17 @@ async def apiAdminUsersCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	# email
 	email:str = Data.getStr("email", "")
 
-	if not username or not email:
-		return await missingData(cls, WebRequest, msg="missing 'username' or 'email'")
+	# password
+	password:str = Data.getStr("password", "")
+	if password: password = password_function(password)
+
+	if not username or not email or not password:
+		return await missingData(cls, WebRequest, msg="missing 'username', 'email' or 'password'")
 
 	try:
 		new_id:int = cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "user",
-			content = dict(username=username, email=email)
+			content = dict(username=username, email=email, password=password)
 		)
 
 		cls.Web.BASE.Logger.debug(f"(API) Create user '{username}' (ID:{new_id})", require="api:user")

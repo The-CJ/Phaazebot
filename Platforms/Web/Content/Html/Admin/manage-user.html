@@ -36,6 +36,13 @@
       </div>
 
       <div class="modal-body">
+        <div class="row action" dont-show="create">
+          <div class="col">
+            <button type="button" class="btn btn-block btn-danger" onclick="">Logout all sessions</button>
+            <button type="button" class="btn btn-block btn-danger" onclick="deleteUser()">Delete User</button>
+          </div>
+        </div>
+
         <div class="row md-form" dont-show="create">
           <div class="col"><span>ID:</span></div>
           <div class="col-8"><input type="text" name="user_id" readonly style="width: 100%;"></div>
@@ -53,7 +60,7 @@
 
         <div class="row md-form">
           <div class="col"><span>Set/Overwrite Password:</span></div>
-          <div class="col-8"><input type="password" name="password" style="width: 100%;"></div>
+          <div class="col-8"><input type="password" name="password" placeholder="Password" style="width: 100%;"></div>
         </div>
 
         <div class="row md-form">
@@ -109,7 +116,6 @@
       <div class="modal-footer">
         <button create type="button" class="btn btn-block btn-success" onclick="createUser()">Create</button><br>
         <button edit type="button" class="btn btn-block btn-success" onclick="editUser()">Save</button>
-        <button edit type="button" class="btn btn-danger" onclick="deleteUser()">Delete</button>
       </div>
 
       <div messagebox></div>
