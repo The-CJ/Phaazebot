@@ -58,6 +58,13 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		db_changes["email"] = validateDBInput(str, value)
 		changes["email"] = value
 
+	# password
+	value:str = Data.getStr("password", UNDEFINED)
+	if value: # aka non empty string and not UNDEFINED
+		value = password_function(value)
+		db_changes["password"] = validateDBInput(str, value)
+		changes["password"] = value
+
 	# verified
 	value:bool = Data.getBool("verified", UNDEFINED)
 	if value != UNDEFINED:
