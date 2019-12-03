@@ -6,6 +6,7 @@ from aiohttp.web import Response, Request
 from .get import apiAdminUsersGet
 from .edit import apiAdminUsersEdit
 from .create import apiAdminUsersCreate
+from .delete import apiAdminUsersDelete
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 from Utils.Classes.webuserinfo import WebUserInfo
 
@@ -29,7 +30,6 @@ async def apiAdminUsers(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiAdminUsersCreate(cls, WebRequest)
 
 	elif method == "delete":
-		pass
-		# return await apiAdminRolesDelete(cls, WebRequest)
+		return await apiAdminUsersDelete(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")

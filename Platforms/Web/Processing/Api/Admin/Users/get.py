@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
+from Platforms.Web.Processing.Api.errors import userNotFound
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.utils import searchUser
 
@@ -19,8 +20,10 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	users:list = await searchUser(cls, where=where)
 
-	return_list:list = list()
+	if not users:
+		return await userNotFound(cls, WebRequest, msg=f"no user found with id: '{user_id}'")
 
+	return_list:list = list()
 	for WebUser in users:
 		return_list.append(WebUser.toJSON())
 
