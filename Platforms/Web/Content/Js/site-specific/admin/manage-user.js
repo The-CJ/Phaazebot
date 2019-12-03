@@ -79,6 +79,11 @@ function detailUser(HTMLElement, overwrite_user_id) {
 
 function editUser() {
   var req = extractData("#edit_create_user");
+  if (!isEmpty(req["password"])) {
+    var c = confirm("This will reset the users password, this cannot be undone. Are you sure?");
+    if (!c) { return; }
+  }
+
   $.post("/api/admin/users/edit", req)
   .done(function (data) {
 
