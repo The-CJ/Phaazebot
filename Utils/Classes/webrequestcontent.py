@@ -86,18 +86,19 @@ class WebRequestContent(object):
 		if value in ["0", "false", "False", ""]: return False
 		else: return True
 
-	def getStr(self, x:str, alternativ:str, must_be_digit:bool=False, strip_blanks:bool=True) -> str:
+	def getStr(self, x:str, alternativ:str, must_be_digit:bool=False, strip:bool=True) -> str:
 		"""
 			get a value as string.
 			test for attributes (must_*), if one failes, return alternativ
-			else return found values and apply all wanted functions
+
+			by default, strip's spaces + line breaks at start and end
 		"""
 		value:str or Undefined = self.get(x)
 		if type(value) is Undefined: return alternativ
 
 		if must_be_digit and not value.isdigit(): return alternativ
 
-		if strip_blanks: value = value.strip(" ")
+		if strip: value = value.strip(' ').strip("\n")
 
 		return value
 

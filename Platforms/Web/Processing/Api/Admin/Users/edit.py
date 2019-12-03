@@ -70,7 +70,7 @@ async def singleActionUserRole(cls:"WebIndex", WebRequest:Request, action:str, D
 	"""
 	user_id:str = Data.getStr("user_id", "")
 	action = action.lower()
-	userrole_role:str = Data.getStr("userrole_role", "").strip(" ").strip("\n")
+	userrole_role:str = Data.getStr("userrole_role", "")
 
 	if not user_id:
 		# should never happen
