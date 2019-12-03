@@ -6,7 +6,7 @@ import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webrole import WebRole
-from Platforms.Web.Processing.Api.errors import missingData, apiWrongData
+from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiNotAllowed
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
 
@@ -94,6 +94,11 @@ async def singleActionUserRole(cls:"WebIndex", WebRequest:Request, action:str, D
 	# here we hope there is only one result, in theory there can be more, BUT since this is a admin endpoint,
 	# i wont will do much error handling
 	Role:WebRole = WebRole(res.pop(0))
+
+	# prevent role missabuse
+	if Role.name.lower() in ["superadmin", "admin"]:
+		if not ( await cls.getWebUserInfo(WebRequest) ).checkRoles(["superadmin"]):
+			return await apiNotAllowed(cls, WebRequest, msg=f"Only Superadmin's can assign/remove '{Role.name}' to user")
 
 	if action == "add":
 		try:
