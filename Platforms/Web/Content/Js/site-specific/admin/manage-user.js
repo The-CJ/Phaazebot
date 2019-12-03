@@ -34,7 +34,6 @@ function getUser() {
       var Template = $("[phantom] .user").clone();
 
       Template.attr("user-id", user.user_id);
-      Template.find(".id").text(user.user_id);
       Template.find(".name").text(user.username);
 
       UserList.append(Template);
