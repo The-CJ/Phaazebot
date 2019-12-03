@@ -4,11 +4,14 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
+from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiNotAllowed, userNotFound
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webrole import WebRole
-from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiNotAllowed
+from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
+from Utils.stringutils import password as password_function
+from Platforms.Web.utils import searchUser
 
 async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -25,6 +28,20 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	action:str = Data.getStr("userrole_action", UNDEFINED)
 	if action:
 		return await singleActionUserRole(cls, WebRequest, action, Data)
+
+	# get user that should be edited
+	check_user:list = await searchUser(cls, where="user.id = %s", values=(user_id,))
+	if not check_user:
+		return await userNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
+
+	# check if this is a (super)admin, if so, is the current user a superadmin?
+	# and not himself
+	UserToEdit:WebUserInfo = check_user.pop(0)
+	CurrentUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	if UserToEdit.checkRoles(["superadmin", "admin"]):
+		if UserToEdit.user_id != CurrentUser.user_id:
+			if not CurrentUser.checkRoles(["superadmin"]):
+				return await apiNotAllowed(cls, WebRequest, msg=f"Only Superadmin's can edit other (Super)admin user")
 
 	changes:dict = dict()
 	db_changes:dict = dict()
