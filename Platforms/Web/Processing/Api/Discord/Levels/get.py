@@ -46,7 +46,7 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	detailed:bool = Data.getBool("detailed", False)
 
 	# order by
-	order:str = Data.getStr("order", "", transform="lower")
+	order:str = Data.getStr("order", "").lower()
 	if order == "exp":
 		order = "ORDER BY `exp`"
 	elif order == "id":
@@ -68,7 +68,7 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	return_list:list = list()
 
 	for LevelUser in levels:
-		
+
 		level_user:dict = LevelUser.toJSON()
 
 		if detailed:

@@ -86,7 +86,7 @@ class WebRequestContent(object):
 		if value in ["0", "false", "False", ""]: return False
 		else: return True
 
-	def getStr(self, x:str, alternativ:str, must_be_digit:bool=False, transform:str=None) -> str:
+	def getStr(self, x:str, alternativ:str, must_be_digit:bool=False, strip_blanks:bool=True) -> str:
 		"""
 			get a value as string.
 			test for attributes (must_*), if one failes, return alternativ
@@ -97,9 +97,9 @@ class WebRequestContent(object):
 
 		if must_be_digit and not value.isdigit(): return alternativ
 
-		if transform == "lower": return value.lower()
-		elif transform == "upper": return value.upper()
-		else: return value
+		if strip_blanks: value = value.strip(" ")
+
+		return value
 
 	def getInt(self, x:str, alternativ:int, min_x:int=-math.inf, max_x:int=math.inf) -> int:
 		"""
