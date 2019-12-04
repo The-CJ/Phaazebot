@@ -40,7 +40,7 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	result:dict = dict(
 		result=[ WebUser.toJSON() for WebUser in users ],
-		total = await getWebUserAmount(cls),
+		total = await getWebUserAmount(cls, where=where, values=values),
 		status=200
 	)
 

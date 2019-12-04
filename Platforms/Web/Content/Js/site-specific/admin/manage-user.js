@@ -49,9 +49,9 @@ function getUser(x={}) {
   })
 }
 
-function searchUser() {
+function searchUser(reset_offset) {
   var req = extractData("#search_menu");
-  res_offset = 0;
+  if (reset_offset) { res_offset = 0; }
   getUser(req);
 }
 
@@ -205,6 +205,9 @@ function updatePageButtons(total) {
   var current_page = (res_offset / res_limit) + 1;
   var max_pages = parseInt((res_total / res_limit) + 1);
   $("#page_menu .index").text(current_page);
+  $("#page_menu .total").text(res_total);
+  $("#page_menu .from").text(res_offset + 1);
+  $("#page_menu .to").text(res_offset + res_limit);
 
   // no more prev pages
   if (current_page <= 1) {
@@ -224,11 +227,11 @@ function updatePageButtons(total) {
 function prevPage(first=0) {
   if (first) { res_offset = 0; }
   else { res_offset -= res_limit; }
-  getUser();
+  searchUser();
 }
 
 function nextPage(last=0) {
   if (last) { res_offset = parseInt((res_total / res_limit)) * res_limit; }
   else { res_offset += res_limit; }
-  getUser();
+  searchUser();
 }
