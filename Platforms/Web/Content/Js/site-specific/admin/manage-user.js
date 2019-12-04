@@ -24,13 +24,13 @@ function loadUserRoles() {
 }
 
 // user
-var res_per_page = 25;
-var current_page = 0;
-
 function getUser(x={}) {
-  x["limit"] = res_per_page;
+  x["limit"] = res_limit;
+  x["offset"] = res_offset;
+
   $.get("/api/admin/users/get", x)
   .done(function (data) {
+    updatePageButtons(data.total);
 
     var UserList = $("#user_list").html("");
 
@@ -190,15 +190,39 @@ function removeUserRole(HTMLButton) {
 }
 
 // page
-function prevPage(first=0) {
-  if (first) { current_page = 0; }
-  else {
-      current_page = current_page - 1;
+var res_total = -1;
+var res_limit = 25;
+var res_offset = 0;
+
+function updatePageButtons(total) {
+  res_total = total;
+  var current_page = (res_offset / res_limit) + 1;
+  var max_pages = parseInt((res_total / res_limit) + 1);
+  $("#page_menu .index").text(current_page);
+
+  // no more prev pages
+  if (current_page <= 1) {
+    $("#page_menu .prev").attr("disabled", true);
+  } else {
+    $("#page_menu .prev").attr("disabled", false);
   }
-  getUser( {offset:0} );
+
+  // no more next pages
+  if (current_page >= max_pages) {
+    $("#page_menu .next").attr("disabled", true);
+  } else {
+    $("#page_menu .next").attr("disabled", false);
+  }
+}
+
+function prevPage(first=0) {
+  if (first) { res_offset = 0; }
+  else { res_offset -= res_limit; }
+  getUser();
 }
 
 function nextPage(last=0) {
-  current_page = current_page + 1;
-  getUser( {offset: (current_page*res_per_page) } );
+  if (last) { res_offset = parseInt((res_total / res_limit)) * res_limit; }
+  else { res_offset += res_limit; }
+  getUser();
 }
