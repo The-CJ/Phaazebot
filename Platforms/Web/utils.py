@@ -8,6 +8,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.storeclasses import GlobalStorage
 
+# templating and stuff
 def getNavbar(active:str="") -> HTMLFormatter:
 	"""
 		get the upper nav bar html,
@@ -38,6 +39,7 @@ def getAccountModal() -> HTMLFormatter:
 	)
 	return AccountModal
 
+# web translator
 async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:
 	"""
 		Tryes to get a WebUser, takes get, post, and cookie in process
@@ -81,7 +83,8 @@ async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -
 
 	return WebRequest.DiscordUser
 
-async def searchUser(cls:"WebIndex", where:str, values:tuple=None, limit:int=None, offset:int=None) -> list:
+# db managment
+async def getWebUsers(cls:"WebIndex", where:str, values:tuple=None, limit:int=None, offset:int=None) -> list:
 	"""
 		Search user via custom 'where' statement
 		'where' can include LIMIT and OFFSET,
