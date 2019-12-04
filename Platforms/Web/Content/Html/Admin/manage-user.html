@@ -13,15 +13,15 @@
       <button onclick="nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
     </div>
 
-    <div class="center-item-row" id="search_menu">
+    <form class="center-item-row" id="search_menu" action="javascript:void(0)" onsubmit="searchUser()">
       <button type="button" class="btn btn-primary" onclick="showCreate()">Create user</button>
 
       <div class="md-form ml-auto">
         <input type="text" name="username" placeholder="Username LIKE">
         <input type="text" name="email" placeholder="E-Mail LIKE">
       </div>
-      <button onclick="searchUser()" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-search"></i></button>
-    </div>
+      <button type="submit" class="btn btn-secondary icon-btn next"><i class="fas fa-search"></i></button>
+    </form>
 
     <div id="user_list"></div>
   </div>

@@ -25,8 +25,8 @@ function loadUserRoles() {
 
 // user
 function getUser(x={}) {
-  x["limit"] = res_limit;
-  x["offset"] = res_offset;
+  x["limit"] = x["limit"] ? x["limit"] : res_limit;
+  x["offset"] = x["offset"] ? x["offset"] : res_offset;
 
   $.get("/api/admin/users/get", x)
   .done(function (data) {
@@ -47,6 +47,12 @@ function getUser(x={}) {
   .fail(function (data) {
     generalAPIErrorHandler( {data:data, msg:"can't load users"} );
   })
+}
+
+function searchUser() {
+  var req = extractData("#search_menu");
+  res_offset = 0;
+  getUser(req);
 }
 
 function detailUser(HTMLElement, overwrite_user_id) {
