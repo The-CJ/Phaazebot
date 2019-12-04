@@ -114,3 +114,10 @@ async def searchUser(cls:"WebIndex", where:str, values:tuple=None, limit:int=Non
 		return_list.append(WebUser)
 
 	return return_list
+
+async def getWebUserAmount(cls:"WebIndex") -> int:
+	"""simply gives a number of all active? user"""
+
+	res:list = cls.Web.BASE.PhaazeDB.selectQuery("SELECT COUNT(*) AS `I` FROM `user`")
+
+	return res[0]['I']
