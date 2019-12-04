@@ -24,8 +24,12 @@ function loadUserRoles() {
 }
 
 // user
-function getUser() {
-  $.get("/api/admin/users/get")
+var res_per_page = 25;
+var current_page = 0;
+
+function getUser(x={}) {
+  x["limit"] = res_per_page;
+  $.get("/api/admin/users/get", x)
   .done(function (data) {
 
     var UserList = $("#user_list").html("");
@@ -183,4 +187,18 @@ function removeUserRole(HTMLButton) {
   .fail(function (data) {
     generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
   })
+}
+
+// page
+function prevPage(first=0) {
+  if (first) { current_page = 0; }
+  else {
+      current_page = current_page - 1;
+  }
+  getUser( {offset:0} );
+}
+
+function nextPage(last=0) {
+  current_page = current_page + 1;
+  getUser( {offset: (current_page*res_per_page) } );
 }
