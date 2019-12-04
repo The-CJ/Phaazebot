@@ -8,6 +8,8 @@ from Platforms.Web.Processing.Api.errors import userNotFound
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.utils import getWebUsers, getWebUserAmount
 
+DEFAULT_LIMIT:int = 50
+
 async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/admin/users/get
@@ -19,8 +21,8 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	username:str = Data.getStr("username", "")
 	email:str = Data.getStr("email", "")
 
-	offset:str = Data.getStr("offset", "", must_be_digit=True)
-	limit:str = Data.getStr("limit", "", must_be_digit=True)
+	offset:int = Data.getInt("offset", 0, min_x=0)
+	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1)
 
 	where:str = "1=1"
 	values:tuple = ()
@@ -40,6 +42,8 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	result:dict = dict(
 		result=[ WebUser.toJSON() for WebUser in users ],
+		limit=limit,
+		offset=offset,
 		total = await getWebUserAmount(cls, where=where, values=values),
 		status=200
 	)

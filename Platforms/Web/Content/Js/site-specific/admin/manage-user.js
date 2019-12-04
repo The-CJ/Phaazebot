@@ -30,7 +30,9 @@ function getUser(x={}) {
 
   $.get("/api/admin/users/get", x)
   .done(function (data) {
-    updatePageButtons(data.total);
+    res_total = data.total;
+    res_offset = data.offset;
+    updatePageButtons();
 
     var UserList = $("#user_list").html("");
 
@@ -200,8 +202,7 @@ var res_total = -1;
 var res_limit = 25;
 var res_offset = 0;
 
-function updatePageButtons(total) {
-  res_total = total;
+function updatePageButtons() {
   var current_page = (res_offset / res_limit) + 1;
   var max_pages = parseInt((res_total / res_limit) + 1);
   $("#page_menu .index").text(current_page);
