@@ -81,7 +81,7 @@ async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -
 
 	return WebRequest.DiscordUser
 
-async def searchUser(cls:"WebIndex", where:str, values:tuple = None) -> list:
+async def searchUser(cls:"WebIndex", where:str, values:tuple=None, limit:int=None, offset:int=None) -> list:
 	"""
 		Search user via custom 'where' statement
 		'where' can include LIMIT and OFFSET,
@@ -98,6 +98,12 @@ async def searchUser(cls:"WebIndex", where:str, values:tuple = None) -> list:
 			ON `role`.`id` = `user_has_role`.`role_id`
 		WHERE {where}
 		GROUP BY `user`.`id`"""
+
+	if limit:
+		statement += f" LIMIT {limit}"
+
+	if offset:
+		statement += f" OFFSET {offset}"
 
 	res:list = cls.Web.BASE.PhaazeDB.selectQuery(statement, values)
 
