@@ -12,7 +12,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.stringutils import password as password_function
 from Utils.regex import IsEmail
-from Platforms.Web.utils import searchUser
+from Platforms.Web.utils import getWebUsers
 
 async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -67,7 +67,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	if new_username:
 		# want a new username
 		if new_username.lower() != WebUser.username.lower():
-			is_occupied:list = await searchUser(cls, "LOWER(`user`.`username`) = LOWER(%s)", (new_username,))
+			is_occupied:list = await getWebUsers(cls, "LOWER(`user`.`username`) = LOWER(%s)", (new_username,))
 			if is_occupied:
 				# already taken
 				return cls.response(
@@ -93,7 +93,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 				content_type="application/json",
 				status=400
 			)
-		is_occupied:list = await searchUser(cls, "user.email LIKE %s", (new_email,))
+		is_occupied:list = await getWebUsers(cls, "user.email LIKE %s", (new_email,))
 		if is_occupied:
 			# already taken
 			return cls.response(

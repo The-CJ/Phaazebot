@@ -11,7 +11,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
 from Utils.stringutils import password as password_function
-from Platforms.Web.utils import searchUser
+from Platforms.Web.utils import getWebUsers
 
 async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -30,7 +30,7 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await singleActionUserRole(cls, WebRequest, action, Data)
 
 	# get user that should be edited
-	check_user:list = await searchUser(cls, where="user.id = %s", values=(user_id,))
+	check_user:list = await getWebUsers(cls, where="user.id = %s", values=(user_id,))
 	if not check_user:
 		return await userNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
 

@@ -8,7 +8,7 @@ import traceback
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.utils import searchUser
+from Platforms.Web.utils import getWebUsers
 from Utils.regex import IsEmail
 from Utils.stringutils import password as password_function
 
@@ -59,7 +59,7 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 			status=400
 		)
 
-	check:list = await searchUser(cls, "user.username LIKE %s OR user.email LIKE %s", (username, email))
+	check:list = await getWebUsers(cls, "user.username LIKE %s OR user.email LIKE %s", (username, email))
 	if check:
 		cls.Web.BASE.Logger.debug(f"(API) Account create failed, account already taken: {str(username)} - {str(email)}", require="api:create")
 		return cls.response(

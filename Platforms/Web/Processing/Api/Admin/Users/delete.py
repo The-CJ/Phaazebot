@@ -10,7 +10,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Web.Processing.Api.errors import missingData, apiNotAllowed, userNotFound
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from Platforms.Web.utils import searchUser
+from Platforms.Web.utils import getWebUsers
 
 async def apiAdminUsersDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -24,7 +24,7 @@ async def apiAdminUsersDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await missingData(cls, WebRequest, msg="missing or invalid 'user_id'")
 
 	where:str = f"`user`.`id` = {user_id}"
-	user_search:list = await searchUser(cls, where=where)
+	user_search:list = await getWebUsers(cls, where=where)
 
 	if not user_search:
 		return await userNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
