@@ -110,7 +110,7 @@
 
 [location=levels] .level { cursor: pointer; }
 [location=levels] .level:hover { background: rgba(0,0,0,0.2); }
-[location=levels] .level > *, [location=levels] .header > * { margin: 2px; }
+[location=levels] .level > *, [location=levels] .header > * { margin: 2px; overflow: hidden; }
 [location=levels] .header > div { background-color: var(--color-listelement-odd); }
 [location=levels] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
 [location=levels] .level > div { background-color: var(--color-sub-listelement-odd); }
