@@ -136,12 +136,12 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 				AND `discord_level`.`guild_id` = %s
 			GROUP BY `discord_level`.`guild_id`, `discord_level`.`member_id`
 		)
-		SELECT * FROM `discord_level` WHERE 1"""
+		SELECT * FROM `discord_level` WHERE 1=1"""
 
 	values:tuple = (guild_id,)
 
 	if member_id:
-		sql += " AND discord_level.member_id = %s"
+		sql += " AND `discord_level`.`member_id` = %s"
 		values += (member_id,)
 
 	sql += f" {order_str}"
@@ -160,13 +160,13 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 	else:
 		return []
 
-async def getDiscordServerLevelAmount(cls:"PhaazebotDiscord", guild_id:str) -> int:
+async def getDiscordServerLevelAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
-	sql:str = """
-		SELECT COUNT(*) AS I FROM discord_level
-		WHERE discord_level.on_server = 1 AND discord_level.guild_id = %s"""
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_level`
+		WHERE `discord_level`.`on_server` = 1 AND `discord_level`.`guild_id` = %s AND {where}"""
 
-	values:tuple = (guild_id,)
+	values:tuple = (guild_id,) + where_values
 
 	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
