@@ -1139,9 +1139,15 @@ var Levels = new(class {
   show(x={}) {
     var LevelO = this;
     var guild_id = $("#guild_id").val();
-    var offset = x["offset"] ? x["offset"] : 0;
 
-    $.get("/api/discord/levels/get", {guild_id: guild_id, detailed:true, offset:offset, limit:this.results_per_page})
+    x["offset"] = x["offset"] ? x["offset"] : 0;
+    x["guild_id"] = guild_id;
+    x["detailed"] = true;
+    x["limit"] = this.results_per_page;
+    x["nickname"] = $("#search [name=nickname]").val();
+    x["name_contains"] = $("#search [name=name_contains]").val();
+
+    $.get("/api/discord/levels/get", x)
     .done(function (data) {
 
       // store a copy of the current number of entrys

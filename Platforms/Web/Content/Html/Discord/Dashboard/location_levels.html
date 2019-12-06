@@ -17,6 +17,19 @@
       <button onclick="Levels.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
     </div>
 
+    <form class="center-item-row" id="search" action="javascript:Levels.prevPage(1)">
+      <div class="col md-form" style="margin: 0;">
+        <input type="text" name="name_contains" placeholder="Name must contain..." style="width: 100%;" class="white-text">
+      </div>
+      <div class="col">
+        <select class="custom-select" name="nickname">
+          <option value="0" selected>Show usernames</option>
+          <option value="1">Show server nicknames</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-secondary icon-btn next"><i class="fas fa-search"></i></button>
+    </form>
+
     <div class="header row">
       <div class="col-1 rank">Rank</div>
       <div class="col-1 lvl">Level</div>

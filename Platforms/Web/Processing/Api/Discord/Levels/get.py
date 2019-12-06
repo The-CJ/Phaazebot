@@ -44,6 +44,11 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# with names, avatar hash etc.
 	detailed:bool = Data.getBool("detailed", False)
+	# usernames or nicknames?
+	nickname:bool = Data.getBool("nickname", False)
+
+	# only show names that contain stuff (workes only if detailed is true)
+	name_contains:str = Data.getStr("name_contains", "")
 
 	# order by
 	order:str = Data.getStr("order", "").lower()
@@ -73,16 +78,26 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 		if detailed:
 			Mem:discord.Member = Guild.get_member(int(LevelUser.member_id))
-			level_user["username"] = Mem.name if Mem else "[N/A]"
 			level_user["avatar"] = Mem.avatar if Mem else None
 			level_user["level"] = LevelCalc.getLevel(LevelUser.exp)
+			if not Mem:
+				level_user["username"] = "[N/A]"
+			else:
+				if nickname and Mem.nick:
+					level_user["username"] = Mem.nick
+				else:
+					level_user["username"] = Mem.name
+
+			# TODO: filter that via database at some time, and yes, that means saving all (nick)names
+			if name_contains and not ( name_contains.lower() in level_user["username"].lower() ):
+				continue
 
 		return_list.append(level_user)
 
 	return cls.response(
 		text=json.dumps( dict(
 			result=return_list,
-			total=await getDiscordServerLevelAmount(PhaazeDiscord, guild_id),
+			total=(await getDiscordServerLevelAmount(PhaazeDiscord, guild_id)),
 			limit=limit,
 			offset=offset,
 			detailed=detailed,
