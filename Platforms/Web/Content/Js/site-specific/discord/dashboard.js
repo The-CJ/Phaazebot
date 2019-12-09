@@ -10,6 +10,7 @@ var DiscordDashboard = new (class {
     this.roles = [];
   }
 
+  // loader
   loadHome() {
     DynamicURL.set("view", false);
     this.showLocationWindow();
@@ -74,8 +75,7 @@ var DiscordDashboard = new (class {
   loadAssignRole() {
     DynamicURL.set("view", "assign_roles");
     this.showLocationWindow("assign_roles");
-    alert("Load and Display 'Assign Role' Info");
-
+    AssignRoles.show();
   }
 
   // utils
@@ -109,7 +109,7 @@ var DiscordDashboard = new (class {
     // x["include_none"] :: bool, if true, include a <option value=''>(None)</option> at first [Default: false]
     //   also true if Select HTML element has attribute: discord-channel-none=true
     // x["only_type"] :: string, if not emtpy, only list the matching types [Default: ""]
-    //   also set by using the attribute: discord-channel=text   or   discord-channel=voice
+    //   also set by using the attribute: [discord-channel=text] or [discord-channel=voice]
 
     var HTMLSelectList = null;
 
@@ -162,9 +162,9 @@ var DiscordDashboard = new (class {
     // x["role_list"] :: a list of `role objects` {"id":"123456", "name":"something", "managed":false}
     // x["target"] :: a list of jquery select elements, or a string for a jquery search   [Default: "select[discord-role]"]
     // x["include_none"] :: bool, if true, include a <option value=''>(None)</option> at first [Default: false]
-    //   also true if Select HTML element has attribute: discord-role-none=true
+    //   also true if Select HTML element has attribute: [discord-role-none=true]
     // x["show_managed"] :: bool, if true, include managed roles in the select [Default: false]
-    //   also true if Select HTML element has attribute: discord-role-managed=true
+    //   also true if Select HTML element has attribute: [discord-role-managed=true]
 
     var HTMLSelectList = null;
 
@@ -203,6 +203,7 @@ var DiscordDashboard = new (class {
     }
   }
 
+  // getter
   getDiscordChannelByID(id) {
     for (var channel of this.channels) {
       if (channel.id == id) { return channel; }
@@ -467,7 +468,7 @@ var Commands = new (class {
       generalAPIErrorHandler( {data:data, msg:"could not load command details"} );
     })
   }
-})
+});
 
 var Configs = new(class {
   constructor() {
@@ -1126,7 +1127,7 @@ var Configs = new(class {
     })
   }
 
-})
+});
 
 var Levels = new(class {
   constructor() {
@@ -1510,7 +1511,29 @@ var Quotes = new (class {
       generalAPIErrorHandler( {data:data, msg:"error updating quote"} );
     })
   }
-})
+});
+
+var AssignRoles = new (class {
+  constructor() {
+
+  }
+
+  show() {
+    var guild_id = $("#guild_id").val();
+
+    $.get("/api/discord/assignroles/get", {guild_id: guild_id})
+    .done(function (data) {
+
+      console.log(data);
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"Could not load assign roles"} );
+    })
+  }
+
+});
+
 
 // utils
 function showTokenHelp(field) {
