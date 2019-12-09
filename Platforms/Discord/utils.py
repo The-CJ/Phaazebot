@@ -90,16 +90,16 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 	"""
 
 	sql:str = """
-		SELECT * FROM discord_command
-		WHERE discord_command.guild_id = %s"""
+		SELECT * FROM `discord_command`
+		WHERE `discord_command`.`guild_id` = %s"""
 	values:tuple = (guild_id,)
 
 	if command_id:
-		sql += " AND discord_command.id = %s"
+		sql += " AND `discord_command`.`id` = %s"
 		values += (command_id,)
 
 	elif trigger:
-		sql += " AND discord_command.trigger = %s"
+		sql += " AND `discord_command`.`trigger` = %s"
 		values += (trigger,)
 
 	sql += f" {order_str}"
@@ -115,7 +115,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 	else:
 		return []
 
-async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None, order_str:str="ORDER BY id", limit:int=0, offset:int=0) -> list:
+async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0) -> list:
 	"""
 		Get server levels, if member_id = None, get all
 		else only get one associated with the member_id
@@ -123,7 +123,7 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 	"""
 
 	sql:str = """
-		WITH discord_level AS (
+		WITH `discord_level` AS (
 			SELECT
 				`discord_level`.*,
 				GROUP_CONCAT(`discord_level_medal`.`name` SEPARATOR ';;;') AS `medals`,
@@ -149,7 +149,7 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 	if limit:
 		sql += f" LIMIT {limit}"
 
-	if offset:
+	if limit and offset:
 		sql += f" OFFSET {offset}"
 
 	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
@@ -172,7 +172,7 @@ async def getDiscordServerLevelAmount(cls:"PhaazebotDiscord", guild_id:str, wher
 
 	return res[0]["I"]
 
-async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:str=None, random:bool=False, limit:int=0) -> list:
+async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:int=None, random:bool=False, limit:int=0) -> list:
 	"""
 		Get server quotes, if quote_id = None, get all
 		else only get one associated with the quote_id
@@ -180,19 +180,19 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 	"""
 
 	sql:str = """
-		SELECT * FROM discord_quote
-		WHERE discord_quote.guild_id = %s"""
+		SELECT * FROM `discord_quote`
+		WHERE `discord_quote`.`guild_id` = %s"""
 
 	values:tuple = (guild_id,)
 
 	if quote_id:
-		sql += " AND discord_quote.id = %s"
+		sql += " AND `discord_quote`.`id` = %s"
 		values += (quote_id,)
 
 	if random:
 		sql += " ORDER BY RAND()"
 	else:
-		sql += " ORDER BY id"
+		sql += " ORDER BY `id`"
 
 	if limit:
 		sql += f" LIMIT {limit}"
@@ -205,7 +205,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 	else:
 		return []
 
-async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:str=None, trigger:str=None, order_str:str="ORDER BY id", limit:int=0) -> list:
+async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:str=None, trigger:str=None, order_str:str="ORDER BY `id`", limit:int=0) -> list:
 	"""
 		Get server assign roles, if role_id and trigger are None, get all
 		else only get one associated with the role_id or trigger
@@ -213,17 +213,17 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 	"""
 
 	sql:str = """
-		SELECT * FROM discord_giverole
-		WHERE discord_giverole.guild_id = %s"""
+		SELECT * FROM `discord_giverole`
+		WHERE `discord_giverole`.`guild_id` = %s"""
 
 	values:tuple = (guild_id,)
 
 	if role_id:
-		sql += " AND discord_giverole.role_id = %s"
+		sql += " AND `discord_giverole`.`role_id` = %s"
 		values += (role_id,)
 
 	if trigger:
-		sql += " AND discord_giverole.trigger = %s"
+		sql += " AND `discord_giverole`.`trigger` = %s"
 		values += (trigger,)
 
 	sql += f" {order_str}"
@@ -240,6 +240,7 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 		return []
 
 async def getDiscordServerAssignRoleAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_giverole`
 		WHERE `discord_giverole`.`guild_id` = %s AND {where}"""
