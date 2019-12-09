@@ -1524,7 +1524,7 @@ var AssignRoles = new (class {
     $.get("/api/discord/assignroles/get", {guild_id: guild_id})
     .done(function (data) {
 
-      $("#assign_role_amount").text(data.total);
+      $("#assign_role_amount").text(data.result.length);
       var AssignRoleList = $("#assign_role_list").html("");
 
       for (var assigerole of data.result) {

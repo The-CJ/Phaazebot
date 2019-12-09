@@ -9,11 +9,8 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import missingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
-from Platforms.Discord.utils import getDiscordServerAssignRoles, getDiscordServerAssignRoleAmount
+from Platforms.Discord.utils import getDiscordServerAssignRoles
 from Utils.Classes.undefined import UNDEFINED
-
-DEFAULT_LIMIT:int = 50
-MAX_LIMIT:int = 100
 
 async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -39,7 +36,6 @@ async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Respon
 	return cls.response(
 		text=json.dumps( dict(
 			result=[ ARole.toJSON() for ARole in assignroles ],
-			total=(await getDiscordServerAssignRoleAmount(PhaazeDiscord, guild_id=guild_id)),
 			status=200)
 		),
 		content_type="application/json",
