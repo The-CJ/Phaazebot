@@ -1545,7 +1545,7 @@ var AssignRoles = new (class {
 
   createModal() {
     $("#assignrole_create .modal-title").text("New assign role");
-    $("#assignrole_create").attr("mode", "new");
+    $("#assignrole_create").attr("mode", "create");
     $("#assignrole_create").modal("show");
   }
 
