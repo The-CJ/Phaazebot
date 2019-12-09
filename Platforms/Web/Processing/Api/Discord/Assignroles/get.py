@@ -8,7 +8,7 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import missingData
-from Platforms.Discord.utils import getDiscordServerAssignRoles
+from Platforms.Discord.utils import getDiscordServerAssignRoles, getDiscordServerAssignRoleAmount
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 from Utils.Classes.undefined import UNDEFINED
 
@@ -32,9 +32,9 @@ async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Respon
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# only one
-	assignrole_id:int = Data.getInt("assignrole_id", UNDEFINED, min_x=1)
+	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
 
-	assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=guild_id, assignrole_id=assignrole_id)
+	assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=guild_id, role_id=role_id)
 
 	return_list:list = list()
 
@@ -44,7 +44,7 @@ async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Respon
 	return cls.response(
 		text=json.dumps( dict(
 			result=return_list,
-			total=len(assignroles),
+			total=(await getDiscordServerAssignRoleAmount(PhaazeDiscord, guild_id=guild_id)),
 			status=200)
 		),
 		content_type="application/json",
