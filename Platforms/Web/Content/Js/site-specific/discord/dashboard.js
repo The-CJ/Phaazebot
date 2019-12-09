@@ -1524,12 +1524,26 @@ var AssignRoles = new (class {
     $.get("/api/discord/assignroles/get", {guild_id: guild_id})
     .done(function (data) {
 
-      console.log(data);
+      var AssignRoleList = $("#assign_role_list").html("");
+
+      for (var assigerole of data.result) {
+        var Template = $("[phantom] .assignrole").clone();
+        var role = DiscordDashboard.getDiscordRoleByID(assigerole.role_id);
+
+        Template.find(".trigger").text(assigerole.trigger);
+        Template.find(".name").text( role ? role.name : "(DELETED ROLE)" );
+
+        AssignRoleList.append(Template);
+      }
 
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"Could not load assign roles"} );
     })
+  }
+
+  startNew() {
+    console.log();
   }
 
 });

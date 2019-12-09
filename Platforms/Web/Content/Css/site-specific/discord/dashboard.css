@@ -135,6 +135,13 @@
 }
 [location=quotes] .quote .quote-id { color: grey; }
 
+[location=assign_roles] .assignrole { cursor: pointer; }
+[location=assign_roles] .assignrole:hover { background: rgba(0,0,0,0.2); }
+[location=assign_roles] .assignrole > *, [location=assign_roles] .header > * { margin: 2px; overflow: hidden; }
+[location=assign_roles] .header > div { background-color: var(--color-listelement-odd); }
+[location=assign_roles] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
+[location=assign_roles] .assignrole > div { background-color: var(--color-sub-listelement-odd); }
+[location=assign_roles] .assignrole > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
 #command_create button[mode] { display: none;}
