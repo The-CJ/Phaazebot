@@ -50,7 +50,6 @@ class DiscordCommand(DBContentClass):
 			j["name"] = None
 			j["description"] = None
 
-
 		return j
 
 	async def increaseUse(self, cls:"PhaazebotDiscord", by:int=1) -> None:

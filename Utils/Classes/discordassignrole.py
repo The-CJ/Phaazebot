@@ -10,7 +10,18 @@ class DiscordAssignRole(DBContentClass):
 
 	def __init__(self, data:dict, guild_id:str):
 
-		self.id:str = data.get("id", Undefined())
+		self.assignrole_id:str = data.get("id", Undefined())
 		self.guild_id:str = guild_id
-		self.role_id:str = data.get("role_id", Undefined())
+		self.role_id:int = data.get("role_id", Undefined())
 		self.trigger:str = data.get("trigger", Undefined())
+
+	def toJSON(self) -> dict:
+		""" Returns a json save dict representation of all values for API, storage, etc... """
+
+		j:dict = dict()
+
+		j["assignrole_id"] = self.assignrole_id
+		j["role_id"] = self.role_id
+		j["trigger"] = self.trigger
+
+		return j
