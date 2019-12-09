@@ -2,28 +2,15 @@
 
   <div class="container-fluid">
 
-    <div class="row">
+    <div class="center-item-row">
       <div class="col">
         <h4>Assign roles: <span id="assign_role_amount">[N/A]</span></h4>
       </div>
-    </div>
-
-    <form class="center-item-row" action="javascript:void(0)" onsubmit="javascript:AssignRoles.startNew()">
-
-      <div class="col md-form">
-        <input type="text" name="assign_role_trigger" placeholder="role key/trigger" class="white-text text-right" style="width: 100%;">
-      </div>
 
       <div class="col">
-        <div class="md-form input-group">
-          <select class="custom-select" id="assign_role_chan" name="assign_role_chan" discord-role></select>
-          <div class="input-group-append">
-            <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
-          </div>
-        </div>
+        <button type="button" class="btn btn-success" onclick="AssignRoles.createModal()">New assign role</button>
       </div>
-
-    </form>
+    </div>
 
     <div class="header row">
       <div class="col trigger">Trigger</div>
