@@ -205,7 +205,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 	else:
 		return []
 
-async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:str=None, trigger:str=None, order_str:str="ORDER BY `id`", limit:int=0) -> list:
+async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:int=None, assignrole_id:int=None, trigger:str=None, order_str:str="ORDER BY `id`", limit:int=0) -> list:
 	"""
 		Get server assign roles, if role_id and trigger are None, get all
 		else only get one associated with the role_id or trigger
@@ -221,6 +221,10 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 	if role_id:
 		sql += " AND `discord_giverole`.`role_id` = %s"
 		values += (role_id,)
+
+	if assignrole_id:
+		sql += " AND `discord_giverole`.`id` = %s"
+		values += (assignrole_id,)
 
 	if trigger:
 		sql += " AND `discord_giverole`.`trigger` = %s"

@@ -30,8 +30,9 @@ async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Respon
 
 	# only one
 	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
+	assignrole_id:int = Data.getInt("assignrole_id", UNDEFINED, min_x=1)
 
-	assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=guild_id, role_id=role_id)
+	assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=guild_id, role_id=role_id, assignrole_id=assignrole_id)
 
 	return cls.response(
 		text=json.dumps( dict(

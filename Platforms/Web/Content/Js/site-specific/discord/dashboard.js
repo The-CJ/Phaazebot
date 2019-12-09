@@ -1531,6 +1531,7 @@ var AssignRoles = new (class {
         var Template = $("[phantom] .assignrole").clone();
         var role = DiscordDashboard.getDiscordRoleByID(assigerole.role_id);
 
+        Template.attr("assignrole-id", assigerole.assignrole_id);
         Template.find(".trigger").text(assigerole.trigger);
         Template.find(".name").text( role ? role.name : "(DELETED ROLE)" );
 
@@ -1547,6 +1548,22 @@ var AssignRoles = new (class {
     $("#assignrole_create .modal-title").text("New assign role");
     $("#assignrole_create").attr("mode", "create");
     $("#assignrole_create").modal("show");
+  }
+
+  detail(HTMLRow) {
+    var AssignRolesO = this;
+    var guild_id = $("#guild_id").val();
+    var assignrole_id = $(HTMLRow).attr("assignrole-id");
+
+    $.get("/api/discord/assignroles/get", {guild_id: guild_id, assignrole_id:assignrole_id})
+    .done(function (data) {
+      var assignrole = data.result[0];
+      console.log(assignrole);
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not load assign role details"} );
+    })
   }
 
 });
