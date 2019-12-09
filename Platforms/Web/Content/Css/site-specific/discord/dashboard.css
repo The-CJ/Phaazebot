@@ -149,6 +149,10 @@
 #command_create[mode=edit] button[mode=edit] { display: unset;}
 #command_create [extra-command-setting] p { word-break: break-word; white-space: pre-line;}
 
+#assignrole_create button[mode] { display: none;}
+#assignrole_create[mode=create] button[mode=create] { display: unset;}
+#assignrole_create[mode=edit] button[mode=edit] { display: unset;}
+
 #token_modal_help .example { color: white; background: grey; }
 #token_modal_help .clickable { color: #262798; background: #8aa6af9c; padding: 2px; cursor: pointer; }
 #token_modal_help .tokenlist { padding: 0 1em; }
