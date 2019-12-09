@@ -1558,8 +1558,10 @@ var AssignRoles = new (class {
     $.get("/api/discord/assignroles/get", {guild_id: guild_id, assignrole_id:assignrole_id})
     .done(function (data) {
       var assignrole = data.result[0];
-      console.log(assignrole);
-
+      insertData("#assignrole_create", assignrole);
+      $("#assignrole_create .modal-title").text("Edit assign role");
+      $("#assignrole_create").attr("mode", "edit");
+      $("#assignrole_create").modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not load assign role details"} );
