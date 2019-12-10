@@ -203,6 +203,34 @@ async def apiDiscordQuotesNotExists(cls:"WebIndex", WebRequest:Request, **kwargs
 		status=400
 	)
 
+async def apiDiscordAssignRoleExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+			role_id:str
+			trigger:str
+	"""
+	res:dict = dict(status=400, error="discord_assignrole_exists")
+
+	default_msg:str = "Assignrole already exists"
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	role_id:str = kwargs.get("role_id", "")
+	if role_id:
+		res["role_id"] = role_id
+
+	trigger:str = kwargs.get("trigger", "")
+	if trigger:
+		res["trigger"] = trigger
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Assignrole exists: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)
+
 # limits
 async def apiDiscordCommandLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
@@ -267,6 +295,29 @@ async def apiDiscordQuoteLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict
 		res["limit"] = limit
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many quotes: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)
+
+async def apiDiscordAssignRoleLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+			limit:str
+	"""
+	res:dict = dict(status=400, error="discord_quote_limit")
+
+	default_msg:str = "You have hit the limit of assign roles for this guild"
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_ADDROLE_AMOUNT)
+	if limit:
+		res["limit"] = limit
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many assign roles: {WebRequest.path}", require="api:400")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",
