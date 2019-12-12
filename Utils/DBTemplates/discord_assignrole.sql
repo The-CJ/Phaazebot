@@ -1,5 +1,5 @@
 /*
-DESCRIBE `discord_giverole`;
+DESCRIBE `discord_assignrole`;
 
 +----------+--------------+------+-----+---------+----------------+
 | Field    | Type         | Null | Key | Default | Extra          |
@@ -11,9 +11,9 @@ DESCRIBE `discord_giverole`;
 +----------+--------------+------+-----+---------+----------------+
 */
 
--- SHOW CREATE TABLE `discord_giverole`;
+-- SHOW CREATE TABLE `discord_assignrole`;
 
-CREATE TABLE `discord_giverole` (
+CREATE TABLE `discord_assignrole` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
   `trigger` varchar(128) NOT NULL,

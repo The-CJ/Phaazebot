@@ -213,21 +213,21 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 	"""
 
 	sql:str = """
-		SELECT * FROM `discord_giverole`
-		WHERE `discord_giverole`.`guild_id` = %s"""
+		SELECT * FROM `discord_assignrole`
+		WHERE `discord_assignrole`.`guild_id` = %s"""
 
 	values:tuple = (guild_id,)
 
 	if role_id:
-		sql += " AND `discord_giverole`.`role_id` = %s"
+		sql += " AND `discord_assignrole`.`role_id` = %s"
 		values += (role_id,)
 
 	if assignrole_id:
-		sql += " AND `discord_giverole`.`id` = %s"
+		sql += " AND `discord_assignrole`.`id` = %s"
 		values += (assignrole_id,)
 
 	if trigger:
-		sql += " AND `discord_giverole`.`trigger` = %s"
+		sql += " AND `discord_assignrole`.`trigger` = %s"
 		values += (trigger,)
 
 	sql += f" {order_str}"
@@ -246,8 +246,8 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 async def getDiscordServerAssignRoleAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
 	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_giverole`
-		WHERE `discord_giverole`.`guild_id` = %s AND {where}"""
+		SELECT COUNT(*) AS `I` FROM `discord_assignrole`
+		WHERE `discord_assignrole`.`guild_id` = %s AND {where}"""
 
 	values:tuple = (guild_id,) + where_values
 

@@ -20,10 +20,10 @@ async def removeAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 
 	Role:DiscordAssignRole = roles[0]
 
-	cls.BASE.PhaazeDB.query("""
-		DELETE FROM discord_giverole
-		WHERE discord_giverole.guild_id = %s
-		AND discord_giverole.trigger = %s""",
+	cls.BASE.PhaazeDB.deleteQuery("""
+		DELETE FROM `discord_assignrole`
+		WHERE `discord_assignrole`.`guild_id` = %s
+		AND `discord_assignrole`.`trigger` = %s""",
 		(Role.guild_id, Role.trigger)
 	)
 

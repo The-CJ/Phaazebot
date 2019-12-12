@@ -49,11 +49,11 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 		SELECT
 			COUNT(*) AS `all`,
 			SUM(
-				CASE WHEN `discord_giverole`.`role_id` = %s OR LOWER(`discord_giverole`.`trigger`) = LOWER(%s)
+				CASE WHEN `discord_assignrole`.`role_id` = %s OR LOWER(`discord_assignrole`.`trigger`) = LOWER(%s)
 				THEN 1 ELSE 0 END
 			) AS `match`
-		FROM `discord_giverole`
-		WHERE `discord_giverole`.`guild_id` = %s""",
+		FROM `discord_assignrole`
+		WHERE `discord_assignrole`.`guild_id` = %s""",
 		( role_id, trigger, guild_id )
 	)
 
@@ -83,7 +83,7 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 		role_id = role_id
 	)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(table="discord_giverole", content=new_assign_role)
+	cls.Web.BASE.PhaazeDB.insertQuery(table="discord_assignrole", content=new_assign_role)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new assign role: S:{guild_id} T:{trigger} N:{str(new_assign_role)}", require="discord:role")
 

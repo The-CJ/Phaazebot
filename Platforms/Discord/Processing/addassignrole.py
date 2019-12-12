@@ -17,13 +17,13 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 	query_str:str = " ".join( CommandContext.parts[2:] )
 
 	res:list = cls.BASE.PhaazeDB.query("""
-		SELECT COUNT(*) AS c
-		FROM discord_giverole
-		WHERE discord_giverole.guild_id = %s""",
+		SELECT COUNT(*) AS `I`
+		FROM `discord_assignrole`
+		WHERE `discord_assignrole`.`guild_id` = %s""",
 		(Command.server_id,)
 	)
 
-	if res[0]["c"] >= cls.BASE.Limit.DISCORD_ADDROLE_AMOUNT:
+	if res[0]["I"] >= cls.BASE.Limit.DISCORD_ADDROLE_AMOUNT:
 		return {"content": ":no_entry_sign: This server hit the assign role limit, please remove some first."}
 
 	if not trigger or not query_str:
@@ -37,11 +37,13 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 	if CommandContext.Message.guild.me.top_role < AssignRole:
 		return {"content": f":no_entry_sign: The Role `{AssignRole.name}` is to high. Phaaze highest role has to be higher in hierarchy then `{AssignRole.name}`"}
 
-	cls.BASE.PhaazeDB.query("""
-		INSERT INTO discord_giverole
-		(`guild_id`, `role_id`, `trigger`)
-		VALUES (%s, %s, %s)""",
-		(Command.server_id, AssignRole.id, trigger)
+	cls.BASE.PhaazeDB.insertQuery(
+		table = "discord_assignrole",
+		content = dict(
+			guild_id = Command.server_id,
+			role_id = AssignRole.id,
+			trigger = trigger
+		)
 	)
 
 	return {"content": f":white_check_mark: Successfull added assign role `{str(AssignRole)}` with trigger `{trigger}`"}
