@@ -47,18 +47,13 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 	# check if already exists and limits
 	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
 		SELECT
-			(
-				SELECT COUNT(*)
-				FROM `discord_giverole`
-				WHERE `discord_giverole`.`role_id` = %s
-					OR LOWER(`discord_giverole`.`trigger`) = LOWER(%s)
-			) AS `match`,
-			(
-				SELECT COUNT(*)
-				FROM `discord_giverole`
-				WHERE `discord_giverole`.`guild_id` = %s
-			) AS `all`
-		""",
+			COUNT(*) AS `all`,
+			SUM(
+				CASE WHEN `discord_giverole`.`role_id` = %s OR LOWER(`discord_giverole`.`trigger`) = LOWER(%s)
+				THEN 1 ELSE 0 END
+			) AS `match`
+		FROM `discord_giverole`
+		WHERE `discord_giverole`.`guild_id` = %s""",
 		( role_id, trigger, guild_id )
 	)
 
