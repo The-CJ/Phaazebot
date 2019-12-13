@@ -1569,12 +1569,15 @@ var AssignRoles = new (class {
   }
 
   create() {
+    var AssignRoleO = this;
     var req = extractData("#assignrole_create");
     req["guild_id"] = $("#guild_id").val();
 
     $.get("/api/discord/assignroles/create", req)
     .done(function (data) {
-      console.log(data);
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $("#assignrole_create").modal("hide");
+      AssignRoleO.show();
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not create assign role"} );
