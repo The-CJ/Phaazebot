@@ -28,7 +28,7 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	role_id:str = Data.getStr("role_id", "", must_be_digit=True)
-	trigger:str = Data.getStr("trigger", "").split(" ")[0] # only take the first argument trigger, since everything else can't be typed in a channel
+	trigger:str = Data.getStr("trigger", "").lower().split(" ")[0] # only take the first argument trigger, since everything else can't be typed in a channel
 
 	# checks
 	if not guild_id:
