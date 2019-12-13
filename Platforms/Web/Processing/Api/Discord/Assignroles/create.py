@@ -61,7 +61,7 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 	if res[0]["match"]:
 		return await apiDiscordAssignRoleExists(cls, WebRequest, role_id=role_id, trigger=trigger)
 
-	if res[0]["all"] >= cls.Web.BASE.Limit.DISCORD_ADDROLE_AMOUNT:
+	if res[0]["all"] >= cls.Web.BASE.Limit.DISCORD_ASSIGNROLE_AMOUNT:
 		return await apiDiscordAssignRoleLimit(cls, WebRequest)
 
 	# get server role

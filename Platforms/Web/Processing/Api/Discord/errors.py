@@ -313,7 +313,7 @@ async def apiDiscordAssignRoleLimit(cls:"WebIndex", WebRequest:Request, **kwargs
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_ADDROLE_AMOUNT)
+	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_ASSIGNROLE_AMOUNT)
 	if limit:
 		res["limit"] = limit
 

@@ -23,7 +23,7 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 		(Command.server_id,)
 	)
 
-	if res[0]["I"] >= cls.BASE.Limit.DISCORD_ADDROLE_AMOUNT:
+	if res[0]["I"] >= cls.BASE.Limit.DISCORD_ASSIGNROLE_AMOUNT:
 		return {"content": ":no_entry_sign: This server hit the assign role limit, please remove some first."}
 
 	if not trigger or not query_str:
