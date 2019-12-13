@@ -7,7 +7,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.webuserinfo import WebUserInfo
-from Platforms.Web.Processing.Api.errors import missingData, apiNotAllowed, userNotFound
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiNotAllowed, userNotFound
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
 from Platforms.Web.utils import getWebUsers
@@ -21,7 +21,7 @@ async def apiAdminUsersDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
 	if not user_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'user_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'user_id'")
 
 	where:str = f"`user`.`id` = {user_id}"
 	user_search:list = await getWebUsers(cls, where=where)

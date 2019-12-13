@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData, apiWrongData
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData
 from Platforms.Discord.utils import getDiscordServerLevels
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordleveluser import DiscordLevelUser
@@ -30,11 +30,11 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
 	if not member_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'member_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'member_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -100,7 +100,7 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		changes["on_server"] = value
 
 	if not db_changes:
-		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
+		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Level Update: S:{guild_id} M:{member_id} {str(db_changes)}", require="discord:levels")
 	cls.Web.BASE.PhaazeDB.updateQuery(
@@ -128,14 +128,14 @@ async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data
 
 	if not guild_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	if not member_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing or invalid 'member_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'member_id'")
 
 	if not medal_name:
-		return await missingData(cls, WebRequest, msg="missing 'medal_name'")
+		return await apiMissingData(cls, WebRequest, msg="missing 'medal_name'")
 
 	if action == "add":
 		if medal_name in CurrentLevelUser.medals:

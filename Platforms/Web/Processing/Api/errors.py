@@ -116,7 +116,7 @@ async def userNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Resp
 		status=404
 	)
 
-async def missingData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiMissingData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
 		Takes from kwargs:
 			msg:str

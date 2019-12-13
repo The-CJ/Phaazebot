@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordQuotesNotExists
 from Platforms.Discord.utils import getDiscordServerQuotes
 from Utils.Classes.discorduserinfo import DiscordUserInfo
@@ -29,13 +29,13 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	content:str = Data.getStr("content", "")
 
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	if not quote_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'quote_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'quote_id'")
 
 	if content == "" or len(content) > MAX_QUOTE_SIZE:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'content'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'content'")
 
 	# check if quote exists before edit
 	quotes:list = await getDiscordServerQuotes(cls.Web.BASE.Discord, guild_id, quote_id=quote_id)

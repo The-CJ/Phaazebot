@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData
+from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordcommand import DiscordCommand
@@ -28,11 +28,11 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 
 	# check guild id
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	# check trigger, command id
 	if not trigger and not command_id:
-		return await missingData(cls, WebRequest, msg="missing 'trigger' or 'command_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing 'trigger' or 'command_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))

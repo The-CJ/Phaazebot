@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData
+from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Discord.utils import getDiscordSeverSettings
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserinfo import DiscordUserInfo
@@ -23,7 +23,7 @@ async def apiDiscordConfigsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))

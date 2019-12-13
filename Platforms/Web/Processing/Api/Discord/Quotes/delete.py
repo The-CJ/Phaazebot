@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData
+from Platforms.Web.Processing.Api.errors import apiMissingData
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
@@ -25,10 +25,10 @@ async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response
 	quote_id:int = Data.getInt("quote_id", UNDEFINED, min_x=1)
 
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	if not quote_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'quote_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'quote_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))

@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordCommandLimit, apiDiscordCommandExists
 from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discorduserinfo import DiscordUserInfo
@@ -33,11 +33,11 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 
 	# guild id check
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	# trigger
 	if not trigger:
-		return await missingData(cls, WebRequest, msg="missing 'trigger'")
+		return await apiMissingData(cls, WebRequest, msg="missing 'trigger'")
 	# only take the first argument trigger, since everything else can't be typed in a channel
 	trigger = trigger.split(" ")[0]
 
@@ -53,7 +53,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	# check if the function actully exists
 	if not complex_:
 		if not function:
-			return await missingData(cls, WebRequest, msg="missing 'function'")
+			return await apiMissingData(cls, WebRequest, msg="missing 'function'")
 		if not function in [cmd["function"].__name__ for cmd in command_register]:
 			return await apiWrongData(cls, WebRequest, msg=f"'{function}' is not a valid value for field 'function'")
 

@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from ..errors import apiNotAllowed, missingData
+from ..errors import apiNotAllowed, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
 async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -22,7 +22,7 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="invalid or missing 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="invalid or missing 'guild_id'")
 
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 

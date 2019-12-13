@@ -9,7 +9,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from ..errors import apiNotAllowed, apiMissingValidMethod, missingData, apiWrongData
+from ..errors import apiNotAllowed, apiMissingValidMethod, apiMissingData, apiWrongData
 
 async def apiAdminRoles(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -71,7 +71,7 @@ async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
 	if not role_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'role_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'role_id'")
 
 	res:list = cls.Web.BASE.PhaazeDB.selectQuery(
 		"SELECT * FROM `role` WHERE `role`.`id` = %s",
@@ -111,7 +111,7 @@ async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 			changes["can_be_removed"] = value
 
 	if not db_changes:
-		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
+		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
 	cls.Web.BASE.Logger.debug(f"(API) Role update: R:{role_id} {str(db_changes)}", require="api:admin")
 	cls.Web.BASE.PhaazeDB.updateQuery(
@@ -136,7 +136,7 @@ async def apiAdminRolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	can_be_removed:bool = Data.getBool("can_be_removed", True)
 
 	if not name:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'name'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'name'")
 
 	res:list = cls.Web.BASE.PhaazeDB.selectQuery(
 		"SELECT COUNT(*) AS `i` FROM `role` WHERE LOWER(`role`.`name`) = %s",
@@ -167,7 +167,7 @@ async def apiAdminRolesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
 	if not role_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'role_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'role_id'")
 
 	res:list = cls.Web.BASE.PhaazeDB.selectQuery(
 		"SELECT `name`, `can_be_removed` FROM `role` WHERE `role`.`id` = %s",

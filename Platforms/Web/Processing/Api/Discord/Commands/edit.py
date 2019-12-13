@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordCommandNotExists, apiDiscordCommandExists
 from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discorduserinfo import DiscordUserInfo
@@ -28,11 +28,11 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# guild id check
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	# check command id
 	if not command_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'command_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id'")
 
 	# check if command exists before edit
 	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
@@ -55,7 +55,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		value = value.split(" ")[0]
 		if not value:
 			# should never happen
-			return await missingData(cls, WebRequest, msg="missing 'trigger'")
+			return await apiMissingData(cls, WebRequest, msg="missing 'trigger'")
 
 		# check if there is another command with the trigger that wants to be set, that is NOT the one currently editing
 		check_double_trigger:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger=value)

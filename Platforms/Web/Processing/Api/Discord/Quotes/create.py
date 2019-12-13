@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordQuoteLimit
 from Platforms.Discord.utils import getDiscordServerQuotes
 from Utils.Classes.discorduserinfo import DiscordUserInfo
@@ -25,10 +25,10 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# checks
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	if not content:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'content'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'content'")
 
 	# get/check discord
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord

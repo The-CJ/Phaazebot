@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData, apiMissingAuthorisation, apiWrongData
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation, apiWrongData
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
@@ -32,13 +32,13 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 
 	# checks
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	if not role_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'role_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'role_id'")
 
 	if not trigger:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'trigger'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'trigger'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -67,7 +67,7 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 	# get server role
 	AssignRole:discord.Role = getDiscordRoleFromString(cls, Guild, role_id)
 	if not AssignRole:
-		return await missingData(cls, WebRequest, msg=f"Could not find any role matching '{role_id}'")
+		return await apiMissingData(cls, WebRequest, msg=f"Could not find any role matching '{role_id}'")
 
 	if AssignRole > Guild.me.top_role:
 		return await apiWrongData(cls, WebRequest, msg=f"The Role `{AssignRole.name}` is to high")

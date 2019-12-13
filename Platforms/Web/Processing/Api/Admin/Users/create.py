@@ -6,7 +6,7 @@ import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webrole import WebRole
-from Platforms.Web.Processing.Api.errors import missingData
+from Platforms.Web.Processing.Api.errors import apiMissingData
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
 from Utils.stringutils import password as password_function
@@ -29,7 +29,7 @@ async def apiAdminUsersCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	if password: password = password_function(password)
 
 	if not username or not email or not password:
-		return await missingData(cls, WebRequest, msg="missing 'username', 'email' or 'password'")
+		return await apiMissingData(cls, WebRequest, msg="missing 'username', 'email' or 'password'")
 
 	try:
 		new_id:int = cls.Web.BASE.PhaazeDB.insertQuery(

@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData, apiWrongData
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData
 from Platforms.Discord.utils import getDiscordSeverSettings
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserinfo import DiscordUserInfo
@@ -32,7 +32,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	if not guild_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -239,7 +239,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		changes["welcome_msg_priv"] = value
 
 	if not db_changes:
-		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
+		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Config Update: S:{guild_id} {str(db_changes)}", require="discord:configs")
 	cls.Web.BASE.PhaazeDB.updateQuery(
@@ -265,10 +265,10 @@ async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:s
 
 	if not guild_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not action_word:
-		return await missingData(cls, WebRequest, msg="missing field 'blacklist_word'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'blacklist_word'")
 
 	if action == "add":
 		cls.Web.BASE.PhaazeDB.insertQuery(
@@ -315,10 +315,10 @@ async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:s
 
 	if not guild_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not action_link:
-		return await missingData(cls, WebRequest, msg="missing field 'linkwhitelist_link'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'linkwhitelist_link'")
 
 	if action == "add":
 		cls.Web.BASE.PhaazeDB.insertQuery(
@@ -365,10 +365,10 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 
 	if not guild_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not role_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid field 'exceptionrole_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid field 'exceptionrole_id'")
 
 	ActionRole:discord.Role = CurrentGuild.get_role(int(role_id))
 	if not ActionRole and action == "add":
@@ -422,10 +422,10 @@ async def singleActionDisableLevelChannel(cls:"WebIndex", WebRequest:Request, ac
 
 	if not guild_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not channel_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid field 'disable_chan_level_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid field 'disable_chan_level_id'")
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
@@ -479,10 +479,10 @@ async def singleActionDisableQuoteChannel(cls:"WebIndex", WebRequest:Request, ac
 
 	if not guild_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not channel_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid field 'disabled_quotechan_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid field 'disabled_quotechan_id'")
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
@@ -536,10 +536,10 @@ async def singleActionDisableNormalChannel(cls:"WebIndex", WebRequest:Request, a
 
 	if not guild_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not channel_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid field 'disabled_normalchan_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid field 'disabled_normalchan_id'")
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
@@ -593,10 +593,10 @@ async def singleActionDisableRegularChannel(cls:"WebIndex", WebRequest:Request, 
 
 	if not guild_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not channel_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid field 'disabled_regularchan_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid field 'disabled_regularchan_id'")
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
@@ -650,10 +650,10 @@ async def singleActionEnabledGameChannel(cls:"WebIndex", WebRequest:Request, act
 
 	if not guild_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not channel_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid field 'enabled_gamechan_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid field 'enabled_gamechan_id'")
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
@@ -707,10 +707,10 @@ async def singleActionEnabledNSFWChannel(cls:"WebIndex", WebRequest:Request, act
 
 	if not guild_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing field 'guild_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not channel_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid field 'enabled_nsfwchan_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid field 'enabled_nsfwchan_id'")
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":

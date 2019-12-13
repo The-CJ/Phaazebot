@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
-from Platforms.Web.Processing.Api.errors import missingData, apiWrongData, apiNotAllowed, userNotFound
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData, apiNotAllowed, userNotFound
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.webuserinfo import WebUserInfo
@@ -22,7 +22,7 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
 	if not user_id:
-		return await missingData(cls, WebRequest, msg="missing or invalid 'user_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'user_id'")
 
 	# single actions
 	action:str = Data.getStr("userrole_action", UNDEFINED)
@@ -72,7 +72,7 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		changes["verified"] = value
 
 	if not db_changes:
-		return await missingData(cls, WebRequest, msg="No changes, please add at least one")
+		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
 	cls.Web.BASE.Logger.debug(f"(API) Config User U:{user_id} {str(db_changes)}", require="api:user")
 	cls.Web.BASE.PhaazeDB.updateQuery(
@@ -98,10 +98,10 @@ async def singleActionUserRole(cls:"WebIndex", WebRequest:Request, action:str, D
 
 	if not user_id:
 		# should never happen
-		return await missingData(cls, WebRequest, msg="missing field 'user_id'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'user_id'")
 
 	if not userrole_role:
-		return await missingData(cls, WebRequest, msg="missing or invalid field 'userrole_role'")
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid field 'userrole_role'")
 
 	# if it's not a number, try to get id from name, else... just select it again... REEEE
 	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
