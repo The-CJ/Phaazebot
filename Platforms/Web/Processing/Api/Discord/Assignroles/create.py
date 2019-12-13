@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import missingData, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.errors import missingData, apiMissingAuthorisation, apiWrongData
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
@@ -16,6 +16,7 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordAssignRoleExists,
 	apiDiscordAssignRoleLimit
 )
+from Platforms.Discord.utils import getDiscordRoleFromString
 
 async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -62,6 +63,14 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 
 	if res[0]["all"] >= cls.Web.BASE.Limit.DISCORD_ADDROLE_AMOUNT:
 		return await apiDiscordAssignRoleLimit(cls, WebRequest)
+
+	# get server role
+	AssignRole:discord.Role = getDiscordRoleFromString(cls, Guild, role_id)
+	if not AssignRole:
+		return await missingData(cls, WebRequest, msg=f"Could not find any role matching '{role_id}'")
+
+	if AssignRole > Guild.me.top_role:
+		return await apiWrongData(cls, WebRequest, msg=f"The Role `{AssignRole.name}` is to high")
 
 	# get user info
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
