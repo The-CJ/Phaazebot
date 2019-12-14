@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
-from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData, apiNotAllowed, userNotFound
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData, apiNotAllowed, apiUserNotFound
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.webuserinfo import WebUserInfo
@@ -35,7 +35,7 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# get user that should be edited
 	check_user:list = await getWebUsers(cls, where="user.id = %s", values=(user_id,))
 	if not check_user:
-		return await userNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
+		return await apiUserNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
 
 	# check if this is a (super)admin, if so, is the current user a superadmin?
 	# and not himself

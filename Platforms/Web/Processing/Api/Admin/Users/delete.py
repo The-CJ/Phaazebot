@@ -6,7 +6,7 @@ import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
-from Platforms.Web.Processing.Api.errors import apiMissingData, apiNotAllowed, userNotFound
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiNotAllowed, apiUserNotFound
 from Platforms.Web.utils import getWebUsers
 
 async def apiAdminUsersDelete(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -29,7 +29,7 @@ async def apiAdminUsersDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	# get user
 	user_search:list = await getWebUsers(cls, where=where)
 	if not user_search:
-		return await userNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
+		return await apiUserNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
 	UserToDelete:WebUserInfo = user_search.pop(0)
 
 	# check for higher users

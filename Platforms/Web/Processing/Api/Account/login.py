@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import json
 import traceback
-from ..errors import apiNotAllowed, userNotFound, apiMissingData
+from ..errors import apiNotAllowed, apiUserNotFound, apiMissingData
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Discord.api import translateDiscordToken, getDiscordUser
@@ -24,7 +24,7 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingData(cls, WebRequest)
 
 	if not WebUser.found:
-		return await userNotFound(cls, WebRequest)
+		return await apiUserNotFound(cls, WebRequest)
 
 	session_key:str = randomString(size=32)
 

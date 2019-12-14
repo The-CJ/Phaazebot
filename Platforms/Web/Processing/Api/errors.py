@@ -101,7 +101,7 @@ async def apiNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respo
 		content_type="application/json"
 	)
 
-async def userNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
 		Takes from kwargs:
 			msg:str

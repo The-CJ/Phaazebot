@@ -6,7 +6,7 @@ import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discorduserinfo import DiscordUserInfo
-from ..errors import apiNotAllowed, userNotFound
+from ..errors import apiNotAllowed, apiUserNotFound
 
 async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -15,7 +15,7 @@ async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
 
 	if not WebUser.found:
-		return await userNotFound(cls, WebRequest, msg="Not logged in")
+		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
 
 	cls.Web.BASE.PhaazeDB.deleteQuery("""
 		DELETE FROM `session_phaaze`
@@ -38,7 +38,7 @@ async def apiAccountLogoutDiscord(cls:"WebIndex", WebRequest:Request) -> Respons
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
 
 	if not DiscordUser.found:
-		return await userNotFound(cls, WebRequest, msg="Not logged in")
+		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
 
 	cls.Web.BASE.PhaazeDB.query("""
 		DELETE FROM `session_discord`
