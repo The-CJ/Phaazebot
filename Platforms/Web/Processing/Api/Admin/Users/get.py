@@ -17,13 +17,14 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
 	username:str = Data.getStr("username", "")
 	email:str = Data.getStr("email", "")
-
 	offset:int = Data.getInt("offset", 0, min_x=0)
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1)
 
+	# format
 	where:str = "1=1"
 	values:tuple = ()
 
@@ -35,6 +36,7 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		where = "`user`.`username` LIKE %s OR `user`.`email` LIKE %s"
 		values = (username, email)
 
+	# get user
 	users:list = await getWebUsers(cls, where=where, values=values, limit=limit, offset=offset)
 
 	if not users:

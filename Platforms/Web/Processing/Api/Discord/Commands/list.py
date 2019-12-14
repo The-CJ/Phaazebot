@@ -14,6 +14,7 @@ async def apiDiscordCommandsList(cls:"WebIndex", WebRequest:Request) -> Response
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	function:str = Data.getStr("function", "")
 
 	command_list:list = []

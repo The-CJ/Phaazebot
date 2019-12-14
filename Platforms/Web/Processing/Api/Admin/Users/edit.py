@@ -20,7 +20,10 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
+
+	# checks
 	if not user_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'user_id'")
 
@@ -143,15 +146,12 @@ async def singleActionUserRole(cls:"WebIndex", WebRequest:Request, action:str, D
 
 	elif action == "remove":
 		try:
-			hits:int = cls.Web.BASE.PhaazeDB.deleteQuery("""
+			cls.Web.BASE.PhaazeDB.deleteQuery("""
 				DELETE FROM `user_has_role`
 				WHERE `role_id` = %s
 					AND `user_id` = %s""",
 				(Role.role_id, user_id)
 			)
-
-			if not hits:
-				raise RuntimeError()
 
 			return cls.response(
 				text=json.dumps( dict(msg="user roles successfull updated", rem=Role.name, status=200) ),

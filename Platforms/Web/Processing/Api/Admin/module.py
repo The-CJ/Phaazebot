@@ -20,6 +20,7 @@ async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	module:str = Data.getStr("module", "x")
 	state:bool = Data.getBool("state", False)
 

@@ -5,7 +5,6 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.webrole import WebRole
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
@@ -18,23 +17,27 @@ async def apiAdminUsersCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	# username
-	username:str = Data.getStr("username", "")
+	# get required stuff
+	username:str = Data.getStr("username", UNDEFINED)
+	email:str = Data.getStr("email", UNDEFINED)
+	password:str = Data.getStr("password", UNDEFINED)
 
-	# email
-	email:str = Data.getStr("email", "")
+	# format
+	if password:
+		password = password_function(password)
 
-	# password
-	password:str = Data.getStr("password", "")
-	if password: password = password_function(password)
-
+	# checks
 	if not username or not email or not password:
 		return await apiMissingData(cls, WebRequest, msg="missing 'username', 'email' or 'password'")
 
 	try:
 		new_id:int = cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "user",
-			content = dict(username=username, email=email, password=password)
+			content = dict(
+				username=username,
+				email=email,
+				password=password
+			)
 		)
 
 		cls.Web.BASE.Logger.debug(f"(API) Create user '{username}' (ID:{new_id})", require="api:user")

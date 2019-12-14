@@ -9,7 +9,6 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordCommandLimit, apiDiscordCommandExists
-from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Discord.commandindex import command_register
 
@@ -22,7 +21,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	trigger:str = Data.getStr("trigger", "")
+	trigger:str = Data.getStr("trigger", "").lower().split(" ")[0]
 	complex_:bool = Data.getBool("complex", False)
 	function:str = Data.getStr("function", "")
 	content:str = Data.getStr("content", "")
@@ -31,23 +30,15 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	require:int = Data.getInt("require", 0, min_x=0)
 	required_currency:int = Data.getInt("required_currency", 0, min_x=0)
 
-	# guild id check
+	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	# trigger
 	if not trigger:
 		return await apiMissingData(cls, WebRequest, msg="missing 'trigger'")
-	# only take the first argument trigger, since everything else can't be typed in a channel
-	trigger = trigger.split(" ")[0]
 
-	#cooldown
 	if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN <= cooldown <= cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX ):
 		return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
-
-	#currency
-	if not required_currency >= 0 :
-		return await apiWrongData(cls, WebRequest, msg="'required_currency' is wrong")
 
 	# if not complex
 	# check if the function actully exists
@@ -57,20 +48,11 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 		if not function in [cmd["function"].__name__ for cmd in command_register]:
 			return await apiWrongData(cls, WebRequest, msg=f"'{function}' is not a valid value for field 'function'")
 
-	# check if already exists
-	res:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger=trigger)
-	if res:
-		return await apiDiscordCommandExists(cls, WebRequest, command=trigger)
-
-	# get/check discord
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	# check limit
-	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id)
-	if len(commands) >= cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT:
 	# check if already exists and limits
 	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
 		SELECT
@@ -104,6 +86,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
+	# create new
 	new:dict = dict(
 		guild_id = guild_id,
 		trigger = trigger,

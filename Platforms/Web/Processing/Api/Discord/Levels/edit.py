@@ -28,11 +28,14 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
+
+	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
 	if not member_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'member_id'")
 
@@ -56,12 +59,11 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
+	# get level user
 	level:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id)
-
 	if not level:
 		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find a level for this user")
-
-	CurrentLevelUser:DiscordLevelUser = level[0]
+	CurrentLevelUser:DiscordLevelUser = level.pop(0)
 
 	# single actions
 	action:str = Data.getStr("medal_action", UNDEFINED)

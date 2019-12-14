@@ -19,7 +19,12 @@ async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Respon
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
+	assignrole_id:int = Data.getInt("assignrole_id", UNDEFINED, min_x=1)
+
+	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
@@ -27,10 +32,6 @@ async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Respon
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
-
-	# only one
-	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
-	assignrole_id:int = Data.getInt("assignrole_id", UNDEFINED, min_x=1)
 
 	assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=guild_id, role_id=role_id, assignrole_id=assignrole_id)
 

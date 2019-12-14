@@ -14,6 +14,7 @@ from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordcommand import DiscordCommand
 from Platforms.Discord.commandindex import command_register
 from Utils.dbutils import validateDBInput
+from Utils.Classes.undefined import UNDEFINED
 
 async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -26,20 +27,19 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
 
-	# guild id check
+	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	# check command id
 	if not command_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id'")
 
-	# check if command exists before edit
+	# get command
 	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
 	if not commands:
 		return await apiDiscordCommandNotExists(cls, WebRequest, command_id=command_id)
 
-	CurrentEditCommand:DiscordCommand = commands.pop()
+	CurrentEditCommand:DiscordCommand = commands.pop(0)
 
 	# after this point we have a existing command
 	# check all possible values if it should be edited
@@ -49,18 +49,13 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 	update:dict = dict()
 
 	# change trigger?
-	value:str = Data.getStr("trigger", None)
-	if value != None:
-		# only take the first argument of trigger, since everything else can't be typed in a channel
-		value = value.split(" ")[0]
-		if not value:
-			# should never happen
-			return await apiMissingData(cls, WebRequest, msg="missing 'trigger'")
-
-		# check if there is another command with the trigger that wants to be set, that is NOT the one currently editing
+	value:str = Data.getStr("trigger", "").lower().split(" ")[0]
+	if value:
+		# try to get command with this trigger
 		check_double_trigger:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger=value)
 		if check_double_trigger:
-			CommandToCheck:DiscordCommand = check_double_trigger.pop()
+			CommandToCheck:DiscordCommand = check_double_trigger.pop(0)
+			# tryed to set a trigger twice
 			if str(CommandToCheck.command_id) != str(CurrentEditCommand.command_id):
 				return await apiDiscordCommandExists(cls, WebRequest, command=value)
 
@@ -68,8 +63,8 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		update["trigger"] = value
 
 	# change cooldown
-	value:int = Data.getInt("cooldown", None, min_x=0)
-	if value != None:
+	value:int = Data.getInt("cooldown", UNDEFINED, min_x=0)
+	if value != UNDEFINED:
 		# wants a invalid cooldown
 		if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN <= value <= cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX ):
 			return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
@@ -78,33 +73,33 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		update["cooldown"] = value
 
 	# change currency
-	value:int = Data.getInt("required_currency", None, min_x=0)
-	if value != None:
+	value:int = Data.getInt("required_currency", UNDEFINED, min_x=0)
+	if value != UNDEFINED:
 		db_update["required_currency"] = validateDBInput(int, value)
 		update["required_currency"] = value
 
 	# change require
-	value:int = Data.getInt("require", None, min_x=0)
-	if value != None :
+	value:int = Data.getInt("require", UNDEFINED, min_x=0)
+	if value != UNDEFINED :
 		db_update["require"] = validateDBInput(int, value)
 		update["require"] = value
 
 	# change content
-	value:str = Data.getStr("content", None)
-	if value != None:
+	value:str = Data.getStr("content", UNDEFINED)
+	if value != UNDEFINED:
 		db_update["content"] = validateDBInput(str, value)
 		update["content"] = value
 
 	# change hidden
-	value:bool = Data.getBool("hidden", None)
-	if value != None:
+	value:bool = Data.getBool("hidden", UNDEFINED)
+	if value != UNDEFINED:
 		db_update["hidden"] = validateDBInput(bool, value)
 		update["hidden"] = value
 
-	# change function
-	complex_:bool = Data.getBool("complex", None)
-	function:str = Data.getStr("function", None)
-	if not complex_ and function != None:
+	# change function (and type)
+	complex_:bool = Data.getBool("complex", UNDEFINED)
+	function:str = Data.getStr("function", UNDEFINED)
+	if (complex_ == False) and (function != UNDEFINED):
 		# it its not complex, we need a function
 		if not function in [cmd["function"].__name__ for cmd in command_register]:
 			return await apiWrongData(cls, WebRequest, msg=f"'{function}' is not a valid value for field 'function'")
@@ -114,7 +109,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		update["complex"] = complex_
 		update["function"] = function
 
-	if complex_ and not function:
+	if (complex_ == True) and (not function):
 		# it is complex, we need a content
 		if not update.get("content", False):
 			return await apiWrongData(cls, WebRequest, msg=f"'complex' is true, but missing 'content'")
@@ -122,8 +117,6 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		db_update["complex"] = validateDBInput(bool, complex_)
 		db_update["function"] = ""
 		update["complex"] = complex_
-
-	# all checks done, authorise the user
 	# get/check discord
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -150,7 +143,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_command",
 		content = db_update,
-		where = "discord_command.guild_id = %s AND discord_command.id = %s",
+		where = "`discord_command`.`guild_id` = %s AND `discord_command`.`id` = %s",
 		where_values = (guild_id, command_id)
 	)
 

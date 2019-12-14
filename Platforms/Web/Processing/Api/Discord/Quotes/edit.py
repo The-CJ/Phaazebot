@@ -28,6 +28,7 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	quote_id:int = Data.getInt("quote_id", UNDEFINED, min_x=1)
 	content:str = Data.getStr("content", "")
 
+	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
@@ -37,12 +38,11 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if content == "" or len(content) > MAX_QUOTE_SIZE:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'content'")
 
-	# check if quote exists before edit
+	# get quote
 	quotes:list = await getDiscordServerQuotes(cls.Web.BASE.Discord, guild_id, quote_id=quote_id)
 	if not quotes:
 		return await apiDiscordQuotesNotExists(cls, WebRequest, quote_id=quote_id)
-
-	CurrentEditQuote:DiscordQuote = quotes.pop()
+	CurrentEditQuote:DiscordQuote = quotes.pop(0)
 
 	# all checks done, authorise the user
 	# get/check discord
@@ -68,7 +68,7 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_quote",
 		content = {"content": content},
-		where = "discord_quote.guild_id = %s AND discord_quote.id = %s",
+		where = "`discord_quote`.`guild_id` = %s AND `discord_quote`.`id` = %s",
 		where_values = (CurrentEditQuote.guild_id, CurrentEditQuote.quote_id)
 	)
 

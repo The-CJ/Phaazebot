@@ -24,6 +24,7 @@ async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response
 	guild_id:str = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
 	quote_id:int = Data.getInt("quote_id", UNDEFINED, min_x=1)
 
+	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 

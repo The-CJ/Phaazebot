@@ -24,6 +24,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
 
+	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 

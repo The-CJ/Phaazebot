@@ -19,6 +19,7 @@ async def apiAdminEvaluate(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	command:str = Data.getStr("command", "")
 	corotine:bool = Data.getBool("corotine", False)
 

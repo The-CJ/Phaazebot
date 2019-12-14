@@ -26,26 +26,30 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 	trigger:str = Data.getStr("trigger", "")
 	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
 
-	# check guild id
+	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	# check trigger, command id
-	if not trigger and not command_id:
-		return await apiMissingData(cls, WebRequest, msg="missing 'trigger' or 'command_id'")
+	if not trigger:
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'trigger'")
+
+	if not command_id:
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
+	# get command
 	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, trigger=trigger)
 
 	if not commands:
 		return await apiDiscordCommandNotExists(cls, WebRequest, command=trigger)
 
-	CommandToDelete:DiscordCommand = commands.pop()
+	CommandToDelete:DiscordCommand = commands.pop(0)
 
+	# get user info
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
@@ -57,19 +61,13 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(
-			cls,
-			WebRequest,
-			guild_id=guild_id,
-			user_id=DiscordUser.user_id,
-			msg = "'administrator' or 'manage_guild' permission required to delete commands"
-		)
+		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
 	cls.Web.BASE.PhaazeDB.query("""
-		DELETE FROM discord_command
-		WHERE discord_command.guild_id = %s
-			AND discord_command.id = %s
-			AND discord_command.trigger = %s""",
+		DELETE FROM `discord_command`
+		WHERE `discord_command`.`guild_id` = %s
+			AND `discord_command`.`id` = %s
+			AND `discord_command`.`trigger` = %s""",
 		(CommandToDelete.server_id, CommandToDelete.command_id, CommandToDelete.trigger)
 	)
 

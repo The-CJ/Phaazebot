@@ -22,7 +22,11 @@ async def apiDiscordQuotesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+	quote_id:int = Data.getInt("quote_id", UNDEFINED, min_x=1)
+
+	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
@@ -31,19 +35,12 @@ async def apiDiscordQuotesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	# only one
-	quote_id:int = Data.getInt("quote_id", UNDEFINED, min_x=1)
-
+	# get quotes
 	quotes:list = await getDiscordServerQuotes(PhaazeDiscord, guild_id=guild_id, quote_id=quote_id)
-
-	return_list:list = list()
-
-	for QuoteData in quotes:
-		return_list.append(QuoteData.toJSON())
 
 	return cls.response(
 		text=json.dumps( dict(
-			result=return_list,
+			result=[ Quote.toJSON() for Quote in quotes ],
 			total=len(quotes),
 			status=200)
 		),

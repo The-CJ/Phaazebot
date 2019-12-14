@@ -42,11 +42,13 @@ async def apiAdminRolesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
+	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
+
 	sql:str = "SELECT * FROM `role`"
 	values:tuple = ()
 
 	# only show one?
-	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
 	if role_id:
 		sql += " WHERE `role`.`id` = %s"
 		values += (role_id,)
@@ -69,7 +71,10 @@ async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
+
+	# checks
 	if not role_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'role_id'")
 
@@ -131,10 +136,12 @@ async def apiAdminRolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	name:str = Data.getStr("name", "")
 	description:str = Data.getStr("description", "")
 	can_be_removed:bool = Data.getBool("can_be_removed", True)
 
+	# checks
 	if not name:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'name'")
 
@@ -165,7 +172,10 @@ async def apiAdminRolesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
+
+	# checks
 	if not role_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'role_id'")
 

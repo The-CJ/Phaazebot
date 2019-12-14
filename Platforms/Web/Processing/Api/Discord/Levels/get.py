@@ -22,36 +22,24 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
+	offset:int = Data.getInt("offset", 0, min_x=0)
+	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
+	detailed:bool = Data.getBool("detailed", False) # with names, avatar hash etc.
+	nickname:bool = Data.getBool("nickname", False) # usernames or nicknames?
+	name_contains:str = Data.getStr("name_contains", "") # only show names that contain stuff (workes only if detailed is true)
+	order:str = Data.getStr("order", "").lower() # order by
+
+	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
-	if not Guild:
-		return await apiDiscordGuildUnknown(cls, WebRequest)
-
-	# limit
-	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	if limit == None:
 		return await apiMissingData(cls, WebRequest, msg=f"invalid 'limit', min=1, max={MAX_LIMIT}")
 
-	# offset
-	offset:int = Data.getInt("offset", 0, min_x=0)
-
-	# one member
-	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
-
-	# with names, avatar hash etc.
-	detailed:bool = Data.getBool("detailed", False)
-	# usernames or nicknames?
-	nickname:bool = Data.getBool("nickname", False)
-
-	# only show names that contain stuff (workes only if detailed is true)
-	name_contains:str = Data.getStr("name_contains", "")
-
-	# order by
-	order:str = Data.getStr("order", "").lower()
+	# format
 	if order == "exp":
 		order = "ORDER BY `exp`"
 	elif order == "id":
@@ -61,9 +49,14 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	else:
 		order = "ORDER BY `rank`"
 
+	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
+	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
+	if not Guild:
+		return await apiDiscordGuildUnknown(cls, WebRequest)
+
+	# get levels
 	levels:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order)
 
-	# stop it
 	if not levels:
 		if member_id:
 			return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find a level for this user")

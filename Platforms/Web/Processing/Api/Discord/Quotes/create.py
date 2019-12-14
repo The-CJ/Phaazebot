@@ -9,7 +9,6 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordQuoteLimit
-from Platforms.Discord.utils import getDiscordServerQuotes
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 
 async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -37,8 +36,13 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# check limit
-	quotes:list = await getDiscordServerQuotes(cls.Web.BASE.Discord, guild_id)
-	if len(quotes) >= cls.Web.BASE.Limit.DISCORD_QUOTES_AMOUNT:
+	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
+		SELECT COUNT(*) AS `I`,
+		WHERE `discord_quote`.`guild_id` = %s""",
+		( guild_id, )
+	)
+
+	if res[0]['I'] >= cls.Web.BASE.Limit.DISCORD_QUOTES_AMOUNT:
 		return await apiDiscordQuoteLimit(cls, WebRequest)
 
 	# get user info
@@ -55,6 +59,7 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
+	# new quote
 	new:dict = dict(
 		guild_id = guild_id,
 		content = content

@@ -30,11 +30,13 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	username:str = Data.getStr("username", "")
 	email:str = Data.getStr("email", "")
 	password:str = Data.getStr("password", "")
 	password2:str = Data.getStr("password2", "")
 
+	# checks
 	if password != password2:
 		cls.Web.BASE.Logger.debug(f"(API) Account create failed, passwords don't match", require="api:create")
 		return cls.response(
@@ -70,16 +72,15 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# everything ok -> create
 	try:
-		cls.Web.BASE.PhaazeDB.query("""
-			INSERT INTO user
-			(username, password, email)
-			VALUES (%s, %s, %s)""", (username, password_function(password), email)
+		user_id:int = cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "user",
+			content = dict(
+				username = username,
+				password = password_function(password),
+				email = email
+			)
 		)
 
-		res:list = cls.Web.BASE.PhaazeDB.query("""SELECT id FROM user WHERE username LIKE %s""", (username,))
-		if not res: raise
-
-		user_id:str = res[0]["id"]
 		cls.Web.BASE.Logger.debug(f"(API) Account created: ID: {user_id}", require="api:create")
 		return cls.response(
 			body=json.dumps( dict(status=200, message="successfull created user", id=user_id, username=username) ),

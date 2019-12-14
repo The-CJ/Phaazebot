@@ -13,6 +13,7 @@ from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.stringutils import password as password_function
 from Utils.regex import IsEmail
 from Platforms.Web.utils import getWebUsers
+from Platforms.Web.Processing.Api.errors import apiWrongData
 
 async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -26,8 +27,14 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	# get required stuff
 	current_password:str = Data.getStr("phaaze_password", "")
+	new_username:str = Data.getStr("phaaze_username", "")
+	new_email:str = Data.getStr("phaaze_email", "")
+	new_password:str = Data.getStr("phaaze_newpassword", "")
+	new_password2:str = Data.getStr("phaaze_newpassword2", "")
 
+	# checks
 	if not current_password or WebUser.password != password_function(current_password):
 		return cls.response(
 			status=400,
@@ -36,11 +43,6 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		)
 
 	changed_email:bool = False # if yes, reset valiated and send mail
-
-	new_username:str = Data.getStr("phaaze_username", "")
-	new_email:str = Data.getStr("phaaze_email", "")
-	new_password:str = Data.getStr("phaaze_newpassword", "")
-	new_password2:str = Data.getStr("phaaze_newpassword2", "")
 
 	update:dict = dict()
 
@@ -106,12 +108,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 			update["email"] = new_email
 
 	if not update:
-		cls.Web.BASE.Logger.debug(f"(API) No action taken for account edit", require="api:account")
-		return cls.response(
-			status=200,
-			text=json.dumps( dict(error="no_action_taken", msg="Nothing has been changed", status=200) ),
-			content_type="application/json"
-		)
+		return await apiWrongData(cls, WebRequest, msg=f"No changes, please add at least one")
 
 	# verification mail
 	if changed_email:
