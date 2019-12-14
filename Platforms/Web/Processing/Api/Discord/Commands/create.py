@@ -71,6 +71,23 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	# check limit
 	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id)
 	if len(commands) >= cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT:
+	# check if already exists and limits
+	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
+		SELECT
+			COUNT(*) AS `all`,
+			SUM(
+				CASE WHEN LOWER(`discord_command`.`trigger`) = LOWER(%s)
+				THEN 1 ELSE 0 END
+			) AS `match`
+		FROM `discord_command`
+		WHERE `discord_command`.`guild_id` = %s""",
+		( trigger, guild_id )
+	)
+
+	if res[0]["match"]:
+		return await apiDiscordCommandExists(cls, WebRequest, command=trigger)
+
+	if res[0]["all"] >= cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT:
 		return await apiDiscordCommandLimit(cls, WebRequest)
 
 	# get user info
