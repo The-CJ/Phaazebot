@@ -13,8 +13,10 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
 	apiDiscordMissingPermission,
-	apiDiscordAssignRoleExists,
-	apiDiscordAssignRoleLimit
+)
+from .errors import (
+	apiDiscordAssignRoleLimit,
+	apiDiscordAssignRoleExists
 )
 from Platforms.Discord.utils import getDiscordRoleFromString
 

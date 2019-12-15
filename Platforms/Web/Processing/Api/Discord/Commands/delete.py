@@ -12,7 +12,8 @@ from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordcommand import DiscordCommand
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordCommandNotExists
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
+from .errors import apiDiscordCommandNotExists
 
 async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

@@ -8,7 +8,8 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordQuoteLimit
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
+from .errors import apiDiscordQuoteLimit
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 
 async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response:

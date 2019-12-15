@@ -15,9 +15,9 @@ from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission,
-	apiDiscordLevelMedalLimit
+	apiDiscordMissingPermission
 )
+from .errors import apiDiscordLevelMedalLimit
 from Utils.dbutils import validateDBInput
 from Utils.Classes.undefined import UNDEFINED
 

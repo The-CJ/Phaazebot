@@ -8,7 +8,8 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission, apiDiscordQuotesNotExists
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
+from .errors import apiDiscordQuotesNotExists
 from Platforms.Discord.utils import getDiscordServerQuotes
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordquote import DiscordQuote
