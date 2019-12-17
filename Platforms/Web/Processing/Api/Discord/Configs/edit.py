@@ -102,27 +102,27 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if action:
 		return await singleActionEnabledNSFWChannel(cls, WebRequest, action, Data, Configs, Guild)
 
-	changes:dict = dict()
-	db_changes:dict = dict()
+	update:dict = dict()
+	db_update:dict = dict()
 
 	# get all changed stuff and add changes to list
 	# changes is for the user, so return with types, db_changes is with, well... db values
 	# e.g.:
-	# changes["x"] = true
-	# db_changes["x"] = "1"
+	# update["x"] = true
+	# db_update["x"] = "1"
 
 	# blacklist_ban_links
 	value:bool = Data.getBool("blacklist_ban_links", UNDEFINED)
 	if value != UNDEFINED:
-		db_changes["blacklist_ban_links"] = validateDBInput(bool, value)
-		changes["blacklist_ban_links"] = value
+		db_update["blacklist_ban_links"] = validateDBInput(bool, value)
+		update["blacklist_ban_links"] = value
 
 	# blacklist_punishment
 	value:str = Data.getStr("blacklist_punishment", UNDEFINED)
 	if value != UNDEFINED:
 		value = checkBlacklistPunishmentString(value)
-		db_changes["blacklist_punishment"] = validateDBInput(str, value)
-		changes["blacklist_punishment"] = value
+		db_update["blacklist_punishment"] = validateDBInput(str, value)
+		update["blacklist_punishment"] = value
 
 	# leave_chan
 	value:str = Data.getStr("leave_chan", UNDEFINED)
@@ -141,22 +141,22 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		if error:
 			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
 
-		db_changes["leave_chan"] = validateDBInput(str, value, allow_null=True)
-		changes["leave_chan"] = value
+		db_update["leave_chan"] = validateDBInput(str, value, allow_null=True)
+		update["leave_chan"] = value
 
 	# leave_msg
 	value:str = Data.getStr("leave_msg", UNDEFINED)
 	if value != UNDEFINED:
 		if not value: value = None
-		db_changes["leave_msg"] = validateDBInput(str, value, allow_null=True)
-		changes["leave_msg"] = value
+		db_update["leave_msg"] = validateDBInput(str, value, allow_null=True)
+		update["leave_msg"] = value
 
 	# level_custom_msg
 	value:str = Data.getStr("level_custom_msg", UNDEFINED)
 	if value != UNDEFINED:
 		if not value: value = None
-		db_changes["level_custom_msg"] = validateDBInput(str, value, allow_null=True)
-		changes["level_custom_msg"] = value
+		db_update["level_custom_msg"] = validateDBInput(str, value, allow_null=True)
+		update["level_custom_msg"] = value
 
 	# level_announce_chan
 	value:str = Data.getStr("level_announce_chan", UNDEFINED)
@@ -175,40 +175,40 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		if error:
 			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
 
-		db_changes["level_announce_chan"] = validateDBInput(str, value, allow_null=True)
-		changes["level_announce_chan"] = value
+		db_update["level_announce_chan"] = validateDBInput(str, value, allow_null=True)
+		update["level_announce_chan"] = value
 
 	# owner_disable_level
 	value:bool = Data.getBool("owner_disable_level", UNDEFINED)
 	if value != UNDEFINED:
 		if not Guild.owner == CheckMember:
 			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_level' require server owner")
-		db_changes["owner_disable_level"] = validateDBInput(bool, value)
-		changes["owner_disable_level"] = value
+		db_update["owner_disable_level"] = validateDBInput(bool, value)
+		update["owner_disable_level"] = value
 
 	# owner_disable_normal
 	value:bool = Data.getBool("owner_disable_normal", UNDEFINED)
 	if value != UNDEFINED:
 		if not Guild.owner == CheckMember:
 			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_normal' require server owner")
-		db_changes["owner_disable_normal"] = validateDBInput(bool, value)
-		changes["owner_disable_normal"] = value
+		db_update["owner_disable_normal"] = validateDBInput(bool, value)
+		update["owner_disable_normal"] = value
 
 	# owner_disable_regular
 	value:bool = Data.getBool("owner_disable_regular", UNDEFINED)
 	if value != UNDEFINED:
 		if not Guild.owner == CheckMember:
 			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_regular' require server owner")
-		db_changes["owner_disable_regular"] = validateDBInput(bool, value)
-		changes["owner_disable_regular"] = value
+		db_update["owner_disable_regular"] = validateDBInput(bool, value)
+		update["owner_disable_regular"] = value
 
 	# owner_disable_mod
 	value:bool = Data.getBool("owner_disable_mod", UNDEFINED)
 	if value != UNDEFINED:
 		if not Guild.owner == CheckMember:
 			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_mod' require server owner")
-		db_changes["owner_disable_mod"] = validateDBInput(bool, value)
-		changes["owner_disable_mod"] = value
+		db_update["owner_disable_mod"] = validateDBInput(bool, value)
+		update["owner_disable_mod"] = value
 
 	# welcome_chan
 	value:str = Data.getStr("welcome_chan", UNDEFINED)
@@ -227,36 +227,36 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		if error:
 			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
 
-		db_changes["welcome_chan"] = validateDBInput(str, value, allow_null=True)
-		changes["welcome_chan"] = value
+		db_update["welcome_chan"] = validateDBInput(str, value, allow_null=True)
+		update["welcome_chan"] = value
 
 	# welcome_msg
 	value:str = Data.getStr("welcome_msg", UNDEFINED)
 	if value != UNDEFINED:
 		if not value: value = None
-		db_changes["welcome_msg"] = validateDBInput(str, value, allow_null=True)
-		changes["welcome_msg"] = value
+		db_update["welcome_msg"] = validateDBInput(str, value, allow_null=True)
+		update["welcome_msg"] = value
 
 	# welcome_msg_priv
 	value:str = Data.getStr("welcome_msg_priv", UNDEFINED)
 	if value != UNDEFINED:
 		if not value: value = None
-		db_changes["welcome_msg_priv"] = validateDBInput(str, value, allow_null=True)
-		changes["welcome_msg_priv"] = value
+		db_update["welcome_msg_priv"] = validateDBInput(str, value, allow_null=True)
+		update["welcome_msg_priv"] = value
 
-	if not db_changes:
+	if not db_update:
 		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Config Update: S:{guild_id} {str(db_changes)}", require="discord:configs")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Config Update: S:{guild_id} {str(db_update)}", require="discord:configs")
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_setting",
-		content = db_changes,
+		content = db_update,
 		where = "discord_setting.guild_id = %s",
 		where_values = (guild_id,)
 	)
 
 	return cls.response(
-		text=json.dumps( dict(msg="configs successfull updated", changes=changes, status=200) ),
+		text=json.dumps( dict(msg="configs successfull updated", update=update, status=200) ),
 		content_type="application/json",
 		status=200
 	)

@@ -18,6 +18,12 @@
         </div>
         <hr>
         <div class="center-item-row md-form">
+          <span class="col text-left">Active:</span>
+          <div class="col text-center">
+            <input type="checkbox" name="active" style="height:2ch; width:2ch;" clear-after-success>
+          </div>
+        </div>
+        <div class="center-item-row md-form">
           <span class="col text-left">Can be used by:</span>
           <select name="require" class="browser-default custom-select" clear-after-success>
             <option value="0">Everyone</option>
@@ -26,6 +32,7 @@
             <option value="3">Server Owner</option>
           </select>
         </div>
+
         <div class="center-item-row md-form">
           <span class="col text-left">Cost to use this command:</span>
           <input type="number" name="required_currency" value="0" clear-after-success>

@@ -12,6 +12,7 @@ class DiscordCommand(DBContentClass):
 		self.command_id:int = data.get("id", Undefined())
 
 		self.trigger:str = data.get("trigger", Undefined())
+		self.active:bool = bool( data.get("active", 1) )
 		self.complex:bool = data.get("complex", False)
 		self.function:str = data.get("function", Undefined())
 		self.content:str = data.get("content", Undefined())
@@ -31,6 +32,7 @@ class DiscordCommand(DBContentClass):
 
 		j["command_id"] = self.command_id
 		j["trigger"] = str(self.trigger)
+		j["active"] = self.active
 		j["complex"] = self.complex
 		j["uses"] = self.uses
 		j["require"] = self.require

@@ -84,6 +84,7 @@
 [location=commands] .command > div { background-color: var(--color-sub-listelement-odd); }
 [location=commands] .command > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
 [location=commands] .command .function.hidden { background: #665b87 }
+[location=commands] .command.non-active { box-shadow: -5px 0 0 red }
 
 [location=configs] .config-box { padding: 5px; margin-bottom: 1em; }
 [location=configs] .config-box .btn { margin: unset; }

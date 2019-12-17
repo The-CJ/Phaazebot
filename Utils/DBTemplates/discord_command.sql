@@ -7,6 +7,7 @@ DESCRIBE `discord_command`;
 | id                | int(11)       | NO   | PRI | NULL    | auto_increment |
 | guild_id          | varchar(128)  | NO   | MUL | NULL    |                |
 | trigger           | varchar(64)   | NO   |     | NULL    |                |
+| active            | tinyint(64)   | NO   |     | 1       |                |
 | content           | varchar(1750) | YES  |     | NULL    |                |
 | function          | varchar(256)  | NO   |     | NULL    |                |
 | complex           | tinyint(1)    | YES  |     | 0       |                |
@@ -24,6 +25,7 @@ CREATE TABLE `discord_command` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
   `trigger` varchar(64) NOT NULL,
+  `active` tinyint(1) DEFAULT 1,
   `content` varchar(1750) DEFAULT NULL,
   `function` varchar(256) NOT NULL,
   `complex` tinyint(1) DEFAULT 0,

@@ -27,6 +27,10 @@ var Commands = new (class {
           Template.find(".function").attr("title", "This is a hidden command and can not be viewed via web, without permissions");
         }
 
+        if (!command.active) {
+          Template.addClass("non-active");
+        }
+
         CommandList.append(Template);
       }
 
@@ -107,6 +111,7 @@ var Commands = new (class {
       "function": $("#command_create [name=function]").val(),
       "complex": $("#command_create [name=commandtype]").val() == "complex" ? true : false,
       "hidden": $("#command_create [name=hidden]").is(":checked"),
+      "active": $("#command_create [name=active]").is(":checked"),
       "cooldown": $("#command_create [name=cooldown]").val(),
       "require": $("#command_create [name=require]").val(),
       "required_currency": $("#command_create [name=required_currency]").val()
@@ -132,12 +137,10 @@ var Commands = new (class {
     .done(function (data) {
       var command = data.result[0];
 
+      insertData("#command_create", command);
+
       $("#command_create .modal-title").text("Edit command: "+command.trigger);
-      $("#command_create [name=command_id]").val(command.command_id);
-      $("#command_create [name=trigger]").val(command.trigger);
-      $("#command_create [name=require]").val( command.require );
       $("#command_create [name=required_currency]").val( command.cost );
-      $("#command_create [name=uses]").val( command.uses );
       $("#command_create [name=cooldown], #command_create [name=cooldown_slider]").val( command.cooldown );
       $("#command_create [name=commandtype]").val( command.complex ? "complex" : "simple" );
       if (command.hidden) { $("#command_create [name=hidden]").prop( "checked", true ); }

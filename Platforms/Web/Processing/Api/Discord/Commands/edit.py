@@ -60,7 +60,13 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 	db_update:dict = dict()
 	update:dict = dict()
 
-	# change trigger?
+	# active
+	value:bool = Data.getBool("active", UNDEFINED)
+	if value != UNDEFINED:
+		db_update["active"] = validateDBInput(bool, value)
+		update["active"] = value
+
+	# trigger
 	value:str = Data.getStr("trigger", "").lower().split(" ")[0]
 	if value:
 		# try to get command with this trigger
@@ -74,7 +80,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		db_update["trigger"] = validateDBInput(str, value)
 		update["trigger"] = value
 
-	# change cooldown
+	# cooldown
 	value:int = Data.getInt("cooldown", UNDEFINED, min_x=0)
 	if value != UNDEFINED:
 		# wants a invalid cooldown
@@ -84,31 +90,31 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		db_update["cooldown"] = validateDBInput(int, value)
 		update["cooldown"] = value
 
-	# change currency
+	# currency
 	value:int = Data.getInt("required_currency", UNDEFINED, min_x=0)
 	if value != UNDEFINED:
 		db_update["required_currency"] = validateDBInput(int, value)
 		update["required_currency"] = value
 
-	# change require
+	# require
 	value:int = Data.getInt("require", UNDEFINED, min_x=0)
 	if value != UNDEFINED :
 		db_update["require"] = validateDBInput(int, value)
 		update["require"] = value
 
-	# change content
+	# content
 	value:str = Data.getStr("content", UNDEFINED)
 	if value != UNDEFINED:
 		db_update["content"] = validateDBInput(str, value)
 		update["content"] = value
 
-	# change hidden
+	# hidden
 	value:bool = Data.getBool("hidden", UNDEFINED)
 	if value != UNDEFINED:
 		db_update["hidden"] = validateDBInput(bool, value)
 		update["hidden"] = value
 
-	# change function (and type)
+	# function (and type)
 	complex_:bool = Data.getBool("complex", False)
 	function:str = Data.getStr("function", UNDEFINED)
 	if (complex_ == False) and (function != UNDEFINED):
