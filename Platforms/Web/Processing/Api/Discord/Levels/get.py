@@ -55,12 +55,6 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	# get levels
 	res_levels:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order, edited=edited)
 
-	if not res_levels:
-		if member_id:
-			return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find a level for this user")
-		else:
-			return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find levels for this guild")
-
 	return_list:list = list()
 
 	for LevelUser in res_levels:
