@@ -78,6 +78,8 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 		Command:DiscordCommand = CommandContext.Command
 
+		if not Command.active: return False
+
 		# check if command is in cooldown
 		if GDCCS.check(Command): return False
 
