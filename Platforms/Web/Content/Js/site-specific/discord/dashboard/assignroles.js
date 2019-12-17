@@ -16,9 +16,17 @@ var AssignRoles = new (class {
         var Template = $("[phantom] .assignrole").clone();
         var role = DiscordDashboard.getDiscordRoleByID(assigerole.role_id);
 
+        var role_name = role ? role.name : "";
+
         Template.attr("assignrole-id", assigerole.assignrole_id);
         Template.find(".trigger").text(assigerole.trigger);
-        Template.find(".name").text( role ? role.name : "(DELETED ROLE)" );
+        if (role_name) {
+          Template.find(".name").text( role_name );
+        }
+        else {
+          Template.find(".name").text( "(DELETED ROLE)" );
+          Template.find(".name").addClass( "red" );
+        }
 
         AssignRoleList.append(Template);
       }
