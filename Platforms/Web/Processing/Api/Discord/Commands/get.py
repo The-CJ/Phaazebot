@@ -23,6 +23,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	# get required vars
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
+	show_hidden:bool = Data.getBool("show_hidden", False)
 
 	# checks
 	if not guild_id:
@@ -33,9 +34,6 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
-
-	show_hidden:bool = Data.getBool("show_hidden", False)
 	if show_hidden:
 		# user requested to get full information about commands, requires authorisation
 
@@ -57,6 +55,8 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 				user_id=DiscordUser.user_id,
 				msg = "'administrator' or 'manage_guild' permission required to show commands with hidden properties"
 			)
+
+	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, show_nonactive=show_hidden)
 
 	# this point is only reached when command can be hidden or user requested hidden props has authorist
 	api_return:list = list()

@@ -162,7 +162,7 @@ command_register:list = [
 	dict(
 		name = "Level | Leaderboard",
 		function = levelLeaderboard,
-		description = "Returns current level, exp and medals for a member.",
+		description = "Returns current level, exp and medals for a group of member.",
 		details = "This function takes one 1 optional argument\n"\
 			"(1) Number as the lengh for the list, max 15",
 		need_content = False

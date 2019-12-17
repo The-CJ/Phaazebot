@@ -80,7 +80,7 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", guild_id:str) -> Disc
 		cls.BASE.Logger.critical(f"(Discord) New server settings failed: S:{guild_id}")
 		raise RuntimeError("Creating new DB entry failed")
 
-async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger:str=None, command_id:str or int=None, order_str:str="ORDER BY id", limit:int=0) -> list:
+async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger:str=None, command_id:str or int=None, order_str:str="ORDER BY id", limit:int=0, show_nonactive:bool=False ) -> list:
 	"""
 		Get custom commands from a discord server/guild, if trigger = None, get all.
 		else only get one associated with trigger.
@@ -93,6 +93,9 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 		SELECT * FROM `discord_command`
 		WHERE `discord_command`.`guild_id` = %s"""
 	values:tuple = (guild_id,)
+
+	if not show_nonactive:
+		sql += " AND `discord_command`.`active` = 1"
 
 	if command_id:
 		sql += " AND `discord_command`.`id` = %s"
