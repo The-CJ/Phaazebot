@@ -7,10 +7,10 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.undefined import UNDEFINED
+from Platforms.Discord.utils import getDiscordServerAssignRoles
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
-from Platforms.Discord.utils import getDiscordServerAssignRoles
-from Utils.Classes.undefined import UNDEFINED
 
 async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

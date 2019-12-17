@@ -40,10 +40,10 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'content'")
 
 	# get quote
-	quotes:list = await getDiscordServerQuotes(cls.Web.BASE.Discord, guild_id, quote_id=quote_id)
-	if not quotes:
+	res_quotes:list = await getDiscordServerQuotes(cls.Web.BASE.Discord, guild_id, quote_id=quote_id)
+	if not res_quotes:
 		return await apiDiscordQuotesNotExists(cls, WebRequest, quote_id=quote_id)
-	CurrentEditQuote:DiscordQuote = quotes.pop(0)
+	CurrentEditQuote:DiscordQuote = res_quotes.pop(0)
 
 	# all checks done, authorise the user
 	# get/check discord

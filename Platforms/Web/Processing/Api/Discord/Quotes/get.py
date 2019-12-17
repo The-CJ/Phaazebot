@@ -7,10 +7,10 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Discord.utils import getDiscordServerQuotes
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 from Utils.Classes.undefined import UNDEFINED
+from Platforms.Web.Processing.Api.errors import apiMissingData
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
 DEFAULT_LIMIT:int = 50
 MAX_LIMIT:int = 100
@@ -36,12 +36,12 @@ async def apiDiscordQuotesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get quotes
-	quotes:list = await getDiscordServerQuotes(PhaazeDiscord, guild_id=guild_id, quote_id=quote_id)
+	res_quotes:list = await getDiscordServerQuotes(PhaazeDiscord, guild_id=guild_id, quote_id=quote_id)
 
 	return cls.response(
 		text=json.dumps( dict(
-			result=[ Quote.toJSON() for Quote in quotes ],
-			total=len(quotes),
+			result=[ Quote.toJSON() for Quote in res_quotes ],
+			total=len(res_quotes),
 			status=200)
 		),
 		content_type="application/json",

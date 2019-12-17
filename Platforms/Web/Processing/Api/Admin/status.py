@@ -7,7 +7,7 @@ import json
 import time
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
-from ..errors import apiNotAllowed
+from Platforms.Web.Processing.Api.errors import apiNotAllowed
 
 async def apiAdminStatus(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

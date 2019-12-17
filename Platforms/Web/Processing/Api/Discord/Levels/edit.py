@@ -7,19 +7,22 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData
 from Platforms.Discord.utils import getDiscordServerLevels
+from Utils.dbutils import validateDBInput
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordleveluser import DiscordLevelUser
-from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
+from Utils.Classes.undefined import UNDEFINED
+from Platforms.Web.Processing.Api.errors import (
+	apiMissingAuthorisation,
+	apiMissingData,
+	apiWrongData
+)
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
 	apiDiscordMissingPermission
 )
 from .errors import apiDiscordLevelMedalLimit
-from Utils.dbutils import validateDBInput
-from Utils.Classes.undefined import UNDEFINED
 
 async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -60,10 +63,10 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
 	# get level user
-	level:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id)
-	if not level:
+	res_level:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id)
+	if not res_level:
 		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find a level for this user")
-	CurrentLevelUser:DiscordLevelUser = level.pop(0)
+	CurrentLevelUser:DiscordLevelUser = res_level.pop(0)
 
 	# single actions
 	action:str = Data.getStr("medal_action", UNDEFINED)

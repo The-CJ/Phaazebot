@@ -7,7 +7,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.management import shutdownModule
-from ..errors import apiMissingValidMethod, apiNotAllowed
+from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingValidMethod
 
 async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

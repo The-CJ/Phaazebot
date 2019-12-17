@@ -61,8 +61,8 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 			status=400
 		)
 
-	check:list = await getWebUsers(cls, "user.username LIKE %s OR user.email LIKE %s", (username, email))
-	if check:
+	res_users:list = await getWebUsers(cls, "LOWER(`user`.`username`) = LOWER(%s) OR LOWER(`user`.`email`) = LOWER(%s)", (username, email))
+	if res_users:
 		cls.Web.BASE.Logger.debug(f"(API) Account create failed, account already taken: {str(username)} - {str(email)}", require="api:create")
 		return cls.response(
 			body=json.dumps( dict(error="account_taken", status=400, msg="username or email is already taken") ),
@@ -91,7 +91,7 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 		tb:str = traceback.format_exc()
 		cls.Web.BASE.Logger.error(f"(API) Database error: {str(e)}\n{tb}")
 		return cls.response(
-			body=json.dumps( dict(status=400, msg="create user failed") ),
+			body=json.dumps( dict(status=500, msg="create user failed") ),
 			content_type="application/json",
-			status=400
+			status=500
 		)

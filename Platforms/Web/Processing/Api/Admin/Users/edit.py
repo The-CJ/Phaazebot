@@ -4,7 +4,6 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
-from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData, apiNotAllowed, apiUserNotFound
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.webuserinfo import WebUserInfo
@@ -12,6 +11,12 @@ from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
 from Utils.stringutils import password as password_function
 from Platforms.Web.utils import getWebUsers
+from Platforms.Web.Processing.Api.errors import (
+	apiMissingData,
+	apiWrongData,
+	apiNotAllowed,
+	apiUserNotFound
+)
 
 async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -46,47 +51,48 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 			if not CurrentUser.checkRoles(["superadmin"]):
 				return await apiNotAllowed(cls, WebRequest, msg=f"Only Superadmin's can edit other (Super)admin user")
 
-	changes:dict = dict()
-	db_changes:dict = dict()
+	# check all update values
+	update:dict = dict()
+	db_update:dict = dict()
 
 	# username
 	value:str = Data.getStr("username", UNDEFINED)
 	if value != UNDEFINED:
-		db_changes["username"] = validateDBInput(str, value)
-		changes["username"] = value
+		db_update["username"] = validateDBInput(str, value)
+		update["username"] = value
 
 	# email
 	value:str = Data.getStr("email", UNDEFINED)
 	if value != UNDEFINED:
-		db_changes["email"] = validateDBInput(str, value)
-		changes["email"] = value
+		db_update["email"] = validateDBInput(str, value)
+		update["email"] = value
 
 	# password
 	value:str = Data.getStr("password", UNDEFINED)
 	if value: # aka non empty string and not UNDEFINED
 		value = password_function(value)
-		db_changes["password"] = validateDBInput(str, value)
-		changes["password"] = value
+		db_update["password"] = validateDBInput(str, value)
+		update["password"] = value
 
 	# verified
 	value:bool = Data.getBool("verified", UNDEFINED)
 	if value != UNDEFINED:
-		db_changes["verified"] = validateDBInput(bool, value)
-		changes["verified"] = value
+		db_update["verified"] = validateDBInput(bool, value)
+		update["verified"] = value
 
-	if not db_changes:
+	if not db_update:
 		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
-	cls.Web.BASE.Logger.debug(f"(API) Config User U:{user_id} {str(db_changes)}", require="api:user")
+	cls.Web.BASE.Logger.debug(f"(API) Config User U:{user_id} {str(db_update)}", require="api:user")
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "user",
-		content = db_changes,
-		where = "user.id = %s",
+		content = db_update,
+		where = "`user`.`id` = %s",
 		where_values = (user_id,)
 	)
 
 	return cls.response(
-		text=json.dumps( dict(msg="user successfull updated", changes=changes, status=200) ),
+		text=json.dumps( dict(msg="user successfull updated", update=update, status=200) ),
 		content_type="application/json",
 		status=200
 	)

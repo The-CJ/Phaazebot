@@ -7,8 +7,13 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation, apiWrongData
 from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Platforms.Discord.utils import getDiscordRoleFromString
+from Platforms.Web.Processing.Api.errors import (
+	apiMissingData,
+	apiMissingAuthorisation,
+	apiWrongData
+)
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
@@ -18,7 +23,6 @@ from .errors import (
 	apiDiscordAssignRoleLimit,
 	apiDiscordAssignRoleExists
 )
-from Platforms.Discord.utils import getDiscordRoleFromString
 
 async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

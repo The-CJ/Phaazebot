@@ -6,7 +6,7 @@ import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discorduserinfo import DiscordUserInfo
-from ..errors import apiNotAllowed, apiUserNotFound
+from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiUserNotFound
 
 async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

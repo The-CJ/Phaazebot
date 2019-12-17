@@ -7,10 +7,17 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
-from .errors import apiDiscordQuoteLimit
 from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Platforms.Web.Processing.Api.errors import (
+	apiMissingData,
+	apiMissingAuthorisation
+)
+from Platforms.Web.Processing.Api.Discord.errors import (
+	apiDiscordGuildUnknown,
+	apiDiscordMemberNotFound,
+	apiDiscordMissingPermission
+)
+from .errors import apiDiscordQuoteLimit
 
 async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

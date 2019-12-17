@@ -4,8 +4,8 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
-from Platforms.Discord.commandindex import command_register
 from Utils.Classes.webrequestcontent import WebRequestContent
+from Platforms.Discord.commandindex import command_register
 
 async def apiDiscordCommandsList(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

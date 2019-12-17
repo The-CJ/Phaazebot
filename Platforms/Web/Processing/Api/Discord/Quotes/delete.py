@@ -62,7 +62,7 @@ async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response
 		(guild_id, quote_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted quote: S:{guild_id} Q:{quote_id}", require="discord:quote")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted quote: S:{guild_id} I:{quote_id}", require="discord:quote")
 
 	return cls.response(
 		text=json.dumps( dict(msg="quote successfull deleted", quote_id=quote_id, status=200) ),

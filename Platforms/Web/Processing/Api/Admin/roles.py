@@ -9,7 +9,12 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from ..errors import apiNotAllowed, apiMissingValidMethod, apiMissingData, apiWrongData
+from Platforms.Web.Processing.Api.errors import (
+	apiNotAllowed,
+	apiMissingValidMethod,
+	apiMissingData,
+	apiWrongData
+)
 
 async def apiAdminRoles(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

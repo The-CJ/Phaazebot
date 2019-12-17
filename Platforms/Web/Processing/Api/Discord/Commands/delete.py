@@ -43,12 +43,12 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get command
-	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, trigger=trigger)
+	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, trigger=trigger)
 
-	if not commands:
+	if not res_commands:
 		return await apiDiscordCommandNotExists(cls, WebRequest, command=trigger)
 
-	CommandToDelete:DiscordCommand = commands.pop(0)
+	CommandToDelete:DiscordCommand = res_commands.pop(0)
 
 	# get user info
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)

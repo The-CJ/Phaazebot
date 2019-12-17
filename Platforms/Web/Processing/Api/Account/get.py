@@ -3,10 +3,10 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 import json
-from ..errors import apiNotAllowed, apiMissingAuthorisation
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingAuthorisation
 
 async def apiAccountGetPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

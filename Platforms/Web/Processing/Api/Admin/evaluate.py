@@ -7,7 +7,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.storeclasses import GlobalStorage
-from ..errors import apiNotAllowed
+from Platforms.Web.Processing.Api.errors import apiNotAllowed
 
 async def apiAdminEvaluate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

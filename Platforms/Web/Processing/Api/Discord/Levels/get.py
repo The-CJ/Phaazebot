@@ -7,10 +7,10 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Discord.utils import getDiscordServerLevels, getDiscordServerLevelAmount
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 from Platforms.Discord.levels import Calc as LevelCalc
+from Platforms.Web.Processing.Api.errors import apiMissingData
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
 DEFAULT_LIMIT:int = 50
 MAX_LIMIT:int = 100
@@ -55,9 +55,9 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get levels
-	levels:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order)
+	res_levels:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order)
 
-	if not levels:
+	if not res_levels:
 		if member_id:
 			return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find a level for this user")
 		else:
@@ -65,7 +65,7 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	return_list:list = list()
 
-	for LevelUser in levels:
+	for LevelUser in res_levels:
 
 		level_user:dict = LevelUser.toJSON()
 
@@ -90,7 +90,7 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	return cls.response(
 		text=json.dumps( dict(
 			result=return_list,
-			total=(await getDiscordServerLevelAmount(PhaazeDiscord, guild_id)),
+			total=await getDiscordServerLevelAmount(PhaazeDiscord, guild_id),
 			limit=limit,
 			offset=offset,
 			detailed=detailed,

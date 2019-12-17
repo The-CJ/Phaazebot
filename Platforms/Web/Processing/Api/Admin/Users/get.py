@@ -4,9 +4,9 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
-from Platforms.Web.Processing.Api.errors import apiUserNotFound
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.utils import getWebUsers, getWebUserAmount
+from Platforms.Web.Processing.Api.errors import apiUserNotFound
 
 DEFAULT_LIMIT:int = 50
 
@@ -37,13 +37,13 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		values = (username, email)
 
 	# get user
-	users:list = await getWebUsers(cls, where=where, values=values, limit=limit, offset=offset)
+	res_users:list = await getWebUsers(cls, where=where, values=values, limit=limit, offset=offset)
 
-	if not users:
+	if not res_users:
 		return await apiUserNotFound(cls, WebRequest, msg=f"no user found")
 
 	result:dict = dict(
-		result=[ WebUser.toJSON() for WebUser in users ],
+		result=[ WebUser.toJSON() for WebUser in res_users ],
 		limit=limit,
 		offset=offset,
 		total = await getWebUserAmount(cls, where=where, values=values),

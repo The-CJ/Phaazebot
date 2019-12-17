@@ -33,7 +33,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
+	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
 
 	show_hidden:bool = Data.getBool("show_hidden", False)
 	if show_hidden:
@@ -60,7 +60,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# this point is only reached when command can be hidden or user requested hidden props has authorist
 	api_return:list = list()
-	for Command in commands:
+	for Command in res_commands:
 		api_return.append(Command.toJSON(show_hidden=show_hidden))
 
 	return cls.response(

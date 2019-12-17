@@ -4,11 +4,11 @@ if TYPE_CHECKING:
 
 import json
 import traceback
-from ..errors import apiNotAllowed, apiUserNotFound, apiMissingData
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Discord.api import translateDiscordToken, getDiscordUser
 from Utils.stringutils import randomString
+from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiUserNotFound, apiMissingData
 
 SESSION_EXPIRE:int = 60*60*24*7 # 1 week
 
@@ -36,7 +36,7 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		)
 	)
 
-	cls.Web.BASE.PhaazeDB.query("""
+	cls.Web.BASE.PhaazeDB.updateQuery("""
 		UPDATE `user`
 		SET `last_login` = NOW()
 		WHERE `user`.`id` = %s""",
@@ -56,20 +56,20 @@ async def apiAccountLoginDiscord(cls:"WebIndex", WebRequest:Request) -> Response
 		This sould only be called by Discord after a user successfull authorise
 	"""
 	data:dict or None = await translateDiscordToken(cls.Web.BASE, WebRequest)
-	msg:str = ""
+	error:str = ""
 
 	if not data:
-		msg = "missing"
+		error = "missing"
 		cls.Web.BASE.Logger.debug(f"(API/Discord) Failed login, never got called", require="discord:api")
 	elif data.get("error", None):
-		msg = "discord"
+		error = "discord"
 		cls.Web.BASE.Logger.debug(f"(API/Discord) Failed login: {str(data)}", require="discord:api")
 	else:
 		return await completeDiscordTokenLogin(cls, WebRequest, data)
 
 	return cls.response(
 		status=302,
-		headers = { "Location": f"/discord/login?error={msg}" }
+		headers = { "Location": f"/discord/login?error={error}" }
 	)
 
 async def apiAccountLoginTwitch(cls:"WebIndex", WebRequest:Request) -> Response:

@@ -6,16 +6,27 @@ if TYPE_CHECKING:
 import json
 import discord
 from aiohttp.web import Response, Request
+from Platforms.Discord.commandindex import command_register
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData, apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
-from .errors import apiDiscordCommandExists, apiDiscordCommandNotExists
-from Platforms.Discord.utils import getDiscordServerCommands
+from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordcommand import DiscordCommand
-from Platforms.Discord.commandindex import command_register
+from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.dbutils import validateDBInput
-from Utils.Classes.undefined import UNDEFINED
+from Platforms.Web.Processing.Api.errors import (
+	apiMissingData,
+	apiWrongData,
+	apiMissingAuthorisation
+)
+from Platforms.Web.Processing.Api.Discord.errors import (
+	apiDiscordGuildUnknown,
+	apiDiscordMemberNotFound,
+	apiDiscordMissingPermission
+)
+from .errors import (
+	apiDiscordCommandExists,
+	apiDiscordCommandNotExists
+)
 
 async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -36,11 +47,11 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id'")
 
 	# get command
-	commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
-	if not commands:
+	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
+	if not res_commands:
 		return await apiDiscordCommandNotExists(cls, WebRequest, command_id=command_id)
 
-	CurrentEditCommand:DiscordCommand = commands.pop(0)
+	CurrentEditCommand:DiscordCommand = res_commands.pop(0)
 
 	# after this point we have a existing command
 	# check all possible values if it should be edited
@@ -98,7 +109,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		update["hidden"] = value
 
 	# change function (and type)
-	complex_:bool = Data.getBool("complex", UNDEFINED)
+	complex_:bool = Data.getBool("complex", False)
 	function:str = Data.getStr("function", UNDEFINED)
 	if (complex_ == False) and (function != UNDEFINED):
 		# it its not complex, we need a function
@@ -118,6 +129,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		db_update["complex"] = validateDBInput(bool, complex_)
 		db_update["function"] = ""
 		update["complex"] = complex_
+
 	# get/check discord
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -148,7 +160,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		where_values = (guild_id, command_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Edited command: S:{guild_id} C:{command_id} U:{str(update)}", require="discord:commands")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Edited command: S:{guild_id} C:{command_id} U:{str(db_update)}", require="discord:commands")
 
 	return cls.response(
 		text=json.dumps( dict(msg="new command successfull edited", command=CurrentEditCommand.trigger, changes=update, status=200) ),

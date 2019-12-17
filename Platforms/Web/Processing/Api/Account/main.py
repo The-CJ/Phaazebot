@@ -3,7 +3,7 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Response, Request
-from ..errors import apiNotAllowed, apiMissingValidMethod
+from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingValidMethod
 from .get import apiAccountGetPhaaze, apiAccountGetDiscord, apiAccountGetTwitch
 from .login import apiAccountLoginPhaaze, apiAccountLoginDiscord, apiAccountLoginTwitch
 from .logout import apiAccountLogoutPhaaze, apiAccountLogoutDiscord, apiAccountLogoutTwitch

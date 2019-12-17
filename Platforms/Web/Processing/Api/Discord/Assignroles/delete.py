@@ -7,11 +7,10 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData
-from Platforms.Discord.utils import getDiscordServerAssignRoles
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Utils.Classes.discordassignrole import DiscordAssignRole
-from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
+from Platforms.Discord.utils import getDiscordServerAssignRoles
+from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
@@ -43,12 +42,12 @@ async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Res
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get assign roles
-	assignroles:list = await getDiscordServerAssignRoles(cls.Web.BASE.Discord, guild_id, assignrole_id=assignrole_id)
+	res_assignroles:list = await getDiscordServerAssignRoles(cls.Web.BASE.Discord, guild_id, assignrole_id=assignrole_id)
 
-	if not assignroles:
+	if not res_assignroles:
 		return await apiDiscordAssignRoleNotExists(cls, WebRequest, assignrole_id=assignrole_id)
 
-	AssignRoleToDelete:DiscordAssignRole = assignroles.pop(0)
+	AssignRoleToDelete:DiscordAssignRole = res_assignroles.pop(0)
 
 	# get user info
 	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
@@ -71,7 +70,7 @@ async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Res
 		(AssignRoleToDelete.guild_id, AssignRoleToDelete.assignrole_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted command: S:{AssignRoleToDelete.guild_id} I:{AssignRoleToDelete.assignrole_id}", require="discord:roles")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted command: S:{AssignRoleToDelete.guild_id} I:{AssignRoleToDelete.assignrole_id}", require="discord:role")
 
 	return cls.response(
 		text=json.dumps( dict(msg="assignrole successfull deleted", assignrole_id=AssignRoleToDelete.assignrole_id, status=200) ),

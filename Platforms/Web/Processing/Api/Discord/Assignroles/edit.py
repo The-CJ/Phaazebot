@@ -51,12 +51,12 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# check if exists
-	assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id, assignrole_id=assignrole_id)
+	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id, assignrole_id=assignrole_id)
 
-	if not assignroles:
+	if not res_assignroles:
 		return await apiDiscordAssignRoleNotExists(cls, WebRequest)
 
-	AssignRoleToEdit:DiscordAssignRole = assignroles.pop(0)
+	AssignRoleToEdit:DiscordAssignRole = res_assignroles.pop(0)
 
 	# check all update values
 	db_update:dict = dict()
@@ -74,8 +74,8 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 		db_update["role_id"] = validateDBInput(str, value)
 		update["role_id"] = value
 
-	value:str = Data.getStr("trigger", UNDEFINED)
-	if value != UNDEFINED:
+	value:str = Data.getStr("trigger", "").lower().split(" ")[0]
+	if value:
 		# try to get command with this trigger
 		check_double_trigger:list = await getDiscordServerAssignRoles(cls.Web.BASE.Discord, guild_id, trigger=value)
 		if check_double_trigger:

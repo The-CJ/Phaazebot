@@ -7,11 +7,22 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData, apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
-from .errors import apiDiscordCommandExists, apiDiscordCommandLimit
 from Utils.Classes.discorduserinfo import DiscordUserInfo
 from Platforms.Discord.commandindex import command_register
+from Platforms.Web.Processing.Api.errors import (
+	apiMissingData,
+	apiWrongData,
+	apiMissingAuthorisation
+)
+from Platforms.Web.Processing.Api.Discord.errors import (
+	apiDiscordGuildUnknown,
+	apiDiscordMemberNotFound,
+	apiDiscordMissingPermission
+)
+from .errors import (
+	apiDiscordCommandExists,
+	apiDiscordCommandLimit
+)
 
 async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

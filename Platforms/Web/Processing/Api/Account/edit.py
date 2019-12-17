@@ -6,14 +6,13 @@ import json
 import re
 import traceback
 import datetime
-from ..errors import apiMissingAuthorisation
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.stringutils import password as password_function
 from Utils.regex import IsEmail
 from Platforms.Web.utils import getWebUsers
-from Platforms.Web.Processing.Api.errors import apiWrongData
+from Platforms.Web.Processing.Api.errors import apiWrongData, apiMissingAuthorisation
 
 async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -127,7 +126,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		cls.Web.BASE.Logger.debug(f"(API) Account edit ({WebUser.user_id}) : {str(update)}", require="api:account")
 		return cls.response(
 			status=200,
-			text=json.dumps( dict(error="successfull_edited", msg="Your account has been successfull edited", changes=update, status=200) ),
+			text=json.dumps( dict(error="successfull_edited", msg="Your account has been successfull edited", update=update, status=200) ),
 			content_type="application/json"
 		)
 

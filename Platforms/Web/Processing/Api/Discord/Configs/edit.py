@@ -7,11 +7,17 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData, apiWrongData
-from Platforms.Discord.utils import getDiscordSeverSettings
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserinfo import DiscordUserInfo
-from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
+from Utils.Classes.undefined import UNDEFINED
+from Utils.dbutils import validateDBInput
+from Platforms.Discord.utils import getDiscordSeverSettings
+from Platforms.Discord.blacklist import checkBlacklistPunishmentString
+from Platforms.Web.Processing.Api.errors import (
+	apiMissingData,
+	apiWrongData,
+	apiMissingAuthorisation
+)
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
@@ -19,9 +25,6 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordRoleNotFound,
 	apiDiscordChannelNotFound
 )
-from Utils.Classes.undefined import UNDEFINED
-from Platforms.Discord.blacklist import checkBlacklistPunishmentString
-from Utils.dbutils import validateDBInput
 
 async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
