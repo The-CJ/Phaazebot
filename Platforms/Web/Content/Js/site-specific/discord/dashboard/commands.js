@@ -81,11 +81,8 @@ var Commands = new (class {
 
   delete() {
     var CommandsObj = this;
-    var guild_id = $("#guild_id").val();
-    var r = {
-      "guild_id": guild_id,
-      "trigger": $("#command_create [name=trigger]").val(),
-    };
+    var r = extractData("#command_create");
+    r["guild_id"] = $("#guild_id").val();
 
     if (!confirm("Are you sure you want to delete the command?")) { return; }
 

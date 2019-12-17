@@ -24,15 +24,11 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 
 	# get required vars
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	trigger:str = Data.getStr("trigger", "")
 	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
 
 	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
-
-	if not trigger:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'trigger'")
 
 	if not command_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id'")
@@ -43,10 +39,10 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get command
-	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, trigger=trigger)
+	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
 
 	if not res_commands:
-		return await apiDiscordCommandNotExists(cls, WebRequest, command=trigger)
+		return await apiDiscordCommandNotExists(cls, WebRequest)
 
 	CommandToDelete:DiscordCommand = res_commands.pop(0)
 
