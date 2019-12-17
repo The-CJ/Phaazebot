@@ -22,7 +22,7 @@ from Platforms.Discord.utils import getDiscordRoleFromString
 
 async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/commands/create
+		Default url: /api/discord/assignroles/create
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -96,7 +96,7 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 
 	cls.Web.BASE.PhaazeDB.insertQuery(table="discord_assignrole", content=new_assign_role)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new assign role: S:{guild_id} T:{trigger} N:{str(new_assign_role)}", require="discord:role")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new assign role: S:{guild_id} T:'{trigger}' N:{str(new_assign_role)}", require="discord:role")
 
 	return cls.response(
 		text=json.dumps( dict(msg="new assign role successfull created", trigger=trigger, status=200) ),

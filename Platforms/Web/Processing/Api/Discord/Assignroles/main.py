@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from aiohttp.web import Response, Request
 from .get import apiDiscordAssignrolesGet
 from .create import apiDiscordAssignrolesCreate
+from .edit import apiDiscordAssignrolesEdit
 from .delete import apiDiscordAssignrolesDelete
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
@@ -25,6 +26,9 @@ async def apiDiscordAssignroles(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	elif method == "create":
 		return await apiDiscordAssignrolesCreate(cls, WebRequest)
+
+	elif method == "edit":
+		return await apiDiscordAssignrolesEdit(cls, WebRequest)
 
 	elif method == "delete":
 		return await apiDiscordAssignrolesDelete(cls, WebRequest)
