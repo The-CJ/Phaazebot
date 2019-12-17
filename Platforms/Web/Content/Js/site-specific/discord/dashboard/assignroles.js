@@ -78,9 +78,38 @@ var AssignRoles = new (class {
   }
 
   edit() {
-
+    var AssignRoleO = this;
     var req = extractData("#assignrole_create");
-    console.log(req);
+    req["guild_id"] = $("#guild_id").val();
+
+    $.get("/api/discord/assignroles/edit", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $("#assignrole_create").modal("hide");
+      AssignRoleO.show();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not edit assign role"} );
+    })
+
+  }
+
+  delete() {
+    var AssignRoleO = this;
+    var req = extractData("#assignrole_create");
+    req["guild_id"] = $("#guild_id").val();
+
+    if (!confirm("Are you sure you want to delete this assign role?")) { return; }
+
+    $.get("/api/discord/assignroles/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $("#assignrole_create").modal("hide");
+      AssignRoleO.show();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not delete assign role"} );
+    })
 
   }
 
