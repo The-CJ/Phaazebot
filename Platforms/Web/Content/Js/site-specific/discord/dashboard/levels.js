@@ -16,6 +16,7 @@ var Levels = new(class {
     x["limit"] = this.results_per_page;
     x["nickname"] = $("#search [name=nickname]").val();
     x["name_contains"] = $("#search [name=name_contains]").val();
+    x["edited"] = $("#search [name=edited]:checked").val();
 
     $.get("/api/discord/levels/get", x)
     .done(function (data) {

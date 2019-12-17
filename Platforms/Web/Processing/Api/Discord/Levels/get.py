@@ -31,13 +31,11 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	nickname:bool = Data.getBool("nickname", False) # usernames or nicknames?
 	name_contains:str = Data.getStr("name_contains", "") # only show names that contain stuff (workes only if detailed is true)
 	order:str = Data.getStr("order", "").lower() # order by
+	edited:int = Data.getInt("edited", 0, min_x=0, max_x=2) # 0 = all, 1 = only nonedited, 2 = only edited
 
 	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
-
-	if limit == None:
-		return await apiMissingData(cls, WebRequest, msg=f"invalid 'limit', min=1, max={MAX_LIMIT}")
 
 	# format
 	if order == "exp":
@@ -55,7 +53,7 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get levels
-	res_levels:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order)
+	res_levels:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order, edited=edited)
 
 	if not res_levels:
 		if member_id:

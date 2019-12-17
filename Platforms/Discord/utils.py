@@ -115,7 +115,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 	else:
 		return []
 
-async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0) -> list:
+async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0, edited:int=0) -> list:
 	"""
 		Get server levels, if member_id = None, get all
 		else only get one associated with the member_id
@@ -143,6 +143,11 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 	if member_id:
 		sql += " AND `discord_level`.`member_id` = %s"
 		values += (member_id,)
+
+	if edited == 2:
+		sql += " AND `discord_level`.`edited` = 1"
+	elif edited == 1:
+		sql += " AND `discord_level`.`edited` = 0"
 
 	sql += f" {order_str}"
 

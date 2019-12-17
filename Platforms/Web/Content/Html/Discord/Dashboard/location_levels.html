@@ -18,15 +18,41 @@
     </div>
 
     <form class="center-item-row" id="search" action="javascript:Levels.prevPage(1)">
+
       <div class="col md-form" style="margin: 0;">
         <input type="text" name="name_contains" placeholder="Name must contain..." style="width: 100%;" class="white-text">
       </div>
+
+      <div class="col" style="margin: 0;">
+        <div class="row">
+          <div class="col">
+            <label>
+              <input type="radio" name="edited" value="0" checked>
+              <span>Show all</span>
+            </label>
+          </div>
+          <div class="col">
+            <label>
+              <input type="radio" name="edited" value="1">
+              <span>Show only unedited</span>
+            </label>
+          </div>
+          <div class="col">
+            <label>
+              <input type="radio" name="edited" value="2">
+              <span>Show only edited</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <div class="col">
         <select class="custom-select" name="nickname">
           <option value="0" selected>Show usernames</option>
           <option value="1">Show server nicknames</option>
         </select>
       </div>
+
       <button type="submit" class="btn btn-secondary icon-btn next"><i class="fas fa-search"></i></button>
     </form>
 
