@@ -70,3 +70,114 @@
   </div>
 
 </div>
+
+<div modal>
+
+  <div class="modal fade" id="level_modal_edit" edit-member="">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Level edit</h4>
+          <button type="button" class="close" onclick="$('#level_modal_edit').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+          <button type="button" name="on_server" class="btn btn-block btn-danger" onclick="Levels.setOnServerFalse()">Set inactive</button>
+
+          <!-- avatar -->
+          <div class="center-item-row md-form forced">
+            <div class="col-4">
+              <img src="" alt="member_avatar" style="border-radius: 50%; border: 2px solid black; height: 128px; width: 128px;">
+            </div>
+            <div class="col-8">
+              <div class="center-item-col">
+                <input disabled type="text" name="username" style="width: 100%;" class="text-center"/>
+                <input disabled type="text" name="display_id" style="width: 100%;" class="text-center"/>
+                <input disabled type="text" name="display_rank" style="width: 100%;" class="text-center"/>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+
+          <h4 class="text-center">Stats</h4>
+
+          <!-- exp -->
+          <div class="center-item-row forced">
+            <div class="col-3">
+              <span>EXP:</span>
+            </div>
+            <form class="col-9 md-form input-group" action="javascript:void(0)" onsubmit="javascript:Levels.editExp()">
+              <input type="number" name="exp" class="form-control text-center">
+              <div class="input-group-append">
+                <button type="submit" name="button" class="btn btn-danger m-0 px-3 py-2"><i class="fas fa-save"></i></button>
+              </div>
+            </form>
+          </div>
+
+          <!-- level -->
+          <div class="center-item-row forced">
+            <div class="col-3">
+              <span>Level:</span>
+            </div>
+            <div class="col-9 md-form forced">
+              <input disabled type="text" name="level" style="width: 100%;" class="text-center">
+            </div>
+          </div>
+
+          <!-- notes -->
+          <div class="center-item-row forced">
+            <div class="col" style="white-space: unset">
+              <span><sub><i>Level is calculated by EXP</i></sub></span>
+            </div>
+          </div>
+
+          <hr>
+
+          <h4 class="text-center">Medals</h4>
+
+          <!-- medals -->
+          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Levels.addMedal()">
+            <input type="text" id="new_medal" class="form-control">
+            <label for="new_medal">New entry:</label>
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+            </div>
+          </form>
+          <div class="medallist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<div phantom hidden>
+
+  <div class="row level" member-id="0" onclick="Levels.detail(this)">
+    <div class="col-1 rank">[N/A]</div>
+    <div class="col-1 lvl">[N/A]</div>
+    <div class="col-1 exp">[N/A]</div>
+    <div class="col member">
+      <div class="center-item-row forced">
+        <img src="" alt="avatar" class="avatar" height="32" width="32">
+        <span class="name"></span>
+      </div>
+    </div>
+    <div class="col-1 medals">[N/A]</div>
+  </div>
+  
+  <div class="center-item-row forced medal">
+    <div class="col name"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="Levels.removeMedal(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+</div>
