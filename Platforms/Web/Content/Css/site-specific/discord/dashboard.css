@@ -65,6 +65,12 @@
   width: 1em;
 }
 
+/* for all lists in modal*/ 
+.modal-itemlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
+.modal-itemlist > * { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
+.modal-itemlist > *.deleted { background-color: #ccaaaaaa; }
+.modal-itemlist:empty::after { content: "(None)"; }
+
 /* locations */
 [location=home] .guild-icon {
   border: 2px solid black;
@@ -164,12 +170,4 @@
 #token_modal_help .tokenlist .token .value { padding-left: 2px; text-align: left;}
 #token_modal_help .modal-body { max-height: 50vh; overflow-y: auto; }
 
-.modal-itemlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
-.modal-itemlist > * { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
-.modal-itemlist > *.deleted { background-color: #ccaaaaaa; }
-.modal-itemlist:empty::after { content: "(None)"; }
-
 #level_modal_edit [name=exp][edited=true] { background-color: #eeaaaaaa; }
-#level_modal_edit .medallist { padding: 0 1em; max-height: 40vh; overflow-y: auto; }
-#level_modal_edit .medallist .medal { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
-#level_modal_edit .medallist:empty:after { content: "(None)"; }
