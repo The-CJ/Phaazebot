@@ -47,7 +47,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id'")
 
 	# get command
-	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
+	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, show_nonactive=True)
 	if not res_commands:
 		return await apiDiscordCommandNotExists(cls, WebRequest, command_id=command_id)
 
