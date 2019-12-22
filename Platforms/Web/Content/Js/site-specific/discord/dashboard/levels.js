@@ -132,7 +132,7 @@ var Levels = new(class {
 
       $("#level_modal_edit").attr("edit-member", level.member_id);
       $("#level_modal_edit").modal("show");
-
+      DynamicURL.set("level_member_id", level.member_id);
     })
     .fail(function (data) {
       Display.showMessage({content: "Could not load level details...", color:Display.color_critical});
