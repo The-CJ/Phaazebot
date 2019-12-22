@@ -164,7 +164,7 @@
 #token_modal_help .tokenlist .token .value { padding-left: 2px; text-align: left;}
 #token_modal_help .modal-body { max-height: 50vh; overflow-y: auto; }
 
-#config_modal_blacklist_words .wordbanlist,
+/* #config_modal_blacklist_words .wordbanlist,
 #config_modal_whitelist_links .linkwhitelist,
 #config_modal_exeption_roles .exceptionrolelist,
 #config_modal_disable_chan_level .disablechanlevellist,
@@ -173,9 +173,11 @@
 #config_modal_disable_chan_regular .disablechanregularlist,
 #config_modal_enable_chan_game .enablechangamelist,
 #config_modal_enable_chan_nsfw .enablechannsfwlist
-  { padding: 1em; max-height: 40vh; overflow-y: auto; }
+  { padding: 1em; max-height: 40vh; overflow-y: auto; background: red; } */
 
-#config_modal_blacklist_words .wordbanlist .blacklistword,
+.modal-itemlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
+
+/* #config_modal_blacklist_words .wordbanlist .blacklistword,
 #config_modal_whitelist_links .linkwhitelist .whitelistlink,
 #config_modal_exeption_roles .exceptionrolelist .exceptionrole,
 #config_modal_disable_chan_level .disablechanlevellist .disablechanlevel,
@@ -184,18 +186,22 @@
 #config_modal_disable_chan_regular .disablechanregularlist .disablechanregular,
 #config_modal_enable_chan_game .enablechangamelist .enablechangame,
 #config_modal_enable_chan_nsfw .enablechannsfwlist .enablechannsfw
-  { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
+  { padding: 2px; margin: 2px 0; background-color: red; } */
 
-#config_modal_exeption_roles .exceptionrolelist .exceptionrole.deleted,
+.modal-itemlist > * { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
+
+/* #config_modal_exeption_roles .exceptionrolelist .exceptionrole.deleted,
 #config_modal_disable_chan_level .disablechanlevellist .disablechanlevel.deleted,
 #config_modal_disable_chan_quote .disablechanquotelist .disablechanquote.deleted,
 #config_modal_disable_chan_normal .disablechannormallist .disablechannormal.deleted,
 #config_modal_disable_chan_regular .disablechanregularlist .disablechanregular.deleted,
 #config_modal_enable_chan_game .enablechangamelist .enablechangame.deleted,
 #config_modal_enable_chan_nsfw .enablechannsfwlist .enablechannsfw.deleted
-  { background-color: #ccaaaaaa; }
+  { background-color: red; } */
 
-#config_modal_blacklist_words .wordbanlist:empty:after,
+.modal-itemlist > *.deleted { background-color: #ccaaaaaa; }
+
+/* #config_modal_blacklist_words .wordbanlist:empty:after,
 #config_modal_whitelist_links .linkwhitelist:empty:after,
 #config_modal_exeption_roles .exceptionrolelist:empty:after,
 #config_modal_disable_chan_level .disablechanlevellist:empty:after,
@@ -204,7 +210,9 @@
 #config_modal_disable_chan_regular .disablechanregularlist:empty:after,
 #config_modal_enable_chan_game .enablechangamelist:empty:after,
 #config_modal_enable_chan_nsfw .enablechannsfwlist:empty:after
-  { content: "(None)"; }
+  { content: "(None)"; background-color: red; } */
+
+.modal-itemlist:empty::after { content: "(None)"; }
 
 #level_modal_edit [name=exp][edited=true] { background-color: #eeaaaaaa; }
 #level_modal_edit .medallist { padding: 0 1em; max-height: 40vh; overflow-y: auto; }
