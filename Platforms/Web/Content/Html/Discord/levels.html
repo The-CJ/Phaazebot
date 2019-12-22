@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="/css/site-specific/discord/levels.css">
 <script src="/js/discord.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/levels.js" charset="utf-8"></script>
 <script src="/js/site-specific/discord/dashboard/levels.js" charset="utf-8"></script>
 <!-- yeah we use the same as in the dashboard, because why not -->
 
@@ -76,6 +77,74 @@
 
 </main>
 
+<div modal>
+
+  <div class="modal fade" id="level_modal_edit" edit-member="">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Level detail</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+          <!-- avatar -->
+          <div class="center-item-row md-form forced">
+            <div class="col-4">
+              <img src="" alt="member_avatar" style="border-radius: 50%; border: 2px solid black; height: 128px; width: 128px;">
+            </div>
+            <div class="col-8">
+              <div class="center-item-col">
+                <input disabled type="text" name="username" style="width: 100%;" class="text-center"/>
+                <input disabled type="text" name="display_id" style="width: 100%;" class="text-center"/>
+                <input disabled type="text" name="display_rank" style="width: 100%;" class="text-center"/>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+
+          <h4 class="text-center">Stats</h4>
+
+          <!-- exp -->
+          <div class="center-item-row forced">
+            <div class="col-3">
+              <span>EXP:</span>
+            </div>
+            <div class="col-9 md-form">
+              <input disabled type="number" name="exp" style="width: 100%;" class="text-center">
+            </div>
+          </div>
+
+          <!-- level -->
+          <div class="center-item-row forced">
+            <div class="col-3">
+              <span>Level:</span>
+            </div>
+            <div class="col-9 md-form">
+              <input disabled type="text" name="level" style="width: 100%;" class="text-center">
+            </div>
+          </div>
+
+          <hr>
+
+          <h4 class="text-center">Medals</h4>
+
+          <!-- medals -->
+          <!-- gets filled with copys of: "[phantom] .medal" -->
+          <div class="medallist modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 <div phantom hidden>
 
   <div class="row level" member-id="0" onclick="Levels.detail(this)">
@@ -93,9 +162,6 @@
 
   <div class="center-item-row forced medal">
     <div class="col name"></div>
-    <div class="delete">
-      <button type="button" class="btn btn-danger icon-btn" onclick="Levels.removeMedal(this)"><i class="fas fa-times"></i></button>
-    </div>
   </div>
 
 </div>
