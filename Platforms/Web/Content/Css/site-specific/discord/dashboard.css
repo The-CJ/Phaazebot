@@ -143,6 +143,8 @@
 [location=assign_roles] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
 [location=assign_roles] .assignrole > div { background-color: var(--color-sub-listelement-odd); }
 [location=assign_roles] .assignrole > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
+[location=assign_roles] #assign_role_list:empty:after { content: "(None)"; }
+
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
 #command_create button[mode] { display: none;}
