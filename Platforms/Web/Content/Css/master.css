@@ -12,6 +12,7 @@
 	border: var(--style-modal-border)!important;
 }
 .modal-content a { color: var(--color-modal-text-link); }
+.modal-content hr { background-color: var(--color-modal-text); }
 .modal-content .close { color: var(--color-modal-text); }
 .modal-content input { color: var(--color-modal-text); }
 .modal-content input:focus { color: var(--color-modal-text); }
