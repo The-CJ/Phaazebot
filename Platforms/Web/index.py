@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Coroutine, Any
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from .main_web import PhaazebotWeb
 
@@ -98,6 +98,7 @@ class WebIndex(object):
 		self.Web.router.add_route('GET', '/discord/invite', self.discordInvite)
 		self.Web.router.add_route('GET', '/discord/commands/{guild_id:\d+}', self.discordCommands)
 		self.Web.router.add_route('GET', '/discord/quotes/{guild_id:\d+}', self.discordQuotes)
+		self.Web.router.add_route('GET', '/discord/levels/{guild_id:\d+}', self.discordLevels)
 		self.Web.router.add_route('GET', '/discord/dashboard/{guild_id:\d+}', self.discordDashboard)
 
 	# api
@@ -164,6 +165,7 @@ class WebIndex(object):
 	from .Processing.Discord.discorddashboard import discordDashboard
 	from .Processing.Discord.discordinvite import discordInvite
 	from .Processing.Discord.discordcommands import discordCommands
+	from .Processing.Discord.discordlevels import discordLevels
 
 	# web contents
 	from .Processing.webcontent import serveCss, serveJs, serveImg, serveFavicon

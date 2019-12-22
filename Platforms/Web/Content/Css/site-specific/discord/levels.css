@@ -1,0 +1,24 @@
+main h1 {
+  margin: 1em 0;
+}
+
+.container {
+  max-width: none;
+  padding: 0 5em;
+}
+
+.level > *, .header > * {
+  margin: 2px;
+}
+.level {
+  cursor: pointer;
+}
+.level:hover {
+  background: rgba(0,0,0,0.2);
+}
+
+.header div { background: var(--color-listelement-odd); }
+.header div:nth-child(even) { background: var(--color-listelement-even); }
+
+.level div { background: var(--color-sub-listelement-odd); }
+.level div:nth-child(even) { background: var(--color-sub-listelement-even); }
