@@ -68,10 +68,10 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 		(CommandToDelete.server_id, CommandToDelete.command_id, CommandToDelete.trigger)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted command: S:{guild_id} T:{trigger}", require="discord:commands")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted command: S:{guild_id} I:{command_id}", require="discord:commands")
 
 	return cls.response(
-		text=json.dumps( dict(msg="command successfull deleted", command=trigger, status=200) ),
+		text=json.dumps( dict(msg="command successfull deleted", status=200) ),
 		content_type="application/json",
 		status=200
 	)
