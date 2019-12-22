@@ -1,19 +1,23 @@
 var Commands = new (class {
   constructor() {
-
+    this.modal_id = "#command_create";
+    this.list_id = "#command_list";
+    this.amount_field_id = "#command_amount";
+    this.phantom_class = ".command";
   }
 
   show() {
+    var CommandsO = this;
     var guild_id = $("#guild_id").val();
 
     $.get("/api/discord/commands/get", {guild_id: guild_id, show_hidden: true})
     .done(function (data) {
 
-      $("#command_amount").text(data.result.length);
-      var CommandList = $("#command_list").html("");
+      $(CommandsO.amount_field_id).text(data.result.length);
+      var CommandList = $(CommandsO.list_id).html("");
 
       for (var command of data.result) {
-        var Template = $("[phantom] .command").clone();
+        var Template = $(`[phantom] ${CommandsO.phantom_class}`).clone();
         Template.find(".trigger").text(command.trigger);
         Template.find(".function").text(command.name);
         Template.find(".require").text( discordTranslateRequire(command.require) );
@@ -41,37 +45,28 @@ var Commands = new (class {
   }
 
   createModal() {
-    $("#command_create [clear-after-success]").val("");
-    $("#command_create [command-setting=simple]").hide();
-    $("#command_create [extra-command-setting], #command_create [extra-command-setting] [name=content]").hide();
-    $("#command_create .modal-title").text("New Command");
-    $("#command_create").attr("mode", "new");
-    $("#command_create").modal("show");
+    $(`${this.modal_id} input, ${this.modal_id} textarea`).val("");
+    $(`${this.modal_id} [command-setting]`).hide();
+    $(`${this.modal_id} [extra-command-setting], ${this.modal_id} [extra-command-setting] [name=content]`).hide();
+    $(`${this.modal_id} .modal-title`).text("New Command");
+    $(this.modal_id).attr("mode", "new");
+    $(this.modal_id).modal("show");
   }
 
   create() {
-    var CommandsObj = this;
-    var guild_id = $("#guild_id").val();
-    var r = {
-      "guild_id": guild_id,
-      "trigger": $("#command_create [name=trigger]").val(),
-      "content": $("#command_create [name=content]").val(),
-      "function": $("#command_create [name=function]").val(),
-      "complex": $("#command_create [name=commandtype]").val() == "complex" ? true : false,
-      "hidden": $("#command_create [name=hidden]").is(":checked"),
-      "cooldown": $("#command_create [name=cooldown]").val(),
-      "require": $("#command_create [name=require]").val(),
-      "required_currency": $("#command_create [name=required_currency]").val()
-    };
+    var CommandsO = this;
+    var req = extractData(this.modal_id);
+    req["complex"] = $(`${this.modal_id} [name=commandtype]`).val() == "complex" ? true : false,
+    req["guild_id"] = $("#guild_id").val();
 
-    $.post("/api/discord/commands/create", r)
+    $.post("/api/discord/commands/create", req)
     .done(function (data) {
       Display.showMessage({content: "Successfull created command: "+data.command, color:Display.color_success});
-      $("#command_create").modal("hide");
-      CommandsObj.show();
+      $(CommandsO.modal_id).modal("hide");
+      CommandsO.show();
       // after successfull command, reset modal
-      $("#command_create [clear-after-success]").val("");
-      $("#command_create [command-setting], #command_create [extra-command-setting]").hide();
+      $(`${CommandsO.modal_id} input, ${CommandsO.modal_id} textarea`).val("");
+      $(`${CommandsO.modal_id} [command-setting], ${CommandsO.modal_id} [extra-command-setting]`).hide();
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"command creation failed"} );
@@ -80,17 +75,17 @@ var Commands = new (class {
   }
 
   delete() {
-    var CommandsObj = this;
-    var r = extractData("#command_create");
-    r["guild_id"] = $("#guild_id").val();
+    var CommandsO = this;
+    var req = extractData(this.modal_id);
+    req["guild_id"] = $("#guild_id").val();
 
     if (!confirm("Are you sure you want to delete the command?")) { return; }
 
-    $.post("/api/discord/commands/delete", r)
+    $.post("/api/discord/commands/delete", req)
     .done(function (data) {
       Display.showMessage({content: "Successfull deleted command: "+data.command, color:Display.color_success});
-      $("#command_create").modal("hide");
-      CommandsObj.show();
+      $(CommandsO.modal_id).modal("hide");
+      CommandsO.show();
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"command delete failed"} );
@@ -98,27 +93,16 @@ var Commands = new (class {
   }
 
   edit() {
-    var CommandsObj = this;
-    var guild_id = $("#guild_id").val();
-    var r = {
-      "guild_id": guild_id,
-      "command_id": $("#command_create [name=command_id]").val(),
-      "trigger": $("#command_create [name=trigger]").val(),
-      "content": $("#command_create [name=content]").val(),
-      "function": $("#command_create [name=function]").val(),
-      "complex": $("#command_create [name=commandtype]").val() == "complex" ? true : false,
-      "hidden": $("#command_create [name=hidden]").is(":checked"),
-      "active": $("#command_create [name=active]").is(":checked"),
-      "cooldown": $("#command_create [name=cooldown]").val(),
-      "require": $("#command_create [name=require]").val(),
-      "required_currency": $("#command_create [name=required_currency]").val()
-    };
+    var CommandsO = this;
+    var req = extractData(this.modal_id);
+    req["complex"] = $(`${this.modal_id} [name=commandtype]`).val() == "complex" ? true : false,
+    req["guild_id"] = $("#guild_id").val();
 
-    $.post("/api/discord/commands/edit", r)
+    $.post("/api/discord/commands/edit", req)
     .done(function (data) {
       Display.showMessage({content: "Successfull edited command: "+data.command, color:Display.color_success});
-      $("#command_create").modal("hide");
-      CommandsObj.show();
+      $(CommandsO.modal_id).modal("hide");
+      CommandsO.show();
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"command edit failed"} );
@@ -126,7 +110,7 @@ var Commands = new (class {
   }
 
   detail(HTMLCommandRow) {
-    var CommandsObj = this;
+    var CommandsO = this;
     var guild_id = $("#guild_id").val();
     var command_id = $(HTMLCommandRow).attr("command-id");
 
@@ -134,23 +118,22 @@ var Commands = new (class {
     .done(function (data) {
       var command = data.result[0];
 
-      insertData("#command_create", command);
+      insertData(CommandsO.modal_id, command);
 
-      $("#command_create .modal-title").text("Edit command: "+command.trigger);
-      $("#command_create [name=required_currency]").val( command.cost );
-      $("#command_create [name=cooldown], #command_create [name=cooldown_slider]").val( command.cooldown );
-      $("#command_create [name=commandtype]").val( command.complex ? "complex" : "simple" );
-      if (command.hidden) { $("#command_create [name=hidden]").prop( "checked", true ); }
-      else { $("#command_create [name=hidden]").prop( "checked", false ); }
+      $(`${CommandsO.modal_id} .modal-title`).text("Edit command: "+command.trigger);
+      $(`${CommandsO.modal_id} [name=required_currency]`).val( command.cost );
+      $(`${CommandsO.modal_id} [name=cooldown], ${CommandsO.modal_id} [name=cooldown_slider]`).val( command.cooldown );
+      $(`${CommandsO.modal_id} [name=commandtype]`).val( command.complex ? "complex" : "simple" );
+      $(`${CommandsO.modal_id} [name=hidden]`).prop( "checked", command.hidden );
 
       if (!command.complex) {
-        CommandsObj.loadCommands(null, "simple", command.function);
-        CommandsObj.loadCommandInfo(null, command.function);
+        CommandsO.loadCommands(null, "simple", command.function);
+        CommandsO.loadCommandInfo(null, command.function);
       }
 
-      $("#command_create [extra-command-setting] [name=content]").val(command.content);
-      $("#command_create").attr("mode", "edit");
-      $("#command_create").modal("show");
+      $(`${CommandsO.modal_id} [extra-command-setting] [name=content]`).val(command.content);
+      $(CommandsO.modal_id).attr("mode", "edit");
+      $(CommandsO.modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not load command details"} );
@@ -158,10 +141,11 @@ var Commands = new (class {
   }
 
   loadCommands(HTMLSelect, command_type, preselected) {
-    $("#command_create [command-setting]").hide();
+    var CommandsO = this;
+    $(`${this.modal_id} [command-setting]`).hide();
     var command_type = $(HTMLSelect).val() || command_type;
     if (command_type == "complex") {
-      $("[command-setting=complex]").show();
+      $(`${this.modal_id} [command-setting=complex]`).show();
       return;
     }
 
@@ -169,7 +153,7 @@ var Commands = new (class {
 
       $.get("/api/discord/commands/list")
       .done(function (data) {
-        var Options = $("#command_create [name=function]").html("");
+        var Options = $(`${CommandsO.modal_id} [name=function]`).html("");
         Options.append( $("<option value=''>Choose a function...</option>") );
         for (var cmd of data.result) {
           let Opt = $("<option>");
@@ -178,7 +162,7 @@ var Commands = new (class {
           Options.append(Opt);
         }
         if (preselected) { Options.val(preselected); }
-        $("[command-setting=simple]").show();
+        $(`${CommandsO.modal_id} [command-setting=simple]`).show();
       })
       .fail(function (data) {
         generalAPIErrorHandler( {data:data, msg:"could ould not load command list"} );
@@ -188,7 +172,8 @@ var Commands = new (class {
   }
 
   loadCommandInfo(HTMLSelect, preselected) {
-    $("#command_create [extra-command-setting], #command_create [extra-command-setting] [name=content]").hide();
+    var CommandsO = this;
+    $(`${this.modal_id} [extra-command-setting], ${this.modal_id} [extra-command-setting] [name=content]`).hide();
     var function_ = $(HTMLSelect).val() || preselected;
     if (isEmpty(function_)) {return;}
 
@@ -201,16 +186,22 @@ var Commands = new (class {
 
       var cmd = data.result[0];
 
-      $("#command_create [extra-command-setting] [name=description]").text(cmd.description);
-      $("#command_create [extra-command-setting] [name=details]").text(cmd.details);
+      $(`${CommandsO.modal_id} [extra-command-setting] [name=description]`).text(cmd.description);
+      $(`${CommandsO.modal_id} [extra-command-setting] [name=details]`).text(cmd.details);
       if (cmd.need_content) {
-        $("#command_create [extra-command-setting] [name=content]").show();
+        $(`${CommandsO.modal_id} [extra-command-setting] [name=content]`).show();
       }
 
-      $("#command_create [extra-command-setting]").show();
+      $(`${CommandsO.modal_id} [extra-command-setting]`).show();
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not load command details"} );
     })
+  }
+
+  // utils
+  updateSlider(value) {
+    $(`${this.modal_id} [name=cooldown_slider]`).val(value);
+    $(`${this.modal_id} [name=cooldown]`).val(value);
   }
 });
