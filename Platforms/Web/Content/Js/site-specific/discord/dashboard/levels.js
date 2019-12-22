@@ -1,5 +1,7 @@
 var Levels = new(class {
   constructor() {
+    this.modal_id = "#level_modal_edit";
+
     this.results_per_page = 50;
     this.offset = 0;
     this.total = 0;
@@ -95,7 +97,7 @@ var Levels = new(class {
   }
 
   detail(HTMLCommandRow) {
-    var LevelObj = this;
+    var LevelO = this;
     var guild_id = $("#guild_id").val();
     var member_id = $(HTMLCommandRow).attr("member-id");
     $.get("/api/discord/levels/get", {guild_id: guild_id, member_id:member_id, detailed: true})
@@ -104,14 +106,14 @@ var Levels = new(class {
 
       // set avatar
       var avatar = discordUserAvatar(level.member_id, level.avatar, 128);
-      $("#level_modal_edit img").attr("src", avatar);
+      $(`${LevelO.modal_id} img`).attr("src", avatar);
 
       // insert medals
-      LevelObj.current_user_medal = level.medals;
-      LevelObj.buildDetailMedal(LevelObj.current_user_medal);
+      LevelO.current_user_medal = level.medals;
+      LevelO.buildDetailMedal(LevelO.current_user_medal);
 
       // edited?
-      $("#level_modal_edit [name=exp]").attr("edited", level.edited ? "true" : "false");
+      $(`${LevelO.modal_id} [name=exp]`).attr("edited", level.edited ? "true" : "false");
 
       // better format, aka lazy format
       level["display_rank"] = (level["rank"] ? "Rank: #"+level["rank"] : "Rank: [N/A]");
@@ -123,15 +125,15 @@ var Levels = new(class {
       //       that is a wanted feature since a owner can do this at any time, via a API request
       //       So kids, dont be dumb and call yourself '[N/A]' and delete your avatar or you may get deleted
       if (level["username"] == "[N/A]" && level["avatar"] == null) {
-        $("#level_modal_edit [name=on_server]").show();
+        $(`${LevelO.modal_id} [name=on_server]`).show();
       } else {
-        $("#level_modal_edit [name=on_server]").hide();
+        $(`${LevelO.modal_id} [name=on_server]`).hide();
       }
 
-      insertData("#level_modal_edit", level);
+      insertData(LevelO.modal_id, level);
 
-      $("#level_modal_edit").attr("edit-member", level.member_id);
-      $("#level_modal_edit").modal("show");
+      $(LevelO.modal_id).attr("edit-member", level.member_id);
+      $(LevelO.modal_id).modal("show");
       DynamicURL.set("level_member_id", level.member_id);
     })
     .fail(function (data) {
@@ -141,7 +143,7 @@ var Levels = new(class {
   }
 
   buildDetailMedal(medal_list) {
-    var EntryList = $("#level_modal_edit .medallist").html("");
+    var EntryList = $(`${this.modal_id} .medallist`).html("");
     for (var entry of medal_list) {
       var EntryRow = $("[phantom] .medal").clone();
       EntryRow.find(".name").text( entry );
@@ -153,7 +155,7 @@ var Levels = new(class {
     var c = confirm("Editing the exp will leave a permanent [EDITED] mark, unless resettet to 0, be carefull. Want to continue?");
     if (!c) { return; }
 
-    var new_exp = $("#level_modal_edit [name=exp]").val();
+    var new_exp = $(`${this.modal_id} [name=exp]`).val();
     this.update( {exp: new_exp} );
   }
 
@@ -204,7 +206,7 @@ var Levels = new(class {
     };
     var LevelO = this;
     var suc = function () {
-      $("#level_modal_edit").modal("hide");
+      $(LevelO.modal_id).modal("hide");
       LevelO.show({offset:LevelO.offset});
     }
     this.update(req, suc);
@@ -213,7 +215,7 @@ var Levels = new(class {
   update(level_update, success_function, fail_function) {
     var guild_id = $("#guild_id").val();
     level_update["guild_id"] = guild_id;
-    var member_id = $("#level_modal_edit").attr("edit-member");
+    var member_id = $(this.modal_id).attr("edit-member");
     level_update["member_id"] = member_id;
 
     $.post("/api/discord/levels/edit", level_update)
