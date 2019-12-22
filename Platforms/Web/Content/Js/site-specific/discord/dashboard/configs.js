@@ -322,8 +322,8 @@ var Configs = new(class {
     var ConfigsO = this;
     var successfunc = function() {
       $("#new_disable_chan_quote").val("");
-      ConfigsO.disable_chan_level.push(new_channel_id.toLowerCase());
-      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
+      ConfigsO.disable_chan_quote.push(new_channel_id);
+      ConfigsO.buildDisableChanQuote(ConfigsO.disable_chan_quote);
     }
     var failfunc = function () {
       $("#new_disable_chan_quote").val("");
@@ -389,8 +389,8 @@ var Configs = new(class {
     var ConfigsO = this;
     var successfunc = function() {
       $("#new_disable_chan_normal").val("");
-      ConfigsO.disable_chan_level.push(new_channel_id.toLowerCase());
-      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
+      ConfigsO.disable_chan_normal.push(new_channel_id);
+      ConfigsO.buildDisableChanNormal(ConfigsO.disable_chan_normal);
     }
     var failfunc = function () {
       $("#new_disable_chan_normal").val("");
@@ -456,8 +456,8 @@ var Configs = new(class {
     var ConfigsO = this;
     var successfunc = function() {
       $("#new_disable_chan_regular").val("");
-      ConfigsO.disable_chan_level.push(new_channel_id.toLowerCase());
-      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
+      ConfigsO.disable_chan_regular.push(new_channel_id);
+      ConfigsO.buildDisableChanRegular(ConfigsO.disable_chan_regular);
     }
     var failfunc = function () {
       $("#new_disable_chan_regular").val("");
@@ -523,7 +523,7 @@ var Configs = new(class {
     var ConfigsO = this;
     var successfunc = function() {
       $("#new_enable_chan_game").val("");
-      ConfigsO.enable_chan_game.push(new_channel_id.toLowerCase());
+      ConfigsO.enable_chan_game.push(new_channel_id);
       ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
     }
     var failfunc = function () {
