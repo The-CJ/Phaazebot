@@ -1,19 +1,23 @@
 var AssignRoles = new (class {
   constructor() {
-
+    this.modal_id = "#assignrole_create";
+    this.list_id = "#assign_role_list";
+    this.amount_field_id = "#assign_role_amount";
+    this.phantom_class = ".assignrole";
   }
 
   show() {
+    var AssignRolesO = this;
     var guild_id = $("#guild_id").val();
 
     $.get("/api/discord/assignroles/get", {guild_id: guild_id})
     .done(function (data) {
 
-      $("#assign_role_amount").text(data.result.length);
-      var AssignRoleList = $("#assign_role_list").html("");
+      $(AssignRolesO.amount_field_id).text(data.result.length);
+      var AssignRoleList = $(AssignRolesO.list_id).html("");
 
       for (var assigerole of data.result) {
-        var Template = $("[phantom] .assignrole").clone();
+        var Template = $(`[phantom] ${AssignRolesO.phantom_class}`).clone();
         var role = DiscordDashboard.getDiscordRoleByID(assigerole.role_id);
 
         var role_name = role ? role.name : "";
@@ -38,9 +42,9 @@ var AssignRoles = new (class {
   }
 
   createModal() {
-    $("#assignrole_create .modal-title").text("New assign role");
-    $("#assignrole_create").attr("mode", "create");
-    $("#assignrole_create").modal("show");
+    $(`${this.modal_id} .modal-title`).text("New assign role");
+    $(this.modal_id).attr("mode", "create");
+    $(this.modal_id).modal("show");
   }
 
   detail(HTMLRow) {
@@ -51,10 +55,10 @@ var AssignRoles = new (class {
     $.get("/api/discord/assignroles/get", {guild_id: guild_id, assignrole_id:assignrole_id})
     .done(function (data) {
       var assignrole = data.result[0];
-      insertData("#assignrole_create", assignrole);
-      $("#assignrole_create .modal-title").text("Edit assign role");
-      $("#assignrole_create").attr("mode", "edit");
-      $("#assignrole_create").modal("show");
+      insertData(AssignRolesO.modal_id, assignrole);
+      $(`${AssignRolesO.modal_id} .modal-title`).text("Edit assign role");
+      $(AssignRolesO.modal_id).attr("mode", "edit");
+      $(AssignRolesO.modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not load assign role details"} );
@@ -62,15 +66,15 @@ var AssignRoles = new (class {
   }
 
   create() {
-    var AssignRoleO = this;
-    var req = extractData("#assignrole_create");
+    var AssignRolesO = this;
+    var req = extractData(this.modal_id);
     req["guild_id"] = $("#guild_id").val();
 
     $.get("/api/discord/assignroles/create", req)
     .done(function (data) {
       Display.showMessage({content: data.msg, color:Display.color_success});
-      $("#assignrole_create").modal("hide");
-      AssignRoleO.show();
+      $(AssignRolesO.modal_id).modal("hide");
+      AssignRolesO.show();
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not create assign role"} );
@@ -78,15 +82,15 @@ var AssignRoles = new (class {
   }
 
   edit() {
-    var AssignRoleO = this;
-    var req = extractData("#assignrole_create");
+    var AssignRolesO = this;
+    var req = extractData(this.modal_id);
     req["guild_id"] = $("#guild_id").val();
 
     $.get("/api/discord/assignroles/edit", req)
     .done(function (data) {
       Display.showMessage({content: data.msg, color:Display.color_success});
-      $("#assignrole_create").modal("hide");
-      AssignRoleO.show();
+      $(AssignRolesO.modal_id).modal("hide");
+      AssignRolesO.show();
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not edit assign role"} );
@@ -95,8 +99,8 @@ var AssignRoles = new (class {
   }
 
   delete() {
-    var AssignRoleO = this;
-    var req = extractData("#assignrole_create");
+    var AssignRolesO = this;
+    var req = extractData(this.modal_id);
     req["guild_id"] = $("#guild_id").val();
 
     if (!confirm("Are you sure you want to delete this assign role?")) { return; }
@@ -104,8 +108,8 @@ var AssignRoles = new (class {
     $.get("/api/discord/assignroles/delete", req)
     .done(function (data) {
       Display.showMessage({content: data.msg, color:Display.color_success});
-      $("#assignrole_create").modal("hide");
-      AssignRoleO.show();
+      $(AssignRolesO.modal_id).modal("hide");
+      AssignRolesO.show();
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not delete assign role"} );
