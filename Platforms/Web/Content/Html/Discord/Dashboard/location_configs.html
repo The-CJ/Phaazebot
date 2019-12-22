@@ -297,7 +297,7 @@
 
         <div class="modal-header text-center">
           <h4 class="modal-title">Token</h4>
-          <button type="button" class="close" onclick="$('#token_modal_help').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
@@ -381,14 +381,14 @@
 
         <div class="modal-header text-center">
           <h4 class="modal-title">Blacklist</h4>
-          <button type="button" class="close" onclick="$('#config_modal_blacklist_words').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
 
           <div class="row">
             <div class="col">
-              <p>Pretty easy to unserstand, everything is handled via <a href="https://en.wikipedia.org/wiki/Regular_expression" style="color: blue;" target="_blank">regular expressions</a></p>
+              <p>Pretty easy to unserstand, everything is handled via <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expressions</a></p>
               <span>If any Regex is found in the message, execute the punishment</span>
               <span>Note:</span><br>
               <span>The message is lowered before checking, so:</span><br>
@@ -424,14 +424,14 @@
 
         <div class="modal-header text-center">
           <h4 class="modal-title">Link whitelist</h4>
-          <button type="button" class="close" onclick="$('#config_modal_whitelist_links').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
 
           <div class="row">
             <div class="col">
-              <p>By default every link gets punished, but here you can define <a href="https://en.wikipedia.org/wiki/Regular_expression" style="color: blue;" target="_blank">regular expressions</a> that are allowed.</p>
+              <p>By default every link gets punished, but here you can define <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expressions</a> that are allowed.</p>
               <span>e.g:</span><br>
               <span>If you ban links, but want to allow all google links, including all subdomains.</span><br>
               <span>You add this: <span style="color:red">^.*google.com$</span></span>
@@ -464,7 +464,7 @@
 
         <div class="modal-header text-center">
           <h4 class="modal-title">Exceptionrole</h4>
-          <button type="button" class="close" onclick="$('#config_modal_exeption_roles').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
@@ -503,7 +503,7 @@
 
         <div class="modal-header text-center">
           <h4 class="modal-title">Disable level in channels</h4>
-          <button type="button" class="close" onclick="$('#config_modal_disable_chan_level').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
@@ -540,7 +540,7 @@
 
         <div class="modal-header text-center">
           <h4 class="modal-title">Disable quote in channels</h4>
-          <button type="button" class="close" onclick="$('#config_modal_disable_chan_quote').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
@@ -577,7 +577,7 @@
 
         <div class="modal-header text-center">
           <h4 class="modal-title">Disable normal commands in channels</h4>
-          <button type="button" class="close" onclick="$('#config_modal_disable_chan_normal').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
@@ -614,7 +614,7 @@
 
         <div class="modal-header text-center">
           <h4 class="modal-title">Disable regular commands in channels</h4>
-          <button type="button" class="close" onclick="$('#config_modal_disable_chan_regular').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
@@ -651,7 +651,7 @@
 
         <div class="modal-header text-center">
           <h4 class="modal-title">Enable game commands in channels</h4>
-          <button type="button" class="close" onclick="$('#config_modal_enable_chan_game').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
@@ -688,7 +688,7 @@
 
         <div class="modal-header text-center">
           <h4 class="modal-title">Enable NSFW commands in channels</h4>
-          <button type="button" class="close" onclick="$('#config_modal_enable_chan_nsfw').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
@@ -696,7 +696,7 @@
           <div class="row">
             <div class="col">
               <span>Enables all NSFW commands in selected channels,</span><br>
-              <span>You may still watch for yourself that all member in your server follow the <a target="_blank" href="https://discordapp.com/terms" style="color:blue">Discord TOS</a></span>
+              <span>You may still watch for yourself that all member in your server follow the <a target="_blank" href="https://discordapp.com/terms">Discord TOS</a></span>
             </div>
           </div>
 

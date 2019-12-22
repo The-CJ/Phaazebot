@@ -6,6 +6,16 @@
 	/* remove uppercase */
 	text-transform: none;
 }
+.modal-content {
+	background-color: var(--color-modal-background);
+	color: var(--color-modal-text);
+	border: var(--style-modal-border)!important;
+}
+.modal-content a { color: var(--color-modal-text-link); }
+.modal-content .close { color: var(--color-modal-text); }
+.modal-content input { color: var(--color-modal-text); }
+.modal-content input:focus { color: var(--color-modal-text); }
+.modal-content input:disabled { color: var(--color-modal-text-disabled); }
 
 /* global styles */
 .content-box {
@@ -80,6 +90,12 @@ label.checkbox-container > span + input[type=checkbox] {
 	--color-boolish-green: #12e400;
 	--color-boolish-red: #ff1700;
 
+	--color-modal-background: #2e2e38;
+	--style-modal-border: 1px solid white;
+	--color-modal-text: #fff;
+	--color-modal-text-link: #00a8e7;
+	--color-modal-text-disabled: #ccc;
+
 	--color-listelement-odd: #0052d6;
 	--color-listelement-even: #0046b8;
 	--color-sub-listelement-odd: #47659a;
@@ -117,7 +133,6 @@ nav {
 }
 #login_form input {
 	margin: 0 2.5em;
-	color: black;
 	border-bottom: 1px solid #000;
 }
 #login_form h1, #login_form h2 {
