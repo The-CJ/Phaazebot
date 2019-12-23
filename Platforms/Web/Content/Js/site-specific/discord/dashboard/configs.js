@@ -9,6 +9,34 @@ var Configs = new(class {
     this.disable_chan_regular = [];
     this.enable_chan_game = [];
     this.enable_chan_nsfw = [];
+
+    this.whitelist_modal_id = "#config_modal_whitelist_links";
+    this.whitelist_phantom_class = ".whitelistlink";
+
+    this.blacklist_modal_id = "#config_modal_blacklist_words";
+    this.blacklist_phantom_class = ".blacklistword";
+
+    this.exceptionrole_modal_id = "#config_modal_exeption_roles";
+    this.exceptionrole_phantom_class = ".exceptionrole";
+
+    this.disable_level_modal_id = "#config_modal_disable_chan_level";
+    this.disable_level_phantom_class = ".disablechanlevel";
+
+    this.disable_quote_modal_id = "#config_modal_disable_chan_quote";
+    this.disable_quote_phantom_class = ".disablechanquote";
+
+    this.disable_normal_modal_id = "#config_modal_disable_chan_normal";
+    this.disable_normal_phantom_class = ".disablechannormal";
+
+    this.disable_regular_modal_id = "#config_modal_disable_chan_regular";
+    this.disable_regular_phantom_class = ".disablechanregular";
+
+    this.enable_game_modal_id = "#config_modal_enable_chan_game";
+    this.enable_game_phantom_class = ".enablechangame";
+
+    this.enable_nsfw_modal_id = "#config_modal_enable_chan_nsfw";
+    this.enable_nsfw_phantom_class = ".enablechannsfw";
+
   }
 
   show() {
@@ -26,7 +54,7 @@ var Configs = new(class {
     })
   }
 
-  // links
+  // links whitelist
   showLinkWhitelist() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
@@ -34,7 +62,7 @@ var Configs = new(class {
     .done(function (data) {
       ConfigsO.whitelist = data.result.blacklist_whitelistlinks;
       ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
-      $("#config_modal_whitelist_links").modal("show");
+      $(ConfigsO.whitelist_modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error loading word link whitelist"} );
@@ -42,9 +70,9 @@ var Configs = new(class {
   }
 
   buildLinkWhitelist(whitelist_links) {
-    var EntryList = $("#config_modal_whitelist_links .linkwhitelist").html("");
+    var EntryList = $(`${this.whitelist_modal_id} .modal-itemlist`).html("");
     for (var entry of whitelist_links) {
-      var EntryRow = $("[phantom] .whitelistlink").clone();
+      var EntryRow = $(`[phantom] ${this.whitelist_phantom_class}`).clone();
       EntryRow.find(".link").text(entry);
       EntryList.append(EntryRow);
     }
@@ -71,7 +99,7 @@ var Configs = new(class {
   }
 
   removeFromLinkWhitelist(HTMLButton) {
-    var Entry = $(HTMLButton).closest(".whitelistlink");
+    var Entry = $(HTMLButton).closest(this.whitelist_phantom_class);
     var link = Entry.find(".link").text();
 
     var req = {
@@ -95,7 +123,7 @@ var Configs = new(class {
     .done(function (data) {
       ConfigsO.blacklist = data.result.blacklist_blacklistwords;
       ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
-      $("#config_modal_blacklist_words").modal("show");
+      $(ConfigsO.blacklist_modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error loading word blacklist"} );
@@ -103,9 +131,9 @@ var Configs = new(class {
   }
 
   buildWordBlacklist(blacklist_blacklistwords) {
-    var EntryList = $("#config_modal_blacklist_words .wordbanlist").html("");
+    var EntryList = $(`${this.blacklist_modal_id} .modal-itemlist`).html("");
     for (var entry of blacklist_blacklistwords) {
-      var EntryRow = $("[phantom] .blacklistword").clone();
+      var EntryRow = $(`[phantom] ${this.blacklist_phantom_class}`).clone();
       EntryRow.find(".word").text(entry);
       EntryList.append(EntryRow);
     }
@@ -132,7 +160,7 @@ var Configs = new(class {
   }
 
   removeFromBlacklist(HTMLButton) {
-    var Entry = $(HTMLButton).closest(".blacklistword");
+    var Entry = $(HTMLButton).closest(this.blacklist_phantom_class);
     var word = Entry.find(".word").text();
 
     var req = {
@@ -155,7 +183,7 @@ var Configs = new(class {
     .done(function (data) {
       ConfigsO.except_roleslist = data.result.blacklist_whitelistroles;
       ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
-      $("#config_modal_exeption_roles").modal("show");
+      $(ConfigsO.exceptionrole_modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error loading execption roles"} );
@@ -163,9 +191,9 @@ var Configs = new(class {
   }
 
   buildExecptionRoles(exceptionroles_roles) {
-    var EntryList = $("#config_modal_exeption_roles .exceptionrolelist").html("");
+    var EntryList = $(`${this.exceptionrole_modal_id} .modal-itemlist`).html("");
     for (var entry of exceptionroles_roles) {
-      var EntryRow = $("[phantom] .exceptionrole").clone();
+      var EntryRow = $(`[phantom] ${this.exceptionrole_phantom_class}`).clone();
       var role = DiscordDashboard.getDiscordRoleByID(entry);
       EntryRow.find("[role-id]").val(entry);
       EntryRow.find(".name").text( role ? role.name : "(DELETED ROLE)" );
@@ -199,7 +227,7 @@ var Configs = new(class {
   }
 
   removeFromExecptionRoles(HTMLButton) {
-    var Entry = $(HTMLButton).closest(".exceptionrole");
+    var Entry = $(HTMLButton).closest(this.exceptionrole_phantom_class);
     var role_id = Entry.find("[role-id]").val();
 
     var req = {
@@ -222,7 +250,7 @@ var Configs = new(class {
     .done(function (data) {
       ConfigsO.disable_chan_level = data.result.disabled_levelchannels;
       ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
-      $("#config_modal_disable_chan_level").modal("show");
+      $(ConfigsO.disable_level_modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error loading execption channels"} );
@@ -230,9 +258,9 @@ var Configs = new(class {
   }
 
   buildDisableChanLevel(channel_list) {
-    var EntryList = $("#config_modal_disable_chan_level .disablechanlevellist").html("");
+    var EntryList = $(`${this.disable_level_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
-      var EntryRow = $("[phantom] .disablechanlevel").clone();
+      var EntryRow = $(`[phantom] ${this.disable_level_phantom_class}`).clone();
       var channel = DiscordDashboard.getDiscordChannelByID(entry);
       EntryRow.find("[channel-id]").val(entry);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
@@ -266,7 +294,7 @@ var Configs = new(class {
   }
 
   removeFromDisableChanLevel(HTMLButton) {
-    var Entry = $(HTMLButton).closest(".disablechanlevel");
+    var Entry = $(HTMLButton).closest(this.disable_level_phantom_class);
     var channel_id = Entry.find("[channel-id]").val();
 
     var req = {
@@ -289,7 +317,7 @@ var Configs = new(class {
     .done(function (data) {
       ConfigsO.disable_chan_quote = data.result.disabled_quotechannels;
       ConfigsO.buildDisableChanQuote(ConfigsO.disable_chan_quote);
-      $("#config_modal_disable_chan_quote").modal("show");
+      $(ConfigsO.disable_quote_modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error loading quote channels"} );
@@ -297,9 +325,9 @@ var Configs = new(class {
   }
 
   buildDisableChanQuote(channel_list) {
-    var EntryList = $("#config_modal_disable_chan_quote .disablechanquotelist").html("");
+    var EntryList = $(`${this.disable_quote_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
-      var EntryRow = $("[phantom] .disablechanquote").clone();
+      var EntryRow = $(`[phantom] ${this.disable_quote_phantom_class}`).clone();
       var channel = DiscordDashboard.getDiscordChannelByID(entry);
       EntryRow.find("[channel-id]").val(entry);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
@@ -333,7 +361,7 @@ var Configs = new(class {
   }
 
   removeFromDisableChanQuote(HTMLButton) {
-    var Entry = $(HTMLButton).closest(".disablechanquote");
+    var Entry = $(HTMLButton).closest(this.disable_quote_phantom_class);
     var channel_id = Entry.find("[channel-id]").val();
 
     var req = {
@@ -356,7 +384,7 @@ var Configs = new(class {
     .done(function (data) {
       ConfigsO.disable_chan_normal = data.result.disabled_normalchannels;
       ConfigsO.buildDisableChanNormal(ConfigsO.disable_chan_normal);
-      $("#config_modal_disable_chan_normal").modal("show");
+      $(Configs.disable_normal_modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error loading normal channels"} );
@@ -364,9 +392,9 @@ var Configs = new(class {
   }
 
   buildDisableChanNormal(channel_list) {
-    var EntryList = $("#config_modal_disable_chan_normal .disablechannormallist").html("");
+    var EntryList = $(`${this.disable_normal_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
-      var EntryRow = $("[phantom] .disablechannormal").clone();
+      var EntryRow = $(`[phantom] ${this.disable_normal_phantom_class}`).clone();
       var channel = DiscordDashboard.getDiscordChannelByID(entry);
       EntryRow.find("[channel-id]").val(entry);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
@@ -400,7 +428,7 @@ var Configs = new(class {
   }
 
   removeFromDisableChanNormal(HTMLButton) {
-    var Entry = $(HTMLButton).closest(".disablechannormal");
+    var Entry = $(HTMLButton).closest(this.disable_normal_phantom_class);
     var channel_id = Entry.find("[channel-id]").val();
 
     var req = {
@@ -423,7 +451,7 @@ var Configs = new(class {
     .done(function (data) {
       ConfigsO.disable_chan_regular = data.result.disabled_regularchannels;
       ConfigsO.buildDisableChanRegular(ConfigsO.disable_chan_regular);
-      $("#config_modal_disable_chan_regular").modal("show");
+      $(ConfigsO.disable_regular_modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error loading regular channels"} );
@@ -431,9 +459,9 @@ var Configs = new(class {
   }
 
   buildDisableChanRegular(channel_list) {
-    var EntryList = $("#config_modal_disable_chan_regular .disablechanregularlist").html("");
+    var EntryList = $(`${this.disable_regular_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
-      var EntryRow = $("[phantom] .disablechanregular").clone();
+      var EntryRow = $(`[phantom] ${this.disable_regular_phantom_class}`).clone();
       var channel = DiscordDashboard.getDiscordChannelByID(entry);
       EntryRow.find("[channel-id]").val(entry);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
@@ -467,7 +495,7 @@ var Configs = new(class {
   }
 
   removeFromDisableChanRegular(HTMLButton) {
-    var Entry = $(HTMLButton).closest(".disablechanregular");
+    var Entry = $(HTMLButton).closest(this.disable_regular_phantom_class);
     var channel_id = Entry.find("[channel-id]").val();
 
     var req = {
@@ -490,7 +518,7 @@ var Configs = new(class {
     .done(function (data) {
       ConfigsO.enable_chan_game = data.result.enabled_gamechannels;
       ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
-      $("#config_modal_enable_chan_game").modal("show");
+      $(ConfigsO.enable_game_modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error loading game channels"} );
@@ -498,9 +526,9 @@ var Configs = new(class {
   }
 
   buildEnableChanGame(channel_list) {
-    var EntryList = $("#config_modal_enable_chan_game .enablechangamelist").html("");
+    var EntryList = $(`${this.enable_game_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
-      var EntryRow = $("[phantom] .enablechangame").clone();
+      var EntryRow = $(`[phantom] ${this.enable_game_phantom_class}`).clone();
       var channel = DiscordDashboard.getDiscordChannelByID(entry);
       EntryRow.find("[channel-id]").val(entry);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
@@ -534,7 +562,7 @@ var Configs = new(class {
   }
 
   removeFromEnableChanGame(HTMLButton) {
-    var Entry = $(HTMLButton).closest(".enablechangame");
+    var Entry = $(HTMLButton).closest(this.enable_game_phantom_class);
     var channel_id = Entry.find("[channel-id]").val();
 
     var req = {
@@ -557,7 +585,7 @@ var Configs = new(class {
     .done(function (data) {
       ConfigsO.enable_chan_nsfw = data.result.enabled_nsfwchannels;
       ConfigsO.buildEnableChanNSFW(ConfigsO.enable_chan_nsfw);
-      $("#config_modal_enable_chan_nsfw").modal("show");
+      $(Configs.enable_nsfw_modal_id).modal("show");
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error loading nsfw channels"} );
@@ -565,10 +593,9 @@ var Configs = new(class {
   }
 
   buildEnableChanNSFW(channel_list) {
-    console.log(channel_list);
-    var EntryList = $("#config_modal_enable_chan_nsfw .enablechannsfwlist").html("");
+    var EntryList = $(`${this.enable_nsfw_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
-      var EntryRow = $("[phantom] .enablechannsfw").clone();
+      var EntryRow = $(`[phantom] ${this.enable_nsfw_phantom_class}`).clone();
       var channel = DiscordDashboard.getDiscordChannelByID(entry);
       EntryRow.find("[channel-id]").val(entry);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
@@ -602,7 +629,7 @@ var Configs = new(class {
   }
 
   removeFromEnableChanNSFW(HTMLButton) {
-    var Entry = $(HTMLButton).closest(".enablechannsfw");
+    var Entry = $(HTMLButton).closest(this.enable_nsfw_phantom_class);
     var channel_id = Entry.find("[channel-id]").val();
 
     var req = {
