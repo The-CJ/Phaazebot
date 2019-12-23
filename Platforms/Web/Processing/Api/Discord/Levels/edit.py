@@ -82,6 +82,12 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# changes["x"] = true
 	# db_changes["x"] = "1"
 
+	# currency
+	value:int = Data.getInt("currency", UNDEFINED, min_x=0)
+	if value != UNDEFINED:
+		db_changes["currency"] = validateDBInput(int, value)
+		changes["currency"] = value
+
 	# exp
 	value:int = Data.getInt("exp", UNDEFINED, min_x=0)
 	if value != UNDEFINED:

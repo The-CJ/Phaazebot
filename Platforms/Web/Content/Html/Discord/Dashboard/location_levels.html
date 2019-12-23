@@ -60,6 +60,7 @@
       <div class="col-1 rank">Rank</div>
       <div class="col-1 lvl">Level</div>
       <div class="col-1 exp">Exp</div>
+      <div class="col-1 currency">Currency</div>
       <div class="col member">Member</div>
       <div class="col-1 medals">Medals</div>
     </div>
@@ -77,7 +78,7 @@
       <div class="modal-content">
 
         <div class="modal-header text-center">
-          <h4 class="modal-title">Level edit</h4>
+          <h4 class="modal-title">Stats edit</h4>
           <button type="button" class="close" onclick="$('#level_modal_edit').modal('hide')"><span>&times;</span></button>
         </div>
 
@@ -101,6 +102,19 @@
           <hr>
 
           <h4 class="text-center">Stats</h4>
+
+          <!-- currency -->
+          <div class="center-item-row forced">
+            <div class="col-3">
+              <span>Currency:</span>
+            </div>
+            <form class="col-9 md-form input-group" action="javascript:void(0)" onsubmit="javascript:Levels.editCurrency()">
+              <input type="number" name="currency" class="form-control text-center" min="0">
+              <div class="input-group-append">
+                <button type="submit" name="button" class="btn btn-danger m-0 px-3 py-2"><i class="fas fa-save"></i></button>
+              </div>
+            </form>
+          </div>
 
           <!-- exp -->
           <div class="center-item-row forced">
@@ -164,6 +178,7 @@
     <div class="col-1 rank">[N/A]</div>
     <div class="col-1 lvl">[N/A]</div>
     <div class="col-1 exp">[N/A]</div>
+    <div class="col-1 currency">Currency</div>
     <div class="col member">
       <div class="center-item-row forced">
         <img src="" alt="avatar" class="avatar" height="32" width="32">

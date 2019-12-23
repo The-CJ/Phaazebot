@@ -37,6 +37,7 @@ var Levels = new(class {
         Template.find(".rank").text(level.rank);
         Template.find(".lvl").text(level.level);
         Template.find(".exp").text(level.exp);
+        Template.find(".currency").text(level.currency);
         Template.find(".name").text( level.username );
         Template.find(".avatar").attr("src", avatar);
         Template.find(".medals").text(level.medals.length);
@@ -157,6 +158,11 @@ var Levels = new(class {
 
     var new_exp = $(`${this.modal_id} [name=exp]`).val();
     this.update( {exp: new_exp} );
+  }
+
+  editCurrency() {
+    var new_currency = $(`${this.modal_id} [name=currency]`).val();
+    this.update( {currency: new_currency} );
   }
 
   addMedal() {
