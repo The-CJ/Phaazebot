@@ -38,14 +38,14 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
 	# format
-	if order == "exp":
-		order = "ORDER BY `exp`"
-	elif order == "id":
+	if order == "id":
 		order = "ORDER BY `id`"
 	elif order == "member_id":
 		order = "ORDER BY `member_id`"
+	elif order == "currency":
+		order = "ORDER BY `currency`"
 	else:
-		order = "ORDER BY `rank`"
+		order = "ORDER BY `rank`, `exp`"
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
