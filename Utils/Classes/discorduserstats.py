@@ -1,9 +1,9 @@
 from Utils.Classes.undefined import Undefined
 from Utils.Classes.dbcontentclass import DBContentClass
 
-class DiscordLevelUser(DBContentClass):
+class DiscordUserStats(DBContentClass):
 	"""
-		Contains and represents all level values for a Discord user
+		Contains and represents all phaaze values for a Discord user
 	"""
 	def __init__(self, data:dict, server_id:str):
 

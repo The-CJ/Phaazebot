@@ -5,8 +5,8 @@ if TYPE_CHECKING:
 import discord
 import math
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordleveluser import DiscordLevelUser
-from .utils import getDiscordServerLevels
+from Utils.Classes.discorduserstats import DiscordUserStats
+from .utils import getDiscordServerUsers
 
 DEFAULT_LEVEL_MESSAGE = "[mention] is now Level **[lvl]** :tada:"
 
@@ -20,13 +20,13 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	if Message.channel.id in ServerSettings.disabled_levelchannels: return
 	if ServerSettings.owner_disable_level: return
 
-	result:list = await getDiscordServerLevels(cls, Message.guild.id, member_id=Message.author.id)
+	result:list = await getDiscordServerUsers(cls, Message.guild.id, member_id=Message.author.id)
 
 	if not result:
-		LevelUser:DiscordLevelUser = await newUser(cls, Message.guild.id, Message.author.id)
+		LevelUser:DiscordUserStats = await newUser(cls, Message.guild.id, Message.author.id)
 	else:
 		# there should be only on in the list
-		LevelUser:DiscordLevelUser = result[0]
+		LevelUser:DiscordUserStats = result[0]
 
 	LevelUser.exp += 1
 	if LevelUser.exp >= 0xFFFFF: #=1'048'575
@@ -42,7 +42,7 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 
 	await checkLevelProgress(cls, Message, LevelUser, ServerSettings)
 
-async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str) -> DiscordLevelUser:
+async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str) -> DiscordUserStats:
 
 	sql:str = """
 		INSERT INTO discord_user
@@ -54,12 +54,12 @@ async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str) -> Discor
 	try:
 		cls.BASE.PhaazeDB.query(sql, values)
 		cls.BASE.Logger.debug(f"(Discord) New entry into levels: S:{guild_id} M:{member_id}", require="discord:level")
-		return DiscordLevelUser( {"member_id": member_id}, guild_id )
+		return DiscordUserStats( {"member_id": member_id}, guild_id )
 	except:
 		cls.BASE.Logger.critical(f"(Discord) New entry into levels failed: S:{guild_id} M:{member_id}")
 		raise RuntimeError("New entry into levels failed")
 
-async def checkLevelProgress(cls:"PhaazebotDiscord", Message:discord.Message, LevelUser:DiscordLevelUser, ServerSettings:DiscordServerSettings) -> None:
+async def checkLevelProgress(cls:"PhaazebotDiscord", Message:discord.Message, LevelUser:DiscordUserStats, ServerSettings:DiscordServerSettings) -> None:
 
 	current_level:int = Calc.getLevel(LevelUser.exp)
 	next_level_exp:int = Calc.getExp(current_level + 1)
@@ -67,7 +67,7 @@ async def checkLevelProgress(cls:"PhaazebotDiscord", Message:discord.Message, Le
 	if next_level_exp == LevelUser.exp:
 		await announceLevelUp(cls, Message, LevelUser, ServerSettings, current_level + 1)
 
-async def announceLevelUp(cls:"PhaazebotDiscord", Message:discord.Message, LevelUser:DiscordLevelUser, ServerSettings:DiscordServerSettings, level_to_announce:str or int) -> None:
+async def announceLevelUp(cls:"PhaazebotDiscord", Message:discord.Message, LevelUser:DiscordUserStats, ServerSettings:DiscordServerSettings, level_to_announce:str or int) -> None:
 
 	LevelChannel:discord.TextChannel = None
 

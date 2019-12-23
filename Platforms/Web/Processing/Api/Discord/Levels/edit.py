@@ -7,10 +7,10 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.utils import getDiscordServerLevels
+from Platforms.Discord.utils import getDiscordServerUsers
 from Utils.dbutils import validateDBInput
 from Utils.Classes.discorduserinfo import DiscordUserInfo
-from Utils.Classes.discordleveluser import DiscordLevelUser
+from Utils.Classes.discorduserstats import DiscordUserStats
 from Utils.Classes.undefined import UNDEFINED
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingAuthorisation,
@@ -63,10 +63,10 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
 	# get level user
-	res_level:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id)
+	res_level:list = await getDiscordServerUsers(PhaazeDiscord, guild_id=guild_id, member_id=member_id)
 	if not res_level:
 		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find a level for this user")
-	CurrentLevelUser:DiscordLevelUser = res_level.pop(0)
+	CurrentLevelUser:DiscordUserStats = res_level.pop(0)
 
 	# single actions
 	action:str = Data.getStr("medal_action", UNDEFINED)
@@ -121,7 +121,7 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		status=200
 	)
 
-async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, CurrentLevelUser:DiscordLevelUser) -> Response:
+async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, CurrentLevelUser:DiscordUserStats) -> Response:
 	"""
 		Default url: /api/discord/levels/edit?medal_action=something
 	"""

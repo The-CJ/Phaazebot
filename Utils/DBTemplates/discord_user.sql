@@ -9,6 +9,7 @@ DESCRIBE `discord_user`;
 | member_id | varchar(128) | NO   |     | NULL    |                |
 | edited    | tinyint(1)   | YES  |     | 0       |                |
 | exp       | int(8)       | YES  |     | 0       |                |
+| currency  | int(11)      | YES  |     | 0       |                |
 | on_server | tinyint(1)   | YES  |     | 1       |                |
 +-----------+--------------+------+-----+---------+----------------+
 */
@@ -21,6 +22,7 @@ CREATE TABLE `discord_user` (
   `member_id` varchar(128) NOT NULL,
   `edited` tinyint(1) DEFAULT 0,
   `exp` int(8) DEFAULT 0,
+  `currency` int(11) DEFAULT 0,
   `on_server` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE KEY `guild_id` (`guild_id`,`member_id`)

@@ -5,8 +5,8 @@ if TYPE_CHECKING:
 import discord
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from Utils.Classes.discordleveluser import DiscordLevelUser
-from Platforms.Discord.utils import getDiscordServerLevels, getDiscordMemberFromString
+from Utils.Classes.discorduserstats import DiscordUserStats
+from Platforms.Discord.utils import getDiscordServerUsers, getDiscordMemberFromString
 from Platforms.Discord.levels import Calc as LevelCalc
 from Utils.stringutils import prettifyNumbers
 
@@ -35,12 +35,12 @@ async def levelStatus(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 		if not Member:
 			return {"content": ":warning: Could not find a user with your query"}
 
-	users:list = await getDiscordServerLevels(cls, Command.server_id, member_id=Member.id)
+	users:list = await getDiscordServerUsers(cls, Command.server_id, member_id=Member.id)
 
 	if not users:
 		return {"content": f":warning: Seems like there are no statistics for `{Member.name}`\nMaybe the user never typed anything or got deleted."}
 
-	LevelUser:DiscordLevelUser = users.pop(0)
+	LevelUser:DiscordUserStats = users.pop(0)
 
 	exp_current:int = LevelUser.exp
 	lvl_current:int = LevelCalc.getLevel(exp_current)

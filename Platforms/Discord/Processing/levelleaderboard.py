@@ -6,7 +6,7 @@ import discord
 from tabulate import tabulate
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from Platforms.Discord.utils import getDiscordServerLevels
+from Platforms.Discord.utils import getDiscordServerUsers
 from Platforms.Discord.levels import Calc as LevelCalc
 from Utils.stringutils import prettifyNumbers
 
@@ -39,7 +39,7 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 	if specific_len > MAX_LEADERBOARD_LEN or not specific_len:
 		return {"content": f":warning: `{specific_len}` is unsupported, length must be between 1 and 15"}
 
-	users:list = await getDiscordServerLevels(cls, Command.server_id, limit=specific_len, order_str="ORDER BY exp DESC")
+	users:list = await getDiscordServerUsers(cls, Command.server_id, limit=specific_len, order_str="ORDER BY exp DESC")
 
 	if not users:
 		return {"content": ":question: Seems like there are no member with level for a leaderboard :("}

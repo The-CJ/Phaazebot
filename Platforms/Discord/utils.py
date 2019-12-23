@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordcommand import DiscordCommand
-from Utils.Classes.discordleveluser import DiscordLevelUser
+from Utils.Classes.discorduserstats import DiscordUserStats
 from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.discordassignrole import DiscordAssignRole
 
@@ -118,11 +118,11 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 	else:
 		return []
 
-async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0, edited:int=0) -> list:
+async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0, edited:int=0) -> list:
 	"""
 		Get server levels, if member_id = None, get all
 		else only get one associated with the member_id
-		Returns a list of DiscordLevelUser().
+		Returns a list of DiscordUserStats().
 	"""
 
 	sql:str = """
@@ -163,12 +163,12 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordLevelUser(x, guild_id) for x in res]
+		return [DiscordUserStats(x, guild_id) for x in res]
 
 	else:
 		return []
 
-async def getDiscordServerLevelAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+async def getDiscordServerUserAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_user`

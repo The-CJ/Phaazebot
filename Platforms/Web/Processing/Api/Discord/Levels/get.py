@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.utils import getDiscordServerLevels, getDiscordServerLevelAmount
+from Platforms.Discord.utils import getDiscordServerUsers, getDiscordServerUserAmount
 from Platforms.Discord.levels import Calc as LevelCalc
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
@@ -53,7 +53,7 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get levels
-	res_levels:list = await getDiscordServerLevels(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order, edited=edited)
+	res_levels:list = await getDiscordServerUsers(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order, edited=edited)
 
 	return_list:list = list()
 
@@ -82,7 +82,7 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	return cls.response(
 		text=json.dumps( dict(
 			result=return_list,
-			total=await getDiscordServerLevelAmount(PhaazeDiscord, guild_id),
+			total=await getDiscordServerUserAmount(PhaazeDiscord, guild_id),
 			limit=limit,
 			offset=offset,
 			detailed=detailed,
