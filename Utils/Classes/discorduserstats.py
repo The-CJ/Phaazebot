@@ -11,6 +11,7 @@ class DiscordUserStats(DBContentClass):
 		self.member_id:str = data.get("member_id", Undefined())
 		self.rank:int = data.get("rank", Undefined())
 		self.exp:int = int( data.get("exp", 0) )
+		self.currency:int = int( data.get("currency", 0) )
 		self.edited:bool = bool( data.get("edited", False) )
 		self.medals:list = self.fromStringList( data.get("medals", Undefined() ), ";;;" )
 
@@ -25,6 +26,7 @@ class DiscordUserStats(DBContentClass):
 		j["member_id"] = self.member_id
 		j["rank"] = self.rank
 		j["exp"] = self.exp
+		j["currency"] = self.currency
 		j["edited"] = bool(self.edited)
 		j["medals"] = self.medals
 
