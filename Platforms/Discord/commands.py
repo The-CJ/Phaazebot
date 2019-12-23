@@ -6,16 +6,18 @@ import discord
 import asyncio
 import re
 from Utils.Classes.discordserversettings import DiscordServerSettings
+from Utils.Classes.discorduserstats import DiscordUserStats
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordpermission import DiscordPermission
+from .utils import getDiscordServerUsers
 from .commandindex import getDiscordCommandFunction
 from Utils.regex import Discord as ReDiscord
 
 class GDCCS():
 	"""
 		i present the GDCCS, short for "Global Discord Command Cooldown Storage"
-		after a command whas been used, it's unique key is saved in where
+		after a command has been used, it's unique key is saved in where
 		while its in there, its in a cool down state, and wont be triggered again
 		after cooldown is gone, remove unique key from here and unlock command
 	"""
@@ -109,6 +111,20 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		if Command.cooldown > cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX:
 			cls.BASE.Logger.debug(f"(Discord) command cooldown > DISCORD_COMMANDS_COOLDOWN_MAX cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
 			Command.cooldown = cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX
+
+		# command requires a currency payment, check if user can affort it
+		# except mods
+		if Command.required_currency != 0 and AuthorPermission.rank < 2:
+			res:list = await getDiscordServerUsers(cls, Message.guild.id, Message.author.id)
+			if not res: return False
+			DiscordUser:DiscordUserStats = res.pop(0)
+
+			# not enough
+			if not (DiscordUser.currency >= Command.required_currency):
+				cls.BASE.Logger.debug(f"(Discord) Skipping command call because of insufficient currency: ({DiscordUser.currency} < {Command.required_currency})", require="discord:commands")
+				return False
+
+			await DiscordUser.editCurrency(cls, -Command.required_currency )
 
 		# add command to cooldown
 		GDCCS.cooldown(Command)

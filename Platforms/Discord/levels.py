@@ -13,20 +13,22 @@ DEFAULT_LEVEL_MESSAGE = "[mention] is now Level **[lvl]** :tada:"
 async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
 	"""
 		Run every time a user writes a message (not edited) and updates the exp.
+		(running checks on every message, even if level progress is disabled,
+		so every user has a entry in the db, for currency and other stuff)
 	"""
 
 	# TODO: Cooldown
-
-	if Message.channel.id in ServerSettings.disabled_levelchannels: return
-	if ServerSettings.owner_disable_level: return
 
 	result:list = await getDiscordServerUsers(cls, Message.guild.id, member_id=Message.author.id)
 
 	if not result:
 		LevelUser:DiscordUserStats = await newUser(cls, Message.guild.id, Message.author.id)
 	else:
-		# there should be only on in the list
+		# there should be only one in the list
 		LevelUser:DiscordUserStats = result[0]
+
+	if Message.channel.id in ServerSettings.disabled_levelchannels: return
+	if ServerSettings.owner_disable_level: return
 
 	LevelUser.exp += 1
 	if LevelUser.exp >= 0xFFFFF: #=1'048'575

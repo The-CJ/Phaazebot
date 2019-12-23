@@ -1,3 +1,7 @@
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+	from Platforms.Discord.main_discord import PhaazebotDiscord
+
 from Utils.Classes.undefined import Undefined
 from Utils.Classes.dbcontentclass import DBContentClass
 
@@ -31,3 +35,13 @@ class DiscordUserStats(DBContentClass):
 		j["medals"] = self.medals
 
 		return j
+
+	async def editCurrency(self, cls:"PhaazebotDiscord", amount:int) -> None:
+		cls.BASE.PhaazeDB.query("""
+			UPDATE `discord_user`
+			SET `currency` = `currency` + %s
+			WHERE `guild_id` = %s AND `member_id` = %s""",
+			(amount, self.server_id, self.member_id)
+		)
+
+		cls.BASE.Logger.debug(f"(Discord) Updated currency: S:{self.server_id} U:{self.member_id}", require="discord:command")
