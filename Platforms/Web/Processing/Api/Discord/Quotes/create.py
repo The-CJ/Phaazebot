@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
 	apiMissingAuthorisation
@@ -54,7 +54,7 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 		return await apiDiscordQuoteLimit(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 

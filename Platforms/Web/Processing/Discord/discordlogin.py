@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
-from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Platforms.Web.utils import getNavbar
 from ..errors import notAllowed
 
@@ -16,7 +16,7 @@ async def discordLogin(cls:"WebIndex", WebRequest:Request, msg:str="") -> Respon
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	if not PhaazeDiscord: return await notAllowed(cls, WebRequest, msg="Discord module is not active")
 
-	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if DiscordUser.found: return await cls.discordMain(WebRequest)
 
 	query_error:str = WebRequest.query.get("error", None)

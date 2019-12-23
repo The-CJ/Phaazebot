@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordassignrole import DiscordAssignRole
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
@@ -88,7 +88,7 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 		update["trigger"] = value
 
 	# get user info
-	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 

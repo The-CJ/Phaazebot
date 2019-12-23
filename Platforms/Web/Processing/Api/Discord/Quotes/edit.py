@@ -11,7 +11,7 @@ from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthor
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordQuotesNotExists
 from Platforms.Discord.utils import getDiscordServerQuotes
-from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.undefined import UNDEFINED
 
@@ -53,7 +53,7 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 

@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordassignrole import DiscordAssignRole
 from Platforms.Discord.utils import getDiscordServerAssignRoles
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
@@ -50,7 +50,7 @@ async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Res
 	AssignRoleToDelete:DiscordAssignRole = res_assignroles.pop(0)
 
 	# get user info
-	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 

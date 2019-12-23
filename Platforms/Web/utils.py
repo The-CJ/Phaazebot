@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 from aiohttp.web import Request
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.webuserinfo import WebUserInfo
-from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.storeclasses import GlobalStorage
 
 # templating and stuff
@@ -63,12 +63,12 @@ async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> We
 
 	return WebRequest.WebUser
 
-async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> DiscordUserInfo:
+async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> DiscordWebUserInfo:
 	"""
 		Tryes to get a DiscordUser, takes get, post, and cookie in process
-		kwargs are given to DiscordUserInfo
+		kwargs are given to DiscordWebUserInfo
 
-		DiscordUserInfo kwargs:
+		DiscordWebUserInfo kwargs:
 			force_method
 			phaaze_discord_session
 	"""
@@ -77,7 +77,7 @@ async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -
 		cls.Web.BASE.Logger.debug(f"(Web) Used stored discord infos: {str(WebRequest.DiscordUser)}", require="web:debug")
 		return WebRequest.DiscordUser
 
-	DiscordUser:DiscordUserInfo = DiscordUserInfo(cls.Web.BASE, WebRequest, **kwargs)
+	DiscordUser:DiscordWebUserInfo = DiscordWebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
 	await DiscordUser.auth()
 	WebRequest.DiscordUser = DiscordUser
 

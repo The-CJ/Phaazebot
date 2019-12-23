@@ -9,7 +9,7 @@ from aiohttp.web import Response, Request
 from Platforms.Discord.commandindex import command_register
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordcommand import DiscordCommand
 from Platforms.Discord.utils import getDiscordServerCommands
 from Utils.dbutils import validateDBInput
@@ -143,7 +143,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 

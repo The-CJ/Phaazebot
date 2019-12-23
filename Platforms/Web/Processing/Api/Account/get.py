@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
-from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingAuthorisation
 
 async def apiAccountGetPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -27,7 +27,7 @@ async def apiAccountGetDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/discord/get
 	"""
-	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
 
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)

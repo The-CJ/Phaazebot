@@ -10,7 +10,7 @@ def forcable(f:Callable) -> Callable:
 	f.__forcable__ = True
 	return f
 
-class DiscordUserInfo(object):
+class DiscordWebUserInfo(object):
 	"""
 		Used for authorisation of a discord web user request
 		variable search way:

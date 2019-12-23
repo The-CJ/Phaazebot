@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
-from Utils.Classes.discorduserinfo import DiscordUserInfo
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiUserNotFound
 
 async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -35,7 +35,7 @@ async def apiAccountLogoutDiscord(cls:"WebIndex", WebRequest:Request) -> Respons
 		Default url: /api/account/discord/logout
 	"""
 
-	DiscordUser:DiscordUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
 
 	if not DiscordUser.found:
 		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
