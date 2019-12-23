@@ -31,7 +31,7 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	res:list = cls.Web.BASE.PhaazeDB.query("""
 		SELECT
-			(SELECT COUNT(*) FROM discord_level WHERE discord_level.guild_id = %s) AS level_count,
+			(SELECT COUNT(*) FROM discord_user WHERE discord_user.guild_id = %s) AS level_count,
 			(SELECT COUNT(*) FROM discord_command WHERE discord_command.guild_id = %s) AS command_count,
 			(SELECT COUNT(*) FROM discord_quote WHERE discord_quote.guild_id = %s) AS quote_count,
 			(SELECT COUNT(*) FROM discord_twitch_alert WHERE discord_twitch_alert.discord_guild_id = %s) AS twitch_alert_count""",

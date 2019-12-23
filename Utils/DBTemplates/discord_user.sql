@@ -1,5 +1,5 @@
 /*
-DESCRIBE `discord_level_medal`;
+DESCRIBE `discord_user`;
 
 +-----------+--------------+------+-----+---------+----------------+
 | Field     | Type         | Null | Key | Default | Extra          |
@@ -13,13 +13,15 @@ DESCRIBE `discord_level_medal`;
 +-----------+--------------+------+-----+---------+----------------+
 */
 
--- SHOW CREATE TABLE `discord_level_medal`;
+-- SHOW CREATE TABLE `discord_user`;
 
-CREATE TABLE `discord_level_medal` (
+CREATE TABLE `discord_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
   `member_id` varchar(128) NOT NULL,
-  `name` varchar(512) DEFAULT 0,
+  `edited` tinyint(1) DEFAULT 0,
+  `exp` int(8) DEFAULT 0,
+  `on_server` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `guild_id` (`guild_id`,`member_id`, `name`)
+  UNIQUE KEY `guild_id` (`guild_id`,`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

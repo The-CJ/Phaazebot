@@ -56,7 +56,7 @@ class PhaazebotDiscord(discord.Client):
 	async def on_member_join(self, Member:discord.Member) -> None:
 		# set member active, if there was a known entry
 		self.BASE.PhaazeDB.updateQuery(
-			table = "discord_level",
+			table = "discord_user",
 			content = {"on_server":"1"},
 			where = "guild_id = %s AND member_id = %s",
 			where_values = (Member.guild.id, Member.id)
@@ -65,7 +65,7 @@ class PhaazebotDiscord(discord.Client):
 	async def on_member_remove(self, Member:discord.Member) -> None:
 		# set member inactive
 		self.BASE.PhaazeDB.updateQuery(
-			table = "discord_level",
+			table = "discord_user",
 			content = {"on_server":"0"},
 			where = "guild_id = %s AND member_id = %s",
 			where_values = (Member.guild.id, Member.id)

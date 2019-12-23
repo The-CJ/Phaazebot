@@ -33,10 +33,10 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 		LevelUser.exp = 1
 
 	cls.BASE.PhaazeDB.query("""
-		UPDATE discord_level
+		UPDATE discord_user
 		SET exp = %s
-		WHERE discord_level.guild_id = %s
- 			AND discord_level.member_id = %s""",
+		WHERE discord_user.guild_id = %s
+ 			AND discord_user.member_id = %s""",
 		(LevelUser.exp, LevelUser.server_id, LevelUser.member_id)
 	)
 
@@ -45,7 +45,7 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str) -> DiscordLevelUser:
 
 	sql:str = """
-		INSERT INTO discord_level
+		INSERT INTO discord_user
 		(guild_id, member_id)
 		VALUES (%s, %s)
 	"""

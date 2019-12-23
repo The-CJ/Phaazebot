@@ -126,31 +126,31 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 	"""
 
 	sql:str = """
-		WITH `discord_level` AS (
+		WITH `discord_user` AS (
 			SELECT
-				`discord_level`.*,
-				GROUP_CONCAT(`discord_level_medal`.`name` SEPARATOR ';;;') AS `medals`,
+				`discord_user`.*,
+				GROUP_CONCAT(`discord_user_medal`.`name` SEPARATOR ';;;') AS `medals`,
 				RANK() OVER (ORDER BY `exp` DESC) AS `rank`
-			FROM `discord_level`
-			LEFT JOIN `discord_level_medal`
-				ON `discord_level_medal`.`guild_id` = `discord_level`.`guild_id`
-					AND `discord_level_medal`.`member_id` = `discord_level`.`member_id`
-			WHERE `discord_level`.`on_server` = 1
-				AND `discord_level`.`guild_id` = %s
-			GROUP BY `discord_level`.`guild_id`, `discord_level`.`member_id`
+			FROM `discord_user`
+			LEFT JOIN `discord_user_medal`
+				ON `discord_user_medal`.`guild_id` = `discord_user`.`guild_id`
+					AND `discord_user_medal`.`member_id` = `discord_user`.`member_id`
+			WHERE `discord_user`.`on_server` = 1
+				AND `discord_user`.`guild_id` = %s
+			GROUP BY `discord_user`.`guild_id`, `discord_user`.`member_id`
 		)
-		SELECT * FROM `discord_level` WHERE 1=1"""
+		SELECT * FROM `discord_user` WHERE 1=1"""
 
 	values:tuple = (guild_id,)
 
 	if member_id:
-		sql += " AND `discord_level`.`member_id` = %s"
+		sql += " AND `discord_user`.`member_id` = %s"
 		values += (member_id,)
 
 	if edited == 2:
-		sql += " AND `discord_level`.`edited` = 1"
+		sql += " AND `discord_user`.`edited` = 1"
 	elif edited == 1:
-		sql += " AND `discord_level`.`edited` = 0"
+		sql += " AND `discord_user`.`edited` = 0"
 
 	sql += f" {order_str}"
 
@@ -171,8 +171,8 @@ async def getDiscordServerLevels(cls:"PhaazebotDiscord", guild_id:str, member_id
 async def getDiscordServerLevelAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
 	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_level`
-		WHERE `discord_level`.`on_server` = 1 AND `discord_level`.`guild_id` = %s AND {where}"""
+		SELECT COUNT(*) AS `I` FROM `discord_user`
+		WHERE `discord_user`.`on_server` = 1 AND `discord_user`.`guild_id` = %s AND {where}"""
 
 	values:tuple = (guild_id,) + where_values
 

@@ -109,9 +109,9 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Level Update: S:{guild_id} M:{member_id} {str(db_changes)}", require="discord:levels")
 	cls.Web.BASE.PhaazeDB.updateQuery(
-		table = "discord_level",
+		table = "discord_user",
 		content = db_changes,
-		where = "discord_level.guild_id = %s AND discord_level.member_id = %s",
+		where = "discord_user.guild_id = %s AND discord_user.member_id = %s",
 		where_values = (guild_id, member_id)
 	)
 
@@ -150,7 +150,7 @@ async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data
 			return await apiDiscordLevelMedalLimit(cls, WebRequest)
 
 		cls.Web.BASE.PhaazeDB.insertQuery(
-			table = "discord_level_medal",
+			table = "discord_user_medal",
 			content = {
 				"guild_id": guild_id,
 				"member_id": member_id,
@@ -170,7 +170,7 @@ async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{medal_name}', is currently not added")
 
 		cls.Web.BASE.PhaazeDB.deleteQuery("""
-			DELETE FROM `discord_level_medal`
+			DELETE FROM `discord_user_medal`
 			WHERE `guild_id` = %s
 				AND `member_id` = %s
 				AND `name` = %s""",
