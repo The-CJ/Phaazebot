@@ -1,14 +1,14 @@
 /*
 DESCRIBE `twitch_user_name`;
 
-+-------------------+--------------+------+-----+---------+----------------+
-| Field             | Type         | Null | Key | Default | Extra          |
-+-------------------+--------------+------+-----+---------+----------------+
-| id                | int(11)      | NO   | PRI | NULL    | auto_increment |
-| user_id           | varchar(128) | NO   |     | NULL    |                |
-| user_name         | varchar(128) | YES  |     | NULL    |                |
-| user_display_name | varchar(128) | YES  |     | NULL    |                |
-+-------------------+--------------+------+-----+---------+----------------+
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| id           | int(11)      | NO   | PRI | NULL    | auto_increment |
+| user_id      | varchar(128) | NO   | UNI | NULL    |                |
+| name         | varchar(128) | YES  |     | NULL    |                |
+| display_name | varchar(128) | YES  |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
 */
 
 -- SHOW CREATE TABLE `twitch_user_name`;

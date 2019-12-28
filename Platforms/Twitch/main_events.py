@@ -18,7 +18,7 @@ class PhaazebotTwitchEvents(object):
 		self.BASE:"Phaazebot" = BASE
 		self.running:bool = False
 		self.refresh_time:int = 50
-		self._live_channel_id:list = list()
+		self.refresh_time_multi:float = 1.0
 
 	def stop(self) -> None:
 		if not self.running: raise Exception("not running")
@@ -30,4 +30,12 @@ class PhaazebotTwitchEvents(object):
 		self.BASE.Logger.info("Started Twitch Events")
 
 		while self.running and self.BASE.Active.twitch_events:
-			await asyncio.sleep(self.refresh_time)
+			self.BASE.Logger.debug("Running new twitch event check...", require="twitch:events")
+
+			self.refresh_time_multi = 1.0 # this can get changed in a check cycle, because of crashes or, null results
+			await self.check()
+
+			await asyncio.sleep( self.refresh_time * self.refresh_time_multi )
+
+	async def check(self) -> None:
+		pass
