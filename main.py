@@ -10,6 +10,7 @@ from Utils.Classes.dbconn import DBConn
 from Platforms.Discord.main_discord import PhaazebotDiscord
 from Platforms.Web.main_web import PhaazebotWeb
 from Platforms.Osu.main_osu import PhaazebotOsu
+from Platforms.Twitch.main_events import PhaazebotTwitchEvents
 
 class Phaazebot(object):
 	"""
@@ -38,13 +39,16 @@ class Phaazebot(object):
 
 		# all featured "superclasses" aka, stuff that makes calls to somewhere
 		# all of these get added by self.Mainframe when started
-		# both the actual working part anda quick link to there running loops, to inject async funtions for them to run
+		# both the actual working part and a quick link to there running loops, to inject async funtions for them to run
 		# most likly used for the worker, that can calculate time consuming functions or discord because send_message must be caled from this loop
 		self.Discord:PhaazebotDiscord = PhaazebotDiscord(self)
 		self.DiscordLoop:asyncio.AbstractEventLoop = None
 
 		self.Twitch = None
 		self.TwitchLoop:asyncio.AbstractEventLoop = None
+
+		self.TwitchEvents:PhaazebotTwitchEvents = PhaazebotTwitchEvents(self)
+		self.TwitchEventsLoop:asyncio.AbstractEventLoop = None
 
 		self.Osu:PhaazebotOsu = PhaazebotOsu(self)
 		self.OsuLoop:asyncio.AbstractEventLoop = None

@@ -24,6 +24,7 @@ class Mainframe(threading.Thread):
 			worker = dict(current=WorkerThread(BASE), tpl=WorkerThread),
 			web = dict(current=WebThread(BASE), tpl=WebThread),
 			osu_irc = dict(current=OsuThread(BASE), tpl=OsuThread),
+			twitch_events = dict(current=TwitchEventsThread(BASE), tpl=TwitchEventsThread),
 		)
 
 	def run(self) -> None:
@@ -153,7 +154,7 @@ class OsuThread(threading.Thread):
 			self.BASE.Osu:PhaazebotOsu = PhaazebotOsu(self.BASE)
 			self.BASE.OsuLoop:asyncio.AbstractEventLoop = self.loop
 
-			self.BASE.IsReady.osu = True
+			self.BASE.IsReady.osu = False
 			self.loop.run_until_complete( self.BASE.Osu.start(token=self.BASE.Access.OSU_IRC_TOKEN, nickname=self.BASE.Access.OSU_IRC_USERNAME, reconnect=True) )
 
 			# we only should reach this point when osu is ended gracefull
@@ -163,4 +164,30 @@ class OsuThread(threading.Thread):
 
 		except Exception as e:
 			self.BASE.Logger.error(f"Osu Thread crashed: {str(e)}")
+			traceback.print_exc()
+
+class TwitchEventsThread(threading.Thread):
+	def __init__(self, BASE:"Phaazebot"):
+		super().__init__()
+		self.BASE:"Phaazebot" = BASE
+		self.name:str = "Twitch Events"
+		self.daemon:bool = True
+		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
+
+	def run(self) -> None:
+		try:
+			asyncio.set_event_loop(self.loop)
+			from Platforms.Twitch.main_events import PhaazebotTwitchEvents
+
+			self.BASE.TwitchEvents:PhaazebotTwitchEvents = PhaazebotTwitchEvents(self.BASE)
+			self.BASE.TwitchEventsLoop:asyncio.AbstractEventLoop = self.loop
+
+			self.loop.run_until_complete( self.BASE.TwitchEvents.start() )
+
+			# we only should reach this point when it's ended gracefull
+			# else it will always call a exception
+			self.BASE.Logger.info("Twitch Events stopped")
+
+		except Exception as e:
+			self.BASE.Logger.error(f"Twitch Events Thread crashed: {str(e)}")
 			traceback.print_exc()
