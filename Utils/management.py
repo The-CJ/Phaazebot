@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-if TYPE_CHECKING:
+if TYPE_CHECKING or 1:
 	from main import Phaazebot
 
 import asyncio
@@ -23,6 +23,9 @@ def shutdownModule(BASE:"Phaazebot", module_name:str) -> bool:
 	elif module_name == "web":
 		return shutdownModuleWeb(BASE)
 
+	elif module_name == "twitch_events":
+		return shutdownModuleTwitchEvents(BASE)
+
 	return False
 
 def shutdownModuleDiscord(BASE:"Phaazebot") -> bool:
@@ -39,7 +42,13 @@ def shutdownModuleWeb(BASE:"Phaazebot") -> bool:
 		of send a disconnect event to all clients.
 		that should be handled by the functions in on_shutdown
 		from Platform.Web.main_web.PhaazebotWeb
-		the discord thread will be done after logout
 	"""
 	asyncio.ensure_future(BASE.Web.shutdown(), loop=BASE.WebLoop)
+	return True
+
+def shutdownModuleTwitchEvents(BASE:"Phaazebot") -> bool:
+	"""
+		this is actully just to be sure i guess
+	"""
+	BASE.TwitchEvents.stop()
 	return True
