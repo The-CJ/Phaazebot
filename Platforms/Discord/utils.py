@@ -118,11 +118,19 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 	else:
 		return []
 
-async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0, edited:int=0) -> list:
+async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0, edited:int=0, name_contains:str=None) -> list:
 	"""
 		Get server levels, if member_id = None, get all
 		else only get one associated with the member_id
 		Returns a list of DiscordUserStats().
+
+		guild_id [required]
+		member_id : limits results to 1
+		order_str : order at end of sql
+		limit : max return list length
+		offset : list offset
+		edited : select (0 = all), (1 = not edited), (2 = only edited)
+		name_contains : username or nickname LIKE X
 	"""
 
 	sql:str = """
@@ -146,6 +154,11 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, member_id:
 	if member_id:
 		sql += " AND `discord_user`.`member_id` = %s"
 		values += (member_id,)
+
+	if name_contains:
+		name_contains = f"%{name_contains}%"
+		sql += " AND (`discord_user`.`username` LIKE %s OR `discord_user`.`nickname` LIKE %s)"
+		values += (name_contains, name_contains)
 
 	if edited == 2:
 		sql += " AND `discord_user`.`edited` = 1"

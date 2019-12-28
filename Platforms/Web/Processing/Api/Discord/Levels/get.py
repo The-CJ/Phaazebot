@@ -53,7 +53,7 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get levels
-	res_levels:list = await getDiscordServerUsers(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order, edited=edited)
+	res_levels:list = await getDiscordServerUsers(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, order_str=order, edited=edited, name_contains=name_contains)
 
 	return_list:list = list()
 
@@ -72,10 +72,6 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 					level_user["username"] = Mem.nick
 				else:
 					level_user["username"] = Mem.name
-
-			# TODO: filter that via database at some time, and yes, that means saving all (nick)names
-			if name_contains and not ( name_contains.lower() in level_user["username"].lower() ):
-				continue
 
 		return_list.append(level_user)
 
