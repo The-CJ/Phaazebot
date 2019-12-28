@@ -60,12 +60,23 @@ class PhaazebotTwitchEvents(object):
 				# no alerts at all, skip everything and try again much later
 				# this will happen close to never
 				self._refresh_time_multi = 10.0
-				self.BASE.Logger.debug(f"No action, delaying next check ({self.delay}s)", require="twitch:events")
+				self.BASE.Logger.debug(f"No actions, delaying next check ({self.delay}s)", require="twitch:events")
 				return
 
 			try:
 				id_list:list = [ x["channel_id"] for x in res ]
-				current_live_streams = await getTwitchStreams(self.BASE, id_list, limit=1)
+				current_live_streams:list = await getTwitchStreams(self.BASE, id_list)
+
+				if not current_live_streams:
+					self.BASE.PhaazeDB.updateQuery( table="twitch_channel", content=dict(live=0), where="1=1" )
+					self.BASE.Logger.debug(f"No channels live, delaying next check ({self.delay}s)", require="twitch:events")
+					return
 
 			except:
-				pass
+				# No API response
+				# nothing usual, just twitch things
+				self._refresh_time_multi = 0.75
+				self.BASE.Logger.error(f"(Twitch Events) No Twitch API Response, delaying next check ({self.delay}s)")
+				return
+
+			# TODO: make stuff i guess
