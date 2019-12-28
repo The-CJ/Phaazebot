@@ -22,7 +22,7 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	result:list = await getDiscordServerUsers(cls, Message.guild.id, member_id=Message.author.id)
 
 	if not result:
-		LevelUser:DiscordUserStats = await newUser(cls, Message.guild.id, Message.author.id)
+		LevelUser:DiscordUserStats = await newUser(cls, Message.guild.id, Message.author.id, username=Message.author.name, nickname=Message.author.nick)
 	else:
 		# there should be only one in the list
 		LevelUser:DiscordUserStats = result.pop(0)
@@ -35,25 +35,35 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 
 	cls.BASE.PhaazeDB.query("""
 		UPDATE `discord_user`
-		SET `exp` = `exp` + 1
+		SET
+			`exp` = `exp` + 1,
+			`username` = %s,
+			`nickname` = %s
 		WHERE `discord_user`.`guild_id` = %s
  			AND `discord_user`.`member_id` = %s""",
-		(LevelUser.server_id, LevelUser.member_id)
+		(Message.author.name, Message.author.nick, LevelUser.server_id, LevelUser.member_id)
 	)
 
 	await checkLevelProgress(cls, Message, LevelUser, ServerSettings)
 
-async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str) -> DiscordUserStats:
+async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_infos:dict) -> DiscordUserStats:
 
-	sql:str = """
-		INSERT INTO discord_user
-		(guild_id, member_id)
-		VALUES (%s, %s)
-	"""
-	values:tuple = (guild_id, member_id)
+	user_info:dict = dict(
+		guild_id = guild_id,
+		member_id = member_id
+	)
+
+	if "username" in more_infos:
+		user_info["username"] = more_infos["username"]
+
+	if "nickname" in more_infos:
+		user_info["nickname"] = more_infos["nickname"]
 
 	try:
-		cls.BASE.PhaazeDB.query(sql, values)
+		cls.BASE.PhaazeDB.insertQuery(
+			table = "discord_user",
+			content = user_info
+		)
 		cls.BASE.Logger.debug(f"(Discord) New entry into levels: S:{guild_id} M:{member_id}", require="discord:level")
 		return DiscordUserStats( {"member_id": member_id}, guild_id )
 	except:
