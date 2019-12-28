@@ -27,7 +27,8 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 		# there should be only one in the list
 		LevelUser:DiscordUserStats = result.pop(0)
 
-	if Message.channel.id in ServerSettings.disabled_levelchannels: return
+	# we check here so we ensure a new user entry, if needed
+	if str(Message.channel.id) in ServerSettings.disabled_levelchannels: return
 	if ServerSettings.owner_disable_level: return
 
 	LevelUser.exp += 1
