@@ -36,7 +36,7 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		)
 	)
 
-	cls.Web.BASE.PhaazeDB.updateQuery("""
+	cls.Web.BASE.PhaazeDB.query("""
 		UPDATE `user`
 		SET `last_login` = NOW()
 		WHERE `user`.`id` = %s""",

@@ -32,7 +32,7 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 
 	LevelUser.exp += 1
 
-	cls.BASE.PhaazeDB.updateQuery("""
+	cls.BASE.PhaazeDB.query("""
 		UPDATE `discord_user`
 		SET `exp` = `exp` + 1
 		WHERE `discord_user`.`guild_id` = %s
