@@ -25,21 +25,19 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 		LevelUser:DiscordUserStats = await newUser(cls, Message.guild.id, Message.author.id)
 	else:
 		# there should be only one in the list
-		LevelUser:DiscordUserStats = result[0]
+		LevelUser:DiscordUserStats = result.pop(0)
 
 	if Message.channel.id in ServerSettings.disabled_levelchannels: return
 	if ServerSettings.owner_disable_level: return
 
 	LevelUser.exp += 1
-	if LevelUser.exp >= 0xFFFFF: #=1'048'575
-		LevelUser.exp = 1
 
-	cls.BASE.PhaazeDB.query("""
-		UPDATE discord_user
-		SET exp = %s
-		WHERE discord_user.guild_id = %s
- 			AND discord_user.member_id = %s""",
-		(LevelUser.exp, LevelUser.server_id, LevelUser.member_id)
+	cls.BASE.PhaazeDB.updateQuery("""
+		UPDATE `discord_user`
+		SET `exp` = `exp` + 1
+		WHERE `discord_user`.`guild_id` = %s
+ 			AND `discord_user`.`member_id` = %s""",
+		(LevelUser.server_id, LevelUser.member_id)
 	)
 
 	await checkLevelProgress(cls, Message, LevelUser, ServerSettings)

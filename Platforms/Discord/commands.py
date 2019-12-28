@@ -48,6 +48,11 @@ class GDCCS():
 GDCCS = GDCCS()
 
 async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+	"""
+		This function is run on every message and checks if there is a command to execute
+		Returns True if a function is executed, else False
+		(Thats needed for level stats, because commands dont give exp)
+	"""
 
 	CommandContext:DiscordCommandContext = DiscordCommandContext(cls, Message, Settings=ServerSettings)
 
