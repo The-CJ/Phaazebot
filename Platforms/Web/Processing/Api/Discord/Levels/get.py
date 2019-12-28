@@ -29,7 +29,7 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
 	detailed:bool = Data.getBool("detailed", False) # with names, avatar hash etc.
 	nickname:bool = Data.getBool("nickname", False) # usernames or nicknames?
-	name_contains:str = Data.getStr("name_contains", "") # only show names that contain stuff (workes only if detailed is true)
+	name_contains:str = Data.getStr("name_contains", "")
 	order:str = Data.getStr("order", "").lower() # order by
 	edited:int = Data.getInt("edited", 0, min_x=0, max_x=2) # 0 = all, 1 = only nonedited, 2 = only edited
 
