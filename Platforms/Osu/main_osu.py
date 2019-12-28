@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import osu_irc as osu
 
-class PhaazeOsu(osu.Client):
+class PhaazebotOsu(osu.Client):
 	def __init__(self, BASE):
 		super().__init__()
 		self.BASE:"Phaazebot" = BASE

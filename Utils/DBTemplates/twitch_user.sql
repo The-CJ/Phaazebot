@@ -1,5 +1,5 @@
 /*
-DESCRIBE `twitch_level`;
+DESCRIBE `twitch_user`;
 
 +-------------------+--------------+------+-----+---------+----------------+
 | Field             | Type         | Null | Key | Default | Extra          |
@@ -15,9 +15,9 @@ DESCRIBE `twitch_level`;
 +-------------------+--------------+------+-----+---------+----------------+
 */
 
--- SHOW CREATE TABLE `twitch_level`;
+-- SHOW CREATE TABLE `twitch_user`;
 
-CREATE TABLE `twitch_level` (
+CREATE TABLE `twitch_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `channel_id` varchar(128) NOT NULL,
   `user_id` varchar(128) NOT NULL,

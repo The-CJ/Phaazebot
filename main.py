@@ -9,7 +9,7 @@ from Utils.Classes.dbconn import DBConn
 # platforms
 from Platforms.Discord.main_discord import PhaazebotDiscord
 from Platforms.Web.main_web import PhaazebotWeb
-from Platforms.Osu.main_osu import PhaazeOsu
+from Platforms.Osu.main_osu import PhaazebotOsu
 
 class Phaazebot(object):
 	"""
@@ -46,7 +46,7 @@ class Phaazebot(object):
 		self.Twitch = None
 		self.TwitchLoop:asyncio.AbstractEventLoop = None
 
-		self.Osu:PhaazeOsu = PhaazeOsu(self)
+		self.Osu:PhaazebotOsu = PhaazebotOsu(self)
 		self.OsuLoop:asyncio.AbstractEventLoop = None
 
 		self.Twitter = None

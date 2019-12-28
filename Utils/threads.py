@@ -148,9 +148,9 @@ class OsuThread(threading.Thread):
 	def run(self) -> None:
 		try:
 			asyncio.set_event_loop(self.loop)
-			from Platforms.Osu.main_osu import PhaazeOsu
+			from Platforms.Osu.main_osu import PhaazebotOsu
 
-			self.BASE.Osu:PhaazeOsu = PhaazeOsu(self.BASE)
+			self.BASE.Osu:PhaazebotOsu = PhaazebotOsu(self.BASE)
 			self.BASE.OsuLoop:asyncio.AbstractEventLoop = self.loop
 
 			self.BASE.IsReady.osu = True
