@@ -46,14 +46,15 @@ class PhaazebotTwitchEvents(object):
 			# to reduce twitch requests as much as possible, we only ask channels,
 			# that have at least one discord channel alert or have Phaaze in the twitch channel active
 			res:list = self.BASE.PhaazeDB.selectQuery("""
-				SELECT DISTINCT
-				  `twitch_channel`.`channel_id` AS `channel_id`
+				SELECT
+				  `twitch_channel`.`channel_id`,
+				  `twitch_channel`.`game_id`,
+				  `twitch_channel`.`live`,
+				  GROUP_CONCAT(`discord_twitch_alert`.`discord_channel_id`) AS `alert_discord`
 				FROM `twitch_channel`
-				WHERE `twitch_channel`.`managed` = 1
-				UNION DISTINCT
-				SELECT DISTINCT
-				  `discord_twitch_alert`.`twitch_channel_id` AS `channel_id`
-				FROM `discord_twitch_alert`"""
+				LEFT JOIN `discord_twitch_alert`
+				  ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_channel`.`channel_id`
+				GROUP BY `twitch_channel`.`channel_id`"""
 			)
 
 			if not res:
@@ -79,4 +80,73 @@ class PhaazebotTwitchEvents(object):
 				self.BASE.Logger.error(f"(Twitch Events) No Twitch API Response, delaying next check ({self.delay}s)")
 				return
 
-			# TODO: make stuff i guess
+			# generate status dict's
+			status_dict_db:dict = self.generateStatusDB(res)
+			status_dict_api:dict = self.generateStatusAPI(current_live_streams)
+
+			await self.checkLiveStatus(status_dict_db, status_dict_api)
+
+			# everything done, set channels live in db
+			channel_ids:str = ",".join(Chan.user_id for Chan in current_live_streams)
+			self.BASE.PhaazeDB.query(f"""
+				UPDATE `twitch_channel`
+				SET `live` = CASE WHEN `twitch_channel`.`channel_id` IN ({channel_ids}) THEN 1 ELSE 0 END""",
+			)
+
+	def generateStatusDB(self, db_result:list) -> dict:
+		status_dict:dict = dict()
+
+		for r in db_result:
+
+			channel_id:str = str( r.get("channel_id", "") or "" )
+			game_id:str = str( r.get("game_id", "") or "" )
+			live:bool = bool( r.get("live", 0) )
+
+			status_dict[channel_id] = dict(
+				game_id = game_id,
+				live = live
+			)
+
+		return status_dict
+
+	def generateStatusAPI(self, api_result:list) -> dict:
+		status_dict:dict = dict()
+
+		for R in api_result:
+
+			user_id:str = str( R.user_id )
+			game_id:str = str( R.game_id )
+			live:bool = bool( R.stream_type == "live" )
+
+			status_dict[user_id] = dict(
+				game_id = game_id,
+				live = live
+			)
+
+		return status_dict
+
+	async def checkLiveStatus(self, status_db:dict, status_api:dict) -> None:
+		"""
+			Checks the currently known channels stats in status_api,
+			with the last known status in the status_db.
+
+			Its easy to understand, a channel is gone offline
+			if he is not in status_api but has live == True in the status_db
+			and gone online when live == False but is found in the status_api
+		"""
+
+		pass
+
+	# events
+	async def eventLive(self) -> None:
+		pass
+
+	async def eventGamechange(self) -> None:
+		pass
+
+	async def eventOffline(self, id_list:list) -> None:
+		"""
+			Event thats called for all twitch channels than gone offline
+			id_list is a list of channel id strings
+		"""
+		pass
