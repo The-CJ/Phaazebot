@@ -17,7 +17,7 @@ async def twitchAPICall(cls:"Phaazebot", url:str) -> requests.Response:
 
 async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=100) -> list:
 	"""
-		get all currently live streams based on 'stream' and 'search'
+		get all currently live streams based on 'item' and 'item_type'
 		Returns a list of TwitchStream()
 
 		item [required]
