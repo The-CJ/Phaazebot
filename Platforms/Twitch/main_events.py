@@ -92,7 +92,9 @@ class PhaazebotTwitchEvents(object):
 				UPDATE `twitch_channel`
 				SET `live` = CASE WHEN `twitch_channel`.`channel_id` IN ({channel_ids}) THEN 1 ELSE 0 END""",
 			)
+			self.BASE.Logger.debug("Updated twitch channel live status", require="twitch:events")
 
+	# dict generator
 	def generateStatusDB(self, db_result:list) -> dict:
 		status_dict:dict = dict()
 
@@ -134,6 +136,11 @@ class PhaazebotTwitchEvents(object):
 			if he is not in status_api but has live == True in the status_db
 			and gone online when live == False but is found in the status_api
 		"""
+
+		for channel_id in status_db:
+
+			entry_db:dict = status_db.get(channel_id, {})
+			entry_api:dict = status_api.get(channel_id, {})
 
 		pass
 
