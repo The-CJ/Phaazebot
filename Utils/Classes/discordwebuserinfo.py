@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Request
-from Utils.Classes.undefined import Undefined
+from Utils.Classes.undefined import UNDEFINED
 
 def forcable(f:Callable) -> Callable:
 	f.__forcable__ = True
@@ -133,18 +133,18 @@ class DiscordWebUserInfo(object):
 	async def finishUser(self, data:dict) -> None:
 		self.found = True
 
-		self.access_token:str = data.get("access_token", Undefined())
-		self.refresh_token:str = data.get("refresh_token", Undefined())
-		self.scope:str = data.get("scope", Undefined())
+		self.access_token:str = data.get("access_token", UNDEFINED)
+		self.refresh_token:str = data.get("refresh_token", UNDEFINED)
+		self.scope:str = data.get("scope", UNDEFINED)
 
 		user:dict = json.loads(data.get("user_info", "{}"))
 
-		self.username = user.get("username", Undefined())
-		self.verified = user.get("verified", Undefined())
-		self.locale = user.get("locale", Undefined())
-		self.premium_type = user.get("premium_type", Undefined())
-		self.user_id = user.get("id", Undefined())
-		self.flags = user.get("flags", Undefined())
-		self.avatar = user.get("avatar", Undefined())
-		self.discriminator = user.get("discriminator", Undefined())
-		self.email = user.get("email", Undefined())
+		self.username = user.get("username", UNDEFINED)
+		self.verified = user.get("verified", UNDEFINED)
+		self.locale = user.get("locale", UNDEFINED)
+		self.premium_type = user.get("premium_type", UNDEFINED)
+		self.user_id = user.get("id", UNDEFINED)
+		self.flags = user.get("flags", UNDEFINED)
+		self.avatar = user.get("avatar", UNDEFINED)
+		self.discriminator = user.get("discriminator", UNDEFINED)
+		self.email = user.get("email", UNDEFINED)

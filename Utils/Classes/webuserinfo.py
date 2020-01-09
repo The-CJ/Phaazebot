@@ -76,6 +76,11 @@ class WebUserInfo(DBContentClass):
 		return j
 
 	def checkRoles(self, roles:str or list) -> bool:
+		"""
+			Checks if a searched roles is assigned to this user
+			returns True on first match
+			else False
+		"""
 		if not roles: return True
 		if not self.roles: return False
 		if type(roles) != list: roles = [roles]

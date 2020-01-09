@@ -7,12 +7,22 @@ class DBContentClass(object):
 		to create usable classes
 	"""
 
-	def fromJsonField(self, data:str or bytes or None) -> list:
-		if type(data) == Undefined: return list()
-		if not data: return list()
+	def fromJsonField(self, data:str or bytes) -> dict or list:
+		"""
+			converts json-string into a dict (or list)
+			giving undefined or bool(data) == False
+			will result in a empty dict
+		"""
+		if type(data) == Undefined: return dict()
+		if not data: return dict()
 		return json.loads(data)
 
-	def fromStringList(self, data:str or bytes or None, seperator:str=",") -> list:
+	def fromStringList(self, data:str or bytes, seperator:str=",") -> list:
+		"""
+			splits string into a list,
+			giving undefined or bool(data) == False
+			will result in a empty list
+		"""
 		if type(data) == Undefined: return list()
 		if not data: return list()
 		return data.split(seperator)

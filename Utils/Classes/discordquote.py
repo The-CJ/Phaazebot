@@ -1,4 +1,4 @@
-from Utils.Classes.undefined import Undefined
+from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.dbcontentclass import DBContentClass
 
 class DiscordQuote(DBContentClass):
@@ -8,8 +8,8 @@ class DiscordQuote(DBContentClass):
 	def __init__(self, data:dict, guild_id:str):
 
 		self.guild_id:str = guild_id
-		self.quote_id:str = data.get("id", Undefined())
-		self.content:str = data.get("content", Undefined())
+		self.quote_id:str = data.get("id", UNDEFINED)
+		self.content:str = data.get("content", UNDEFINED)
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' quote='{self.quote_id}'>"
@@ -19,7 +19,7 @@ class DiscordQuote(DBContentClass):
 
 		j:dict = dict()
 
-		j["quote_id"] = self.quote_id
-		j["content"] = self.content
+		j["quote_id"] = str(self.quote_id)
+		j["content"] = str(self.content)
 
 		return j

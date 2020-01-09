@@ -29,6 +29,6 @@ class Undefined():
 	def __iter__(self): return self
 	def __next__(self): raise StopIteration
 
-# a constant class of undefined... you you dont need to generate new objects...
+# a constant class of undefined... so you dont need to generate new objects...
 # or so? is this saving resources... idk
 UNDEFINED:Undefined = Undefined()

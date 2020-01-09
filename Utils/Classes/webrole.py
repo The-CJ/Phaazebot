@@ -20,8 +20,8 @@ class WebRole(DBContentClass):
 		j:dict = dict()
 
 		j["role_id"] = str(self.role_id)
-		j["name"] = self.name
-		j["description"] = self.description if self.description else ""
+		j["name"] = str(self.name)
+		j["description"] = str(self.description)
 		j["can_be_removed"] = bool(self.can_be_removed)
 
 		return j

@@ -1,6 +1,6 @@
 from typing import Any
 from Utils.config import ConfigParser
-from Utils.Classes.undefined import Undefined
+from Utils.Classes.undefined import UNDEFINED
 
 class AccessStore(object):
 	"""
@@ -134,10 +134,10 @@ class GlobalStorage(dict):
 	def add(self, key:str, value:Any) -> None:
 		self.__store[key] = value
 
-	def get(self, key:str, alt:Any=Undefined()) -> Any:
+	def get(self, key:str, alt:Any=UNDEFINED) -> Any:
 		return self.__store.get(key, alt)
 
-	def rem(self, key:str, alt:Any=Undefined()) -> Any:
+	def rem(self, key:str, alt:Any=UNDEFINED) -> Any:
 		return self.__store.pop(key, alt)
 
 GlobalStorage = GlobalStorage()

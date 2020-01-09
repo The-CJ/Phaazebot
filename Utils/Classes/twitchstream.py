@@ -23,18 +23,18 @@ class TwitchStream(object):
 		h:int = int(w/16*9)
 		return self._thumbnail.format(width=w, height=h)
 
-	def toJSON(self) -> dict:
+	def toJSON(self, thumbnail_width:int=1920) -> dict:
 		""" Returns a json save dict representation of all values for API, storage, etc... """
 
 		j:dict = dict()
 
-		j["user_id"] = self.user_id
-		j["user_name"] = self.user_name
-		j["game_id"] = self.game_id
-		j["stream_type"] = self.stream_type
-		j["title"] = self.title
-		j["viewer_count"] = self.viewer_count
-		j["language"] = self.language
-		j["thumbnail"] = self.thumbnail()
+		j["user_id"] = str(self.user_id)
+		j["user_name"] = str(self.user_name)
+		j["game_id"] = str(self.game_id)
+		j["stream_type"] = str(self.stream_type)
+		j["title"] = str(self.title)
+		j["viewer_count"] = int(self.viewer_count)
+		j["language"] = str(self.language)
+		j["thumbnail"] = str( self.thumbnail(thumbnail_width) )
 
 		return j
