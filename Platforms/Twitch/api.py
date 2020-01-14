@@ -27,7 +27,9 @@ async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="use
 
 	if type(item) is not list: item = [item]
 
-	if limit > 100: limit = 100
+	if limit > 100:
+		cls.Logger.critical("Requesting more then 100 Streams -> limiting to 100 : TODO: implement mass requests")
+		limit = 100
 
 	query:str = f"?first={limit}"
 
@@ -38,3 +40,28 @@ async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="use
 
 	resp:dict = (await twitchAPICall(cls, link)).json()
 	return [ TwitchStream(s) for s in resp.get("data", []) ]
+
+async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id") -> list:
+	"""
+		get all game data based on 'item' and 'item_type'
+		Returns a list of TwitchGame()
+
+		item [required]
+		item_type : what are the contains of `item` (id, name) | name must be exact, not good for search
+	"""
+
+	if type(item) is not list: item = [item]
+
+	if len(item) > 100:
+		cls.Logger.critical("Requesting more then 100 Games -> limiting to 100 : TODO: implement mass requests")
+		item = item[:100]
+
+	query:str = f"?{item_type}={item.pop(0)}"
+
+	for i in item:
+		query += f"&{item_type}={i}"
+
+	link:str = f"{ROOT_URL}games{query}"
+
+	resp:dict = (await twitchAPICall(cls, link)).json()
+	return [ TwitchGame(s) for s in resp.get("data", []) ]
