@@ -1,19 +1,20 @@
 ## Programm call variables:
 
-`python3.7 main.py`
+`python3.8 main.py`
 
 ### args
-```
-# allows start without configuration
--no-args   
-```
+
+* -no-args
+    * allows start without configuration
 
 ### kwargs
-```
-# set logging type
---logging=(console, systemd)
 
-# set debug outputs
---debug=require
-// require can be found at any debug print call, "all" gives everything
-```
+* --logging=
+    * console *(default)*
+
+* --debug=
+    * all
+        * Shows everything
+    * "" (None / Empty) *(default)*
+        * Shows nothing
+    * Everything else can be found inside the code at the debug functions
