@@ -35,7 +35,7 @@ async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="use
 		cls.Logger.critical("Requesting more then 100 Streams -> limiting to 100 : TODO: implement mass requests")
 		item = item[:100]
 
-	query:str = f"?first={limit}"
+	query:str = f"?first={len(item)}"
 
 	for i in item:
 		query += f"&{item_type}={i}"
