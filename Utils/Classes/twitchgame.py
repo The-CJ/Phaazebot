@@ -11,7 +11,7 @@ class TwitchGame(object):
 		self._thumbnail:str = data.get("box_art_url", UNDEFINED)
 
 	def __repr__(self):
-		return f"<{self.__class__.__name__} id='{self.game_id}' name='{self.name}'>"
+		return f"<{self.__class__.__name__} game_id='{self.game_id}' name='{self.name}'>"
 
 	def thumbnail(self, w:int=138) -> str:
 		h:int = int(w/69*95)

@@ -170,7 +170,6 @@ class PhaazebotTwitchEvents(object):
 		needed_games = await self.fillGameData(needed_games)
 		needed_users = await self.fillUserData(needed_users)
 
-		return 
 		print(needed_games)
 		print(needed_users)
 
