@@ -3,7 +3,7 @@ if TYPE_CHECKING:
 	from main import Phaazebot
 
 import asyncio
-from Platforms.Twitch.api import getTwitchStreams
+from Platforms.Twitch.api import getTwitchStreams, getTwitchGames
 from Utils.Classes.twitchstream import TwitchStream
 
 class PhaazebotTwitchEvents(object):
@@ -156,6 +156,23 @@ class PhaazebotTwitchEvents(object):
 
 		self.BASE.Logger.debug(f"Processing {len(events)} Twitch Events", require="twitchevents:processing")
 
+		# the following 2 dicts are key based with a simple True value
+		# every key must be searched in the twitch api for infos
+		# (actully just needed for games, because users are unique)
+		needed_games:dict = dict()
+		needed_users:dict = dict()
+
+		for event in events:
+			Status:StatusEntry = event[1]
+			needed_games[Status.game_id] = False
+			needed_users[Status.channel_id] = False
+
+		needed_games = await self.fillGameData(needed_games)
+		needed_users = await self.fillUserData(needed_users)
+
+		print(needed_games)
+		print(needed_users)
+
 	# dict generator
 	def generateStatusDB(self, db_result:list) -> dict:
 		status_dict:dict = dict()
@@ -187,6 +204,26 @@ class PhaazebotTwitchEvents(object):
 			status_dict[Entry.channel_id] = Entry
 
 		return status_dict
+
+	# api gatherer
+	async def fillGameData(self, requested_games:dict) -> dict:
+		"""
+			Tryes to get requested games by existing dict keys
+			value of these keys does not matter
+		"""
+
+		id_list:list = [ g for g in requested_games ]
+		result_game:list = await getTwitchGames(self.BASE, id_list)
+
+		for Game in result_game:
+			requested_games[Game.game_id] = Game
+
+		return requested_games
+
+	async def fillUserData(self, requested_users:dict) -> dict:
+		id_list:list = [ u for u in requested_users ]
+		# current_live_streams:list = await getTwitchUsers(self.BASE, id_list)
+		pass
 
 	# updates
 	async def updateChannelLive(self, streams:list) -> None:
