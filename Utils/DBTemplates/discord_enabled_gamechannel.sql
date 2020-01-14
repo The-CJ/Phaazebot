@@ -17,5 +17,5 @@ CREATE TABLE `discord_enabled_gamechannel` (
   `guild_id` varchar(128) NOT NULL,
   `channel_id` varchar(128) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `guild_id` (`guild_id`,`channel_id`)
+  UNIQUE KEY `entry_key` (`guild_id`,`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

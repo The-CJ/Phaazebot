@@ -17,5 +17,5 @@ CREATE TABLE `discord_blacklist_whitelistrole` (
   `guild_id` varchar(128) NOT NULL,
   `role_id` varchar(128) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `guild_id` (`guild_id`,`role_id`)
+  UNIQUE KEY `entry_key` (`guild_id`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

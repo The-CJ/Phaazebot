@@ -17,5 +17,5 @@ CREATE TABLE `user_has_role` (
   `user_id` int(11) NOT NULL,
   `role_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_id` (`user_id`, `role_id`)
+  UNIQUE KEY `role_key` (`user_id`, `role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

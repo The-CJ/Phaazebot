@@ -29,5 +29,5 @@ CREATE TABLE `discord_user` (
   `currency` int(11) DEFAULT 0,
   `on_server` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `guild_id` (`guild_id`,`member_id`)
+  UNIQUE KEY `user_key` (`guild_id`,`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

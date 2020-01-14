@@ -19,5 +19,5 @@ CREATE TABLE `discord_user_medal` (
   `member_id` varchar(128) NOT NULL,
   `name` varchar(512) DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `guild_id` (`guild_id`,`member_id`, `name`)
+  UNIQUE KEY `medal_key` (`guild_id`,`member_id`, `name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

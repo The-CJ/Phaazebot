@@ -35,5 +35,5 @@ CREATE TABLE `discord_command` (
   `uses` int(8) DEFAULT 0,
   `cooldown` int(8) DEFAULT 10,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `guild_id` (`guild_id`,`trigger`)
+  UNIQUE KEY `command_key` (`guild_id`,`trigger`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

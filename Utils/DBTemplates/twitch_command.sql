@@ -33,5 +33,5 @@ CREATE TABLE `twitch_command` (
   `uses` int(8) DEFAULT 0,
   `cooldown` int(8) DEFAULT 10,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `guild_id` (`channel_id`,`trigger`)
+  UNIQUE KEY `command_key` (`channel_id`,`trigger`)
 ) ENGINE=InnoDB CHARSET=utf8mb4;

@@ -19,5 +19,5 @@ CREATE TABLE `discord_assignrole` (
   `trigger` varchar(128) NOT NULL,
   `role_id` varchar(128) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `guild_id` (`guild_id`,`trigger`,`role_id`)
+  UNIQUE KEY `role_key` (`guild_id`,`trigger`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
