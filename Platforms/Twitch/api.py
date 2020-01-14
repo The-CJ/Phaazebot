@@ -15,7 +15,7 @@ async def twitchAPICall(cls:"Phaazebot", url:str) -> requests.Response:
 	header:dict = {"Client-ID": cls.Access.TWITCH_API_TOKEN}
 	return requests.get(url, headers=header)
 
-async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=100) -> list:
+async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=-1) -> list:
 	"""
 		get all currently live streams based on 'item' and 'item_type'
 		Returns a list of TwitchStream()
@@ -27,9 +27,12 @@ async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="use
 
 	if type(item) is not list: item = [item]
 
-	if limit > 100:
+	if limit > 0:
+		item = item[:limit]
+
+	if len(item) > 100:
 		cls.Logger.critical("Requesting more then 100 Streams -> limiting to 100 : TODO: implement mass requests")
-		limit = 100
+		item = item[:100]
 
 	query:str = f"?first={limit}"
 
