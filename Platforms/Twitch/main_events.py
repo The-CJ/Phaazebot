@@ -191,6 +191,7 @@ class PhaazebotTwitchEvents(object):
 	# updates
 	async def updateChannelLive(self, streams:list) -> None:
 		channel_ids:str = ",".join(Chan.user_id for Chan in streams)
+		if not channel_ids: channel_ids = "0"
 		self.BASE.PhaazeDB.query(f"""
 			UPDATE `twitch_channel`
 			SET `live` = CASE WHEN `twitch_channel`.`channel_id` IN ({channel_ids}) THEN 1 ELSE 0 END""",
@@ -208,6 +209,7 @@ class PhaazebotTwitchEvents(object):
 		game_sql:str = "UPDATE `twitch_channel` SET `game_id` = CASE"
 		for game_id in game_dict:
 			channels:str = ",".join(game_dict[game_id])
+			if not channels: channels = "0"
 			game_sql += f" WHEN `twitch_channel`.`channel_id` IN ({channels}) THEN {game_id}"
 		game_sql += " ELSE `game_id` END WHERE 1=1"
 
