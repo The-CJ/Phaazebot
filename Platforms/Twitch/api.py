@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 import requests
 from Utils.Classes.twitchstream import TwitchStream
+from Utils.Classes.twitchgame import TwitchGame
 
 ROOT_URL = "https://api.twitch.tv/helix/"
 
