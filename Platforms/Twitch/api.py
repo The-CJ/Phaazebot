@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import requests
 from Utils.Classes.twitchstream import TwitchStream
 from Utils.Classes.twitchgame import TwitchGame
+from Utils.Classes.twitchuser import TwitchUser
 
 ROOT_URL = "https://api.twitch.tv/helix/"
 
@@ -69,3 +70,28 @@ async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id") 
 
 	resp:dict = (await twitchAPICall(cls, link)).json()
 	return [ TwitchGame(s) for s in resp.get("data", []) ]
+
+async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id") -> list:
+	"""
+		get all game data based on 'item' and 'item_type'
+		Returns a list of TwitchUser()
+
+		item [required]
+		item_type : what are the contains of `item` (id, login)
+	"""
+
+	if type(item) is not list: item = [item]
+
+	if len(item) > 100:
+		cls.Logger.critical("Requesting more then 100 User -> limiting to 100 : TODO: implement mass requests")
+		item = item[:100]
+
+	query:str = f"?{item_type}={item.pop(0)}"
+
+	for i in item:
+		query += f"&{item_type}={i}"
+
+	link:str = f"{ROOT_URL}users{query}"
+
+	resp:dict = (await twitchAPICall(cls, link)).json()
+	return [ TwitchUser(s) for s in resp.get("data", []) ]
