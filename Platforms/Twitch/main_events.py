@@ -3,7 +3,7 @@ if TYPE_CHECKING:
 	from main import Phaazebot
 
 import asyncio
-from Platforms.Twitch.api import getTwitchStreams, getTwitchGames
+from Platforms.Twitch.api import getTwitchStreams, getTwitchGames, getTwitchUsers
 from Utils.Classes.twitchstream import TwitchStream
 
 class PhaazebotTwitchEvents(object):
@@ -170,6 +170,7 @@ class PhaazebotTwitchEvents(object):
 		needed_games = await self.fillGameData(needed_games)
 		needed_users = await self.fillUserData(needed_users)
 
+		return 
 		print(needed_games)
 		print(needed_users)
 
@@ -221,9 +222,18 @@ class PhaazebotTwitchEvents(object):
 		return requested_games
 
 	async def fillUserData(self, requested_users:dict) -> dict:
+		"""
+			Tryes to get requested user by existing dict keys
+			value of these keys does not matter
+		"""
+
 		id_list:list = [ u for u in requested_users ]
-		# current_live_streams:list = await getTwitchUsers(self.BASE, id_list)
-		pass
+		result_user:list = await getTwitchUsers(self.BASE, id_list)
+
+		for User in result_user:
+			requested_users[User.user_id] = User
+
+		return requested_users
 
 	# updates
 	async def updateChannelLive(self, streams:list) -> None:

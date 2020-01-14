@@ -6,7 +6,7 @@ class TwitchGame(object):
 	"""
 	def __init__(self, data:dict):
 
-		self.game_id:str = data.get("game_id", UNDEFINED)
+		self.game_id:str = data.get("id", UNDEFINED)
 		self.name:str = data.get("name", UNDEFINED)
 		self._thumbnail:str = data.get("box_art_url", UNDEFINED)
 
