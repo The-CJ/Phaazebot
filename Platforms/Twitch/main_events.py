@@ -5,6 +5,8 @@ if TYPE_CHECKING:
 import asyncio
 from Platforms.Twitch.api import getTwitchStreams, getTwitchGames, getTwitchUsers
 from Utils.Classes.twitchstream import TwitchStream
+from Utils.Classes.twitchgame import TwitchGame
+from Utils.Classes.twitchuser import TwitchUser
 
 class PhaazebotTwitchEvents(object):
 	"""
@@ -88,10 +90,10 @@ class PhaazebotTwitchEvents(object):
 		await self.checkChanges(status_dict_db, status_dict_api)
 
 		# update channels live in db
-		await self.updateChannelLive(current_live_streams)
+		# await self.updateChannelLive(current_live_streams)
 
 		# update game in db
-		await self.updateChannelGame(current_live_streams)
+		# await self.updateChannelGame(current_live_streams)
 
 	async def checkChanges(self, status_db:dict, status_api:dict) -> None:
 		"""
@@ -126,6 +128,8 @@ class PhaazebotTwitchEvents(object):
 
 			# twitch gave us a result
 			else:
+				# complete API Entry, since this is missing the alerts
+				EntryAPI.alert_discord = EntryDB.alert_discord
 
 				# we have a api result and it was not live in db
 				# -> channel gone live
@@ -137,6 +141,7 @@ class PhaazebotTwitchEvents(object):
 				 # -> game changed
 				elif str(EntryAPI.game_id) != str(EntryDB.game_id):
 					detected_events.append( [2, EntryAPI] )
+					continue
 
 		return await self.handleEvents(detected_events)
 
@@ -170,8 +175,35 @@ class PhaazebotTwitchEvents(object):
 		needed_games = await self.fillGameData(needed_games)
 		needed_users = await self.fillUserData(needed_users)
 
-		print(needed_games)
-		print(needed_users)
+		alert_list_live:list = list()
+		alert_list_gamechange:list = list()
+		alert_list_offline:list = list()
+
+		for event in events:
+			Status:StatusEntry = event[1]
+			Status.Game = needed_games.get(Status.game_id, None)
+			Status.User = needed_users.get(Status.channel_id, None)
+
+
+		if event[0] == 0:
+			alert_list_offline.append(Status)
+
+		elif event[0] == 1:
+			alert_list_live.append(Status)
+
+		elif event[0] == 2:
+			alert_list_gamechange.append(Status)
+
+		else:
+			self.BASE.Logger.warning(f"Unknown Status Event number: {event[0]}")
+
+		# launch events
+		asyncio.ensure_future( self.eventLive(alert_list_live) )
+		asyncio.ensure_future( self.eventOffline(alert_list_offline) )
+		asyncio.ensure_future( self.eventGamechange(alert_list_gamechange) )
+
+		# TODO: update DB twitch_game
+		# TODO: update DB twitch_user_name
 
 	# dict generator
 	def generateStatusDB(self, db_result:list) -> dict:
@@ -184,6 +216,8 @@ class PhaazebotTwitchEvents(object):
 			Entry.channel_id = str( res.get("channel_id", "") or "" )
 			Entry.game_id = str( res.get("game_id", "") or "" )
 			Entry.live = bool( res.get("live", 0) )
+
+			Entry.alert_discord = list( res.get("alert_discord", []) or [] )
 
 			status_dict[Entry.channel_id] = Entry
 
@@ -271,7 +305,9 @@ class PhaazebotTwitchEvents(object):
 		"""
 		if not status_list: return
 
-		self.BASE.Logger.debug(f"Sending LIVE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
+		self.BASE.Logger.debug(f"Received LIVE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
+
+		print(status_list)
 
 	async def eventGamechange(self, status_list:list) -> None:
 		"""
@@ -281,7 +317,9 @@ class PhaazebotTwitchEvents(object):
 		"""
 		if not status_list: return
 
-		self.BASE.Logger.debug(f"Sending GAMECHANGE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
+		self.BASE.Logger.debug(f"Received GAMECHANGE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
+
+		print(status_list)
 
 	async def eventOffline(self, status_list:list) -> None:
 		"""
@@ -291,7 +329,9 @@ class PhaazebotTwitchEvents(object):
 		"""
 		if not status_list: return
 
-		self.BASE.Logger.debug(f"Sending OFFLINE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
+		self.BASE.Logger.debug(f"Received OFFLINE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
+
+		print(status_list)
 
 class StatusEntry(object):
 	"""
@@ -301,7 +341,15 @@ class StatusEntry(object):
 		self.channel_id:str = ""
 		self.game_id:str = ""
 		self.live:bool = False
+
 		self.Stream:TwitchStream = None
+		self.User:TwitchUser = None
+		self.Game:TwitchGame = None
+
+		self.alert_discord:list = list()
+
+	def __repr__(self):
+		return f"<{self.__class__.__name__} Stream={self.Stream} Game={self.Game} User={self.User} >"
 
 	def __bool__(self):
 		return bool(self.live)
