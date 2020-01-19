@@ -301,12 +301,16 @@ class PhaazebotTwitchEvents(object):
 			updates the db with data we gathered before
 		"""
 
-		sql:str = "REPLACE INTO `twitch_game` (`game_id`,`name`) VALUES " + ", ".join("(%s, %s)" for x in update_games)
+		sql:str = "REPLACE INTO `twitch_game` (`game_id`,`name`) VALUES " + ", ".join("(%s, %s)" for x in update_games if x)
 		sql_values:tuple = ()
 
 		for game_id in update_games:
 			Game:TwitchGame = update_games[game_id]
+			if not Game: continue # could be unfound in api from .fillGameData and still be False
 			sql_values += (Game.game_id, Game.name)
+
+		# no requested games are found in API, SQL whould be invalid -> skip
+		if not sql_values: return
 
 		self.BASE.PhaazeDB.query(sql, sql_values)
 		self.BASE.Logger.debug(f"Updated DB - twitch_game {len(update_games)} Entry(s)", require="twitchevents:db")
@@ -316,12 +320,16 @@ class PhaazebotTwitchEvents(object):
 			updates the db with data we gathered before
 		"""
 
-		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`,`name`, `display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in update_users)
+		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`,`name`, `display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in update_users if x)
 		sql_values:tuple = ()
 
 		for user_id in update_users:
 			User:TwitchUser = update_users[user_id]
+			if not User: continue # could be unfound in api from .fillUserData and still be False
 			sql_values += (User.user_id, User.name, User.display_name)
+
+		# no requested users are found in API, SQL whould be invalid -> skip
+		if not sql_values: return
 
 		self.BASE.PhaazeDB.query(sql, sql_values)
 		self.BASE.Logger.debug(f"Updated DB - twitch_user_name {len(update_users)} Entrys(s)", require="twitchevents:db")
