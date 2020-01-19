@@ -90,10 +90,10 @@ class PhaazebotTwitchEvents(object):
 		await self.checkChanges(status_dict_db, status_dict_api)
 
 		# update channels live in db
-		# await self.updateChannelLive(current_live_streams)
+		await self.updateChannelLive(current_live_streams)
 
 		# update game in db
-		# await self.updateChannelGame(current_live_streams)
+		await self.updateChannelGame(current_live_streams)
 
 	async def checkChanges(self, status_db:dict, status_api:dict) -> None:
 		"""
@@ -181,9 +181,8 @@ class PhaazebotTwitchEvents(object):
 
 		for event in events:
 			Status:StatusEntry = event[1]
-			Status.Game = needed_games.get(Status.game_id, None)
-			Status.User = needed_users.get(Status.channel_id, None)
-
+			Status.Game = needed_games.get(Status.game_id, False)
+			Status.User = needed_users.get(Status.channel_id, False)
 
 		if event[0] == 0:
 			alert_list_offline.append(Status)
@@ -197,13 +196,14 @@ class PhaazebotTwitchEvents(object):
 		else:
 			self.BASE.Logger.warning(f"Unknown Status Event number: {event[0]}")
 
+		# update db
+		asyncio.ensure_future( self.updateTwitchGames(needed_games) )
+		asyncio.ensure_future( self.updateTwitchUserNames(needed_users) )
+
 		# launch events
 		asyncio.ensure_future( self.eventLive(alert_list_live) )
 		asyncio.ensure_future( self.eventOffline(alert_list_offline) )
 		asyncio.ensure_future( self.eventGamechange(alert_list_gamechange) )
-
-		# TODO: update DB twitch_game
-		# TODO: update DB twitch_user_name
 
 	# dict generator
 	def generateStatusDB(self, db_result:list) -> dict:
@@ -276,7 +276,7 @@ class PhaazebotTwitchEvents(object):
 			UPDATE `twitch_channel`
 			SET `live` = CASE WHEN `twitch_channel`.`channel_id` IN ({channel_ids}) THEN 1 ELSE 0 END""",
 		)
-		self.BASE.Logger.debug("Updated DB - twitch_channel (live)", require="twitchevents:game")
+		self.BASE.Logger.debug("Updated DB - twitch_channel (live)", require="twitchevents:db")
 
 	async def updateChannelGame(self, streams:list) -> None:
 		game_dict:dict = dict()
@@ -294,7 +294,37 @@ class PhaazebotTwitchEvents(object):
 		game_sql += " ELSE `game_id` END WHERE 1=1"
 
 		self.BASE.PhaazeDB.query(game_sql)
-		self.BASE.Logger.debug("Updated DB - twitch_channel (game_id)", require="twitchevents:game")
+		self.BASE.Logger.debug("Updated DB - twitch_channel (game_id)", require="twitchevents:db")
+
+	async def updateTwitchGames(self, update_games:dict) -> None:
+		"""
+			updates the db with data we gathered before
+		"""
+
+		sql:str = "REPLACE INTO `twitch_game` (`game_id`,`name`) VALUES " + ", ".join("(%s, %s)" for x in update_games)
+		sql_values:tuple = ()
+
+		for game_id in update_games:
+			Game:TwitchGame = update_games[game_id]
+			sql_values += (Game.game_id, Game.name)
+
+		self.BASE.PhaazeDB.query(sql, sql_values)
+		self.BASE.Logger.debug(f"Updated DB - twitch_game {len(update_games)} Entry(s)", require="twitchevents:db")
+
+	async def updateTwitchUserNames(self, update_users:dict) -> None:
+		"""
+			updates the db with data we gathered before
+		"""
+
+		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`,`name`, `display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in update_users)
+		sql_values:tuple = ()
+
+		for user_id in update_users:
+			User:TwitchUser = update_users[user_id]
+			sql_values += (User.user_id, User.name, User.display_name)
+
+		self.BASE.PhaazeDB.query(sql, sql_values)
+		self.BASE.Logger.debug(f"Updated DB - twitch_user_name {len(update_users)} Entrys(s)", require="twitchevents:db")
 
 	# events
 	async def eventLive(self, status_list:list) -> None:
