@@ -4,6 +4,17 @@ from mysql.connector import MySQLConnection
 class DBConn(object):
 	"""
 		Should handle all incomming requests
+
+		All query function take an optional `debug` kwarg
+		it is not returned, but gets filled with various data.
+		Just give a dict reference with the call to get the data.
+
+		For example, to get the formated query actully send to the server:
+		< d = dict()
+		< DBConn.query("SELECT * FROM table WHERE id = %s OR name LIKE = %s", (544, 'CJ'), debug=d)
+		< print(d.get("last_statement", ""))
+		> SELECT * FROM table WHERE id = 544 OR name LIKE = 'CJ'
+
 	"""
 	def __init__(self, host:str="localhost", port:str or int=3306, user:str="root", passwd:str="...", database:str=None):
 		self.host:str = str(host)
@@ -15,7 +26,7 @@ class DBConn(object):
 		self.mass_request:bool = False
 		self.MassRequestConn:MySQLConnection = None
 
-	def query(self, sql:str, values:tuple = None) -> list:
+	def query(self, sql:str, values:tuple = None, debug:dict={}) -> list:
 		"""
 			Querys a SQL command. Using a MySQLCursorDict.
 			query made via this function get auto commited
@@ -48,6 +59,7 @@ class DBConn(object):
 
 		# do stuff
 		Cursor.execute(sql, values)
+		debug["last_statement"] = Cursor.statement
 
 		# read and quess result
 		if Cursor._have_unread_result(): res:list = Cursor.fetchall()
@@ -60,7 +72,7 @@ class DBConn(object):
 
 		return res
 
-	def selectQuery(self, sql:str, values:tuple = None) -> list:
+	def selectQuery(self, sql:str, values:tuple = None, debug:dict={}) -> list:
 		"""
 			Pretty much the same as a normal .query()
 			except it ensures a list with sets return
@@ -73,6 +85,7 @@ class DBConn(object):
 
 		# do stuff
 		Cursor.execute(sql, values)
+		debug["last_statement"] = Cursor.statement
 
 		# gather stuff
 		res:list = Cursor.fetchall()
@@ -82,7 +95,7 @@ class DBConn(object):
 
 		return res
 
-	def deleteQuery(self, sql:str, values:tuple = None) -> int:
+	def deleteQuery(self, sql:str, values:tuple = None, debug:dict={}) -> int:
 		"""
 			Pretty much the same as a normal .query()
 			except it ensures a int return
@@ -95,6 +108,7 @@ class DBConn(object):
 
 		# do stuff
 		Cursor.execute(sql, values)
+		debug["last_statement"] = Cursor.statement
 
 		# commit and close?
 		Conn.commit()
@@ -102,7 +116,7 @@ class DBConn(object):
 
 		return int(Cursor.rowcount)
 
-	def updateQuery(self, table:str=None, content:dict=None, where:str=None, where_values:tuple=()) -> int:
+	def updateQuery(self, table:str=None, content:dict=None, where:str=None, where_values:tuple=(), debug:dict={}) -> int:
 		"""
 			dict bases, secured update query,
 			all special chars will get replaced by byte safe sql counterpart
@@ -132,6 +146,7 @@ class DBConn(object):
 
 		# do stuff
 		Cursor.execute(statement, values)
+		debug["last_statement"] = Cursor.statement
 
 		# commit and close?
 		Conn.commit()
@@ -139,7 +154,7 @@ class DBConn(object):
 
 		return int(Cursor.rowcount)
 
-	def insertQuery(self, table:str=None, content:dict=None) -> int:
+	def insertQuery(self, table:str=None, content:dict=None, debug:dict={}) -> int:
 		"""
 			dict bases, secured insert query,
 			all special chars will get replaced by byte safe sql counterpart
@@ -169,6 +184,7 @@ class DBConn(object):
 
 		# do stuff
 		Cursor.execute(statement, values)
+		debug["last_statement"] = Cursor.statement
 
 		# commit and close
 		Conn.commit()
