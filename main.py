@@ -1,6 +1,13 @@
 import asyncio
 import time
-from Utils.Classes.storeclasses import ActiveStore, VarsStore, AccessStore, LimitStore, IsReadyStore, GlobalStorage
+from Utils.Classes.storeclasses import (
+	ActiveStore,
+	VarsStore,
+	AccessStore,
+	LimitStore,
+	IsReadyStore,
+	GlobalStorage
+)
 from Utils.config import ConfigParser
 from Utils.logger import PhaazeLogger
 from Utils.threads import Mainframe
@@ -40,7 +47,7 @@ class Phaazebot(object):
 		# all featured "superclasses" aka, stuff that makes calls to somewhere
 		# all of these get added by self.Mainframe when started
 		# both the actual working part and a quick link to there running loops, to inject async funtions for them to run
-		# most likly used for the worker, that can calculate time consuming functions or discord because send_message must be caled from this loop
+		# most likly used for the worker, that can calculate time consuming functions or discord because send_message must be called from this loop
 		self.Discord:PhaazebotDiscord = PhaazebotDiscord(self)
 		self.DiscordLoop:asyncio.AbstractEventLoop = None
 
