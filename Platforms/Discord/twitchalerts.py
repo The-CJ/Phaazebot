@@ -7,7 +7,9 @@ import discord
 from Utils.Classes.twitchstream import TwitchStream
 from Utils.Classes.twitchgame import TwitchGame
 from Utils.Classes.twitchuser import TwitchUser
-# from Utils.Classes.discordserversettings import DiscordServerSettings
+
+TWITCH_COLOR:int = 0x6441A4
+TWITCH_STREAM_URL:str = "https://twitch.tv/"
 
 async def discordHandleLive(cls:"PhaazebotDiscord", event_list:list) -> None:
 	"""
@@ -31,11 +33,47 @@ async def discordHandleLive(cls:"PhaazebotDiscord", event_list:list) -> None:
 	for db_entry in res:
 
 		Event = getStreamFromDBResult(event_list, db_entry["twitch_channel_id"])
-		if not Event: continue # should never happen
+		if Event == None: continue # should never happen
 
 		# we only care about live alerts,
 		# there should be no other types, but we go save here
 		if Event.Stream.stream_type != "live": continue
+
+		stream_status:str = Event.Stream.title or "[N/A]"
+		stream_url:str = TWITCH_STREAM_URL + (Event.User.name or "")
+		stream_description:str = f":game_die: Playing: **{(Event.Game.name)}**"
+
+		Emb:discord.Embed = discord.Embed(
+			title = stream_status,
+			url = stream_url,
+			description = stream_description,
+			color = TWITCH_COLOR
+		)
+		Emb.set_author(
+			name=Event.User.display_name,
+			url=stream_url,
+			icon_url=Event.User.profile_image_url
+		)
+		Emb.set_footer(
+			text = "Provided by Twitch.tv",
+			icon_url = cls.BASE.Vars.LOGO_TWITCH
+		)
+		Emb.set_image(url = Event.User.profile_image_url)
+
+		discord_chan_id:str = db_entry.get("discord_channel_id", "-1")
+		discord_custom_msg:str = db_entry.get("custom_msg", None) or None
+
+		# DEBUG:
+		discord_chan_id = "183984517797773314"
+
+		try:
+			Chan:discord.TextChannel = cls.get_channel( int(discord_chan_id) )
+			if not Chan: continue
+
+			await Chan.send( content = discord_custom_msg, embed = Emb )
+
+		except:
+			cls.BASE.Logger.warning(f"Can't send Twitch Alert to Discord Channel ID: {discord_chan_id}")
 
 async def discordHandleGameChange(cls:"PhaazebotDiscord", status_list:list) -> None:
 	print(status_list)
@@ -43,7 +81,7 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", status_list:list) -> N
 async def discordHandleOffline(cls:"PhaazebotDiscord", status_list:list) -> None:
 	print(status_list)
 
-def getStreamFromDBResult(events, channel_id) -> "StatusEntry":
+def getStreamFromDBResult(events, channel_id) -> "StatusEntry" or None:
 	Ev:StatusEntry
 	for Ev in events:
 		if str(Ev.channel_id) == str(channel_id): return Ev
