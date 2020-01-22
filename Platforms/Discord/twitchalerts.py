@@ -4,9 +4,6 @@ if TYPE_CHECKING:
 	from Platforms.Twitch.main_events import StatusEntry
 
 import discord
-from Utils.Classes.twitchstream import TwitchStream
-from Utils.Classes.twitchgame import TwitchGame
-from Utils.Classes.twitchuser import TwitchUser
 
 TWITCH_COLOR:int = 0x6441A4
 TWITCH_STREAM_URL:str = "https://twitch.tv/"
