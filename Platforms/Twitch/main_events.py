@@ -3,20 +3,21 @@ if TYPE_CHECKING:
 	from main import Phaazebot
 
 import asyncio
-from Platforms.Twitch.api import getTwitchStreams, getTwitchGames, getTwitchUsers
 from Utils.Classes.twitchstream import TwitchStream
 from Utils.Classes.twitchgame import TwitchGame
 from Utils.Classes.twitchuser import TwitchUser
+from Platforms.Twitch.api import getTwitchStreams, getTwitchGames, getTwitchUsers
+from Platforms.Discord.twitchalerts import discordHandleLive, discordHandleOffline, discordHandleGameChange
 
 class PhaazebotTwitchEvents(object):
 	"""
 		This Module is to keep track of all events related to twitch
-		and is a info point for other modules so we can reduce twitch api calls as much as possible.
+		and is the part that keeps phaaze db updates
+		so we can reduce twitch api calls as much as possible.
 		Under events fall:
-			- twitch alerts
-				- a channel going live
-				- a channel goes offline
-			- twitch viewer time increase
+			- a channel going live
+			- a channel changes his game
+			- a channel goes offline
 	"""
 	def __init__(self, BASE):
 		self.BASE:"Phaazebot" = BASE
@@ -52,8 +53,7 @@ class PhaazebotTwitchEvents(object):
 			SELECT
 			  `twitch_channel`.`channel_id`,
 			  `twitch_channel`.`game_id`,
-			  `twitch_channel`.`live`,
-			  GROUP_CONCAT(`discord_twitch_alert`.`discord_channel_id`) AS `alert_discord`
+			  `twitch_channel`.`live`
 			FROM `twitch_channel`
 			LEFT JOIN `discord_twitch_alert`
 			  ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_channel`.`channel_id`
@@ -128,9 +128,6 @@ class PhaazebotTwitchEvents(object):
 
 			# twitch gave us a result
 			else:
-				# complete API Entry, since this is missing the alerts
-				EntryAPI.alert_discord = EntryDB.alert_discord
-
 				# we have a api result and it was not live in db
 				# -> channel gone live
 				if not EntryDB.live:
@@ -216,8 +213,6 @@ class PhaazebotTwitchEvents(object):
 			Entry.channel_id = str( res.get("channel_id", "") or "" )
 			Entry.game_id = str( res.get("game_id", "") or "" )
 			Entry.live = bool( res.get("live", 0) )
-
-			Entry.alert_discord = list( res.get("alert_discord", []) or [] )
 
 			status_dict[Entry.channel_id] = Entry
 
@@ -345,11 +340,15 @@ class PhaazebotTwitchEvents(object):
 
 		self.BASE.Logger.debug(f"Received LIVE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
 
-		print(status_list)
+		if self.BASE.Discord:
+			# give infos to discord loop and give out alerts
+			asyncio.ensure_future( discordHandleLive(self.BASE.Discord, status_list), loop=self.BASE.DiscordLoop )
+		else:
+			self.BASE.Logger.debug(f"Skipping Twitch Alerts for Discord, it is not active", require="twitchevents:live")
 
 	async def eventGamechange(self, status_list:list) -> None:
 		"""
-			Event thats called for all twitch channels than gone offline
+			Event thats called for all twitch channels than are still live but changed there game
 			status_list is a list of StatusEntry()
 			with the values from the twitch api
 		"""
@@ -357,19 +356,27 @@ class PhaazebotTwitchEvents(object):
 
 		self.BASE.Logger.debug(f"Received GAMECHANGE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
 
-		print(status_list)
+		if self.BASE.Discord:
+			# give infos to discord loop and give out alerts
+			asyncio.ensure_future( discordHandleGameChange(self.BASE.Discord, status_list), loop=self.BASE.DiscordLoop )
+		else:
+			self.BASE.Logger.debug(f"Skipping Twitch Alerts for Discord, it is not active", require="twitchevents:live")
 
 	async def eventOffline(self, status_list:list) -> None:
 		"""
 			Event thats called for all twitch channels than gone offline
 			status_list is a list of StatusEntry()
-			with the last known values
+			with the last known values from phaaze db
 		"""
 		if not status_list: return
 
 		self.BASE.Logger.debug(f"Received OFFLINE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
 
-		print(status_list)
+		if self.BASE.Discord:
+			# give infos to discord loop and give out alerts
+			asyncio.ensure_future( discordHandleOffline(self.BASE.Discord, status_list), loop=self.BASE.DiscordLoop )
+		else:
+			self.BASE.Logger.debug(f"Skipping Twitch Alerts for Discord, it is not active", require="twitchevents:live")
 
 class StatusEntry(object):
 	"""
@@ -383,8 +390,6 @@ class StatusEntry(object):
 		self.Stream:TwitchStream = None
 		self.User:TwitchUser = None
 		self.Game:TwitchGame = None
-
-		self.alert_discord:list = list()
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} Stream={self.Stream} Game={self.Game} User={self.User} >"
