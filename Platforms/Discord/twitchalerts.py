@@ -63,9 +63,6 @@ async def discordHandleLive(cls:"PhaazebotDiscord", event_list:list) -> None:
 		discord_chan_id:str = db_entry.get("discord_channel_id", "-1")
 		discord_custom_msg:str = db_entry.get("custom_msg", None) or None
 
-		# DEBUG:
-		discord_chan_id = "183984517797773314"
-
 		try:
 			Chan:discord.TextChannel = cls.get_channel( int(discord_chan_id) )
 			if not Chan: continue
