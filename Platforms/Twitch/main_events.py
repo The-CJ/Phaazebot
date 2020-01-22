@@ -181,17 +181,17 @@ class PhaazebotTwitchEvents(object):
 			Status.Game = needed_games.get(Status.game_id, False)
 			Status.User = needed_users.get(Status.channel_id, False)
 
-		if event[0] == 0:
-			alert_list_offline.append(Status)
+			if event[0] == 0:
+				alert_list_offline.append(Status)
 
-		elif event[0] == 1:
-			alert_list_live.append(Status)
+			elif event[0] == 1:
+				alert_list_live.append(Status)
 
-		elif event[0] == 2:
-			alert_list_gamechange.append(Status)
+			elif event[0] == 2:
+				alert_list_gamechange.append(Status)
 
-		else:
-			self.BASE.Logger.warning(f"Unknown Status Event number: {event[0]}")
+			else:
+				self.BASE.Logger.warning(f"Unknown Status Event number: {event[0]}")
 
 		# update db
 		asyncio.ensure_future( self.updateTwitchGames(needed_games) )
