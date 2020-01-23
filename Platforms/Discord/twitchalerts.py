@@ -132,7 +132,7 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:list) -> No
 			cls.BASE.Logger.warning(f"Can't send Twitch Alert to Discord Channel ID: {discord_chan_id}")
 
 async def discordHandleOffline(cls:"PhaazebotDiscord", status_list:list) -> None:
-	print(status_list)
+	return # for now do nothing
 
 def getStreamFromDBResult(events, channel_id) -> "StatusEntry" or None:
 	Ev:StatusEntry
