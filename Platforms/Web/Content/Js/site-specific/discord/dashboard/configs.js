@@ -670,7 +670,7 @@ var Configs = new(class {
     $.post("/api/discord/configs/edit", new_configs)
     .done(function (data) {
 
-      insertData("[location=configs]", data.changes, true);
+      insertData("[location=configs]", data.update, true);
       Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
 
       if (success_function) { success_function.call() }

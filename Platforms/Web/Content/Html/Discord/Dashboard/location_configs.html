@@ -304,7 +304,7 @@
 
           <div class="row">
             <div class="col">
-              <p>Tokens are placeholder that get replaced with informations the the message is given out.</p>
+              <p>Tokens are placeholder that get replaced with informations if the message is given out.</p>
               <p>e.g.: </p>
               <pre class="example">Hello [user-mention], please read <#rules#></pre>
               <p>Will be: </p>
@@ -318,17 +318,17 @@
           <table class="tokenlist">
             <tr class="token welcome leave priv_welcome level">
               <td class="key">[user-name]</td>
-              <td class="value">The User name</td>
+              <td class="value">The user name</td>
             </tr>
             <tr class="token welcome leave level">
               <td class="key">[user-mention]</td>
-              <td class="value">A <span class="clickable">@mention</span> of the name</td>
+              <td class="value">A <span class="clickable">@mention</span> of the user</td>
             </tr>
-            <tr class="token welcome leave level">
+            <tr class="token level">
               <td class="key">[channel-name]</td>
-              <td class="value">The name of the event channel of the name</td>
+              <td class="value">The name of the event</td>
             </tr>
-            <tr class="token welcome leave level">
+            <tr class="token level">
               <td class="key">[channel-mention]</td>
               <td class="value">A <span class="clickable">#mention</span> of the event channel</td>
             </tr>
@@ -350,7 +350,7 @@
             </tr>
             <tr class="token level">
               <td class="key">[rank]</td>
-              <td class="value">The users rank baed on exp</td>
+              <td class="value">The users rank based on exp</td>
             </tr>
             <tr>
               <td colspan="2"><h3>Special token list</h3></td>
