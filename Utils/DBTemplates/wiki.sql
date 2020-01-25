@@ -6,7 +6,7 @@ DESCRIBE `wiki`;
 +------------+--------------+------+-----+---------------------+----------------+
 | id         | int(11)      | NO   | PRI | NULL                | auto_increment |
 | title      | varchar(128) | YES  |     | NULL                |                |
-| content    | text         | YES  |     | ''                  |                |
+| content    | longtext     | YES  |     | ''                  |                |
 | url_id     | varchar(64)  | YES  | UNI | NULL                |                |
 | mod_only   | tinyint(1)   | YES  |     | 0                   |                |
 | created_at | datetime     | NO   |     | current_timestamp() |                |
@@ -21,7 +21,7 @@ DESCRIBE `wiki`;
 CREATE TABLE `wiki` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(128) DEFAULT NULL,
-  `content` text DEFAULT '',
+  `content` longtext DEFAULT '',
   `url_id` varchar(64) DEFAULT NULL,
   `mod_only` tinyint(1) DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),

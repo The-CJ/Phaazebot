@@ -10,9 +10,7 @@ DESCRIBE `twitch_setting`;
 | active_level               | tinyint(1)   | YES  |     | 0       |                |
 | active_quote               | tinyint(1)   | YES  |     | 0       |                |
 | blacklist_ban_links        | tinyint(1)   | YES  |     | 0       |                |
-| blacklist_link_whitelist   | longtext     | YES  |     | '[]'    |                |
 | blacklist_link_msg         | varchar(475) | YES  |     | NULL    |                |
-| blacklist_words            | longtext     | YES  |     | '[]'    |                |
 | blacklist_notify           | tinyint(1)   | YES  |     | 0       |                |
 | blacklist_msg              | varchar(475) | YES  |     | NULL    |                |
 | blacklist_punishment       | tinyint(1)   | YES  |     | 0       |                |
@@ -23,7 +21,6 @@ DESCRIBE `twitch_setting`;
 | gain_currency_active_multi | float        | YES  |     | 1       |                |
 | owner_disable_mod          | tinyint(1)   | YES  |     | 0       |                |
 | owner_disable_normal       | tinyint(1)   | YES  |     | 0       |                |
-| regulars                   | longtext     | YES  |     | '[]'    |                |
 | osurequestformat_osu       | varchar(475) | YES  |     | NULL    |                |
 | osurequestformat_twtich    | varchar(475) | YES  |     | NULL    |                |
 +----------------------------+--------------+------+-----+---------+----------------+
@@ -38,9 +35,7 @@ CREATE TABLE `twitch_setting` (
   `active_level` tinyint(1) DEFAULT 0,
   `active_quote` tinyint(1) DEFAULT 0,
   `blacklist_ban_links` tinyint(1) DEFAULT 0,
-  `blacklist_link_whitelist` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`blacklist_link_whitelist`)),
   `blacklist_link_msg` varchar(475) DEFAULT NULL,
-  `blacklist_words` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`blacklist_words`)),
   `blacklist_notify` tinyint(1) DEFAULT 0,
   `blacklist_msg` varchar(475) DEFAULT NULL,
   `blacklist_punishment` tinyint(1) DEFAULT 0,
@@ -51,7 +46,6 @@ CREATE TABLE `twitch_setting` (
   `gain_currency_active_multi` float DEFAULT 1,
   `owner_disable_mod` tinyint(1) DEFAULT 0,
   `owner_disable_normal` tinyint(1) DEFAULT 0,
-  `regulars` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '[]' CHECK (json_valid(`regulars`)),
   `osurequestformat_osu` varchar(475) DEFAULT NULL,
   `osurequestformat_twtich` varchar(475) DEFAULT NULL,
   PRIMARY KEY (`id`),
