@@ -25,7 +25,7 @@ CREATE TABLE `session_discord` (
   `refresh_token` varchar(128) DEFAULT NULL,
   `scope` varchar(256) DEFAULT NULL,
   `token_type` varchar(64) DEFAULT 'Bearer',
-  `user_info` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '{}' CHECK (json_valid(`user_info`)),
+  `user_info` longtext DEFAULT '{}',
   PRIMARY KEY (`id`),
   UNIQUE KEY `session` (`session`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

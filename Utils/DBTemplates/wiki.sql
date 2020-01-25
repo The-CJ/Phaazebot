@@ -8,7 +8,6 @@ DESCRIBE `wiki`;
 | title      | varchar(128) | YES  |     | NULL                |                |
 | content    | text         | YES  |     | ''                  |                |
 | url_id     | varchar(64)  | YES  | UNI | NULL                |                |
-| tags       | longtext     | YES  |     | NULL                |                |
 | mod_only   | tinyint(1)   | YES  |     | 0                   |                |
 | created_at | datetime     | NO   |     | current_timestamp() |                |
 | created_by | int(8)       | NO   |     | NULL                |                |
@@ -24,7 +23,6 @@ CREATE TABLE `wiki` (
   `title` varchar(128) DEFAULT NULL,
   `content` text DEFAULT '',
   `url_id` varchar(64) DEFAULT NULL,
-  `tags` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`tags`)),
   `mod_only` tinyint(1) DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by` int(8) NOT NULL,
