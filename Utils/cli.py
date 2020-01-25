@@ -1,33 +1,34 @@
-import sys, re
-from typing import Any
-from Utils.Classes.undefined import Undefined
-
+import sys
+import re
+from Utils.Classes.undefined import UNDEFINED
 
 class CliArgs(object):
 	"""Contains arguments added by programm start """
 	def __init__(self):
 		self.args:dict = dict()
 
-		arg_re = re.compile(r'^-(.+?)$')
-		kwarg_re = re.compile(r'^--(.+?)=(.*)$')
+		ArgRE:"re.Pattern" = re.compile(r'^-(.+?)$')
+		KWargRE:"re.Pattern" = re.compile(r'^--(.+?)=(.*)$')
 
 		for arg in sys.argv[1:]:
 
-			kwarg_res = kwarg_re.match(arg)
-			if kwarg_res != None:
-				self.args[kwarg_res.group(1)] = kwarg_res.group(2)
+			KWargRes:"re.Match" = KWargRE.match(arg)
+			if KWargRes != None:
+				self.args[KWargRes.group(1)] = KWargRes.group(2)
 				continue
 
-			arg_res = arg_re.match(arg)
-			if arg_res != None:
-				self.args[arg_res.group(1)] = True
+			ArgRes:"re.Match" = ArgRE.match(arg)
+			if ArgRes != None:
+				self.args[ArgRes.group(1)] = True
 				continue
 
-	def get(self, *arg) -> Any:
-		if len(arg) == 0:
-			return self.args
-		else:
-			if len(arg) > 1: return self.args.get(arg[0], arg[1])
-			else: return self.args.get(arg[0], Undefined())
+	def get(self, arg:str, alt:str=None) -> str:
+		return self.args.get(arg, alt)
+
+	def pos(self, i:int) -> str:
+		try:
+			return sys.argv[i]
+		except:
+			return UNDEFINED
 
 CliArgs = CliArgs()

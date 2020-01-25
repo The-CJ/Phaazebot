@@ -1,8 +1,8 @@
 import json
 import traceback
-from Utils.cli import CliArgs
 from typing import Any
-from Utils.Classes.undefined import Undefined
+from Utils.cli import CliArgs
+from Utils.Classes.undefined import UNDEFINED
 
 class ConfigParser(object):
 	""" used to load programm configs from file """
@@ -22,14 +22,8 @@ class ConfigParser(object):
 				print("Phaazebot not started, start without configs, add -no-args")
 				exit(2)
 
-	def get(self, *arg) -> Any:
-		if not arg:
-			return self.content
-		else:
-			if len(arg) > 1:
-				return self.content.get(arg[0].lower(), arg[1])
-			else:
-				return self.content.get(arg[0], Undefined())
+	def get(self, arg:str=None, alt:Any=UNDEFINED) -> Any:
+		return self.content.get(arg, alt)
 
 	def loadJSON(self) -> None:
 		try:
