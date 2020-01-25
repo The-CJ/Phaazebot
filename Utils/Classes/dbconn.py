@@ -4,7 +4,10 @@ from mysql.connector import MySQLConnection
 class DBConn(object):
 	"""
 		Should handle all incomming requests
+		call .setMassRequest(True) to prevent closing connection
+		and reuse the last connection
 
+		DEBUG:
 		All query function take an optional `debug` kwarg
 		it is not returned, but gets filled with various data.
 		Just give a dict reference with the call to get the data.
