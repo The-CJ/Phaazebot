@@ -1,0 +1,20 @@
+main h1 {
+  margin: 1em 0;
+}
+
+#quote_list .quote {
+  margin: 1em 0;
+}
+
+#quote_list .info {
+  color: grey;
+}
+
+#quote_list .quote [name=content] {
+  width: 100%;
+  padding: 1em;
+  background: transparent;
+  border: none;
+  resize: none;
+  color: white;
+}

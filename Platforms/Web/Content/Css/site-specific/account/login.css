@@ -1,0 +1,15 @@
+main h1 {
+  margin: 1em 0;
+}
+
+#login_space {
+  padding: 1em;
+}
+
+#login_space input {
+  width: 100%;
+}
+
+#login_space .center-item-row {
+  margin-bottom: 1em;
+}

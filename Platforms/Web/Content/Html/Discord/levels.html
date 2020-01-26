@@ -1,0 +1,179 @@
+<link rel="stylesheet" href="/css/site-specific/discord/levels.css">
+<script src="/js/discord.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/levels.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/dashboard/levels.js" charset="utf-8"></script>
+<!-- yeah we use the same as in the dashboard, because why not -->
+
+<main>
+
+  <div class="container text-center white-text">
+
+    <h1 id="guild_name">|<!--#(guild_name)#-->|</h1>
+    <data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
+    <data value="|<!--#(guild_currency)#-->|" id="guild_currency"></data>
+    <data value="|<!--#(guild_currency_multi)#-->|" id="guild_currency_multi"></data>
+
+    <hr>
+
+    <div class="center-item-row" id="level_pages">
+      <button onclick="Levels.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+      <button onclick="Levels.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+      <span>Page: <span class="index">0</span></span>
+      <button onclick="Levels.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+      <button onclick="Levels.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+    </div>
+
+    <form class="center-item-row" id="search" action="javascript:Levels.prevPage(1)">
+
+      <div class="col md-form" style="margin: 0;">
+        <input type="text" name="name_contains" placeholder="Name must contain..." style="width: 100%;" class="white-text">
+      </div>
+
+      <div class="col" style="margin: 0;">
+        <div class="row">
+          <div class="col">
+            <label>
+              <input type="radio" name="edited" value="0" checked>
+              <span>Show all</span>
+            </label>
+          </div>
+          <div class="col">
+            <label>
+              <input type="radio" name="edited" value="1">
+              <span>Show only unedited</span>
+            </label>
+          </div>
+          <div class="col">
+            <label>
+              <input type="radio" name="edited" value="2">
+              <span>Show only edited</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <select class="custom-select" name="nickname">
+          <option value="0" selected>Show usernames</option>
+          <option value="1">Show server nicknames</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-secondary icon-btn next"><i class="fas fa-search"></i></button>
+    </form>
+
+    <div class="header row">
+      <div class="col-1 rank">Rank</div>
+      <div class="col-1 lvl">Level</div>
+      <div class="col-1 exp">Exp</div>
+      <div class="col-1 currency">Currency</div>
+      <div class="col member">Member</div>
+      <div class="col-1 medals">Medals</div>
+    </div>
+
+    <!-- gets filled with copys of: "[phantom] .level" -->
+    <div id="level_list"></div>
+
+  </div>
+
+</main>
+
+<div modal>
+
+  <div class="modal fade" id="level_modal_edit" edit-member="">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Level detail</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+          <!-- avatar -->
+          <div class="center-item-row md-form forced">
+            <div class="col-4">
+              <img src="" alt="member_avatar" style="border-radius: 50%; border: 2px solid black; height: 128px; width: 128px;">
+            </div>
+            <div class="col-8">
+              <div class="center-item-col">
+                <input disabled type="text" name="username" style="width: 100%;" class="text-center"/>
+                <input disabled type="text" name="display_id" style="width: 100%;" class="text-center"/>
+                <input disabled type="text" name="display_rank" style="width: 100%;" class="text-center"/>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+
+          <h4 class="text-center">Stats</h4>
+
+          <!-- currency -->
+          <div class="center-item-row forced">
+            <div class="col-3">
+              <span>CURRENCY:</span>
+            </div>
+            <div class="col-9 md-form">
+              <input disabled type="number" name="currency" style="width: 100%;" class="text-center">
+            </div>
+          </div>
+
+          <!-- exp -->
+          <div class="center-item-row forced">
+            <div class="col-3">
+              <span>EXP:</span>
+            </div>
+            <div class="col-9 md-form">
+              <input disabled type="number" name="exp" style="width: 100%;" class="text-center">
+            </div>
+          </div>
+
+          <!-- level -->
+          <div class="center-item-row forced">
+            <div class="col-3">
+              <span>Level:</span>
+            </div>
+            <div class="col-9 md-form">
+              <input disabled type="text" name="level" style="width: 100%;" class="text-center">
+            </div>
+          </div>
+
+          <hr>
+
+          <h4 class="text-center">Medals</h4>
+
+          <!-- medals -->
+          <!-- gets filled with copys of: "[phantom] .medal" -->
+          <div class="medallist modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="row level" member-id="0" onclick="Levels.detail(this)">
+    <div class="col-1 rank">[N/A]</div>
+    <div class="col-1 lvl">[N/A]</div>
+    <div class="col-1 exp">[N/A]</div>
+    <div class="col-1 currency">[N/A]</div>
+    <div class="col member">
+      <div class="center-item-row forced">
+        <img src="" alt="avatar" class="avatar" height="32" width="32">
+        <span class="name"></span>
+      </div>
+    </div>
+    <div class="col-1 medals">[N/A]</div>
+  </div>
+
+  <div class="center-item-row forced medal">
+    <div class="col name"></div>
+  </div>
+
+</div>

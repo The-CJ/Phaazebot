@@ -1,0 +1,174 @@
+<div location="commands">
+
+  <div class="container-fluid">
+
+    <div class="center-item-row">
+      <div class="col">
+        <h4>Commands: <span id="command_amount">[N/A]</span></h4>
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-success" onclick="Commands.createModal()">New Command</button>
+      </div>
+    </div>
+
+    <div class="center-item-row md-form">
+      <span>Public command page for this server:</span>
+      <div class="col">
+        <input type="text" value="|<!--#(web_root)#-->|/discord/commands/|<!--#(guild_id)#-->|" readonly class="white-text text-center" style="width: 100%;">
+      </div>
+    </div>
+
+    <div class="header row">
+      <div class="col-2 trigger">Trigger</div>
+      <div class="col function">Function</div>
+      <div class="col-2 require">Require</div>
+      <div class="col-1 cost">Cost</div>
+      <div class="col-1 uses">Uses</div>
+      <div class="col-1 uses">Cooldown</div>
+    </div>
+    <!-- all commands go here -->
+    <div id="command_list"></div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+  <div class="modal fade" id="command_create" mode="new">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">New command</h4>
+          <data name="command_id" value=""></data>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <!-- trigger -->
+          <div class="center-item-row md-form">
+            <div class="col">
+              <input type="text" name="trigger" placeholder="A word to trigger the command..." style="width: 100%;" class="text-center">
+            </div>
+          </div>
+
+          <hr>
+
+          <!-- active -->
+          <div class="center-item-row md-form">
+            <span class="col text-left">Active:</span>
+            <div class="col text-center">
+              <input type="checkbox" name="active" style="height:2ch; width:2ch;" checked>
+            </div>
+          </div>
+
+          <!-- require -->
+          <div class="center-item-row md-form">
+            <span class="col text-left">Can be used by:</span>
+            <select name="require" class="browser-default custom-select">
+              <option value="" selected>Select requirement...</option>
+              <option value="0">Everyone</option>
+              <option value="1">Regular</option>
+              <option value="2">Moderator</option>
+              <option value="3">Server Owner</option>
+            </select>
+          </div>
+
+          <!-- require_currency -->
+          <div class="center-item-row md-form">
+            <span class="col text-left">Cost to use this command:</span>
+            <input type="number" name="required_currency" value="0" min="0">
+          </div>
+
+          <!-- hidden -->
+          <div class="center-item-row md-form">
+            <span class="col text-left">Hidden command?</span>
+            <div class="col text-center">
+              <input type="checkbox" name="hidden" style="height:2ch; width:2ch;">
+            </div>
+          </div>
+
+          <!-- cooldown -->
+          <div class="center-item-row md-form">
+            <span class="col text-left">Cooldown in sec.</span>
+            <div class="col text-center">
+              <input type="number" name="cooldown" value="10" min="3" max="600" oninput="Commands.updateSlider(this.value)" style="width:6ch;">
+              <input type="range" name="cooldown_slider" value="10" min="3" max="600" step="1" oninput="Commands.updateSlider(this.value)">
+            </div>
+          </div>
+
+          <!-- complex -->
+          <div class="center-item-row md-form">
+            <span class="col text-left">What type of command?</span>
+            <select name="commandtype" class="browser-default custom-select" onchange="Commands.loadCommands(this)">
+              <option value="">Choose a type...</option>
+              <option value="simple">Simple</option>
+              <option value="complex">Complex</option>
+            </select>
+          </div>
+
+          <hr>
+
+          <div command-setting="simple">
+
+            <div class="center-item-row md-form">
+              <span class="col text-left">Function:</span>
+              <select name="function" class="browser-default custom-select" onchange="Commands.loadCommandInfo(this)" >
+                <!-- this div gets filled with all possible commands after "simple" is choosen -->
+              </select>
+            </div>
+
+            <div extra-command-setting>
+
+              <div class="center-item-row">
+                <div class="col"><h4>Description</h4></div>
+              </div>
+              <div class="center-item-row">
+                <div class="col"><p name="description">[N/A]</p></div>
+              </div>
+              <div class="center-item-row">
+                <div class="col"><h4>Details</h4></div>
+              </div>
+              <div class="center-item-row">
+                <div class="col"><p name="details">[N/A]</p></div>
+              </div>
+
+              <textarea name="content" rows="5" style="width: 100%" style="display: none"></textarea>
+
+            </div>
+
+          </div>
+
+          <div command-setting="complex">
+
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-block btn-success" onclick="Commands.create()" mode="new">Submit</button>
+          <button type="button" class="btn btn-block btn-warning black-text" onclick="Commands.edit()" mode="edit">Submit changes</button>
+          <button type="button" class="btn btn-block btn-danger" onclick="Commands.delete()" mode="edit">Delete</button>
+        </div>
+        <div messagebox></div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="row command" command-id="0" onclick="Commands.detail(this)">
+    <div class="col-2 trigger">[N/A]</div>
+    <div class="col function">[N/A]</div>
+    <div class="col-2 require">[N/A]</div>
+    <div class="col-1 cost">[N/A]</div>
+    <div class="col-1 uses">[N/A]</div>
+    <div class="col-1 cooldown">[N/A]</div>
+  </div>
+
+</div>

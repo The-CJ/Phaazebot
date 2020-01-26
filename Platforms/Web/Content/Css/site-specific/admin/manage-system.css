@@ -1,0 +1,16 @@
+main h1 {
+  margin: 1em 0;
+}
+
+.status-field {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid white;
+  box-shadow: 5px 5px 15px black
+}
+
+[part=phaaze] [modules] button[active=true] { background: var(--color-boolish-green) }
+[part=phaaze] [modules] button[active=false] { background: var(--color-boolish-red) }
+
+[part=phaaze] [modules] button[active=true]:after { content: "Enabled" }
+[part=phaaze] [modules] button[active=false]:after { content: "Disabled" }

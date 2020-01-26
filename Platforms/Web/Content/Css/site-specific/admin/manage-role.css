@@ -1,0 +1,18 @@
+main h1 {
+  margin: 1em 0;
+}
+
+.role [can_be_removed=true] { display: none; }
+.role [can_be_removed=false] { display: block; }
+
+#role_list > .role > .row {
+  margin: .25em;
+  padding: .5em;
+  background: var(--color-listelement-odd);
+  cursor: pointer;
+}
+#role_list .role:nth-child(even) > .row {background: var(--color-listelement-even); }
+#role_list { padding: 1em; }
+#edit_create_role .modal-footer button { display: none; }
+#edit_create_role[mode=edit] .modal-footer button[edit] { display: block; }
+#edit_create_role[mode=create] .modal-footer button[create] { display: block; }

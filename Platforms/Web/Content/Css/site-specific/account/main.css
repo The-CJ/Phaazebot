@@ -1,0 +1,23 @@
+main h1 {
+  margin: 1em 0;
+}
+
+#manage_field {
+  padding: 1em;
+}
+
+#manage_field button {
+  margin: 5px 0;
+}
+
+#role_field > .role {
+  width: 100%;
+  border: 2px solid black;
+  margin: 2px;
+  background: #7a7a7a;
+}
+
+#role_field > .role.none {
+  border: 2px solid grey;
+  background: #444444;
+}

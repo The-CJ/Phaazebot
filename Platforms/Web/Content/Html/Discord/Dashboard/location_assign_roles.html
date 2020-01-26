@@ -1,0 +1,81 @@
+<div location="assign_roles">
+
+  <div class="container-fluid">
+
+    <div class="center-item-row">
+      <div class="col">
+        <h4>Assign roles: <span id="assign_role_amount">[N/A]</span></h4>
+      </div>
+
+      <div class="col">
+        <button type="button" class="btn btn-success" onclick="AssignRoles.createModal()">New assign role</button>
+      </div>
+    </div>
+
+    <div class="center-item-row">
+      <div class="col">
+        <sub>Assign roles are used by the "Assign Role" Command-group in the <a href="javascript:DiscordDashboard.loadCommand()">command section</a></sub>
+      </div>
+    </div>
+
+    <div class="header row">
+      <div class="col trigger">Trigger</div>
+      <div class="col name">Role</div>
+    </div>
+    <!-- get filled with copys of: "[phantom] .assignrole -->
+    <div id="assign_role_list"></div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+  <div class="modal fade" id="assignrole_create" mode="create">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title"></h4>
+          <data name="assignrole_id" value=""></data>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="center-item-row md-form">
+            <div class="col">
+              <input type="text" name="trigger" placeholder="A trigger to get/remove the role" style="width: 100%;" class="text-center">
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="center-item-row md-form">
+            <span class="col text-left">Linked role:</span>
+            <select name="role_id" class="browser-default custom-select" discord-role></select>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-block btn-success" onclick="AssignRoles.create()" mode="create">Submit</button>
+          <button type="button" class="btn btn-block btn-warning" onclick="AssignRoles.edit()" mode="edit">Save</button>
+          <button type="button" class="btn btn-block btn-danger" onclick="AssignRoles.delete()" mode="edit">Delete</button>
+        </div>
+        <div messagebox></div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="row assignrole" assignrole-id="0" onclick="AssignRoles.detail(this)">
+    <div class="col trigger">[N/A]</div>
+    <div class="col name">[N/A]</div>
+  </div>
+
+</div>

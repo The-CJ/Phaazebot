@@ -1,0 +1,15 @@
+.pageNotFound-404 {
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  font-size: 25vw;
+  font-weight: 400;
+  opacity: 0.15;
+}
+
+.pageNotFound-logo {
+  width: 33.3vw;
+}

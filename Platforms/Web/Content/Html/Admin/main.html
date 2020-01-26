@@ -1,0 +1,46 @@
+<link rel="stylesheet" href="/css/site-specific/admin/main.css">
+<script src="/js/site-specific/admin/main.js" charset="utf-8"></script>
+
+<main>
+  <div class="container text-center white-text">
+    <h1>Administration</h1>
+
+    <div buttons>
+      <a href="/admin/manage-user">
+        <button type="button" class="btn btn-block">User manager</button>
+      </a>
+      <a href="/admin/manage-role">
+        <button type="button" class="btn btn-block">Role manager</button>
+      </a>
+      <a href="/admin/manage-system">
+        <button type="button" class="btn btn-block">System manager</button>
+      </a>
+      <a href="/admin/manage-image">
+        <button type="button" class="btn btn-block">Image manager</button>
+      </a>
+    </div>
+
+    <hr>
+
+    <button type="button" class="btn btn-block btn-danger" onclick="$('#root_console').collapse('toggle')">System Console ↓</button>
+    <div id="root_console" class="collapse stylish-color-dark">
+      <pre id="result_data" class="text-left text-white">[Output]</pre>
+      <div class="center-item-row">
+        <label class="btn btn-primary center-item-row">
+          <span>Run as corotine &nbsp;</span>
+          <input type="checkbox" name="corotine" value="1">
+        </label>
+      </div>
+      <span>Avariable variables:</span><br>
+      <span><b>cls</b>:WebIndex, <b>WebRequest</b>:Request, <b>Data</b>:WebRequestContent, <b>BASE</b>:Phaazebot</span><br>
+      <span><b>SUPERBASE</b>: GlobalStorage</span>
+      <form action="javascript:evalCommand()" method="post">
+        <div class="center-item-row">
+          <input type="text" placeholder="evaluate command" class="black-text" id="eval_command" style="width: 100%">
+          <button type="submit" class="btn ml-auto grey" style="margin:0;padding:0.5em;">→</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</main>

@@ -1,0 +1,72 @@
+<link rel="stylesheet" href="/css/site-specific/admin/manage-role.css">
+<script src="/js/site-specific/admin/manage-role.js" charset="utf-8"></script>
+
+<main>
+  <div class="container text-center white-text">
+    <h1>Role manager</h1>
+    <button type="button" class="btn btn-primary" onclick="showCreate()">New</button>
+    <div id="role_list"></div>
+  </div>
+</main>
+
+<div phantom hidden>
+
+  <div class="role" role-id="0" onclick="detailRole(this)">
+    <div class="row">
+      <div class="col-1"></div>
+      <div class="col"><span class="name">[N/A]</span></div>
+      <div class="col-1"><span can_be_removed="true"><i class="fas fa-lock"></i></span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal fade" id="edit_create_role" mode="edit/create">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">[N/A]</h4>
+        <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+        <div class="row md-form">
+          <div class="col"><span>ID:</span></div>
+          <div class="col-8"><input type="text" name="role_id" readonly style="width: 100%;"></div>
+        </div>
+
+        <div class="row md-form">
+          <div class="col"><span>Name:</span></div>
+          <div class="col-8"><input type="text" name="name" placeholder="Role name" style="width: 100%;"></div>
+        </div>
+
+        <div class="row md-form">
+          <div class="col">
+            <span>Description:</span><br>
+            <textarea name="description" maxlength="510" style="width: 100%;"></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label class="checkbox-container">
+              <input type="checkbox" name="can_be_removed" checked>
+              <span>Can be removed</span>
+            </label>
+            <button remove type="button" class="btn btn-block btn-danger" onclick="removeRole()">Remove</button>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="modal-footer">
+        <button create type="button" class="btn btn-block btn-success" onclick="createRole()">Create</button><br>
+        <button edit type="button" class="btn btn-block btn-success" onclick="editRole()">Save</button>
+      </div>
+
+      <div messagebox></div>
+    </div>
+  </div>
+</div>

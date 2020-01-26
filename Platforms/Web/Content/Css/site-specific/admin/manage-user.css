@@ -1,0 +1,18 @@
+main h1 {
+  margin: 1em 0;
+}
+
+#user_list > .user > .row {
+  margin: .25em;
+  padding: .5em;
+  background: var(--color-listelement-odd);
+  cursor: pointer;
+}
+#user_list .user:nth-child(even) > .row {background: var(--color-listelement-even); }
+
+#edit_create_user .modal-footer button { display: none; }
+#edit_create_user[mode=edit] .modal-footer button[edit] { display:block; }
+#edit_create_user[mode=create] .modal-footer button[create] { display:block; }
+#edit_create_user[mode=edit] [dont-show=edit] { display: none;}
+#edit_create_user[mode=create] [dont-show=create] { display: none;}
+#user_role_list .role { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }

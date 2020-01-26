@@ -1,0 +1,797 @@
+<div location="configs">
+
+  <div class="container-fluid">
+
+    <h3 id="config_chat">Chat management</h3>
+    <div>
+      <span>Disallow links, blacklist words and punish members that go agains it.</span>
+
+      <hr>
+
+      <!-- blacklist, roles, links -->
+      <div class="center-item-row">
+
+        <!-- word blacklist -->
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Blacklist</p>
+            <div class="config-info"><span>RE in message = punishment</span></div>
+            <button type="button" class="btn btn-block btn-secondary" onclick="javascript:Configs.showWordBlacklist()">Open blacklist</button>
+          </div>
+        </div>
+
+        <!-- execption roles -->
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Exception roles</p>
+            <div class="config-info"><span>These will bypass punishment</span></div>
+            <button type="button" class="btn btn-block btn-secondary" onclick="javascript:Configs.showExecptionRoles()">Open role list</button>
+          </div>
+        </div>
+
+        <!-- link whitelist -->
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Ban links</p>
+            <form onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
+              <button type="submit" class="btn btn-block toggle-value" name="blacklist_ban_links" value="x">Click to </button>
+            </form>
+            <button type="button" class="btn btn-block btn-secondary" onclick="javascript:Configs.showLinkWhitelist()">Open link whitelist</button>
+          </div>
+        </div>
+
+      </div>
+      <!-- punishment -->
+      <div class="center-item-row">
+
+        <div class="col">
+          <form class="content-box config-box" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
+            <p>Punishment level</p>
+            <div class="config-info"><span>In case someone go against the rules, what should happen?<span></div>
+            <select class="custom-select" name="blacklist_punishment">
+              <option value="delete">Just delete the message</option>
+              <option value="kick">Delete the message and kick the author</option>
+              <option value="ban">Delete the message and ban the author</option>
+            </select>
+            <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <h3 id="config_events">Automated event messages</h3>
+    <div>
+      <span>There are some events, that can be used to announce some automated messages.</span>
+
+      <hr>
+
+      <!-- welcome and leave -->
+      <div class="center-item-row">
+
+        <!-- welcome msg -->
+        <div class="col">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
+            <div class="center-item-col">
+              <p>Welcome message</p>
+              <div class="config-info"><span>Get's triggered everytime a member joins<span></div>
+              <textarea class="config-textbox-input" name="welcome_msg" rows="5"></textarea>
+              <div class="config-info">
+                <span>The channel where the message appears<span><br>
+                <span>(channel == none or no text content = message turned off)</span>
+              </div>
+              <select class="custom-select" discord-channel="text" discord-channel-none="true" name="welcome_chan">
+                <option value="">(Channel Select)</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
+            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('welcome')">Token</button>
+          </form>
+        </div>
+
+        <!-- leave msg -->
+        <div class="col">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
+            <div class="center-item-col">
+              <p>Leave message</p>
+              <div class="config-info"><span>Get's triggered everytime a member leaves :c<span></div>
+              <textarea class="config-textbox-input" name="leave_msg" rows="5"></textarea>
+              <div class="config-info">
+                <span>The channel where the message appears<span><br>
+                <span>(channel == none or no text content = message turned off)</span>
+              </div>
+              <select class="custom-select" discord-channel="text" discord-channel-none="true" name="leave_chan">
+                <option value="">(Channel Select)</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
+            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('leave')">Token</button>
+          </form>
+        </div>
+
+      </div>
+      <!-- priv welcome -->
+      <div class="center-item-row">
+
+        <div class="col">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
+            <p>Private welcome message</p>
+            <div class="config-info">
+              <span>Get's triggered with "Welcome message", except it is sent to the member via DM<span><br>
+              <span>(no text content = message turned off)</span>
+            </div>
+            <textarea class="config-textbox-input" name="welcome_msg_priv" rows="5"></textarea>
+            <button type="submit" class="btn btn-block btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('priv_welcome')">Token</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <h3 id="config_level">Level config</h3>
+    <div>
+      <span>Level execptions, announce channel and custom messages</span>
+
+      <hr>
+
+      <!-- level msg -->
+      <div class="center-item-row">
+        <div class="col">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
+            <p>Custom level-up message</p>
+            <div class="config-info">
+              <span>Message that appears on level up</span>
+            </div>
+            <textarea class="config-textbox-input" name="level_custom_msg" rows="5"></textarea>
+            <button type="submit" class="btn btn-block btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('level')">Token</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- level chan -->
+      <div class="center-item-row">
+        <div class="col">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
+            <p>Level-up channel</p>
+            <div class="config-info">
+              <span>By default, the message will appear in the same channel the user typed, but this can be overwritten, so all level ups go into one channel</span>
+            </div>
+            <select class="custom-select" name="level_announce_chan" discord-channel="text" discord-channel-none="true"></select>
+            <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- disable single channels -->
+      <div class="center-item-row">
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Channel execption</p>
+            <div class="config-info"><span>Prevents everyone in a channel from gaining exp or using commands associated with level</span></div>
+            <button type="button" class="btn btn-block btn-secondary" onclick="javascript:Configs.showDisableChanLevel()">Open channellist</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- master disable level -->
+      <div class="center-item-row">
+        <div class="col">
+          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
+            <span>Master: Level Commands / Progress</span><br>
+            <div class="config-info"><span>Prevents everyone serverwide from gaining exp or using commands associated with level<span></div>
+            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_level" value="x">Click to </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <h3 id="config_channels">Channel execptions</h3>
+    <div>
+      <span>Disable command groups in a channel</span>
+      <br>
+      <span>or allow command groups that need to be activated for a channel</span>
+
+      <hr>
+
+      <!-- all things you can disable -->
+      <div class="center-item-row">
+
+        <!-- disable normal -->
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Disable normal commands</p>
+            <button type="button" class="btn btn-block btn-secondary" onclick="Configs.showDisableChanNormal()">Open channellist</button>
+          </div>
+        </div>
+
+        <!-- disable regulars -->
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Disable regular commands</p>
+            <button type="button" class="btn btn-block btn-secondary" onclick="Configs.showDisableChanRegular()">Open channellist</button>
+          </div>
+        </div>
+
+        <!-- disable quotes -->
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Disable quotes</p>
+            <button type="button" class="btn btn-block btn-secondary" onclick="Configs.showDisableChanQuote()">Open channellist</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- all things you can enable -->
+      <div class="center-item-row">
+        <!-- enable game -->
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Enable game commands</p>
+            <button type="button" class="btn btn-block btn-secondary" onclick="Configs.showEnableChanGame()">Open channellist</button>
+          </div>
+        </div>
+
+        <!-- enable nsfw -->
+        <div class="col">
+          <div class="content-box config-box">
+            <p>Enable NSFW commands</p>
+            <button type="button" class="btn btn-block btn-secondary" onclick="Configs.showEnableChanNSFW()">Open channellist</button>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <h3 id="config_master">Master controlls</h3>
+    <div>
+      <span>Master configs can only be edited by the server owner, all of them have serverwide impact.</span>
+      <br>
+      <span>A disabled command group can only be used by the server owner and noone else.</span>
+
+      <hr>
+
+      <!-- all master things -->
+      <div class="center-item-row">
+
+        <!-- normal -->
+        <div class="col">
+          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
+            <p>Normal Commands</p>
+            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_normal" value="x">Click to </button>
+          </form>
+        </div>
+
+        <!-- regular -->
+        <div class="col">
+          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
+            <p>Regular Commands</p>
+            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_regular" value="x">Click to </button>
+          </form>
+        </div>
+
+        <!-- mod -->
+        <div class="col">
+          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
+            <p>Moderator Commands</p>
+            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_mod" value="x">Click to </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+  <div class="modal fade" id="token_modal_help">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Token</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <p>Tokens are placeholder that get replaced with informations if the message is given out.</p>
+              <p>e.g.: </p>
+              <pre class="example">Hello [user-mention], please read <#rules#></pre>
+              <p>Will be: </p>
+              <pre class="example">Hello <span class="clickable">@NewUserName</span>, please read <span class="clickable">#rules</span></pre>
+              <span>Note: using <#rules#> will make a <span class="clickable">clickable</span> channel mention,<br></span>
+              <span>If you just use #rules it will be normal text.</span>
+            </div>
+          </div>
+
+          <h3>Token list</h3>
+          <table class="tokenlist">
+            <tr class="token welcome leave priv_welcome level">
+              <td class="key">[user-name]</td>
+              <td class="value">The user name</td>
+            </tr>
+            <tr class="token welcome leave level">
+              <td class="key">[user-mention]</td>
+              <td class="value">A <span class="clickable">@mention</span> of the user</td>
+            </tr>
+            <tr class="token level">
+              <td class="key">[channel-name]</td>
+              <td class="value">The name of the event</td>
+            </tr>
+            <tr class="token level">
+              <td class="key">[channel-mention]</td>
+              <td class="value">A <span class="clickable">#mention</span> of the event channel</td>
+            </tr>
+            <tr class="token welcome leave priv_welcome level">
+              <td class="key">[server-name]</td>
+              <td class="value">Event server name</td>
+            </tr>
+            <tr class="token welcome leave priv_welcome level">
+              <td class="key">[member-count]</td>
+              <td class="value">Current event server member count</td>
+            </tr>
+            <tr class="token level">
+              <td class="key">[lvl]</td>
+              <td class="value">The users level</td>
+            </tr>
+            <tr class="token level">
+              <td class="key">[exp]</td>
+              <td class="value">The user exp</td>
+            </tr>
+            <tr class="token level">
+              <td class="key">[rank]</td>
+              <td class="value">The users rank based on exp</td>
+            </tr>
+            <tr>
+              <td colspan="2"><h3>Special token list</h3></td>
+            </tr>
+            <tr class="token welcome leave priv_welcome level">
+              <td class="key"><#name#></td>
+              <td class="value">Channel mention of channel associated with name*</td>
+            </tr>
+            <tr class="token welcome leave priv_welcome level">
+              <td class="key"><#!id!#></td>
+              <td class="value">Channel mention of channel associated with id*</td>
+            </tr>
+            <tr class="token welcome leave priv_welcome level">
+              <td colspan="2">* = if none found replace with: (unknown)</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="modal-footer"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="config_modal_blacklist_words">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Blacklist</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <p>Pretty easy to unserstand, everything is handled via <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expressions</a></p>
+              <span>If any Regex is found in the message, execute the punishment</span>
+              <span>Note:</span><br>
+              <span>The message is lowered before checking, so:</span><br>
+              <span>"Hello there my name is CreAtIvU53R1337"</span><br>
+              <span>will be: </span><br>
+              <span>"hello there my name is creativu53r1337"</span>
+            </div>
+          </div>
+
+          <hr>
+          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToBlacklist()">
+            <input type="text" id="new_blacklistword" class="form-control">
+            <label for="new_blacklistword">New entry:</label>
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+            </div>
+          </form>
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .blacklistword" -->
+          <div class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="config_modal_whitelist_links">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Link whitelist</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <p>By default every link gets punished, but here you can define <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expressions</a> that are allowed.</p>
+              <span>e.g:</span><br>
+              <span>If you ban links, but want to allow all google links, including all subdomains.</span><br>
+              <span>You add this: <span style="color:red">^.*google.com$</span></span>
+            </div>
+          </div>
+
+          <hr>
+          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToLinkWhitelist()">
+            <input type="text" id="new_whitelistlink" class="form-control">
+            <label for="new_whitelistlink">New entry:</label>
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+            </div>
+          </form>
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .whitelistlink" -->
+          <div class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="config_modal_exeption_roles">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Exceptionrole</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <span>A member who has at least one of these roles will have full immunity to the blacklist-, link ban- and punishment-system</span>
+            </div>
+          </div>
+
+          <hr>
+          <span>Only non-managed roles are shown</span><br>
+          <span>Adding @everyone is not a good idea... i think?</span>
+          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToExecptionRoles()">
+            <select class="custom-select" id="new_exceptionrole" discord-role discord-role-none="true"></select>
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+            </div>
+          </form>
+          <span>Select a role you want to add.</span>
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .exceptionrole" -->
+          <div class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="config_modal_disable_chan_level">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Disable level in channels</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <span>Member wont gain exp in these channels</span>
+            </div>
+          </div>
+
+          <hr>
+          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToDisableChanLevel()">
+            <select class="custom-select" id="new_disable_chan_level" discord-channel="text"></select>
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+            </div>
+          </form>
+          <span>Select a channel you want to add.</span>
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .disablechanlevel" -->
+          <div class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="config_modal_disable_chan_quote">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Disable quote in channels</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <span>Asking quotes in this channel is prevented</span>
+            </div>
+          </div>
+
+          <hr>
+          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToDisableChanQuote()">
+            <select class="custom-select" id="new_disable_chan_quote" discord-channel="text"></select>
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+            </div>
+          </form>
+          <span>Select a channel you want to add.</span>
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .disablechanquote" -->
+          <div class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="config_modal_disable_chan_normal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Disable normal commands in channels</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <span>All commands with a require of "Everyone" is prevented</span>
+            </div>
+          </div>
+
+          <hr>
+          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToDisableChanNormal()">
+            <select class="custom-select" id="new_disable_chan_normal" discord-channel="text"></select>
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+            </div>
+          </form>
+          <span>Select a channel you want to add.</span>
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .disablechannormal" -->
+          <div class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="config_modal_disable_chan_regular">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Disable regular commands in channels</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <span>All commands with a require of "Regular" is prevented</span>
+            </div>
+          </div>
+
+          <hr>
+          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToDisableChanRegular()">
+            <select class="custom-select" id="new_disable_chan_regular" discord-channel="text"></select>
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+            </div>
+          </form>
+          <span>Select a channel you want to add.</span>
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .disablechanregular" -->
+          <div class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="config_modal_enable_chan_game">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Enable game commands in channels</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <span>Enables all game commands in selected channels</span>
+            </div>
+          </div>
+
+          <hr>
+          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToEnableChanGame()">
+            <select class="custom-select" id="new_enable_chan_game" discord-channel="text"></select>
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+            </div>
+          </form>
+          <span>Select a channel you want to add.</span>
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .enablechangame" -->
+          <div class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="config_modal_enable_chan_nsfw">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Enable NSFW commands in channels</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <span>Enables all NSFW commands in selected channels,</span><br>
+              <span>You may still watch for yourself that all member in your server follow the <a target="_blank" href="https://discordapp.com/terms">Discord TOS</a></span>
+            </div>
+          </div>
+
+          <hr>
+          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToEnableChanNSFW()">
+            <select class="custom-select" id="new_enable_chan_nsfw" discord-channel="text"></select>
+            <div class="input-group-append">
+              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+            </div>
+          </form>
+          <span>Select a channel you want to add.</span>
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .enablechannsfw" -->
+          <div class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="center-item-row forced blacklistword">
+    <div class="col word"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromBlacklist(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div class="center-item-row forced whitelistlink">
+    <div class="col link"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromLinkWhitelist(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div class="center-item-row forced exceptionrole">
+    <data value="" role-id></data>
+    <div class="col name"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromExecptionRoles(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div class="center-item-row forced disablechanlevel">
+    <data value="" channel-id></data>
+    <div class="col name"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromDisableChanLevel(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div class="center-item-row forced disablechanquote">
+    <data value="" channel-id></data>
+    <div class="col name"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromDisableChanQuote(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div class="center-item-row forced disablechannormal">
+    <data value="" channel-id></data>
+    <div class="col name"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromDisableChanNormal(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div class="center-item-row forced disablechanregular">
+    <data value="" channel-id></data>
+    <div class="col name"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromDisableChanRegular(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div class="center-item-row forced enablechangame">
+    <data value="" channel-id></data>
+    <div class="col name"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromEnableChanGame(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div class="center-item-row forced enablechannsfw">
+    <data value="" channel-id></data>
+    <div class="col name"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromEnableChanNSFW(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+</div>

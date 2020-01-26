@@ -1,0 +1,82 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark">
+
+  <!-- Brand -->
+  <a class="navbar-brand" href="/">
+    <span>Phaaze</span>
+    <img src="/img/favicon.ico" alt="logo" height="50">
+  </a>
+
+  <!-- Collapse button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_content"
+    aria-controls="navbar_content" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Collapsible content -->
+  <div class="collapse navbar-collapse" id="navbar_content">
+
+    <!-- Left -->
+    <ul class="navbar-nav mr-auto center-item-row">
+      <li class="nav-item {selected_discord}">
+        <a class="nav-link" href="/discord">Discord</a>
+      </li>
+      <li class="nav-item {selected_twitch}">
+        <a class="nav-link" href="/twitch">Twitch</a>
+      </li>
+      <li class="nav-item {selected_osu}">
+        <a class="nav-link" href="/osu">osu!</a>
+      </li>
+      <li class="nav-item {selected_wiki}">
+        <a class="nav-link" href="/wiki">Wiki</a>
+      </li>
+    </ul>
+
+    <!-- Right -->
+    <ul class="navbar-nav ml-auto center-item-row">
+      <li class="nav-item">
+        <a class="nav-link" href="https://discord.gg/ZymrebS">
+          <i class="fab fa-discord"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" onmouseover="showEmail()">
+          <i class="far fa-envelope" id="email_icon"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://github.com/The-CJ/Phaazebot">
+          <i class="fab fa-github"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.patreon.com/the_cj">
+          <i class="fab fa-patreon"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/bug">
+          <i class="fas fa-bug"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="/wiki/about">About</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="/wiki/api">API</a>
+      </li>
+      <li class="nav-item">
+        <button type="button" class="btn btn-primary center-item-row" id="account_field" onclick="SessionManager.showAccountPanel()">
+          <i class="fas fa-user-circle"></i>
+        </button>
+      </li>
+    </ul>
+
+  </div>
+
+</nav>
+
+<div id="global_modals">
+  |<!--#(account_modal)#-->|
+</div>
+
+<div messagebox id="main_message_field"></div>

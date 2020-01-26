@@ -1,0 +1,34 @@
+<link rel="stylesheet" href="/css/site-specific/discord/quotes.css">
+<script src="/js/discord.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/quotes.js" charset="utf-8"></script>
+
+<main>
+
+  <div class="container text-center white-text">
+
+    <h1 id="guild_name">|<!--#(guild_name)#-->|</h1>
+    <data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
+
+    <h2>Quotes: <span id="quote_amount">0</span></h2>
+
+    <hr>
+
+    <!-- gets filled with copys of: "[phantom] .quote" -->
+    <div id="quote_list"></div>
+
+  </div>
+
+</main>
+
+<div phantom hidden>
+
+  <div class="row quote content-box" quote-id="0" onclick="detailCommand(this)">
+    <div class="col-1 info center-item-row">
+      <span>ID: <span name="quote_id">0</span></span>
+    </div>
+    <div class="col content">
+      <textarea name="content" rows="5" readonly></textarea>
+    </div>
+  </div>
+
+</div>

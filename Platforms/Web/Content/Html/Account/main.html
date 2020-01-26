@@ -1,0 +1,50 @@
+<link rel="stylesheet" href="/css/site-specific/account/main.css">
+<script src="/js/site-specific/account/main.js" charset="utf-8"></script>
+
+<main>
+	<div class="container text-center white-text">
+
+		<h1>Manage Account</h1>
+
+		<h2>General</h2>
+		<form class="stylish-color-dark" id="manage_field" action="javascript:saveAccountInfos()">
+
+			<div class="center-item-row md-form">
+				<i class="fas fa-user-circle prefix grey-text"></i>
+				<input type="text" class="form-control white-text" placeholder="Your username" name="username">
+			</div>
+
+			<div class="center-item-row md-form">
+				<i class="far fa-envelope prefix grey-text"></i>
+				<input type="email" class="form-control white-text" placeholder="Your e-mail" name="email">
+			</div>
+
+			<div class="center-item-row md-form">
+				<i class="fas fa-lock prefix grey-text" title="needed for changes">*</i>
+				<input type="password" class="form-control white-text" placeholder="Your current password" name="password">
+			</div>
+
+			<div new_password_space>
+				<button type="button" class="btn btn-block btn-warning" onclick="showPasswordFields()">Change password</button>
+
+				<div class="center-item-row md-form" style="display: none">
+					<i class="fas fa-key prefix grey-text"></i>
+					<input type="password" class="form-control white-text" placeholder="Your new password" name="newpassword">
+				</div>
+
+				<div class="center-item-row md-form" style="display: none">
+					<i class="fas fa-key prefix grey-text"></i>
+					<input type="password" class="form-control white-text" placeholder="Retype your password" name="newpassword2">
+				</div>
+			</div>
+
+			<button type="submit" class="btn btn-block btn-primary">Save</button>
+
+		</form>
+
+		<h2>Roles</h2>
+		<div class="stylish-color-dark center-item-col" id="role_field"></div>
+
+	</div>
+
+</main>

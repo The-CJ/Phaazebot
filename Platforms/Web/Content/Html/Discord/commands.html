@@ -1,0 +1,86 @@
+<link rel="stylesheet" href="/css/site-specific/discord/commands.css">
+<script src="/js/discord.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/commands.js" charset="utf-8"></script>
+
+<main>
+
+  <div class="container text-center white-text">
+
+    <h1 id="guild_name">|<!--#(guild_name)#-->|</h1>
+    <data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
+    <data value="|<!--#(guild_currency)#-->|" id="guild_currency"></data>
+    <data value="|<!--#(guild_currency_multi)#-->|" id="guild_currency_multi"></data>
+
+    <h2>Commands: <span id="command_amount">0</span></h2>
+
+    <hr>
+
+    <div class="header row">
+      <div class="col-2 trigger">Trigger</div>
+      <div class="col function">Function</div>
+      <div class="col-2 require">Require</div>
+      <div class="col-1 cost">Cost</div>
+      <div class="col-1 uses">Uses</div>
+    </div>
+
+    <!-- get filled with copys of: "[phantom] .command" -->
+    <div id="command_list"></div>
+
+  </div>
+
+</main>
+
+<div phantom hidden>
+
+  <div class="row command" command-id="0" onclick="detailCommand(this)">
+    <div class="col-2 trigger">[N/A]</div>
+    <div class="col function">[N/A]</div>
+    <div class="col-2 require">[N/A]</div>
+    <div class="col-1 cost">[N/A]</div>
+    <div class="col-1 uses">[N/A]</div>
+  </div>
+
+</div>
+
+<div class="modal fade" id="command_detail">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Command details</h4>
+        <button type="button" class="close" onclick="$('#command_detail').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-black">
+
+        <div class="center-item-row">
+          <span class="col text-left">Trigger:</span>
+          <span class="col text-right" name="trigger">[N/A]<span>
+        </div>
+        <hr>
+        <div class="center-item-row">
+          <span class="col text-left">Can be used by:</span>
+          <span class="col text-right" name="require">[N/A]<span>
+        </div>
+        <div class="center-item-row">
+          <span class="col text-left">Used:</span>
+          <span class="col text-right" name="uses">[N/A]<span>
+        </div>
+        <div class="center-item-row">
+          <span class="col text-left">Cost to use:</span>
+          <span class="col text-right" name="cost">[N/A]<span>
+        </div>
+        <hr>
+        <div class="center-item-row">
+          <p class="col text-center" name="name">[N/A]</p>
+        </div>
+        <div class="center-item-row">
+          <span class="col text-center" name="description">[N/A]<span>
+        </div>
+      </div>
+
+      <div class="modal-footer"></div>
+
+    </div>
+  </div>
+</div>

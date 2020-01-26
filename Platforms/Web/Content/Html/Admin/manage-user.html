@@ -1,0 +1,137 @@
+<link rel="stylesheet" href="/css/site-specific/admin/manage-user.css">
+<script src="/js/site-specific/admin/manage-user.js" charset="utf-8"></script>
+
+<main>
+  <div class="container text-center white-text">
+    <h1>User manager</h1>
+
+    <div class="center-item-row" id="page_menu">
+      <button onclick="prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+      <button onclick="prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+      <span>Page: <span class="index">0</span></span>
+      <button onclick="nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+      <button onclick="nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+      <span>[<span class="from">-1</span> - <span class="to">-1</span> of <span class="total">-1</span>]</span>
+    </div>
+
+    <form class="center-item-row" id="search_menu" action="javascript:void(0)" onsubmit="searchUser(true)">
+      <button type="button" class="btn btn-primary" onclick="showCreate()">Create user</button>
+
+      <div class="md-form ml-auto">
+        <input type="text" name="username" placeholder="Username LIKE" class="text-white">
+        <input type="text" name="email" placeholder="E-Mail LIKE" class="text-white">
+      </div>
+      <button type="submit" class="btn btn-secondary icon-btn next"><i class="fas fa-search"></i></button>
+    </form>
+
+    <div id="user_list"></div>
+  </div>
+</main>
+
+<div phantom hidden>
+
+  <div class="user" user-id="0" onclick="detailUser(this)">
+    <div class="row">
+      <div class="col"><span class="name">[N/A]</span></div>
+    </div>
+  </div>
+
+  <div class="center-item-row forced role">
+    <div class="col name"></div>
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="removeUserRole(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal fade" id="edit_create_user" mode="edit/create">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">[N/A]</h4>
+        <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row md-form" dont-show="create">
+          <div class="col"><span>ID:</span></div>
+          <div class="col-8"><input type="text" name="user_id" readonly style="width: 100%;"></div>
+        </div>
+
+        <div class="row md-form">
+          <div class="col"><span>Username:</span></div>
+          <div class="col-8"><input type="text" name="username" placeholder="User name" style="width: 100%;"></div>
+        </div>
+
+        <div class="row md-form" dont-show="create">
+          <div class="col"><span>Username changed:</span></div>
+          <div class="col-8"><input type="text" name="username_changed" readonly style="width: 100%;"></div>
+        </div>
+
+        <div class="row md-form">
+          <div class="col"><span>Set/Overwrite Password:</span></div>
+          <div class="col-8"><input type="password" name="password" placeholder="Password" style="width: 100%;"></div>
+        </div>
+
+        <div class="row md-form">
+          <div class="col"><span>E-Mail:</span></div>
+          <div class="col-8"><input type="text" name="email" placeholder="User email" style="width: 100%;"></div>
+        </div>
+
+        <div class="row" dont-show="create">
+          <div class="col">
+            <span>Verified:</span>
+          </div>
+          <div class="col-8">
+            <label class="checkbox-container">
+              <input type="checkbox" name="verified" checked>
+            </label>
+          </div>
+        </div>
+
+        <div class="row md-form" dont-show="create">
+          <div class="col"><span>Created:</span></div>
+          <div class="col-8"><input type="text" name="created_at" style="width: 100%;" readonly></div>
+        </div>
+
+        <div class="row md-form" dont-show="create">
+          <div class="col"><span>Last edit:</span></div>
+          <div class="col-8"><input type="text" name="edited_at" style="width: 100%;" readonly></div>
+        </div>
+
+        <div class="row md-form" dont-show="create">
+          <div class="col"><span>Last login:</span></div>
+          <div class="col-8"><input type="text" name="last_login" style="width: 100%;" readonly></div>
+        </div>
+
+        <div class="row" dont-show="create">
+          <div class="col">
+            <h4>Roles:</h4>
+
+            <div class="center-item-row forced">
+              <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:addUserRole()">
+                <select class="custom-select" id="new_user_role"></select>
+                <div class="input-group-append">
+                  <button type="submit" class="btn btn-primary m-0 px-3 py-2">+</button>
+                </div>
+              </form>
+            </div>
+
+            <div id="user_role_list"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button create type="button" class="btn btn-block btn-success" onclick="createUser()">Create</button><br>
+        <button edit type="button" class="btn btn-block btn-success" onclick="editUser()">Save</button>
+        <button edit type="button" class="btn btn-danger" onclick="deleteUser()">Delete</button>
+      </div>
+
+      <div messagebox></div>
+    </div>
+  </div>
+</div>

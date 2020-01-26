@@ -1,0 +1,51 @@
+<link rel="stylesheet" href="/css/site-specific/discord/dashboard.css">
+<script src="/js/discord.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/dashboard/main.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/dashboard/configs.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/dashboard/commands.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/dashboard/levels.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/dashboard/quotes.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/dashboard/assignroles.js" charset="utf-8"></script>
+
+<main>
+
+  <div class="container-fluid text-center white-text">
+
+    <div class="row">
+      <div class="col-2 stylish-color-dark site-panel">
+        <h4>|<!--#(guild_name)#-->|</h4>
+        <data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
+        <hr>
+        <div class="location-selector text-left">
+          <div onclick="DiscordDashboard.loadHome()" class="location"><i class="fas fa-home"></i>Home</div>
+          <div onclick="DiscordDashboard.loadConfig()" class="location"><i class="fas fa-cogs"></i>Configuration</div>
+          <div onclick="DiscordDashboard.loadCommand()" class="location"><i class="fas fa-terminal"></i>Commands</div>
+          <div onclick="DiscordDashboard.loadLevel()" class="location"><i class="fas fa-list-ol"></i>Levels</div>
+          <div onclick="DiscordDashboard.loadQuote()" class="location"><i class="fas fa-quote-right"></i>Quotes</div>
+          <div onclick="DiscordDashboard.loadTwitchAlert()" class="location"><i class="fab fa-twitch"></i>Twitch Alerts</div>
+          <div onclick="DiscordDashboard.loadAssignRole()" class="location"><i class="far fa-address-book"></i>Assign Roles</div>
+        </div>
+      </div>
+      <div class="col main-panel">
+
+        |<!--#(location_home)#-->|
+
+        |<!--#(location_configs)#-->|
+
+        |<!--#(location_commands)#-->|
+
+        |<!--#(location_levels)#-->|
+
+        |<!--#(location_quotes)#-->|
+
+        |<!--#(location_twitch_alerts)#-->|
+
+        |<!--#(location_assign_roles)#-->|
+
+      </div>
+    </div>
+
+  </div>
+
+</main>
+<button type="button" class="site-panel-btn btn btn-primary" onclick="DiscordDashboard.toggleSitePanel()"><i class="fas fa-angle-double-right"></i></button>

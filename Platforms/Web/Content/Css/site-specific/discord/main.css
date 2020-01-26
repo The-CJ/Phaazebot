@@ -1,0 +1,32 @@
+main h1 {
+  margin: 1em 0;
+}
+
+.guild-list:empty::after {
+  content: "Nothing here...";
+  background: rgba(0, 0, 0, 0.2);
+  width: 100%;
+  border: 5px solid rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.guild-list .guild {
+  padding: 5px;
+}
+
+.guild-list .guild:hover {
+  border-radius: 1em;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.guild-list .guild img {
+  border: 2px solid black;
+  background: #202225;
+  border-radius: 50%;
+}
+
+.guild-list .guild .name {
+  overflow: hidden;
+  max-width: 128px;
+}
