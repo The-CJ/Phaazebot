@@ -36,4 +36,5 @@ cat Utils/DBTemplates/* | mysql phaaze
 ```
 ```sql
 GRANT ALL PRIVILEGES ON `phaaze`.* TO "phaazebot"@"localhost" IDENTIFIED BY "your_password";
+FLUSH PRIVILEGES;
 ```

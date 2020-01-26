@@ -1,3 +1,4 @@
+setuptools
 mysql-connector
 discord.py
 requests
