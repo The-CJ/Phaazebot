@@ -57,6 +57,7 @@
   "twitch_stats_cooldown":5,
 
   "web_root":"localhost",
+  "ssl_dir":"/etc/letsencrypt/live/domain.something/",
   "web_client_max_size":5242880,
 
   "trigger_discord":">",

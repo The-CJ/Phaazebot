@@ -106,6 +106,7 @@ class VarsStore(object):
 		self.DEFAULT_DISCORD_CURRENCY_MULTI:str = str(config.get('default_discord_currency_multi', 'Credits'))
 
 		self.WEB_ROOT:str = str(config.get('web_root', 'localhost'))
+		self.SSL_DIR:str = str(config.get('ssl_dir', '/etc/letsencrypt/live/domain.something/'))
 
 		self.DISCORD_BOT_ID:str = str(config.get('discord_bot_id', '00000'))
 		self.DISCORD_LOGIN_LINK:str = str(config.get('discord_login_link', '/discord'))
