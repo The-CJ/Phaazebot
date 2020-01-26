@@ -7,11 +7,23 @@ Requires always the newest Python Version (3.8)
 [Because why should you stay on a lower one?]
 
 ```
+# before we start
 apt-get update
+apt-get dist-upgrade
+
+# only if not already installed
+# apt-get install vim
+# apt-get install git
+
+# python
 apt-get install python3.8
 apt-get install python3-pip
 apt-get install python3.8-dev
 python3.8 -m pip install -r requirement.txt
+
+# mariadb
+curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
+apt-get install mariadb-server
 ```
 
 Create Database
