@@ -8,6 +8,7 @@ from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discorduserstats import DiscordUserStats
 from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.discordassignrole import DiscordAssignRole
+from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
 
 # db management
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
@@ -169,9 +170,8 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, member_id:
 
 	if limit:
 		sql += f" LIMIT {limit}"
-
-	if limit and offset:
-		sql += f" OFFSET {offset}"
+		if offset:
+			sql += f" OFFSET {offset}"
 
 	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
@@ -222,6 +222,36 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 
 	if res:
 		return [DiscordQuote(x, guild_id) for x in res]
+
+	else:
+		return []
+
+async def getDiscordTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, alert_id:int=None, limit:int=0, offset:int=0) -> list:
+	"""
+		Get server discord alerts, if alert_id = None, get all
+		else only get one associated with the alert_id
+		Returns a list of DiscordTwitchAlert().
+	"""
+
+	sql:str = """
+		SELECT * FROM `discord_twitch_alert`
+		WHERE `discord_twitch_alert`.`guild_id` = %s"""
+
+	values:tuple = (guild_id,)
+
+	if alert_id:
+		sql += " AND `discord_twitch_alert`.`id` = %s"
+		values += (alert_id,)
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	if res:
+		return [DiscordTwitchAlert(x) for x in res]
 
 	else:
 		return []
