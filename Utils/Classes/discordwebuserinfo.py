@@ -114,9 +114,9 @@ class DiscordWebUserInfo(object):
 
 	async def viaSession(self) -> None:
 		dbr:str = """
-			SELECT * FROM session_discord
-			WHERE session_discord.created_at > (NOW() - INTERVAL 7 DAY)
-				AND session_discord.session = %s"""
+			SELECT * FROM `session_discord`
+			WHERE `session_discord`.`created_at` > (NOW() - INTERVAL 7 DAY)
+				AND `session_discord`.`session` = %s"""
 
 		val:tuple = (self.__session,)
 		return await self.dbRequest(dbr, val)
