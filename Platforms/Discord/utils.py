@@ -235,7 +235,7 @@ async def getDiscordTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, alert_id:
 
 	sql:str = """
 		SELECT * FROM `discord_twitch_alert`
-		WHERE `discord_twitch_alert`.`guild_id` = %s"""
+		WHERE `discord_twitch_alert`.`discord_guild_id` = %s"""
 
 	values:tuple = (guild_id,)
 
