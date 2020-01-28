@@ -29,6 +29,9 @@ class DBConn(object):
 		self.mass_request:bool = False
 		self.MassRequestConn:MySQLConnection = None
 
+		# if != None, called with last statement as arg, for logging etc.
+		self.statement_func:callable = None
+
 	def query(self, sql:str, values:tuple = None, debug:dict={}) -> list:
 		"""
 			Querys a SQL command. Using a MySQLCursorDict.
@@ -63,6 +66,7 @@ class DBConn(object):
 		# do stuff
 		Cursor.execute(sql, values)
 		debug["last_statement"] = Cursor.statement
+		if self.statement_func != None: self.statement_func(debug["last_statement"])
 
 		# read and quess result
 		if Cursor._have_unread_result(): res:list = Cursor.fetchall()
@@ -89,6 +93,7 @@ class DBConn(object):
 		# do stuff
 		Cursor.execute(sql, values)
 		debug["last_statement"] = Cursor.statement
+		if self.statement_func != None: self.statement_func(debug["last_statement"])
 
 		# gather stuff
 		res:list = Cursor.fetchall()
@@ -112,6 +117,7 @@ class DBConn(object):
 		# do stuff
 		Cursor.execute(sql, values)
 		debug["last_statement"] = Cursor.statement
+		if self.statement_func != None: self.statement_func(debug["last_statement"])
 
 		# commit and close?
 		Conn.commit()
@@ -150,6 +156,7 @@ class DBConn(object):
 		# do stuff
 		Cursor.execute(statement, values)
 		debug["last_statement"] = Cursor.statement
+		if self.statement_func != None: self.statement_func(debug["last_statement"])
 
 		# commit and close?
 		Conn.commit()
@@ -188,6 +195,7 @@ class DBConn(object):
 		# do stuff
 		Cursor.execute(statement, values)
 		debug["last_statement"] = Cursor.statement
+		if self.statement_func != None: self.statement_func(debug["last_statement"])
 
 		# commit and close
 		Conn.commit()

@@ -7,6 +7,9 @@
 * -no-args
     * allows start without configuration
 
+  -log-sql
+    * prints all SQL Statements with inserted values to the console
+
 ### kwargs
 
 * --logging=

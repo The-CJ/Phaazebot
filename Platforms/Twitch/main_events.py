@@ -51,12 +51,12 @@ class PhaazebotTwitchEvents(object):
 		# that have at least one discord channel alert or have Phaaze in the twitch channel active
 		res:list = self.BASE.PhaazeDB.selectQuery("""
 			SELECT
-			  `twitch_channel`.`channel_id`,
-			  `twitch_channel`.`game_id`,
-			  `twitch_channel`.`live`
+				`twitch_channel`.`channel_id`,
+				`twitch_channel`.`game_id`,
+				`twitch_channel`.`live`
 			FROM `twitch_channel`
 			LEFT JOIN `discord_twitch_alert`
-			  ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_channel`.`channel_id`
+				ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_channel`.`channel_id`
 			GROUP BY `twitch_channel`.`channel_id`"""
 		)
 
