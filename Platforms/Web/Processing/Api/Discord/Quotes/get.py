@@ -25,6 +25,8 @@ async def apiDiscordQuotesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	quote_id:int = Data.getInt("quote_id", UNDEFINED, min_x=1)
+	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
+	offset:int = Data.getInt("offset", 0, min_x=0)
 
 	# checks
 	if not guild_id:
@@ -36,7 +38,7 @@ async def apiDiscordQuotesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get quotes
-	res_quotes:list = await getDiscordServerQuotes(PhaazeDiscord, guild_id=guild_id, quote_id=quote_id)
+	res_quotes:list = await getDiscordServerQuotes(PhaazeDiscord, guild_id=guild_id, quote_id=quote_id, limit=limit, offset=offset)
 
 	return cls.response(
 		text=json.dumps( dict(

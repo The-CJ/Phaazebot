@@ -81,7 +81,7 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", guild_id:str) -> Disc
 		cls.BASE.Logger.critical(f"(Discord) New server settings failed: S:{guild_id}")
 		raise RuntimeError("Creating new DB entry failed")
 
-async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger:str=None, command_id:str or int=None, order_str:str="ORDER BY id", limit:int=0, show_nonactive:bool=False ) -> list:
+async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger:str=None, command_id:str or int=None, order_str:str="ORDER BY id", show_nonactive:bool=False, limit:int=0, offset:int=0) -> list:
 	"""
 		Get custom commands from a discord server/guild, if trigger = None, get all.
 		else only get one associated with trigger.
@@ -110,6 +110,8 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 
 	if limit:
 		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
 
 	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
@@ -193,7 +195,7 @@ async def getDiscordServerUserAmount(cls:"PhaazebotDiscord", guild_id:str, where
 
 	return res[0]["I"]
 
-async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:int=None, random:bool=False, limit:int=0) -> list:
+async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:int=None, random:bool=False, limit:int=0, offset:int=0) -> list:
 	"""
 		Get server quotes, if quote_id = None, get all
 		else only get one associated with the quote_id
@@ -217,6 +219,8 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 
 	if limit:
 		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
 
 	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
@@ -256,7 +260,7 @@ async def getDiscordTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, alert_id:
 	else:
 		return []
 
-async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:int=None, assignrole_id:int=None, trigger:str=None, order_str:str="ORDER BY `id`", limit:int=0) -> list:
+async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:int=None, assignrole_id:int=None, trigger:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0) -> list:
 	"""
 		Get server assign roles, if role_id and trigger are None, get all
 		else only get one associated with the role_id or trigger
@@ -285,6 +289,8 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 
 	if limit:
 		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
 
 	res:list = cls.BASE.PhaazeDB.query(sql, values)
 

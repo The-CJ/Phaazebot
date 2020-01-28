@@ -13,6 +13,9 @@ from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 
+DEFAULT_LIMIT:int = 50
+MAX_LIMIT:int = 100
+
 async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/discord/commands/get
@@ -24,6 +27,8 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
 	show_hidden:bool = Data.getBool("show_hidden", False)
+	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
+	offset:int = Data.getInt("offset", 0, min_x=0)
 
 	# checks
 	if not guild_id:
@@ -56,7 +61,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 				msg = "'administrator' or 'manage_guild' permission required to show commands with hidden properties"
 			)
 
-	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, show_nonactive=show_hidden)
+	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, show_nonactive=show_hidden, limit=limit, offset=offset)
 
 	# this point is only reached when command can be hidden or user requested hidden props has authorist
 	api_return:list = list()

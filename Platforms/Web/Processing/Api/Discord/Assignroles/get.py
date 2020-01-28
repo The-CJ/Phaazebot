@@ -12,6 +12,9 @@ from Platforms.Discord.utils import getDiscordServerAssignRoles
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
+DEFAULT_LIMIT:int = 50
+MAX_LIMIT:int = 100
+
 async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/discord/assignroles/get
@@ -23,6 +26,8 @@ async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Respon
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
 	assignrole_id:int = Data.getInt("assignrole_id", UNDEFINED, min_x=1)
+	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
+	offset:int = Data.getInt("offset", 0, min_x=0)
 
 	# checks
 	if not guild_id:
@@ -33,7 +38,7 @@ async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Respon
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=guild_id, role_id=role_id, assignrole_id=assignrole_id)
+	assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=guild_id, role_id=role_id, assignrole_id=assignrole_id, limit=limit, offset=offset)
 
 	return cls.response(
 		text=json.dumps( dict(
