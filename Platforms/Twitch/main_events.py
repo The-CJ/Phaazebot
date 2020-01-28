@@ -315,7 +315,7 @@ class PhaazebotTwitchEvents(object):
 			updates the db with data we gathered before
 		"""
 
-		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`,`name`, `display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in update_users if x)
+		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in update_users if x)
 		sql_values:tuple = ()
 
 		for user_id in update_users:
