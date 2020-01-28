@@ -68,8 +68,7 @@ var DiscordDashboard = new (class {
   loadTwitchAlert() {
     DynamicURL.set("view", "twitch_alerts");
     this.showLocationWindow("twitch_alerts");
-    alert("Load and Display 'Twitch Alert' Info");
-
+    TwitchAlerts.show();
   }
 
   loadAssignRole() {
