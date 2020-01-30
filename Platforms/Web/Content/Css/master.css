@@ -1,6 +1,28 @@
+/* root vars */
+:root {
+	--color-phaaze: #00FFD0;
+	--color-darkphaaze: #004299;
+	--color-discord: #7289DA;
+	--color-twitch: #6441A4;
+
+	--color-boolish-green: #12e400;
+	--color-boolish-red: #ff1700;
+
+	--color-modal-background: #2e2e38;
+	--style-modal-border: 1px solid white;
+	--color-modal-text: #fff;
+	--color-modal-text-link: #00a8e7;
+	--color-modal-text-disabled: #ccc;
+
+	--color-listelement-odd: #0052d6;
+	--color-listelement-even: #0046b8;
+	--color-sub-listelement-odd: #47659a;
+	--color-sub-listelement-even: #44519e;
+}
+
 /* overrides */
 .stylish-color a {
-	color: #9dfcff;
+	color: var(--color-phaaze);
 }
 .btn {
 	/* remove uppercase */
@@ -82,26 +104,6 @@ label.checkbox-container > span + input[type=checkbox] {
 }
 
 /* extra colors */
-:root {
-	--color-phaaze: #00FFD0;
-	--color-darkphaaze: #004299;
-	--color-discord: #7289DA;
-	--color-twitch: #6441A4;
-
-	--color-boolish-green: #12e400;
-	--color-boolish-red: #ff1700;
-
-	--color-modal-background: #2e2e38;
-	--style-modal-border: 1px solid white;
-	--color-modal-text: #fff;
-	--color-modal-text-link: #00a8e7;
-	--color-modal-text-disabled: #ccc;
-
-	--color-listelement-odd: #0052d6;
-	--color-listelement-even: #0046b8;
-	--color-sub-listelement-odd: #47659a;
-	--color-sub-listelement-even: #44519e;
-}
 .color-twitch { background-color: var(--color-twitch); }
 .color-phaaze { background-color: var(--color-phaaze); }
 .color-discord { background-color: var(--color-discord); }
