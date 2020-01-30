@@ -4,12 +4,8 @@ function showPasswordFields() {
 }
 
 function saveAccountInfos() {
-  var data = extractData("#manage_field");
-  var real_data = {};
-  for (var d in data) {
-    real_data["phaaze_"+d] = data[d];
-  }
-  $.post("/api/account/phaaze/edit", real_data)
+  var edit = extractData("#manage_field");
+  $.post("/api/account/phaaze/edit", edit)
   .done(function (data) {
     Display.showMessage({content:data.msg, color:Display.color_success});
     getAccountInfos();
@@ -23,15 +19,14 @@ function getAccountInfos() {
   $.get("/api/account/phaaze/get")
   .done(function (data) {
     insertData("#manage_field", data.user);
-    var role_field = $("#role_field").html("");
+    var RoleList = $("#role_list").html("");
     for (role of data.user.roles) {
-      let r = $("<div class='role'>");
-      r.text(role);
-      role_field.append(r);
+      var Role = $("<div class='role'>").text(role);
+      RoleList.append(Role);
     }
     if (!data.user.roles.length) {
-      let r = $("<div class='role none'>(None)</div>");
-      role_field.append(r);
+      var Role = $("<div class='role none'>(None)</div>");
+      RoleList.append(Role);
     }
   })
   .fail(function (data) {
@@ -39,6 +34,6 @@ function getAccountInfos() {
   })
 }
 
-$("document").ready(
-  getAccountInfos
-)
+$("document").ready(function () {
+  getAccountInfos();
+})
