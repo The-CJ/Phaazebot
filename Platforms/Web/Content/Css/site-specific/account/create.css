@@ -7,9 +7,7 @@ main h1 {
 #register_space [type=submit] {
   margin-top: 2em;
 }
-#register_space [name=password] {
-  margin-right: 0.5em;
-}
+#register_space [name=password],
 #register_space [name=password2] {
   margin-left: 0.5em;
 }
