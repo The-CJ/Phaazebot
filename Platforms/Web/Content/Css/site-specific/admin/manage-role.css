@@ -13,6 +13,6 @@ main h1 {
 }
 #role_list .role:nth-child(even) > .row {background: var(--color-listelement-even); }
 #role_list { padding: 1em; }
-#edit_create_role .modal-footer button { display: none; }
-#edit_create_role[mode=edit] .modal-footer button[edit] { display: block; }
-#edit_create_role[mode=create] .modal-footer button[create] { display: block; }
+#edit_create_role[mode] [show-mode] { display: none; }
+#edit_create_role[mode=edit] [show-mode=edit] { display: block; }
+#edit_create_role[mode=create] [show-mode=create] { display: block; }
