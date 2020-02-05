@@ -11,6 +11,7 @@ class DiscordTwitchAlert(DBContentClass):
 		self.guild_id:str = data.get("discord_guild_id", UNDEFINED)
 		self.discord_channel_id:str = data.get("discord_channel_id", UNDEFINED)
 		self.twitch_channel_id:str = data.get("twitch_channel_id", UNDEFINED)
+		self.twitch_channel_name:str = data.get("twitch_channel_name", UNDEFINED)
 		self.custom_msg:str = data.get("custom_msg", UNDEFINED)
 
 	def __repr__(self):
@@ -25,6 +26,7 @@ class DiscordTwitchAlert(DBContentClass):
 		j["guild_id"] = str(self.guild_id)
 		j["discord_channel_id"] = str(self.discord_channel_id)
 		j["twitch_channel_id"] = str(self.twitch_channel_id)
+		j["twitch_channel_name"] = str(self.twitch_channel_name)
 
 		if custom_msg:
 			j["custom_msg"] = str(self.custom_msg)

@@ -40,9 +40,12 @@ async def apiDiscordTwitchalertsGet(cls:"WebIndex", WebRequest:Request) -> Respo
 	# get alerts
 	res_alerts:list = await getDiscordTwitchAlerts(PhaazeDiscord, guild_id=guild_id, alert_id=alert_id, limit=limit, offset=offset)
 
+	# if only one is requestet, also send custom content
+	with_message:bool = True if alert_id else False
+
 	return cls.response(
 		text=json.dumps( dict(
-			result=[ Alert.toJSON() for Alert in res_alerts ],
+			result=[ Alert.toJSON(custom_msg=with_message) for Alert in res_alerts ],
 			total=len(res_alerts),
 			status=200)
 		),
