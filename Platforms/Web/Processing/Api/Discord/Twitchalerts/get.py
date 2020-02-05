@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.utils import getDiscordTwitchAlerts
+from Platforms.Discord.utils import getDiscordTwitchAlerts, getDiscordTwitchAlertsAmount
 from Utils.Classes.undefined import UNDEFINED
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
@@ -46,7 +46,7 @@ async def apiDiscordTwitchalertsGet(cls:"WebIndex", WebRequest:Request) -> Respo
 	return cls.response(
 		text=json.dumps( dict(
 			result=[ Alert.toJSON(custom_msg=with_message) for Alert in res_alerts ],
-			total=len(res_alerts),
+			total=( await getDiscordTwitchAlertsAmount(PhaazeDiscord, guild_id) ),
 			status=200)
 		),
 		content_type="application/json",

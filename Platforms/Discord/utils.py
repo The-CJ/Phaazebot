@@ -265,6 +265,18 @@ async def getDiscordTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, alert_id:
 	else:
 		return []
 
+async def getDiscordTwitchAlertsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_twitch_alert`
+		WHERE `discord_twitch_alert`.`discord_guild_id` = %s AND {where}"""
+
+	values:tuple = (guild_id,) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
 async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:int=None, assignrole_id:int=None, trigger:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0) -> list:
 	"""
 		Get server assign roles, if role_id and trigger are None, get all
