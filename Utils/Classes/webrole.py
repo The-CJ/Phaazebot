@@ -1,7 +1,8 @@
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.apiclass import APIClass
 
-class WebRole(DBContentClass):
+class WebRole(DBContentClass, APIClass):
 	"""
 		Contains and represents a role for the web server
 	"""
@@ -19,9 +20,9 @@ class WebRole(DBContentClass):
 
 		j:dict = dict()
 
-		j["role_id"] = str(self.role_id)
-		j["name"] = str(self.name)
-		j["description"] = str(self.description)
-		j["can_be_removed"] = bool(self.can_be_removed)
+		j["role_id"] = self.toString(self.role_id)
+		j["name"] = self.toString(self.name)
+		j["description"] = self.toString(self.description)
+		j["can_be_removed"] = self.toBoolean(self.can_be_removed)
 
 		return j

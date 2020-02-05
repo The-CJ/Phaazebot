@@ -7,12 +7,13 @@ from aiohttp.web import Request
 from Utils.stringutils import password
 from Utils.Classes.undefined import Undefined
 from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.apiclass import APIClass
 
 def forcable(f:Callable) -> Callable:
 	f.__forcable__ = True
 	return f
 
-class WebUserInfo(DBContentClass):
+class WebUserInfo(DBContentClass, APIClass):
 	"""
 		Used for authorisation of a phaaze web user request
 		It should if possible, avoid reading in POST content when not needed
@@ -58,20 +59,20 @@ class WebUserInfo(DBContentClass):
 
 		j:dict = dict()
 
-		j["user_id"] = str(self.user_id)
-		j["username"] = self.username
-		j["username_changed"] = self.username_changed
-		j["email"] = self.email
-		j["verified"] = self.verified
-		j["roles"] = self.roles
+		j["user_id"] = self.toString(self.user_id)
+		j["username"] = self.toString(self.username)
+		j["username_changed"] = self.toInteger(self.username_changed)
+		j["email"] = self.toString(self.email)
+		j["verified"] = self.toBoolean(self.verified)
+		j["roles"] = self.toList(self.roles)
 
 		if dates:
-			j["created_at"] = str(self.created_at) if self.created_at else None
-			j["edited_at"] = str(self.edited_at) if self.edited_at else None
-			j["last_login"] = str(self.last_login) if self.last_login else None
+			j["created_at"] = self.toString(self.created_at)
+			j["edited_at"] = self.toString(self.edited_at)
+			j["last_login"] = self.toString(self.last_login)
 
 		if password:
-			j["password"] = self.password
+			j["password"] = self.toString(self.password)
 
 		return j
 

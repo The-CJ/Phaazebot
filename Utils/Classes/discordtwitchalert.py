@@ -1,7 +1,8 @@
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.apiclass import APIClass
 
-class DiscordTwitchAlert(DBContentClass):
+class DiscordTwitchAlert(DBContentClass, APIClass):
 	"""
 		Contains and represents stuff for a discord twitch alert
 	"""
@@ -22,13 +23,13 @@ class DiscordTwitchAlert(DBContentClass):
 
 		j:dict = dict()
 
-		j["alert_id"] = str(self.alert_id)
-		j["guild_id"] = str(self.guild_id)
-		j["discord_channel_id"] = str(self.discord_channel_id)
-		j["twitch_channel_id"] = str(self.twitch_channel_id)
-		j["twitch_channel_name"] = str(self.twitch_channel_name)
+		j["alert_id"] = self.toString(self.alert_id)
+		j["guild_id"] = self.toString(self.guild_id)
+		j["discord_channel_id"] = self.toString(self.discord_channel_id)
+		j["twitch_channel_id"] = self.toString(self.twitch_channel_id)
+		j["twitch_channel_name"] = self.toString(self.twitch_channel_name)
 
 		if custom_msg:
-			j["custom_msg"] = str(self.custom_msg)
+			j["custom_msg"] = self.toString(self.custom_msg)
 
 		return j

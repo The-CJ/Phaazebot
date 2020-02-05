@@ -1,6 +1,7 @@
 from Utils.Classes.undefined import UNDEFINED
+from Utils.Classes.apiclass import APIClass
 
-class TwitchGame(object):
+class TwitchGame(APIClass):
 	"""
 		Contains and represents a twitch game
 	"""
@@ -22,8 +23,8 @@ class TwitchGame(object):
 
 		j:dict = dict()
 
-		j["game_id"] = str(self.user_id)
-		j["name"] = str(self.user_name)
-		j["thumbnail"] = str( self.thumbnail(thumbnail_width) )
+		j["game_id"] = self.toString(self.user_id)
+		j["name"] = self.toString(self.user_name)
+		j["thumbnail"] = self.toString( self.thumbnail(thumbnail_width) )
 
 		return j

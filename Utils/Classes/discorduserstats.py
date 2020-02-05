@@ -4,8 +4,9 @@ if TYPE_CHECKING:
 
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.apiclass import APIClass
 
-class DiscordUserStats(DBContentClass):
+class DiscordUserStats(DBContentClass, APIClass):
 	"""
 		Contains and represents all phaaze values for a Discord user
 	"""
@@ -37,11 +38,11 @@ class DiscordUserStats(DBContentClass):
 
 		j:dict = dict()
 
-		j["member_id"] = str(self.member_id)
-		j["rank"] = int(self.rank)
-		j["exp"] = int(self.exp)
-		j["currency"] = int(self.currency)
-		j["edited"] = bool(self.edited)
-		j["medals"] = list(self.medals)
+		j["member_id"] = self.toString(self.member_id)
+		j["rank"] = self.toInteger(self.rank)
+		j["exp"] = self.toInteger(self.exp)
+		j["currency"] = self.toInteger(self.currency)
+		j["edited"] = self.toBoolean(self.edited)
+		j["medals"] = self.toList(self.medals)
 
 		return j

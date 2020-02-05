@@ -1,7 +1,8 @@
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.apiclass import APIClass
 
-class DiscordQuote(DBContentClass):
+class DiscordQuote(DBContentClass, APIClass):
 	"""
 		Contains and represents stuff for a discord quote
 	"""
@@ -19,7 +20,8 @@ class DiscordQuote(DBContentClass):
 
 		j:dict = dict()
 
-		j["quote_id"] = str(self.quote_id)
-		j["content"] = str(self.content)
+		j["quote_id"] = self.toString(self.quote_id)
+		j["guild_id"] = self.toString(self.guild_id)
+		j["content"] = self.toString(self.content)
 
 		return j
