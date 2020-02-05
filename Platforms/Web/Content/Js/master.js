@@ -178,10 +178,11 @@ function generalAPIErrorHandler(x={}) {
 var SessionManager = new (class {
   constructor() {
   }
+
   showAccountPanel(field="all") {
-    $('#login_form').modal('show');
-    $('#login_form [table], #login_form [table] [loggedin]').hide();
-    $('#login_form [table='+field+']').show();
+    $('#account_modal').modal('show');
+    $('#account_modal [table], #account_modal [login]').hide();
+    $(`#account_modal [table=${field}]`).show();
     if (field != "all") {
       this.getAccountInfo(field);
     }
@@ -189,60 +190,60 @@ var SessionManager = new (class {
 
   getAccountInfo(platform) {
     var SessMan = this;
-    $.get("/api/account/"+platform+"/get")
+    $.get(`/api/account/${platform}/get`)
     .done(function (data) {
       SessMan.displayInfo(platform, data.user);
-      $('#login_form [table='+platform+'] [loggedin=true]').show();
+      $(`#account_modal [table=${platform}] [login=true]`).show();
     })
     .fail(function (data) {
-      $('#login_form [table='+platform+'] [loggedin=false]').show();
+      $(`#account_modal [table=${platform}] [login=false]`).show();
     })
   }
 
   displayInfo(platform, data) {
     if (platform == "phaaze") {
-      $("#current_phaaze_username").val(data.username);
-      $("#current_phaaze_email").val(data.email);
-      var role_field = $("#user_roles").html("");
+      insertData("#account_modal [table=phaaze] [login=true]", data);
+      var RoleList = $("#account_modal_roles").html("");
       for (var role of data.roles) {
-        role_field.append( $('<div class="role">').text(role) );
+        RoleList.append( $("<div class='role'>").text(role) );
       }
     }
     if (platform == "discord") {
       $("#current_discord_username").val(data.username);
       $("#current_discord_avatar").attr(
         "src",
-        "https://cdn.discordapp.com/avatars/"+data.user_id+"/"+data.avatar+"?size=256"
+        `https://cdn.discordapp.com/avatars/${data.user_id}/${data.avatar}?size=256`
       );
     }
   }
 
   login() {
-    let user = $("#phaaze_email_or_username").val();
-    let password = $("#phaaze_password").val();
-    $.post("/api/account/phaaze/login", {"phaaze_username":user, "phaaze_password":password})
+    var login = extractData("#account_modal [table=phaaze] [login=false]");
+    $.post("/api/account/phaaze/login", login)
     .done(function (data) {
       CookieManager.set("phaaze_session", data.phaaze_session, data.expires_in);
       Display.showMessage({'content': 'You successfull logged in!' ,'color':Display.color_success});
-      $('#login_form').modal('hide');
+      $('#account_modal').modal('hide');
     })
     .fail(function (data) {
-      $("#phaaze_email_or_username").addClass("animated shake");
-      $("#phaaze_password").addClass("animated shake").val("");
+      // pun = phaaze user name
+      // ppw = phaaze pass word
+      $("#pun").addClass("animated shake");
+      $("#ppw").addClass("animated shake").val("");
       setTimeout(function () {
-        $("#phaaze_password, #phaaze_email_or_username").removeClass("animated shake");
+        $("#pun, #ppw").removeClass("animated shake");
       }, 1000);
     })
   }
 
-  logout(field) {
-    $.post("/api/account/"+field+"/logout")
+  logout(platform) {
+    $.post(`/api/account/${platform}/logout`)
     .done(function (data) {
-      Display.showMessage({'content': 'You successfull logged out from '+field ,'color':Display.color_success});
-      if (field == "phaaze") { CookieManager.remove("phaaze_session"); }
-      if (field == "discord") { CookieManager.remove("phaaze_discord_session"); }
-      if (field == "twitch") { CookieManager.remove("phaaze_twitch_session"); }
-      $('#login_form').modal('hide');
+      Display.showMessage({"content": `You successfull logged out from ${platform}`,'color':Display.color_success});
+      if (platform == "phaaze") { CookieManager.remove("phaaze_session"); }
+      if (platform == "discord") { CookieManager.remove("phaaze_discord_session"); }
+      if (platform == "twitch") { CookieManager.remove("phaaze_twitch_session"); }
+      $('#account_modal').modal('hide');
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"Unable to logout"} );
@@ -250,7 +251,7 @@ var SessionManager = new (class {
   }
 
   edit() {
-    var data = extractData("#login_form [table=phaaze] [loggedin=true]");
+    var data = extractData("#account_modal [table=phaaze] [login=true]");
     $.post("/api/account/phaaze/edit", data)
     .done(function (data) {
       Display.showMessage({content:data.msg, color:Display.color_success});

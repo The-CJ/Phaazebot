@@ -1,38 +1,37 @@
-<div class="modal fade" id="login_form">
+<div class="modal fade" id="account_modal">
   <div class="modal-dialog" role="document">
 
     <div table="all">
-
       <div class="modal-content">
         <div class="modal-header text-center">
           <h4 class="modal-title">Choose Platform</h4>
-          <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
-        <div class="modal-body text-black">
-          <div class="center-item-row forced btn color-phaaze" onclick="SessionManager.showAccountPanel('phaaze')">
-            <div class="platform center-item-row forced">
+        <div class="modal-body">
+          <div class="platform center-item-row forced btn color-phaaze black-text" onclick="SessionManager.showAccountPanel('phaaze')">
+            <div class="col-3 platform-icon">
               <img src="/img/favicon.ico" alt="logo" width="45">
             </div>
-            <div class="col"></div>
-            <h2>Phaaze</h2>
-            <div class="col"></div>
+            <div class="col">
+              <h2>Phaaze</h2>
+            </div>
           </div>
-          <div class="center-item-row forced text-white btn color-discord" onclick="SessionManager.showAccountPanel('discord')">
-            <div class="platform center-item-row forced">
+          <div class="platform center-item-row forced btn color-discord white-text" onclick="SessionManager.showAccountPanel('discord')">
+            <div class="col-3 platform-icon">
               <i class="fab fa-discord"></i>
             </div>
-            <div class="col"></div>
-            <h2>Discord</h2>
-            <div class="col"></div>
+            <div class="col">
+              <h2>Discord</h2>
+            </div>
           </div>
-          <div class="center-item-row forced text-white btn color-twitch" onclick="SessionManager.showAccountPanel('twitch')">
-            <div class="platform center-item-row forced">
+          <div class="platform center-item-row forced btn color-twitch white-text" onclick="SessionManager.showAccountPanel('twitch')">
+            <div class="col-3 platform-icon">
               <i class="fab fa-twitch"></i>
             </div>
-            <div class="col"></div>
-            <h2>Twitch</h2>
-            <div class="col"></div>
+            <div class="col">
+              <h2>Twitch</h2>
+            </div>
           </div>
         </div>
 
@@ -41,41 +40,42 @@
     </div>
 
     <div table="phaaze">
-      <div loggedin="true" style="display:none;">
+      <div login="true" style="display:none;">
         <div class="modal-content">
           <div class="modal-header text-center">
             <h4 class="modal-title">Phaaze account</h4>
-            <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
+            <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
           </div>
 
           <div class="modal-body text-black">
             <h3>General</h3>
             <div class="md-form">
               <i class="fas fa-user-circle prefix grey-text"></i>
-              <input type="text" id="current_phaaze_username" class="form-control" placeholder="Your username" name="phaaze_username">
+              <input type="text" class="form-control" placeholder="Your username" name="username">
             </div>
             <div class="md-form">
               <i class="far fa-envelope prefix grey-text"></i>
-              <input type="email" id="current_phaaze_email" class="form-control" placeholder="Your e-mail" name="phaaze_email">
+              <input type="email" class="form-control" placeholder="Your e-mail" name="email">
             </div>
             <div class="md-form">
               <i class="fas fa-lock prefix grey-text" title="needed for changes">*</i>
-              <input type="password" id="current_phaaze_password" class="form-control" placeholder="Your current password" name="phaaze_password">
+              <input type="password" class="form-control" placeholder="Your current password" name="password">
             </div>
             <button type="button" class="btn btn-block orange" onclick="$(this).hide();$('#new_password_fields').show()">Set new password</button>
             <div id="new_password_fields" style="display: none;">
               <div class="md-form">
                 <i class="fas fa-key prefix grey-text"></i>
-                <input type="password" id="new_phaaze_password" class="form-control" placeholder="New password" name="phaaze_newpassword">
+                <input type="password" class="form-control" placeholder="New password" name="newpassword">
               </div>
               <div class="md-form">
                 <i class="fas fa-key prefix grey-text"></i>
-                <input type="password" id="new_phaaze_password2" class="form-control" placeholder="Retype password" name="phaaze_newpassword2">
+                <input type="password" class="form-control" placeholder="Retype password" name="newpassword2">
               </div>
             </div>
             <hr>
             <h3>Roles</h3>
-            <div id="user_roles"></div>
+            <!-- get filled with ".role" elements -->
+            <div id="account_modal_roles"></div>
           </div>
 
           <div class="modal-footer center-item-col forced">
@@ -86,24 +86,24 @@
           </div>
         </div>
       </div>
-      <div loggedin="false" style="display:none;">
+      <div login="false" style="display:none;">
         <form action="javascript:SessionManager.login()">
           <div class="modal-content">
             <div class="modal-header text-center">
               <h4 class="modal-title">Sign into Phaaze</h4>
-              <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
+              <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
             </div>
 
             <div class="modal-body text-black">
               <div class="md-form">
                 <i class="fas fa-user-circle prefix grey-text"></i>
-                <input type="text" id="phaaze_email_or_username" class="form-control">
-                <label for="phaaze_email_or_username">Username or E-mail</label>
+                <input type="text" id="pun" class="form-control" name="username">
+                <label for="pun">Username or E-mail</label>
               </div>
               <div class="md-form">
                 <i class="fas fa-lock prefix grey-text"></i>
-                <input type="password" id="phaaze_password" class="form-control">
-                <label for="phaaze_password">Password</label>
+                <input type="password" id="ppw" class="form-control" name="password">
+                <label for="ppw">Password</label>
               </div>
             </div>
 
@@ -121,11 +121,11 @@
     </div>
 
     <div table="discord">
-      <div loggedin="true" style="display:none;">
+      <div login="true" style="display:none;">
         <div class="modal-content">
           <div class="modal-header text-center">
             <h4 class="modal-title">Discord account</h4>
-            <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
+            <button type="button" class="close" onclick="$('#account_modal').modal('hide')"><span>&times;</span></button>
           </div>
 
           <div class="modal-body text-black">
@@ -146,11 +146,11 @@
           </div>
         </div>
       </div>
-      <div loggedin="false" style="display:none;">
+      <div login="false" style="display:none;">
         <div class="modal-content">
           <div class="modal-header text-center">
             <h4 class="modal-title">Log in via Discord</h4>
-            <button type="button" class="close" onclick="$('#login_form').modal('hide')"><span>&times;</span></button>
+            <button type="button" class="close" onclick="$('#account_modal').modal('hide')"><span>&times;</span></button>
           </div>
 
           <div class="modal-body center-item-col forced">

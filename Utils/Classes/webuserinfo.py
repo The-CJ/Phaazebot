@@ -129,8 +129,8 @@ class WebUserInfo(DBContentClass):
 		if self.__session: return await self.viaSession()
 		self.__token = self.kwargs.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
-		self.__username = self.kwargs.get("phaaze_username", None)
-		self.__password = self.kwargs.get("phaaze_password", None)
+		self.__username = self.kwargs.get("username", None)
+		self.__password = self.kwargs.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	@forcable
@@ -140,8 +140,8 @@ class WebUserInfo(DBContentClass):
 		self.__token = self.WebRequest.cookies.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
 		# this makes no sense, but ok
-		self.__username = self.WebRequest.cookies.get("phaaze_username", None)
-		self.__password = self.WebRequest.cookies.get("phaaze_password", None)
+		self.__username = self.WebRequest.cookies.get("username", None)
+		self.__password = self.WebRequest.cookies.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	@forcable
@@ -151,8 +151,8 @@ class WebUserInfo(DBContentClass):
 		self.__token = self.WebRequest.headers.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
 		# this makes no sense, but ok
-		self.__username = self.WebRequest.headers.get("phaaze_username", None)
-		self.__password = self.WebRequest.headers.get("phaaze_password", None)
+		self.__username = self.WebRequest.headers.get("username", None)
+		self.__password = self.WebRequest.headers.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	@forcable
@@ -161,8 +161,8 @@ class WebUserInfo(DBContentClass):
 		if self.__session: return await self.viaSession()
 		self.__token = self.WebRequest.query.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
-		self.__username = self.WebRequest.query.get("phaaze_username", None)
-		self.__password = self.WebRequest.query.get("phaaze_password", None)
+		self.__username = self.WebRequest.query.get("username", None)
+		self.__password = self.WebRequest.query.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	@forcable
@@ -174,8 +174,8 @@ class WebUserInfo(DBContentClass):
 		if self.__session: return await self.viaSession()
 		self.__token = Json.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
-		self.__username = Json.get("phaaze_username", None)
-		self.__password = Json.get("phaaze_password", None)
+		self.__username = Json.get("username", None)
+		self.__password = Json.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	@forcable
@@ -192,8 +192,8 @@ class WebUserInfo(DBContentClass):
 		if self.__session: return await self.viaSession()
 		self.__token = Post.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
-		self.__username = Post.get("phaaze_username", None)
-		self.__password = Post.get("phaaze_password", None)
+		self.__username = Post.get("username", None)
+		self.__password = Post.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	# checker

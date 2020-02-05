@@ -31,9 +31,11 @@
       </div>
 
       <div class="modal-body text-black">
-        <div class="row md-form">
-          <div class="col"><span>ID:</span></div>
-          <div class="col-8"><input type="text" name="role_id" readonly style="width: 100%;"></div>
+        <div show-mode="edit">
+          <div class="row md-form">
+            <div class="col"><span>ID:</span></div>
+            <div class="col-8"><input type="text" name="role_id" readonly style="width: 100%;"></div>
+          </div>
         </div>
 
         <div class="row md-form">
@@ -62,8 +64,8 @@
       </div>
 
       <div class="modal-footer">
-        <button create type="button" class="btn btn-block btn-success" onclick="createRole()">Create</button><br>
-        <button edit type="button" class="btn btn-block btn-success" onclick="editRole()">Save</button>
+        <button show-mode="create" type="button" class="btn btn-block btn-success" onclick="createRole()">Create</button><br>
+        <button show-mode="edit" type="button" class="btn btn-block btn-success" onclick="editRole()">Save</button>
       </div>
 
       <div messagebox></div>

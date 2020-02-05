@@ -27,6 +27,9 @@ def getNavbar(active:str="") -> HTMLFormatter:
 	return Navbar
 
 def getAccountModal() -> HTMLFormatter:
+	"""
+		get the global login form with all applied formated links etc...
+	"""
 	try:
 		discord_login_link:str = GlobalStorage.get("Phaazebot").Vars.DISCORD_LOGIN_LINK
 	except:

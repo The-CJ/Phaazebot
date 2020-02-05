@@ -1,6 +1,28 @@
+/* root vars */
+:root {
+	--color-phaaze: #00FFD0;
+	--color-darkphaaze: #004299;
+	--color-discord: #7289DA;
+	--color-twitch: #6441A4;
+
+	--color-boolish-green: #12e400;
+	--color-boolish-red: #ff1700;
+
+	--color-modal-background: #2e2e38;
+	--style-modal-border: 1px solid white;
+	--color-modal-text: #fff;
+	--color-modal-text-link: #00a8e7;
+	--color-modal-text-disabled: #ccc;
+
+	--color-listelement-odd: #0052d6;
+	--color-listelement-even: #0046b8;
+	--color-sub-listelement-odd: #47659a;
+	--color-sub-listelement-even: #44519e;
+}
+
 /* overrides */
 .stylish-color a {
-	color: #9dfcff;
+	color: var(--color-phaaze);
 }
 .btn {
 	/* remove uppercase */
@@ -82,26 +104,6 @@ label.checkbox-container > span + input[type=checkbox] {
 }
 
 /* extra colors */
-:root {
-	--color-phaaze: #00FFD0;
-	--color-darkphaaze: #004299;
-	--color-discord: #7289DA;
-	--color-twitch: #6441A4;
-
-	--color-boolish-green: #12e400;
-	--color-boolish-red: #ff1700;
-
-	--color-modal-background: #2e2e38;
-	--style-modal-border: 1px solid white;
-	--color-modal-text: #fff;
-	--color-modal-text-link: #00a8e7;
-	--color-modal-text-disabled: #ccc;
-
-	--color-listelement-odd: #0052d6;
-	--color-listelement-even: #0046b8;
-	--color-sub-listelement-odd: #47659a;
-	--color-sub-listelement-even: #44519e;
-}
 .color-twitch { background-color: var(--color-twitch); }
 .color-phaaze { background-color: var(--color-phaaze); }
 .color-discord { background-color: var(--color-discord); }
@@ -116,55 +118,49 @@ nav {
 	background-color: var(--color-darkphaaze);
 }
 
-/* account/login button/form */
-#account_field {
+/* navbar right account btn */
+#account_button {
 	border-radius: 7.5em;
 	padding: 1em;
 	line-height: 0;
 }
-#account_field::after {
+#account_button::after {
 	display: none;
 	transition: .5s;
 	content: "Accounts";
 	position: relative;
 	overflow: hidden;
 }
-#account_field:hover::after {
+#account_button:hover::after {
 	display: contents;
 }
-#login_form input {
-	margin: 0 2.5em;
-	border-bottom: 1px solid #000;
-}
-#login_form h1, #login_form h2 {
-	margin: 0;
+
+/* global account modal */
+#account_modal h2 {
 	padding: 0;
+	margin: 0;
 }
-#login_form .modal-body > .center-item-row {
-	height: 70px;
+#account_modal .platform {
 	border: 1px solid black;
 }
-#login_form .platform {
-	width: 70px;
-	height: 70px;
-}
-#login_form .platform > * {
-	margin: auto;
+#account_modal .platform-icon > i {
 	font-size: 45px;
 }
-#login_form #user_roles:empty:after {
+
+/* role list under general info */
+#account_modal_roles {
+	overflow-y: auto;
+	overflow-x: visible;
+	max-height: 10em;
+}
+#account_modal_roles:empty::after {
 	content: "None";
 }
-#login_form #user_roles > * {
+#account_modal_roles > * {
 	padding: 5px;
 	border: 2px solid black;
 	margin: 3px;
 	background: rgba(0, 0, 0, 0.25);
-}
-#login_form #user_roles {
-	overflow-y: auto;
-	overflow-x: visible;
-	max-height: 10em;
 }
 
 /*global messages*/

@@ -7,7 +7,7 @@ from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Web.utils import getNavbar
 
-async def adminManageRole(cls:"WebIndex", WebRequest:Request) -> Response:
+async def adminProtocols(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /admin/protocols
 	"""
@@ -15,14 +15,14 @@ async def adminManageRole(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not WebUser.found: return await cls.accountLogin(WebRequest)
 	if not WebUser.checkRoles(["superadmin"]): return await cls.notAllowed(WebRequest, msg="Superadmin rights required")
 
-	AdminManageRole:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Admin/protocols.html")
+	AdminProtocols:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Admin/protocols.html")
 
 	site:str = cls.HTMLRoot.replace(
 		replace_empty = True,
 
-		title = "Phaaze | Admin - Role manager",
+		title = "Phaaze | Admin - Protocols",
 		header = getNavbar(),
-		main = AdminManageRole
+		main = AdminProtocols
 	)
 
 	return cls.response(
