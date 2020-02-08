@@ -45,6 +45,7 @@ class DiscordCommand(DBContentClass, APIClass):
 			j["function"] = self.toString(self.function)
 			j["content"] = self.toString(self.content)
 			j["description"] = self.toString(self.description)
+			j["name"] = self.toString(self.name)
 
 		else:
 			j["function"] = None
