@@ -102,6 +102,8 @@ var TwitchAlerts = new (class {
     req["guild_id"] = guild_id;
     req["alert_id"] = alert_id;
 
+    if (!confirm("Are you sure you want to delete this twitch alert?")) { return; }
+
     $.post("/api/discord/twitchalerts/delete", req)
     .done(function (data) {
       Display.showMessage({content: data.msg, color:Display.color_success});
@@ -109,7 +111,7 @@ var TwitchAlerts = new (class {
       TwitchAlertsO.show();
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"could not edit alert"} );
+      generalAPIErrorHandler( {data:data, msg:"could not delete alert"} );
     })
   }
 

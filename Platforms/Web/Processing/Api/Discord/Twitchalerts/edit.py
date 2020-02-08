@@ -19,7 +19,7 @@ MAX_CONTENT_SIZE:int = 1750
 
 async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/quotes/edit
+		Default url: /api/discord/twitchalerts/edit
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()

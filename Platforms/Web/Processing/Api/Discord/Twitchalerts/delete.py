@@ -12,23 +12,23 @@ from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMiss
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from Utils.Classes.undefined import UNDEFINED
 
-async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordTwitchalertsDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/quotes/delete
+		Default url: /api/discord/twitchalerts/delete
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
 	# get required vars
 	guild_id:str = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
-	quote_id:int = Data.getInt("quote_id", UNDEFINED, min_x=1)
+	alert_id:int = Data.getInt("alert_id", UNDEFINED, min_x=1)
 
 	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	if not quote_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'quote_id'")
+	if not alert_id:
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'alert_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -46,25 +46,19 @@ async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(
-			cls,
-			WebRequest,
-			guild_id=guild_id,
-			user_id=DiscordUser.user_id,
-			msg = "'administrator' or 'manage_guild' permission required to delete quotes"
-		)
+		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
 	cls.Web.BASE.PhaazeDB.deleteQuery("""
-		DELETE FROM `discord_quote`
-		WHERE `discord_quote`.`guild_id` = %s
-			AND `discord_quote`.`id` = %s""",
-		(guild_id, quote_id)
+		DELETE FROM `discord_twitch_alert`
+		WHERE `discord_twitch_alert`.`discord_guild_id` = %s
+			AND `discord_twitch_alert`.`id` = %s""",
+		(guild_id, alert_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted quote: S:{guild_id} I:{quote_id}", require="discord:quote")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted alert: S:{guild_id} A:{alert_id}", require="discord:alert")
 
 	return cls.response(
-		text=json.dumps( dict(msg="quote successfull deleted", quote_id=quote_id, status=200) ),
+		text=json.dumps( dict(msg="alert successfull deleted", alert_id=alert_id, status=200) ),
 		content_type="application/json",
 		status=200
 	)
