@@ -6,7 +6,7 @@ DESCRIBE `twitch_user_name`;
 +--------------+--------------+------+-----+---------+----------------+
 | id           | int(11)      | NO   | PRI | NULL    | auto_increment |
 | user_id      | varchar(128) | NO   | UNI | NULL    |                |
-| name         | varchar(128) | YES  |     | NULL    |                |
+| user_name    | varchar(128) | YES  |     | NULL    |                |
 | display_name | varchar(128) | YES  |     | NULL    |                |
 +--------------+--------------+------+-----+---------+----------------+
 */

@@ -4,9 +4,10 @@ if TYPE_CHECKING:
 
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.apiclass import APIClass
 from Utils.Classes.storeclasses import GlobalStorage
 
-class DiscordCommand(DBContentClass):
+class DiscordCommand(DBContentClass, APIClass):
 	def __init__(self, data:dict, server_id:str):
 		self.server_id:str = server_id
 		self.command_id:str = data.get("id", UNDEFINED)
@@ -30,21 +31,20 @@ class DiscordCommand(DBContentClass):
 
 		j:dict = dict()
 
-		j["command_id"] = str(self.command_id)
-		j["trigger"] = str(self.trigger)
-		j["active"] = bool(self.active)
-		j["complex"] = bool(self.complex)
-		j["uses"] = int(self.uses)
-		j["require"] = int(self.require)
-		j["cost"] = int(self.required_currency)
-		j["cooldown"] = int(self.cooldown)
-		j["hidden"] = bool(self.hidden)
+		j["command_id"] = self.toString(self.command_id)
+		j["trigger"] = self.toString(self.trigger)
+		j["active"] = self.toBoolean(self.active)
+		j["complex"] = self.toBoolean(self.complex)
+		j["uses"] = self.toInteger(self.uses)
+		j["require"] = self.toInteger(self.require)
+		j["cost"] = self.toInteger(self.required_currency)
+		j["cooldown"] = self.toInteger(self.cooldown)
+		j["hidden"] = self.toBoolean(self.hidden)
 
 		if show_hidden or not self.hidden:
-			j["function"] = str(self.function)
-			j["content"] = str(self.content)
-			j["name"] = str(self.name)
-			j["description"] = str(self.description)
+			j["function"] = self.toString(self.function)
+			j["content"] = self.toString(self.content)
+			j["description"] = self.toString(self.description)
 
 		else:
 			j["function"] = None

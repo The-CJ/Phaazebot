@@ -1,6 +1,7 @@
 from Utils.Classes.undefined import UNDEFINED
+from Utils.Classes.apiclass import APIClass
 
-class TwitchUser(object):
+class TwitchUser(APIClass):
 	"""
 		Contains and represents a twitch user
 
@@ -25,18 +26,18 @@ class TwitchUser(object):
 
 		j:dict = dict()
 
-		j["user_id"] = str(self.user_id)
-		j["name"] = str(self.name)
-		j["display_name"] = str(self.display_name)
-		j["description"] = str(self.description)
-		j["view_count"] = int(self.view_count)
+		j["user_id"] = self.toString(self.user_id)
+		j["name"] = self.toString(self.name)
+		j["display_name"] = self.toString(self.display_name)
+		j["description"] = self.toString(self.description)
+		j["view_count"] = self.toInteger(self.view_count)
 
 		if types:
-			j["user_type"] = str(self.user_type)
-			j["broadcaster_type"] = str(self.broadcaster_type)
+			j["user_type"] = self.toString(self.user_type)
+			j["broadcaster_type"] = self.toString(self.broadcaster_type)
 
 		if images:
-			j["profile_image_url"] = str(self.profile_image_url)
-			j["offline_image_url"] = str(self.offline_image_url)
+			j["profile_image_url"] = self.toString(self.profile_image_url)
+			j["offline_image_url"] = self.toString(self.offline_image_url)
 
 		return j

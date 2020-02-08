@@ -1,7 +1,8 @@
 import datetime
 from Utils.Classes.undefined import UNDEFINED
+from Utils.Classes.apiclass import APIClass
 
-class OsuUser(object):
+class OsuUser(APIClass):
 	"""
 		Represents a osu! user with all its stats in a specific game mode
 	"""
@@ -53,31 +54,31 @@ class OsuUser(object):
 
 		j:dict = dict()
 
-		j["mode"] = str(self.mode)
-		j["user_id"] = str(self.user_id)
-		j["username"] = str(self.username)
-		j["join_date"] = str(self.JoinDate)
-		j["playcount"] = str(self.playcount)
-		j["country"] = str(self.country)
-		j["ranked_score"] = str(self.ranked_score)
-		j["total_score"] = str(self.total_score)
-		j["pp_rank"] = str(self.pp_rank)
-		j["pp_country_rank"] = str(self.pp_country_rank)
-		j["level"] = str(self.level)
-		j["pp_raw"] = str(self.pp_raw)
-		j["accuracy"] = str(self.accuracy)
-		j["total_seconds_played"] = str(self.total_seconds_played)
+		j["mode"] = self.toString(self.mode)
+		j["user_id"] = self.toString(self.user_id)
+		j["username"] = self.toString(self.username)
+		j["join_date"] = self.toString(self.JoinDate)
+		j["playcount"] = self.toString(self.playcount)
+		j["country"] = self.toString(self.country)
+		j["ranked_score"] = self.toString(self.ranked_score)
+		j["total_score"] = self.toString(self.total_score)
+		j["pp_rank"] = self.toString(self.pp_rank)
+		j["pp_country_rank"] = self.toString(self.pp_country_rank)
+		j["level"] = self.toString(self.level)
+		j["pp_raw"] = self.toString(self.pp_raw)
+		j["accuracy"] = self.toString(self.accuracy)
+		j["total_seconds_played"] = self.toString(self.total_seconds_played)
 
 		if count_objects:
-			j["count300"] = str(self.count300)
-			j["count100"] = str(self.count100)
-			j["count50"] = str(self.count50)
+			j["count300"] = self.toString(self.count300)
+			j["count100"] = self.toString(self.count100)
+			j["count50"] = self.toString(self.count50)
 
 		if ranks:
-			j["count_rank_ssh"] = str(self.count_rank_ssh)
-			j["count_rank_ss"] = str(self.count_rank_ss)
-			j["count_rank_sh"] = str(self.count_rank_sh)
-			j["count_rank_s"] = str(self.count_rank_s)
-			j["count_rank_a"] = str(self.count_rank_a)
+			j["count_rank_ssh"] = self.toString(self.count_rank_ssh)
+			j["count_rank_ss"] = self.toString(self.count_rank_ss)
+			j["count_rank_sh"] = self.toString(self.count_rank_sh)
+			j["count_rank_s"] = self.toString(self.count_rank_s)
+			j["count_rank_a"] = self.toString(self.count_rank_a)
 
 		return j

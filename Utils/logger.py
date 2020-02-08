@@ -73,3 +73,15 @@ class PhaazeLogger(object):
 			location:str = Caller.filename.replace(os.getcwd(), "")
 
 			self.Log.debug(f"{location}:{Caller.lineno} | {msg}")
+
+def printSQL(statement:str) -> None:
+	"""
+		pretty prints a sql statement
+		(i like using tabs, so that should remove them before printing,
+		so you dont have to watch disorderd stairs)
+	"""
+	# just remove leading whitespaces and put back together
+	statement = '\n'.join([ l.lstrip("\t") for l in statement.splitlines() ])
+	print("+"*10)
+	print(statement)
+	print("-"*10)

@@ -16,3 +16,6 @@ class Discord(object):
 class Osu(object):
 	Maplink:"re.Pattern" = re.compile(r"(?P<method>https?://)?osu\.ppy\.sh/(?P<way>b|beatmapsets)/(?P<id1>\d+)(?P<mode>#\w+)?(/(?P<id2>\d+))?")
 	Userlink:"re.Pattern" = re.compile(r"(?P<method>https?://)?osu\.ppy\.sh/(?P<way>u|users)/(?P<id>\d+)")
+
+class Twitch(object):
+	ChannelLink:"re.Pattern" = re.compile(r"(?P<method>https?://)?twitch\.tv/(?P<name>\S+)")

@@ -1,6 +1,7 @@
 from Utils.Classes.undefined import UNDEFINED
+from Utils.Classes.apiclass import APIClass
 
-class TwitchStream(object):
+class TwitchStream(APIClass):
 	"""
 		Contains and represents a twitch stream
 	"""
@@ -28,13 +29,13 @@ class TwitchStream(object):
 
 		j:dict = dict()
 
-		j["user_id"] = str(self.user_id)
-		j["user_name"] = str(self.user_name)
-		j["game_id"] = str(self.game_id)
-		j["stream_type"] = str(self.stream_type)
-		j["title"] = str(self.title)
-		j["viewer_count"] = int(self.viewer_count)
-		j["language"] = str(self.language)
-		j["thumbnail"] = str( self.thumbnail(thumbnail_width) )
+		j["user_id"] = self.toString(self.user_id)
+		j["user_name"] = self.toString(self.user_name)
+		j["game_id"] = self.toString(self.game_id)
+		j["stream_type"] = self.toString(self.stream_type)
+		j["title"] = self.toString(self.title)
+		j["viewer_count"] = self.toInteger(self.viewer_count)
+		j["language"] = self.toString(self.language)
+		j["thumbnail"] = self.toString( self.thumbnail(thumbnail_width) )
 
 		return j

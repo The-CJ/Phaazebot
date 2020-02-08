@@ -7,12 +7,13 @@ from aiohttp.web import Request
 from Utils.stringutils import password
 from Utils.Classes.undefined import Undefined
 from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.apiclass import APIClass
 
 def forcable(f:Callable) -> Callable:
 	f.__forcable__ = True
 	return f
 
-class WebUserInfo(DBContentClass):
+class WebUserInfo(DBContentClass, APIClass):
 	"""
 		Used for authorisation of a phaaze web user request
 		It should if possible, avoid reading in POST content when not needed
@@ -58,20 +59,20 @@ class WebUserInfo(DBContentClass):
 
 		j:dict = dict()
 
-		j["user_id"] = str(self.user_id)
-		j["username"] = self.username
-		j["username_changed"] = self.username_changed
-		j["email"] = self.email
-		j["verified"] = self.verified
-		j["roles"] = self.roles
+		j["user_id"] = self.toString(self.user_id)
+		j["username"] = self.toString(self.username)
+		j["username_changed"] = self.toInteger(self.username_changed)
+		j["email"] = self.toString(self.email)
+		j["verified"] = self.toBoolean(self.verified)
+		j["roles"] = self.toList(self.roles)
 
 		if dates:
-			j["created_at"] = str(self.created_at) if self.created_at else None
-			j["edited_at"] = str(self.edited_at) if self.edited_at else None
-			j["last_login"] = str(self.last_login) if self.last_login else None
+			j["created_at"] = self.toString(self.created_at)
+			j["edited_at"] = self.toString(self.edited_at)
+			j["last_login"] = self.toString(self.last_login)
 
 		if password:
-			j["password"] = self.password
+			j["password"] = self.toString(self.password)
 
 		return j
 
@@ -129,8 +130,8 @@ class WebUserInfo(DBContentClass):
 		if self.__session: return await self.viaSession()
 		self.__token = self.kwargs.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
-		self.__username = self.kwargs.get("phaaze_username", None)
-		self.__password = self.kwargs.get("phaaze_password", None)
+		self.__username = self.kwargs.get("username", None)
+		self.__password = self.kwargs.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	@forcable
@@ -140,8 +141,8 @@ class WebUserInfo(DBContentClass):
 		self.__token = self.WebRequest.cookies.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
 		# this makes no sense, but ok
-		self.__username = self.WebRequest.cookies.get("phaaze_username", None)
-		self.__password = self.WebRequest.cookies.get("phaaze_password", None)
+		self.__username = self.WebRequest.cookies.get("username", None)
+		self.__password = self.WebRequest.cookies.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	@forcable
@@ -151,8 +152,8 @@ class WebUserInfo(DBContentClass):
 		self.__token = self.WebRequest.headers.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
 		# this makes no sense, but ok
-		self.__username = self.WebRequest.headers.get("phaaze_username", None)
-		self.__password = self.WebRequest.headers.get("phaaze_password", None)
+		self.__username = self.WebRequest.headers.get("username", None)
+		self.__password = self.WebRequest.headers.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	@forcable
@@ -161,8 +162,8 @@ class WebUserInfo(DBContentClass):
 		if self.__session: return await self.viaSession()
 		self.__token = self.WebRequest.query.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
-		self.__username = self.WebRequest.query.get("phaaze_username", None)
-		self.__password = self.WebRequest.query.get("phaaze_password", None)
+		self.__username = self.WebRequest.query.get("username", None)
+		self.__password = self.WebRequest.query.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	@forcable
@@ -174,8 +175,8 @@ class WebUserInfo(DBContentClass):
 		if self.__session: return await self.viaSession()
 		self.__token = Json.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
-		self.__username = Json.get("phaaze_username", None)
-		self.__password = Json.get("phaaze_password", None)
+		self.__username = Json.get("username", None)
+		self.__password = Json.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	@forcable
@@ -192,8 +193,8 @@ class WebUserInfo(DBContentClass):
 		if self.__session: return await self.viaSession()
 		self.__token = Post.get("phaaze_token", None)
 		if self.__session: return await self.via__token()
-		self.__username = Post.get("phaaze_username", None)
-		self.__password = Post.get("phaaze_password", None)
+		self.__username = Post.get("username", None)
+		self.__password = Post.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
 	# checker

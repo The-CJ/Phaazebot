@@ -1,7 +1,8 @@
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.apiclass import APIClass
 
-class DiscordServerSettings(DBContentClass):
+class DiscordServerSettings(DBContentClass, APIClass):
 	"""
 		Contains and represents all possible discord server settings
 	"""
@@ -54,32 +55,32 @@ class DiscordServerSettings(DBContentClass):
 
 		j:dict = dict()
 
-		j["autorole_id"] = str(self.autorole_id)
-		j["blacklist_ban_links"] = bool(self.blacklist_ban_links)
-		j["blacklist_whitelistroles"] = list(self.blacklist_whitelistroles)
-		j["blacklist_whitelistlinks"] = list(self.blacklist_whitelistlinks)
-		j["blacklist_blacklistwords"] = list(self.blacklist_blacklistwords)
-		j["blacklist_punishment"] = str(self.blacklist_punishment)
-		j["currency_name"] = str(self.currency_name)
-		j["currency_name_multi"] = str(self.currency_name_multi)
-		j["disabled_levelchannels"] = list(self.disabled_levelchannels)
-		j["disabled_quotechannels"] = list(self.disabled_quotechannels)
-		j["disabled_normalchannels"] = list(self.disabled_normalchannels)
-		j["disabled_regularchannels"] = list(self.disabled_regularchannels)
-		j["enabled_gamechannels"] = list(self.enabled_gamechannels)
-		j["enabled_nsfwchannels"] = list(self.enabled_nsfwchannels)
-		j["level_announce_chan"] = str(self.level_announce_chan)
-		j["level_custom_msg"] = str(self.level_custom_msg)
-		j["leave_msg"] = str(self.leave_msg)
-		j["leave_chan"] = str(self.leave_chan)
-		j["owner_disable_level"] = bool(self.owner_disable_level)
-		j["owner_disable_normal"] = bool(self.owner_disable_normal)
-		j["owner_disable_regular"] = bool(self.owner_disable_regular)
-		j["owner_disable_mod"] = bool(self.owner_disable_mod)
-		j["track_channel"] = str(self.track_channel)
-		j["track_options"] = list(self.track_options)
-		j["welcome_chan"] = str(self.welcome_chan)
-		j["welcome_msg"] = str(self.welcome_msg)
-		j["welcome_msg_priv"] = str(self.welcome_msg_priv)
+		j["autorole_id"] = self.toString(self.autorole_id)
+		j["blacklist_ban_links"] = self.toBoolean(self.blacklist_ban_links)
+		j["blacklist_whitelistroles"] = self.toList(self.blacklist_whitelistroles)
+		j["blacklist_whitelistlinks"] = self.toList(self.blacklist_whitelistlinks)
+		j["blacklist_blacklistwords"] = self.toList(self.blacklist_blacklistwords)
+		j["blacklist_punishment"] = self.toString(self.blacklist_punishment)
+		j["currency_name"] = self.toString(self.currency_name)
+		j["currency_name_multi"] = self.toString(self.currency_name_multi)
+		j["disabled_levelchannels"] = self.toList(self.disabled_levelchannels)
+		j["disabled_quotechannels"] = self.toList(self.disabled_quotechannels)
+		j["disabled_normalchannels"] = self.toList(self.disabled_normalchannels)
+		j["disabled_regularchannels"] = self.toList(self.disabled_regularchannels)
+		j["enabled_gamechannels"] = self.toList(self.enabled_gamechannels)
+		j["enabled_nsfwchannels"] = self.toList(self.enabled_nsfwchannels)
+		j["level_announce_chan"] = self.toString(self.level_announce_chan)
+		j["level_custom_msg"] = self.toString(self.level_custom_msg)
+		j["leave_msg"] = self.toString(self.leave_msg)
+		j["leave_chan"] = self.toString(self.leave_chan)
+		j["owner_disable_level"] = self.toBoolean(self.owner_disable_level)
+		j["owner_disable_normal"] = self.toBoolean(self.owner_disable_normal)
+		j["owner_disable_regular"] = self.toBoolean(self.owner_disable_regular)
+		j["owner_disable_mod"] = self.toBoolean(self.owner_disable_mod)
+		j["track_channel"] = self.toString(self.track_channel)
+		j["track_options"] = self.toList(self.track_options)
+		j["welcome_chan"] = self.toString(self.welcome_chan)
+		j["welcome_msg"] = self.toString(self.welcome_msg)
+		j["welcome_msg_priv"] = self.toString(self.welcome_msg_priv)
 
 		return j

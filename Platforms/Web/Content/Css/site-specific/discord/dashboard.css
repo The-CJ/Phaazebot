@@ -65,7 +65,7 @@
   width: 1em;
 }
 
-/* for all lists in modal*/ 
+/* for all lists in modal*/
 .modal-itemlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
 .modal-itemlist > * { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
 .modal-itemlist > *.deleted { background-color: #ccaaaaaa; }
@@ -149,7 +149,16 @@
 [location=assign_roles] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
 [location=assign_roles] .assignrole > div { background-color: var(--color-sub-listelement-odd); }
 [location=assign_roles] .assignrole > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
-[location=assign_roles] #assign_role_list:empty:after { content: "(None)"; }
+[location=assign_roles] #assign_role_list:empty::after { content: "(None)"; }
+
+[location=twitch_alerts] .twitchalert { cursor: pointer; }
+[location=twitch_alerts] .twitchalert:hover { background: rgba(0,0,0,0.2); }
+[location=twitch_alerts] .twitchalert > *, [location=twitch_alerts] .header > * { margin: 2px; overflow: hidden; }
+[location=twitch_alerts] .header > div { background-color: var(--color-listelement-odd); }
+[location=twitch_alerts] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
+[location=twitch_alerts] .twitchalert > div { background-color: var(--color-sub-listelement-odd); }
+[location=twitch_alerts] .twitchalert > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
+[location=twitch_alerts] #twitchalert_list:empty::after { content: "(None)"; }
 
 /* modals */
 #command_create [command-setting], #command_create [extra-command-setting] { display: none;}
@@ -161,6 +170,10 @@
 #assignrole_create button[mode] { display: none;}
 #assignrole_create[mode=create] button[mode=create] { display: unset;}
 #assignrole_create[mode=edit] button[mode=edit] { display: unset;}
+
+#alert_modal[mode] [show-mode] { display: none; }
+#alert_modal[mode=edit] [show-mode=edit] { display: block; }
+#alert_modal[mode=create] [show-mode=create] { display: block; }
 
 #token_modal_help .example { color: white; background: grey; }
 #token_modal_help .clickable { color: #262798; background: #8aa6af9c; padding: 2px; cursor: pointer; }

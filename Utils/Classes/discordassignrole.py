@@ -1,7 +1,8 @@
-from Utils.Classes.undefined import Undefined
+from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.apiclass import APIClass
 
-class DiscordAssignRole(DBContentClass):
+class DiscordAssignRole(DBContentClass, APIClass):
 	"""
 		Contains and represents stuff for a discord assign role
 	"""
@@ -10,18 +11,19 @@ class DiscordAssignRole(DBContentClass):
 
 	def __init__(self, data:dict, guild_id:str):
 
-		self.assignrole_id:str = data.get("id", Undefined())
+		self.assignrole_id:str = data.get("id", UNDEFINED)
 		self.guild_id:str = guild_id
-		self.role_id:str = data.get("role_id", Undefined())
-		self.trigger:str = data.get("trigger", Undefined())
+		self.role_id:str = data.get("role_id", UNDEFINED)
+		self.trigger:str = data.get("trigger", UNDEFINED)
 
 	def toJSON(self) -> dict:
 		""" Returns a json save dict representation of all values for API, storage, etc... """
 
 		j:dict = dict()
 
-		j["assignrole_id"] = str(self.assignrole_id)
-		j["role_id"] = str(self.role_id)
-		j["trigger"] = str(self.trigger)
+		j["assignrole_id"] = self.toString(self.assignrole_id)
+		j["guild_id"] = self.toString(self.guild_id)
+		j["role_id"] = self.toString(self.role_id)
+		j["trigger"] = self.toString(self.trigger)
 
 		return j

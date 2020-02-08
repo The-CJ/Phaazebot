@@ -30,25 +30,18 @@ function detailRole(HTMLElement) {
   $.get("/api/admin/roles/get", {role_id: role_id})
   .done(function (data) {
 
-    var role = data.result[0];
+    var role = data.result.shift();
 
     $("#edit_create_role").attr("mode", "edit");
     $("#edit_create_role .modal-title").text("Edit role:");
 
-    $("#edit_create_role").find("[name=role_id]").val(role.id);
-    $("#edit_create_role").find("[name=role_id]").closest(".row").show();
-
-    $("#edit_create_role").find("[name=name]").val(role.name);
-
-    $("#edit_create_role").find("[name=description]").val(role.description);
+    insertData("#edit_create_role", role);
 
     if (!role.can_be_removed) {
-      $("#edit_create_role").find("[name=can_be_removed]").prop("checked", false);
       $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", true);
       $("#edit_create_role").find("[name=name]").attr("readonly", true);
       $("#edit_create_role button[remove]").hide();
     } else {
-      $("#edit_create_role").find("[name=can_be_removed]").prop("checked", true);
       $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);
       $("#edit_create_role").find("[name=name]").attr("readonly", false);
       $("#edit_create_role button[remove]").show();
@@ -83,7 +76,6 @@ function showCreate() {
   $("#edit_create_role").attr("mode", "create");
   $("#edit_create_role .modal-title").text("Create role:");
 
-  $("#edit_create_role").find("[name=role_id]").closest(".row").hide();
   $("#edit_create_role").find("input, textarea").val("");
   $("#edit_create_role").find("[name=name]").attr("readonly", false);
   $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);

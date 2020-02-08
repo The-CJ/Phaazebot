@@ -12,6 +12,7 @@ from Utils.config import ConfigParser
 from Utils.logger import PhaazeLogger
 from Utils.threads import Mainframe
 from Utils.Classes.dbconn import DBConn
+from Utils.cli import CliArgs
 
 # platforms
 from Platforms.Discord.main_discord import PhaazebotDiscord
@@ -68,6 +69,12 @@ class Phaazebot(object):
 
 		self.WorkerLoop:asyncio.AbstractEventLoop = None # Worker object is protected and only gives us the loop in inject
 
+		# this runs everthing
+		self.Mainframe = Mainframe(self)
+
+		# this keeps track of what is running
+		self.IsReady:IsReadyStore = IsReadyStore()
+
 		# connection to phaaze brain
 		self.PhaazeDB:DBConn = DBConn(
 			host = self.Access.PHAAZEDB_HOST,
@@ -77,16 +84,16 @@ class Phaazebot(object):
 			database = self.Access.PHAAZEDB_DATABASE
 		)
 
-		# this runs everthing
-		self.Mainframe = Mainframe(self)
-
-		self.IsReady:IsReadyStore = IsReadyStore()
-
 	def start(self) -> None:
 		self.Logger.info("Phaazebot Mainframe started -> Starting Threads...")
 		self.Mainframe.start()
 
 if __name__ == '__main__':
-	Phaaze = Phaazebot()
+	Phaaze:Phaazebot = Phaazebot()
 	GlobalStorage.add("Phaazebot", Phaaze)
+
+	if CliArgs.get("log-sql", False):
+		from Utils.logger import printSQL
+		Phaaze.PhaazeDB.statement_func = printSQL
+
 	Phaaze.start()

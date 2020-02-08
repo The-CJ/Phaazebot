@@ -51,12 +51,12 @@ class PhaazebotTwitchEvents(object):
 		# that have at least one discord channel alert or have Phaaze in the twitch channel active
 		res:list = self.BASE.PhaazeDB.selectQuery("""
 			SELECT
-			  `twitch_channel`.`channel_id`,
-			  `twitch_channel`.`game_id`,
-			  `twitch_channel`.`live`
+				`twitch_channel`.`channel_id`,
+				`twitch_channel`.`game_id`,
+				`twitch_channel`.`live`
 			FROM `twitch_channel`
 			LEFT JOIN `discord_twitch_alert`
-			  ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_channel`.`channel_id`
+				ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_channel`.`channel_id`
 			GROUP BY `twitch_channel`.`channel_id`"""
 		)
 
@@ -315,7 +315,7 @@ class PhaazebotTwitchEvents(object):
 			updates the db with data we gathered before
 		"""
 
-		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`,`name`, `display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in update_users if x)
+		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in update_users if x)
 		sql_values:tuple = ()
 
 		for user_id in update_users:

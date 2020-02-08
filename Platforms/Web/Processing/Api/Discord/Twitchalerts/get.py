@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.utils import getDiscordServerQuotes
+from Platforms.Discord.utils import getDiscordTwitchAlerts, getDiscordTwitchAlertsAmount
 from Utils.Classes.undefined import UNDEFINED
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
@@ -15,16 +15,16 @@ from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 DEFAULT_LIMIT:int = 50
 MAX_LIMIT:int = 100
 
-async def apiDiscordQuotesGet(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordTwitchalertsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/quotes/get
+		Default url: /api/discord/twitchalerts/get
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	quote_id:int = Data.getInt("quote_id", UNDEFINED, min_x=1)
+	alert_id:int = Data.getInt("alert_id", UNDEFINED, min_x=1)
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	offset:int = Data.getInt("offset", 0, min_x=0)
 
@@ -37,13 +37,16 @@ async def apiDiscordQuotesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	# get quotes
-	res_quotes:list = await getDiscordServerQuotes(PhaazeDiscord, guild_id=guild_id, quote_id=quote_id, limit=limit, offset=offset)
+	# get alerts
+	res_alerts:list = await getDiscordTwitchAlerts(PhaazeDiscord, guild_id=guild_id, alert_id=alert_id, limit=limit, offset=offset)
+
+	# if only one is requestet, also send custom content
+	with_message:bool = True if alert_id else False
 
 	return cls.response(
 		text=json.dumps( dict(
-			result=[ Quote.toJSON() for Quote in res_quotes ],
-			total=len(res_quotes),
+			result=[ Alert.toJSON(custom_msg=with_message) for Alert in res_alerts ],
+			total=( await getDiscordTwitchAlertsAmount(PhaazeDiscord, guild_id) ),
 			status=200)
 		),
 		content_type="application/json",
