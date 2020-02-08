@@ -79,6 +79,7 @@ var TwitchAlerts = new (class {
     var alert_id = $(TwitchAlertsO.modal_id).attr("alert-id");
 
     var req = extractData(TwitchAlertsO.modal_id);
+    req["guild_id"] = guild_id;
     req["alert_id"] = alert_id;
 
     $.post("/api/discord/twitchalerts/edit", req)
