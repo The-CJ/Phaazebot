@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from aiohttp.web import Response, Request
 from .get import apiDiscordTwitchalertsGet
 from .edit import apiDiscordTwitchalertsEdit
+from .create import apiDiscordTwitchalertsCreate
 from .delete import apiDiscordTwitchalertsDelete
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
@@ -25,6 +26,9 @@ async def apiDiscordTwitchalerts(cls:"WebIndex", WebRequest:Request) -> Response
 
 	elif method == "edit":
 		return await apiDiscordTwitchalertsEdit(cls, WebRequest)
+
+	elif method == "create":
+		return await apiDiscordTwitchalertsCreate(cls, WebRequest)
 
 	elif method == "delete":
 		return await apiDiscordTwitchalertsDelete(cls, WebRequest)
