@@ -6,7 +6,11 @@
       <div class="col">
         <h4>Twitch Alerts: <span id="alert_amount">[N/A]</span></h4>
       </div>
+      <div class="col">
+        <button type="button" class="btn btn-success" onclick="TwitchAlerts.createModal()">New alert</button>
+      </div>
     </div>
+
 
     <!-- gets filled with copys of: "[phantom] .twitchalert" -->
     <div id="twitchalert_list"></div>
@@ -31,24 +35,37 @@
 
           <div show-mode="create">
             <p>
-              The following twitch channel will trigger a Discord message<br>
-              if it goes live or changes the game<br>
-              <br>
-              You might change the alert content, but you can't change the Discord or Twitch channel.<br>
-              Delete this alert and make a new one if needed.
+              Adding a Twitchalert, will send a Discord message to a channel<br>
+              if a Twitch channel goes live or changes to the game.<br>
+              This is only triggered by LIVE events, restreaming a VOD will not trigger it.<br>
+              Each Twitch channel can only be added once per Discord channel, (obviously)<br>
+              and in total, in 3 Discord channels per guild/server.<br>
+              (i don't know why you even wanna be notified in 2 channels, but this limit is sadly needed... don't ask why)
             </p>
             <hr>
 
             <div>
-              <i class="fab fa-twitch prefix grey-text"></i>
-              <a href="/" name="twitch_link"></a>
+              <i class="fab fa-twitch grey-text"></i>
+              <p>
+                Select the Twitch channel you want to track.<br>
+                Just enter the channel name or the entire channel link.
+              </p>
+              <div class="md-form">
+                <input type="text" name="twitch_channel" class="form-controll text-center" style="width:100%;" placeholder="Twitch channel link or name">
+              </div>
             </div>
             <hr>
 
             <div>
-              <i class="fab fa-discord prefix grey-text"></i>
-              <span name="discord_channel_name"></span>
+              <i class="fab fa-discord grey-text"></i>
+              <p>
+                Select a Discord channel<br>
+                (Phaaze must have permission to send messages to this channel, obviously)
+              </p>
+              <select class="custom-select form-control" name="discord_channel_id" discord-channel="text"></select>
             </div>
+            <hr>
+
           </div>
 
           <div show-mode="edit">
@@ -73,19 +90,22 @@
             </div>
             <hr>
 
-            <p>
-              The custom message, only appears on the live event, not gamechange.<br>
-              It's added as text above the alert embed.<br>
-              Leave it empty if you don't want any.
-            </p>
-            <textarea name="custom_msg" rows="8" style="width:100%;"></textarea>
           </div>
+
+          <!-- bottom text area -->
+          <p>
+            The custom message, only appears on the live event, not gamechange.<br>
+            It's added as text above the alert embed.<br>
+            Leave it empty if you don't want any.
+          </p>
+          <textarea name="custom_msg" rows="8" style="width:100%;"></textarea>
 
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-block btn-warning" onclick="TwitchAlerts.edit()" show-mode="edit">Edit</button>
           <button type="button" class="btn btn-block btn-danger" onclick="TwitchAlerts.delete()" show-mode="edit">Delete</button>
+          <button type="button" class="btn btn-block btn-success" onclick="TwitchAlerts.create()" show-mode="create">Submit</button>
         </div>
         <div messagebox></div>
       </div>

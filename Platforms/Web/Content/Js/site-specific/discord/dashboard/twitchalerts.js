@@ -41,6 +41,27 @@ var TwitchAlerts = new (class {
     })
   }
 
+  createModal() {
+    $(this.modal_id).attr("mode", "create");
+    $(this.modal_id).modal("show");
+  }
+
+  create() {
+    var TwitchAlertsO = this;
+    var req = extractData(TwitchAlertsO.modal_id);
+    req["guild_id"] = $("#guild_id").val();
+
+    $.post("/api/discord/twitchalerts/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $(TwitchAlertsO.modal_id).modal("hide");
+      TwitchAlertsO.show();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not create alert"} );
+    })
+  }
+
   detail(HTMLRow) {
     var TwitchAlertsO = this;
     var guild_id = $("#guild_id").val();
