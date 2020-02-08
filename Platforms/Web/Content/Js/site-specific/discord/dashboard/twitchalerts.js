@@ -45,7 +45,13 @@ var TwitchAlerts = new (class {
     $.get("/api/discord/twitchalerts/get", {guild_id: guild_id, alert_id: alert_id})
     .done(function (data) {
 
-      console.log(data);
+      var alert = data.result.shift();
+      console.log(alert);
+
+      insertData("#alert_modal", alert);
+      $("#alert_modal").modal("show");
+      $("#alert_modal").attr("alert-id", alert.alert_id);
+      $("#alert_modal").attr("mode", "edit");
 
     })
     .fail(function (data) {
