@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import math
 from aiohttp.web import Request
-from .undefined import Undefined
+from .undefined import Undefined, UNDEFINED
 
 def forcable(f:Callable) -> Callable:
 	f.__forcable__ = True
@@ -67,7 +67,7 @@ class WebRequestContent(object):
 		self.BASE.Logger.debug("Someone send data via multipart content", require="web:debug")
 		return None
 
-	def get(self, a:str, b:Any = Undefined()) -> Any:
+	def get(self, a:str, b:Any = UNDEFINED) -> Any:
 		"""
 			get any value from the stored content
 		"""

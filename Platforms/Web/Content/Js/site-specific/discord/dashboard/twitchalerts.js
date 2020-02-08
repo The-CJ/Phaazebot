@@ -91,7 +91,26 @@ var TwitchAlerts = new (class {
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not edit alert"} );
     })
+  }
 
+  delete() {
+    var TwitchAlertsO = this;
+    var guild_id = $("#guild_id").val();
+    var alert_id = $(TwitchAlertsO.modal_id).attr("alert-id");
+
+    var req = {};
+    req["guild_id"] = guild_id;
+    req["alert_id"] = alert_id;
+
+    $.post("/api/discord/twitchalerts/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $(TwitchAlertsO.modal_id).modal("hide");
+      TwitchAlertsO.show();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not edit alert"} );
+    })
   }
 
 });

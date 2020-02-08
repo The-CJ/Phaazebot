@@ -27,7 +27,7 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	alert_id:int = Data.getInt("alert_id", UNDEFINED, min_x=1)
-	custom_msg:str = Data.getStr("custom_msg", "")
+	custom_msg:str = Data.getStr("custom_msg", UNDEFINED)
 
 	# checks
 	if not guild_id:
@@ -36,8 +36,8 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 	if not alert_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'alert_id'")
 
-	if len(custom_msg) > MAX_CONTENT_SIZE:
-		return await apiMissingData(cls, WebRequest, msg="'custom_msg' is to big")
+	if custom_msg == UNDEFINED or len(custom_msg) > MAX_CONTENT_SIZE:
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'custom_msg'")
 
 	# get quote
 	res_alerts:list = await getDiscordTwitchAlerts(cls.Web.BASE.Discord, guild_id, alert_id=alert_id)
