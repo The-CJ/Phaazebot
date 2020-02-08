@@ -82,35 +82,52 @@ function extractData(o) {
   return data;
 }
 
-function insertData(o, d, to_string=false) {
-  // o = JQuery object | str
-  // d = object
+function insertData(Obj, data, to_string=false) {
+  // obj = JQuery object | str
+  // data = object
   // to_string = bool :: false
 
-  // 'o' is the target, in this target all keys of 'd' get searched
-  // every matching [name=d_key] element, it inserts d[key]
+  // 'obj' is the target, in this target all keys of 'data' get searched
+  // every matching [name=key] element, it inserts data[key]
 
   // if matching element is a [type=checkbox]:
-  // element gets prop 'checked' set based on boolish interpretion of d[key]
+  // element gets prop 'checked' set based on boolish interpretion of data[key]
+
+  // if matching element is a SPAN
+  // the value of data[key] gets inserted as text
 
   // to_string ensures content input by all types, except 'null'
   // which will be convertet to a empty string
 
-  if (typeof o != "object") { o = $(o); }
-  for (var k in d) {
+  if (typeof Obj != "object") { Obj = $(Obj); }
+  for (var key in data) {
     try {
-      var v = d[k];
+      var value = data[key];
+
+      // ensure stings?
       if (to_string) {
-        if (typeof v == "boolean") { v = v ? "true" : "false"; }
-        else if (v == null) { v = ""; }
+        if (typeof value == "boolean") { value = (value ? "true" : "false"); }
+        else if (value == null) { value = ""; }
       }
-      for (var f of o.find("[name="+k+"]")) {
-        f = $(f);
-        if (f.attr("type") == "checkbox") {
-          if ( oppositeValue(v) ) { f.prop("checked", false) } else { f.prop("checked", true) }
-        } else {
-          f.val( v );
+
+      // find all elements based on [name]
+      for (var Match of Obj.find(`[name=${key}]`)) {
+        Match = $(Match);
+
+        // checkboxes
+        if (Match.attr("type") == "checkbox") {
+          let checked = ( !oppositeValue(value) ? false : true );
+          Match.prop("checked", checked);
+          continue;
         }
+
+        if ( ["SPAN"].indexOf(Match.prop("tagName")) >= 0 ) {
+          Match.text(value);
+          continue;
+        }
+
+        Match.val(value);
+        continue;
       }
     }
     catch (e) { continue }
