@@ -42,6 +42,7 @@ var TwitchAlerts = new (class {
   }
 
   createModal() {
+    resetInput(this.modal_id);
     $(this.modal_id).attr("mode", "create");
     $(this.modal_id).modal("show");
   }
@@ -71,7 +72,6 @@ var TwitchAlerts = new (class {
     .done(function (data) {
 
       var alert = data.result.shift();
-      console.log(alert);
 
       $(TwitchAlertsO.modal_id).attr("alert-id", alert.alert_id);
       $(TwitchAlertsO.modal_id).attr("mode", "edit");
