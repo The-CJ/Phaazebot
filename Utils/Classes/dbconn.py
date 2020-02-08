@@ -32,7 +32,7 @@ class DBConn(object):
 		# if != None, called with last statement as arg, for logging etc.
 		self.statement_func:callable = None
 
-	def query(self, sql:str, values:tuple = None, debug:dict={}) -> list:
+	def query(self, sql:str, values:tuple or dict = None, debug:dict={}) -> list:
 		"""
 			Querys a SQL command. Using a MySQLCursorDict.
 			query made via this function get auto commited
@@ -79,7 +79,7 @@ class DBConn(object):
 
 		return res
 
-	def selectQuery(self, sql:str, values:tuple = None, debug:dict={}) -> list:
+	def selectQuery(self, sql:str, values:tuple or dict = None, debug:dict={}) -> list:
 		"""
 			Pretty much the same as a normal .query()
 			except it ensures a list with sets return
@@ -103,7 +103,7 @@ class DBConn(object):
 
 		return res
 
-	def deleteQuery(self, sql:str, values:tuple = None, debug:dict={}) -> int:
+	def deleteQuery(self, sql:str, values:tuple or dict = None, debug:dict={}) -> int:
 		"""
 			Pretty much the same as a normal .query()
 			except it ensures a int return
