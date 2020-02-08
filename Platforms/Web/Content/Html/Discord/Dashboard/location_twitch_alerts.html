@@ -29,18 +29,64 @@
 
         <div class="modal-body text-black">
 
-          <div class="center-item-row" show-mode="edit">
+          <div show-mode="create">
+            <p>
+              The following twitch channel will trigger a Discord message<br>
+              if it goes live or changes the game<br>
+              <br>
+              You might change the alert content, but you can't change the Discord or Twitch channel.<br>
+              Delete this alert and make a new one if needed.
+            </p>
+            <hr>
 
-            <i class="fab fa-twitch prefix grey-text"></i>
-            <span>https://twitch.tv/</span>
-            <span name="twitch_channel_name"></span>
+            <div>
+              <i class="fab fa-twitch prefix grey-text"></i>
+              <a href="/" name="twitch_link"></a>
+            </div>
+            <hr>
 
+            <div>
+              <i class="fab fa-discord prefix grey-text"></i>
+              <span name="discord_channel_name"></span>
+            </div>
           </div>
 
+          <div show-mode="edit">
+            <p>
+              The following twitch channel will trigger a Discord message<br>
+              if it goes live or changes the game<br>
+              <br>
+              You might change the alert content, but you can't change the Discord or Twitch channel.<br>
+              Delete this alert and make a new one if needed.
+            </p>
+            <hr>
+
+            <div>
+              <i class="fab fa-twitch prefix grey-text"></i>
+              <a href="/" name="twitch_link"></a>
+            </div>
+            <hr>
+
+            <div>
+              <i class="fab fa-discord prefix grey-text"></i>
+              <span name="discord_channel_name"></span>
+            </div>
+            <hr>
+
+            <p>
+              The custom message, only appears on the live event, not gamechange.<br>
+              It's added as text above the alert embed.<br>
+              Leave it empty if you don't want any.
+            </p>
+            <textarea name="custom_msg" rows="8" style="width:100%;"></textarea>
+          </div>
 
         </div>
 
-        <div class="modal-footer"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-block btn-warning" onclick="TwitchAlerts.edit()" show-mode="edit">Edit</button>
+          <button type="button" class="btn btn-block btn-danger" onclick="TwitchAlerts.delete()" show-mode="edit">Delete</button>
+        </div>
         <div messagebox></div>
       </div>
     </div>

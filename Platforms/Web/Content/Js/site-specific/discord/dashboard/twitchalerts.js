@@ -1,6 +1,10 @@
 var TwitchAlerts = new (class {
   constructor() {
-
+    this.modal_id = "#alert_modal";
+    this.list_id = "#twitchalert_list";
+    this.amount_field_id = "#alert_amount";
+    this.phantom_class = ".twitchalert";
+    this.twitchbase = "https://twitch.tv/";
   }
 
   show(x={}) {
@@ -11,11 +15,11 @@ var TwitchAlerts = new (class {
     $.get("/api/discord/twitchalerts/get", {guild_id: guild_id})
     .done(function (data) {
 
-      $("#alert_amount").text(data.total);
+      $(TwitchAlertsO.amount_field_id).text(data.total);
 
-      var AlertList = $("#twitchalert_list").html("");
+      var AlertList = $(TwitchAlertsO.list_id).html("");
       for (var alert of data.result) {
-        var Template = $("[phantom] .twitchalert").clone();
+        var Template = $(`[phantom] ${TwitchAlertsO.phantom_class}`).clone();
         var twitch_name = alert.twitch_channel_name ? alert.twitch_channel_name : `Unknown channel name, ID: ${alert.twitch_channel_id}`;
         var discord_channel = DiscordDashboard.getDiscordChannelByID(alert.discord_channel_id);
 
@@ -48,14 +52,43 @@ var TwitchAlerts = new (class {
       var alert = data.result.shift();
       console.log(alert);
 
-      insertData("#alert_modal", alert);
-      $("#alert_modal").modal("show");
-      $("#alert_modal").attr("alert-id", alert.alert_id);
-      $("#alert_modal").attr("mode", "edit");
+      $(TwitchAlertsO.modal_id).attr("alert-id", alert.alert_id);
+      $(TwitchAlertsO.modal_id).attr("mode", "edit");
+
+      let twitch_link = `${TwitchAlertsO.twitchbase}${alert.twitch_channel_name}`;
+      $(`${TwitchAlertsO.modal_id} [name=twitch_link]`).attr("href", twitch_link);
+      $(`${TwitchAlertsO.modal_id} [name=twitch_link]`).text(twitch_link);
+
+      var discord_channel = DiscordDashboard.getDiscordChannelByID(alert.discord_channel_id);
+      $(`${TwitchAlertsO.modal_id} [name=discord_channel_name]`).text(discord_channel ? "#"+discord_channel.name : "(DELETED CHANNEL)");
+
+      $(`${TwitchAlertsO.modal_id} [name=custom_msg]`).val(alert.custom_msg);
+
+      $(TwitchAlertsO.modal_id).modal("show");
 
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not load twitchalert"} );
+    })
+
+  }
+
+  edit() {
+    var TwitchAlertsO = this;
+    var guild_id = $("#guild_id").val();
+    var alert_id = $(TwitchAlertsO.modal_id).attr("alert-id");
+
+    var req = extractData(TwitchAlertsO.modal_id);
+    req["alert_id"] = alert_id;
+
+    $.post("/api/discord/twitchalerts/edit", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $(TwitchAlertsO.modal_id).modal("hide");
+      TwitchAlertsO.show();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not edit alert"} );
     })
 
   }

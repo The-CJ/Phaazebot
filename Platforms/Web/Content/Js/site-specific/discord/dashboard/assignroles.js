@@ -86,7 +86,7 @@ var AssignRoles = new (class {
     var req = extractData(this.modal_id);
     req["guild_id"] = $("#guild_id").val();
 
-    $.get("/api/discord/assignroles/edit", req)
+    $.post("/api/discord/assignroles/edit", req)
     .done(function (data) {
       Display.showMessage({content: data.msg, color:Display.color_success});
       $(AssignRolesO.modal_id).modal("hide");
