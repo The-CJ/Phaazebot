@@ -1,0 +1,21 @@
+main h1 {
+  margin: 1em 0;
+}
+
+div[buttons] a {
+  margin: 3px 0;
+}
+
+div[buttons] > a > button {
+  color: white;
+  background: var(--color-listelement-odd);
+}
+div[buttons] > a:nth-child(even) > button { background: var(--color-listelement-even); }
+
+div[buttons] > a > button:hover {
+  color: lightgrey;
+}
+
+#root_console {
+  padding: 0.5em;
+}
