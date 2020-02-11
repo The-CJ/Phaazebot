@@ -18,8 +18,9 @@ class PhaazebotDiscord(discord.Client):
 	async def on_ready(self) -> None:
 		try:
 			await self.change_presence(
-				activity=discord.Game ( type=0, name=f"{self.BASE.Vars.TRIGGER_DISCORD}help | v{self.BASE.version}"	),
-				status=discord.Status.online
+				activity = discord.Game(name = self.BASE.Vars.DISCORD_MODT),
+				status = discord.Status.online,
+				afk = False
 			)
 
 			self.BASE.Logger.info("Discord connected")
@@ -64,19 +65,12 @@ class PhaazebotDiscord(discord.Client):
 
 	async def on_member_remove(self, Member:discord.Member) -> None:
 		# set member inactive
-		debug:dict = dict()
-		try:
-			self.BASE.PhaazeDB.updateQuery(
-				table = "discord_user",
-				content = {"on_server":"0"},
-				where = "guild_id = %s AND member_id = %s",
-				where_values = (Member.guild.id, Member.id),
-				debug = debug
-			)
-		except:
-			pass
-
-		print(debug)
+		self.BASE.PhaazeDB.updateQuery(
+			table = "discord_user",
+			content = {"on_server":"0"},
+			where = "guild_id = %s AND member_id = %s",
+			where_values = (Member.guild.id, Member.id)
+		)
 
 	async def on_member_ban(self, member):
 		pass

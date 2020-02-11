@@ -40,7 +40,7 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 			`username` = %s,
 			`nickname` = %s
 		WHERE `discord_user`.`guild_id` = %s
- 			AND `discord_user`.`member_id` = %s""",
+			AND `discord_user`.`member_id` = %s""",
 		(Message.author.name, Message.author.nick, LevelUser.server_id, LevelUser.member_id)
 	)
 

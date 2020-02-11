@@ -96,9 +96,7 @@ class VarsStore(object):
 		filled with permanent vars, or functions to get vars
 	"""
 	def __init__(self, config:ConfigParser):
-		self.TRIGGER_DISCORD:str = str(config.get('trigger_discord', '>'))
-		self.TRIGGER_OSU:str = str(config.get('trigger_osu', '!'))
-		self.TRIGGER_TWITCH:str = str(config.get('trigger_twitch', '!'))
+		self.DISCORD_MODT:str = str(config.get('discord_motd', 'Hello there'))
 
 		self.DEFAULT_TWITCH_CURRENCY:str = str(config.get('default_twitch_currency', 'Credit'))
 		self.DEFAULT_TWITCH_CURRENCY_MULTI:str = str(config.get('default_twitch_currency_multi', 'Credits'))
