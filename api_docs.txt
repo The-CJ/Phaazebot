@@ -1,4 +1,4 @@
-Please ignore this file to, it a reminder for me what endpoints there are.
+Please ignore this file to, its a reminder for me what endpoints there are.
 
 /api/account/phaaze
 /api/account/phaaze/create
@@ -20,16 +20,24 @@ Please ignore this file to, it a reminder for me what endpoints there are.
 /api/admin/evaluate
 /api/admin/module
 /api/admin/status
+
 /api/admin/roles
-/api/admin/roles/get
 /api/admin/roles/create
-/api/admin/roles/edit
 /api/admin/roles/delete
+/api/admin/roles/edit
+/api/admin/roles/get
+
 /api/admin/users
 /api/admin/users/create
 /api/admin/users/delete
 /api/admin/users/edit
 /api/admin/users/get
+
+/api/discord/assignroles
+/api/discord/assignroles/create
+/api/discord/assignroles/delete
+/api/discord/assignroles/edit
+/api/discord/assignroles/get
 
 /api/discord/commands
 /api/discord/commands/create
@@ -47,10 +55,10 @@ Please ignore this file to, it a reminder for me what endpoints there are.
 /api/discord/levels/edit
 
 /api/discord/quotes
-/api/discord/quotes/get
-/api/discord/quotes/edit
-/api/discord/quotes/delete
 /api/discord/quotes/create
+/api/discord/quotes/delete
+/api/discord/quotes/edit
+/api/discord/quotes/get
 
 /api/discord/guild
 /api/discord/userguilds
