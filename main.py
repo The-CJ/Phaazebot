@@ -93,7 +93,6 @@ if __name__ == '__main__':
 	GlobalStorage.add("Phaazebot", Phaaze)
 
 	if CliArgs.get("log-sql", False):
-		from Utils.logger import printSQL
-		Phaaze.PhaazeDB.statement_func = printSQL
+		Phaaze.PhaazeDB.statement_func = Phaaze.Logger.printSQL
 
 	Phaaze.start()

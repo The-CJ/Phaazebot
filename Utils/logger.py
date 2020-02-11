@@ -61,6 +61,8 @@ class PhaazeLogger(object):
 
 	def debug(self, msg:str, require:str="all") -> None:
 		show:bool = False
+		if require == "": show = True
+		
 		for ad in self.active_debugs:
 			if ad == "all": show = True; break
 			if require == ad: show = True; break
@@ -74,14 +76,12 @@ class PhaazeLogger(object):
 
 			self.Log.debug(f"{location}:{Caller.lineno} | {msg}")
 
-def printSQL(statement:str) -> None:
-	"""
-		pretty prints a sql statement
-		(i like using tabs, so that should remove them before printing,
-		so you dont have to watch disorderd stairs)
-	"""
-	# just remove leading whitespaces and put back together
-	statement = '\n'.join([ l.lstrip("\t") for l in statement.splitlines() ])
-	print("+"*10)
-	print(statement)
-	print("-"*10)
+	def printSQL(self, statement:str) -> None:
+		"""
+			pretty prints a sql statement
+			(i like using tabs, so that should remove them before printing,
+			so you dont have to watch disorderd stairs)
+		"""
+		# just remove leading whitespaces and put back together
+		statement = '\n'.join([ l.lstrip("\t") for l in statement.splitlines() ])
+		self.debug(f"{'+'*10}\n{statement}\n{'-'*10}", require="")
