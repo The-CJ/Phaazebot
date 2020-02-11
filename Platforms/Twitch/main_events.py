@@ -158,7 +158,7 @@ class PhaazebotTwitchEvents(object):
 
 		self.BASE.Logger.debug(f"Processing {len(events)} Twitch Events", require="twitchevents:processing")
 
-		# the following 2 dicts are key based with a simple True value
+		# the following 2 dicts are key based with a simple None value
 		# every key must be searched in the twitch api for infos
 		# (actully just needed for games, because users are unique)
 		needed_games:dict = dict()
@@ -166,8 +166,8 @@ class PhaazebotTwitchEvents(object):
 
 		for event in events:
 			Status:StatusEntry = event[1]
-			needed_games[Status.game_id] = False
-			needed_users[Status.channel_id] = False
+			needed_games[str(Status.game_id)] = None
+			needed_users[str(Status.channel_id)] = None
 
 		needed_games = await self.fillGameData(needed_games)
 		needed_users = await self.fillUserData(needed_users)
@@ -178,8 +178,8 @@ class PhaazebotTwitchEvents(object):
 
 		for event in events:
 			Status:StatusEntry = event[1]
-			Status.Game = needed_games.get(Status.game_id, False)
-			Status.User = needed_users.get(Status.channel_id, False)
+			Status.Game = needed_games.get(Status.game_id, None)
+			Status.User = needed_users.get(Status.channel_id, None)
 
 			if event[0] == 0:
 				alert_list_offline.append(Status)
@@ -244,8 +244,9 @@ class PhaazebotTwitchEvents(object):
 		id_list:list = [ g for g in requested_games ]
 		result_game:list = await getTwitchGames(self.BASE, id_list)
 
+		Game:TwitchGame
 		for Game in result_game:
-			requested_games[Game.game_id] = Game
+			requested_games[str(Game.game_id)] = Game
 
 		return requested_games
 
@@ -258,8 +259,9 @@ class PhaazebotTwitchEvents(object):
 		id_list:list = [ u for u in requested_users ]
 		result_user:list = await getTwitchUsers(self.BASE, id_list)
 
+		User:TwitchUser
 		for User in result_user:
-			requested_users[User.user_id] = User
+			requested_users[str(User.user_id)] = User
 
 		return requested_users
 
