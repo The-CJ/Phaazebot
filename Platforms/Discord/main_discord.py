@@ -45,7 +45,7 @@ class PhaazebotDiscord(discord.Client):
 			return await openChannel(self, Message)
 
 		else:
-			print("TODO: " + type(Message.channel))
+			self.BASE.Logger.warning("TODO: " + type(Message.channel))
 
 	async def on_message_delete(self, message):
 		pass
