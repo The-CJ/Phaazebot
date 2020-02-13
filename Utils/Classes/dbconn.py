@@ -64,9 +64,7 @@ class DBConn(object):
 		Cursor:MySQLCursorDict = Conn.cursor(dictionary=True)
 
 		# do stuff
-		Cursor.execute(sql, values)
-		debug["last_statement"] = Cursor.statement
-		if self.statement_func != None: self.statement_func(debug["last_statement"])
+		self.executeQuery(Cursor, sql, values, debug)
 
 		# read and quess result
 		if Cursor._have_unread_result(): res:list = Cursor.fetchall()
@@ -91,9 +89,7 @@ class DBConn(object):
 		Cursor:MySQLCursorDict = Conn.cursor(dictionary=True)
 
 		# do stuff
-		Cursor.execute(sql, values)
-		debug["last_statement"] = Cursor.statement
-		if self.statement_func != None: self.statement_func(debug["last_statement"])
+		self.executeQuery(Cursor, sql, values, debug)
 
 		# gather stuff
 		res:list = Cursor.fetchall()
@@ -115,9 +111,7 @@ class DBConn(object):
 		Cursor:MySQLCursorDict = Conn.cursor(dictionary=True)
 
 		# do stuff
-		Cursor.execute(sql, values)
-		debug["last_statement"] = Cursor.statement
-		if self.statement_func != None: self.statement_func(debug["last_statement"])
+		self.executeQuery(Cursor, sql, values, debug)
 
 		# commit and close?
 		Conn.commit()
@@ -154,9 +148,7 @@ class DBConn(object):
 		Cursor:MySQLCursorDict = Conn.cursor(dictionary=True)
 
 		# do stuff
-		Cursor.execute(statement, values)
-		debug["last_statement"] = Cursor.statement
-		if self.statement_func != None: self.statement_func(debug["last_statement"])
+		self.executeQuery(Cursor, statement, values, debug)
 
 		# commit and close?
 		Conn.commit()
@@ -193,15 +185,30 @@ class DBConn(object):
 		Cursor:MySQLCursorDict = Conn.cursor(dictionary=True)
 
 		# do stuff
-		Cursor.execute(statement, values)
-		debug["last_statement"] = Cursor.statement
-		if self.statement_func != None: self.statement_func(debug["last_statement"])
+		self.executeQuery(Cursor, statement, values, debug)
 
 		# commit and close
 		Conn.commit()
 		if not self.mass_request: Conn.close()
 
 		return Cursor.lastrowid
+
+	def executeQuery(self, Cursor:MySQLCursorDict, sql:str, values:tuple or dict, debug:dict) -> None:
+		"""
+			Just wrappes the query in a try catch to get the statement and debug funtions
+		"""
+		try:
+			Cursor.execute(sql, values)
+			debug["last_statement"] = Cursor.statement
+			if self.statement_func != None:
+				self.statement_func(debug["last_statement"])
+
+		except Exception as E:
+			debug["last_statement"] = Cursor.statement
+			if self.statement_func != None:
+				self.statement_func(debug["last_statement"])
+
+			raise E
 
 	def getConnection(self) -> MySQLConnection:
 		"""
