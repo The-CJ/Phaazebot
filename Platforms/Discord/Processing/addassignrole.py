@@ -40,8 +40,8 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 	cls.BASE.PhaazeDB.insertQuery(
 		table = "discord_assignrole",
 		content = dict(
-			guild_id = Command.server_id,
-			role_id = AssignRole.id,
+			guild_id = str(Command.server_id),
+			role_id = str(AssignRole.id),
 			trigger = trigger
 		)
 	)

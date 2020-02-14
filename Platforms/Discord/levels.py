@@ -49,8 +49,8 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_infos:dict) -> DiscordUserStats:
 
 	user_info:dict = dict(
-		guild_id = guild_id,
-		member_id = member_id
+		guild_id = str(guild_id),
+		member_id = str(member_id)
 	)
 
 	if "username" in more_infos:
@@ -65,7 +65,7 @@ async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_in
 			content = user_info
 		)
 		cls.BASE.Logger.debug(f"(Discord) New entry into levels: S:{guild_id} M:{member_id}", require="discord:level")
-		return DiscordUserStats( {"member_id": member_id}, guild_id )
+		return DiscordUserStats( user_info, guild_id )
 	except:
 		cls.BASE.Logger.critical(f"(Discord) New entry into levels failed: S:{guild_id} M:{member_id}")
 		raise RuntimeError("New entry into levels failed")

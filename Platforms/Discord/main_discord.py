@@ -60,7 +60,7 @@ class PhaazebotDiscord(discord.Client):
 			table = "discord_user",
 			content = {"on_server":"1"},
 			where = "guild_id = %s AND member_id = %s",
-			where_values = (Member.guild.id, Member.id)
+			where_values = ( str(Member.guild.id), str(Member.id) )
 		)
 
 	async def on_member_remove(self, Member:discord.Member) -> None:
@@ -69,7 +69,7 @@ class PhaazebotDiscord(discord.Client):
 			table = "discord_user",
 			content = {"on_server":"0"},
 			where = "guild_id = %s AND member_id = %s",
-			where_values = (Member.guild.id, Member.id)
+			where_values = ( str(Member.guild.id), str(Member.id) )
 		)
 
 	async def on_member_ban(self, member):
