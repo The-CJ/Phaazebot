@@ -47,6 +47,14 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	await checkLevelProgress(cls, Message, LevelUser, ServerSettings)
 
 async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_infos:dict) -> DiscordUserStats:
+	"""
+		Creates a new entry in discord_user table
+		more_infos can contain optional infos:
+			guild_id:str
+			member_id:str
+			exp:int
+			currency:int
+	"""
 
 	user_info:dict = dict(
 		guild_id = str(guild_id),
@@ -58,6 +66,12 @@ async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_in
 
 	if "nickname" in more_infos:
 		user_info["nickname"] = more_infos["nickname"]
+
+	if "exp" in more_infos:
+		user_info["exp"] = more_infos["exp"]
+
+	if "currency" in more_infos:
+		user_info["currency"] = more_infos["currency"]
 
 	try:
 		cls.BASE.PhaazeDB.insertQuery(
