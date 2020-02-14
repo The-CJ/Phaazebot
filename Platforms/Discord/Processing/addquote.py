@@ -14,25 +14,24 @@ async def addQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 		return {"content": ":warning: You need to define a quote content to add."}
 
 	res:list = cls.BASE.PhaazeDB.query("""
-		SELECT COUNT(*) AS c
-		FROM discord_quote
-		WHERE discord_quote.guild_id = %s""",
+		SELECT COUNT(*) AS `I`
+		FROM `discord_quote`
+		WHERE `discord_quote`.`guild_id` = %s""",
 		(Command.server_id,)
 	)
 
 	if res[0]["c"] >= cls.BASE.Limit.DISCORD_QUOTES_AMOUNT:
 		return {"content": ":no_entry_sign: This server hit the quote limit, please remove some first."}
 
-	res:list = cls.BASE.PhaazeDB.query("""
-		INSERT INTO discord_quote
-		(guild_id, content)
-		VALUES (%s, %s)""",
-		(Command.server_id, new_quote)
+	res:list = cls.BASE.PhaazeDB.insertQuery(
+		table = "discord_quote",
+		content = dict(
+			guild_id = str(Command.server_id),
+			content = new_quote,
+		)
 	)
 
-	new_quote_id:int = 0
-	if res:
-		new_quote_id = res[0]
+	new_quote_id:int = res[0]
 
 	Emb = discord.Embed(description=new_quote, color=0x11EE11)
 	Emb.set_footer(text=f'ID: {new_quote_id}')

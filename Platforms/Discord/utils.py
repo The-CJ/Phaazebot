@@ -70,11 +70,11 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", guild_id:str) -> Disc
 	"""
 
 	try:
-		cls.BASE.PhaazeDB.query("""
-			INSERT INTO discord_setting
-			(guild_id)
-			VALUES (%s)""",	(guild_id,)
+		cls.BASE.PhaazeDB.insertQuery(
+			table = "discord_setting",
+			content = dict(guild_id = guild_id)
 		)
+
 		cls.BASE.Logger.info(f"(Discord) New server settings DB entry: S:{guild_id}")
 		return DiscordServerSettings( infos = {} )
 	except:
@@ -93,7 +93,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 	sql:str = """
 		SELECT * FROM `discord_command`
 		WHERE `discord_command`.`guild_id` = %s"""
-	values:tuple = (guild_id,)
+	values:tuple = ( str(guild_id), )
 
 	if not show_nonactive:
 		sql += " AND `discord_command`.`active` = 1"
@@ -152,11 +152,11 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, member_id:
 		)
 		SELECT * FROM `discord_user` WHERE 1=1"""
 
-	values:tuple = (guild_id,)
+	values:tuple = ( str(guild_id), )
 
 	if member_id:
 		sql += " AND `discord_user`.`member_id` = %s"
-		values += (member_id,)
+		values += ( str(member_id), )
 
 	if name_contains:
 		name_contains = f"%{name_contains}%"
@@ -206,7 +206,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 		SELECT * FROM `discord_quote`
 		WHERE `discord_quote`.`guild_id` = %s"""
 
-	values:tuple = (guild_id,)
+	values:tuple = ( str(guild_id), )
 
 	if quote_id:
 		sql += " AND `discord_quote`.`id` = %s"
@@ -246,7 +246,7 @@ async def getDiscordTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, alert_id:
 			ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_user_name`.`user_id`
 		WHERE `discord_twitch_alert`.`discord_guild_id` = %s"""
 
-	values:tuple = (guild_id,)
+	values:tuple = ( str(guild_id), )
 
 	if alert_id:
 		sql += " AND `discord_twitch_alert`.`id` = %s"
@@ -288,7 +288,7 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 		SELECT * FROM `discord_assignrole`
 		WHERE `discord_assignrole`.`guild_id` = %s"""
 
-	values:tuple = (guild_id,)
+	values:tuple = ( str(guild_id), )
 
 	if role_id:
 		sql += " AND `discord_assignrole`.`role_id` = %s"
@@ -323,7 +323,7 @@ async def getDiscordServerAssignRoleAmount(cls:"PhaazebotDiscord", guild_id:str,
 		SELECT COUNT(*) AS `I` FROM `discord_assignrole`
 		WHERE `discord_assignrole`.`guild_id` = %s AND {where}"""
 
-	values:tuple = (guild_id,) + where_values
+	values:tuple = ( str(guild_id), ) + where_values
 
 	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
