@@ -204,6 +204,11 @@ class PhaazebotTwitchEvents(object):
 
 	# dict generator
 	def generateStatusDB(self, db_result:list) -> dict:
+		"""
+			Generates a StatusEntry
+			filled with standard infos from DB
+			Later, this object may get added with a Game and/or a Channel object
+		"""
 		status_dict:dict = dict()
 
 		for res in db_result:
@@ -219,6 +224,12 @@ class PhaazebotTwitchEvents(object):
 		return status_dict
 
 	def generateStatusAPI(self, api_result:list) -> dict:
+		"""
+			Generates a StatusEntry
+			filled with all infos from API
+			also adds the TwitchStream object as self.Stream
+			Later, this object may get added with a Game and/or a Channel object
+		"""
 		status_dict:dict = dict()
 
 		for TStream in api_result:
@@ -267,8 +278,14 @@ class PhaazebotTwitchEvents(object):
 
 	# updates
 	async def updateChannelLive(self, streams:list) -> None:
-		channel_ids:str = ",".join(f"'{Chan.user_id}'" for Chan in streams)
+		"""
+			Updates the `live` col in DB, according to all entrys in `streams`
+			`streams` is a list of TwitchStream
+		"""
+		Stream:TwitchStream
+		channel_ids:str = ','.join( f"'{Stream.user_id}'" for Stream in streams )
 		if not channel_ids: channel_ids = "0"
+
 		self.BASE.PhaazeDB.query(f"""
 			UPDATE `twitch_channel`
 			SET `live` = CASE WHEN `twitch_channel`.`channel_id` IN ({channel_ids}) THEN 1 ELSE 0 END""",
@@ -276,18 +293,28 @@ class PhaazebotTwitchEvents(object):
 		self.BASE.Logger.debug("Updated DB - twitch_channel (live)", require="twitchevents:db")
 
 	async def updateChannelGame(self, streams:list) -> None:
+		"""
+			Updates the `game_id` col in DB, according to all entrys in `streams`
+			`streams` is a list of TwitchStream
+		"""
+		# create a dict with `game_id` as keys
+		# and a list of channel_ids as that are playing this game as value
 		game_dict:dict = dict()
+
+		Stream:TwitchStream
 		for Stream in streams:
 			if game_dict.get(Stream.game_id, None) == None:
 				game_dict[Stream.game_id] = list()
-			game_dict[Stream.game_id].append(str(Stream.user_id))
+			game_dict[Stream.game_id].append(Stream.user_id)
 
 		# build update sql
 		game_sql:str = "UPDATE `twitch_channel` SET `game_id` = CASE"
+
 		for game_id in game_dict:
-			channels:str = ",".join(game_dict[game_id]) # TODO: look for valid str != int stuff because DB, see issue #119
-			if not channels: channels = "0"
-			game_sql += f" WHEN `twitch_channel`.`channel_id` IN ({channels}) THEN {game_id}"
+			playing:str = ','.join( f"'{chan_id}'" for chan_id in game_dict[game_id] )
+			if not playing: playing = "0" # should never happen
+			game_sql += f" WHEN `twitch_channel`.`channel_id` IN ({playing}) THEN '{game_id}'"
+
 		game_sql += " ELSE `game_id` END WHERE 1=1"
 
 		self.BASE.PhaazeDB.query(game_sql)
@@ -295,38 +322,46 @@ class PhaazebotTwitchEvents(object):
 
 	async def updateTwitchGames(self, update_games:dict) -> None:
 		"""
-			updates the db with data we gathered before
+			updates the twitch_game db with data we gathered before
 		"""
 
-		sql:str = "REPLACE INTO `twitch_game` (`game_id`,`name`) VALUES " + ", ".join("(%s, %s)" for x in update_games if x)
-		sql_values:tuple = ()
+		sql:str = "REPLACE INTO `twitch_game` (`game_id`,`name`) VALUES "
+		sql_additions:list = list()
+		sql_values:tuple = tuple()
 
 		for game_id in update_games:
 			Game:TwitchGame = update_games[game_id]
 			if not Game: continue # could be unfound in api from .fillGameData and still be False
+
+			sql_additions.append( "(%s, %s)" )	
 			sql_values += (Game.game_id, Game.name)
 
 		# no requested games are found in API, SQL whould be invalid -> skip
-		if not sql_values: return
+		if (not sql_values) or (not sql_additions): return
+		sql += ','.join(sql_additions)
 
 		self.BASE.PhaazeDB.query(sql, sql_values)
 		self.BASE.Logger.debug(f"Updated DB - twitch_game {len(update_games)} Entry(s)", require="twitchevents:db")
 
 	async def updateTwitchUserNames(self, update_users:dict) -> None:
 		"""
-			updates the db with data we gathered before
+			updates the twitch_user_name db with data we gathered before
 		"""
 
-		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in update_users if x)
-		sql_values:tuple = ()
+		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES "
+		sql_additions:list = list()
+		sql_values:tuple = tuple()
 
 		for user_id in update_users:
 			User:TwitchUser = update_users[user_id]
 			if not User: continue # could be unfound in api from .fillUserData and still be False
+
+			sql_additions.append( "(%s, %s, %s)" )
 			sql_values += (User.user_id, User.name, User.display_name)
 
 		# no requested users are found in API, SQL whould be invalid -> skip
-		if not sql_values: return
+		if (not sql_values) or (not sql_additions): return
+		sql += ','.join(sql_additions)
 
 		self.BASE.PhaazeDB.query(sql, sql_values)
 		self.BASE.Logger.debug(f"Updated DB - twitch_user_name {len(update_users)} Entrys(s)", require="twitchevents:db")

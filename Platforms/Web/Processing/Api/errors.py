@@ -153,7 +153,7 @@ async def apiUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> R
 
 	cls.Web.BASE.Logger.debug(f"(Web/API) User not found", require="api:400")
 	return cls.response(
-		text=json.dumps(  ),
+		text=json.dumps( res ),
 		content_type="application/json",
 		status=404
 	)
