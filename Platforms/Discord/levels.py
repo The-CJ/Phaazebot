@@ -41,7 +41,7 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 			`nickname` = %s
 		WHERE `discord_user`.`guild_id` = %s
 			AND `discord_user`.`member_id` = %s""",
-		(Message.author.name, Message.author.nick, LevelUser.server_id, LevelUser.member_id)
+		( Message.author.name, Message.author.nick, str(LevelUser.server_id), str(LevelUser.member_id) )
 	)
 
 	await checkLevelProgress(cls, Message, LevelUser, ServerSettings)

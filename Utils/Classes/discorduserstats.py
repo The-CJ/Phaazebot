@@ -28,7 +28,7 @@ class DiscordUserStats(DBContentClass, APIClass):
 			UPDATE `discord_user`
 			SET `currency` = `currency` + %s
 			WHERE `guild_id` = %s AND `member_id` = %s""",
-			(amount, self.server_id, self.member_id)
+			( amount, str(self.server_id), str(self.member_id) )
 		)
 
 		cls.BASE.Logger.debug(f"(Discord) Updated currency: S:{self.server_id} U:{self.member_id}", require="discord:command")
