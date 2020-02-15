@@ -101,7 +101,7 @@ command_register:list = [
 		name = "Wikipedia search",
 		function = searchWikipedia,
 		description = "Let's you search through wikipedia.\n"\
-			"Tryes to autocomplete you input (if possible)",
+			"Tryes to autocomplete your input (if possible)",
 		details = "This function takes everything after the trigger and search for it",
 		need_content = False
 	),

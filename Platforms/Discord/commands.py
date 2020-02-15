@@ -169,6 +169,7 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 	if not Command.complex:
 		function_str:str = Command.function
 
+		# get function from fucntions index
 		func:Awaitable = getDiscordCommandFunction(function_str)
 
 		# this happens if a user enters @phaazebot and then some garbage

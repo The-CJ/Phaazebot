@@ -23,7 +23,7 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 	if not AssignRole:
 		return {"content": f":warning: Could not find any role matching: `{query_str}`"}
 
-	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
+	res:list = cls.BASE.PhaazeDB.selectQuery("""
 		SELECT
 			COUNT(*) AS `all`,
 			SUM(
@@ -38,7 +38,7 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 	if res[0]["all"] >= cls.BASE.Limit.DISCORD_ASSIGNROLE_AMOUNT:
 		return {"content": ":no_entry_sign: This server hit the assign role limit, please remove some first."}
 
-	if res[0]["match"] >= 0:
+	if res[0]["match"] >= 1:
 		return {"content": ":no_entry_sign: This Assignrole or the used trigger already exists."}
 
 	if CommandContext.Message.guild.me.top_role < AssignRole:

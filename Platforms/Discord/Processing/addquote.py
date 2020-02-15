@@ -8,7 +8,7 @@ from Utils.Classes.discordcommandcontext import DiscordCommandContext
 
 async def addQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
-	new_quote:str = CommandContext.Message.content[(len(CommandContext.parts[0])):]
+	new_quote = " ".join( CommandContext.parts[1:] )
 
 	if not new_quote:
 		return {"content": ":warning: You need to define a quote content to add."}
@@ -20,18 +20,16 @@ async def addQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 		(Command.server_id,)
 	)
 
-	if res[0]["c"] >= cls.BASE.Limit.DISCORD_QUOTES_AMOUNT:
+	if res[0]["I"] >= cls.BASE.Limit.DISCORD_QUOTES_AMOUNT:
 		return {"content": ":no_entry_sign: This server hit the quote limit, please remove some first."}
 
-	res:list = cls.BASE.PhaazeDB.insertQuery(
+	new_quote_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table = "discord_quote",
 		content = dict(
 			guild_id = str(Command.server_id),
 			content = new_quote,
 		)
 	)
-
-	new_quote_id:int = res[0]
 
 	Emb = discord.Embed(description=new_quote, color=0x11EE11)
 	Emb.set_footer(text=f'ID: {new_quote_id}')
