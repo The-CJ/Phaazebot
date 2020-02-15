@@ -60,9 +60,8 @@
   "ssl_dir":"/etc/letsencrypt/live/domain.something/",
   "web_client_max_size":5242880,
 
-  "trigger_discord":">",
-  "trigger_osu":"!",
-  "trigger_twitch":"!",
+  "discord_motd":"Oh... hello there",
+
   "default_twitch_currency":"Twitch coin",
   "default_twitch_currency_multi":"Twitch coins",
   "default_discord_currency":"Discord coin",

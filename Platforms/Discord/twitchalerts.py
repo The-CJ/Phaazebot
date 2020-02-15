@@ -17,7 +17,7 @@ async def discordHandleLive(cls:"PhaazebotDiscord", event_list:list) -> None:
 	if not cls: return #Discord Client not ready or off
 
 	Event:StatusEntry
-	event_channel_list:str = ",".join(Event.channel_id for Event in event_list)
+	event_channel_list:str = ",".join(str(Event.channel_id) for Event in event_list)
 
 	res:list = cls.BASE.PhaazeDB.selectQuery(f"""
 		SELECT
@@ -36,6 +36,15 @@ async def discordHandleLive(cls:"PhaazebotDiscord", event_list:list) -> None:
 		# we only care about live alerts,
 		# there should be no other types, but we go save here
 		if Event.Stream.stream_type != "live": continue
+
+		# try to catch invalid twitch api results
+		if not Event.User:
+			cls.BASE.Logger.warning(f"Can't find Twitch User ID:{Event.channel_id}")
+			continue
+
+		if not Event.Game:
+			cls.BASE.Logger.warning(f"Can't find Twitch Game ID:{Event.game_id}")
+			continue
 
 		stream_status:str = Event.Stream.title or "[N/A]"
 		stream_url:str = TWITCH_STREAM_URL + (Event.User.name or "")
@@ -97,6 +106,15 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:list) -> No
 		# we only care about live alerts,
 		# there should be no other types, but we go save here
 		if Event.Stream.stream_type != "live": continue
+
+		# try to catch invalid twitch api results
+		if not Event.User:
+			cls.BASE.Logger.warning(f"Can't find Twitch User ID:{Event.channel_id}")
+			continue
+
+		if not Event.Game:
+			cls.BASE.Logger.warning(f"Can't find Twitch Game ID:{Event.game_id}")
+			continue
 
 		stream_status:str = Event.Stream.title or "[N/A]"
 		stream_url:str = TWITCH_STREAM_URL + (Event.User.name or "")

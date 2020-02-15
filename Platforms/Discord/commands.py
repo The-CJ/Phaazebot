@@ -61,7 +61,9 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 	# direct call via @Phaazebot [command] (rest vars)
 	# server owner only (for now)
-	if AuthorPermission.rank >= 3 and Message.guild.me.mention == CommandContext.part(0):
+	nickname_free:str = CommandContext.part(0).replace('!', '')
+	if AuthorPermission.rank >= 3 and str(Message.guild.me.mention) == nickname_free:
+
 		CommandContext.parts.pop(0)
 		CommandContext.Message.mentions.pop(0)
 
@@ -167,6 +169,7 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 	if not Command.complex:
 		function_str:str = Command.function
 
+		# get function from fucntions index
 		func:Awaitable = getDiscordCommandFunction(function_str)
 
 		# this happens if a user enters @phaazebot and then some garbage

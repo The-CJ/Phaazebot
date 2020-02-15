@@ -24,11 +24,11 @@ async def removeQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 
 	DQuote:DiscordQuote = quote[0]
 
-	cls.BASE.PhaazeDB.query("""
-		DELETE FROM discord_quote
-		WHERE discord_quote.guild_id = %s
-		AND discord_quote.id = %s""",
-		(DQuote.guild_id, DQuote.quote_id)
+	cls.BASE.PhaazeDB.deleteQuery("""
+		DELETE FROM `discord_quote`
+		WHERE `discord_quote`.`guild_id` = %s
+		AND `discord_quote`.`id` = %s""",
+		( str(DQuote.guild_id), str(DQuote.quote_id) )
 	)
 
 	return {"content": f":white_check_mark: Quote #{specific_id} removed"}

@@ -40,17 +40,25 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 			`username` = %s,
 			`nickname` = %s
 		WHERE `discord_user`.`guild_id` = %s
- 			AND `discord_user`.`member_id` = %s""",
-		(Message.author.name, Message.author.nick, LevelUser.server_id, LevelUser.member_id)
+			AND `discord_user`.`member_id` = %s""",
+		( Message.author.name, Message.author.nick, str(LevelUser.server_id), str(LevelUser.member_id) )
 	)
 
 	await checkLevelProgress(cls, Message, LevelUser, ServerSettings)
 
 async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_infos:dict) -> DiscordUserStats:
+	"""
+		Creates a new entry in discord_user table
+		more_infos can contain optional infos:
+			guild_id:str
+			member_id:str
+			exp:int
+			currency:int
+	"""
 
 	user_info:dict = dict(
-		guild_id = guild_id,
-		member_id = member_id
+		guild_id = str(guild_id),
+		member_id = str(member_id)
 	)
 
 	if "username" in more_infos:
@@ -59,13 +67,19 @@ async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_in
 	if "nickname" in more_infos:
 		user_info["nickname"] = more_infos["nickname"]
 
+	if "exp" in more_infos:
+		user_info["exp"] = more_infos["exp"]
+
+	if "currency" in more_infos:
+		user_info["currency"] = more_infos["currency"]
+
 	try:
 		cls.BASE.PhaazeDB.insertQuery(
 			table = "discord_user",
 			content = user_info
 		)
 		cls.BASE.Logger.debug(f"(Discord) New entry into levels: S:{guild_id} M:{member_id}", require="discord:level")
-		return DiscordUserStats( {"member_id": member_id}, guild_id )
+		return DiscordUserStats( user_info, guild_id )
 	except:
 		cls.BASE.Logger.critical(f"(Discord) New entry into levels failed: S:{guild_id} M:{member_id}")
 		raise RuntimeError("New entry into levels failed")

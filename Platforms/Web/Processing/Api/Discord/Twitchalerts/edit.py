@@ -39,7 +39,7 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 	if custom_msg == UNDEFINED or len(custom_msg) > MAX_CONTENT_SIZE:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'custom_msg'")
 
-	# get quote
+	# get alert
 	res_alerts:list = await getDiscordTwitchAlerts(cls.Web.BASE.Discord, guild_id, alert_id=alert_id)
 	if not res_alerts:
 		return await apiDiscordAlertNotExists(cls, WebRequest, alert_id=alert_id)
