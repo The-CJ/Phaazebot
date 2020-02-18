@@ -10,9 +10,9 @@ from Utils.Classes.discorduserstats import DiscordUserStats
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordpermission import DiscordPermission
+from Utils.regex import Discord as ReDiscord
 from .utils import getDiscordServerUsers
 from .commandindex import getDiscordCommandFunction
-from Utils.regex import Discord as ReDiscord
 
 class GDCCS():
 	"""
@@ -59,10 +59,12 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 	# get permission object
 	AuthorPermission:DiscordPermission = DiscordPermission(Message)
 
+	# random fact, even part 0 can be none, if a image is updated
+	clean_nickname:str = (CommandContext.part(0) or '').replace('!', '')
+
 	# direct call via @Phaazebot [command] (rest vars)
 	# server owner only (for now)
-	nickname_free:str = CommandContext.part(0).replace('!', '')
-	if AuthorPermission.rank >= 3 and str(Message.guild.me.mention) == nickname_free:
+	if AuthorPermission.rank >= 3 and str(Message.guild.me.mention) == clean_nickname:
 
 		CommandContext.parts.pop(0)
 		CommandContext.Message.mentions.pop(0)

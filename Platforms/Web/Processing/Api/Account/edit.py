@@ -4,7 +4,6 @@ if TYPE_CHECKING:
 
 import json
 import re
-import traceback
 import datetime
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
@@ -13,6 +12,12 @@ from Utils.stringutils import password as password_function
 from Utils.regex import IsEmail
 from Platforms.Web.utils import getWebUsers
 from Platforms.Web.Processing.Api.errors import apiWrongData, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.Account.errors import (
+	apiAccountPasswordsDontMatch,
+	apiAccountPasswordToShort,
+	apiAccountTaken,
+	apiAccountEmailWrong
+)
 
 async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -35,11 +40,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# checks
 	if not current_password or WebUser.password != password_function(current_password):
-		return cls.response(
-			status=400,
-			text=json.dumps( dict(error="current_password_wrong", msg="Current password is not correct", status=400) ),
-			content_type="application/json"
-		)
+		return await apiAccountPasswordsDontMatch(cls, WebRequest, msg="Current password is not correct")
 
 	changed_email:bool = False # if yes, reset valiated and send mail
 
@@ -48,20 +49,10 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	# if new_password is set, check all and set to update
 	if new_password:
 		if new_password != new_password2:
-			cls.Web.BASE.Logger.debug(f"(API) Account edit failed, passwords don't match", require="api:create")
-			return cls.response(
-				text=json.dumps( dict(error="unequal_passwords", status=400, msg="the passwords are not the same") ),
-				content_type="application/json",
-				status=400
-			)
+			return await apiAccountPasswordsDontMatch(cls, WebRequest)
 
-		if len(new_password) < 7:
-			cls.Web.BASE.Logger.debug(f"(API) Account edit failed, password to short", require="api:create")
-			return cls.response(
-				body=json.dumps( dict(error="invalid_password", status=400, msg="the password must be at least 8 chars long") ),
-				content_type="application/json",
-				status=400
-			)
+		if len(new_password) < 8:
+			return await apiAccountPasswordToShort(cls, WebRequest, min_length=8)
 
 		update["password"] = password_function(new_password)
 
@@ -71,11 +62,8 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 			is_occupied:list = await getWebUsers(cls, "LOWER(`user`.`username`) = LOWER(%s)", (new_username,))
 			if is_occupied:
 				# already taken
-				return cls.response(
-					status=400,
-					text=json.dumps( dict(error="account_taken", msg="username or email is taken", status=400) ),
-					content_type="application/json"
-				)
+				return await apiAccountTaken(cls, WebRequest)
+
 			else:
 				# username is free, add to update and add one to username_changed,
 				# maybe i do something later with it
@@ -89,19 +77,13 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	if new_email and new_email.lower() != WebUser.email:
 		if re.match(IsEmail, new_email) == None:
 			# does not look like a email
-			return cls.response(
-				text=json.dumps( dict(error="invalid_email", status=400, msg="email looks false") ),
-				content_type="application/json",
-				status=400
-			)
+			return await apiAccountEmailWrong(cls, WebRequest, email=new_email)
+
 		is_occupied:list = await getWebUsers(cls, "user.email LIKE %s", (new_email,))
 		if is_occupied:
 			# already taken
-			return cls.response(
-				status=400,
-				text=json.dumps( dict(error="account_taken", msg="username or email is taken", status=400) ),
-				content_type="application/json"
-			)
+			return await apiAccountTaken(cls, WebRequest)
+
 		else:
 			changed_email = True
 			update["email"] = new_email
@@ -111,30 +93,21 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# verification mail
 	if changed_email:
-		cls.Web.BASE.Logger.debug(f"(API) New Email, send new verification mail: {new_email}", require="api:account")
+		cls.Web.BASE.Logger.warning(f"(API) New Email, send new verification mail: {new_email}", require="api:account")
 		# TODO: SEND MAIL
 
 	update["edited_at"] = str(datetime.datetime.now())
 
-	try:
-		cls.Web.BASE.PhaazeDB.updateQuery(
-			table = "user",
-			content = update,
-			where = "user.id = %s",
-			where_values = (WebUser.user_id,)
-		)
-		cls.Web.BASE.Logger.debug(f"(API) Account edit ({WebUser.user_id}) : {str(update)}", require="api:account")
-		return cls.response(
-			status=200,
-			text=json.dumps( dict(error="successfull_edited", msg="Your account has been successfull edited", update=update, status=200) ),
-			content_type="application/json"
-		)
-
-	except Exception as e:
-		tb:str = traceback.format_exc()
-		cls.Web.BASE.Logger.error(f"(API) Account edit failed ({WebUser.user_id}) - {str(e)}\n{tb}")
-		return cls.response(
-			status=500,
-			text=json.dumps( dict(error="edit_failed", msg="Editing you account failed", status=500) ),
-			content_type="application/json"
-		)
+	cls.Web.BASE.PhaazeDB.updateQuery(
+		table = "user",
+		content = update,
+		where = "`user`.`id` = %s",
+		where_values = (WebUser.user_id,)
+	)
+	
+	cls.Web.BASE.Logger.debug(f"(API) Account edit ({WebUser.user_id}) : {str(update)}", require="api:account")
+	return cls.response(
+		status=200,
+		text=json.dumps( dict(error="successfull_edited", msg="Your account has been successfull edited", update=update, status=200) ),
+		content_type="application/json"
+	)
