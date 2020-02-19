@@ -96,11 +96,11 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	action:str = Data.getStr("enabled_gamechan_action", UNDEFINED)
 	if action:
-		return await singleActionEnabledGameChannel(cls, WebRequest, action, Data, Configs, Guild)
+		return await singleActionEnableGameChannel(cls, WebRequest, action, Data, Configs, Guild)
 
 	action:str = Data.getStr("enabled_nsfwchan_action", UNDEFINED)
 	if action:
-		return await singleActionEnabledNSFWChannel(cls, WebRequest, action, Data, Configs, Guild)
+		return await singleActionEnableNSFWChannel(cls, WebRequest, action, Data, Configs, Guild)
 
 	update:dict = dict()
 	db_update:dict = dict()
@@ -267,21 +267,21 @@ async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	action_word:str = Data.getStr("wordblacklist_word", "").strip(" ").strip("\n").replace(";;;", "") # ;;; is the sql sepperator
+	action_word:str = Data.getStr("wordblacklist_word", "").replace(";;;", "") # ;;; is the sql sepperator
 
 	if not guild_id:
 		# should never happen
 		return await apiMissingData(cls, WebRequest, msg="missing field 'guild_id'")
 
 	if not action_word:
-		return await apiMissingData(cls, WebRequest, msg="missing field 'blacklist_word'")
+		return await apiMissingData(cls, WebRequest, msg="missing field 'wordblacklist_word'")
 
 	if action == "add":
 		cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "discord_blacklist_blacklistword",
 			content = {
-				"word": action_word,
-				"guild_id": guild_id
+				"guild_id": guild_id,
+				"word": action_word
 			}
 		)
 
@@ -296,7 +296,7 @@ async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:s
 		if action_word not in Configs.blacklist_blacklistwords:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{action_word}', it's currently not in the word blacklist")
 
-		cls.Web.BASE.PhaazeDB.query("""
+		cls.Web.BASE.PhaazeDB.deleteQuery("""
 			DELETE FROM `discord_blacklist_blacklistword` WHERE `guild_id` = %s AND `word` = %s""",
 			(guild_id, action_word)
 		)
@@ -346,7 +346,7 @@ async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:s
 		if action_link not in Configs.blacklist_whitelistlinks:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{action_link}', it's currently not in the link whitelist")
 
-		cls.Web.BASE.PhaazeDB.query("""
+		cls.Web.BASE.PhaazeDB.deleteQuery("""
 			DELETE FROM `discord_blacklist_whitelistlink` WHERE `guild_id` = %s AND `link` = %s""",
 			(guild_id, action_link)
 		)
@@ -424,7 +424,7 @@ async def singleActionDisableLevelChannel(cls:"WebIndex", WebRequest:Request, ac
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	channel_id:str = Data.getStr("disabled_levelchan_id", "", must_be_digit=True).strip(" ").strip("\n")
+	channel_id:str = Data.getStr("disabled_levelchan_id", "", must_be_digit=True)
 
 	if not guild_id:
 		# should never happen
@@ -444,8 +444,8 @@ async def singleActionDisableLevelChannel(cls:"WebIndex", WebRequest:Request, ac
 		cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "discord_disabled_levelchannel",
 			content = {
-				"channel_id": ActionChannel.id,
-				"guild_id": guild_id
+				"guild_id": guild_id,
+				"channel_id": channel_id
 			}
 		)
 
@@ -460,7 +460,7 @@ async def singleActionDisableLevelChannel(cls:"WebIndex", WebRequest:Request, ac
 		if channel_id not in Configs.disabled_levelchannels:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
 
-		cls.Web.BASE.PhaazeDB.query("""
+		cls.Web.BASE.PhaazeDB.deleteQuery("""
 			DELETE FROM `discord_disabled_levelchannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
 			(guild_id, channel_id)
 		)
@@ -646,7 +646,7 @@ async def singleActionDisableRegularChannel(cls:"WebIndex", WebRequest:Request, 
 	else:
 		return await apiWrongData(cls, WebRequest)
 
-async def singleActionEnabledGameChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
+async def singleActionEnableGameChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
 	"""
 		Default url: /api/discord/configs/edit?enabled_gamechan_action=something
 	"""
@@ -703,7 +703,7 @@ async def singleActionEnabledGameChannel(cls:"WebIndex", WebRequest:Request, act
 	else:
 		return await apiWrongData(cls, WebRequest)
 
-async def singleActionEnabledNSFWChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
+async def singleActionEnableNSFWChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
 	"""
 		Default url: /api/discord/configs/edit?enabled_nsfwchan_action=something
 	"""

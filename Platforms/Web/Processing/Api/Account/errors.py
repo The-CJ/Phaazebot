@@ -68,7 +68,10 @@ async def apiAccountPasswordToShort(cls:"WebIndex", WebRequest:Request, **kwargs
 		res["min_length"] = min_length
 
 	# build message
-	default_msg:str = f"The password must be at least {min_length} chars long"
+	default_msg:str = f"The password is to short"
+
+	if min_length:
+		default_msg += f", it must be at least {min_length} chars long"
 
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
@@ -98,7 +101,7 @@ async def apiAccountEmailWrong(cls:"WebIndex", WebRequest:Request, **kwargs:dict
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API) Account create failed, email looks false: {str(email)}", require="api:create")
+	cls.Web.BASE.Logger.debug(f"(API) Account create failed, email looks false: {email}", require="api:create")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",
