@@ -378,7 +378,7 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 
 	ActionRole:discord.Role = CurrentGuild.get_role(int(role_id))
 	if not ActionRole and action == "add":
-		return await apiDiscordRoleNotFound(cls, WebRequest, role_id=role_id, guild_id=CurrentGuild.id)
+		return await apiDiscordRoleNotFound(cls, WebRequest, guild_id=CurrentGuild.id, guild_name=CurrentGuild.name, role_id=role_id)
 
 	if action == "add":
 		if str(ActionRole.id) in Configs.blacklist_whitelistroles:
@@ -435,7 +435,7 @@ async def singleActionDisableLevelChannel(cls:"WebIndex", WebRequest:Request, ac
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
-		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+		return await apiDiscordChannelNotFound(cls, WebRequest, guild_name=CurrentGuild.name, guild_id=CurrentGuild.id, channel_id=channel_id)
 
 	if action == "add":
 		if str(ActionChannel.id) in Configs.disabled_levelchannels:
@@ -492,7 +492,7 @@ async def singleActionDisableQuoteChannel(cls:"WebIndex", WebRequest:Request, ac
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
-		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+		return await apiDiscordChannelNotFound(cls, WebRequest, guild_name=CurrentGuild.name, guild_id=CurrentGuild.id, channel_id=channel_id)
 
 	if action == "add":
 		if str(ActionChannel.id) in Configs.disabled_quotechannels:
@@ -549,7 +549,7 @@ async def singleActionDisableNormalChannel(cls:"WebIndex", WebRequest:Request, a
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
-		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+		return await apiDiscordChannelNotFound(cls, WebRequest, guild_name=CurrentGuild.name, guild_id=CurrentGuild.id, channel_id=channel_id)
 
 	if action == "add":
 		if str(ActionChannel.id) in Configs.disabled_normalchannels:
@@ -606,7 +606,7 @@ async def singleActionDisableRegularChannel(cls:"WebIndex", WebRequest:Request, 
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
-		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+		return await apiDiscordChannelNotFound(cls, WebRequest, guild_name=CurrentGuild.name, guild_id=CurrentGuild.id, channel_id=channel_id)
 
 	if action == "add":
 		if str(ActionChannel.id) in Configs.disabled_regularchannels:
@@ -663,7 +663,7 @@ async def singleActionEnableGameChannel(cls:"WebIndex", WebRequest:Request, acti
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
-		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+		return await apiDiscordChannelNotFound(cls, WebRequest, guild_name=CurrentGuild.name, guild_id=CurrentGuild.id, channel_id=channel_id)
 
 	if action == "add":
 		if str(ActionChannel.id) in Configs.enabled_gamechannels:
@@ -720,7 +720,7 @@ async def singleActionEnableNSFWChannel(cls:"WebIndex", WebRequest:Request, acti
 
 	ActionChannel:discord.TextChannel = CurrentGuild.get_channel(int(channel_id))
 	if not ActionChannel and action == "add":
-		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id, guild_id=CurrentGuild.id)
+		return await apiDiscordChannelNotFound(cls, WebRequest, guild_name=CurrentGuild.name, guild_id=CurrentGuild.id, channel_id=channel_id)
 
 	if action == "add":
 		if str(ActionChannel.id) in Configs.enabled_nsfwchannels:
