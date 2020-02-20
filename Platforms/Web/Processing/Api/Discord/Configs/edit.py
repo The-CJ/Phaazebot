@@ -317,7 +317,7 @@ async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	action_link:str = Data.getStr("linkwhitelist_link", "").strip(" ").strip("\n").replace(";;;", "")
+	action_link:str = Data.getStr("linkwhitelist_link", "").replace(";;;", "") # ;;; is the sql sepperator
 
 	if not guild_id:
 		# should never happen
@@ -367,7 +367,7 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	role_id:str = Data.getStr("exceptionrole_id", "", must_be_digit=True).strip(" ").strip("\n")
+	role_id:str = Data.getStr("exceptionrole_id", "", must_be_digit=True)
 
 	if not guild_id:
 		# should never happen
@@ -387,8 +387,8 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "discord_blacklist_whitelistrole",
 			content = {
-				"role_id": ActionRole.id,
-				"guild_id": guild_id
+				"guild_id": guild_id,
+				"role_id": role_id
 			}
 		)
 
@@ -403,7 +403,7 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 		if role_id not in Configs.blacklist_whitelistroles:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{role_id}', is currently not added")
 
-		cls.Web.BASE.PhaazeDB.query("""
+		cls.Web.BASE.PhaazeDB.deleteQuery("""
 			DELETE FROM `discord_blacklist_whitelistrole` WHERE `guild_id` = %s AND `role_id` = %s""",
 			(guild_id, role_id)
 		)
@@ -481,7 +481,7 @@ async def singleActionDisableQuoteChannel(cls:"WebIndex", WebRequest:Request, ac
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	channel_id:str = Data.getStr("disabled_quotechan_id", "", must_be_digit=True).strip(" ").strip("\n")
+	channel_id:str = Data.getStr("disabled_quotechan_id", "", must_be_digit=True)
 
 	if not guild_id:
 		# should never happen
@@ -501,8 +501,8 @@ async def singleActionDisableQuoteChannel(cls:"WebIndex", WebRequest:Request, ac
 		cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "discord_disabled_quotechannel",
 			content = {
-				"channel_id": ActionChannel.id,
-				"guild_id": guild_id
+				"guild_id": guild_id,
+				"channel_id": channel_id
 			}
 		)
 
@@ -517,7 +517,7 @@ async def singleActionDisableQuoteChannel(cls:"WebIndex", WebRequest:Request, ac
 		if channel_id not in Configs.disabled_quotechannels:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
 
-		cls.Web.BASE.PhaazeDB.query("""
+		cls.Web.BASE.PhaazeDB.deleteQuery("""
 			DELETE FROM `discord_disabled_quotechannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
 			(guild_id, channel_id)
 		)
@@ -538,7 +538,7 @@ async def singleActionDisableNormalChannel(cls:"WebIndex", WebRequest:Request, a
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	channel_id:str = Data.getStr("disabled_normalchan_id", "", must_be_digit=True).strip(" ").strip("\n")
+	channel_id:str = Data.getStr("disabled_normalchan_id", "", must_be_digit=True)
 
 	if not guild_id:
 		# should never happen
@@ -558,8 +558,8 @@ async def singleActionDisableNormalChannel(cls:"WebIndex", WebRequest:Request, a
 		cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "discord_disabled_normalchannel",
 			content = {
-				"channel_id": ActionChannel.id,
-				"guild_id": guild_id
+				"guild_id": guild_id,
+				"channel_id": channel_id
 			}
 		)
 
@@ -574,7 +574,7 @@ async def singleActionDisableNormalChannel(cls:"WebIndex", WebRequest:Request, a
 		if channel_id not in Configs.disabled_normalchannels:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
 
-		cls.Web.BASE.PhaazeDB.query("""
+		cls.Web.BASE.PhaazeDB.deleteQuery("""
 			DELETE FROM `discord_disabled_normalchannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
 			(guild_id, channel_id)
 		)
@@ -595,7 +595,7 @@ async def singleActionDisableRegularChannel(cls:"WebIndex", WebRequest:Request, 
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	channel_id:str = Data.getStr("disabled_regularchan_id", "", must_be_digit=True).strip(" ").strip("\n")
+	channel_id:str = Data.getStr("disabled_regularchan_id", "", must_be_digit=True)
 
 	if not guild_id:
 		# should never happen
@@ -615,8 +615,8 @@ async def singleActionDisableRegularChannel(cls:"WebIndex", WebRequest:Request, 
 		cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "discord_disabled_regularchannel",
 			content = {
-				"channel_id": ActionChannel.id,
-				"guild_id": guild_id
+				"guild_id": guild_id,
+				"channel_id": channel_id,
 			}
 		)
 
@@ -631,7 +631,7 @@ async def singleActionDisableRegularChannel(cls:"WebIndex", WebRequest:Request, 
 		if channel_id not in Configs.disabled_regularchannels:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
 
-		cls.Web.BASE.PhaazeDB.query("""
+		cls.Web.BASE.PhaazeDB.deleteQuery("""
 			DELETE FROM `discord_disabled_regularchannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
 			(guild_id, channel_id)
 		)
@@ -652,7 +652,7 @@ async def singleActionEnableGameChannel(cls:"WebIndex", WebRequest:Request, acti
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	channel_id:str = Data.getStr("enabled_gamechan_id", "", must_be_digit=True).strip(" ").strip("\n")
+	channel_id:str = Data.getStr("enabled_gamechan_id", "", must_be_digit=True)
 
 	if not guild_id:
 		# should never happen
@@ -672,8 +672,8 @@ async def singleActionEnableGameChannel(cls:"WebIndex", WebRequest:Request, acti
 		cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "discord_enabled_gamechannel",
 			content = {
-				"channel_id": ActionChannel.id,
-				"guild_id": guild_id
+				"guild_id": guild_id,
+				"channel_id": channel_id
 			}
 		)
 
@@ -688,7 +688,7 @@ async def singleActionEnableGameChannel(cls:"WebIndex", WebRequest:Request, acti
 		if channel_id not in Configs.enabled_gamechannels:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
 
-		cls.Web.BASE.PhaazeDB.query("""
+		cls.Web.BASE.PhaazeDB.deleteQuery("""
 			DELETE FROM `discord_enabled_gamechannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
 			(guild_id, channel_id)
 		)
@@ -709,7 +709,7 @@ async def singleActionEnableNSFWChannel(cls:"WebIndex", WebRequest:Request, acti
 	"""
 	guild_id:str = Data.getStr("guild_id", "")
 	action = action.lower()
-	channel_id:str = Data.getStr("enabled_nsfwchan_id", "", must_be_digit=True).strip(" ").strip("\n")
+	channel_id:str = Data.getStr("enabled_nsfwchan_id", "", must_be_digit=True)
 
 	if not guild_id:
 		# should never happen
@@ -729,8 +729,8 @@ async def singleActionEnableNSFWChannel(cls:"WebIndex", WebRequest:Request, acti
 		cls.Web.BASE.PhaazeDB.insertQuery(
 			table = "discord_enabled_nsfwchannel",
 			content = {
-				"channel_id": ActionChannel.id,
-				"guild_id": guild_id
+				"guild_id": guild_id,
+				"channel_id": channel_id,
 			}
 		)
 
@@ -745,7 +745,7 @@ async def singleActionEnableNSFWChannel(cls:"WebIndex", WebRequest:Request, acti
 		if channel_id not in Configs.enabled_nsfwchannels:
 			return await apiWrongData(cls, WebRequest, msg=f"can't remove '{channel_id}', is currently not added")
 
-		cls.Web.BASE.PhaazeDB.query("""
+		cls.Web.BASE.PhaazeDB.deleteQuery("""
 			DELETE FROM `discord_enabled_nsfwchannel` WHERE `guild_id` = %s AND `channel_id` = %s""",
 			(guild_id, channel_id)
 		)
