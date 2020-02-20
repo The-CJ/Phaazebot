@@ -10,7 +10,7 @@ from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.discordassignrole import DiscordAssignRole
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
 
-# db management
+# db requests
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
 	"""
 		Get server settings for a discord server/guild
@@ -183,18 +183,6 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, member_id:
 	else:
 		return []
 
-async def getDiscordServerUserAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_user`
-		WHERE `discord_user`.`on_server` = 1 AND `discord_user`.`guild_id` = %s AND {where}"""
-
-	values:tuple = (guild_id,) + where_values
-
-	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
-
 async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:int=None, random:bool=False, limit:int=0, offset:int=0) -> list:
 	"""
 		Get server quotes, if quote_id = None, get all
@@ -265,18 +253,6 @@ async def getDiscordTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, alert_id:
 	else:
 		return []
 
-async def getDiscordTwitchAlertsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_twitch_alert`
-		WHERE `discord_twitch_alert`.`discord_guild_id` = %s AND {where}"""
-
-	values:tuple = (guild_id,) + where_values
-
-	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
-
 async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:int=None, assignrole_id:int=None, trigger:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0) -> list:
 	"""
 		Get server assign roles, if role_id and trigger are None, get all
@@ -316,6 +292,43 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 
 	else:
 		return []
+
+# db amount counter
+async def getDiscordServerUserAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_user`
+		WHERE `discord_user`.`on_server` = 1 AND `discord_user`.`guild_id` = %s AND {where}"""
+
+	values:tuple = (guild_id,) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
+async def getDiscordServerQuotesAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_quote`
+		WHERE `discord_quote`.`guild_id` = %s AND {where}"""
+
+	values:tuple = (guild_id,) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
+async def getDiscordTwitchAlertsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_twitch_alert`
+		WHERE `discord_twitch_alert`.`discord_guild_id` = %s AND {where}"""
+
+	values:tuple = (guild_id,) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
 
 async def getDiscordServerAssignRoleAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 

@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.utils import getDiscordServerQuotes
+from Platforms.Discord.utils import getDiscordServerQuotes, getDiscordServerQuotesAmount
 from Utils.Classes.undefined import UNDEFINED
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
@@ -43,7 +43,9 @@ async def apiDiscordQuotesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	return cls.response(
 		text=json.dumps( dict(
 			result=[ Quote.toJSON() for Quote in res_quotes ],
-			total=len(res_quotes),
+			limit=limit,
+			offset=offset,
+			total=(await getDiscordServerQuotesAmount(PhaazeDiscord, guild_id)),
 			status=200)
 		),
 		content_type="application/json",
