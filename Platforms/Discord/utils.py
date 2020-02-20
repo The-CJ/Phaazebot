@@ -10,7 +10,7 @@ from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.discordassignrole import DiscordAssignRole
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
 
-# db requests
+# base settings/config management
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
 	"""
 		Get server settings for a discord server/guild
@@ -81,6 +81,7 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", guild_id:str) -> Disc
 		cls.BASE.Logger.critical(f"(Discord) New server settings failed: S:{guild_id}")
 		raise RuntimeError("Creating new DB entry failed")
 
+# db data requests
 async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger:str=None, command_id:str or int=None, order_str:str="ORDER BY id", show_nonactive:bool=False, limit:int=0, offset:int=0) -> list:
 	"""
 		Get custom commands from a discord server/guild, if trigger = None, get all.
@@ -293,7 +294,19 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 	else:
 		return []
 
-# db amount counter
+# db total counter
+async def getDiscordServerCommandsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_command`
+		WHERE `discord_command`.`guild_id` = %s AND {where}"""
+
+	values:tuple = (guild_id,) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
 async def getDiscordServerUserAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
 	sql:str = f"""

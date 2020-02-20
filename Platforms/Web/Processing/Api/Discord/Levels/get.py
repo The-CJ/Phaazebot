@@ -45,7 +45,7 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	elif order == "currency":
 		order = "ORDER BY `currency`"
 	else:
-		order = "ORDER BY `rank`, `exp`"
+		order = "ORDER BY `exp`"
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))

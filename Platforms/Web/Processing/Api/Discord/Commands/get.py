@@ -8,7 +8,7 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import apiMissingData
-from Platforms.Discord.utils import getDiscordServerCommands
+from Platforms.Discord.utils import getDiscordServerCommands, getDiscordServerCommandsAmount
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
@@ -61,7 +61,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 				msg = "'administrator' or 'manage_guild' permission required to show commands with hidden properties"
 			)
 
-	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, show_nonactive=show_hidden, limit=limit, offset=offset)
+	res_commands:list = await getDiscordServerCommands(PhaazeDiscord, guild_id, command_id=command_id, show_nonactive=show_hidden, limit=limit, offset=offset)
 
 	# this point is only reached when command can be hidden or user requested hidden props has authorist
 	api_return:list = list()
@@ -69,7 +69,13 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		api_return.append(Command.toJSON(show_hidden=show_hidden))
 
 	return cls.response(
-		text=json.dumps( dict(result=api_return, status=200) ),
+		text=json.dumps( dict(
+			result=api_return,
+			limit=limit,
+			offset=offset,
+			total=(await getDiscordServerCommandsAmount(PhaazeDiscord, guild_id)),
+			status=200)
+		),
 		content_type="application/json",
 		status=200
 	)
