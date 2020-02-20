@@ -124,7 +124,6 @@ var Commands = new (class {
       $(`${CommandsO.modal_id} [name=required_currency]`).val( command.cost );
       $(`${CommandsO.modal_id} [name=cooldown], ${CommandsO.modal_id} [name=cooldown_slider]`).val( command.cooldown );
       $(`${CommandsO.modal_id} [name=commandtype]`).val( command.complex ? "complex" : "simple" );
-      $(`${CommandsO.modal_id} [name=hidden]`).prop( "checked", command.hidden );
 
       if (!command.complex) {
         CommandsO.loadCommands(null, "simple", command.function);

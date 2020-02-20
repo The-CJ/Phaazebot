@@ -116,7 +116,7 @@ function insertData(Obj, data, to_string=false) {
 
         // checkboxes
         if (Match.attr("type") == "checkbox") {
-          let checked = ( !oppositeValue(value) ? false : true );
+          let checked = ( value ? true : false );
           Match.prop("checked", checked);
           continue;
         }
