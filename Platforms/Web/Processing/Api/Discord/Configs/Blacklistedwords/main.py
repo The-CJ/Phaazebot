@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Response, Request
+from .get import apiDiscordConfigsBlacklistedWordsGet
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordConfigsBlacklistedWords(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -16,5 +17,8 @@ async def apiDiscordConfigsBlacklistedWords(cls:"WebIndex", WebRequest:Request) 
 
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
+
+	elif method == "get":
+		return await apiDiscordConfigsBlacklistedWordsGet(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
