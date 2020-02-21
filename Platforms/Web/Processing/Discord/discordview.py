@@ -23,7 +23,10 @@ async def discordView(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await cls.discordInvite(WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
 
 	ViewPage:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/view.html")
-	ViewPage.replace()
+	ViewPage.replace(
+		guild_id = Guild.id,
+		guild_name = Guild.name
+	)
 
 	site:str = cls.HTMLRoot.replace(
 		replace_empty = True,
