@@ -8,7 +8,7 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
-from Platforms.Discord.utils import getDiscordTwitchAlerts
+from Platforms.Discord.utils import getDiscordServerTwitchAlerts
 from .errors import apiDiscordAlertNotExists
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
@@ -40,7 +40,7 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'custom_msg'")
 
 	# get alert
-	res_alerts:list = await getDiscordTwitchAlerts(cls.Web.BASE.Discord, guild_id, alert_id=alert_id)
+	res_alerts:list = await getDiscordServerTwitchAlerts(cls.Web.BASE.Discord, guild_id, alert_id=alert_id)
 	if not res_alerts:
 		return await apiDiscordAlertNotExists(cls, WebRequest, alert_id=alert_id)
 	CurrentEditAlert:DiscordTwitchAlert = res_alerts.pop(0)

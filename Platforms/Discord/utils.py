@@ -219,7 +219,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 	else:
 		return []
 
-async def getDiscordTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, alert_id:int=None, limit:int=0, offset:int=0) -> list:
+async def getDiscordServerTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, alert_id:int=None, limit:int=0, offset:int=0) -> list:
 	"""
 		Get server discord alerts, if alert_id = None, get all
 		else only get one associated with the alert_id
@@ -331,7 +331,7 @@ async def getDiscordServerQuotesAmount(cls:"PhaazebotDiscord", guild_id:str, whe
 
 	return res[0]["I"]
 
-async def getDiscordTwitchAlertsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+async def getDiscordServerTwitchAlertsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_twitch_alert`
