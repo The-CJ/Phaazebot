@@ -100,6 +100,7 @@ class WebIndex(object):
 		self.Web.router.add_route('GET', '/discord/quotes/{guild_id:\d+}', self.discordQuotes)
 		self.Web.router.add_route('GET', '/discord/levels/{guild_id:\d+}', self.discordLevels)
 		self.Web.router.add_route('GET', '/discord/dashboard/{guild_id:\d+}', self.discordDashboard)
+		self.Web.router.add_route('GET', '/discord/view/{guild_id:\d+}', self.discordView)
 
 	# api
 	def addAPIRoutes(self) -> None:
@@ -166,6 +167,7 @@ class WebIndex(object):
 	from .Processing.Discord.discordmain import discordMain
 	from .Processing.Discord.discordlogin import discordLogin
 	from .Processing.Discord.discordquotes import discordQuotes
+	from .Processing.Discord.discordview import discordView
 	from .Processing.Discord.discorddashboard import discordDashboard
 	from .Processing.Discord.discordinvite import discordInvite
 	from .Processing.Discord.discordcommands import discordCommands

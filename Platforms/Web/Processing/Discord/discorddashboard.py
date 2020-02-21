@@ -9,7 +9,6 @@ from aiohttp.web import Response, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Platforms.Web.utils import getNavbar
-from .discordinvite import discordInvite
 from ..errors import notAllowed
 
 async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -23,10 +22,17 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id if guild_id.isdigit() else 0))
 
 	if not Guild:
-		return await discordInvite(cls, WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
+		return await cls.discordInvite(WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
 
 	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found: return await cls.discordLogin(WebRequest)
+
+	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	if not CheckMember:
+		pass
+
+	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
+		pass
 
 	DiscordDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/main.html")
 	DiscordDash.replace(
