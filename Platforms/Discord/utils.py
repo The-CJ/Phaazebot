@@ -10,6 +10,7 @@ from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.discordassignrole import DiscordAssignRole
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
 from Utils.Classes.discordblacklistedword import DiscordBlacklistedWord
+from Utils.Classes.discordwhitelistedrole import DiscordWhitelistedRole
 
 # base settings/config management
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
@@ -327,6 +328,42 @@ async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", guild_id:str,
 	else:
 		return []
 
+async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", guild_id:str, exceptionrole_id:int=None, role_id:int=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0) -> list:
+	"""
+		Get all words that are blacklisted on the guild, if word_id is None, get all
+		else only get one associated with the word_id
+		Returns a list of DiscordWhitelistedRole().
+	"""
+
+	sql:str = """
+		SELECT * FROM `discord_blacklist_whitelistrole`
+		WHERE `discord_blacklist_whitelistrole`.`guild_id` = %s"""
+
+	values:tuple = ( str(guild_id), )
+
+	if exceptionrole_id:
+		sql += " AND `discord_blacklist_whitelistrole`.`id` = %s"
+		values += (exceptionrole_id,)
+
+	if role_id:
+		sql += " AND `discord_blacklist_whitelistrole`.`role_id` = %s"
+		values += (role_id,)
+
+	sql += f" {order_str}"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:list = cls.BASE.PhaazeDB.query(sql, values)
+
+	if res:
+		return [DiscordWhitelistedRole(x, guild_id) for x in res]
+
+	else:
+		return []
+
 # db total counter
 async def getDiscordServerCommandsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
@@ -393,6 +430,18 @@ async def getDiscordServerBlacklistedWordAmount(cls:"PhaazebotDiscord", guild_id
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_blacklist_blacklistword`
 		WHERE `discord_blacklist_blacklistword`.`guild_id` = %s AND {where}"""
+
+	values:tuple = ( str(guild_id), ) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
+async def getDiscordServerExceptionRoleAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_blacklist_whitelistrole`
+		WHERE `discord_blacklist_whitelistrole`.`guild_id` = %s AND {where}"""
 
 	values:tuple = ( str(guild_id), ) + where_values
 
