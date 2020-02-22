@@ -8,7 +8,6 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
-from Platforms.Discord.utils import getDiscordServerBlacklistedWords, getDiscordServerBlacklistedWordAmount
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingAuthorisation,
 	apiMissingData
@@ -19,25 +18,23 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordMissingPermission
 )
 
-DEFAULT_LIMIT:int = 50
-MAX_LIMIT:int = 100
-
-async def apiDiscordConfigsBlacklistedWordsGet(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordConfigsBlacklistedWordsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/configs/blacklistedwords/get
+		Default url: /api/discord/configs/blacklistedwords/create
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	word_id:int = Data.getStr("word_id", "", must_be_digit=True)
-	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
-	offset:int = Data.getInt("offset", 0, min_x=0)
+	word:str = Data.getStr("word", "").replace(";;;", "") # ;;; is the sql sepperator
 
 	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+
+	if not word:
+		return await apiMissingData(cls, WebRequest, msg="missing field 'word'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -58,16 +55,17 @@ async def apiDiscordConfigsBlacklistedWordsGet(cls:"WebIndex", WebRequest:Reques
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	word_res:list = await getDiscordServerBlacklistedWords(PhaazeDiscord, guild_id, word_id=word_id, limit=limit, offset=offset)
+	cls.Web.BASE.PhaazeDB.insertQuery(
+		table = "discord_blacklist_blacklistword",
+		content = {
+			"guild_id": guild_id,
+			"word": word
+		}
+	)
 
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Word Blacklist Update: S:{guild_id} - add: {word}", require="discord:configs")
 	return cls.response(
-		text=json.dumps( dict(
-			result=[ Word.toJSON() for Word in word_res ],
-			limit=limit,
-			offset=offset,
-			total=(await getDiscordServerBlacklistedWordAmount(PhaazeDiscord, guild_id)),
-			status=200)
-		),
+		text=json.dumps( dict(msg="word blacklist successfull updated", add=word, status=200) ),
 		content_type="application/json",
 		status=200
 	)

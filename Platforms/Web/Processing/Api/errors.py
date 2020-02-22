@@ -173,7 +173,7 @@ async def apiMissingData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Re
 
 	cls.Web.BASE.Logger.debug(f"(Web/API) Missing Data for api request", require="api:400")
 	return cls.response(
-		text=json.dumps( msg ),
+		text=json.dumps( res ),
 		content_type="application/json",
 		status=400
 	)
