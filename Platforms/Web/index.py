@@ -131,6 +131,7 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/discord/userguilds', self.apiDiscordUserGuilds)
 		self.Web.router.add_route('*', '/api/discord/commands{x:/?}{method:.*}', self.apiDiscordCommands)
 		self.Web.router.add_route('*', '/api/discord/configs/blacklistedwords{x:/?}{method:.*}', self.apiDiscordConfigsBlacklistedWords)
+		self.Web.router.add_route('*', '/api/discord/configs/exceptionroles{x:/?}{method:.*}', self.apiDiscordConfigsExceptionRoles)
 		self.Web.router.add_route('*', '/api/discord/configs{x:/?}{method:.*}', self.apiDiscordConfigs)
 		self.Web.router.add_route('*', '/api/discord/levels{x:/?}{method:.*}', self.apiDiscordLevels)
 		self.Web.router.add_route('*', '/api/discord/quotes{x:/?}{method:.*}', self.apiDiscordQuotes)
@@ -150,6 +151,7 @@ class WebIndex(object):
 	from .Processing.Api.Discord.Commands.main import apiDiscordCommands
 	from .Processing.Api.Discord.Configs.main import apiDiscordConfigs
 	from .Processing.Api.Discord.Configs.Blacklistedwords.main import apiDiscordConfigsBlacklistedWords
+	from .Processing.Api.Discord.Configs.Exceptionroles.main import apiDiscordConfigsExceptionRoles
 	from .Processing.Api.Discord.Levels.main import apiDiscordLevels
 	from .Processing.Api.Discord.Quotes.main import apiDiscordQuotes
 	from .Processing.Api.Discord.Assignroles.main import apiDiscordAssignroles
