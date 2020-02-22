@@ -61,9 +61,9 @@ async def apiDiscordConfigsBlacklistedWordsDelete(cls:"WebIndex", WebRequest:Req
 		(guild_id, word_id, word)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Word Blacklist Update: S:{guild_id} - removed: {deleted} entry(s)", require="discord:configs")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Wordblacklist: {guild_id=} removed: {deleted} entry(s) [{word=}, {word_id=}]", require="discord:configs")
 	return cls.response(
-		text=json.dumps( dict(msg=f"Wordblacklist: Deleted {deleted} entry(s)", status=200) ),
+		text=json.dumps( dict(msg=f"Wordblacklist: Deleted {deleted} entry(s)", deleted=deleted, status=200) ),
 		content_type="application/json",
 		status=200
 	)
