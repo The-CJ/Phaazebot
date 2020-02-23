@@ -16,11 +16,11 @@ async def apiDiscordGuildUnknown(cls:"WebIndex", WebRequest:Request, **kwargs:di
 
 	guild_id:str = kwargs.get("guild_id", "")
 	if guild_id:
-		res["guild_id"] = guild_id
+		res["guild_id"] = str(guild_id)
 
 	guild_name:str = kwargs.get("guild_name", "")
 	if guild_name:
-		res["guild_name"] = guild_name
+		res["guild_name"] = str(guild_name)
 
 	# build message
 	default_msg:str = "Could not find a phaaze known guild"
@@ -54,19 +54,19 @@ async def apiDiscordMissingPermission(cls:"WebIndex", WebRequest:Request, **kwar
 
 	user_id:str = kwargs.get("user_id", "")
 	if user_id:
-		res["user_id"] = user_id
+		res["user_id"] = str(user_id)
 
 	user_name:str = kwargs.get("user_name", "")
 	if user_name:
-		res["user_name"] = user_name
+		res["user_name"] = str(user_name)
 
 	guild_id:str = kwargs.get("guild_id", "")
 	if guild_id:
-		res["guild_id"] = guild_id
+		res["guild_id"] = str(guild_id)
 
 	guild_name:str = kwargs.get("guild_name", "")
 	if guild_name:
-		res["guild_name"] = guild_name
+		res["guild_name"] = str(guild_name)
 
 	# build message
 	default_msg:str = "Missing 'administrator' or 'manage_guild' permission"
@@ -104,19 +104,19 @@ async def apiDiscordMemberNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:
 
 	user_id:str = kwargs.get("user_id", "")
 	if user_id:
-		res["user_id"] = user_id
+		res["user_id"] = str(user_id)
 
 	user_name:str = kwargs.get("user_name", "")
 	if user_name:
-		res["user_name"] = user_name
+		res["user_name"] = str(user_name)
 
 	guild_id:str = kwargs.get("guild_id", "")
 	if guild_id:
-		res["guild_id"] = guild_id
+		res["guild_id"] = str(guild_id)
 
 	guild_name:str = kwargs.get("guild_name", "")
 	if guild_name:
-		res["guild_name"] = guild_name
+		res["guild_name"] = str(guild_name)
 
 	# build message
 	default_msg:str = "Could not find a valid member"
@@ -154,19 +154,19 @@ async def apiDiscordRoleNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:di
 
 	role_id:str = kwargs.get("role_id", "")
 	if role_id:
-		res["role_id"] = role_id
+		res["role_id"] = str(role_id)
 
 	role_name:str = kwargs.get("role_name", "")
 	if role_name:
-		res["role_name"] = role_name
+		res["role_name"] = str(role_name)
 
 	guild_id:str = kwargs.get("guild_id", "")
 	if guild_id:
-		res["guild_id"] = guild_id
+		res["guild_id"] = str(guild_id)
 
 	guild_name:str = kwargs.get("guild_name", "")
 	if guild_name:
-		res["guild_name"] = guild_name
+		res["guild_name"] = str(guild_name)
 
 	# build message
 	default_msg:str = "Could not find a valid role"
@@ -204,19 +204,19 @@ async def apiDiscordChannelNotFound(cls:"WebIndex", WebRequest:Request, **kwargs
 
 	channel_id:str = kwargs.get("channel_id", "")
 	if channel_id:
-		res["channel_id"] = channel_id
+		res["channel_id"] = str(channel_id)
 
 	channel_name:str = kwargs.get("channel_name", "")
 	if channel_name:
-		res["channel_name"] = channel_name
+		res["channel_name"] = str(channel_name)
 
 	guild_id:str = kwargs.get("guild_id", "")
 	if guild_id:
-		res["guild_id"] = guild_id
+		res["guild_id"] = str(guild_id)
 
 	guild_name:str = kwargs.get("guild_name", "")
 	if guild_name:
-		res["guild_name"] = guild_name
+		res["guild_name"] = str(guild_name)
 
 	# build message
 	default_msg:str = "Could not find a valid channel"
