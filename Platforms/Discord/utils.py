@@ -296,7 +296,7 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role
 	else:
 		return []
 
-async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", guild_id:str, word_id:int=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0) -> list:
+async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", guild_id:str, word_id:int=None, word:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0) -> list:
 	"""
 		Get all words that are blacklisted on the guild, if word_id is None, get all
 		else only get one associated with the word_id
@@ -312,6 +312,10 @@ async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", guild_id:str,
 	if word_id:
 		sql += " AND `discord_blacklist_blacklistword`.`id` = %s"
 		values += (word_id,)
+
+	if word:
+		sql += " AND `discord_blacklist_blacklistword`.`word` = %s"
+		values += (word,)
 
 	sql += f" {order_str}"
 

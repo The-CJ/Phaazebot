@@ -31,7 +31,8 @@ async def apiDiscordConfigsBlacklistedWordsGet(cls:"WebIndex", WebRequest:Reques
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	word_id:int = Data.getStr("word_id", "", must_be_digit=True)
+	word_id:int = Data.getInt("word_id", 0, min_x=1)
+	word:str = Data.getStr("word", "")
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	offset:int = Data.getInt("offset", 0, min_x=0)
 
@@ -58,7 +59,7 @@ async def apiDiscordConfigsBlacklistedWordsGet(cls:"WebIndex", WebRequest:Reques
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	word_res:list = await getDiscordServerBlacklistedWords(PhaazeDiscord, guild_id, word_id=word_id, limit=limit, offset=offset)
+	word_res:list = await getDiscordServerBlacklistedWords(PhaazeDiscord, guild_id, word_id=word_id, word=word, limit=limit, offset=offset)
 
 	return cls.response(
 		text=json.dumps( dict(
