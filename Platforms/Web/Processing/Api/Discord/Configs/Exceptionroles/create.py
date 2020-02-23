@@ -79,7 +79,7 @@ async def apiDiscordConfigsExceptionRolesCreate(cls:"WebIndex", WebRequest:Reque
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Exceptionrole: {guild_id=} added: {role_id=}", require="discord:configs")
 	return cls.response(
-		text=json.dumps( dict(msg="Wordblacklist: Added new entry", entry=role_id, status=200) ),
+		text=json.dumps( dict(msg="Exceptionrole: Added new entry", entry=role_id, status=200) ),
 		content_type="application/json",
 		status=200
 	)

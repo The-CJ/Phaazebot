@@ -63,7 +63,7 @@ async def apiDiscordConfigsExceptionRolesDelete(cls:"WebIndex", WebRequest:Reque
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Exceptionrole: {guild_id=} removed: {deleted} entry(s) [{exceptionrole_id=}, {role_id=}]", require="discord:configs")
 	return cls.response(
-		text=json.dumps( dict(msg=f"Wordblacklist: Deleted {deleted} entry(s)", deleted=deleted, status=200) ),
+		text=json.dumps( dict(msg=f"Exceptionrole: Deleted {deleted} entry(s)", deleted=deleted, status=200) ),
 		content_type="application/json",
 		status=200
 	)

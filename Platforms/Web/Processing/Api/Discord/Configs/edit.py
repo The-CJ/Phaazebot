@@ -261,6 +261,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		status=200
 	)
 
+# REPLACED
 async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings) -> Response:
 	"""
 		Default url: /api/discord/configs/edit?wordblacklist_action=something
@@ -361,6 +362,7 @@ async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:s
 	else:
 		return await apiWrongData(cls, WebRequest)
 
+# REPLACED
 async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
 	"""
 		Default url: /api/discord/configs/edit?exceptionrole_action=something

@@ -8,10 +8,7 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
-from Platforms.Web.Processing.Api.errors import (
-	apiMissingAuthorisation,
-	apiMissingData
-)
+from Platforms.Web.Processing.Api.errors import	apiMissingAuthorisation, apiMissingData, apiWrongData
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
@@ -54,6 +51,18 @@ async def apiDiscordConfigsBlacklistedWordsCreate(cls:"WebIndex", WebRequest:Req
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+
+	# check if already exists
+	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
+		SELECT COUNT(*) AS `match`
+		FROM `discord_blacklist_blacklistword`
+		WHERE `discord_blacklist_blacklistword`.`guild_id` = %s
+			AND LOWER(`discord_blacklist_blacklistword`.`word`) = LOWER(%s)""",
+		( guild_id, word )
+	)
+
+	if res[0]["match"]:
+			return await apiWrongData(cls, WebRequest, msg=f"'{word}' is already added")
 
 	cls.Web.BASE.PhaazeDB.insertQuery(
 		table = "discord_blacklist_blacklistword",
