@@ -38,7 +38,6 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	assignrole_id:str = Data.getStr("assignrole_id", "", must_be_digit=True)
-	role_id:str = Data.getStr("role_id", "", must_be_digit=True)
 
 	# checks
 	if not guild_id:
@@ -53,10 +52,10 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# check if exists
-	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id, assignrole_id=assignrole_id, role_id=role_id)
+	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id, assignrole_id=assignrole_id)
 
 	if not res_assignroles:
-		return await apiDiscordAssignRoleNotExists(cls, WebRequest, assignrole_id=assignrole_id, role_id=role_id)
+		return await apiDiscordAssignRoleNotExists(cls, WebRequest, assignrole_id=assignrole_id)
 
 	AssignRoleToEdit:DiscordAssignRole = res_assignroles.pop(0)
 

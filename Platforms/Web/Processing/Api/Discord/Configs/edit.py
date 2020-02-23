@@ -312,6 +312,7 @@ async def singleActionWordBlacklist(cls:"WebIndex", WebRequest:Request, action:s
 	else:
 		return await apiWrongData(cls, WebRequest)
 
+#
 async def singleActionLinkWhitelist(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings) -> Response:
 	"""
 		Default url: /api/discord/configs/edit?linkwhitelist_action=something

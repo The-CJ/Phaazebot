@@ -25,13 +25,14 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 	# get required vars
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
+	trigger:str = Data.getStr("trigger", "")
 
 	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	if not command_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id'")
+	if (not command_id) and (not trigger):
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id' or 'trigger'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -39,10 +40,10 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get command
-	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id)
+	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, trigger=trigger)
 
 	if not res_commands:
-		return await apiDiscordCommandNotExists(cls, WebRequest)
+		return await apiDiscordCommandNotExists(cls, WebRequest, trigger=trigger, command_id=command_id)
 
 	CommandToDelete:DiscordCommand = res_commands.pop(0)
 
@@ -63,9 +64,8 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 	cls.Web.BASE.PhaazeDB.query("""
 		DELETE FROM `discord_command`
 		WHERE `discord_command`.`guild_id` = %s
-			AND `discord_command`.`id` = %s
-			AND `discord_command`.`trigger` = %s""",
-		(CommandToDelete.server_id, CommandToDelete.command_id, CommandToDelete.trigger)
+			AND `discord_command`.`id` = %s""",
+		(CommandToDelete.server_id, CommandToDelete.command_id)
 	)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted command: S:{guild_id} I:{command_id}", require="discord:commands")

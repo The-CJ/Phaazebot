@@ -9,17 +9,22 @@ async def apiDiscordCommandExists(cls:"WebIndex", WebRequest:Request, **kwargs:d
 	"""
 		Takes from kwargs:
 			msg:str
-			command:str
+			trigger:str
 	"""
 	res:dict = dict(status=400, error="discord_command_exists")
 
-	default_msg:str = "This command trigger already exists"
+	trigger:str = kwargs.get("trigger", "")
+	if trigger:
+		res["trigger"] = trigger
+
+	# build message
+	default_msg:str = "Command already exists"
+
+	if trigger:
+		default_msg += f" with trigger '{trigger}'"
+
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
-
-	command:str = kwargs.get("command", "")
-	if command:
-		res["command"] = command
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Command exits: {WebRequest.path}", require="api:400")
 	return cls.response(
@@ -32,17 +37,30 @@ async def apiDiscordCommandNotExists(cls:"WebIndex", WebRequest:Request, **kwarg
 	"""
 		Takes from kwargs:
 			msg:str
-			command:str
+			trigger:str
+			command_id:str
 	"""
 	res:dict = dict(status=400, error="discord_command_not_exists")
 
+	trigger:str = kwargs.get("trigger", "")
+	if trigger:
+		res["trigger"] = trigger
+
+	command_id:str = kwargs.get("command_id", "")
+	if command_id:
+		res["command_id"] = command_id
+
+	# build message
 	default_msg:str = "No command has been found"
+
+	if trigger:
+		default_msg += f" with trigger '{trigger}'"
+
+	if command_id:
+		default_msg += f" (Command ID: {command_id})"
+
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
-
-	command:str = kwargs.get("command", "")
-	if command:
-		res["command"] = command
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Command not found: {WebRequest.path}", require="api:400")
 	return cls.response(
@@ -59,13 +77,18 @@ async def apiDiscordCommandLimit(cls:"WebIndex", WebRequest:Request, **kwargs:di
 	"""
 	res:dict = dict(status=400, error="discord_command_limit")
 
-	default_msg:str = "You have hit the limit of commands for this server"
-	msg:str = kwargs.get("msg", default_msg)
-	res["msg"] = msg
-
-	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT)
+	limit:str = kwargs.get("limit", "")
 	if limit:
 		res["limit"] = limit
+
+	# build message
+	default_msg:str = "You have hit the limit of commands for this server"
+
+	if limit:
+		default_msg += f" (Limit: {limit})"
+
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many commands: {WebRequest.path}", require="api:400")
 	return cls.response(
