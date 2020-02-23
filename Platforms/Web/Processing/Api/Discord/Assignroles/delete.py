@@ -69,7 +69,7 @@ async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Res
 		(AssignRoleToDelete.guild_id, AssignRoleToDelete.assignrole_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Assignroles: {guild_id=} [{role_id}, {assignrole_id=}]", require="discord:role")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Assignroles: {guild_id=} deleted [{role_id}, {assignrole_id=}]", require="discord:role")
 	return cls.response(
 		text=json.dumps( dict(msg="Assignroles: Deleted entry", deleted=AssignRoleToDelete.trigger, status=200) ),
 		content_type="application/json",

@@ -115,7 +115,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Commands: {guild_id=} added: {trigger=}", require="discord:commands")
 	return cls.response(
-		text=json.dumps( dict(msg="Commands: New entry", entry=trigger, status=200) ),
+		text=json.dumps( dict(msg="Commands: Added new entry", entry=trigger, status=200) ),
 		content_type="application/json",
 		status=200
 	)

@@ -72,7 +72,7 @@ async def apiDiscordConfigsExceptionRolesDelete(cls:"WebIndex", WebRequest:Reque
 		(RoleToDelete.guild_id, RoleToDelete.exceptionrole_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Exceptionrole: {guild_id=} [{exceptionrole_id=}, {role_id=}]", require="discord:configs")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Exceptionrole: {guild_id=} deleted [{exceptionrole_id=}, {role_id=}]", require="discord:configs")
 	return cls.response(
 		text=json.dumps( dict(msg=f"Exceptionrole: Deleted entry", deleted=RoleToDelete.role_id, status=200) ),
 		content_type="application/json",

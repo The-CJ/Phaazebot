@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response, Request
 from .create import apiDiscordConfigsWhitelistedLinkCreate
-# from .delete import apiDiscordConfigsWhitelistedLinkDelete
+from .delete import apiDiscordConfigsWhitelistedLinkDelete
 from .get import apiDiscordConfigsWhitelistedLinkGet
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
@@ -23,9 +23,9 @@ async def apiDiscordConfigsWhitelistedLink(cls:"WebIndex", WebRequest:Request) -
 	elif method == "create":
 		return await apiDiscordConfigsWhitelistedLinkCreate(cls, WebRequest)
 
-	# elif method == "delete":
-	# 	return await apiDiscordConfigsWhitelistedLinkDelete(cls, WebRequest)
-	#
+	elif method == "delete":
+		return await apiDiscordConfigsWhitelistedLinkDelete(cls, WebRequest)
+
 	elif method == "get":
 		return await apiDiscordConfigsWhitelistedLinkGet(cls, WebRequest)
 
