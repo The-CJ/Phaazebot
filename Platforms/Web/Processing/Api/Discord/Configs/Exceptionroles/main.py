@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Response, Request
-# from .create import apiDiscordConfigsExceptionRolesCreate
+from .create import apiDiscordConfigsExceptionRolesCreate
 # from .delete import apiDiscordConfigsExceptionRolesDelete
 from .get import apiDiscordConfigsExceptionRolesGet
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
@@ -20,9 +20,9 @@ async def apiDiscordConfigsExceptionRoles(cls:"WebIndex", WebRequest:Request) ->
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	# elif method == "create":
-	# 	return await apiDiscordConfigsExceptionRolesCreate(cls, WebRequest)
-	#
+	elif method == "create":
+		return await apiDiscordConfigsExceptionRolesCreate(cls, WebRequest)
+
 	# elif method == "delete":
 	# 	return await apiDiscordConfigsExceptionRolesDelete(cls, WebRequest)
 

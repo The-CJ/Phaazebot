@@ -438,7 +438,7 @@ async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", guild_id:str,
 
 async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
 	"""
-	Get all words that are blacklisted on the guild.
+	Get exceptionroles for a guild.
 	Returns a list of DiscordWhitelistedRole().
 
 	Optional keywords:
