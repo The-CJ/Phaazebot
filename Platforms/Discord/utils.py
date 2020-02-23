@@ -330,30 +330,46 @@ async def getDiscordServerTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, **s
 	else:
 		return []
 
-async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, role_id:int=None, assignrole_id:int=None, trigger:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0) -> list:
+async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
 	"""
-		Get server assign roles, if role_id and trigger are None, get all
-		else only get one associated with the role_id or trigger
-		Returns a list of DiscordAssignRole().
-	"""
+	Get server assign roles.
+	Returns a list of DiscordAssignRole().
 
+	Optional keywords:
+	------------------
+	* assignrole_id `str` or `int`: (Default: None)
+	* role_id `str`: (Default: None)
+	* trigger `str`: (Default: None)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpackt
+	assignrole_id:str or int = search.get("assignrole_id", None)
+	role_id:str = search.get("role_id", None)
+	trigger:str = search.get("trigger", None)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
 	sql:str = """
 		SELECT * FROM `discord_assignrole`
 		WHERE `discord_assignrole`.`guild_id` = %s"""
 
 	values:tuple = ( str(guild_id), )
 
-	if role_id:
-		sql += " AND `discord_assignrole`.`role_id` = %s"
-		values += (role_id,)
-
 	if assignrole_id:
 		sql += " AND `discord_assignrole`.`id` = %s"
-		values += (assignrole_id,)
+		values += ( int(assignrole_id), )
+
+	if role_id:
+		sql += " AND `discord_assignrole`.`role_id` = %s"
+		values += ( str(role_id), )
 
 	if trigger:
 		sql += " AND `discord_assignrole`.`trigger` = %s"
-		values += (trigger,)
+		values += ( str(trigger), )
 
 	sql += f" {order_str}"
 
