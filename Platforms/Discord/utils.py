@@ -436,13 +436,27 @@ async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", guild_id:str,
 	else:
 		return []
 
-async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", guild_id:str, exceptionrole_id:int=None, role_id:int=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0) -> list:
+async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
 	"""
-		Get all words that are blacklisted on the guild, if word_id is None, get all
-		else only get one associated with the word_id
-		Returns a list of DiscordWhitelistedRole().
-	"""
+	Get all words that are blacklisted on the guild.
+	Returns a list of DiscordWhitelistedRole().
 
+	Optional keywords:
+	------------------
+	* exceptionrole_id `str` or `int`: (Default: None)
+	* role_id `str`: (Default: None)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpack
+	exceptionrole_id:str or int = search.get("exceptionrole_id", None)
+	role_id:str = search.get("role_id", None)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
 	sql:str = """
 		SELECT * FROM `discord_blacklist_whitelistrole`
 		WHERE `discord_blacklist_whitelistrole`.`guild_id` = %s"""
@@ -451,11 +465,11 @@ async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", guild_id:str, e
 
 	if exceptionrole_id:
 		sql += " AND `discord_blacklist_whitelistrole`.`id` = %s"
-		values += (exceptionrole_id,)
+		values += ( int(exceptionrole_id), )
 
 	if role_id:
 		sql += " AND `discord_blacklist_whitelistrole`.`role_id` = %s"
-		values += (role_id,)
+		values += ( str(role_id), )
 
 	sql += f" {order_str}"
 
