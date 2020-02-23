@@ -214,13 +214,29 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:d
 	else:
 		return []
 
-async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:int=None, random:bool=False, limit:int=0, offset:int=0) -> list:
+async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
 	"""
-		Get server quotes, if quote_id = None, get all
-		else only get one associated with the quote_id
-		Returns a list of DiscordQuote().
-	"""
+	Get server quotes.
+	Returns a list of DiscordQuote().
 
+	Optional keywords:
+	------------------
+	* quote_id `str` or `int`: (Default: None)
+	* content `str`: (Default: None)
+	* content_contains `str`: (Default: None) [DB uses LIKE]
+	* random `bool`: (Default: False) [sql add: ORDER BY RAND()]
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	#unpack
+	quote_id:str or int = search.get("quote_id", None)
+	content:str = search.get("content", None)
+	content_contains:str = search.get("content_contains", None)
+	random:bool = search.get("random", False)
+	limit:bool = search.get("limit", None)
+	offset:bool = search.get("offset", 0)
+
+	#process
 	sql:str = """
 		SELECT * FROM `discord_quote`
 		WHERE `discord_quote`.`guild_id` = %s"""
@@ -229,12 +245,19 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, quote_id:
 
 	if quote_id:
 		sql += " AND `discord_quote`.`id` = %s"
-		values += (quote_id,)
+		values += ( int(quote_id), )
 
-	if random:
-		sql += " ORDER BY RAND()"
-	else:
-		sql += " ORDER BY `id`"
+	if content:
+		sql += " AND `discord_quote`.`content` = %s"
+		values += ( str(content), )
+
+	if content_contains:
+		content_contains = f"%{content_contains}%"
+		sql += " AND `discord_quote`.`content` LIKE %s"
+		values += ( str(content_contains), )
+
+	if random: sql += " ORDER BY RAND()"
+	else: sql += " ORDER BY `id`"
 
 	if limit:
 		sql += f" LIMIT {limit}"
