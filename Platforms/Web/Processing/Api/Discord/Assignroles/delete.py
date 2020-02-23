@@ -27,27 +27,20 @@ async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Res
 
 	# get required vars
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+	role_id:str = Data.getStr("role_id", "", must_be_digit=True)
 	assignrole_id:str = Data.getStr("assignrole_id", "", must_be_digit=True)
 
 	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	if not assignrole_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'assignrole_id'")
+	if (not assignrole_id) and (not role_id):
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'assignrole_id' or 'role_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
-
-	# get assign roles
-	res_assignroles:list = await getDiscordServerAssignRoles(cls.Web.BASE.Discord, guild_id, assignrole_id=assignrole_id)
-
-	if not res_assignroles:
-		return await apiDiscordAssignRoleNotExists(cls, WebRequest, assignrole_id=assignrole_id)
-
-	AssignRoleToDelete:DiscordAssignRole = res_assignroles.pop(0)
 
 	# get user info
 	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
@@ -63,17 +56,22 @@ async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Res
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
+	# get assign roles
+	res_assignroles:list = await getDiscordServerAssignRoles(cls.Web.BASE.Discord, guild_id, assignrole_id=assignrole_id, role_id=role_id)
+
+	if not res_assignroles:
+		return await apiDiscordAssignRoleNotExists(cls, WebRequest, role_id=role_id, assignrole_id=assignrole_id)
+
+	AssignRoleToDelete:DiscordAssignRole = res_assignroles.pop(0)
+
 	cls.Web.BASE.PhaazeDB.deleteQuery("""
-		DELETE FROM `discord_assignrole`
-		WHERE `discord_assignrole`.`guild_id` = %s
-			AND `discord_assignrole`.`id` = %s""",
+		DELETE FROM `discord_assignrole` WHERE `guild_id` = %s `id` = %s""",
 		(AssignRoleToDelete.guild_id, AssignRoleToDelete.assignrole_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted command: S:{AssignRoleToDelete.guild_id} I:{AssignRoleToDelete.assignrole_id}", require="discord:role")
-
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Assignroles: {guild_id=} [{role_id}, {assignrole_id=}]", require="discord:role")
 	return cls.response(
-		text=json.dumps( dict(msg="assignrole successfull deleted", assignrole_id=AssignRoleToDelete.assignrole_id, status=200) ),
+		text=json.dumps( dict(msg="Assignroles: Deleted entry", deleted=AssignRoleToDelete.trigger, status=200) ),
 		content_type="application/json",
 		status=200
 	)

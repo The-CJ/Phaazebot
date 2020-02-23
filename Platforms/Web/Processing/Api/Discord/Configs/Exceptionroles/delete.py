@@ -8,6 +8,8 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordwhitelistedrole import DiscordWhitelistedRole
+from Platforms.Discord.utils import getDiscordServerExceptionRoles
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingAuthorisation,
 	apiMissingData
@@ -17,6 +19,7 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordMemberNotFound,
 	apiDiscordMissingPermission
 )
+from .errors import apiDiscordExceptionRoleNotExists
 
 async def apiDiscordConfigsExceptionRolesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -56,14 +59,22 @@ async def apiDiscordConfigsExceptionRolesDelete(cls:"WebIndex", WebRequest:Reque
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	deleted:int = cls.Web.BASE.PhaazeDB.deleteQuery("""
-		DELETE FROM `discord_blacklist_whitelistrole` WHERE `guild_id` = %s AND (`id` = %s OR `role_id` = %s)""",
-		(guild_id, exceptionrole_id, role_id)
+	# get assign roles
+	res_words:list = await getDiscordServerExceptionRoles(cls.Web.BASE.Discord, guild_id, exceptionrole_id=exceptionrole_id, role_id=role_id)
+
+	if not res_words:
+		return await apiDiscordExceptionRoleNotExists(cls, WebRequest, exceptionrole_id=exceptionrole_id, role_id=role_id)
+
+	RoleToDelete:DiscordWhitelistedRole = res_words.pop(0)
+
+	cls.Web.BASE.PhaazeDB.deleteQuery("""
+		DELETE FROM `discord_blacklist_whitelistrole` WHERE `guild_id` = %s `id` = %s""",
+		(RoleToDelete.guild_id, RoleToDelete.exceptionrole_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Exceptionrole: {guild_id=} removed: {deleted} entry(s) [{exceptionrole_id=}, {role_id=}]", require="discord:configs")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Exceptionrole: {guild_id=} [{exceptionrole_id=}, {role_id=}]", require="discord:configs")
 	return cls.response(
-		text=json.dumps( dict(msg=f"Exceptionrole: Deleted {deleted} entry(s)", deleted=deleted, status=200) ),
+		text=json.dumps( dict(msg=f"Exceptionrole: Deleted entry", deleted=RoleToDelete.role_id, status=200) ),
 		content_type="application/json",
 		status=200
 	)

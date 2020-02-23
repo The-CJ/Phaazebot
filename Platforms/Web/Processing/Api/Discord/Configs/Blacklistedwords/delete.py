@@ -8,6 +8,8 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordblacklistedword import DiscordBlacklistedWord
+from Platforms.Discord.utils import getDiscordServerBlacklistedWords
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingAuthorisation,
 	apiMissingData
@@ -17,6 +19,8 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordMemberNotFound,
 	apiDiscordMissingPermission
 )
+
+from .errors import apiDiscordBlacklistWordNotExists
 
 async def apiDiscordConfigsBlacklistedWordsDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -56,14 +60,22 @@ async def apiDiscordConfigsBlacklistedWordsDelete(cls:"WebIndex", WebRequest:Req
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	deleted:int = cls.Web.BASE.PhaazeDB.deleteQuery("""
-		DELETE FROM `discord_blacklist_blacklistword` WHERE `guild_id` = %s AND (`id` = %s OR `word` = %s)""",
-		(guild_id, word_id, word)
+	# get assign roles
+	res_words:list = await getDiscordServerBlacklistedWords(cls.Web.BASE.Discord, guild_id, word_id=word_id, word=word)
+
+	if not res_words:
+		return await apiDiscordBlacklistWordNotExists(cls, WebRequest, word_id=word_id, word=word)
+
+	WordToDelete:DiscordBlacklistedWord = res_words.pop(0)
+
+	cls.Web.BASE.PhaazeDB.deleteQuery("""
+		DELETE FROM `discord_blacklist_blacklistword` WHERE `guild_id` = %s AND `id` = %s""",
+		(WordToDelete.guild_id, WordToDelete.word_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Wordblacklist: {guild_id=} removed: {deleted} entry(s) [{word=}, {word_id=}]", require="discord:configs")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Wordblacklist: {guild_id=} [{word=}, {word_id=}]", require="discord:configs")
 	return cls.response(
-		text=json.dumps( dict(msg=f"Wordblacklist: Deleted {deleted} entry(s)", deleted=deleted, status=200) ),
+		text=json.dumps( dict(msg=f"Wordblacklist: Deleted entry", deleted=WordToDelete.word, status=200) ),
 		content_type="application/json",
 		status=200
 	)

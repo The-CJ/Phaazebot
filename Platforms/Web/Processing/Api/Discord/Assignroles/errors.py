@@ -60,6 +60,7 @@ async def apiDiscordAssignRoleNotExists(cls:"WebIndex", WebRequest:Request, **kw
 	"""
 		Takes from kwargs:
 			msg:str
+			role_id:str
 			assignrole_id:str
 	"""
 	res:dict = dict(status=400, error="discord_assignrole_not_exists")
@@ -71,6 +72,10 @@ async def apiDiscordAssignRoleNotExists(cls:"WebIndex", WebRequest:Request, **kw
 	assignrole_id:str = kwargs.get("assignrole_id", "")
 	if assignrole_id:
 		res["assignrole_id"] = assignrole_id
+
+	role_id:str = kwargs.get("role_id", "")
+	if role_id:
+		res["role_id"] = role_id
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Assignrole not exists: {WebRequest.path}", require="api:400")
 	return cls.response(

@@ -8,13 +8,15 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
-from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData, apiWrongData
+from Platforms.Discord.utils import getDiscordRoleFromString
+from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
 	apiDiscordMissingPermission,
 	apiDiscordRoleNotFound
 )
+from .errors import apiDiscordExceptionRoleExists
 
 async def apiDiscordConfigsExceptionRolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -53,7 +55,7 @@ async def apiDiscordConfigsExceptionRolesCreate(cls:"WebIndex", WebRequest:Reque
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	ActionRole:discord.Role = Guild.get_role(int(role_id))
+	ActionRole:discord.Role = getDiscordRoleFromString(PhaazeDiscord, Guild, role_id)
 	if not ActionRole:
 		return await apiDiscordRoleNotFound(cls, WebRequest, guild_id=Guild.id, guild_name=Guild.name, role_id=role_id)
 
@@ -67,7 +69,7 @@ async def apiDiscordConfigsExceptionRolesCreate(cls:"WebIndex", WebRequest:Reque
 	)
 
 	if res[0]["match"]:
-			return await apiWrongData(cls, WebRequest, msg=f"'{ActionRole.name}' is already added")
+			return await apiDiscordExceptionRoleExists(cls, WebRequest, role_id=role_id, role_name=ActionRole.name)
 
 	cls.Web.BASE.PhaazeDB.insertQuery(
 		table = "discord_blacklist_whitelistrole",

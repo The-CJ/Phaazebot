@@ -18,6 +18,7 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
 	apiDiscordMissingPermission,
+	apiDiscordRoleNotFound
 )
 from .errors import (
 	apiDiscordAssignRoleLimit,
@@ -51,6 +52,28 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
+	# get user info
+	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	if not DiscordUser.found:
+		return await apiMissingAuthorisation(cls, WebRequest)
+
+	# get member
+	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	if not CheckMember:
+		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+
+	# check permissions
+	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
+		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+
+	# get server role
+	AssignRole:discord.Role = getDiscordRoleFromString(cls, Guild, role_id)
+	if not AssignRole:
+		return await apiDiscordRoleNotFound(cls, WebRequest, guild_id=Guild.name, guild_name=Guild.name, role_id=role_id)
+
+	if AssignRole > Guild.me.top_role:
+		return await apiWrongData(cls, WebRequest, msg=f"The Role `{AssignRole.name}` is to high")
+
 	# check if already exists and limits
 	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
 		SELECT
@@ -70,40 +93,18 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 	if res[0]["all"] >= cls.Web.BASE.Limit.DISCORD_ASSIGNROLE_AMOUNT:
 		return await apiDiscordAssignRoleLimit(cls, WebRequest)
 
-	# get server role
-	AssignRole:discord.Role = getDiscordRoleFromString(cls, Guild, role_id)
-	if not AssignRole:
-		return await apiMissingData(cls, WebRequest, msg=f"Could not find any role matching '{role_id}'")
-
-	if AssignRole > Guild.me.top_role:
-		return await apiWrongData(cls, WebRequest, msg=f"The Role `{AssignRole.name}` is to high")
-
-	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found:
-		return await apiMissingAuthorisation(cls, WebRequest)
-
-	# get member
-	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
-	if not CheckMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
-
-	# check permissions
-	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
-
-	new_assign_role:dict = dict(
-		guild_id = guild_id,
-		trigger = trigger,
-		role_id = role_id
+	cls.Web.BASE.PhaazeDB.insertQuery(
+		table="discord_assignrole",
+		content={
+			"guild_id": guild_id,
+			"trigger": trigger,
+			"role_id": role_id
+		}
 	)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(table="discord_assignrole", content=new_assign_role)
-
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new assign role: S:{guild_id} T:'{trigger}' N:{str(new_assign_role)}", require="discord:role")
-
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Assignroles: {guild_id=} added: {trigger=}", require="discord:configs")
 	return cls.response(
-		text=json.dumps( dict(msg="new assign role successfull created", trigger=trigger, status=200) ),
+		text=json.dumps( dict(msg="Assignroles: Added new entry", entry=trigger, status=200) ),
 		content_type="application/json",
 		status=200
 	)
