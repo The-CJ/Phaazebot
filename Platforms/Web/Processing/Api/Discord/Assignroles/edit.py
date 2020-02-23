@@ -21,6 +21,7 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
 	apiDiscordMissingPermission,
+	apiDiscordRoleNotFound
 )
 from .errors import (
 	apiDiscordAssignRoleExists,
@@ -37,6 +38,7 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	assignrole_id:str = Data.getStr("assignrole_id", "", must_be_digit=True)
+	role_id:str = Data.getStr("role_id", "", must_be_digit=True)
 
 	# checks
 	if not guild_id:
@@ -51,10 +53,10 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# check if exists
-	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id, assignrole_id=assignrole_id)
+	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id, assignrole_id=assignrole_id, role_id=role_id)
 
 	if not res_assignroles:
-		return await apiDiscordAssignRoleNotExists(cls, WebRequest)
+		return await apiDiscordAssignRoleNotExists(cls, WebRequest, assignrole_id=assignrole_id, role_id=role_id)
 
 	AssignRoleToEdit:DiscordAssignRole = res_assignroles.pop(0)
 
@@ -66,7 +68,7 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 	if value != UNDEFINED:
 		AssignRole:discord.Role = getDiscordRoleFromString(cls, Guild, value)
 		if not AssignRole:
-			return await apiMissingData(cls, WebRequest, msg=f"Could not find any role matching '{value}'")
+			return await apiDiscordRoleNotFound(cls, WebRequest, guild_name=Guild.name, guild_id=Guild.id, role_name=value )
 
 		if AssignRole > Guild.me.top_role:
 			return await apiWrongData(cls, WebRequest, msg=f"The Role `{AssignRole.name}` is to high")

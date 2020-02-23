@@ -16,11 +16,11 @@ async def apiDiscordExceptionRoleExists(cls:"WebIndex", WebRequest:Request, **kw
 
 	role_id:str = kwargs.get("role_id", "")
 	if role_id:
-		res["role_id"] = role_id
+		res["role_id"] = str(role_id)
 
 	role_name:str = kwargs.get("role_name", "")
 	if role_name:
-		res["role_name"] = role_name
+		res["role_name"] = str(role_name)
 
 	# build message
 	default_msg:str = "Exceptionrole already exists"
@@ -52,11 +52,11 @@ async def apiDiscordExceptionRoleNotExists(cls:"WebIndex", WebRequest:Request, *
 
 	exceptionrole_id:str = kwargs.get("exceptionrole_id", "")
 	if exceptionrole_id:
-		res["exceptionrole_id"] = exceptionrole_id
+		res["exceptionrole_id"] = str(exceptionrole_id)
 
 	role_id:str = kwargs.get("role_id", "")
 	if role_id:
-		res["role_id"] = role_id
+		res["role_id"] = str(role_id)
 
 	# build message
 	default_msg:str = "No exceptionrole found"

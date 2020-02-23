@@ -15,7 +15,7 @@ async def apiDiscordBlacklistWordExists(cls:"WebIndex", WebRequest:Request, **kw
 
 	word:str = kwargs.get("word", "")
 	if word:
-		res["word"] = word
+		res["word"] = str(word)
 
 	# build message
 	default_msg:str = "Blacklisted word already exists"
@@ -44,11 +44,11 @@ async def apiDiscordBlacklistWordNotExists(cls:"WebIndex", WebRequest:Request, *
 
 	word_id:str = kwargs.get("word_id", "")
 	if word_id:
-		res["word_id"] = word_id
+		res["word_id"] = str(word_id)
 
 	word:str = kwargs.get("word", "")
 	if word:
-		res["word"] = word
+		res["word"] = str(word)
 
 	# build message
 	default_msg:str = "Blacklisted word does not exists"

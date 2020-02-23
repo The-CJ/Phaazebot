@@ -15,7 +15,7 @@ async def apiDiscordAssignRoleLimit(cls:"WebIndex", WebRequest:Request, **kwargs
 
 	limit:str = kwargs.get("limit", "")
 	if limit:
-		res["limit"] = limit
+		res["limit"] = str(limit)
 
 	# build message
 	default_msg:str = "You have hit the limit of assign roles for this guild"
@@ -45,15 +45,15 @@ async def apiDiscordAssignRoleExists(cls:"WebIndex", WebRequest:Request, **kwarg
 
 	role_id:str = kwargs.get("role_id", "")
 	if role_id:
-		res["role_id"] = role_id
+		res["role_id"] = str(role_id)
 
 	role_name:str = kwargs.get("role_name", "")
 	if role_name:
-		res["role_name"] = role_name
+		res["role_name"] = str(role_name)
 
 	trigger:str = kwargs.get("trigger", "")
 	if trigger:
-		res["trigger"] = trigger
+		res["trigger"] = str(trigger)
 
 	# build message
 	default_msg:str = "Assignrole already exists"
@@ -88,11 +88,11 @@ async def apiDiscordAssignRoleNotExists(cls:"WebIndex", WebRequest:Request, **kw
 
 	assignrole_id:str = kwargs.get("assignrole_id", "")
 	if assignrole_id:
-		res["assignrole_id"] = assignrole_id
+		res["assignrole_id"] = str(assignrole_id)
 
 	role_id:str = kwargs.get("role_id", "")
 	if role_id:
-		res["role_id"] = role_id
+		res["role_id"] = str(role_id)
 
 	# build message
 	default_msg:str = "Assignrole does not exists"
