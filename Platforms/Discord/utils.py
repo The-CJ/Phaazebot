@@ -11,6 +11,7 @@ from Utils.Classes.discordassignrole import DiscordAssignRole
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
 from Utils.Classes.discordblacklistedword import DiscordBlacklistedWord
 from Utils.Classes.discordwhitelistedrole import DiscordWhitelistedRole
+from Utils.Classes.discordwhitelistedlink import DiscordWhitelistedLink
 
 # base settings/config management
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
@@ -486,6 +487,56 @@ async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", guild_id:str, *
 	else:
 		return []
 
+async def getDiscordServerWhitelistedLinks(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
+	"""
+	Get whitelisted links for a guild.
+	Returns a list of DiscordWhitelistedLink().
+
+	Optional keywords:
+	------------------
+	* link_id `str` or `int`: (Default: None)
+	* link `str`: (Default: None)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpack
+	link_id:str or int = search.get("link_id", None)
+	link:str = search.get("link", None)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
+	sql:str = """
+		SELECT * FROM `discord_blacklist_whitelistlink`
+		WHERE `discord_blacklist_whitelistlink`.`guild_id` = %s"""
+
+	values:tuple = ( str(guild_id), )
+
+	if link_id:
+		sql += " AND `discord_blacklist_whitelistlink`.`id` = %s"
+		values += ( int(link_id), )
+
+	if link:
+		sql += " AND `discord_blacklist_whitelistlink`.`link` = %s"
+		values += ( str(link), )
+
+	sql += f" {order_str}"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:list = cls.BASE.PhaazeDB.query(sql, values)
+
+	if res:
+		return [DiscordWhitelistedLink(x, guild_id) for x in res]
+
+	else:
+		return []
+
 # db total counter
 async def getDiscordServerCommandsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
@@ -564,6 +615,18 @@ async def getDiscordServerExceptionRoleAmount(cls:"PhaazebotDiscord", guild_id:s
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_blacklist_whitelistrole`
 		WHERE `discord_blacklist_whitelistrole`.`guild_id` = %s AND {where}"""
+
+	values:tuple = ( str(guild_id), ) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
+async def getDiscordServerWhitelistedLinkAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_blacklist_whitelistlink`
+		WHERE `discord_blacklist_whitelistlink`.`guild_id` = %s AND {where}"""
 
 	values:tuple = ( str(guild_id), ) + where_values
 
