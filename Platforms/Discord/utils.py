@@ -272,13 +272,27 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search:
 	else:
 		return []
 
-async def getDiscordServerTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, alert_id:int=None, limit:int=0, offset:int=0) -> list:
+async def getDiscordServerTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
 	"""
-		Get server discord alerts, if alert_id = None, get all
-		else only get one associated with the alert_id
-		Returns a list of DiscordTwitchAlert().
-	"""
+	Get server twitch alerts.
+	Returns a list of DiscordTwitchAlert().
 
+	Optional keywords:
+	------------------
+	* alert_id `str` or `int`: (Default: None)
+	* twitch_name `str`: (Default: None)
+	* twitch_name_contains `str`: (Default: None) [DB uses LIKE]
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpackt
+	alert_id:str or int = search.get("alert_id", None)
+	twitch_name:str = search.get("twitch_name", None)
+	twitch_name_contains:str = search.get("twitch_name_contains", None)
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
 	sql:str = """
 		SELECT
 			`discord_twitch_alert`.*,
@@ -292,7 +306,16 @@ async def getDiscordServerTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, ale
 
 	if alert_id:
 		sql += " AND `discord_twitch_alert`.`id` = %s"
-		values += (alert_id,)
+		values += ( int(alert_id), )
+
+	if twitch_name:
+		sql += " AND `twitch_user_name`.`user_name` = %s"
+		values += ( str(twitch_name), )
+
+	if twitch_name_contains:
+		twitch_name_contains = f"%{twitch_name_contains}%"
+		sql += " AND `twitch_user_name`.`user_name` LIKE %s"
+		values += ( str(twitch_name_contains), )
 
 	if limit:
 		sql += f" LIMIT {limit}"
