@@ -1,0 +1,70 @@
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+	from Platforms.Web.index import WebIndex
+
+import json
+from aiohttp.web import Response, Request
+
+async def apiDiscordWhitelistedLinkExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+			link:str
+	"""
+	res:dict = dict(status=400, error="discord_whitelistlink_exists")
+
+	link:str = kwargs.get("link", "")
+	if link:
+		res["link"] = str(link)
+
+	# build message
+	default_msg:str = "Whitelisted link already exists"
+
+	if link:
+		default_msg += f" (Link: '{link}')"
+
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Link exists: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)
+
+async def apiDiscordWhitelistedLinkNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+		Takes from kwargs:
+			msg:str
+			link_id:str
+			link:str
+	"""
+	res:dict = dict(status=400, error="discord_whitelistlink_not_exists")
+
+	link_id:str = kwargs.get("link_id", "")
+	if link_id:
+		res["link_id"] = str(link_id)
+
+	link:str = kwargs.get("link", "")
+	if link:
+		res["link"] = str(link)
+
+	# build message
+	default_msg:str = "No whitelisted link found"
+
+	if link:
+		default_msg += f" for '{link}')"
+
+	if link_id:
+		default_msg += f" (Link ID:{link_id})"
+
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Link does not exists: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)
