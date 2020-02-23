@@ -113,7 +113,6 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 	)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Assignrole: {guild_id=} edited {assignrole_id=}", require="discord:role")
-
 	return cls.response(
 		text=json.dumps( dict(msg="Assignrole: Edited entry", changes=update, status=200) ),
 		content_type="application/json",

@@ -24,14 +24,14 @@ async def apiDiscordLevelsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
-	offset:int = Data.getInt("offset", 0, min_x=0)
 	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
 	detailed:bool = Data.getBool("detailed", False) # with names, avatar hash etc.
 	nickname:bool = Data.getBool("nickname", False) # usernames or nicknames?
 	name_contains:str = Data.getStr("name_contains", "")
-	order:str = Data.getStr("order", "").lower() # order by
 	edited:int = Data.getInt("edited", 0, min_x=0, max_x=2) # 0 = all, 1 = only nonedited, 2 = only edited
+	order:str = Data.getStr("order", "").lower() # order by
+	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
+	offset:int = Data.getInt("offset", 0, min_x=0)
 
 	# checks
 	if not guild_id:

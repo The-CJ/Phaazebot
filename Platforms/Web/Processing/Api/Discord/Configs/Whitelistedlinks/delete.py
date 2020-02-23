@@ -59,7 +59,7 @@ async def apiDiscordConfigsWhitelistedLinkDelete(cls:"WebIndex", WebRequest:Requ
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	# get assign roles
+	# get links
 	link_res:list = await getDiscordServerWhitelistedLinks(cls.Web.BASE.Discord, guild_id, link_id=link_id, link=link)
 
 	if not link_res:

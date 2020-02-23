@@ -247,7 +247,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not db_update:
 		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Config Update: S:{guild_id} {str(db_update)}", require="discord:configs")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Configs: {guild_id=} updated", require="discord:configs")
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_setting",
 		content = db_update,
@@ -256,7 +256,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 
 	return cls.response(
-		text=json.dumps( dict(msg="configs successfull updated", update=update, status=200) ),
+		text=json.dumps( dict(msg="Configs: Updated", update=update, status=200) ),
 		content_type="application/json",
 		status=200
 	)

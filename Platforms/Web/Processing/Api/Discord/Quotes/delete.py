@@ -8,9 +8,11 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordquote import DiscordQuote
+from Platforms.Discord.utils import getDiscordServerQuotes
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
-from Utils.Classes.undefined import UNDEFINED
+from .errors import apiDiscordQuotesNotExists
 
 async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -20,8 +22,8 @@ async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response
 	await Data.load()
 
 	# get required vars
-	guild_id:str = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
-	quote_id:int = Data.getInt("quote_id", UNDEFINED, min_x=1)
+	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+	quote_id:str = Data.getStr("quote_id", "", must_be_digit=True)
 
 	# checks
 	if not guild_id:
@@ -46,25 +48,24 @@ async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(
-			cls,
-			WebRequest,
-			guild_id=guild_id,
-			user_id=DiscordUser.user_id,
-			msg = "'administrator' or 'manage_guild' permission required to delete quotes"
-		)
+		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+
+	# get quote
+	quote_res:list = await getDiscordServerQuotes(cls.Web.BASE.Discord, guild_id, quote_id=quote_id)
+
+	if not quote_res:
+		return await apiDiscordQuotesNotExists(cls, WebRequest, quote_id=quote_id)
+
+	QuoteToDelete:DiscordQuote = quote_res.pop(0)
 
 	cls.Web.BASE.PhaazeDB.deleteQuery("""
-		DELETE FROM `discord_quote`
-		WHERE `discord_quote`.`guild_id` = %s
-			AND `discord_quote`.`id` = %s""",
-		(guild_id, quote_id)
+		DELETE FROM `discord_quote`	WHERE `guild_id` = %s AND `id` = %s""",
+		(QuoteToDelete.guild_id, QuoteToDelete.quote_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Deleted quote: S:{guild_id} I:{quote_id}", require="discord:quote")
-
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Quote: {guild_id=} deleted {quote_id=}", require="discord:quote")
 	return cls.response(
-		text=json.dumps( dict(msg="quote successfull deleted", quote_id=quote_id, status=200) ),
+		text=json.dumps( dict(msg="Quote: Deleted entry", deleted=QuoteToDelete.content, status=200) ),
 		content_type="application/json",
 		status=200
 	)

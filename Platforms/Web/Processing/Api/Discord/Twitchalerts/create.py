@@ -112,20 +112,19 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	# new alert
-	new:dict = dict(
-		discord_guild_id = guild_id,
-		discord_channel_id = discord_channel_id,
-		twitch_channel_id = FoundUser.user_id,
-		custom_msg = custom_msg
+	cls.Web.BASE.PhaazeDB.insertQuery(
+		table="discord_twitch_alert",
+		content={
+			"discord_guild_id": guild_id,
+			"discord_channel_id": discord_channel_id,
+			"twitch_channel_id": FoundUser.user_id,
+			"custom_msg": custom_msg
+		}
 	)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(table="discord_twitch_alert", content=new)
-
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new twitch alert: S:{guild_id}", require="discord:alert")
-
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Twitchalert: {guild_id=} added {FoundUser.user_id=}", require="discord:alert")
 	return cls.response(
-		text=json.dumps( dict(msg="new alert successfull created", status=200) ),
+		text=json.dumps( dict(msg="Twitchalert: Added new entry", entry=FoundUser.user_type, status=200) ),
 		content_type="application/json",
 		status=200
 	)

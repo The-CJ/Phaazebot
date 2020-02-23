@@ -8,7 +8,6 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Discord.utils import getDiscordServerQuotes, getDiscordServerQuotesAmount
-from Utils.Classes.undefined import UNDEFINED
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
@@ -24,7 +23,7 @@ async def apiDiscordQuotesGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	quote_id:int = Data.getInt("quote_id", UNDEFINED, min_x=1)
+	quote_id:str = Data.getStr("quote_id", "", must_be_digit=True)
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	offset:int = Data.getInt("offset", 0, min_x=0)
 

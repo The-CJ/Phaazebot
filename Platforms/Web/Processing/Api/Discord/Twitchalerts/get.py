@@ -8,7 +8,6 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Discord.utils import getDiscordServerTwitchAlerts, getDiscordServerTwitchAlertsAmount
-from Utils.Classes.undefined import UNDEFINED
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
@@ -24,7 +23,7 @@ async def apiDiscordTwitchalertsGet(cls:"WebIndex", WebRequest:Request) -> Respo
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	alert_id:int = Data.getInt("alert_id", UNDEFINED, min_x=1)
+	alert_id:int = Data.getStr("alert_id", "", must_be_digit=True)
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	offset:int = Data.getInt("offset", 0, min_x=0)
 
