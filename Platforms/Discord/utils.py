@@ -84,15 +84,29 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", guild_id:str) -> Disc
 		raise RuntimeError("Creating new DB entry failed")
 
 # db data requests
-async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger:str=None, command_id:str or int=None, order_str:str="ORDER BY id", show_nonactive:bool=False, limit:int=0, offset:int=0) -> list:
+async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
 	"""
-		Get custom commands from a discord server/guild, if trigger = None, get all.
-		else only get one associated with trigger.
+	Get server commands.
+	Returns a list of DiscordCommand()
 
-		If command_id != None: only get one command associated with id
-		Returns a list of DiscordCommand()
+	Optional keywords:
+	------------------
+	* trigger `str` : (Default: None)
+	* command_id `str` or `int` : (Default: None)
+	* show_nonactive `bool`: (Default: False)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
 	"""
+	# unpack
+	trigger:str = search.get("trigger", None)
+	command_id:str or int = search.get("command_id", None)
+	show_nonactive:bool = search.get("show_nonactive", False)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 
+	# process
 	sql:str = """
 		SELECT * FROM `discord_command`
 		WHERE `discord_command`.`guild_id` = %s"""
@@ -103,11 +117,11 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, trigger
 
 	if command_id:
 		sql += " AND `discord_command`.`id` = %s"
-		values += (command_id,)
+		values += ( int(command_id), )
 
 	elif trigger:
 		sql += " AND `discord_command`.`trigger` = %s"
-		values += (trigger,)
+		values += ( str(trigger), )
 
 	sql += f" {order_str}"
 
