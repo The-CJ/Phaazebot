@@ -31,7 +31,7 @@ async def apiDiscordConfigsBlacklistedWordsGet(cls:"WebIndex", WebRequest:Reques
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	word_id:int = Data.getInt("word_id", 0, min_x=1)
+	word_id:str = Data.getStr("word_id", "", must_be_digit=True)
 	word:str = Data.getStr("word", "")
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	offset:int = Data.getInt("offset", 0, min_x=0)

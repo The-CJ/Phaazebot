@@ -27,8 +27,8 @@ async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Res
 
 	# get required vars
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	role_id:str = Data.getStr("role_id", "", must_be_digit=True)
 	assignrole_id:str = Data.getStr("assignrole_id", "", must_be_digit=True)
+	role_id:str = Data.getStr("role_id", "", must_be_digit=True)
 
 	# checks
 	if not guild_id:

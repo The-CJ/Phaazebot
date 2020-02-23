@@ -31,7 +31,7 @@ async def apiDiscordConfigsExceptionRolesGet(cls:"WebIndex", WebRequest:Request)
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	exceptionrole_id:int = Data.getInt("exceptionrole_id", 0, min_x=1)
+	exceptionrole_id:str = Data.getStr("exceptionrole_id", "", must_be_digit=True)
 	role_id:str = Data.getStr("role_id", "", must_be_digit=True)
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	offset:int = Data.getInt("offset", 0, min_x=0)
