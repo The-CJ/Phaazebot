@@ -7,7 +7,7 @@ class WebRole(DBContentClass, APIClass):
 		Contains and represents a role for the web server
 	"""
 	def __init__(self, data:dict):
-		self.role_id:str = data.get("id", UNDEFINED)
+		self.role_id:int = data.get("id", UNDEFINED)
 		self.name:str = data.get("name", UNDEFINED)
 		self.description:str = data.get("description", UNDEFINED)
 		self.can_be_removed:bool = bool( data.get("can_be_removed", UNDEFINED) )

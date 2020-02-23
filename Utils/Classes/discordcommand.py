@@ -10,7 +10,7 @@ from Utils.Classes.storeclasses import GlobalStorage
 class DiscordCommand(DBContentClass, APIClass):
 	def __init__(self, data:dict, server_id:str):
 		self.server_id:str = server_id
-		self.command_id:str = data.get("id", UNDEFINED)
+		self.command_id:int = data.get("id", UNDEFINED)
 
 		self.trigger:str = data.get("trigger", UNDEFINED)
 		self.active:bool = bool( data.get("active", 1) )

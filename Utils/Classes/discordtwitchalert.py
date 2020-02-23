@@ -8,7 +8,7 @@ class DiscordTwitchAlert(DBContentClass, APIClass):
 	"""
 	def __init__(self, data:dict):
 
-		self.alert_id:str = data.get("id", UNDEFINED)
+		self.alert_id:int = data.get("id", UNDEFINED)
 		self.guild_id:str = data.get("discord_guild_id", UNDEFINED)
 		self.discord_channel_id:str = data.get("discord_channel_id", UNDEFINED)
 		self.twitch_channel_id:str = data.get("twitch_channel_id", UNDEFINED)
