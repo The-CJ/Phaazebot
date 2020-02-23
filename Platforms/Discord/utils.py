@@ -138,21 +138,31 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, **searc
 	else:
 		return []
 
-async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, member_id:str=None, order_str:str="ORDER BY `id`", limit:int=0, offset:int=0, edited:int=0, name_contains:str=None) -> list:
+async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
 	"""
-		Get server levels, if member_id = None, get all
-		else only get one associated with the member_id
-		Returns a list of DiscordUserStats().
+	Get server levels.
+	Returns a list of DiscordUserStats().
 
-		guild_id [required]
-		member_id : limits results to 1
-		order_str : order at end of sql
-		limit : max return list length
-		offset : list offset
-		edited : select (0 = all), (1 = not edited), (2 = only edited)
-		name_contains : username or nickname LIKE X
+	Optional keywords:
+	------------------
+	* member_id `str` : (Default: None)
+	* edited `int`: (Default: 0) [0=all, 1=not edited, 2=only edited]
+	* name `str`: (Default: None)
+	* name_contains `str`: (Default: None) [DB uses LIKE]
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
 	"""
+	# unpack
+	member_id:str = search.get("member_id", None)
+	edited:int = search.get("order_str", 0)
+	name:str = search.get("name", None)
+	name_contains:str = search.get("name_contains", None)
+	order_str:str = search.get("order_str", "ORDER BY id")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 
+	# process
 	sql:str = """
 		WITH `discord_user` AS (
 			SELECT
@@ -175,14 +185,18 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, member_id:
 		sql += " AND `discord_user`.`member_id` = %s"
 		values += ( str(member_id), )
 
+	if name:
+		sql += " AND (`discord_user`.`username` = %s OR `discord_user`.`nickname` = %s)"
+		values += ( str(name), str(name) )
+
 	if name_contains:
 		name_contains = f"%{name_contains}%"
 		sql += " AND (`discord_user`.`username` LIKE %s OR `discord_user`.`nickname` LIKE %s)"
-		values += (name_contains, name_contains)
+		values += ( str(name_contains), str(name_contains) )
 
 	if edited == 2:
 		sql += " AND `discord_user`.`edited` = 1"
-	elif edited == 1:
+	if edited == 1:
 		sql += " AND `discord_user`.`edited` = 0"
 
 	sql += f" {order_str}"
