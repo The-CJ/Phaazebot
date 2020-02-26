@@ -12,6 +12,7 @@ from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
 from Utils.Classes.discordblacklistedword import DiscordBlacklistedWord
 from Utils.Classes.discordwhitelistedrole import DiscordWhitelistedRole
 from Utils.Classes.discordwhitelistedlink import DiscordWhitelistedLink
+from Utils.Classes.discordleveldisabledchannel import DiscordLevelDisabledChannel
 
 # base settings/config management
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
@@ -537,6 +538,56 @@ async def getDiscordServerWhitelistedLinks(cls:"PhaazebotDiscord", guild_id:str,
 	else:
 		return []
 
+async def getDiscordServerLevelDisabledChannels(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
+	"""
+	Get channels where levels are disabled for a guild.
+	Returns a list of DiscordLevelDisabledChannel().
+
+	Optional keywords:
+	------------------
+	* entry_id `str` or `int`: (Default: None)
+	* channel_id `str`: (Default: None)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpack
+	entry_id:str or int = search.get("entry_id", None)
+	channel_id:str = search.get("channel_id", None)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
+	sql:str = """
+		SELECT * FROM `discord_disabled_levelchannel`
+		WHERE `discord_disabled_levelchannel`.`guild_id` = %s"""
+
+	values:tuple = ( str(guild_id), )
+
+	if entry_id:
+		sql += " AND `discord_disabled_levelchannel`.`id` = %s"
+		values += ( int(entry_id), )
+
+	if channel_id:
+		sql += " AND `discord_disabled_levelchannel`.`channel_id` = %s"
+		values += ( str(channel_id), )
+
+	sql += f" {order_str}"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:list = cls.BASE.PhaazeDB.query(sql, values)
+
+	if res:
+		return [DiscordLevelDisabledChannel(x, guild_id) for x in res]
+
+	else:
+		return []
+
 # db total counter
 async def getDiscordServerCommandsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
@@ -633,6 +684,19 @@ async def getDiscordServerWhitelistedLinkAmount(cls:"PhaazebotDiscord", guild_id
 	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	return res[0]["I"]
+
+async def getDiscordServerLevelDisabledChannelAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_disabled_levelchannel`
+		WHERE `discord_disabled_levelchannel`.`guild_id` = %s AND {where}"""
+
+	values:tuple = ( str(guild_id), ) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
 
 # utility functions
 def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None) -> discord.Member or None:
