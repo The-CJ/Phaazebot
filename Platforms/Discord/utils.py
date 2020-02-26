@@ -699,6 +699,41 @@ async def getDiscordServerLevelDisabledChannelAmount(cls:"PhaazebotDiscord", gui
 
 
 # utility functions
+def getDiscordChannelFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None, required_type:str=None) -> discord.abc.GuildChannel or None:
+	"""
+		Tryes to get a channel from a guild, the search input may be,
+		the channel name or the id, else None is given
+
+		Also can take Message mentions in account if Message given
+	"""
+	SearchChannel:discord.abc.GuildChannel = None
+
+	search_str:str = str(search)
+	search_id:int = 0
+	if search_str.isdigit():
+		search_id = int(search)
+
+	# mention
+	if Message:
+		if Message.channel_mentions:
+			SearchChannel = Message.channel_mentions[0]
+
+	for Chan in Guild.channels:
+		if (Chan.name == search_str) or (Chan.id == search_id):
+			SearchChannel = Chan
+			break
+
+	# type check
+	if required_type:
+		if required_type == "text" and type(SearchChannel) is not discord.TextChannel:
+			return None
+		if required_type == "voice" and type(SearchChannel) is not discord.VoiceChannel:
+			return None
+		if required_type == "category" and type(SearchChannel) is not discord.CategoryChannel:
+			return None
+
+	return SearchChannel
+
 def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None) -> discord.Member or None:
 	"""
 		Tryes to get a member from a guild, the search input may be,
