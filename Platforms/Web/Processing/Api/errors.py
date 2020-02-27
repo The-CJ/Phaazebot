@@ -7,7 +7,13 @@ from aiohttp.web import Response, Request
 
 async def apiUnknown(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
-		Takes from kwargs: None
+	Optional keywords:
+	------------------
+	None
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	None
 	"""
 	res:dict = dict(status=404, error="unknown_api")
 
@@ -20,8 +26,13 @@ async def apiUnknown(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respon
 
 async def apiNothing(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Trying to find out the PhaazeAPI?. Try looking at WEB_ROOT/wiki/api
 	"""
 	res:dict = dict(status=400, error="no_path")
 
@@ -40,8 +51,13 @@ async def apiNothing(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respon
 
 async def apiNotAllowed(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Not allowed
 	"""
 	res:dict = dict(status=403, error="action_not_allowed")
 
@@ -60,8 +76,13 @@ async def apiNotAllowed(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Res
 
 async def apiMissingValidMethod(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Missing valid api method
 	"""
 	res:dict = dict(status=400, error="missing_valid_method")
 
@@ -80,7 +101,13 @@ async def apiMissingValidMethod(cls:"WebIndex", WebRequest:Request, **kwargs:Any
 
 async def apiMissingAuthorisation(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
-		Takes from kwargs: None
+	Optional keywords:
+	------------------
+	None
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	None
 	"""
 	res:dict = dict(status=401, error="missing_authorisation")
 
@@ -93,8 +120,13 @@ async def apiMissingAuthorisation(cls:"WebIndex", WebRequest:Request, **kwargs:A
 
 async def apiWrongData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Wrong data passed
 	"""
 	res:dict = dict(status=400, error="wrong_data")
 
@@ -112,8 +144,13 @@ async def apiWrongData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Resp
 
 async def apiNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	No data found
 	"""
 	res:dict = dict(status=400, error="not_found")
 
@@ -130,10 +167,15 @@ async def apiNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respo
 
 async def apiUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			username:str
-			password:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* username `str`
+	* password `str`
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	No user could be found
 	"""
 	res:dict = dict(status=404, error="no_user_found")
 
@@ -160,8 +202,13 @@ async def apiUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> R
 
 async def apiMissingData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Missing required data
 	"""
 	res:dict = dict(status=400, error="missing_data")
 

@@ -7,10 +7,15 @@ from aiohttp.web import Response, Request
 
 async def apiDiscordExceptionRoleExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			role_id:str
-			role_name:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* role_name `str` *
+	* role_id `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Exceptionrole already exists
 	"""
 	res:dict = dict(status=400, error="discord_exceptionrole_exists")
 
@@ -43,10 +48,15 @@ async def apiDiscordExceptionRoleExists(cls:"WebIndex", WebRequest:Request, **kw
 
 async def apiDiscordExceptionRoleNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			exceptionrole_id:str
-			role_id:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* exceptionrole_id `str` *
+	* role_id `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Exceptionrole does not exists
 	"""
 	res:dict = dict(status=400, error="discord_exceptionrole_not_exists")
 
@@ -59,7 +69,7 @@ async def apiDiscordExceptionRoleNotExists(cls:"WebIndex", WebRequest:Request, *
 		res["role_id"] = str(role_id)
 
 	# build message
-	default_msg:str = "No exceptionrole found"
+	default_msg:str = "Exceptionrole does not exists"
 
 	if role_id:
 		default_msg += f" (Role ID:{role_id})"

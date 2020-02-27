@@ -7,9 +7,14 @@ from aiohttp.web import Response, Request
 
 async def apiDiscordBlacklistWordExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			word:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* word `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Blacklisted word already exists
 	"""
 	res:dict = dict(status=400, error="discord_assignrole_exists")
 
@@ -35,10 +40,15 @@ async def apiDiscordBlacklistWordExists(cls:"WebIndex", WebRequest:Request, **kw
 
 async def apiDiscordBlacklistWordNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			word_id:str
-			word:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* word `str` *
+	* word_id `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Blacklisted word does not exists
 	"""
 	res:dict = dict(status=400, error="discord_blacklistword_not_exists")
 

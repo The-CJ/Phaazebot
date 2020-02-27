@@ -7,9 +7,14 @@ from aiohttp.web import Response, Request
 
 async def apiDiscordAssignRoleLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			limit:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* limit `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	You have hit the limit of assign roles for this guild
 	"""
 	res:dict = dict(status=400, error="discord_quote_limit")
 
@@ -35,11 +40,16 @@ async def apiDiscordAssignRoleLimit(cls:"WebIndex", WebRequest:Request, **kwargs
 
 async def apiDiscordAssignRoleExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			role_id:str
-			role_name:str
-			trigger:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* trigger `str` *
+	* role_name `str` *
+	* role_id `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Assignrole already exists
 	"""
 	res:dict = dict(status=400, error="discord_assignrole_exists")
 
@@ -79,10 +89,15 @@ async def apiDiscordAssignRoleExists(cls:"WebIndex", WebRequest:Request, **kwarg
 
 async def apiDiscordAssignRoleNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			role_id:str
-			assignrole_id:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* assignrole_id `str` *
+	* role_id `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Assignrole does not exists
 	"""
 	res:dict = dict(status=400, error="discord_assignrole_not_exists")
 

@@ -38,7 +38,7 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await singleActionUserRole(cls, WebRequest, action, Data)
 
 	# get user that should be edited
-	check_user:list = await getWebUsers(cls, where="user.id = %s", values=(user_id,))
+	check_user:list = await getWebUsers(cls, where="user.id = %s", where_values=(user_id,))
 	if not check_user:
 		return await apiUserNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
 

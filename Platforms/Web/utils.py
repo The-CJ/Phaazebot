@@ -87,12 +87,26 @@ async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -
 	return WebRequest.DiscordUser
 
 # db managment
-async def getWebUsers(cls:"WebIndex", where:str, values:tuple=None, limit:int=None, offset:int=None) -> list:
+async def getWebUsers(cls:"WebIndex", **search:dict) -> list:
 	"""
-		Search user via custom 'where' statement
-		'where' can include LIMIT and OFFSET,
-		but not GROUP BY or ORDER
+	Get web users
+	Returns a list of WebUserInfo()
+
+	Optional keywords:
+	------------------
+	* where `str`: (Default: "1=1")
+	* where_values `tuple` or `dict`: (Default: None)
+	* order_str `str`: (Default: "ORDER BY user.id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+
 	"""
+	where:str = search.get("where", "1=1")
+	where_values:str = search.get("where_values", None)
+	order_str:str = search.get("order_str", "ORDER BY `user`.`id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
 	statement:str = f"""
 		SELECT
 			`user`.*,
@@ -105,13 +119,15 @@ async def getWebUsers(cls:"WebIndex", where:str, values:tuple=None, limit:int=No
 		WHERE {where}
 		GROUP BY `user`.`id`"""
 
+	if order_str:
+		statement += f" {order_str}"
+
 	if limit:
 		statement += f" LIMIT {limit}"
+		if offset:
+			statement += f" OFFSET {offset}"
 
-	if offset:
-		statement += f" OFFSET {offset}"
-
-	res:list = cls.Web.BASE.PhaazeDB.selectQuery(statement, values)
+	res:list = cls.Web.BASE.PhaazeDB.selectQuery(statement, where_values)
 
 	return_list:list = []
 	for user in res:

@@ -7,10 +7,15 @@ from aiohttp.web import Response, Request
 
 async def apiDiscordConfigsLevelDisabledChannelExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			channel_id:str
-			channel_name:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* channel_id `str` *
+	* channel_name `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Disabled level channel already exists
 	"""
 	res:dict = dict(status=400, error="discord_disabled_levelchannel_exists")
 
@@ -43,10 +48,15 @@ async def apiDiscordConfigsLevelDisabledChannelExists(cls:"WebIndex", WebRequest
 
 async def apiDiscordConfigsLevelDisabledChannelNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			channel_id:str
-			channel_name:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* channel_id `str` *
+	* channel_name `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Disabled level channel already exists
 	"""
 	res:dict = dict(status=400, error="discord_disabled_levelchannel_not_exists")
 
@@ -59,7 +69,7 @@ async def apiDiscordConfigsLevelDisabledChannelNotExists(cls:"WebIndex", WebRequ
 		res["channel_name"] = str(channel_name)
 
 	# build message
-	default_msg:str = "No disabled level channel found"
+	default_msg:str = "Disabled level channel does not exists"
 
 	if channel_name:
 		default_msg += f" for '{channel_name}'"

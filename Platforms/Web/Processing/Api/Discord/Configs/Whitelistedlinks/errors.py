@@ -7,9 +7,14 @@ from aiohttp.web import Response, Request
 
 async def apiDiscordWhitelistedLinkExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			link:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* link `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Whitelisted link already exists
 	"""
 	res:dict = dict(status=400, error="discord_whitelistlink_exists")
 
@@ -35,10 +40,15 @@ async def apiDiscordWhitelistedLinkExists(cls:"WebIndex", WebRequest:Request, **
 
 async def apiDiscordWhitelistedLinkNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			link_id:str
-			link:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* link_id `str` *
+	* link `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Whitelisted link does not exists
 	"""
 	res:dict = dict(status=400, error="discord_whitelistlink_not_exists")
 
@@ -51,7 +61,7 @@ async def apiDiscordWhitelistedLinkNotExists(cls:"WebIndex", WebRequest:Request,
 		res["link"] = str(link)
 
 	# build message
-	default_msg:str = "No whitelisted link found"
+	default_msg:str = "Whitelisted link does not exists"
 
 	if link:
 		default_msg += f" for '{link}')"

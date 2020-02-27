@@ -7,9 +7,14 @@ from aiohttp.web import Response, Request
 
 async def apiDiscordCommandExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			trigger:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* trigger `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Command already exists
 	"""
 	res:dict = dict(status=400, error="discord_command_exists")
 
@@ -35,10 +40,15 @@ async def apiDiscordCommandExists(cls:"WebIndex", WebRequest:Request, **kwargs:d
 
 async def apiDiscordCommandNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			trigger:str
-			command_id:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* trigger `str` *
+	* command_id `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	No command has been found
 	"""
 	res:dict = dict(status=400, error="discord_command_not_exists")
 
@@ -71,9 +81,14 @@ async def apiDiscordCommandNotExists(cls:"WebIndex", WebRequest:Request, **kwarg
 
 async def apiDiscordCommandLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			limit:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* limit `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	You have hit the limit of commands for this server
 	"""
 	res:dict = dict(status=400, error="discord_command_limit")
 

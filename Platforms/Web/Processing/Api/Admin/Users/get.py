@@ -37,7 +37,7 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		values = (username, email)
 
 	# get user
-	res_users:list = await getWebUsers(cls, where=where, values=values, limit=limit, offset=offset)
+	res_users:list = await getWebUsers(cls, where=where, where_values=values, limit=limit, offset=offset)
 
 	if not res_users:
 		return await apiUserNotFound(cls, WebRequest, msg=f"no user found")
