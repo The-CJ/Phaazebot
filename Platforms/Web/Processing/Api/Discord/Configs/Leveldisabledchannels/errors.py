@@ -34,7 +34,7 @@ async def apiDiscordConfigsLevelDisabledChannelExists(cls:"WebIndex", WebRequest
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Role exists: {WebRequest.path}", require="api:400")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Channel exists: {WebRequest.path}", require="api:400")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",
@@ -45,32 +45,32 @@ async def apiDiscordConfigsLevelDisabledChannelNotExists(cls:"WebIndex", WebRequ
 	"""
 		Takes from kwargs:
 			msg:str
-			exceptionrole_id:str
-			role_id:str
+			channel_id:str
+			channel_name:str
 	"""
 	res:dict = dict(status=400, error="discord_disabled_levelchannel_not_exists")
 
-	exceptionrole_id:str = kwargs.get("exceptionrole_id", "")
-	if exceptionrole_id:
-		res["exceptionrole_id"] = str(exceptionrole_id)
+	channel_id:str = kwargs.get("channel_id", "")
+	if channel_id:
+		res["channel_id"] = str(channel_id)
 
-	role_id:str = kwargs.get("role_id", "")
-	if role_id:
-		res["role_id"] = str(role_id)
+	channel_name:str = kwargs.get("channel_name", "")
+	if channel_name:
+		res["channel_name"] = str(channel_name)
 
 	# build message
-	default_msg:str = "No exceptionrole found"
+	default_msg:str = "No disabled level channel found"
 
-	if role_id:
-		default_msg += f" (Role ID:{role_id})"
+	if channel_name:
+		default_msg += f" for '{channel_name}'"
 
-	if exceptionrole_id:
-		default_msg += f" (Exceptionrole ID:{exceptionrole_id})"
+	if channel_id:
+		default_msg += f" (Channel ID:{channel_id})"
 
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Role does not exists: {WebRequest.path}", require="api:400")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Channel does not exists: {WebRequest.path}", require="api:400")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",

@@ -421,6 +421,7 @@ async def singleActionExceptionRole(cls:"WebIndex", WebRequest:Request, action:s
 	else:
 		return await apiWrongData(cls, WebRequest)
 
+# REPLACED
 async def singleActionDisableLevelChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
 	"""
 		Default url: /api/discord/configs/edit?disabled_levelchan_action=something
