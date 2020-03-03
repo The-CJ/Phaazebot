@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response, Request
 
-async def apiDiscordConfigsLevelDisabledChannelExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordConfigsRegularDisabledChannelExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -15,9 +15,9 @@ async def apiDiscordConfigsLevelDisabledChannelExists(cls:"WebIndex", WebRequest
 
 	Default message (*gets altered by optional keywords):
 	----------------------------------------------------
-	Disabled level channel already exists
+	Disabled regular channel already exists
 	"""
-	res:dict = dict(status=400, error="discord_disabled_levelchannel_exists")
+	res:dict = dict(status=400, error="discord_disabled_regularchannel_exists")
 
 	channel_id:str = kwargs.get("channel_id", "")
 	if channel_id:
@@ -28,7 +28,7 @@ async def apiDiscordConfigsLevelDisabledChannelExists(cls:"WebIndex", WebRequest
 		res["channel_name"] = str(channel_name)
 
 	# build message
-	default_msg:str = "Disabled level channel already exists"
+	default_msg:str = "Disabled regular channel already exists"
 
 	if channel_name:
 		default_msg += f" for '{channel_name}'"
@@ -46,7 +46,7 @@ async def apiDiscordConfigsLevelDisabledChannelExists(cls:"WebIndex", WebRequest
 		status=400
 	)
 
-async def apiDiscordConfigsLevelDisabledChannelNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordConfigsRegularDisabledChannelNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -56,9 +56,9 @@ async def apiDiscordConfigsLevelDisabledChannelNotExists(cls:"WebIndex", WebRequ
 
 	Default message (*gets altered by optional keywords):
 	----------------------------------------------------
-	Disabled level channel does not exists
+	Disabled regular channel does not exists
 	"""
-	res:dict = dict(status=400, error="discord_disabled_levelchannel_not_exists")
+	res:dict = dict(status=400, error="discord_disabled_regularchannel_not_exists")
 
 	channel_id:str = kwargs.get("channel_id", "")
 	if channel_id:
@@ -69,7 +69,7 @@ async def apiDiscordConfigsLevelDisabledChannelNotExists(cls:"WebIndex", WebRequ
 		res["channel_name"] = str(channel_name)
 
 	# build message
-	default_msg:str = "Disabled level channel does not exists"
+	default_msg:str = "Disabled regular channel does not exists"
 
 	if channel_name:
 		default_msg += f" for '{channel_name}'"
