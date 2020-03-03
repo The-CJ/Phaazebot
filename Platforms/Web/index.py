@@ -130,6 +130,7 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/discord/guild', self.apiDiscordGuild)
 		self.Web.router.add_route('*', '/api/discord/userguilds', self.apiDiscordUserGuilds)
 		self.Web.router.add_route('*', '/api/discord/commands{x:/?}{method:.*}', self.apiDiscordCommands)
+		self.Web.router.add_route('*', '/api/discord/configs/regulardisabledchannels{x:/?}{method:.*}', self.apiDiscordConfigsRegularDisabledChannels)
 		self.Web.router.add_route('*', '/api/discord/configs/leveldisabledchannels{x:/?}{method:.*}', self.apiDiscordConfigsLevelDisabledChannels)
 		self.Web.router.add_route('*', '/api/discord/configs/blacklistedwords{x:/?}{method:.*}', self.apiDiscordConfigsBlacklistedWords)
 		self.Web.router.add_route('*', '/api/discord/configs/whitelistedlinks{x:/?}{method:.*}', self.apiDiscordConfigsWhitelistedLink)
@@ -156,6 +157,7 @@ class WebIndex(object):
 	from .Processing.Api.Discord.Configs.Whitelistedlinks.main import apiDiscordConfigsWhitelistedLink
 	from .Processing.Api.Discord.Configs.Exceptionroles.main import apiDiscordConfigsExceptionRoles
 	from .Processing.Api.Discord.Configs.Leveldisabledchannels.main import apiDiscordConfigsLevelDisabledChannels
+	from .Processing.Api.Discord.Configs.Regulardisabledchannels.main import apiDiscordConfigsRegularDisabledChannels
 	from .Processing.Api.Discord.Levels.main import apiDiscordLevels
 	from .Processing.Api.Discord.Quotes.main import apiDiscordQuotes
 	from .Processing.Api.Discord.Assignroles.main import apiDiscordAssignroles
