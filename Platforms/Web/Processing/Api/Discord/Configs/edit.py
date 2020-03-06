@@ -536,6 +536,7 @@ async def singleActionDisableQuoteChannel(cls:"WebIndex", WebRequest:Request, ac
 	else:
 		return await apiWrongData(cls, WebRequest)
 
+# 
 async def singleActionDisableNormalChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
 	"""
 		Default url: /api/discord/configs/edit?disabled_normalchan_action=something
@@ -593,6 +594,7 @@ async def singleActionDisableNormalChannel(cls:"WebIndex", WebRequest:Request, a
 	else:
 		return await apiWrongData(cls, WebRequest)
 
+# REPLACED
 async def singleActionDisableRegularChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
 	"""
 		Default url: /api/discord/configs/edit?disabled_regularchan_action=something
