@@ -15,6 +15,7 @@ from Utils.Classes.discordwhitelistedlink import DiscordWhitelistedLink
 from Utils.Classes.discordleveldisabledchannel import DiscordLevelDisabledChannel
 from Utils.Classes.discordregulardisabledchannel import DiscordRegularDisabledChannel
 from Utils.Classes.discordnormaldisabledchannel import DiscordNormalDisabledChannel
+from Utils.Classes.discordquotedisabledchannel import DiscordQuoteDisabledChannel
 
 # base settings/config management
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
@@ -690,6 +691,56 @@ async def getDiscordServerNormalDisabledChannels(cls:"PhaazebotDiscord", guild_i
 	else:
 		return []
 
+async def getDiscordServerQuoteDisabledChannels(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
+	"""
+	Get channels where levels are disabled for a guild.
+	Returns a list of DiscordQuoteDisabledChannel().
+
+	Optional keywords:
+	------------------
+	* entry_id `str` or `int`: (Default: None)
+	* channel_id `str`: (Default: None)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpack
+	entry_id:str or int = search.get("entry_id", None)
+	channel_id:str = search.get("channel_id", None)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
+	sql:str = """
+		SELECT * FROM `discord_disabled_quotechannel`
+		WHERE `discord_disabled_quotechannel`.`guild_id` = %s"""
+
+	values:tuple = ( str(guild_id), )
+
+	if entry_id:
+		sql += " AND `discord_disabled_quotechannel`.`id` = %s"
+		values += ( int(entry_id), )
+
+	if channel_id:
+		sql += " AND `discord_disabled_quotechannel`.`channel_id` = %s"
+		values += ( str(channel_id), )
+
+	sql += f" {order_str}"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	if res:
+		return [DiscordQuoteDisabledChannel(x, guild_id) for x in res]
+
+	else:
+		return []
+
 # db total counter
 async def getDiscordServerCommandsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
@@ -816,6 +867,18 @@ async def getDiscordServerNormalDisabledChannelAmount(cls:"PhaazebotDiscord", gu
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_disabled_normalchannel`
 		WHERE `discord_disabled_normalchannel`.`guild_id` = %s AND {where}"""
+
+	values:tuple = ( str(guild_id), ) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
+async def getDiscordServerQuoteDisabledChannelAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_disabled_quotechannel`
+		WHERE `discord_disabled_quotechannel`.`guild_id` = %s AND {where}"""
 
 	values:tuple = ( str(guild_id), ) + where_values
 
