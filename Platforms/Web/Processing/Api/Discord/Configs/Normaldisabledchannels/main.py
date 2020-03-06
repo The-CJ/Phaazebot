@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response, Request
 from .create import apiDiscordConfigsNormalDisabledChannelsCreate
-# from .delete import apiDiscordConfigsRegularDisabledChannelsDelete
+from .delete import apiDiscordConfigsNormalDisabledChannelsDelete
 from .get import apiDiscordConfigsNormalDisabledChannelsGet
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
@@ -23,8 +23,8 @@ async def apiDiscordConfigsNormalDisabledChannels(cls:"WebIndex", WebRequest:Req
 	elif method == "create":
 		return await apiDiscordConfigsNormalDisabledChannelsCreate(cls, WebRequest)
 
-	# elif method == "delete":
-		# return await apiDiscordConfigsRegularDisabledChannelsDelete(cls, WebRequest)
+	elif method == "delete":
+		return await apiDiscordConfigsNormalDisabledChannelsDelete(cls, WebRequest)
 
 	elif method == "get":
 		return await apiDiscordConfigsNormalDisabledChannelsGet(cls, WebRequest)
