@@ -16,6 +16,7 @@ from Utils.Classes.discordleveldisabledchannel import DiscordLevelDisabledChanne
 from Utils.Classes.discordregulardisabledchannel import DiscordRegularDisabledChannel
 from Utils.Classes.discordnormaldisabledchannel import DiscordNormalDisabledChannel
 from Utils.Classes.discordquotedisabledchannel import DiscordQuoteDisabledChannel
+from Utils.Classes.discordgameenablededchannel import DiscordGameEnabledChannel
 
 # base settings/config management
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
@@ -593,7 +594,7 @@ async def getDiscordServerLevelDisabledChannels(cls:"PhaazebotDiscord", guild_id
 
 async def getDiscordServerRegularDisabledChannels(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
 	"""
-	Get channels where levels are disabled for a guild.
+	Get channels where regular commands (requirement = regular) are disabled for a guild.
 	Returns a list of DiscordRegularDisabledChannel().
 
 	Optional keywords:
@@ -643,7 +644,7 @@ async def getDiscordServerRegularDisabledChannels(cls:"PhaazebotDiscord", guild_
 
 async def getDiscordServerNormalDisabledChannels(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
 	"""
-	Get channels where levels are disabled for a guild.
+	Get channels where normal commands (requirement = everyone) are disabled for a guild.
 	Returns a list of DiscordNormalDisabledChannel().
 
 	Optional keywords:
@@ -693,7 +694,7 @@ async def getDiscordServerNormalDisabledChannels(cls:"PhaazebotDiscord", guild_i
 
 async def getDiscordServerQuoteDisabledChannels(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
 	"""
-	Get channels where levels are disabled for a guild.
+	Get channels where quotes are disabled for a guild.
 	Returns a list of DiscordQuoteDisabledChannel().
 
 	Optional keywords:
@@ -737,6 +738,56 @@ async def getDiscordServerQuoteDisabledChannels(cls:"PhaazebotDiscord", guild_id
 
 	if res:
 		return [DiscordQuoteDisabledChannel(x, guild_id) for x in res]
+
+	else:
+		return []
+
+async def getDiscordServerGameEnabledChannels(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
+	"""
+	Get channels where games are enabled for a guild.
+	Returns a list of DiscordGameEnabledChannel().
+
+	Optional keywords:
+	------------------
+	* entry_id `str` or `int`: (Default: None)
+	* channel_id `str`: (Default: None)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpack
+	entry_id:str or int = search.get("entry_id", None)
+	channel_id:str = search.get("channel_id", None)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
+	sql:str = """
+		SELECT * FROM `discord_enabled_gamechannel`
+		WHERE `discord_enabled_gamechannel`.`guild_id` = %s"""
+
+	values:tuple = ( str(guild_id), )
+
+	if entry_id:
+		sql += " AND `discord_enabled_gamechannel`.`id` = %s"
+		values += ( int(entry_id), )
+
+	if channel_id:
+		sql += " AND `discord_enabled_gamechannel`.`channel_id` = %s"
+		values += ( str(channel_id), )
+
+	sql += f" {order_str}"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	if res:
+		return [DiscordGameEnabledChannel(x, guild_id) for x in res]
 
 	else:
 		return []
@@ -879,6 +930,18 @@ async def getDiscordServerQuoteDisabledChannelAmount(cls:"PhaazebotDiscord", gui
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_disabled_quotechannel`
 		WHERE `discord_disabled_quotechannel`.`guild_id` = %s AND {where}"""
+
+	values:tuple = ( str(guild_id), ) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
+async def getDiscordServerGameEnabledChannelAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_enabled_gamechannel`
+		WHERE `discord_enabled_gamechannel`.`guild_id` = %s AND {where}"""
 
 	values:tuple = ( str(guild_id), ) + where_values
 
