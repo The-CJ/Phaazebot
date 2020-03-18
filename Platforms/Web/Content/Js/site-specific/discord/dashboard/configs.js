@@ -65,7 +65,7 @@ var Configs = new(class {
       $(ConfigsO.whitelist_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading word link whitelist"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading link whitelist"} );
     })
   }
 
@@ -129,9 +129,9 @@ var Configs = new(class {
   showWordBlacklist() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/blacklistedwords/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.blacklist = data.result.blacklist_blacklistwords;
+      ConfigsO.blacklist = data.result;
       ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
       $(ConfigsO.blacklist_modal_id).modal("show");
     })
@@ -144,44 +144,54 @@ var Configs = new(class {
     var EntryList = $(`${this.blacklist_modal_id} .modal-itemlist`).html("");
     for (var entry of blacklist_blacklistwords) {
       var EntryRow = $(`[phantom] ${this.blacklist_phantom_class}`).clone();
-      EntryRow.find(".word").text(entry);
+      EntryRow.attr("word-id", entry.word_id);
+      EntryRow.find(".word").text(entry.word);
       EntryList.append(EntryRow);
     }
   }
 
   addToBlacklist() {
+    var guild_id = $("#guild_id").val();
     var new_word = $("#new_blacklistword").val();
     if (isEmpty(new_word)) { return; }
-    var req = {
-      "wordblacklist_word": new_word,
-      "wordblacklist_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_blacklistword").val("");
-      ConfigsO.blacklist.push(new_word.toLowerCase());
-      ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
-    }
-    var failfunc = function () {
-      $("#new_blacklistword").val("");
-    }
+    var req = {
+      "word": new_word,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/blacklistedwords/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_blacklistword").val("");
+      ConfigsO.showWordBlacklist();
+    })
+    .fail(function (data) {
+      $("#new_blacklistword").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding word to blacklist"} );
+    });
+
   }
 
   removeFromBlacklist(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.blacklist_phantom_class);
-    var word = Entry.find(".word").text();
-
-    var req = {
-      "wordblacklist_word": word,
-      "wordblacklist_action": "remove"
-    };
+    var word_id = Entry.attr("word-id");
+    if (isEmpty(word_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.blacklist.indexOf(word);
-      ConfigsO.blacklist.splice(i, 1);
-      ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
+    var req = {
+      "word_id": word_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/blacklistedwords/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showWordBlacklist();
+    })
+    .fail(function (data) {
+      $("#new_blacklistword").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing word from blacklist"} );
     });
   }
 
