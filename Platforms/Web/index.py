@@ -135,6 +135,7 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/discord/configs/leveldisabledchannels{x:/?}{method:.*}', self.apiDiscordConfigsLevelDisabledChannels)
 		self.Web.router.add_route('*', '/api/discord/configs/quotedisabledchannels{x:/?}{method:.*}', self.apiDiscordConfigsQuoteDisabledChannels)
 		self.Web.router.add_route('*', '/api/discord/configs/gameenabledchannels{x:/?}{method:.*}', self.apiDiscordConfigsGameEnabledChannels)
+		self.Web.router.add_route('*', '/api/discord/configs/nsfwenabledchannels{x:/?}{method:.*}', self.apiDiscordConfigsNsfwEnabledChannels)
 		self.Web.router.add_route('*', '/api/discord/configs/blacklistedwords{x:/?}{method:.*}', self.apiDiscordConfigsBlacklistedWords)
 		self.Web.router.add_route('*', '/api/discord/configs/whitelistedlinks{x:/?}{method:.*}', self.apiDiscordConfigsWhitelistedLink)
 		self.Web.router.add_route('*', '/api/discord/configs/exceptionroles{x:/?}{method:.*}', self.apiDiscordConfigsExceptionRoles)
@@ -160,6 +161,7 @@ class WebIndex(object):
 	from .Processing.Api.Discord.Configs.Leveldisabledchannels.main import apiDiscordConfigsLevelDisabledChannels
 	from .Processing.Api.Discord.Configs.Quotedisabledchannels.main import apiDiscordConfigsQuoteDisabledChannels
 	from .Processing.Api.Discord.Configs.Gameenabledchannels.main import apiDiscordConfigsGameEnabledChannels
+	from .Processing.Api.Discord.Configs.Nsfwenabledchannels.main import apiDiscordConfigsNsfwEnabledChannels
 	from .Processing.Api.Discord.Configs.Blacklistedwords.main import apiDiscordConfigsBlacklistedWords
 	from .Processing.Api.Discord.Configs.Whitelistedlinks.main import apiDiscordConfigsWhitelistedLink
 	from .Processing.Api.Discord.Configs.Exceptionroles.main import apiDiscordConfigsExceptionRoles
