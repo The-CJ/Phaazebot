@@ -653,6 +653,7 @@ async def singleActionDisableRegularChannel(cls:"WebIndex", WebRequest:Request, 
 	else:
 		return await apiWrongData(cls, WebRequest)
 
+# REPLACED
 async def singleActionEnableGameChannel(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent, Configs:DiscordServerSettings, CurrentGuild:discord.Guild) -> Response:
 	"""
 		Default url: /api/discord/configs/edit?enabled_gamechan_action=something
