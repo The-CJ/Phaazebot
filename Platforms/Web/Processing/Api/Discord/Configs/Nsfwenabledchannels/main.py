@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 from aiohttp.web import Response, Request
 # from .create import apiDiscordConfigsNsfwEnabledChannelsCreate
 # from .delete import apiDiscordConfigsNsfwEnabledChannelsDelete
-# from .get import apiDiscordConfigsNsfwEnabledChannelsGet
+from .get import apiDiscordConfigsNsfwEnabledChannelsGet
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordConfigsNsfwEnabledChannels(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -26,7 +26,7 @@ async def apiDiscordConfigsNsfwEnabledChannels(cls:"WebIndex", WebRequest:Reques
 	# elif method == "delete":
 		# return await apiDiscordConfigsNsfwEnabledChannelsDelete(cls, WebRequest)
 
-	# elif method == "get":
-		# return await apiDiscordConfigsNsfwEnabledChannelsGet(cls, WebRequest)
+	elif method == "get":
+		return await apiDiscordConfigsNsfwEnabledChannelsGet(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
