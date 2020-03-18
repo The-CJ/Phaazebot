@@ -68,7 +68,7 @@ async def apiDiscordConfigsWhitelistedLinkDelete(cls:"WebIndex", WebRequest:Requ
 	LinkToDelete:DiscordWhitelistedLink = link_res.pop(0)
 
 	cls.Web.BASE.PhaazeDB.deleteQuery("""
-		DELETE FROM `discord_blacklist_whitelistlink` WHERE `guild_id` = %s `id` = %s""",
+		DELETE FROM `discord_blacklist_whitelistlink` WHERE `guild_id` = %s AND `id` = %s""",
 		(LinkToDelete.guild_id, LinkToDelete.link_id)
 	)
 

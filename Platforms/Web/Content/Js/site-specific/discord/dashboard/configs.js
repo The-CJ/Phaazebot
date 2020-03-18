@@ -58,9 +58,9 @@ var Configs = new(class {
   showLinkWhitelist() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/whitelistedlinks/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.whitelist = data.result.blacklist_whitelistlinks;
+      ConfigsO.whitelist = data.result;
       ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
       $(ConfigsO.whitelist_modal_id).modal("show");
     })
@@ -73,44 +73,54 @@ var Configs = new(class {
     var EntryList = $(`${this.whitelist_modal_id} .modal-itemlist`).html("");
     for (var entry of whitelist_links) {
       var EntryRow = $(`[phantom] ${this.whitelist_phantom_class}`).clone();
-      EntryRow.find(".link").text(entry);
+      EntryRow.attr("link-id", entry.link_id);
+      EntryRow.find(".link").text(entry.link);
       EntryList.append(EntryRow);
     }
   }
 
   addToLinkWhitelist() {
+    var guild_id = $("#guild_id").val();
     var new_link = $("#new_whitelistlink").val();
     if (isEmpty(new_link)) { return; }
-    var req = {
-      "linkwhitelist_link": new_link,
-      "linkwhitelist_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function () {
-      $("#new_whitelistlink").val("");
-      ConfigsO.whitelist.push(new_link.toLowerCase());
-      ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
-    }
-    var failfunc = function() {
-      $("#new_whitelistlink").val("");
-    }
+    var req = {
+      "link": new_link,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/whitelistedlinks/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_whitelistlink").val("");
+      ConfigsO.showLinkWhitelist();
+    })
+    .fail(function (data) {
+      $("#new_whitelistlink").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding link to whitelist"} );
+    });
+
   }
 
   removeFromLinkWhitelist(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.whitelist_phantom_class);
-    var link = Entry.find(".link").text();
-
-    var req = {
-      "linkwhitelist_link": link,
-      "linkwhitelist_action": "remove"
-    };
+    var link_id = Entry.attr("link-id");
+    if (isEmpty(link_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.whitelist.indexOf(link);
-      ConfigsO.whitelist.splice(i, 1);
-      ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
+    var req = {
+      "link_id": link_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/whitelistedlinks/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showLinkWhitelist();
+    })
+    .fail(function (data) {
+      $("#new_whitelistlink").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing link from whitelist"} );
     });
 
   }
