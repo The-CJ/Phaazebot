@@ -17,6 +17,7 @@ from Utils.Classes.discordregulardisabledchannel import DiscordRegularDisabledCh
 from Utils.Classes.discordnormaldisabledchannel import DiscordNormalDisabledChannel
 from Utils.Classes.discordquotedisabledchannel import DiscordQuoteDisabledChannel
 from Utils.Classes.discordgameenablededchannel import DiscordGameEnabledChannel
+from Utils.Classes.discordnsfwenablededchannel import DiscordNsfwEnabledChannel
 
 # base settings/config management
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
@@ -792,6 +793,56 @@ async def getDiscordServerGameEnabledChannels(cls:"PhaazebotDiscord", guild_id:s
 	else:
 		return []
 
+async def getDiscordServerNsfwEnabledChannels(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
+	"""
+	Get channels where nsfw commands are enabled for a guild.
+	Returns a list of DiscordNsfwEnabledChannel().
+
+	Optional keywords:
+	------------------
+	* entry_id `str` or `int`: (Default: None)
+	* channel_id `str`: (Default: None)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpack
+	entry_id:str or int = search.get("entry_id", None)
+	channel_id:str = search.get("channel_id", None)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
+	sql:str = """
+		SELECT * FROM `discord_enabled_nsfwchannel`
+		WHERE `discord_enabled_nsfwchannel`.`guild_id` = %s"""
+
+	values:tuple = ( str(guild_id), )
+
+	if entry_id:
+		sql += " AND `discord_enabled_nsfwchannel`.`id` = %s"
+		values += ( int(entry_id), )
+
+	if channel_id:
+		sql += " AND `discord_enabled_nsfwchannel`.`channel_id` = %s"
+		values += ( str(channel_id), )
+
+	sql += f" {order_str}"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	if res:
+		return [DiscordNsfwEnabledChannel(x, guild_id) for x in res]
+
+	else:
+		return []
+
 # db total counter
 async def getDiscordServerCommandsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
@@ -942,6 +993,18 @@ async def getDiscordServerGameEnabledChannelAmount(cls:"PhaazebotDiscord", guild
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_enabled_gamechannel`
 		WHERE `discord_enabled_gamechannel`.`guild_id` = %s AND {where}"""
+
+	values:tuple = ( str(guild_id), ) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
+async def getDiscordServerNsfwEnabledChannelAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_enabled_nsfwchannel`
+		WHERE `discord_enabled_nsfwchannel`.`guild_id` = %s AND {where}"""
 
 	values:tuple = ( str(guild_id), ) + where_values
 
