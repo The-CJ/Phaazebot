@@ -421,14 +421,14 @@ var Configs = new(class {
   showDisableChanNormal() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/normaldisabledchannels/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.disable_chan_normal = data.result.disabled_normalchannels;
+      ConfigsO.disable_chan_normal = data.result;
       ConfigsO.buildDisableChanNormal(ConfigsO.disable_chan_normal);
       $(Configs.disable_normal_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading normal channels"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading normal disabled channels"} );
     })
   }
 
@@ -436,51 +436,58 @@ var Configs = new(class {
     var EntryList = $(`${this.disable_normal_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
       var EntryRow = $(`[phantom] ${this.disable_normal_phantom_class}`).clone();
-      var channel = DiscordDashboard.getDiscordChannelByID(entry);
-      EntryRow.find("[channel-id]").val(entry);
+      var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
+      EntryRow.attr("entry-id", entry.entry_id);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
       if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
       }
-
       EntryList.append(EntryRow);
     }
   }
 
   addToDisableChanNormal() {
+    var guild_id = $("#guild_id").val();
     var new_channel_id = $("#new_disable_chan_normal").val();
     if (isEmpty(new_channel_id)) { return; }
-    var req = {
-      "disabled_normalchan_id": new_channel_id,
-      "disabled_normalchan_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_disable_chan_normal").val("");
-      ConfigsO.disable_chan_normal.push(new_channel_id);
-      ConfigsO.buildDisableChanNormal(ConfigsO.disable_chan_normal);
-    }
-    var failfunc = function () {
-      $("#new_disable_chan_normal").val("");
-    }
+    var req = {
+      "channel_id": new_channel_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/normaldisabledchannels/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_disable_chan_normal").val("");
+      ConfigsO.showDisableChanNormal();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_normal").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding channel to normal disabled list"} );
+    });
   }
 
   removeFromDisableChanNormal(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.disable_normal_phantom_class);
-    var channel_id = Entry.find("[channel-id]").val();
-
-    var req = {
-      "disabled_normalchan_id": channel_id,
-      "disabled_normalchan_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
+    if (isEmpty(entry_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.disable_chan_normal.indexOf(channel_id);
-      ConfigsO.disable_chan_normal.splice(i, 1);
-      ConfigsO.buildDisableChanNormal(ConfigsO.disable_chan_normal);
+    var req = {
+      "entry_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/normaldisabledchannels/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showDisableChanNormal();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_normal").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from normal disabled list"} );
     });
   }
 
