@@ -641,14 +641,14 @@ var Configs = new(class {
   showEnableChanNSFW() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/nsfwenabledchannels/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.enable_chan_nsfw = data.result.enabled_nsfwchannels;
+      ConfigsO.enable_chan_nsfw = data.result;
       ConfigsO.buildEnableChanNSFW(ConfigsO.enable_chan_nsfw);
       $(Configs.enable_nsfw_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading nsfw channels"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading nsfw enabled channels"} );
     })
   }
 
@@ -656,8 +656,8 @@ var Configs = new(class {
     var EntryList = $(`${this.enable_nsfw_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
       var EntryRow = $(`[phantom] ${this.enable_nsfw_phantom_class}`).clone();
-      var channel = DiscordDashboard.getDiscordChannelByID(entry);
-      EntryRow.find("[channel-id]").val(entry);
+      var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
+      EntryRow.attr("entry-id", entry.entry_id);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
       if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
@@ -669,38 +669,45 @@ var Configs = new(class {
   }
 
   addToEnableChanNSFW() {
+    var guild_id = $("#guild_id").val();
     var new_channel_id = $("#new_enable_chan_nsfw").val();
     if (isEmpty(new_channel_id)) { return; }
-    var req = {
-      "enabled_nsfwchan_id": new_channel_id,
-      "enabled_nsfwchan_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_enable_chan_nsfw").val("");
-      ConfigsO.enable_chan_nsfw.push(new_channel_id.toLowerCase());
-      ConfigsO.buildEnableChanNSFW(ConfigsO.enable_chan_nsfw);
-    }
-    var failfunc = function () {
-      $("#new_enable_chan_nsfw").val("");
-    }
+    var req = {
+      "channel_id": new_channel_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/nsfwenabledchannels/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_enable_chan_nsfw").val("");
+      ConfigsO.showEnableChanNSFW();
+    })
+    .fail(function (data) {
+      $("#new_enable_chan_nsfw").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding channel to nsfw enabled list"} );
+    });
   }
 
   removeFromEnableChanNSFW(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.enable_nsfw_phantom_class);
-    var channel_id = Entry.find("[channel-id]").val();
-
-    var req = {
-      "enabled_nsfwchan_id": channel_id,
-      "enabled_nsfwchan_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.enable_chan_nsfw.indexOf(channel_id);
-      ConfigsO.enable_chan_nsfw.splice(i, 1);
-      ConfigsO.buildEnableChanNSFW(ConfigsO.enable_chan_nsfw);
+    var req = {
+      "entry_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/nsfwenabledchannels/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showEnableChanNSFW();
+    })
+    .fail(function (data) {
+      $("#new_enable_chan_nsfw").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from nsfw enabled list"} );
     });
   }
 
