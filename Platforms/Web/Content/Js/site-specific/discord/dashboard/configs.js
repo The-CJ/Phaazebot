@@ -199,9 +199,9 @@ var Configs = new(class {
   showExecptionRoles() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/exceptionroles/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.except_roleslist = data.result.blacklist_whitelistroles;
+      ConfigsO.except_roleslist = data.result;
       ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
       $(ConfigsO.exceptionrole_modal_id).modal("show");
     })
@@ -214,51 +214,58 @@ var Configs = new(class {
     var EntryList = $(`${this.exceptionrole_modal_id} .modal-itemlist`).html("");
     for (var entry of exceptionroles_roles) {
       var EntryRow = $(`[phantom] ${this.exceptionrole_phantom_class}`).clone();
-      var role = DiscordDashboard.getDiscordRoleByID(entry);
-      EntryRow.find("[role-id]").val(entry);
+      var role = DiscordDashboard.getDiscordRoleByID(entry.role_id);
+      EntryRow.attr("entry-id", entry.exceptionrole_id);
       EntryRow.find(".name").text( role ? role.name : "(DELETED ROLE)" );
       if (isEmpty(role)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This role is deleted on the server and can be deleted here as well without any worries");
       }
-
       EntryList.append(EntryRow);
     }
   }
 
   addToExecptionRoles() {
+    var guild_id = $("#guild_id").val();
     var new_role_id = $("#new_exceptionrole").val();
     if (isEmpty(new_role_id)) { return; }
-    var req = {
-      "exceptionrole_id": new_role_id,
-      "exceptionrole_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_exceptionrole").val("");
-      ConfigsO.except_roleslist.push(new_role_id.toLowerCase());
-      ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
-    }
-    var failfunc = function () {
-      $("#new_exceptionrole").val("");
-    }
+    var req = {
+      "role_id": new_role_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/exceptionroles/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_exceptionrole").val("");
+      ConfigsO.showExecptionRoles();
+    })
+    .fail(function (data) {
+      $("#new_exceptionrole").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding role to exceptionroles"} );
+    });
   }
 
   removeFromExecptionRoles(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.exceptionrole_phantom_class);
-    var role_id = Entry.find("[role-id]").val();
-
-    var req = {
-      "exceptionrole_id": role_id,
-      "exceptionrole_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
+    if (isEmpty(entry_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.except_roleslist.indexOf(role_id);
-      ConfigsO.except_roleslist.splice(i, 1);
-      ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
+    var req = {
+      "exceptionrole_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/exceptionroles/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showExecptionRoles();
+    })
+    .fail(function (data) {
+      $("#new_blacklistword").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from exceptionroles"} );
     });
   }
 
