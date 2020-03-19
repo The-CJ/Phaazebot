@@ -264,7 +264,7 @@ var Configs = new(class {
       ConfigsO.showExecptionRoles();
     })
     .fail(function (data) {
-      $("#new_blacklistword").val("");
+      $("#new_exceptionrole").val("");
       generalAPIErrorHandler( {data:data, msg:"error removing entry from exceptionroles"} );
     });
   }
@@ -338,7 +338,7 @@ var Configs = new(class {
       ConfigsO.showDisableChanLevel();
     })
     .fail(function (data) {
-      $("#new_blacklistword").val("");
+      $("#new_disable_chan_level").val("");
       generalAPIErrorHandler( {data:data, msg:"error removing entry from level disabled list"} );
     });
   }
@@ -347,14 +347,14 @@ var Configs = new(class {
   showDisableChanQuote() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/quotedisabledchannels/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.disable_chan_quote = data.result.disabled_quotechannels;
+      ConfigsO.disable_chan_quote = data.result;
       ConfigsO.buildDisableChanQuote(ConfigsO.disable_chan_quote);
       $(ConfigsO.disable_quote_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading quote channels"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading quote disabled channels"} );
     })
   }
 
@@ -362,51 +362,58 @@ var Configs = new(class {
     var EntryList = $(`${this.disable_quote_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
       var EntryRow = $(`[phantom] ${this.disable_quote_phantom_class}`).clone();
-      var channel = DiscordDashboard.getDiscordChannelByID(entry);
-      EntryRow.find("[channel-id]").val(entry);
+      var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
+      EntryRow.attr("entry-id", entry.entry_id);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
       if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
       }
-
       EntryList.append(EntryRow);
     }
   }
 
   addToDisableChanQuote() {
+    var guild_id = $("#guild_id").val();
     var new_channel_id = $("#new_disable_chan_quote").val();
     if (isEmpty(new_channel_id)) { return; }
-    var req = {
-      "disabled_quotechan_id": new_channel_id,
-      "disabled_quotechan_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_disable_chan_quote").val("");
-      ConfigsO.disable_chan_quote.push(new_channel_id);
-      ConfigsO.buildDisableChanQuote(ConfigsO.disable_chan_quote);
-    }
-    var failfunc = function () {
-      $("#new_disable_chan_quote").val("");
-    }
+    var req = {
+      "channel_id": new_channel_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/quotedisabledchannels/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_disable_chan_quote").val("");
+      ConfigsO.showDisableChanQuote();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_quote").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding channel to quote disabled list"} );
+    });
   }
 
   removeFromDisableChanQuote(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.disable_quote_phantom_class);
-    var channel_id = Entry.find("[channel-id]").val();
-
-    var req = {
-      "disabled_quotechan_id": channel_id,
-      "disabled_quotechan_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
+    if (isEmpty(entry_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.disable_chan_quote.indexOf(channel_id);
-      ConfigsO.disable_chan_quote.splice(i, 1);
-      ConfigsO.buildDisableChanQuote(ConfigsO.disable_chan_quote);
+    var req = {
+      "entry_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/quotedisabledchannels/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showDisableChanQuote();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_quote").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from quote disabled list"} );
     });
   }
 
