@@ -568,14 +568,14 @@ var Configs = new(class {
   showEnableChanGame() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/gameenabledchannels/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.enable_chan_game = data.result.enabled_gamechannels;
+      ConfigsO.enable_chan_game = data.result;
       ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
       $(ConfigsO.enable_game_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading game channels"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading game enabled channels"} );
     })
   }
 
@@ -583,51 +583,57 @@ var Configs = new(class {
     var EntryList = $(`${this.enable_game_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
       var EntryRow = $(`[phantom] ${this.enable_game_phantom_class}`).clone();
-      var channel = DiscordDashboard.getDiscordChannelByID(entry);
-      EntryRow.find("[channel-id]").val(entry);
+      var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
+      EntryRow.attr("entry-id", entry.entry_id);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
       if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
       }
-
       EntryList.append(EntryRow);
     }
   }
 
   addToEnableChanGame() {
+    var guild_id = $("#guild_id").val();
     var new_channel_id = $("#new_enable_chan_game").val();
     if (isEmpty(new_channel_id)) { return; }
-    var req = {
-      "enabled_gamechan_id": new_channel_id,
-      "enabled_gamechan_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_enable_chan_game").val("");
-      ConfigsO.enable_chan_game.push(new_channel_id);
-      ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
-    }
-    var failfunc = function () {
-      $("#new_enable_chan_game").val("");
-    }
+    var req = {
+      "channel_id": new_channel_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/gameenabledchannels/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_enable_chan_game").val("");
+      ConfigsO.showEnableChanGame();
+    })
+    .fail(function (data) {
+      $("#new_enable_chan_game").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding channel to game enabled list"} );
+    });
   }
 
   removeFromEnableChanGame(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.enable_game_phantom_class);
-    var channel_id = Entry.find("[channel-id]").val();
-
-    var req = {
-      "enabled_gamechan_id": channel_id,
-      "enabled_gamechan_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.enable_chan_game.indexOf(channel_id);
-      ConfigsO.enable_chan_game.splice(i, 1);
-      ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
+    var req = {
+      "entry_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/gameenabledchannels/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showEnableChanGame();
+    })
+    .fail(function (data) {
+      $("#new_enable_chan_game").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from game enabled list"} );
     });
   }
 
