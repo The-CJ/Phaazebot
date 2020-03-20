@@ -36,7 +36,7 @@
 <div modal>
 
   <div class="modal fade" id="command_create" mode="new">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -57,56 +57,80 @@
           <hr>
 
           <!-- active -->
-          <div class="center-item-row md-form">
-            <span class="col text-left">Active:</span>
+          <div class="center-item-row">
+            <div class="col text-left">
+              <span>Active:</span>
+            </div>
             <div class="col text-center">
-              <input type="checkbox" name="active" style="height:2ch; width:2ch;" checked>
+              <label class="checkbox-container">
+                <input type="checkbox" name="active" checked>
+              </label>
             </div>
           </div>
 
           <!-- require -->
           <div class="center-item-row md-form">
-            <span class="col text-left">Can be used by:</span>
-            <select name="require" class="browser-default custom-select">
-              <option value="" selected>Select requirement...</option>
-              <option value="0">Everyone</option>
-              <option value="1">Regular</option>
-              <option value="2">Moderator</option>
-              <option value="3">Server Owner</option>
-            </select>
+            <div class="col text-left">
+              <span>Can be used by:</span>
+            </div>
+            <div class="col text-center">
+              <select name="require" class="browser-default custom-select">
+                <option value="" selected>Select requirement...</option>
+                <option value="0">Everyone</option>
+                <option value="1">Regular</option>
+                <option value="2">Moderator</option>
+                <option value="3">Server Owner</option>
+              </select>
+            </div>
           </div>
 
           <!-- require_currency -->
           <div class="center-item-row md-form">
-            <span class="col text-left">Cost to use this command:</span>
-            <input type="number" name="required_currency" value="0" min="0">
+            <div class="col text-left">
+              <span>Cost to use this command:</span>
+            </div>
+            <div class="col text-center">
+              <input type="number" name="required_currency" value="0" min="0" style="width:100%;">
+            </div>
           </div>
 
           <!-- hidden -->
-          <div class="center-item-row md-form">
-            <span class="col text-left">Hidden command?</span>
+          <div class="center-item-row">
+            <div class="col text-left">
+              <span>Hidden command?</span>
+            </div>
             <div class="col text-center">
-              <input type="checkbox" name="hidden" style="height:2ch; width:2ch;">
+              <label class="checkbox-container">
+                <input type="checkbox" name="hidden">
+              </label>
             </div>
           </div>
 
           <!-- cooldown -->
           <div class="center-item-row md-form">
-            <span class="col text-left">Cooldown in sec.</span>
+            <div class="col text-left">
+              <span>Cooldown in sec.</span>
+            </div>
             <div class="col text-center">
-              <input type="number" name="cooldown" value="10" min="3" max="600" oninput="Commands.updateSlider(this.value)" style="width:6ch;">
-              <input type="range" name="cooldown_slider" value="10" min="3" max="600" step="1" oninput="Commands.updateSlider(this.value)">
+              <div class="center-item-row">
+                <input type="number" name="cooldown" value="10" min="3" max="600" oninput="Commands.updateSlider(this.value)" style="width:20%;">
+                <input type="range" name="cooldown_slider" value="10" min="3" max="600" step="1" oninput="Commands.updateSlider(this.value)" style="width:80%;">
+              </div>
             </div>
           </div>
 
           <!-- complex -->
           <div class="center-item-row md-form">
-            <span class="col text-left">What type of command?</span>
-            <select name="commandtype" class="browser-default custom-select" onchange="Commands.loadCommands(this)">
-              <option value="">Choose a type...</option>
-              <option value="simple">Simple</option>
-              <option value="complex">Complex</option>
-            </select>
+            <div class="col text-left">
+              <span>What type of command?</span>
+            </div>
+            <div class="col text-center">
+              <select name="commandtype" class="browser-default custom-select" onchange="Commands.loadCommands(this)">
+                <option value="">Choose a type...</option>
+                <option value="simple">Simple</option>
+                <option value="complex">Complex</option>
+              </select>
+            </div>
           </div>
 
           <hr>

@@ -60,6 +60,8 @@
 label.checkbox-container {
 	margin-right: auto;
 	margin-left: auto;
+	margin-top: 0;
+	margin-bottom: 0;
 	display: flex;
 	flex-direction: row;
 	align-items: center;

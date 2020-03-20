@@ -292,7 +292,7 @@
 <div modal>
 
   <div class="modal fade" id="token_modal_help">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -376,7 +376,7 @@
   </div>
 
   <div class="modal fade" id="config_modal_blacklist_words">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -419,7 +419,7 @@
   </div>
 
   <div class="modal fade" id="config_modal_whitelist_links">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -459,7 +459,7 @@
   </div>
 
   <div class="modal fade" id="config_modal_exeption_roles">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -498,7 +498,7 @@
   </div>
 
   <div class="modal fade" id="config_modal_disable_chan_level">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -535,7 +535,7 @@
   </div>
 
   <div class="modal fade" id="config_modal_disable_chan_quote">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -572,7 +572,7 @@
   </div>
 
   <div class="modal fade" id="config_modal_disable_chan_normal">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -609,7 +609,7 @@
   </div>
 
   <div class="modal fade" id="config_modal_disable_chan_regular">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -646,7 +646,7 @@
   </div>
 
   <div class="modal fade" id="config_modal_enable_chan_game">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -683,7 +683,7 @@
   </div>
 
   <div class="modal fade" id="config_modal_enable_chan_nsfw">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
@@ -725,66 +725,66 @@
 <div phantom hidden>
 
   <div class="center-item-row forced blacklistword" word-id="-1">
-    <div class="col word"></div>
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromBlacklist(this)"><i class="fas fa-times"></i></button>
     </div>
+    <div class="col word"></div>
   </div>
 
   <div class="center-item-row forced whitelistlink" link-id="-1">
-    <div class="col link"></div>
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromLinkWhitelist(this)"><i class="fas fa-times"></i></button>
     </div>
+    <div class="col link"></div>
   </div>
 
   <div class="center-item-row forced exceptionrole" entry-id="-1">
-    <div class="col name"></div>
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromExecptionRoles(this)"><i class="fas fa-times"></i></button>
     </div>
+    <div class="col name"></div>
   </div>
 
   <div class="center-item-row forced disablechanlevel" entry-id="-1">
-    <div class="col name"></div>
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromDisableChanLevel(this)"><i class="fas fa-times"></i></button>
     </div>
+    <div class="col name"></div>
   </div>
 
   <div class="center-item-row forced disablechanquote" entry-id="-1">
-    <div class="col name"></div>
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromDisableChanQuote(this)"><i class="fas fa-times"></i></button>
     </div>
+    <div class="col name"></div>
   </div>
 
   <div class="center-item-row forced disablechannormal" entry-id="-1">
-    <div class="col name"></div>
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromDisableChanNormal(this)"><i class="fas fa-times"></i></button>
     </div>
+    <div class="col name"></div>
   </div>
 
   <div class="center-item-row forced disablechanregular" entry-id="-1">
-    <div class="col name"></div>
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromDisableChanRegular(this)"><i class="fas fa-times"></i></button>
     </div>
+    <div class="col name"></div>
   </div>
 
   <div class="center-item-row forced enablechangame" entry-id="-1">
-    <div class="col name"></div>
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromEnableChanGame(this)"><i class="fas fa-times"></i></button>
     </div>
+    <div class="col name"></div>
   </div>
 
   <div class="center-item-row forced enablechannsfw" entry-id="-1">
-    <div class="col name"></div>
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromEnableChanNSFW(this)"><i class="fas fa-times"></i></button>
     </div>
+    <div class="col name"></div>
   </div>
 
 </div>
