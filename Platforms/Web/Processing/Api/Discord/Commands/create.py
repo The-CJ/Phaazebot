@@ -79,10 +79,10 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	)
 
 	if res[0]["match"]:
-		return await apiDiscordCommandExists(cls, WebRequest, command=trigger)
+		return await apiDiscordCommandExists(cls, WebRequest, trigger=trigger)
 
 	if res[0]["all"] >= cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT:
-		return await apiDiscordCommandLimit(cls, WebRequest)
+		return await apiDiscordCommandLimit(cls, WebRequest, limit=cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT)
 
 	# get user info
 	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
@@ -98,25 +98,24 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	# create new
-	new:dict = dict(
-		guild_id = guild_id,
-		trigger = trigger,
-		content = content,
-		function = function,
-		complex = complex_,
-		hidden = hidden,
-		require = require,
-		required_currency = required_currency,
-		cooldown = cooldown
+	cls.Web.BASE.PhaazeDB.insertQuery(
+		table="discord_command",
+		content={
+			"guild_id": guild_id,
+			"trigger": trigger,
+			"content": content,
+			"function": function,
+			"complex": complex_,
+			"hidden": hidden,
+			"require": require,
+			"required_currency": required_currency,
+			"cooldown": cooldown
+		}
 	)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(table="discord_command", content=new)
-
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new command: S:{guild_id} T:{trigger} N:{str(new)}", require="discord:commands")
-
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Commands: {guild_id=} added: {trigger=}", require="discord:commands")
 	return cls.response(
-		text=json.dumps( dict(msg="new command successfull created", command=trigger, status=200) ),
+		text=json.dumps( dict(msg="Commands: Added new entry", entry=trigger, status=200) ),
 		content_type="application/json",
 		status=200
 	)

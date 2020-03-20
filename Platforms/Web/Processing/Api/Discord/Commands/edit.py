@@ -163,13 +163,13 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		table = "discord_command",
 		content = db_update,
 		where = "`discord_command`.`guild_id` = %s AND `discord_command`.`id` = %s",
-		where_values = (guild_id, command_id)
+		where_values = (CurrentEditCommand.server_id, CurrentEditCommand.command_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Edited command: S:{guild_id} C:{command_id} U:{str(db_update)}", require="discord:commands")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Commands: {guild_id=} edited {command_id=}", require="discord:commands")
 
 	return cls.response(
-		text=json.dumps( dict(msg="new command successfull edited", command=CurrentEditCommand.trigger, changes=update, status=200) ),
+		text=json.dumps( dict(msg="Commands: Edited entry", changes=update, status=200) ),
 		content_type="application/json",
 		status=200
 	)

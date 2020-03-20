@@ -7,8 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.utils import getDiscordTwitchAlerts, getDiscordTwitchAlertsAmount
-from Utils.Classes.undefined import UNDEFINED
+from Platforms.Discord.utils import getDiscordServerTwitchAlerts, getDiscordServerTwitchAlertsAmount
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
@@ -24,7 +23,7 @@ async def apiDiscordTwitchalertsGet(cls:"WebIndex", WebRequest:Request) -> Respo
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	alert_id:int = Data.getInt("alert_id", UNDEFINED, min_x=1)
+	alert_id:int = Data.getStr("alert_id", "", must_be_digit=True)
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	offset:int = Data.getInt("offset", 0, min_x=0)
 
@@ -38,7 +37,7 @@ async def apiDiscordTwitchalertsGet(cls:"WebIndex", WebRequest:Request) -> Respo
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get alerts
-	res_alerts:list = await getDiscordTwitchAlerts(PhaazeDiscord, guild_id=guild_id, alert_id=alert_id, limit=limit, offset=offset)
+	res_alerts:list = await getDiscordServerTwitchAlerts(PhaazeDiscord, guild_id=guild_id, alert_id=alert_id, limit=limit, offset=offset)
 
 	# if only one is requestet, also send custom content
 	with_message:bool = True if alert_id else False
@@ -46,7 +45,7 @@ async def apiDiscordTwitchalertsGet(cls:"WebIndex", WebRequest:Request) -> Respo
 	return cls.response(
 		text=json.dumps( dict(
 			result=[ Alert.toJSON(custom_msg=with_message) for Alert in res_alerts ],
-			total=( await getDiscordTwitchAlertsAmount(PhaazeDiscord, guild_id) ),
+			total=( await getDiscordServerTwitchAlertsAmount(PhaazeDiscord, guild_id) ),
 			status=200)
 		),
 		content_type="application/json",

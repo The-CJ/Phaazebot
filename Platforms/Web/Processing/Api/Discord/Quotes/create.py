@@ -68,18 +68,18 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	# new quote
-	new:dict = dict(
-		guild_id = guild_id,
-		content = content
+	cls.Web.BASE.PhaazeDB.insertQuery(
+		table="discord_quote",
+		content={
+			"guild_id": guild_id,
+			"content": content
+		}
 	)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(table="discord_quote", content=new)
-
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new quote: S:{guild_id}", require="discord:quotes")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Quote: {guild_id=} added new entry", require="discord:quotes")
 
 	return cls.response(
-		text=json.dumps( dict(msg="new quote successfull created", status=200) ),
+		text=json.dumps( dict(msg="Quote: Added new entry", entry=content, status=200) ),
 		content_type="application/json",
 		status=200
 	)

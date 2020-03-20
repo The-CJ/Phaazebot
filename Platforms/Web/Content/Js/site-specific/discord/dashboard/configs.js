@@ -58,14 +58,14 @@ var Configs = new(class {
   showLinkWhitelist() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/whitelistedlinks/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.whitelist = data.result.blacklist_whitelistlinks;
+      ConfigsO.whitelist = data.result;
       ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
       $(ConfigsO.whitelist_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading word link whitelist"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading link whitelist"} );
     })
   }
 
@@ -73,44 +73,54 @@ var Configs = new(class {
     var EntryList = $(`${this.whitelist_modal_id} .modal-itemlist`).html("");
     for (var entry of whitelist_links) {
       var EntryRow = $(`[phantom] ${this.whitelist_phantom_class}`).clone();
-      EntryRow.find(".link").text(entry);
+      EntryRow.attr("link-id", entry.link_id);
+      EntryRow.find(".link").text(entry.link);
       EntryList.append(EntryRow);
     }
   }
 
   addToLinkWhitelist() {
+    var guild_id = $("#guild_id").val();
     var new_link = $("#new_whitelistlink").val();
     if (isEmpty(new_link)) { return; }
-    var req = {
-      "linkwhitelist_link": new_link,
-      "linkwhitelist_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function () {
-      $("#new_whitelistlink").val("");
-      ConfigsO.whitelist.push(new_link.toLowerCase());
-      ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
-    }
-    var failfunc = function() {
-      $("#new_whitelistlink").val("");
-    }
+    var req = {
+      "link": new_link,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/whitelistedlinks/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_whitelistlink").val("");
+      ConfigsO.showLinkWhitelist();
+    })
+    .fail(function (data) {
+      $("#new_whitelistlink").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding link to whitelist"} );
+    });
+
   }
 
   removeFromLinkWhitelist(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.whitelist_phantom_class);
-    var link = Entry.find(".link").text();
-
-    var req = {
-      "linkwhitelist_link": link,
-      "linkwhitelist_action": "remove"
-    };
+    var link_id = Entry.attr("link-id");
+    if (isEmpty(link_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.whitelist.indexOf(link);
-      ConfigsO.whitelist.splice(i, 1);
-      ConfigsO.buildLinkWhitelist(ConfigsO.whitelist);
+    var req = {
+      "link_id": link_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/whitelistedlinks/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showLinkWhitelist();
+    })
+    .fail(function (data) {
+      $("#new_whitelistlink").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing link from whitelist"} );
     });
 
   }
@@ -119,9 +129,9 @@ var Configs = new(class {
   showWordBlacklist() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/blacklistedwords/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.blacklist = data.result.blacklist_blacklistwords;
+      ConfigsO.blacklist = data.result;
       ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
       $(ConfigsO.blacklist_modal_id).modal("show");
     })
@@ -134,44 +144,54 @@ var Configs = new(class {
     var EntryList = $(`${this.blacklist_modal_id} .modal-itemlist`).html("");
     for (var entry of blacklist_blacklistwords) {
       var EntryRow = $(`[phantom] ${this.blacklist_phantom_class}`).clone();
-      EntryRow.find(".word").text(entry);
+      EntryRow.attr("word-id", entry.word_id);
+      EntryRow.find(".word").text(entry.word);
       EntryList.append(EntryRow);
     }
   }
 
   addToBlacklist() {
+    var guild_id = $("#guild_id").val();
     var new_word = $("#new_blacklistword").val();
     if (isEmpty(new_word)) { return; }
-    var req = {
-      "wordblacklist_word": new_word,
-      "wordblacklist_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_blacklistword").val("");
-      ConfigsO.blacklist.push(new_word.toLowerCase());
-      ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
-    }
-    var failfunc = function () {
-      $("#new_blacklistword").val("");
-    }
+    var req = {
+      "word": new_word,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/blacklistedwords/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_blacklistword").val("");
+      ConfigsO.showWordBlacklist();
+    })
+    .fail(function (data) {
+      $("#new_blacklistword").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding word to blacklist"} );
+    });
+
   }
 
   removeFromBlacklist(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.blacklist_phantom_class);
-    var word = Entry.find(".word").text();
-
-    var req = {
-      "wordblacklist_word": word,
-      "wordblacklist_action": "remove"
-    };
+    var word_id = Entry.attr("word-id");
+    if (isEmpty(word_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.blacklist.indexOf(word);
-      ConfigsO.blacklist.splice(i, 1);
-      ConfigsO.buildWordBlacklist(ConfigsO.blacklist);
+    var req = {
+      "word_id": word_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/blacklistedwords/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showWordBlacklist();
+    })
+    .fail(function (data) {
+      $("#new_blacklistword").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing word from blacklist"} );
     });
   }
 
@@ -179,9 +199,9 @@ var Configs = new(class {
   showExecptionRoles() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/exceptionroles/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.except_roleslist = data.result.blacklist_whitelistroles;
+      ConfigsO.except_roleslist = data.result;
       ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
       $(ConfigsO.exceptionrole_modal_id).modal("show");
     })
@@ -194,51 +214,58 @@ var Configs = new(class {
     var EntryList = $(`${this.exceptionrole_modal_id} .modal-itemlist`).html("");
     for (var entry of exceptionroles_roles) {
       var EntryRow = $(`[phantom] ${this.exceptionrole_phantom_class}`).clone();
-      var role = DiscordDashboard.getDiscordRoleByID(entry);
-      EntryRow.find("[role-id]").val(entry);
+      var role = DiscordDashboard.getDiscordRoleByID(entry.role_id);
+      EntryRow.attr("entry-id", entry.exceptionrole_id);
       EntryRow.find(".name").text( role ? role.name : "(DELETED ROLE)" );
       if (isEmpty(role)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This role is deleted on the server and can be deleted here as well without any worries");
       }
-
       EntryList.append(EntryRow);
     }
   }
 
   addToExecptionRoles() {
+    var guild_id = $("#guild_id").val();
     var new_role_id = $("#new_exceptionrole").val();
     if (isEmpty(new_role_id)) { return; }
-    var req = {
-      "exceptionrole_id": new_role_id,
-      "exceptionrole_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_exceptionrole").val("");
-      ConfigsO.except_roleslist.push(new_role_id.toLowerCase());
-      ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
-    }
-    var failfunc = function () {
-      $("#new_exceptionrole").val("");
-    }
+    var req = {
+      "role_id": new_role_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/exceptionroles/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_exceptionrole").val("");
+      ConfigsO.showExecptionRoles();
+    })
+    .fail(function (data) {
+      $("#new_exceptionrole").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding role to exceptionroles"} );
+    });
   }
 
   removeFromExecptionRoles(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.exceptionrole_phantom_class);
-    var role_id = Entry.find("[role-id]").val();
-
-    var req = {
-      "exceptionrole_id": role_id,
-      "exceptionrole_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
+    if (isEmpty(entry_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.except_roleslist.indexOf(role_id);
-      ConfigsO.except_roleslist.splice(i, 1);
-      ConfigsO.buildExecptionRoles(ConfigsO.except_roleslist);
+    var req = {
+      "exceptionrole_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/exceptionroles/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showExecptionRoles();
+    })
+    .fail(function (data) {
+      $("#new_exceptionrole").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from exceptionroles"} );
     });
   }
 
@@ -246,14 +273,14 @@ var Configs = new(class {
   showDisableChanLevel() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/leveldisabledchannels/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.disable_chan_level = data.result.disabled_levelchannels;
+      ConfigsO.disable_chan_level = data.result;
       ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
       $(ConfigsO.disable_level_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading execption channels"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading level disabled channels"} );
     })
   }
 
@@ -261,51 +288,58 @@ var Configs = new(class {
     var EntryList = $(`${this.disable_level_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
       var EntryRow = $(`[phantom] ${this.disable_level_phantom_class}`).clone();
-      var channel = DiscordDashboard.getDiscordChannelByID(entry);
-      EntryRow.find("[channel-id]").val(entry);
+      var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
+      EntryRow.attr("entry-id", entry.entry_id);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
       if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
       }
-
       EntryList.append(EntryRow);
     }
   }
 
   addToDisableChanLevel() {
+    var guild_id = $("#guild_id").val();
     var new_channel_id = $("#new_disable_chan_level").val();
     if (isEmpty(new_channel_id)) { return; }
-    var req = {
-      "disabled_levelchan_id": new_channel_id,
-      "disabled_levelchan_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_disable_chan_level").val("");
-      ConfigsO.disable_chan_level.push(new_channel_id.toLowerCase());
-      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
-    }
-    var failfunc = function () {
-      $("#new_disable_chan_level").val("");
-    }
+    var req = {
+      "channel_id": new_channel_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/leveldisabledchannels/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_disable_chan_level").val("");
+      ConfigsO.showDisableChanLevel();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_level").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding channel to level disabled list"} );
+    });
   }
 
   removeFromDisableChanLevel(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.disable_level_phantom_class);
-    var channel_id = Entry.find("[channel-id]").val();
-
-    var req = {
-      "disabled_levelchan_id": channel_id,
-      "disabled_levelchan_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
+    if (isEmpty(entry_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.disable_chan_level.indexOf(channel_id);
-      ConfigsO.disable_chan_level.splice(i, 1);
-      ConfigsO.buildDisableChanLevel(ConfigsO.disable_chan_level);
+    var req = {
+      "entry_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/leveldisabledchannels/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showDisableChanLevel();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_level").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from level disabled list"} );
     });
   }
 
@@ -313,14 +347,14 @@ var Configs = new(class {
   showDisableChanQuote() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/quotedisabledchannels/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.disable_chan_quote = data.result.disabled_quotechannels;
+      ConfigsO.disable_chan_quote = data.result;
       ConfigsO.buildDisableChanQuote(ConfigsO.disable_chan_quote);
       $(ConfigsO.disable_quote_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading quote channels"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading quote disabled channels"} );
     })
   }
 
@@ -328,51 +362,58 @@ var Configs = new(class {
     var EntryList = $(`${this.disable_quote_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
       var EntryRow = $(`[phantom] ${this.disable_quote_phantom_class}`).clone();
-      var channel = DiscordDashboard.getDiscordChannelByID(entry);
-      EntryRow.find("[channel-id]").val(entry);
+      var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
+      EntryRow.attr("entry-id", entry.entry_id);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
       if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
       }
-
       EntryList.append(EntryRow);
     }
   }
 
   addToDisableChanQuote() {
+    var guild_id = $("#guild_id").val();
     var new_channel_id = $("#new_disable_chan_quote").val();
     if (isEmpty(new_channel_id)) { return; }
-    var req = {
-      "disabled_quotechan_id": new_channel_id,
-      "disabled_quotechan_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_disable_chan_quote").val("");
-      ConfigsO.disable_chan_quote.push(new_channel_id);
-      ConfigsO.buildDisableChanQuote(ConfigsO.disable_chan_quote);
-    }
-    var failfunc = function () {
-      $("#new_disable_chan_quote").val("");
-    }
+    var req = {
+      "channel_id": new_channel_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/quotedisabledchannels/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_disable_chan_quote").val("");
+      ConfigsO.showDisableChanQuote();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_quote").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding channel to quote disabled list"} );
+    });
   }
 
   removeFromDisableChanQuote(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.disable_quote_phantom_class);
-    var channel_id = Entry.find("[channel-id]").val();
-
-    var req = {
-      "disabled_quotechan_id": channel_id,
-      "disabled_quotechan_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
+    if (isEmpty(entry_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.disable_chan_quote.indexOf(channel_id);
-      ConfigsO.disable_chan_quote.splice(i, 1);
-      ConfigsO.buildDisableChanQuote(ConfigsO.disable_chan_quote);
+    var req = {
+      "entry_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/quotedisabledchannels/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showDisableChanQuote();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_quote").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from quote disabled list"} );
     });
   }
 
@@ -380,14 +421,14 @@ var Configs = new(class {
   showDisableChanNormal() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/normaldisabledchannels/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.disable_chan_normal = data.result.disabled_normalchannels;
+      ConfigsO.disable_chan_normal = data.result;
       ConfigsO.buildDisableChanNormal(ConfigsO.disable_chan_normal);
       $(Configs.disable_normal_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading normal channels"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading normal disabled channels"} );
     })
   }
 
@@ -395,51 +436,58 @@ var Configs = new(class {
     var EntryList = $(`${this.disable_normal_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
       var EntryRow = $(`[phantom] ${this.disable_normal_phantom_class}`).clone();
-      var channel = DiscordDashboard.getDiscordChannelByID(entry);
-      EntryRow.find("[channel-id]").val(entry);
+      var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
+      EntryRow.attr("entry-id", entry.entry_id);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
       if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
       }
-
       EntryList.append(EntryRow);
     }
   }
 
   addToDisableChanNormal() {
+    var guild_id = $("#guild_id").val();
     var new_channel_id = $("#new_disable_chan_normal").val();
     if (isEmpty(new_channel_id)) { return; }
-    var req = {
-      "disabled_normalchan_id": new_channel_id,
-      "disabled_normalchan_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_disable_chan_normal").val("");
-      ConfigsO.disable_chan_normal.push(new_channel_id);
-      ConfigsO.buildDisableChanNormal(ConfigsO.disable_chan_normal);
-    }
-    var failfunc = function () {
-      $("#new_disable_chan_normal").val("");
-    }
+    var req = {
+      "channel_id": new_channel_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/normaldisabledchannels/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_disable_chan_normal").val("");
+      ConfigsO.showDisableChanNormal();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_normal").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding channel to normal disabled list"} );
+    });
   }
 
   removeFromDisableChanNormal(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.disable_normal_phantom_class);
-    var channel_id = Entry.find("[channel-id]").val();
-
-    var req = {
-      "disabled_normalchan_id": channel_id,
-      "disabled_normalchan_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
+    if (isEmpty(entry_id)) { return; }
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.disable_chan_normal.indexOf(channel_id);
-      ConfigsO.disable_chan_normal.splice(i, 1);
-      ConfigsO.buildDisableChanNormal(ConfigsO.disable_chan_normal);
+    var req = {
+      "entry_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/normaldisabledchannels/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showDisableChanNormal();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_normal").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from normal disabled list"} );
     });
   }
 
@@ -447,14 +495,14 @@ var Configs = new(class {
   showDisableChanRegular() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/regulardisabledchannels/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.disable_chan_regular = data.result.disabled_regularchannels;
+      ConfigsO.disable_chan_regular = data.result;
       ConfigsO.buildDisableChanRegular(ConfigsO.disable_chan_regular);
       $(ConfigsO.disable_regular_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading regular channels"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading regular disabled channels"} );
     })
   }
 
@@ -462,51 +510,57 @@ var Configs = new(class {
     var EntryList = $(`${this.disable_regular_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
       var EntryRow = $(`[phantom] ${this.disable_regular_phantom_class}`).clone();
-      var channel = DiscordDashboard.getDiscordChannelByID(entry);
-      EntryRow.find("[channel-id]").val(entry);
+      var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
+      EntryRow.attr("entry-id", entry.entry_id);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
       if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
       }
-
       EntryList.append(EntryRow);
     }
   }
 
   addToDisableChanRegular() {
+    var guild_id = $("#guild_id").val();
     var new_channel_id = $("#new_disable_chan_regular").val();
     if (isEmpty(new_channel_id)) { return; }
-    var req = {
-      "disabled_regularchan_id": new_channel_id,
-      "disabled_regularchan_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_disable_chan_regular").val("");
-      ConfigsO.disable_chan_regular.push(new_channel_id);
-      ConfigsO.buildDisableChanRegular(ConfigsO.disable_chan_regular);
-    }
-    var failfunc = function () {
-      $("#new_disable_chan_regular").val("");
-    }
+    var req = {
+      "channel_id": new_channel_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/regulardisabledchannels/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_disable_chan_regular").val("");
+      ConfigsO.showDisableChanRegular();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_regular").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding channel to regular disabled list"} );
+    });
   }
 
   removeFromDisableChanRegular(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.disable_regular_phantom_class);
-    var channel_id = Entry.find("[channel-id]").val();
-
-    var req = {
-      "disabled_regularchan_id": channel_id,
-      "disabled_regularchan_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.disable_chan_regular.indexOf(channel_id);
-      ConfigsO.disable_chan_regular.splice(i, 1);
-      ConfigsO.buildDisableChanRegular(ConfigsO.disable_chan_regular);
+    var req = {
+      "entry_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/regulardisabledchannels/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showDisableChanRegular();
+    })
+    .fail(function (data) {
+      $("#new_disable_chan_regular").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from regular disabled list"} );
     });
   }
 
@@ -514,14 +568,14 @@ var Configs = new(class {
   showEnableChanGame() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/gameenabledchannels/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.enable_chan_game = data.result.enabled_gamechannels;
+      ConfigsO.enable_chan_game = data.result;
       ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
       $(ConfigsO.enable_game_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading game channels"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading game enabled channels"} );
     })
   }
 
@@ -529,51 +583,57 @@ var Configs = new(class {
     var EntryList = $(`${this.enable_game_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
       var EntryRow = $(`[phantom] ${this.enable_game_phantom_class}`).clone();
-      var channel = DiscordDashboard.getDiscordChannelByID(entry);
-      EntryRow.find("[channel-id]").val(entry);
+      var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
+      EntryRow.attr("entry-id", entry.entry_id);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
       if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
         EntryRow.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
       }
-
       EntryList.append(EntryRow);
     }
   }
 
   addToEnableChanGame() {
+    var guild_id = $("#guild_id").val();
     var new_channel_id = $("#new_enable_chan_game").val();
     if (isEmpty(new_channel_id)) { return; }
-    var req = {
-      "enabled_gamechan_id": new_channel_id,
-      "enabled_gamechan_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_enable_chan_game").val("");
-      ConfigsO.enable_chan_game.push(new_channel_id);
-      ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
-    }
-    var failfunc = function () {
-      $("#new_enable_chan_game").val("");
-    }
+    var req = {
+      "channel_id": new_channel_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/gameenabledchannels/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_enable_chan_game").val("");
+      ConfigsO.showEnableChanGame();
+    })
+    .fail(function (data) {
+      $("#new_enable_chan_game").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding channel to game enabled list"} );
+    });
   }
 
   removeFromEnableChanGame(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.enable_game_phantom_class);
-    var channel_id = Entry.find("[channel-id]").val();
-
-    var req = {
-      "enabled_gamechan_id": channel_id,
-      "enabled_gamechan_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.enable_chan_game.indexOf(channel_id);
-      ConfigsO.enable_chan_game.splice(i, 1);
-      ConfigsO.buildEnableChanGame(ConfigsO.enable_chan_game);
+    var req = {
+      "entry_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/gameenabledchannels/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showEnableChanGame();
+    })
+    .fail(function (data) {
+      $("#new_enable_chan_game").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from game enabled list"} );
     });
   }
 
@@ -581,14 +641,14 @@ var Configs = new(class {
   showEnableChanNSFW() {
     var ConfigsO = this;
     var guild_id = $("#guild_id").val();
-    $.get("/api/discord/configs/get", {guild_id: guild_id})
+    $.get("/api/discord/configs/nsfwenabledchannels/get", {guild_id: guild_id})
     .done(function (data) {
-      ConfigsO.enable_chan_nsfw = data.result.enabled_nsfwchannels;
+      ConfigsO.enable_chan_nsfw = data.result;
       ConfigsO.buildEnableChanNSFW(ConfigsO.enable_chan_nsfw);
       $(Configs.enable_nsfw_modal_id).modal("show");
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error loading nsfw channels"} );
+      generalAPIErrorHandler( {data:data, msg:"error loading nsfw enabled channels"} );
     })
   }
 
@@ -596,8 +656,8 @@ var Configs = new(class {
     var EntryList = $(`${this.enable_nsfw_modal_id} .modal-itemlist`).html("");
     for (var entry of channel_list) {
       var EntryRow = $(`[phantom] ${this.enable_nsfw_phantom_class}`).clone();
-      var channel = DiscordDashboard.getDiscordChannelByID(entry);
-      EntryRow.find("[channel-id]").val(entry);
+      var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
+      EntryRow.attr("entry-id", entry.entry_id);
       EntryRow.find(".name").text( channel ? "#"+channel.name : "(DELETED CHANNEL)" );
       if (isEmpty(channel)) {
         EntryRow.addClass("deleted");
@@ -609,38 +669,45 @@ var Configs = new(class {
   }
 
   addToEnableChanNSFW() {
+    var guild_id = $("#guild_id").val();
     var new_channel_id = $("#new_enable_chan_nsfw").val();
     if (isEmpty(new_channel_id)) { return; }
-    var req = {
-      "enabled_nsfwchan_id": new_channel_id,
-      "enabled_nsfwchan_action": "add"
-    };
     var ConfigsO = this;
-    var successfunc = function() {
-      $("#new_enable_chan_nsfw").val("");
-      ConfigsO.enable_chan_nsfw.push(new_channel_id.toLowerCase());
-      ConfigsO.buildEnableChanNSFW(ConfigsO.enable_chan_nsfw);
-    }
-    var failfunc = function () {
-      $("#new_enable_chan_nsfw").val("");
-    }
+    var req = {
+      "channel_id": new_channel_id,
+      "guild_id": guild_id
+    };
 
-    this.update(req, successfunc, failfunc);
+    $.post("/api/discord/configs/nsfwenabledchannels/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_enable_chan_nsfw").val("");
+      ConfigsO.showEnableChanNSFW();
+    })
+    .fail(function (data) {
+      $("#new_enable_chan_nsfw").val("");
+      generalAPIErrorHandler( {data:data, msg:"error adding channel to nsfw enabled list"} );
+    });
   }
 
   removeFromEnableChanNSFW(HTMLButton) {
+    var guild_id = $("#guild_id").val();
     var Entry = $(HTMLButton).closest(this.enable_nsfw_phantom_class);
-    var channel_id = Entry.find("[channel-id]").val();
-
-    var req = {
-      "enabled_nsfwchan_id": channel_id,
-      "enabled_nsfwchan_action": "remove"
-    };
+    var entry_id = Entry.attr("entry-id");
     var ConfigsO = this;
-    this.update(req, function () {
-      var i = ConfigsO.enable_chan_nsfw.indexOf(channel_id);
-      ConfigsO.enable_chan_nsfw.splice(i, 1);
-      ConfigsO.buildEnableChanNSFW(ConfigsO.enable_chan_nsfw);
+    var req = {
+      "entry_id": entry_id,
+      "guild_id": guild_id
+    };
+
+    $.post("/api/discord/configs/nsfwenabledchannels/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsO.showEnableChanNSFW();
+    })
+    .fail(function (data) {
+      $("#new_enable_chan_nsfw").val("");
+      generalAPIErrorHandler( {data:data, msg:"error removing entry from nsfw enabled list"} );
     });
   }
 

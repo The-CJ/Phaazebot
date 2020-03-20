@@ -7,9 +7,14 @@ from aiohttp.web import Response, Request
 
 async def apiDiscordLevelMedalLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			limit:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* limit `str`
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	You have hit the limit of medals for this member
 	"""
 	res:dict = dict(status=400, error="discord_medal_limit")
 

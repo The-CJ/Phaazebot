@@ -7,16 +7,17 @@ from aiohttp.web import Response, Request
 
 async def apiTwitchUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			user_id:str
-			user_name:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* user_id `str` *
+	* user_name `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Could not find a valid twitch user
 	"""
 	res:dict = dict(status=404, error="twitch_user_not_found")
-
-	default_msg:str = "could not find a valid twitch user"
-	msg:str = kwargs.get("msg", default_msg)
-	res["msg"] = msg
 
 	user_id:str = kwargs.get("user_id", "")
 	if user_id:
@@ -25,6 +26,17 @@ async def apiTwitchUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:dic
 	user_name:str = kwargs.get("user_name", "")
 	if user_name:
 		res["user_name"] = user_name
+
+	default_msg:str = "Could not find a valid twitch user"
+
+	if user_name:
+		default_msg += f" with name: '{user_name}'"
+
+	if user_id:
+		default_msg += f" (User ID:{user_id})"
+
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
 
 	cls.Web.BASE.Logger.debug(f"(API/Twitch) 400 User not Found: {WebRequest.path}", require="api:404")
 	return cls.response(

@@ -1,0 +1,88 @@
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+	from Platforms.Web.index import WebIndex
+
+import json
+from aiohttp.web import Response, Request
+
+async def apiDiscordConfigsRegularDisabledChannelExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* channel_id `str` *
+	* channel_name `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Disabled regular channel already exists
+	"""
+	res:dict = dict(status=400, error="discord_disabled_regularchannel_exists")
+
+	channel_id:str = kwargs.get("channel_id", "")
+	if channel_id:
+		res["channel_id"] = str(channel_id)
+
+	channel_name:str = kwargs.get("channel_name", "")
+	if channel_name:
+		res["channel_name"] = str(channel_name)
+
+	# build message
+	default_msg:str = "Disabled regular channel already exists"
+
+	if channel_name:
+		default_msg += f" for '{channel_name}'"
+
+	if channel_id:
+		default_msg += f" (Channel ID:{channel_id})"
+
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Channel exists: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)
+
+async def apiDiscordConfigsRegularDisabledChannelNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* channel_id `str` *
+	* channel_name `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Disabled regular channel does not exists
+	"""
+	res:dict = dict(status=400, error="discord_disabled_regularchannel_not_exists")
+
+	channel_id:str = kwargs.get("channel_id", "")
+	if channel_id:
+		res["channel_id"] = str(channel_id)
+
+	channel_name:str = kwargs.get("channel_name", "")
+	if channel_name:
+		res["channel_name"] = str(channel_name)
+
+	# build message
+	default_msg:str = "Disabled regular channel does not exists"
+
+	if channel_name:
+		default_msg += f" for '{channel_name}'"
+
+	if channel_id:
+		default_msg += f" (Channel ID:{channel_id})"
+
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Channel does not exists: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)

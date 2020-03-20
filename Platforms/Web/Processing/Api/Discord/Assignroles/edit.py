@@ -21,6 +21,7 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
 	apiDiscordMissingPermission,
+	apiDiscordRoleNotFound
 )
 from .errors import (
 	apiDiscordAssignRoleExists,
@@ -54,7 +55,7 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id, assignrole_id=assignrole_id)
 
 	if not res_assignroles:
-		return await apiDiscordAssignRoleNotExists(cls, WebRequest)
+		return await apiDiscordAssignRoleNotExists(cls, WebRequest, assignrole_id=assignrole_id)
 
 	AssignRoleToEdit:DiscordAssignRole = res_assignroles.pop(0)
 
@@ -66,7 +67,7 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 	if value != UNDEFINED:
 		AssignRole:discord.Role = getDiscordRoleFromString(cls, Guild, value)
 		if not AssignRole:
-			return await apiMissingData(cls, WebRequest, msg=f"Could not find any role matching '{value}'")
+			return await apiDiscordRoleNotFound(cls, WebRequest, guild_name=Guild.name, guild_id=Guild.id, role_name=value )
 
 		if AssignRole > Guild.me.top_role:
 			return await apiWrongData(cls, WebRequest, msg=f"The Role `{AssignRole.name}` is to high")
@@ -111,10 +112,9 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 		where_values = (AssignRoleToEdit.guild_id, AssignRoleToEdit.assignrole_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Created new assign role: S:{guild_id} T:{assignrole_id} N:{str(update)}", require="discord:role")
-
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Assignrole: {guild_id=} edited {assignrole_id=}", require="discord:role")
 	return cls.response(
-		text=json.dumps( dict(msg="assign role successfull updated", changes=update, status=200) ),
+		text=json.dumps( dict(msg="Assignrole: Edited entry", changes=update, status=200) ),
 		content_type="application/json",
 		status=200
 	)

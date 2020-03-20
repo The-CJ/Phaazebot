@@ -11,8 +11,8 @@ class DiscordAssignRole(DBContentClass, APIClass):
 
 	def __init__(self, data:dict, guild_id:str):
 
-		self.assignrole_id:str = data.get("id", UNDEFINED)
 		self.guild_id:str = guild_id
+		self.assignrole_id:int = data.get("id", UNDEFINED)
 		self.role_id:str = data.get("role_id", UNDEFINED)
 		self.trigger:str = data.get("trigger", UNDEFINED)
 
@@ -22,7 +22,6 @@ class DiscordAssignRole(DBContentClass, APIClass):
 		j:dict = dict()
 
 		j["assignrole_id"] = self.toString(self.assignrole_id)
-		j["guild_id"] = self.toString(self.guild_id)
 		j["role_id"] = self.toString(self.role_id)
 		j["trigger"] = self.toString(self.trigger)
 

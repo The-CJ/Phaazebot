@@ -7,10 +7,15 @@ from aiohttp.web import Response, Request
 
 async def apiAccountAlreadyLoggedIn(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			user_id:str
-			user_name:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* user_id `str`
+	* user_name `str`
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	No registration needed, already logged in
 	"""
 	res:dict = dict(status=400, error="aleady_logged_in")
 
@@ -37,8 +42,13 @@ async def apiAccountAlreadyLoggedIn(cls:"WebIndex", WebRequest:Request, **kwargs
 
 async def apiAccountPasswordsDontMatch(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+
+	Default message (gets altered by optional keywords):
+	----------------------------------------------------
+	The passwords are not the same
 	"""
 	res:dict = dict(status=400, error="unequal_passwords")
 
@@ -57,9 +67,14 @@ async def apiAccountPasswordsDontMatch(cls:"WebIndex", WebRequest:Request, **kwa
 
 async def apiAccountPasswordToShort(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			min_length:int
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* min_length : `str` (Default: None) *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	The password is to short
 	"""
 	res:dict = dict(status=400, error="invalid_password")
 
@@ -85,9 +100,14 @@ async def apiAccountPasswordToShort(cls:"WebIndex", WebRequest:Request, **kwargs
 
 async def apiAccountEmailWrong(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			email:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* email : `str` (Default: None)
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	E-Mail doesn't look valid
 	"""
 	res:dict = dict(status=400, error="invalid_email")
 
@@ -110,10 +130,15 @@ async def apiAccountEmailWrong(cls:"WebIndex", WebRequest:Request, **kwargs:dict
 
 async def apiAccountTaken(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			email:str
-			username:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* email : `str` (Default: None)
+	* username : `str` (Default: None)
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Username or E-Mail is already taken
 	"""
 	res:dict = dict(status=400, error="account_taken")
 

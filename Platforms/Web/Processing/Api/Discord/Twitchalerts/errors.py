@@ -7,9 +7,14 @@ from aiohttp.web import Response, Request
 
 async def apiDiscordAlertNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			alert_id:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* alert_id `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Twitchalert does not exists
 	"""
 	res:dict = dict(status=400, error="discord_twitch_alert_not_exists")
 
@@ -17,7 +22,7 @@ async def apiDiscordAlertNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:
 	if alert_id:
 		res["alert_id"] = alert_id
 
-	default_msg:str = "No twitchalert has been found"
+	default_msg:str = "Twitchalert does not exists"
 	if alert_id:
 		default_msg += f" (Alert ID:{alert_id})"
 
@@ -33,13 +38,18 @@ async def apiDiscordAlertNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:
 
 async def apiDiscordAlertExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			alert_id:str
-			twitch_id:str
-			twitch_name:str
-			discord_id:str
-			discord_name:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* alert_id `str` *
+	* twitch_id `str` *
+	* twitch_name `str` *
+	* discord_id `str` *
+	* discord_name `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Twitchalert already exists
 	"""
 	res:dict = dict(status=400, error="discord_twitch_alert_exists")
 
@@ -64,7 +74,7 @@ async def apiDiscordAlertExists(cls:"WebIndex", WebRequest:Request, **kwargs:dic
 		res["discord_name"] = discord_name
 
 	# build message
-	default_msg:str = "The twitchalert already exists"
+	default_msg:str = "Twitchalert already exists"
 
 	if twitch_name:
 		default_msg += f" for twitch channel '{twitch_name}'"
@@ -90,11 +100,14 @@ async def apiDiscordAlertExists(cls:"WebIndex", WebRequest:Request, **kwargs:dic
 
 async def apiDiscordAlertLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			limit:str
-			guild_id:str
-			guild_name:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* limit `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	You have hit the limit of twitchalerts
 	"""
 	res:dict = dict(status=400, error="discord_twitch_alert_limit")
 
@@ -102,24 +115,11 @@ async def apiDiscordAlertLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict
 	if limit:
 		res["limit"] = limit
 
-	guild_id:str = kwargs.get("guild_id", "")
-	if guild_id:
-		res["guild_id"] = guild_id
-
-	guild_name:str = kwargs.get("guild_name", "")
-	if guild_name:
-		res["guild_name"] = guild_name
-
 	# build message
 	default_msg:str = "You have hit the limit of twitchalerts"
 
-	if guild_name:
-		default_msg += f" on guild '{guild_name}'"
 	if limit:
 		default_msg = f", the limit is {limit}"
-
-	if guild_id:
-		default_msg = f" (Guild ID:{guild_id})"
 
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
@@ -133,26 +133,21 @@ async def apiDiscordAlertLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict
 
 async def apiDiscordAlertSameTwitchChannelLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
-		Takes from kwargs:
-			msg:str
-			limit:str
-			guild_id:str
-			guild_name:str
-			twitch_name:str
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* limit `str` *
+	* twitch_name `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	You have hit the limit of same twitchalerts
 	"""
 	res:dict = dict(status=400, error="discord_twitch_alert_twitch_limit")
 
 	limit:str = kwargs.get("limit", 0)
 	if limit:
 		res["limit"] = limit
-
-	guild_id:str = kwargs.get("guild_id", "")
-	if guild_id:
-		res["guild_id"] = guild_id
-
-	guild_name:str = kwargs.get("guild_name", "")
-	if guild_name:
-		res["guild_name"] = guild_name
 
 	twitch_name:str = kwargs.get("twitch_name", "")
 	if twitch_name:
@@ -161,15 +156,11 @@ async def apiDiscordAlertSameTwitchChannelLimit(cls:"WebIndex", WebRequest:Reque
 	# build message
 	default_msg:str = "You have hit the limit of same twitchalerts"
 
-	if guild_name:
-		default_msg += f" on guild '{guild_name}'"
 	if twitch_name:
-		default_msg = f" for Twitch channel '{twitch_name}'"
+		default_msg = f" for '{twitch_name}'"
+
 	if limit:
 		default_msg = f", the limit is {limit} channels"
-
-	if guild_id:
-		default_msg = f" (Guild ID:{guild_id})"
 
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg

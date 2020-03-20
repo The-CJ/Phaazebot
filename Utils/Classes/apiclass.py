@@ -3,7 +3,7 @@ from typing import Any
 class APIClass(object):
 	"""
 		Utiliy class for all classes that have a .toJSON()
-        to format it into a API save dict
+		to format it into a API save dict
 	"""
 
 	def toJSON(self) -> None:

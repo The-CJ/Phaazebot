@@ -9,7 +9,7 @@ class DiscordQuote(DBContentClass, APIClass):
 	def __init__(self, data:dict, guild_id:str):
 
 		self.guild_id:str = guild_id
-		self.quote_id:str = data.get("id", UNDEFINED)
+		self.quote_id:int = data.get("id", UNDEFINED)
 		self.content:str = data.get("content", UNDEFINED)
 
 	def __repr__(self):

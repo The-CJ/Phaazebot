@@ -113,16 +113,16 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not db_changes:
 		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Level Update: S:{guild_id} M:{member_id} {str(db_changes)}", require="discord:levels")
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_user",
 		content = db_changes,
-		where = "discord_user.guild_id = %s AND discord_user.member_id = %s",
+		where = "`discord_user`.`guild_id` = %s AND `discord_user`.`member_id` = %s",
 		where_values = (guild_id, member_id)
 	)
 
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Level: {guild_id=} {member_id=} updated", require="discord:levels")
 	return cls.response(
-		text=json.dumps( dict(msg="level successfull updated", changes=changes, status=200) ),
+		text=json.dumps( dict(msg="Level: Updated", changes=changes, status=200) ),
 		content_type="application/json",
 		status=200
 	)

@@ -47,23 +47,21 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 	if not re.match(IsEmail, email):
 		return await apiAccountEmailWrong(cls, WebRequest, email=email)
 
-	res_users:list = await getWebUsers(cls, "LOWER(`user`.`username`) = LOWER(%s) OR LOWER(`user`.`email`) = LOWER(%s)", (username, email))
+	res_users:list = await getWebUsers( cls, where="LOWER(`user`.`username`) = LOWER(%s) OR LOWER(`user`.`email`) = LOWER(%s)",	where_values=(username, email) )
 	if res_users:
 		return await apiAccountTaken(cls, WebRequest, email=email, username=username)
 
 	# everything ok -> create
-	new_user:dict = dict(
-		username = username,
-		password = password_function(password),
-		email = email
-	)
-
 	user_id:int = cls.Web.BASE.PhaazeDB.insertQuery(
 		table = "user",
-		content = new_user
+		content = {
+			"username": username,
+			"password": password_function(password),
+			"email": email,
+		}
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API) Account created: ID: {user_id}", require="api:create")
+	cls.Web.BASE.Logger.debug(f"(API) Account: Created {user_id=}", require="api:create")
 	return cls.response(
 		body=json.dumps( dict(status=200, message="successfull created user", user_id=user_id, username=username) ),
 		content_type="application/json",

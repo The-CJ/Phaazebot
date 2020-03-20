@@ -59,7 +59,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	if new_username:
 		# want a new username
 		if new_username.lower() != WebUser.username.lower():
-			is_occupied:list = await getWebUsers(cls, "LOWER(`user`.`username`) = LOWER(%s)", (new_username,))
+			is_occupied:list = await getWebUsers( cls, where="LOWER(`user`.`username`) = LOWER(%s)", where_values=(new_username,) )
 			if is_occupied:
 				# already taken
 				return await apiAccountTaken(cls, WebRequest)
@@ -79,7 +79,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 			# does not look like a email
 			return await apiAccountEmailWrong(cls, WebRequest, email=new_email)
 
-		is_occupied:list = await getWebUsers(cls, "user.email LIKE %s", (new_email,))
+		is_occupied:list = await getWebUsers( cls, where="user.email LIKE %s", where_values=(new_email,) )
 		if is_occupied:
 			# already taken
 			return await apiAccountTaken(cls, WebRequest)
@@ -104,7 +104,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		where = "`user`.`id` = %s",
 		where_values = (WebUser.user_id,)
 	)
-	
+
 	cls.Web.BASE.Logger.debug(f"(API) Account edit ({WebUser.user_id}) : {str(update)}", require="api:account")
 	return cls.response(
 		status=200,

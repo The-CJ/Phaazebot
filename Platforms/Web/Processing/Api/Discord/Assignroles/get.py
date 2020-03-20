@@ -7,7 +7,6 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.undefined import UNDEFINED
 from Platforms.Discord.utils import getDiscordServerAssignRoles
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
@@ -24,8 +23,8 @@ async def apiDiscordAssignrolesGet(cls:"WebIndex", WebRequest:Request) -> Respon
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	role_id:int = Data.getInt("role_id", UNDEFINED, min_x=1)
-	assignrole_id:int = Data.getInt("assignrole_id", UNDEFINED, min_x=1)
+	assignrole_id:str = Data.getStr("assignrole_id", "", must_be_digit=True)
+	role_id:str = Data.getStr("role_id", "", must_be_digit=True)
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	offset:int = Data.getInt("offset", 0, min_x=0)
 

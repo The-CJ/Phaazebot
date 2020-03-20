@@ -10,7 +10,6 @@ from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Discord.utils import getDiscordSeverSettings
 from Platforms.Web.utils import getNavbar
-from .discordinvite import discordInvite
 from ..errors import notAllowed
 
 async def discordLevels(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -24,7 +23,7 @@ async def discordLevels(cls:"WebIndex", WebRequest:Request) -> Response:
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id if guild_id.isdigit() else 0))
 
 	if not Guild:
-		return await discordInvite(cls, WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
+		return await cls.discordInvite(WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
 
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(cls.Web.BASE.Discord, guild_id, prevent_new=True)
 
