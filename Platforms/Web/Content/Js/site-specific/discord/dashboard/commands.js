@@ -83,7 +83,7 @@ var Commands = new (class {
 
     $.post("/api/discord/commands/delete", req)
     .done(function (data) {
-      Display.showMessage({content: "Successfull deleted command: "+data.command, color:Display.color_success});
+      Display.showMessage({content: "Successfull deleted command", color:Display.color_success});
       $(CommandsO.modal_id).modal("hide");
       CommandsO.show();
     })
@@ -100,7 +100,7 @@ var Commands = new (class {
 
     $.post("/api/discord/commands/edit", req)
     .done(function (data) {
-      Display.showMessage({content: "Successfull edited command: "+data.command, color:Display.color_success});
+      Display.showMessage({content: "Successfull edited command", color:Display.color_success});
       $(CommandsO.modal_id).modal("hide");
       CommandsO.show();
     })
