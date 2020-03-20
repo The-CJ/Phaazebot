@@ -61,7 +61,7 @@ var Commands = new (class {
 
     $.post("/api/discord/commands/create", req)
     .done(function (data) {
-      Display.showMessage({content: "Successfull created command: "+data.command, color:Display.color_success});
+      Display.showMessage({content: "Successfull created command", color:Display.color_success});
       $(CommandsO.modal_id).modal("hide");
       CommandsO.show();
       // after successfull command, reset modal
