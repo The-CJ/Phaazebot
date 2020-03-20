@@ -56,7 +56,6 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message
 				AS `enabled_gamechannels`,
 			(SELECT GROUP_CONCAT(`discord_enabled_nsfwchannel`.`channel_id` SEPARATOR ',') FROM `discord_enabled_nsfwchannel` WHERE `discord_enabled_nsfwchannel`.`guild_id` = `discord_setting`.`guild_id`)
 				AS `enabled_nsfwchannels`
-
 		FROM `discord_setting`
 		WHERE `discord_setting`.`guild_id` = %s
 		GROUP BY `discord_setting`.`guild_id`""",
@@ -156,7 +155,7 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:d
 	* edited `int`: (Default: 0) [0=all, 1=not edited, 2=only edited]
 	* name `str`: (Default: None)
 	* name_contains `str`: (Default: None) [DB uses LIKE]
-	* order_str `str`: (Default: "ORDER BY id")
+	* order_str `str`: (Default: "ORDER BY id DESC")
 	* limit `int`: (Default: None)
 	* offset `int`: (Default: 0)
 	"""
@@ -165,7 +164,7 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:d
 	edited:int = search.get("order_str", 0)
 	name:str = search.get("name", None)
 	name_contains:str = search.get("name_contains", None)
-	order_str:str = search.get("order_str", "ORDER BY id")
+	order_str:str = search.get("order_str", "ORDER BY `id`")
 	limit:int = search.get("limit", None)
 	offset:int = search.get("offset", 0)
 
@@ -232,6 +231,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search:
 	* content `str`: (Default: None)
 	* content_contains `str`: (Default: None) [DB uses LIKE]
 	* random `bool`: (Default: False) [sql add: ORDER BY RAND()]
+	* order_str `str`: (Default: "ORDER BY id") [used only if not random]
 	* limit `int`: (Default: None)
 	* offset `int`: (Default: 0)
 	"""
@@ -240,6 +240,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search:
 	content:str = search.get("content", None)
 	content_contains:str = search.get("content_contains", None)
 	random:bool = search.get("random", False)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
 	limit:bool = search.get("limit", None)
 	offset:bool = search.get("offset", 0)
 
@@ -264,7 +265,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search:
 		values += ( str(content_contains), )
 
 	if random: sql += " ORDER BY RAND()"
-	else: sql += " ORDER BY `id`"
+	else: sql += f" {order_str}"
 
 	if limit:
 		sql += f" LIMIT {limit}"
