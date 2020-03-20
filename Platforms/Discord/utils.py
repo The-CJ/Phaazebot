@@ -155,7 +155,7 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:d
 	* edited `int`: (Default: 0) [0=all, 1=not edited, 2=only edited]
 	* name `str`: (Default: None)
 	* name_contains `str`: (Default: None) [DB uses LIKE]
-	* order_str `str`: (Default: "ORDER BY id DESC")
+	* order_str `str`: (Default: "ORDER BY id")
 	* limit `int`: (Default: None)
 	* offset `int`: (Default: 0)
 	"""
