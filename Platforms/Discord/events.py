@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import sys
 import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordChannelFromString
+from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordChannelFromString, getDiscordRoleFromString
 from Platforms.Discord.formater import responseFormater
 from Utils.regex import ContainsLink
 
@@ -33,6 +33,15 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 			except Exception as E:
 				cls.BASE.Logger.warning(f"Can't send welcome message: {E} {sys.exc_info()[0]}")
 
+	# give member autorole
+	if Settings.autorole_id:
+		RoleToGive:discord.Role = getDiscordRoleFromString(cls, Member.guild, Settings.autorole_id)
+		if RoleToGive and RoleToGive < Member.guild.me.top_role: # there is a role found and phaaze can give this role
+			try:
+				await Member.add_roles(RoleToGive)
+			except Exception as E:
+				cls.BASE.Logger.warning(f"Can't add role to member: {E} {sys.exc_info()[0]}")
+
 	# set member active, if there was a known entry
 	cls.BASE.PhaazeDB.updateQuery(
 		table = "discord_user",
@@ -48,7 +57,7 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 
 	# TODO: logging for member leave
 
-	# send welcome message
+	# send leave message
 	if Settings.leave_chan and Settings.leave_msg and (not link_in_name):
 
 		LeaveChan:discord.TextChannel = getDiscordChannelFromString(cls, Member.guild, Settings.leave_chan, required_type="text")
