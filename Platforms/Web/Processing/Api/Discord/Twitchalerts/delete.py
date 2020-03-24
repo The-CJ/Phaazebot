@@ -51,7 +51,7 @@ async def apiDiscordTwitchalertsDelete(cls:"WebIndex", WebRequest:Request) -> Re
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
 	# get alert
-	alert_res:list = await getDiscordServerTwitchAlerts(guild_id, alert_id=alert_id)
+	alert_res:list = await getDiscordServerTwitchAlerts(PhaazeDiscord, guild_id, alert_id=alert_id)
 
 	if not alert_res:
 		return await apiDiscordAlertNotExists(cls, WebRequest, alert_id=alert_id)

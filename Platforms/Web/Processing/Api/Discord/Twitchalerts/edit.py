@@ -59,7 +59,7 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
 	# get alert
-	res_alerts:list = await getDiscordServerTwitchAlerts(cls.Web.BASE.Discord, guild_id, alert_id=alert_id)
+	res_alerts:list = await getDiscordServerTwitchAlerts(PhaazeDiscord, guild_id, alert_id=alert_id)
 
 	if not res_alerts:
 		return await apiDiscordAlertNotExists(cls, WebRequest, alert_id=alert_id)

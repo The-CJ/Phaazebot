@@ -37,7 +37,7 @@ async def apiDiscordTwitchalertsGet(cls:"WebIndex", WebRequest:Request) -> Respo
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get alerts
-	res_alerts:list = await getDiscordServerTwitchAlerts(PhaazeDiscord, guild_id=guild_id, alert_id=alert_id, limit=limit, offset=offset)
+	res_alerts:list = await getDiscordServerTwitchAlerts(PhaazeDiscord, guild_id, alert_id=alert_id, limit=limit, offset=offset)
 
 	# if only one is requestet, also send custom content
 	with_message:bool = True if alert_id else False
