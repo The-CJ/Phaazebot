@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
-import sys
 import discord
+import traceback
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordChannelFromString, getDiscordRoleFromString
 from Platforms.Discord.formater import responseFormater
@@ -31,7 +31,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 			try:
 				await WelcomeChan.send(finished_message)
 			except Exception as E:
-				cls.BASE.Logger.warning(f"Can't send welcome message: {E} {sys.exc_info()[0]}")
+				cls.BASE.Logger.warning(f"Can't send welcome message: {E} {traceback.format_exc()}")
 
 	# send private welcome message
 	if Settings.welcome_msg_priv:
@@ -45,7 +45,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 		try:
 			await Member.send(finished_message)
 		except Exception as E:
-			cls.BASE.Logger.warning(f"Can't send private welcome message: {E} {sys.exc_info()[0]}")
+			cls.BASE.Logger.warning(f"Can't send private welcome message: {E} {traceback.format_exc()}")
 
 	# give member autorole
 	if Settings.autorole_id:
@@ -54,7 +54,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 			try:
 				await Member.add_roles(RoleToGive)
 			except Exception as E:
-				cls.BASE.Logger.warning(f"Can't add role to member: {E} {sys.exc_info()[0]}")
+				cls.BASE.Logger.warning(f"Can't add role to member: {E} {traceback.format_exc()}")
 
 	# set member active, if there was a known entry
 	cls.BASE.PhaazeDB.updateQuery(
@@ -86,7 +86,7 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 			try:
 				await LeaveChan.send(finished_message)
 			except Exception as E:
-				cls.BASE.Logger.warning(f"Can't send leave message: {E} {sys.exc_info()[0]}")
+				cls.BASE.Logger.warning(f"Can't send leave message: {E} {traceback.format_exc()}")
 
 	# set member inactive
 	cls.BASE.PhaazeDB.updateQuery(
