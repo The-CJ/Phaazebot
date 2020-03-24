@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
+import sys
 import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordChannelFromString
@@ -20,7 +21,17 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 
 		WelcomeChan:discord.TextChannel = getDiscordChannelFromString(cls, Member.guild, Settings.welcome_chan, required_type="text")
 		if WelcomeChan:
-			pass
+			welcome_msg_vars:dict = {
+				"user-name": Member.name,
+				"user-mention": Member.mention,
+				"server-name": Member.guild.name,
+				"member-count": str(Member.guild.member_count)
+			}
+			finished_message:str = await responseFormater(cls, Settings.welcome_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
+			try:
+				await WelcomeChan.send(finished_message)
+			except Exception as E:
+				cls.BASE.Logger.warning(f"Can't send welcome message: {E} {sys.exc_info()[0]}")
 
 	# set member active, if there was a known entry
 	cls.BASE.PhaazeDB.updateQuery(

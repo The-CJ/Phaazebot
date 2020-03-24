@@ -27,6 +27,6 @@ async def textOnly(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 		enable_special = True
 	)
 
-	formated_content:str = await responseFormater(cls, Command.content, CommandContext, **additional_kwargs)
+	formated_content:str = await responseFormater(cls, Command.content, **additional_kwargs)
 
 	return {"content": formated_content}
