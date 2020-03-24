@@ -11,7 +11,7 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from Platforms.Discord.utils import getDiscordSeverSettings
+from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordRoleFromString, getDiscordChannelFromString
 from Platforms.Discord.blacklist import checkBlacklistPunishmentString
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
@@ -71,6 +71,27 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# e.g.:
 	# update["x"] = true
 	# db_update["x"] = "1"
+
+	value:str = Data.getStr("autorole_id", UNDEFINED)
+	if value != UNDEFINED:
+		error:bool = False
+		if not value: value = None
+		elif value.isdigit():
+			Role:discord.Role = getDiscordRoleFromString(PhaazeDiscord, Guild, value)
+			if not Role:
+				error = True
+			elif Role >= Guild.me.top_role:
+				return await apiWrongData(cls, WebRequest, msg=f"The Role `{Role.name}` is to high")
+			else:
+				value = str(Role.id)
+		else:
+			error = True
+
+		if error:
+			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord role id")
+
+		db_update["autorole_id"] = validateDBInput(str, value, allow_null=True)
+		update["autorole_id"] = value
 
 	# blacklist_ban_links
 	value:bool = Data.getBool("blacklist_ban_links", UNDEFINED)

@@ -60,9 +60,9 @@
       </div>
     </div>
 
-    <h3 id="config_events">Automated event messages</h3>
+    <h3 id="config_events">Automated events</h3>
     <div>
-      <span>There are some events, that can be used to announce some automated messages.</span>
+      <span>There are some events, that can be used to announce some automated messages or other stuff.</span>
 
       <hr>
 
@@ -123,6 +123,21 @@
             <textarea class="config-textbox-input" name="welcome_msg_priv" rows="5"></textarea>
             <button type="submit" class="btn btn-block btn-primary">Save</button>
             <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('priv_welcome')">Token</button>
+          </form>
+        </div>
+
+      </div>
+      <!-- autorole -->
+      <div class="center-item-row">
+
+        <div class="col">
+          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
+            <p>Automatic assigned role</p>
+            <div class="config-info">
+              <span>A role every member gets when they join the server<span>
+            </div>
+            <select class="custom-select" name="autorole_id" discord-role discord-role-none="true"></select>
+            <button type="submit" class="btn btn-block btn-primary">Save</button>
           </form>
         </div>
 
