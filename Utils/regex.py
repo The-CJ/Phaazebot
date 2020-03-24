@@ -13,7 +13,7 @@ class Discord(object):
 	CommandVariableString:"re.Pattern" = re.compile(r"\[(?P<name>.+?)\]")
 	CommandPosString:"re.Pattern" = re.compile(r"\$(?P<pos>\d+)")
 	SpecialStringChannelName:"re.Pattern" = re.compile(r"\<#(?P<name>.+?)#\>")
-	SpecialStringChannelID:"re.Pattern" = re.compile(r"\<#!(?P<id>.+?)!#\>")
+	SpecialStringChannelID:"re.Pattern" = re.compile(r"\<#!(?P<id>\d+?)!#\>")
 
 class Osu(object):
 	Maplink:"re.Pattern" = re.compile(r"(?P<method>https?://)?osu\.ppy\.sh/(?P<way>b|beatmapsets)/(?P<id1>\d+)(?P<mode>#\w+)?(/(?P<id2>\d+))?")

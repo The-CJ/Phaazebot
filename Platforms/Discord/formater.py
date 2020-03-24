@@ -68,6 +68,6 @@ async def responseFormater(cls:"PhaazebotDiscord", content:str, *x:list, **kwarg
 			for Hit in found:
 				ChannelToMention:discord.abc.GuildChannel = getDiscordChannelFromString(cls, DiscordGuild, Hit.group(1))
 				if ChannelToMention:
-					content.replace( Hit.group(0), ChannelToMention.mention )
+					content = content.replace( Hit.group(0), ChannelToMention.mention )
 
 	return content

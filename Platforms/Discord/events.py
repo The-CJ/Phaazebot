@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordChannelFromString
-from Platforms.Discord.formater import formater
+from Platforms.Discord.formater import responseFormater
 from Utils.regex import ContainsLink
 
 async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> None:
