@@ -6,6 +6,10 @@ import discord
 import asyncio
 import traceback
 from .openchannel import openChannel
+from .events import (
+	eventOnMemberJoin,
+	eventOnMemberRemove
+)
 
 class PhaazebotDiscord(discord.Client):
 	def __init__(self, BASE:"Phaazebot"):
@@ -45,32 +49,20 @@ class PhaazebotDiscord(discord.Client):
 			return await openChannel(self, Message)
 
 		else:
-			self.BASE.Logger.warning("TODO: " + type(Message.channel))
-
-	async def on_message_delete(self, message):
-		pass
+			self.BASE.Logger.warning("TODO: privat channel")
 
 	async def on_message_edit(self, Before:discord.Message, After:discord.Message) -> None:
 		await self.on_message(After)
 
+	async def on_message_delete(self, message):
+		pass
+
 	#member management
 	async def on_member_join(self, Member:discord.Member) -> None:
-		# set member active, if there was a known entry
-		self.BASE.PhaazeDB.updateQuery(
-			table = "discord_user",
-			content = {"on_server":1},
-			where = "guild_id = %s AND member_id = %s",
-			where_values = ( str(Member.guild.id), str(Member.id) )
-		)
+		await eventOnMemberJoin(self, Member)
 
 	async def on_member_remove(self, Member:discord.Member) -> None:
-		# set member inactive
-		self.BASE.PhaazeDB.updateQuery(
-			table = "discord_user",
-			content = {"on_server":0},
-			where = "guild_id = %s AND member_id = %s",
-			where_values = ( str(Member.guild.id), str(Member.id) )
-		)
+		await eventOnMemberRemove(self, Member)
 
 	async def on_member_ban(self, member):
 		pass
