@@ -185,7 +185,7 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 
 	else:
 		# TODO: to complex functions
-		FunctionHits = re.search(ReDiscord.CommandFunctionString, Command.content)
+		FunctionHits = re.search(ReDiscord.CommandObjectVariableString, Command.content)
 		print(FunctionHits)
 		VarHits = re.search(ReDiscord.CommandVariableString, Command.content)
 		print(VarHits)
