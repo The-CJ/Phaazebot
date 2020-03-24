@@ -29,6 +29,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 			}
 			finished_message:str = await responseFormater(cls, Settings.welcome_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
 			try:
+				finished_message = finished_message[:1997]
 				await WelcomeChan.send(finished_message)
 			except Exception as E:
 				cls.BASE.Logger.warning(f"Can't send welcome message: {E} {traceback.format_exc()}")
@@ -43,6 +44,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 		}
 		finished_message:str = await responseFormater(cls, Settings.welcome_msg_priv, var_dict=welcome_msg_priv_vars, enable_special=True, DiscordGuild=Member.guild)
 		try:
+			finished_message = finished_message[:1997]
 			await Member.send(finished_message)
 		except Exception as E:
 			cls.BASE.Logger.warning(f"Can't send private welcome message: {E} {traceback.format_exc()}")
@@ -84,6 +86,7 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 			}
 			finished_message:str = await responseFormater(cls, Settings.leave_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
 			try:
+				finished_message = finished_message[:1997]
 				await LeaveChan.send(finished_message)
 			except Exception as E:
 				cls.BASE.Logger.warning(f"Can't send leave message: {E} {traceback.format_exc()}")
