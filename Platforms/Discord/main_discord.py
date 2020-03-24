@@ -58,7 +58,7 @@ class PhaazebotDiscord(discord.Client):
 		# set member active, if there was a known entry
 		self.BASE.PhaazeDB.updateQuery(
 			table = "discord_user",
-			content = {"on_server":"1"},
+			content = {"on_server":1},
 			where = "guild_id = %s AND member_id = %s",
 			where_values = ( str(Member.guild.id), str(Member.id) )
 		)
@@ -67,7 +67,7 @@ class PhaazebotDiscord(discord.Client):
 		# set member inactive
 		self.BASE.PhaazeDB.updateQuery(
 			table = "discord_user",
-			content = {"on_server":"0"},
+			content = {"on_server":0},
 			where = "guild_id = %s AND member_id = %s",
 			where_values = ( str(Member.guild.id), str(Member.id) )
 		)

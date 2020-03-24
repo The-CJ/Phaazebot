@@ -8,7 +8,7 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
 from .utils import getDiscordServerUsers
 
-DEFAULT_LEVEL_MESSAGE = "[mention] is now Level **[lvl]** :tada:"
+DEFAULT_LEVEL_MESSAGE:str = "[mention] is now Level **[lvl]** :tada:"
 
 async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
 	"""
