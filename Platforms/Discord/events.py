@@ -33,6 +33,20 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 			except Exception as E:
 				cls.BASE.Logger.warning(f"Can't send welcome message: {E} {sys.exc_info()[0]}")
 
+	# send private welcome message
+	if Settings.welcome_msg_priv:
+
+		welcome_msg_priv_vars:dict = {
+			"user-name": Member.name,
+			"server-name": Member.guild.name,
+			"member-count": str(Member.guild.member_count)
+		}
+		finished_message:str = await responseFormater(cls, Settings.welcome_msg_priv, var_dict=welcome_msg_priv_vars, enable_special=True, DiscordGuild=Member.guild)
+		try:
+			await Member.send(finished_message)
+		except Exception as E:
+			cls.BASE.Logger.warning(f"Can't send private welcome message: {E} {sys.exc_info()[0]}")
+
 	# give member autorole
 	if Settings.autorole_id:
 		RoleToGive:discord.Role = getDiscordRoleFromString(cls, Member.guild, Settings.autorole_id)
