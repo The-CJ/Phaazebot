@@ -10,6 +10,15 @@ from Platforms.Discord.formater import responseFormater
 from Utils.regex import ContainsLink
 
 async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> None:
+	"""
+	Get's triggered everytime a new member joins a guild
+	the following action may be taken (in this order):
+	* TODO: Send logging message
+	* Send a welcome message to guild channel
+	* Send a private welcome message to the new member
+	* Give the new member a predefined role
+	* (if the member was on this guild before) set member active in levels table
+	"""
 
 	Settings:DiscordServerSettings = await getDiscordSeverSettings(cls, Member.guild.id)
 	link_in_name:bool = bool( ContainsLink.match(Member.name) )
@@ -67,6 +76,13 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 	)
 
 async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> None:
+	"""
+	Get's triggered everytime a member leaves a guild
+	the following action may be taken (in this order):
+	* TODO: Send logging message
+	* Send a leave message to guild channel
+	* set member inactive in levels table
+	"""
 
 	Settings:DiscordServerSettings = await getDiscordSeverSettings(cls, Member.guild.id)
 	link_in_name:bool = bool( ContainsLink.match(Member.name) )
