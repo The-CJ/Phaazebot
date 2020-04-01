@@ -7,13 +7,14 @@ import traceback
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordChannelFromString, getDiscordRoleFromString
 from Platforms.Discord.formater import responseFormater
+from Platforms.Discord.logging import loggingOnMemberJoin, loggingOnMemberRemove
 from Utils.regex import ContainsLink
 
 async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> None:
 	"""
 	Get's triggered everytime a new member joins a guild
 	the following action may be taken (in this order):
-	* TODO: Send logging message
+	* Send logging message
 	* Send a welcome message to guild channel
 	* Send a private welcome message to the new member
 	* Give the new member a predefined role
@@ -23,7 +24,8 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 	Settings:DiscordServerSettings = await getDiscordSeverSettings(cls, Member.guild.id)
 	link_in_name:bool = bool( ContainsLink.match(Member.name) )
 
-	# TODO: Logging for new member
+	# logging message
+	await loggingOnMemberJoin(cls, Settings, Member, link_in_name=link_in_name)
 
 	# send welcome message
 	if Settings.welcome_chan and Settings.welcome_msg and (not link_in_name):
@@ -79,7 +81,7 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 	"""
 	Get's triggered everytime a member leaves a guild
 	the following action may be taken (in this order):
-	* TODO: Send logging message
+	* Send logging message
 	* Send a leave message to guild channel
 	* set member inactive in levels table
 	"""
@@ -87,7 +89,8 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 	Settings:DiscordServerSettings = await getDiscordSeverSettings(cls, Member.guild.id)
 	link_in_name:bool = bool( ContainsLink.match(Member.name) )
 
-	# TODO: logging for member leave
+	# logging message
+	await loggingOnMemberRemove(cls, Settings, Member, link_in_name=link_in_name)
 
 	# send leave message
 	if Settings.leave_chan and Settings.leave_msg and (not link_in_name):
