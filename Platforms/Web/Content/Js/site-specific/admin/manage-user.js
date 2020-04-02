@@ -74,7 +74,7 @@ function detailUser(HTMLElement, overwrite_user_id) {
     $("#edit_create_user").attr("mode", "edit");
     $("#edit_create_user [name=password]").val("");
 
-    insertData("#edit_create_user", data, true);
+    insertData("#edit_create_user", data);
     var RoleList = $("#user_role_list").html("");
     for (var role of data.roles) {
       var RoleTemplate = $("[phantom] .role").clone();

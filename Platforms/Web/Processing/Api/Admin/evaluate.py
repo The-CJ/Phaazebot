@@ -3,6 +3,7 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 import json
+import traceback
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
@@ -27,16 +28,26 @@ async def apiAdminEvaluate(cls:"WebIndex", WebRequest:Request) -> Response:
 	locals()["BASE"] = cls.Web.BASE
 	locals()["SUPERBASE"] = GlobalStorage
 
+	# return values
+	success:bool = False
+	result:str = None
+	trace:str = None
+
 	try:
 		res:Any = eval(command)
 		if corotine: res = await res
-	except Exception as Fail:
-		res:Any = Fail
 
-	result = str(res)
+		result = str(res)
+		trace = None
+		success = True
+
+	except Exception as Fail:
+		result = str(Fail)
+		trace = traceback.format_exc()
+		success = False
 
 	return cls.response(
-		body=json.dumps(dict(result=result, status="200")),
+		body=json.dumps(dict(result=result, traceback=trace, success=success, status="200")),
 		status=200,
 		content_type='application/json'
 	)

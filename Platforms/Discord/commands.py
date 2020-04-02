@@ -11,15 +11,15 @@ from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordpermission import DiscordPermission
 from Utils.regex import Discord as ReDiscord
-from .utils import getDiscordServerUsers
-from .commandindex import getDiscordCommandFunction
+from Platforms.Discord.utils import getDiscordServerUsers
+from Platforms.Discord.commandindex import getDiscordCommandFunction
 
 class GDCCS():
 	"""
-		i present the GDCCS, short for "Global Discord Command Cooldown Storage"
-		after a command has been used, it's unique key is saved in where
-		while its in there, its in a cool down state, and wont be triggered again
-		after cooldown is gone, remove unique key from here and unlock command
+	i present the GDCCS, short for "Global Discord Command Cooldown Storage"
+	after a command has been used, it's unique key is saved in where
+	while its in there, its in a cool down state, and wont be triggered again
+	after cooldown is gone, remove unique key from here and unlock command
 	"""
 	def __init__(self):
 		self.in_cooldown:dict = dict()
@@ -49,9 +49,9 @@ GDCCS = GDCCS()
 
 async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 	"""
-		This function is run on every message and checks if there is a command to execute
-		Returns True if a function is executed, else False
-		(Thats needed for level stats, because commands dont give exp)
+	This function is run on every message and checks if there is a command to execute
+	Returns True if a function is executed, else False
+	(Thats needed for level stats, because commands dont give exp)
 	"""
 
 	CommandContext:DiscordCommandContext = DiscordCommandContext(cls, Message, Settings=ServerSettings)
@@ -185,7 +185,7 @@ async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 
 	else:
 		# TODO: to complex functions
-		FunctionHits = re.search(ReDiscord.CommandFunctionString, Command.content)
+		FunctionHits = re.search(ReDiscord.CommandObjectVariableString, Command.content)
 		print(FunctionHits)
 		VarHits = re.search(ReDiscord.CommandVariableString, Command.content)
 		print(VarHits)
