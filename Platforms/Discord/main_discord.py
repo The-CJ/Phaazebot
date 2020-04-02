@@ -111,6 +111,8 @@ class PhaazebotDiscord(discord.Client):
 		elif Message.content.startswith("!!!"):
 			command = Message.content.replace("!!!", '', 1)
 			corotine = True
+		else:
+			return
 
 		try:
 			res:Any = eval(command)
