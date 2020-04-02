@@ -38,6 +38,7 @@ class PhaazebotDiscord(discord.Client):
 	async def on_message(self, Message:discord.Message) -> None:
 
 		if Message.author == self.user: return
+		
 		if not self.BASE.IsReady.discord: return
 		if Message.author.bot: return
 
