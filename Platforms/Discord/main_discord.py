@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
 	from main import Phaazebot
 
@@ -20,6 +20,9 @@ class PhaazebotDiscord(discord.Client):
 		return self.BASE.IsReady.discord
 
 	async def on_ready(self) -> None:
+		"""
+		Called when Phaaze is first connected, or sometimes when reconnected
+		"""
 		try:
 			await self.change_presence(
 				activity = discord.Game(name = self.BASE.Vars.DISCORD_MODT),
@@ -36,11 +39,15 @@ class PhaazebotDiscord(discord.Client):
 			await self.on_ready()
 
 	async def on_message(self, Message:discord.Message) -> None:
-
-		if Message.author == self.user: return
+		"""
+		Called everytime a message is new message is received
+		"""
 
 		if not self.BASE.IsReady.discord: return
+		if Message.author == self.user: return
 		if Message.author.bot: return
+		if str(Message.author.id) == str(self.BASE.Vars.DISCORD_DEBUG_USER_ID):
+			await self.debugCall(Message)
 
 		if "phaaze" in Message.content.lower():
 			try: await Message.channel.trigger_typing()
@@ -53,42 +60,62 @@ class PhaazebotDiscord(discord.Client):
 			self.BASE.Logger.warning("TODO: privat channel")
 
 	async def on_message_edit(self, Before:discord.Message, After:discord.Message) -> None:
+		"""
+		Called only when a message is edited, and this message is in the self.cached_messages buffer.
+		max len(self.cached_messages) == self.max_messages
+		"""
 		await self.on_message(After)
-
-	async def on_message_delete(self, message):
-		pass
 
 	#member management
 	async def on_member_join(self, Member:discord.Member) -> None:
+		"""
+		Called when a new user joins a guild
+		"""
 		await eventOnMemberJoin(self, Member)
 
 	async def on_member_remove(self, Member:discord.Member) -> None:
+		"""
+		Called when a user leaves a guild
+		"""
 		await eventOnMemberRemove(self, Member)
-
-	async def on_member_ban(self, member):
-		pass
-
-	async def on_member_unban(self, server, user):
-		pass
-
-	async def on_member_update(self, before, after):
-		pass
-
-	#channel management
-	async def on_channel_create(self, channel):
-		pass
-
-	async def on_channel_delete(self, channel):
-		pass
-
-	#role management
-	async def on_server_role_create(self, role):
-		pass
-
-	async def on_server_role_delete(self, role):
-		pass
 
 	# errors
 	async def on_error(self, event_method, *args, **kwargs):
+		"""
+		Default error funtion, called everytime someting went wrong
+		"""
 		tb = traceback.format_exc()
 		self.BASE.Logger.error(f'(Discord) Ignoring exception in {event_method}\n{tb}')
+
+	# debug
+	async def debugCall(self, Message:discord.Message):
+		"""
+		string evaluation on user input,
+		only for the user assosiated with self.BASE.Vars.DISCORD_DEBUG_USER_ID
+		"""
+
+		# we check again... just to be sure
+		if str(Message.author.id) == str(self.BASE.Vars.DISCORD_DEBUG_USER_ID):
+			return
+
+		command:str = Message.content
+
+		if not (command.startswith(">>>")):
+			return
+
+		# cut command from content
+		command = command.replace(">>>", '', count=1)
+
+		corotine:bool = False
+		if command.startswith("await"):
+			command = command.replace("await", '', count=1)
+			corotine = True
+
+		try:
+			res:Any = eval()
+			if corotine: res = await res
+			return await Message.channel.send(f"```{str(res)}```")
+
+		except Exception as Fail:
+			tb = traceback.format_exc()
+			return await Message.channel.send(f"Exception: {str(Fail)}```{str(tb)}```")
