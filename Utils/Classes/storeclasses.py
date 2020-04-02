@@ -9,7 +9,6 @@ class AccessStore(object):
 	def __init__(self, config:ConfigParser):
 		self.TWITCH_API_TOKEN:str = str(config.get("twitch_api_token", ''))
 		self.TWITCH_IRC_TOKEN:str = str(config.get("twitch_irc_token", ''))
-		self.TWITCH_ADMIN_TOKEN:str = str(config.get("twitch_admin_token", ''))
 
 		self.DISCORD_TOKEN:str = str(config.get("discord_token", ''))
 		self.DISCORD_SECRET:str = str(config.get("discord_secret", ''))

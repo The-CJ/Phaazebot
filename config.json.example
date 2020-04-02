@@ -3,7 +3,6 @@
 
   "twitch_api_token":"secret!..?",
   "twitch_irc_token":"secret!..?",
-  "twitch_admin_token":"secret!..?",
 
   "discord_bot_id":"000",
   "discord_token":"secret!..?",
@@ -49,6 +48,7 @@
   "discord_assignrole_amount":25,
   "discord_login_link":"https://discordapp.com",
   "discord_redirect_link":"localhost",
+  "discord_debug_user_id":"",
 
   "twitch_timeout_message_cooldown":20,
   "twitch_blacklist_remember_time":180,
