@@ -92,27 +92,28 @@ class PhaazebotDiscord(discord.Client):
 		"""
 		string evaluation on user input,
 		only for the user assosiated with self.BASE.Vars.DISCORD_DEBUG_USER_ID
+		starting a message with ### or !!! will execute everything after this
+		### is a normal call
+		!!! a corotine
 		"""
 
 		# we check again... just to be sure
-		if str(Message.author.id) == str(self.BASE.Vars.DISCORD_DEBUG_USER_ID):
+		if not ( str(Message.author.id) == str(self.BASE.Vars.DISCORD_DEBUG_USER_ID) ):
 			return
-
-		command:str = Message.content
-
-		if not (command.startswith(">>>")):
-			return
-
-		# cut command from content
-		command = command.replace(">>>", '', count=1)
 
 		corotine:bool = False
-		if command.startswith("await"):
-			command = command.replace("await", '', count=1)
+		command:str = None
+
+		if Message.content.startswith("###"):
+			command = Message.content.replace("###", '', 1)
+			corotine = False
+
+		elif Message.content.startswith("!!!"):
+			command = Message.content.replace("!!!", '', 1)
 			corotine = True
 
 		try:
-			res:Any = eval()
+			res:Any = eval(command)
 			if corotine: res = await res
 			return await Message.channel.send(f"```{str(res)}```")
 

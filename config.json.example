@@ -19,6 +19,7 @@
   "phaazedb_user":"secret!..?",
   "phaazedb_password":"secret!..?",
   "phaazedb_database":"phaaze",
+  "phaazedb_port":"3306",
   "phaazedb_host":"localhost",
 
   "twitter_token":"secret!..?",
