@@ -47,7 +47,7 @@ async def apiAdminEvaluate(cls:"WebIndex", WebRequest:Request) -> Response:
 		success = False
 
 	return cls.response(
-		body=json.dumps(dict(result=result, status="200")),
+		body=json.dumps(dict(result=result, traceback=trace, success=success, status="200")),
 		status=200,
 		content_type='application/json'
 	)
