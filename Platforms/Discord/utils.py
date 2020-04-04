@@ -40,10 +40,6 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message
 			`discord_setting`.*,
 			(SELECT GROUP_CONCAT(`discord_blacklist_whitelistrole`.`role_id` SEPARATOR ',') FROM `discord_blacklist_whitelistrole` WHERE `discord_blacklist_whitelistrole`.`guild_id` = `discord_setting`.`guild_id`)
 				AS `blacklist_whitelistroles`,
-			(SELECT GROUP_CONCAT(`discord_blacklist_whitelistlink`.`link` SEPARATOR ";;;") FROM `discord_blacklist_whitelistlink` WHERE `discord_blacklist_whitelistlink`.`guild_id` = `discord_setting`.`guild_id`)
-				AS `blacklist_whitelistlinks`,
-			(SELECT GROUP_CONCAT(`discord_blacklist_blacklistword`.`word` SEPARATOR ";;;") FROM `discord_blacklist_blacklistword` WHERE `discord_blacklist_blacklistword`.`guild_id` = `discord_setting`.`guild_id`)
-				AS `blacklist_blacklistwords`,
 			(SELECT GROUP_CONCAT(`discord_disabled_levelchannel`.`channel_id` SEPARATOR ',') FROM `discord_disabled_levelchannel` WHERE `discord_disabled_levelchannel`.`guild_id` = `discord_setting`.`guild_id`)
 				AS `disabled_levelchannels`,
 			(SELECT GROUP_CONCAT(`discord_disabled_quotechannel`.`channel_id` SEPARATOR ',') FROM `discord_disabled_quotechannel` WHERE `discord_disabled_quotechannel`.`guild_id` = `discord_setting`.`guild_id`)
@@ -55,7 +51,13 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message
 			(SELECT GROUP_CONCAT(`discord_enabled_gamechannel`.`channel_id` SEPARATOR ',') FROM `discord_enabled_gamechannel` WHERE `discord_enabled_gamechannel`.`guild_id` = `discord_setting`.`guild_id`)
 				AS `enabled_gamechannels`,
 			(SELECT GROUP_CONCAT(`discord_enabled_nsfwchannel`.`channel_id` SEPARATOR ',') FROM `discord_enabled_nsfwchannel` WHERE `discord_enabled_nsfwchannel`.`guild_id` = `discord_setting`.`guild_id`)
-				AS `enabled_nsfwchannels`
+				AS `enabled_nsfwchannels`,
+			(SELECT GROUP_CONCAT(`discord_blacklist_whitelistlink`.`link` SEPARATOR ";;;") FROM `discord_blacklist_whitelistlink` WHERE `discord_blacklist_whitelistlink`.`guild_id` = `discord_setting`.`guild_id`)
+				AS `blacklist_whitelistlinks`,
+			(SELECT GROUP_CONCAT(`discord_blacklist_blacklistword`.`word` SEPARATOR ";;;") FROM `discord_blacklist_blacklistword` WHERE `discord_blacklist_blacklistword`.`guild_id` = `discord_setting`.`guild_id`)
+				AS `blacklist_blacklistwords`,
+			(SELECT GROUP_CONCAT(`discord_track_option`.`option` SEPARATOR ";;;") FROM `discord_track_option` WHERE `discord_track_option`.`guild_id` = `discord_setting`.`guild_id`)
+				AS `track_options`
 		FROM `discord_setting`
 		WHERE `discord_setting`.`guild_id` = %s
 		GROUP BY `discord_setting`.`guild_id`""",

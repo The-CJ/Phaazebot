@@ -36,7 +36,7 @@ class DiscordServerSettings(DBContentClass, APIClass):
 		self.owner_disable_mod:bool = bool( infos.get("owner_disable_mod", UNDEFINED) )
 		self.server_id:str = infos.get("guild_id", UNDEFINED)
 		self.track_channel:str = infos.get("track_channel", UNDEFINED)
-		self.track_options:list = self.fromJsonField( infos.get("track_options", UNDEFINED) )
+		self.track_options:list = self.fromStringList( infos.get("track_options", UNDEFINED), ";;;" )
 		self.welcome_chan:str = infos.get("welcome_chan", UNDEFINED)
 		self.welcome_msg:str = infos.get("welcome_msg", UNDEFINED)
 		self.welcome_msg_priv:str = infos.get("welcome_msg_priv", UNDEFINED)
