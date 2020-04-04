@@ -103,7 +103,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		update["require"] = value
 
 	# content
-	value:str = Data.getStr("content", UNDEFINED)
+	value:str = Data.getStr("content", UNDEFINED, len_max=1750)
 	if value != UNDEFINED:
 		db_update["content"] = validateDBInput(str, value)
 		update["content"] = value
@@ -116,7 +116,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# function (and type)
 	complex_:bool = Data.getBool("complex", False)
-	function:str = Data.getStr("function", UNDEFINED)
+	function:str = Data.getStr("function", UNDEFINED, len_max=256)
 	if (complex_ == False) and (function != UNDEFINED):
 		# it its not complex, we need a function
 		if not function in [cmd["function"].__name__ for cmd in command_register]:

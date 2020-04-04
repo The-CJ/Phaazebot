@@ -26,7 +26,7 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	alert_id:str = Data.getStr("alert_id", "", must_be_digit=True)
-	custom_msg:str = Data.getStr("custom_msg", "")
+	custom_msg:str = Data.getStr("custom_msg", "", len_max=1750)
 
 	# checks
 	if not guild_id:

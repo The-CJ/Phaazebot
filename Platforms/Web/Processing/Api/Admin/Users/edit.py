@@ -56,19 +56,19 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	db_update:dict = dict()
 
 	# username
-	value:str = Data.getStr("username", UNDEFINED)
+	value:str = Data.getStr("username", UNDEFINED, len_max=64)
 	if value != UNDEFINED:
 		db_update["username"] = validateDBInput(str, value)
 		update["username"] = value
 
 	# email
-	value:str = Data.getStr("email", UNDEFINED)
+	value:str = Data.getStr("email", UNDEFINED, len_max=128)
 	if value != UNDEFINED:
 		db_update["email"] = validateDBInput(str, value)
 		update["email"] = value
 
 	# password
-	value:str = Data.getStr("password", UNDEFINED)
+	value:str = Data.getStr("password", UNDEFINED, len_max=256)
 	if value: # aka non empty string and not UNDEFINED
 		value = password_function(value)
 		db_update["password"] = validateDBInput(str, value)

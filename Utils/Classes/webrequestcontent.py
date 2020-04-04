@@ -86,7 +86,7 @@ class WebRequestContent(object):
 		if value in ["0", "false", "False", ""]: return False
 		else: return True
 
-	def getStr(self, x:str, alternativ:str, len_min:int=-math.inf, len_max=math.inf, must_be_digit:bool=False, strip:bool=True) -> str:
+	def getStr(self, x:str, alternativ:str, len_min:int=-math.inf, len_max:int=math.inf, must_be_digit:bool=False, strip:bool=True) -> str:
 		"""
 			get a value as string.
 			test it it only contains digits, it its to short or to long,

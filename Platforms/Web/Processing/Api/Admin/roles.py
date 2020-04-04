@@ -97,7 +97,7 @@ async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	changes:dict = dict()
 
 	# name
-	value:str = Data.getStr("name", UNDEFINED)
+	value:str = Data.getStr("name", UNDEFINED, len_max=64)
 	if value != UNDEFINED:
 		# only allow role name change as long the role is removable,
 		# because based on name... a rename whould be a delete... got it?
@@ -106,7 +106,7 @@ async def apiAdminRolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 			changes["name"] = value
 
 	# description
-	value:str = Data.getStr("description", UNDEFINED)
+	value:str = Data.getStr("description", UNDEFINED, len_max=512)
 	if value != UNDEFINED:
 		db_changes["description"] = validateDBInput(str, value)
 		changes["description"] = value
@@ -142,8 +142,8 @@ async def apiAdminRolesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	await Data.load()
 
 	# get required stuff
-	name:str = Data.getStr("name", "")
-	description:str = Data.getStr("description", "")
+	name:str = Data.getStr("name", "", len_max=64)
+	description:str = Data.getStr("description", "", len_max=512)
 	can_be_removed:bool = Data.getBool("can_be_removed", True)
 
 	# checks

@@ -25,7 +25,7 @@ async def apiDiscordConfigsWhitelistedLinkCreate(cls:"WebIndex", WebRequest:Requ
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	link:str = Data.getStr("link", "")
+	link:str = Data.getStr("link", "", len_max=512)
 
 	# checks
 	if not guild_id:

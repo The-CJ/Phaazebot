@@ -35,8 +35,8 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	trigger:str = Data.getStr("trigger", "").lower().split(" ")[0]
 	complex_:bool = Data.getBool("complex", False)
-	function:str = Data.getStr("function", "")
-	content:str = Data.getStr("content", "")
+	function:str = Data.getStr("function", "", len_max=256)
+	content:str = Data.getStr("content", "", len_max=1750)
 	hidden:str = Data.getBool("hidden", False)
 	cooldown:int = Data.getInt("cooldown", cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN)
 	require:int = Data.getInt("require", 0, min_x=0)

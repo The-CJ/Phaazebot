@@ -19,8 +19,8 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# get required stuff
 	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
-	username:str = Data.getStr("username", "")
-	email:str = Data.getStr("email", "")
+	username:str = Data.getStr("username", "", len_max=64)
+	email:str = Data.getStr("email", "", len_max=128)
 	offset:int = Data.getInt("offset", 0, min_x=0)
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1)
 

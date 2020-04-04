@@ -32,10 +32,10 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 	await Data.load()
 
 	# get required stuff
-	username:str = Data.getStr("username", "")
-	email:str = Data.getStr("email", "")
-	password:str = Data.getStr("password", "")
-	password2:str = Data.getStr("password2", "")
+	username:str = Data.getStr("username", "", len_max=64)
+	email:str = Data.getStr("email", "", len_max=128)
+	password:str = Data.getStr("password", "", len_max=256)
+	password2:str = Data.getStr("password2", "", len_max=256)
 
 	# checks
 	if password != password2:

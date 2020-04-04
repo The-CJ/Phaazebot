@@ -13,6 +13,9 @@ async def addQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 	if not new_quote:
 		return {"content": ":warning: You need to define a quote content to add."}
 
+	if len(new_quote) > 1750:
+		return {"content": ":warning: Your quote is to long, there is a maximum of 1750 chars."}
+
 	res:list = cls.BASE.PhaazeDB.query("""
 		SELECT COUNT(*) AS `I`
 		FROM `discord_quote`

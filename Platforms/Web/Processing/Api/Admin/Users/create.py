@@ -17,9 +17,9 @@ async def apiAdminUsersCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	await Data.load()
 
 	# get required stuff
-	username:str = Data.getStr("username", UNDEFINED)
-	email:str = Data.getStr("email", UNDEFINED)
-	password:str = Data.getStr("password", UNDEFINED)
+	username:str = Data.getStr("username", UNDEFINED, len_max=64)
+	email:str = Data.getStr("email", UNDEFINED, len_max=128)
+	password:str = Data.getStr("password", UNDEFINED, len_max=256)
 
 	# format
 	if password:

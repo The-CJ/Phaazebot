@@ -32,11 +32,11 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	await Data.load()
 
 	# get required stuff
-	current_password:str = Data.getStr("password", "")
-	new_username:str = Data.getStr("username", "")
-	new_email:str = Data.getStr("email", "")
-	new_password:str = Data.getStr("newpassword", "")
-	new_password2:str = Data.getStr("newpassword2", "")
+	current_password:str = Data.getStr("password", "", len_max=256)
+	new_username:str = Data.getStr("username", "", len_max=64)
+	new_email:str = Data.getStr("email", "", len_max=128)
+	new_password:str = Data.getStr("newpassword", "", len_max=256)
+	new_password2:str = Data.getStr("newpassword2", "", len_max=256)
 
 	# checks
 	if not current_password or WebUser.password != password_function(current_password):

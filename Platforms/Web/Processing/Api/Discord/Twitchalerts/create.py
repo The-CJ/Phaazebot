@@ -34,7 +34,7 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	discord_channel_id:str = Data.getStr("discord_channel_id", "", must_be_digit=True)
 	twitch_channel:str = Data.getStr("twitch_channel", "")
-	custom_msg:str = Data.getStr("custom_msg", "")
+	custom_msg:str = Data.getStr("custom_msg", "", len_max=1750)
 
 	# checks
 	if not guild_id:

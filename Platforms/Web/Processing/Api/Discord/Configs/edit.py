@@ -100,7 +100,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		update["blacklist_ban_links"] = value
 
 	# blacklist_punishment
-	value:str = Data.getStr("blacklist_punishment", UNDEFINED)
+	value:str = Data.getStr("blacklist_punishment", UNDEFINED, len_max=32)
 	if value != UNDEFINED:
 		value = checkBlacklistPunishmentString(value)
 		db_update["blacklist_punishment"] = validateDBInput(str, value)
@@ -127,14 +127,14 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		update["leave_chan"] = value
 
 	# leave_msg
-	value:str = Data.getStr("leave_msg", UNDEFINED)
+	value:str = Data.getStr("leave_msg", UNDEFINED, len_max=1750)
 	if value != UNDEFINED:
 		if not value: value = None
 		db_update["leave_msg"] = validateDBInput(str, value, allow_null=True)
 		update["leave_msg"] = value
 
 	# level_custom_msg
-	value:str = Data.getStr("level_custom_msg", UNDEFINED)
+	value:str = Data.getStr("level_custom_msg", UNDEFINED, len_max=1750)
 	if value != UNDEFINED:
 		if not value: value = None
 		db_update["level_custom_msg"] = validateDBInput(str, value, allow_null=True)
@@ -213,14 +213,14 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		update["welcome_chan"] = value
 
 	# welcome_msg
-	value:str = Data.getStr("welcome_msg", UNDEFINED)
+	value:str = Data.getStr("welcome_msg", UNDEFINED, len_max=1750)
 	if value != UNDEFINED:
 		if not value: value = None
 		db_update["welcome_msg"] = validateDBInput(str, value, allow_null=True)
 		update["welcome_msg"] = value
 
 	# welcome_msg_priv
-	value:str = Data.getStr("welcome_msg_priv", UNDEFINED)
+	value:str = Data.getStr("welcome_msg_priv", UNDEFINED, len_max=1750)
 	if value != UNDEFINED:
 		if not value: value = None
 		db_update["welcome_msg_priv"] = validateDBInput(str, value, allow_null=True)

@@ -135,7 +135,7 @@ async def singleActionMedal(cls:"WebIndex", WebRequest:Request, action:str, Data
 	member_id:str = Data.getStr("member_id", "")
 
 	action = action.lower()
-	medal_name:str = Data.getStr("medal_name", "").strip(" ").strip("\n")
+	medal_name:str = Data.getStr("medal_name", "", len_max=512)
 
 	if not guild_id:
 		# should never happen
