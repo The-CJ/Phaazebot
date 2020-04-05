@@ -4,18 +4,30 @@
 
 /* frame styles */
 
-.site-panel {
-  height: calc(100vh - 5em);
-  overflow-y: auto;
-}
-
 .main-panel {
   max-height: calc(100vh - 5em);
   overflow-y: auto;
 }
 
+.site-panel {
+  height: calc(100vh - 5em);
+  overflow-y: auto;
+}
+
+.site-panel ul li i {
+  margin-right: .5em;
+}
+
 .site-panel-btn {
   display: none;
+  position: fixed;
+  left: 2px;
+  bottom: 2px;
+  border-radius: 7.5em;
+  line-height: 0;
+  background-color: lightgreen;
+  color: black;
+  z-index: 2;
 }
 
 /* location specific styles */
@@ -39,18 +51,21 @@
     transition-timing-function: linear;
   }
 
-  .site-panel-btn {
-    display: block;
-    position: absolute;
-    left: 2em;
-    bottom: 2em;
-    z-index: 2;
-  }
-
   .site-panel.show {
     width: 75vw;
     visibility: visible;
   }
+
+  .site-panel-btn {
+    display: block;
+  }
+
+  .site-panel-btn.show {
+    background-color: darkred;
+    color: white;
+  }
+
+
 }
 
 /* show mode attributes (please say me there is a better method... but i know know)*/
