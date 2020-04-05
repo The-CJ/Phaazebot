@@ -11,7 +11,7 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordRoleFromString, getDiscordChannelFromString
+from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordRoleFromString
 from Platforms.Discord.blacklist import checkBlacklistPunishmentString
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
@@ -105,6 +105,20 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		value = checkBlacklistPunishmentString(value)
 		db_update["blacklist_punishment"] = validateDBInput(str, value)
 		update["blacklist_punishment"] = value
+
+	# currency_name
+	value:str = Data.getStr("currency_name", UNDEFINED, len_max=256)
+	if value != UNDEFINED:
+		if not value: value = None
+		db_update["currency_name"] = validateDBInput(str, value, allow_null=True)
+		update["currency_name"] = value
+
+	# currency_name_multi
+	value:str = Data.getStr("currency_name_multi", UNDEFINED, len_max=256)
+	if value != UNDEFINED:
+		if not value: value = None
+		db_update["currency_name_multi"] = validateDBInput(str, value, allow_null=True)
+		update["currency_name_multi"] = value
 
 	# leave_chan
 	value:str = Data.getStr("leave_chan", UNDEFINED)
