@@ -221,7 +221,8 @@ var DiscordDashboard = new (class {
   showLocationWindow(view) {
     if ( isEmpty(view) ) { view = "home"; }
     $("[location]").hide();
-    $("[location="+view+"]").show();
+    $(`[location=${view}]`).show();
+    $(".site-panel").attr("mode", view);
     this.toggleSitePanel("hide");
   }
 

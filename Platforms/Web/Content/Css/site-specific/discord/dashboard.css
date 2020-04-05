@@ -1,5 +1,7 @@
 /* overall styles */
 
+[mode] [show-mode] { display: none; } /* see file bottom */
+
 /* frame styles */
 
 .site-panel {
@@ -50,3 +52,6 @@
     visibility: visible;
   }
 }
+
+/* show mode attributes (please say me there is a better method... but i know know)*/
+[mode="configs"] [show-mode=configs] { display: block; }

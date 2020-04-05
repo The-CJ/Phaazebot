@@ -14,13 +14,16 @@
 
     <div class="row">
 
-      <div class="col-2 stylish-color-dark site-panel">
+      <div class="col-2 stylish-color-dark site-panel" mode="[N/A]">
         <h4>|<!--#(guild_name)#-->|</h4>
         <data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
         <hr>
         <ul class="text-left">
           <li onclick="DiscordDashboard.loadHome()"><i class="fas fa-home"></i>Home</li>
           <li onclick="DiscordDashboard.loadConfig()"><i class="fas fa-cogs"></i>Configuration</li>
+          <ul show-mode="configs">
+            <li><a onclick="DiscordDashboard.loadConfig()" href="#">Chat management</a></li>
+          </ul>
           <li onclick="DiscordDashboard.loadCommand()"><i class="fas fa-terminal"></i>Commands</li>
           <li onclick="DiscordDashboard.loadLevel()"><i class="fas fa-list-ol"></i>Levels</li>
           <li onclick="DiscordDashboard.loadQuote()"><i class="fas fa-quote-right"></i>Quotes</li>
@@ -29,7 +32,7 @@
         </ul>
       </div>
 
-      <div class="col main-panel" hidden>
+      <div class="col main-panel">
 
         |<!--#(location_home)#-->|
 
