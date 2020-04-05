@@ -13,7 +13,7 @@ var DiscordDashboard = new (class {
   // loader
   loadHome() {
     DynamicURL.set("view", false);
-    this.showLocationWindow();
+    this.showLocationWindow("home");
     var guild_id = $("#guild_id").val();
     $.get("/api/discord/guild", {guild_id: guild_id})
     .done(function (data) {
@@ -21,19 +21,8 @@ var DiscordDashboard = new (class {
 
       var image = discordGuildAvatar(guild.id, guild.icon, 128);
       $("#icon").attr("src", image);
-      $("#name").text(guild.name);
 
-      // stats
-      $("#command_count").text(guild.command_count);
-      $("#quote_count").text(guild.quote_count);
-      $("#twitch_alert_count").text(guild.twitch_alert_count);
-      $("#level_count").text(guild.level_count);
-
-      // infos
-      $("#member_count").text(guild.member_count);
-      $("#role_count").text(guild.role_count);
-      $("#channel_count").text(guild.channel_count);
-      $("#premium_subscription_count").text(guild.premium_subscription_count ? guild.premium_subscription_count : 0);
+      insertData("[location='home']", guild);
 
     })
     .fail(function (data) {

@@ -1,5 +1,6 @@
 /* overall styles */
 
+[location] { padding-top: 1.5em; }
 [mode] [show-mode] { display: none; } /* see file bottom */
 
 /* frame styles */
@@ -14,9 +15,9 @@
   overflow-y: auto;
 }
 
-.site-panel ul li i {
-  margin-right: .5em;
-}
+.site-panel ul li { cursor: pointer; }
+
+.site-panel ul li i { margin-right: 0.5em; }
 
 .site-panel-btn {
   display: none;
@@ -31,6 +32,8 @@
 }
 
 /* location specific styles */
+
+[location="home"] .guild-name { margin-left: 1em; font-size: 3ch; }
 
 /* modal styles */
 
@@ -64,7 +67,6 @@
     background-color: darkred;
     color: white;
   }
-
 
 }
 
