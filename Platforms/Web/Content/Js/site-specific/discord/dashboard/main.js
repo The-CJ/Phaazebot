@@ -11,6 +11,12 @@ var DiscordDashboard = new (class {
   }
 
   // loader
+  loadLocation(target) {
+    DynamicURL.set("view", target);
+    this.showLocationWindow(target);
+    this.setSitePanelCollapse("hide");
+  }
+
   loadHome() {
     DynamicURL.set("view", false);
     this.showLocationWindow("home");
@@ -211,34 +217,37 @@ var DiscordDashboard = new (class {
     if ( isEmpty(view) ) { view = "home"; }
     $("[location]").hide();
     $(`[location=${view}]`).show();
-    $(".site-panel").attr("mode", view);
-    this.toggleSitePanel("hide");
+    this.setSitePanelCollapse("hide");
   }
 
-  toggleSitePanel(state) {
-    if (isEmpty(state)) {
+  setSitePanelCollapse(state) {
+    if ( isEmpty(state) ) {
       state = $(".site-panel").hasClass("show");
       state = state ? "hide" : "show";
     }
     if (state == "hide") {
-      $(".site-panel").removeClass("show");
-      $(".site-panel-btn").removeClass("show");
+      $(".site-panel, .site-panel-btn").removeClass("show");
     }
     if (state == "show") {
-      $(".site-panel").addClass("show");
-      $(".site-panel-btn").addClass("show");
+      $(".site-panel, .site-panel-btn").addClass("show");
     }
   }
 
+  setExpandSitePanelCollapse(expand) {
+    if ( isEmpty(expand) ) { expand = "NULL"; }
+    DynamicURL.set("ex", expand);
+    $(".site-panel .collapse").collapse("hide");
+    $(`.site-panel .collapse[expand="${expand}"]`).collapse("show");
+  }
+
   restoreView() {
-    var l = DynamicURL.get("view");
-    if (l == "home" || !l) { this.loadHome(); }
-    else if (l == "configs") { this.loadConfig(); }
-    else if (l == "commands") { this.loadCommand(); }
-    else if (l == "levels") { this.loadLevel(); }
-    else if (l == "quotes") { this.loadQuote(); }
-    else if (l == "twitch_alerts") { this.loadTwitchAlert(); }
-    else if (l == "assign_roles") { this.loadAssignRole(); }
+    var expand = DynamicURL.get("ex");
+    if (!expand) { location = "NULL"; }
+    this.setExpandSitePanelCollapse(expand);
+
+    var location = DynamicURL.get("view");
+    if (!location) { location = "home"; }
+    this.loadLocation(location);
   }
 })
 

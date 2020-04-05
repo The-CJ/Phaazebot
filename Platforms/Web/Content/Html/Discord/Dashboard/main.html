@@ -14,22 +14,77 @@
 
     <div class="row">
 
-      <div class="col-2 stylish-color-dark site-panel" mode="[N/A]">
+      <div class="col-2 stylish-color-dark site-panel">
         <h4>|<!--#(guild_name)#-->|</h4>
         <data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
+
         <hr>
-        <ul class="text-left">
-          <li onclick="DiscordDashboard.loadHome()"><i class="fas fa-home"></i>Home</li>
-          <li onclick="DiscordDashboard.loadConfig()"><i class="fas fa-cogs"></i>Configuration</li>
-          <ul show-mode="configs">
-            <li><a onclick="DiscordDashboard.loadConfig()" href="#">Chat management</a></li>
-          </ul>
-          <li onclick="DiscordDashboard.loadCommand()"><i class="fas fa-terminal"></i>Commands</li>
-          <li onclick="DiscordDashboard.loadLevel()"><i class="fas fa-list-ol"></i>Levels</li>
-          <li onclick="DiscordDashboard.loadQuote()"><i class="fas fa-quote-right"></i>Quotes</li>
-          <li onclick="DiscordDashboard.loadTwitchAlert()"><i class="fab fa-twitch"></i>Twitch Alerts</li>
-          <li onclick="DiscordDashboard.loadAssignRole()"><i class="far fa-address-book"></i>Assign Roles</li>
-        </ul>
+
+        <div class="text-left" onclick="DiscordDashboard.loadLocation('home')">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </div>
+
+        <div class="text-left" onclick="DiscordDashboard.loadLocation('quotes')">
+          <i class="fas fa-quote-right"></i>
+          <span>Quotes</span>
+        </div>
+
+        <div class="text-left" onclick="DiscordDashboard.loadLocation('twitch_alerts')">
+          <i class="fab fa-twitch"></i>
+          <span>Twitch Alerts</span>
+        </div>
+
+        <div class="text-left" onclick="DiscordDashboard.loadLocation('levels')">
+          <i class="fas fa-list-ol"></i>
+          <span>Levels</span>
+        </div>
+
+        <div class="text-left" onclick="DiscordDashboard.setExpandSitePanelCollapse('configs')">
+          <i class="fas fa-cogs"></i>
+          <span>Configuration</span>
+          <i class="fas fa-arrow-down"></i>
+        </div>
+        <div class="collapse" expand="configs">
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_chat')">
+            <span>Chat Management</span>
+          </div>
+
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_event')">
+            <span>Automated Events</span>
+          </div>
+
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_level')">
+            <span>Level Options</span>
+          </div>
+
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_channels')">
+            <span>Channel Exceptions</span>
+          </div>
+
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_master')">
+            <span>Master Controlls</span>
+          </div>
+        </div>
+
+        <div class="text-left" onclick="DiscordDashboard.setExpandSitePanelCollapse('commands')">
+          <i class="fas fa-terminal"></i>
+          <span>Commands</span>
+          <i class="fas fa-arrow-down"></i>
+        </div>
+        <div class="collapse" expand="commands">
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('commands')">
+            <span>Server commands</span>
+          </div>
+
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('commands_help')">
+            <span>Command help</span>
+          </div>
+
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('commands_assign')">
+            <span>Assignroles</span>
+          </div>
+        </div>
       </div>
 
       <div class="col main-panel">
@@ -54,4 +109,4 @@
   </div>
 
 </main>
-<button type="button" class="site-panel-btn btn" onclick="DiscordDashboard.toggleSitePanel()"><i class="fas fa-angle-double-right"></i></button>
+<button type="button" class="site-panel-btn btn" onclick="DiscordDashboard.setSitePanelCollapse()"><i class="fas fa-angle-double-right"></i></button>

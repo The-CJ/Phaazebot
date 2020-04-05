@@ -13,11 +13,13 @@
 .site-panel {
   height: calc(100vh - 5em);
   overflow-y: auto;
+  padding-top: 1.5em;
 }
 
-.site-panel ul li { cursor: pointer; }
+.site-panel [onclick] { cursor: pointer; margin: 5px; }
+.site-panel [expand] > * { margin-left: 1.5em; }
 
-.site-panel ul li i { margin-right: 0.5em; }
+.site-panel i { width: 1ch; margin-right: 1em; }
 
 .site-panel-btn {
   display: none;
