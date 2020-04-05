@@ -17,6 +17,7 @@
 }
 
 .site-panel [onclick] { cursor: pointer; margin: 5px; }
+
 .site-panel [expand] > * { margin-left: 1.5em; }
 
 .site-panel i { width: 1ch; margin-right: 1em; }
@@ -69,7 +70,6 @@
     background-color: darkred;
     color: white;
   }
-
 }
 
 /* show mode attributes (please say me there is a better method... but i know know)*/
