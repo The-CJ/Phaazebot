@@ -1,0 +1,186 @@
+/* panel stuff */
+.site-panel {
+  min-height: calc(100vh - 5em);
+  position: static;
+  top: 5em;
+  left: 0;
+}
+.site-panel h4 {
+  margin: 0.5em 0;
+}
+
+.site-panel-btn {
+  display: none;
+  position: fixed;
+  left: 2px;
+  bottom: 2px;
+  z-index: 2;
+  border-radius: 7.5em;
+  padding: 1em;
+  line-height: 0;
+  color: white;
+}
+.site-panel-btn.show {
+  color: black;
+}
+
+@media (max-width: 1100px) {
+  .site-panel {
+    left: 0;
+    position: fixed;
+    display: none;
+    height: 100vh;
+    width: 50vw;
+    max-width: unset;
+    z-index: 1;
+    float: unset;
+    border-right: 2px solid black;
+  }
+  .site-panel-btn {
+    display: block;
+  }
+}
+.site-panel.show { display: unset; }
+
+.main-panel {
+  padding-top: 15px;
+  overflow-y: auto;
+}
+.main-panel [location] {
+  display: none;
+}
+.location-selector {
+  display: block;
+}
+.location-selector > * {
+  margin: 1em 0;
+  cursor: pointer;
+}
+.location-selector .location {
+  color: white;
+}
+.location-selector .location i {
+  margin-left: 2em;
+  margin-right: 0.75em;
+  width: 1em;
+}
+
+/* for all lists in modal*/
+.modal-itemlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
+.modal-itemlist > * { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
+.modal-itemlist > *.deleted { background-color: #ccaaaaaa; }
+.modal-itemlist:empty::after { content: "(None)"; }
+
+/* locations */
+[location=home] .guild-icon {
+  border: 2px solid black;
+  background-color: #202225;
+  border-radius: 50%;
+}
+[location=home] .guild-name {
+  margin-left: 1em;
+  font-size: 32px;
+}
+
+[location=commands] .command { cursor: pointer;; }
+[location=commands] .command:hover { background: rgba(0,0,0,0.2); }
+[location=commands] .command > *, [location=commands] .header > * { margin: 2px; }
+[location=commands] .header > div { background-color: var(--color-listelement-odd); }
+[location=commands] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
+[location=commands] .command > div { background-color: var(--color-sub-listelement-odd); }
+[location=commands] .command > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
+[location=commands] .command .function.hidden { background: #665b87 }
+[location=commands] .command.non-active { box-shadow: -5px 0 0 red }
+
+[location=configs] .config-box { padding: 5px; margin-bottom: 1em; }
+[location=configs] .config-box .btn { margin: unset; }
+[location=configs] .btn.toggle-value[value=x] {background-color: #696969; }
+[location=configs] .btn.toggle-value[value=true], [location=configs] .btn.toggle-value.reverse[value=false] {
+  background-color: var(--color-boolish-green);
+}
+[location=configs] .btn.toggle-value[value=false], [location=configs] .btn.toggle-value.reverse[value=true] {
+  background-color: var(--color-boolish-red);
+}
+[location=configs] .btn.toggle-value[value]::after {
+  content: "-----";
+}
+[location=configs] .btn.toggle-value[value=true]::after, [location=configs] .btn.toggle-value.reverse[value=false]::after {
+  content: "Disable";
+}
+[location=configs] .btn.toggle-value[value=false]::after, [location=configs] .btn.toggle-value.reverse[value=true]::after {
+  content: "Enable";
+}
+[location=configs] .btn.config-save { margin-top: 1em; }
+[location=configs] .config-info { padding: .84rem 2.14rem; font-size: .81rem; } /* same as btn */
+[location=configs] .config-textbox-input { width: 100%; }
+[location=configs] .config-token-btn { position: absolute; top: 1px; right: 1px; }
+
+[location=levels] .level { cursor: pointer; }
+[location=levels] .level:hover { background: rgba(0,0,0,0.2); }
+[location=levels] .level > *, [location=levels] .header > * { margin: 2px; overflow: hidden; }
+[location=levels] .header > div { background-color: var(--color-listelement-odd); }
+[location=levels] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
+[location=levels] .level > div { background-color: var(--color-sub-listelement-odd); }
+[location=levels] .level > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
+[location=levels] .level .exp.edited { background: #665b87; }
+[location=levels] .level .member .avatar { border-radius: 50%; }
+[location=levels] .level .member .name { margin-left: 1em; }
+
+[location=quotes] .quote { margin: 5px 0; }
+[location=quotes] .quote [name=content] {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 10px;
+  resize: none;
+}
+[location=quotes] .quote [name=content]:not([readonly]) {
+  background: #00000050;
+  border-left: 2px solid red;
+}
+[location=quotes] .quote .quote-id { color: grey; }
+
+[location=assign_roles] .assignrole { cursor: pointer; }
+[location=assign_roles] .assignrole:hover { background: rgba(0,0,0,0.2); }
+[location=assign_roles] .assignrole > *, [location=assign_roles] .header > * { margin: 2px; overflow: hidden; }
+[location=assign_roles] .header > div { background-color: var(--color-listelement-odd); }
+[location=assign_roles] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
+[location=assign_roles] .assignrole > div { background-color: var(--color-sub-listelement-odd); }
+[location=assign_roles] .assignrole > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
+[location=assign_roles] #assign_role_list:empty::after { content: "(None)"; }
+
+[location=twitch_alerts] .twitchalert { cursor: pointer; }
+[location=twitch_alerts] .twitchalert:hover { background: rgba(0,0,0,0.2); }
+[location=twitch_alerts] .twitchalert > *, [location=twitch_alerts] .header > * { margin: 2px; overflow: hidden; }
+[location=twitch_alerts] .header > div { background-color: var(--color-listelement-odd); }
+[location=twitch_alerts] .header > div:nth-child(even) { background-color: var(--color-listelement-even); }
+[location=twitch_alerts] .twitchalert > div { background-color: var(--color-sub-listelement-odd); }
+[location=twitch_alerts] .twitchalert > div:nth-child(even) { background-color: var(--color-sub-listelement-even); }
+[location=twitch_alerts] #twitchalert_list:empty::after { content: "(None)"; }
+
+/* modals */
+#command_create [command-setting], #command_create [extra-command-setting] { display: none;}
+#command_create button[mode] { display: none;}
+#command_create[mode=new] button[mode=new] { display: unset;}
+#command_create[mode=edit] button[mode=edit] { display: unset;}
+#command_create [extra-command-setting] p { word-break: break-word; white-space: pre-line;}
+
+#assignrole_create button[mode] { display: none;}
+#assignrole_create[mode=create] button[mode=create] { display: unset;}
+#assignrole_create[mode=edit] button[mode=edit] { display: unset;}
+
+#alert_modal[mode] [show-mode] { display: none; }
+#alert_modal[mode=edit] [show-mode=edit] { display: block; }
+#alert_modal[mode=create] [show-mode=create] { display: block; }
+
+#token_modal_help .example { color: white; background: grey; }
+#token_modal_help .clickable { color: #262798; background: #8aa6af9c; padding: 2px; cursor: pointer; }
+#token_modal_help .tokenlist { padding: 0 1em; }
+#token_modal_help .tokenlist .token { padding: 1px; }
+#token_modal_help .tokenlist .token .key { padding-right: 2px; background: #aaaaaaaa; text-align: center;}
+#token_modal_help .tokenlist .token .value { padding-left: 2px; text-align: left;}
+#token_modal_help .modal-body { max-height: 50vh; overflow-y: auto; }
+
+#level_modal_edit [name=exp][edited=true] { background-color: #eeaaaaaa; }

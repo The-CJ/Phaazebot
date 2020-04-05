@@ -13,21 +13,23 @@
   <div class="container-fluid text-center white-text">
 
     <div class="row">
+
       <div class="col-2 stylish-color-dark site-panel">
         <h4>|<!--#(guild_name)#-->|</h4>
         <data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
         <hr>
-        <div class="location-selector text-left">
-          <div onclick="DiscordDashboard.loadHome()" class="location"><i class="fas fa-home"></i>Home</div>
-          <div onclick="DiscordDashboard.loadConfig()" class="location"><i class="fas fa-cogs"></i>Configuration</div>
-          <div onclick="DiscordDashboard.loadCommand()" class="location"><i class="fas fa-terminal"></i>Commands</div>
-          <div onclick="DiscordDashboard.loadLevel()" class="location"><i class="fas fa-list-ol"></i>Levels</div>
-          <div onclick="DiscordDashboard.loadQuote()" class="location"><i class="fas fa-quote-right"></i>Quotes</div>
-          <div onclick="DiscordDashboard.loadTwitchAlert()" class="location"><i class="fab fa-twitch"></i>Twitch Alerts</div>
-          <div onclick="DiscordDashboard.loadAssignRole()" class="location"><i class="far fa-address-book"></i>Assign Roles</div>
-        </div>
+        <ul class="text-left">
+          <li onclick="DiscordDashboard.loadHome()"><i class="fas fa-home"></i>Home</li>
+          <li onclick="DiscordDashboard.loadConfig()"><i class="fas fa-cogs"></i>Configuration</li>
+          <li onclick="DiscordDashboard.loadCommand()"><i class="fas fa-terminal"></i>Commands</li>
+          <li onclick="DiscordDashboard.loadLevel()"><i class="fas fa-list-ol"></i>Levels</li>
+          <li onclick="DiscordDashboard.loadQuote()"><i class="fas fa-quote-right"></i>Quotes</li>
+          <li onclick="DiscordDashboard.loadTwitchAlert()"><i class="fab fa-twitch"></i>Twitch Alerts</li>
+          <li onclick="DiscordDashboard.loadAssignRole()"><i class="far fa-address-book"></i>Assign Roles</li>
+        </ul>
       </div>
-      <div class="col main-panel">
+
+      <div class="col main-panel" hidden>
 
         |<!--#(location_home)#-->|
 
