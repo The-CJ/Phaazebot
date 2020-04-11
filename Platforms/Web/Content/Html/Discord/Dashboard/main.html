@@ -20,77 +20,89 @@
 
         <hr>
 
-        <div class="text-left" onclick="DiscordDashboard.loadLocation('home')">
-          <i class="fas fa-home"></i>
-          <span>Home</span>
-        </div>
-
-        <div class="text-left" onclick="DiscordDashboard.loadLocation('quotes')">
-          <i class="fas fa-quote-right"></i>
-          <span>Quotes</span>
-        </div>
-
-        <div class="text-left" onclick="DiscordDashboard.loadLocation('twitch_alerts')">
-          <i class="fab fa-twitch"></i>
-          <span>Twitch Alerts</span>
-        </div>
-
-        <div class="text-left" onclick="DiscordDashboard.loadLocation('levels')">
-          <i class="fas fa-list-ol"></i>
-          <span>Levels</span>
-        </div>
-
-        <div class="text-left" onclick="DiscordDashboard.setExpandSitePanelCollapse('configs')">
-          <i class="fas fa-cogs"></i>
-          <span>Configuration</span>
-          <i class="fas fa-arrow-down"></i>
-        </div>
-        <div class="collapse" expand="configs">
-          <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_chat')">
-            <i class="fas fa-chevron-right"></i>
-            <span>Chat Management</span>
-          </div>
-
-          <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_event')">
-            <i class="fas fa-chevron-right"></i>
-            <span>Automated Events</span>
-          </div>
-
-          <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_level')">
-            <i class="fas fa-chevron-right"></i>
-            <span>Level Options</span>
-          </div>
-
-          <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_channels')">
-            <i class="fas fa-chevron-right"></i>
-            <span>Channel Exceptions</span>
-          </div>
-
-          <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_master')">
-            <i class="fas fa-chevron-right"></i>
-            <span>Master Controlls</span>
+        <div sidebar-location="home">
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('home')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
           </div>
         </div>
 
-        <div class="text-left" onclick="DiscordDashboard.setExpandSitePanelCollapse('commands')">
-          <i class="fas fa-terminal"></i>
-          <span>Commands</span>
-          <i class="fas fa-arrow-down"></i>
+        <div sidebar-location="quotes">
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('quotes')">
+            <i class="fas fa-quote-right"></i>
+            <span>Quotes</span>
+          </div>
         </div>
-        <div class="collapse" expand="commands">
-          <div class="text-left" onclick="DiscordDashboard.loadLocation('commands')">
-            <i class="fas fa-chevron-right"></i>
-            <span>Server commands</span>
-          </div>
 
-          <div class="text-left" onclick="DiscordDashboard.loadLocation('commands_help')">
-            <i class="fas fa-chevron-right"></i>
-            <span>Command help</span>
+        <div sidebar-location="twitch_alerts">
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('twitch_alerts')">
+            <i class="fab fa-twitch"></i>
+            <span>Twitch Alerts</span>
           </div>
+        </div>
 
-          <div class="text-left" onclick="DiscordDashboard.loadLocation('commands_assign')">
-            <i class="fas fa-chevron-right"></i>
-            <span>Assignroles</span>
+        <div sidebar-location="levels">
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('levels')">
+            <i class="fas fa-list-ol"></i>
+            <span>Levels</span>
+          </div>
+        </div>
+
+        <div sidebar-location="configs">
+          <div class="text-left" onclick="DiscordDashboard.setExpandSitePanelCollapse('configs')">
+            <i class="fas fa-cogs"></i>
+            <span>Configuration</span>
+            <i class="fas fa-arrow-down"></i>
+          </div>
+          <div class="collapse" expand="configs">
+            <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_chat')">
+              <i class="fas fa-chevron-right"></i>
+              <span>Chat Management</span>
+            </div>
+
+            <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_event')">
+              <i class="fas fa-chevron-right"></i>
+              <span>Automated Events</span>
+            </div>
+
+            <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_level')">
+              <i class="fas fa-chevron-right"></i>
+              <span>Level Options</span>
+            </div>
+
+            <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_channels')">
+              <i class="fas fa-chevron-right"></i>
+              <span>Channel Exceptions</span>
+            </div>
+
+            <div class="text-left" onclick="DiscordDashboard.loadLocation('configs_master')">
+              <i class="fas fa-chevron-right"></i>
+              <span>Master Controlls</span>
+            </div>
+          </div>
+        </div>
+
+        <div sidebar-location="commands">
+          <div class="text-left" onclick="DiscordDashboard.setExpandSitePanelCollapse('commands')">
+            <i class="fas fa-terminal"></i>
+            <span>Commands</span>
+            <i class="fas fa-arrow-down"></i>
+          </div>
+          <div class="collapse" expand="commands">
+            <div class="text-left" onclick="DiscordDashboard.loadLocation('commands')">
+              <i class="fas fa-chevron-right"></i>
+              <span>Server commands</span>
+            </div>
+
+            <div class="text-left" onclick="DiscordDashboard.loadLocation('commands_help')">
+              <i class="fas fa-chevron-right"></i>
+              <span>Command help</span>
+            </div>
+
+            <div class="text-left" onclick="DiscordDashboard.loadLocation('commands_assign')">
+              <i class="fas fa-chevron-right"></i>
+              <span>Assignroles</span>
+            </div>
           </div>
         </div>
       </div>
