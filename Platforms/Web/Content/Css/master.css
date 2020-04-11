@@ -74,6 +74,10 @@ label.checkbox-container > input[type=checkbox] + span,
 label.checkbox-container > span + input[type=checkbox] {
 	margin-left: 5px;
 }
+.generic-list > * { background-color: var(--color-listelement-odd); }
+.generic-list > *:nth-child(even) { background-color: var(--color-listelement-even); }
+.generic-sub-list > * { background-color: var(--color-sub-listelement-odd); }
+.generic-sub-list > *:nth-child(even) { background-color: var(--color-sub-listelement-even); }
 
 /* center items */
 @media (min-width: 992px) {

@@ -1,5 +1,5 @@
 /* overall styles */
-
+.generic-list > *, .generic-sub-list > * { margin: 2px; padding: 2px; } 
 [location] { padding-top: 1.5em; }
 [mode] [show-mode] { display: none; } /* see file bottom */
 

@@ -1,0 +1,81 @@
+<div location="quotes">
+
+  <div class="container-fluid">
+
+    <div class="center-item-row">
+      <div class="col">
+        <h4>Quotes: <span id="quote_amount">[N/A]</span></h4>
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-success" onclick="Quotes.startNewModal()">New Quote</button>
+      </div>
+    </div>
+
+    <div class="center-item-row md-form">
+      <span>Public quote page for this server:</span>
+      <div class="col">
+        <input type="text" value="|<!--#(web_root)#-->|/discord/quotes/|<!--#(guild_id)#-->|" readonly class="white-text text-center" style="width: 100%;">
+      </div>
+    </div>
+
+    <div class="center-item-row" id="quote_pages" hidden>
+      <button onclick="Levels.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+      <button onclick="Levels.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+      <span>Page: <span class="index">0</span></span>
+      <button onclick="Levels.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+      <button onclick="Levels.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+    </div>
+
+    <!-- gets filled with copys of: "[phantom] .quote" -->
+    <div id="quote_list"></div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+  <div class="modal fade" id="quote_modal_new">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">New Quote</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+          <textarea rows="8" style="width: 100%" name="content" maxlength="1750"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-block btn-success" onclick="Quotes.startNew()">Save</button>
+        </div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="row quote content-box" quote-id="0">
+    <div class="col-1 controls one">
+      <div class="center-item-col">
+        <span class="quote-id">ID: <span name="quote_id">0</span></span>
+        <button type="button" class="btn btn-secondary icon-btn" onclick="Quotes.startEdit(this)"><i class="fas fa-wrench"></i></button>
+        <button type="button" class="btn btn-danger icon-btn" onclick="Quotes.startDelete(this)"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+    <div class="col-1 controls two" style="display: none">
+      <div class="center-item-col">
+        <span class="quote-id">ID: <span name="quote_id">0</span></span>
+        <button type="button" class="btn btn-danger icon-btn" onclick="Quotes.endEdit(this)"><i class="fas fa-times"></i></button>
+        <button type="button" class="btn btn-primary icon-btn" onclick="Quotes.startSave(this)"><i class="fas fa-save"></i></button>
+      </div>
+    </div>
+    <div class="col-11 content"><textarea name="content" readonly></textarea></div>
+  </div>
+
+</div>

@@ -1,27 +1,40 @@
 var Quotes = new (class {
   constructor() {
-    this.amount = 0;
-    this.temporarily_quote_content = {};
+    this.total = 0;
   }
 
-  show(x={}) {
-    var QuoteO = this;
-    var guild_id = $("#guild_id").val();
-    // var offset = x["offset"] ? x["offset"] : 0; // NOTE: do i need this?
+  show() {
+    // loads in default values or taken from url
+    let limit = DynamicURL.get("quotes[limit]") || 10;
+    let page = DynamicURL.get("quotes[page]") || 0;
 
-    $.get("/api/discord/quotes/get", {guild_id: guild_id})
+    var req = {
+      limit: limit,
+      offset: (page * limit)
+    };
+
+    this.load( req );
+  }
+
+  load(x={}) {
+    var QuoteO = this;
+    x["guild_id"] = $("#guild_id").val();
+
+    $.get("/api/discord/quotes/get", x)
     .done(function (data) {
 
-      QuoteO.amount = data.result.length;
+      QuoteO.total = data.total;
       $("#quote_amount").text(QuoteO.amount);
       var QuoteList = $("#quote_list").html("");
 
       for (var quote of data.result) {
         var Template = $("[phantom] .quote").clone();
 
-        // Template.find(".name").text( level.username );
-        Template.find("[name=content]").val(quote.content);
-        Template.find("[name=quote_id]").text(quote.quote_id);
+        if (quote.content.length > 100) {
+          quote.content = quote.content.slice(0, 97) + "...";
+        }
+
+        insertData(Template, quote);
         Template.attr("quote-id", quote.quote_id);
 
         QuoteList.append(Template);
@@ -32,6 +45,18 @@ var Quotes = new (class {
       generalAPIErrorHandler( {data:data, msg:"could not load quotes"} );
     })
   }
+
+  nextPage(last=false) {}
+
+  prevPage(first=false) {
+    var search = extractData("[location=quotes] .controlls");
+    this.load(search);
+  }
+
+
+
+
+
 
   startEdit(HTMLButton) {
     var Quote = $(HTMLButton).closest(".quote");
