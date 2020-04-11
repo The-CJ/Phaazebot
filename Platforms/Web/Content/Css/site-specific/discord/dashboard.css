@@ -14,11 +14,17 @@
   height: calc(100vh - 5em);
   overflow-y: auto;
   padding-top: 1.5em;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .site-panel [onclick] { cursor: pointer; margin: 5px; }
 
 .site-panel [expand] > * { margin-left: 1.5em; }
+
+.site-panel [sidebar-location] { padding: 0 1em; }
+
+.site-panel [sidebar-location].active { background-color: var(--color-modal-background); }
 
 .site-panel i { width: 1ch; margin-right: 1em; }
 
