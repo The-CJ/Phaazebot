@@ -358,7 +358,7 @@ var Display = new (class {
 
 var DynamicURL = new (class {
   constructor() {
-    this.values = {};
+    this.values = this.getAll();
   }
 
   set(key, value, update=true) {
@@ -370,8 +370,23 @@ var DynamicURL = new (class {
     let value = this.values[key];
     if (value == null) {
       value = this.getFromLocation(key);
+      this.values[key] = value;
     }
     return value
+  }
+
+  getAll() {
+    var search = location.search.substring(1);
+    search = search.replace(/&/g, '","');
+    search = search.replace(/=/g, '":"');
+
+    return JSON.parse( `{"${search}"}`,
+      function(key, value) {
+        console.log(key);
+        console.log(value);
+        return (key==="") ? value : decodeURIComponent(value);
+      }
+    )
   }
 
   update() {
@@ -382,7 +397,7 @@ var DynamicURL = new (class {
       let value = this.values[key];
       if (isEmpty(value)) { continue; }
 
-      ucurl = ucurl + pre + key + "=" + value;
+      ucurl = ucurl + pre + key + "=" + encodeURIComponent(value);
       pre = "&";
 
     }
