@@ -102,6 +102,7 @@ var Quotes = new (class {
   // create
   createModal() {
     $(this.modal_id).attr("mode", "new");
+    $(this.modal_id).find("[name=content]").val("");
     $(this.modal_id).modal("show");
   }
 
@@ -124,96 +125,68 @@ var Quotes = new (class {
   }
 
   // edit
-
-  startEdit(HTMLButton) {
-    var Quote = $(HTMLButton).closest(".quote");
-
-    // stage content ins temp.
-    var quote_id = Quote.attr("quote-id");
-    var quote_content = Quote.find("[name=content]").val();
-    this.temporarily_quote_content[quote_id] = quote_content;
-
-    // hide controll group 1
-    Quote.find(".controls.one").hide();
-
-    // show control group 2 and make text field editable
-    Quote.find(".controls.two").show();
-    Quote.find("[name=content]").attr("readonly", null);
-  }
-
-  endEdit(HTMLButton) {
-    var Quote = $(HTMLButton).closest(".quote");
-
-    // edit is ended without save, restore old content
-    var quote_id = Quote.attr("quote-id");
-    var content = this.temporarily_quote_content[quote_id];
-    if (!isEmpty(content)) {
-      Quote.find("[name=content]").val(content);
-      delete this.temporarily_quote_content[quote_id];
-    }
-
-    // hide controll group 2
-    Quote.find(".controls.two").hide();
-
-    // show control group 1 and make text field uneditable
-    Quote.find(".controls.one").show();
-    Quote.find("[name=content]").attr("readonly", true);
-  }
-
-  startDelete(HTMLButton) {
-    var c = confirm("Are you sure you want to delete this quote?");
-    if (!c) {return;}
-
-    var Quote = $(HTMLButton).closest(".quote");
+  editModal(HTMLButton) {
     var QuoteO = this;
 
-    var guild_id = $("#guild_id").val();
-    var quote_id = Quote.attr("quote-id");
-
     var req = {
-      "guild_id": guild_id,
-      "quote_id": quote_id
+      "guild_id": $("#guild_id").val(),
+      "quote_id": $(HTMLButton).closest(".quote").attr("quote-id")
     };
-
-    $.post("/api/discord/quotes/delete", req)
+    $.get("/api/discord/quotes/get", req)
     .done(function (data) {
 
-      QuoteO.amount -= 1;
-      $("#quote_amount").text(QuoteO.amount);
-      Quote.remove();
-      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      var quote = data.result.pop();
+      insertData(QuoteO.modal_id, quote);
+      $(QuoteO.modal_id).attr("mode", "edit");
+      $(QuoteO.modal_id).modal("show");
 
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error deleting quote"} );
+      generalAPIErrorHandler( {data:data, msg:"error displaying quote"} );
     })
   }
 
-  startSave(HTMLButton) {
-    var Quote = $(HTMLButton).closest(".quote");
+  edit() {
+    var QuoteO = this;
 
-    // get all vars
-    var guild_id = $("#guild_id").val();
-    var quote_id = Quote.attr("quote-id");
-    var quote_content = Quote.find("[name=content]").val();
-
-    var req = {
-      "guild_id": guild_id,
-      "quote_id": quote_id,
-      "content": quote_content
-    };
+    var req = extractData(this.modal_id);
+    req["guild_id"] = $("#guild_id").val();
 
     $.post("/api/discord/quotes/edit", req)
     .done(function (data) {
 
-      Quote.find(".controls.one").show();
-      Quote.find("[name=content]").attr("readonly", true);
-      Quote.find(".controls.two").hide();
+      $(QuoteO.modal_id).modal("hide");
+      QuoteO.show();
       Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
 
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error updating quote"} );
+    })
+  }
+
+  // delete
+  delete(HTMLButton) {
+    var c = confirm("Are you sure you want to delete this quote?");
+    if (!c) {return;}
+
+    var QuoteO = this;
+    var Quote = $(HTMLButton).closest(".quote");
+
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "quote_id": Quote.attr("quote-id")
+    };
+
+    $.post("/api/discord/quotes/delete", req)
+    .done(function (data) {
+
+      QuoteO.show();
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error deleting quote"} );
     })
   }
 

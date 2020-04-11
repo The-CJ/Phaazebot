@@ -59,17 +59,20 @@
       <div class="modal-content">
 
         <div class="modal-header text-center">
+          <data name="quote_id"></data>
           <h4 class="modal-title" show-mode="new">New Quote</h4>
           <h4 class="modal-title" show-mode="edit">Edit Quote</h4>
           <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
+          <sub>Max length: 1750 chars.</sub>
           <textarea rows="8" style="width: 100%" name="content" maxlength="1750"></textarea>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-block btn-success" onclick="Quotes.create()">Save</button>
+          <button show-mode="new" type="button" class="btn btn-block btn-success" onclick="Quotes.create()">Save</button>
+          <button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="Quotes.edit()">Submit changes</button>
         </div>
         <div messagebox></div>
       </div>
@@ -84,8 +87,8 @@
     <div class="col-1 id"><span name="quote_id">[N/A]</span></div>
     <div class="col content"><span name="content">[N/A]</span></div>
     <div class="col-1 action">
-      <button type="submit" class="btn btn-warning icon-btn small"><i class="fas fa-edit"></i></button>
-      <button type="submit" class="btn btn-danger icon-btn small"><i class="fas fa-trash"></i></button>
+      <button type="submit" class="btn btn-warning icon-btn small" onclick="Quotes.editModal(this)"><i class="fas fa-edit"></i></button>
+      <button type="submit" class="btn btn-danger icon-btn small" onclick="Quotes.delete(this)"><i class="fas fa-trash"></i></button>
     </div>
   </div>
 
