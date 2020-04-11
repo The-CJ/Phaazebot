@@ -10,30 +10,35 @@ var DiscordDashboard = new (class {
     this.roles = [];
   }
 
-  // loader
   loadLocation(target) {
+    // handles all display and view utils
+    // everything except home is support to be outmoved in a extra class
     DynamicURL.set("view", target);
+
+    if (target == "home") {
+      this.setSitePanelSelectedLocation("home");
+      var guild_id = $("#guild_id").val();
+      $.get("/api/discord/guild", {guild_id: guild_id})
+      .done(function (data) {
+        var guild = data.result;
+
+        var image = discordGuildAvatar(guild.id, guild.icon, 128);
+        $("#icon").attr("src", image);
+
+        insertData("[location='home']", guild);
+      })
+      .fail(function (data) {
+        generalAPIErrorHandler( {data:data, msg:"loading informations failed"} );
+      });
+    }
+
+    if (target == "quotes") {
+      this.setSitePanelSelectedLocation("quotes");
+      Quotes.show();
+    }
+
     this.setLocationWindow(target);
     this.setSitePanelCollapse("hide");
-  }
-
-  __loadHome() {
-    DynamicURL.set("view", false);
-    this.showLocationWindow("home");
-    var guild_id = $("#guild_id").val();
-    $.get("/api/discord/guild", {guild_id: guild_id})
-    .done(function (data) {
-      var guild = data.result;
-
-      var image = discordGuildAvatar(guild.id, guild.icon, 128);
-      $("#icon").attr("src", image);
-
-      insertData("[location='home']", guild);
-
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"loading informations failed"} );
-    })
   }
 
   __loadConfig() {
@@ -52,12 +57,6 @@ var DiscordDashboard = new (class {
     DynamicURL.set("view", "levels");
     this.showLocationWindow("levels");
     Levels.show();
-  }
-
-  __loadQuote() {
-    DynamicURL.set("view", "quotes");
-    this.showLocationWindow("quotes");
-    Quotes.show();
   }
 
   __loadTwitchAlert() {
@@ -257,11 +256,12 @@ var DiscordDashboard = new (class {
     // restores all locations and sitebar selections
     // based on DynamicURL
     var expand = DynamicURL.get("ex");
-    if (!expand) { location = "NULL"; }
+    var location = DynamicURL.get("view");
+    
+    if ( isEmpty(expand) ) { expand = null; }
     this.setExpandSitePanelCollapse(expand);
 
-    var location = DynamicURL.get("view");
-    if (!location) { location = "home"; }
+    if ( isEmpty(location) ) { location = "home"; }
     this.loadLocation(location);
   }
 })

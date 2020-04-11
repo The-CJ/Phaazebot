@@ -382,8 +382,6 @@ var DynamicURL = new (class {
 
     return JSON.parse( `{"${search}"}`,
       function(key, value) {
-        console.log(key);
-        console.log(value);
         return (key==="") ? value : decodeURIComponent(value);
       }
     )
