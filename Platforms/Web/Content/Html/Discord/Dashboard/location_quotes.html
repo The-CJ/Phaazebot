@@ -2,7 +2,7 @@
 
   <div class="container-fluid">
 
-    <form class="row controlls" action="javascript:Quotes.prevPage(1)">
+    <form class="center-item-row controlls" action="javascript:Quotes.prevPage(1)">
       <div class="col" option="limit">
         <select class="" name="limit">
           <option value="5">5</option>
@@ -23,6 +23,14 @@
         <button type="submit" class="btn btn-secondary icon-btn"><i class="fas fa-search"></i></button>
       </div>
     </form>
+
+    <div class="center-item-row pages">
+      <button onclick="Quotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+      <button onclick="Quotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+      <span>Page: <span class="page">0</span></span>
+      <button onclick="Quotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+      <button onclick="Quotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+    </div>
 
     <hr>
 

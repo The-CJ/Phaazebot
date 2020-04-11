@@ -1,12 +1,17 @@
 var Quotes = new (class {
   constructor() {
-    this.total = 0;
+    this.default_limit = 10;
+    this.default_page = 0;
+
+    this.current_limit = 0;
+    this.current_page = 0;
+    this.current_max_page = 0;
   }
 
   show() {
     // loads in default values or taken from url
-    let limit = DynamicURL.get("quotes[limit]") || 10;
-    let page = DynamicURL.get("quotes[page]") || 0;
+    let limit = DynamicURL.get("quotes[limit]") || this.default_limit;
+    let page = DynamicURL.get("quotes[page]") || this.default_page;
 
     var req = {
       limit: limit,
@@ -23,9 +28,11 @@ var Quotes = new (class {
     $.get("/api/discord/quotes/get", x)
     .done(function (data) {
 
-      QuoteO.total = data.total;
-      $("#quote_amount").text(QuoteO.amount);
+      // update view
+      QuoteO.updatePageIndexButtons(data);
+
       var QuoteList = $("#quote_list").html("");
+      $("#quote_amount").text(data.total);
 
       for (var quote of data.result) {
         var Template = $("[phantom] .quote").clone();
@@ -39,21 +46,54 @@ var Quotes = new (class {
 
         QuoteList.append(Template);
       }
-
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not load quotes"} );
     })
   }
 
-  nextPage(last=false) {}
-
-  prevPage(first=false) {
+  nextPage(last=false) {
+    this.current_page += 1;
     var search = extractData("[location=quotes] .controlls");
+    search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
   }
 
+  prevPage(first=false) {
+    this.current_page -= 1;
+    if (first) { this.current_page = 0; }
 
+    var search = extractData("[location=quotes] .controlls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
+  }
+
+  updatePageIndexButtons(data) {
+    this.current_limit = data.limit;
+    this.current_page = data.offset / data.limit;
+    this.current_max_page = (data.total / data.limit);
+    this.current_max_page = parseInt(this.current_max_page)
+
+    // update limit url if needed
+    if (this.current_limit != this.default_limit) {
+      DynamicURL.set("quotes[limit]", this.current_limit);
+    } else {
+      DynamicURL.set("quotes[limit]", null);
+    }
+
+    // update page url if needed
+    if (this.current_page != this.default_page) {
+      DynamicURL.set("quotes[page]", this.current_page);
+    } else {
+      DynamicURL.set("quotes[page]", null);
+    }
+
+    // update html elements
+    $("[location=quotes] [name=limit]").val(this.current_limit);
+    $("[location=quotes] .pages .prev").attr("disabled", (this.current_page <= 0) );
+    $("[location=quotes] .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+
+  }
 
 
 
