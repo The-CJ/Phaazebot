@@ -3,7 +3,8 @@
   <div class="container-fluid">
 
     <form class="center-item-row controlls content-box" action="javascript:Quotes.prevPage(1)">
-      <div class="col" option="limit">
+      <!-- limit -->
+      <div class="col">
         <select class="custom-select" name="limit">
           <option value="5">5 Entrys per page</option>
           <option value="10" selected>10 Entrys per page</option>
@@ -13,10 +14,12 @@
         </select>
       </div>
 
-      <div class="col" option="content_contains">
+      <!-- quote contains -->
+      <div class="col">
         <input type="text" name="content_contains" class="form-control" placeholder="Quote must contain..."/>
       </div>
 
+      <!-- pages -->
       <div class="col pages">
         <button onclick="Quotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
         <button onclick="Quotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
@@ -27,7 +30,8 @@
         <span>Total: <span id="quote_amount">[N/A]</span> Quotes</span>
       </div>
 
-      <div class="col" option="submit">
+      <!-- buttons -->
+      <div class="col">
         <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
         <button type="button" class="btn btn-success icon-btn" onclick="Quotes.createModal()"><i class="fas fa-plus"></i></button>
       </div>
@@ -38,6 +42,7 @@
     <div class="row header generic-list">
       <div class="col-1 id">ID</div>
       <div class="col content">Content</div>
+      <div class="col-1 action">Action</div>
     </div>
 
     <!-- gets filled with copys of: "[phantom] .quote" -->
@@ -78,6 +83,10 @@
   <div class="row quote generic-sub-list" quote-id="0">
     <div class="col-1 id"><span name="quote_id">[N/A]</span></div>
     <div class="col content"><span name="content">[N/A]</span></div>
+    <div class="col-1 action">
+      <button type="submit" class="btn btn-warning icon-btn small"><i class="fas fa-edit"></i></button>
+      <button type="submit" class="btn btn-danger icon-btn small"><i class="fas fa-trash"></i></button>
+    </div>
   </div>
 
 </div>

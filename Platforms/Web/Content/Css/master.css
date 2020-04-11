@@ -47,16 +47,11 @@
   background: rgba(0, 0, 0, 0.10);
   box-shadow: 0px 0px 10px #00000069;
 }
-.icon-btn {
-  padding: 1em;
-  line-height: 0;
-}
-.icon-btn.round {
-	border-radius: 50%;
-}
-.icon-btn i {
-	width: 14px;
-}
+.icon-btn { padding: 1em; line-height: 0; }
+.icon-btn.small { padding: 0.5em; }
+.icon-btn.round {	border-radius: 50%; }
+.icon-btn i {	width: 14px; }
+.icon-btn.small i {	width: 9px; font-size: 1.33ch; }
 label.checkbox-container {
 	margin-right: auto;
 	margin-left: auto;

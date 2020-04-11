@@ -54,6 +54,7 @@ var Quotes = new (class {
     })
   }
 
+  // utils
   nextPage(last=false) {
     this.current_page += 1;
     var search = extractData("[location=quotes] .controlls");
@@ -98,8 +99,31 @@ var Quotes = new (class {
 
   }
 
+  // create
+  createModal() {
+    $(this.modal_id).attr("mode", "new");
+    $(this.modal_id).modal("show");
+  }
 
+  create() {
+    var QuoteO = this;
+    var req = extractData(this.modal_id);
+    req["guild_id"] = $("#guild_id").val();
 
+    $.post("/api/discord/quotes/create", req)
+    .done(function (data) {
+
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $(QuoteO.modal_id).modal("hide");
+      QuoteO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error creating quote"} );
+    })
+  }
+
+  // edit
 
   startEdit(HTMLButton) {
     var Quote = $(HTMLButton).closest(".quote");
@@ -193,27 +217,4 @@ var Quotes = new (class {
     })
   }
 
-  createModal() {
-    $(this.modal_id).attr("mode", "new");
-    $(this.modal_id).modal("show");
-  }
-
-  create() {
-
-    var QuoteO = this;
-    var req = extractData(this.modal_id);
-    req["guild_id"] = $("#guild_id").val();
-
-    $.post("/api/discord/quotes/create", req)
-    .done(function (data) {
-
-      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
-      $(QuoteO.modal_id).modal("hide");
-      QuoteO.show();
-
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error creating quote"} );
-    })
-  }
 });
