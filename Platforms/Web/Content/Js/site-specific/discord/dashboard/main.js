@@ -13,11 +13,11 @@ var DiscordDashboard = new (class {
   // loader
   loadLocation(target) {
     DynamicURL.set("view", target);
-    this.showLocationWindow(target);
+    this.setLocationWindow(target);
     this.setSitePanelCollapse("hide");
   }
 
-  loadHome() {
+  __loadHome() {
     DynamicURL.set("view", false);
     this.showLocationWindow("home");
     var guild_id = $("#guild_id").val();
@@ -36,37 +36,37 @@ var DiscordDashboard = new (class {
     })
   }
 
-  loadConfig() {
+  __loadConfig() {
     DynamicURL.set("view", "configs");
     this.showLocationWindow("configs");
     Configs.show();
   }
 
-  loadCommand() {
+  __loadCommand() {
     DynamicURL.set("view", "commands");
     this.showLocationWindow("commands");
     Commands.show();
   }
 
-  loadLevel() {
+  __loadLevel() {
     DynamicURL.set("view", "levels");
     this.showLocationWindow("levels");
     Levels.show();
   }
 
-  loadQuote() {
+  __loadQuote() {
     DynamicURL.set("view", "quotes");
     this.showLocationWindow("quotes");
     Quotes.show();
   }
 
-  loadTwitchAlert() {
+  __loadTwitchAlert() {
     DynamicURL.set("view", "twitch_alerts");
     this.showLocationWindow("twitch_alerts");
     TwitchAlerts.show();
   }
 
-  loadAssignRole() {
+  __loadAssignRole() {
     DynamicURL.set("view", "assign_roles");
     this.showLocationWindow("assign_roles");
     AssignRoles.show();
@@ -213,34 +213,49 @@ var DiscordDashboard = new (class {
   }
 
   // view utils
-  showLocationWindow(view) {
-    if ( isEmpty(view) ) { view = "home"; }
+  setLocationWindow(view) {
+    // set the selected parts in main-panel
+    // also updates DynamicURL
+    // empty to hide everything
+    if ( isEmpty(view) ) { view = null; }
+    DynamicURL.set("view", view);
     $("[location]").hide();
     $(`[location=${view}]`).show();
-    this.setSitePanelCollapse("hide");
   }
 
   setSitePanelCollapse(state) {
+    // controlls site panel and collapse button visibility, classes, etc
+    // allowed states: "show", "hide", ""
+    // empty will toggle it
     if ( isEmpty(state) ) {
       state = $(".site-panel").hasClass("show");
       state = state ? "hide" : "show";
     }
-    if (state == "hide") {
-      $(".site-panel, .site-panel-btn").removeClass("show");
-    }
-    if (state == "show") {
-      $(".site-panel, .site-panel-btn").addClass("show");
-    }
+
+    if (state == "hide") { $(".site-panel, .site-panel-btn").removeClass("show"); }
+    else if (state == "show") { $(".site-panel, .site-panel-btn").addClass("show"); }
+  }
+
+  setSitePanelSelectedLocation(target) {
+    // set the background color of the last selected site-panel option
+    if ( isEmpty(target) ) { target = null; }
+    $(".site-panel [sidebar-location]").removeClass("active");
+    $(`.site-panel [sidebar-location="${target}"]`).addClass("active");
   }
 
   setExpandSitePanelCollapse(expand) {
-    if ( isEmpty(expand) ) { expand = "NULL"; }
+    // there are multiple collapse elements in the sitebar
+    // given a expand name will open this collapse and set it in DynamicURL
+    // empty will clear it
+    if ( isEmpty(expand) ) { expand = null; }
     DynamicURL.set("ex", expand);
     $(".site-panel .collapse").collapse("hide");
     $(`.site-panel .collapse[expand="${expand}"]`).collapse("show");
   }
 
   restoreView() {
+    // restores all locations and sitebar selections
+    // based on DynamicURL
     var expand = DynamicURL.get("ex");
     if (!expand) { location = "NULL"; }
     this.setExpandSitePanelCollapse(expand);
