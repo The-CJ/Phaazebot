@@ -25,7 +25,7 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	quote_id:str = Data.getInt("quote_id", "", must_be_digit=True)
+	quote_id:str = Data.getStr("quote_id", "", must_be_digit=True)
 	content:str = Data.getStr("content", "")
 
 	# checks
