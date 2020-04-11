@@ -1,5 +1,5 @@
 /* overall styles */
-.generic-list > *, .generic-sub-list > * { margin: 2px; padding: 2px; } 
+.generic-list > *, .generic-sub-list > * { margin: 2px; padding: 2px; }
 [location] { padding-top: 1.5em; }
 [mode] [show-mode] { display: none; } /* see file bottom */
 
@@ -42,7 +42,7 @@
 
 /* location specific styles */
 
-[location="home"] .guild-name { margin-left: 1em; font-size: 3ch; }
+[location=home] .guild-name { margin-left: 1em; font-size: 3ch; }
 
 /* modal styles */
 
@@ -79,4 +79,6 @@
 }
 
 /* show mode attributes (please say me there is a better method... but i know know)*/
-[mode="configs"] [show-mode=configs] { display: block; }
+[mode=configs] [show-mode=configs] { display: block; }
+[mode=new] [show-mode=new] { display: block; }
+[mode=edit] [show-mode=edit] { display: block; }

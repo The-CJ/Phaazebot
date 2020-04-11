@@ -1,5 +1,7 @@
 var Quotes = new (class {
   constructor() {
+    this.modal_id = "#quote_modal";
+
     this.default_limit = 10;
     this.default_page = 0;
 
@@ -92,6 +94,7 @@ var Quotes = new (class {
     $("[location=quotes] [name=limit]").val(this.current_limit);
     $("[location=quotes] .pages .prev").attr("disabled", (this.current_page <= 0) );
     $("[location=quotes] .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+    $("[location=quotes] .pages .page").text(this.current_page+1);
 
   }
 
@@ -190,26 +193,27 @@ var Quotes = new (class {
     })
   }
 
-  startNewModal() {
-    $("#quote_modal_new").modal("show");
+  createModal() {
+    $(this.modal_id).attr("mode", "new");
+    $(this.modal_id).modal("show");
   }
 
-  startNew() {
+  create() {
 
     var QuoteO = this;
-    var req = extractData("#quote_modal_new");
+    var req = extractData(this.modal_id);
     req["guild_id"] = $("#guild_id").val();
 
     $.post("/api/discord/quotes/create", req)
     .done(function (data) {
 
       Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
-      $("#quote_modal_new").modal("hide");
+      $(QuoteO.modal_id).modal("hide");
       QuoteO.show();
 
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error updating quote"} );
+      generalAPIErrorHandler( {data:data, msg:"error creating quote"} );
     })
   }
 });
