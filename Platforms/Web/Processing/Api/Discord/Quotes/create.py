@@ -45,7 +45,7 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# check limit
 	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
-		SELECT COUNT(*) AS `I`,
+		SELECT COUNT(*) AS `I`
 		FROM `discord_quote`
 		WHERE `discord_quote`.`guild_id` = %s""",
 		( guild_id, )
