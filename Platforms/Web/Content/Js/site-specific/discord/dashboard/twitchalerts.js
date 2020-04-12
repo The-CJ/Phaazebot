@@ -179,22 +179,32 @@ var TwitchAlerts = new (class {
   }
 
   // delete
-  delete() {
+  deleteFromList(HTMLButton) {
+    let alert_id = $(HTMLButton).closest(this.phantom_class).attr("alert-id");
+    this.delete(alert_id);
+  }
+
+  deleteFromModal() {
+    let alert_id = $(`${this.modal_id} [name=alert_id]`).val();
+    this.delete(alert_id);
+  }
+
+  delete(alert_id) {
+    var c = confirm("Are you sure you want to delete this twitch alert?");
+    if (!c) {return;}
+
     var TwitchAlertsO = this;
-    var guild_id = $("#guild_id").val();
-    var alert_id = $(TwitchAlertsO.modal_id).attr("alert-id");
 
-    var req = {};
-    req["guild_id"] = guild_id;
-    req["alert_id"] = alert_id;
-
-    if (!confirm("Are you sure you want to delete this twitch alert?")) { return; }
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "alert_id": alert_id
+    };
 
     $.post("/api/discord/twitchalerts/delete", req)
     .done(function (data) {
-      Display.showMessage({content: data.msg, color:Display.color_success});
       $(TwitchAlertsO.modal_id).modal("hide");
       TwitchAlertsO.show();
+      Display.showMessage({content: data.msg, color:Display.color_success});
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not delete alert"} );

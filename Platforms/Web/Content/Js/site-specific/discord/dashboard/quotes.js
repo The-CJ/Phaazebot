@@ -192,11 +192,9 @@ var Quotes = new (class {
 
     $.post("/api/discord/quotes/delete", req)
     .done(function (data) {
-
       $(QuoteO.modal_id).modal("hide");
       QuoteO.show();
       Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
-
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error deleting quote"} );

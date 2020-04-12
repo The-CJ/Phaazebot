@@ -132,9 +132,9 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-block btn-warning" onclick="TwitchAlerts.edit()" show-mode="edit">Submit changes</button>
-          <button type="button" class="btn btn-block btn-danger" onclick="TwitchAlerts.delete()" show-mode="edit">Delete</button>
-          <button type="button" class="btn btn-block btn-success" onclick="TwitchAlerts.create()" show-mode="create">Submit</button>
+          <button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="TwitchAlerts.edit()">Submit changes</button>
+          <button show-mode="edit" type="button" class="btn btn-block btn-danger" onclick="TwitchAlerts.deleteFromModal()">Delete</button>
+          <button show-mode="create" type="button" class="btn btn-block btn-success" onclick="TwitchAlerts.create()">Submit</button>
         </div>
         <div messagebox></div>
       </div>
@@ -150,7 +150,7 @@
     <div class="col twitch"><span name="twitch_channel">[N/A]</span></div>
     <div class="col-1 action">
       <button type="submit" class="btn btn-warning icon-btn small" onclick="TwitchAlerts.editModal(this)"><i class="fas fa-edit"></i></button>
-      <button type="submit" class="btn btn-danger icon-btn small" onclick="TwitchAlerts.delete(this)"><i class="fas fa-trash"></i></button>
+      <button type="submit" class="btn btn-danger icon-btn small" onclick="TwitchAlerts.deleteFromList(this)"><i class="fas fa-trash"></i></button>
     </div>
   </div>
 
