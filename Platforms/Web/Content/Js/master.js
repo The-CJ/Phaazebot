@@ -380,11 +380,16 @@ var DynamicURL = new (class {
     search = search.replace(/&/g, '","');
     search = search.replace(/=/g, '":"');
 
-    return JSON.parse( `{"${search}"}`,
-      function(key, value) {
-        return (key==="") ? value : decodeURIComponent(value);
-      }
-    )
+    if (isEmpty(search)) { return {}; }
+
+    try {
+      return JSON.parse( `{"${search}"}`,
+        function(key, value) { return (key==="") ? value : decodeURIComponent(value); }
+      )
+    } catch (e) {
+      return {};
+    }
+
   }
 
   update() {
