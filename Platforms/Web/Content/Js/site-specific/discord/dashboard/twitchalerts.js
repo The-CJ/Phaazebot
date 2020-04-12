@@ -2,12 +2,12 @@ var TwitchAlerts = new (class {
   constructor() {
     this.modal_id = "#alert_modal";
     this.list_id = "#twitchalert_list";
-    this.amount_field_id = "#alert_amount";
+    this.total_field_id = "#alert_amount";
     this.phantom_class = ".twitchalert";
     this.twitchbase = "https://twitch.tv/";
   }
 
-  show(x={}) {
+  show() {
     var TwitchAlertsO = this;
     var guild_id = $("#guild_id").val();
     // var offset = x["offset"] ? x["offset"] : 0; // NOTE: do i need this?
@@ -41,6 +41,13 @@ var TwitchAlerts = new (class {
     })
   }
 
+  load(x={}) {
+
+  }
+
+  // utils
+
+  // create
   createModal() {
     resetInput(this.modal_id);
     $(this.modal_id).attr("mode", "create");
@@ -63,6 +70,7 @@ var TwitchAlerts = new (class {
     })
   }
 
+  // edit
   detail(HTMLRow) {
     var TwitchAlertsO = this;
     var guild_id = $("#guild_id").val();
@@ -114,6 +122,7 @@ var TwitchAlerts = new (class {
     })
   }
 
+  // delete
   delete() {
     var TwitchAlertsO = this;
     var guild_id = $("#guild_id").val();

@@ -2,7 +2,7 @@
 
   <div class="container-fluid">
 
-    <form class="center-item-row controlls content-box" action="javascript:Quotes.prevPage(1)">
+    <form class="center-item-row controlls content-box" action="javascript:TwitchAlerts.prevPage(1)">
       <!-- limit -->
       <div class="col">
         <select class="custom-select" name="limit">
@@ -14,28 +14,31 @@
         </select>
       </div>
 
-      <!-- quote contains -->
-      <div class="col">
-        <input type="text" name="content_contains" class="form-control" placeholder="Quote must contain..."/>
-      </div>
-
       <!-- pages -->
       <div class="col pages">
-        <button onclick="Quotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
-        <button onclick="Quotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+        <button onclick="TwitchAlerts.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+        <button onclick="TwitchAlerts.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
         <span>Page: <span class="page">0</span></span>
-        <button onclick="Quotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
-        <button onclick="Quotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+        <button onclick="TwitchAlerts.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+        <button onclick="TwitchAlerts.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
 
-        <span>Total: <span id="quote_amount">[N/A]</span> Quotes</span>
+        <span>Total: <span id="alert_amount">[N/A]</span> Alerts</span>
       </div>
 
       <!-- buttons -->
       <div class="col">
         <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
-        <button type="button" class="btn btn-success icon-btn" onclick="Quotes.createModal()"><i class="fas fa-plus"></i></button>
+        <button type="button" class="btn btn-success icon-btn" onclick="TwitchAlerts.createModal()"><i class="fas fa-plus"></i></button>
       </div>
     </form>
+
+    <hr>
+
+    <div class="row header generic-list">
+      <div class="col discord">Discord Channel</div>
+      <div class="col twitch">Twitch Channel</div>
+      <div class="col-1 action">Action</div>
+    </div>
 
     <!-- gets filled with copys of: "[phantom] .twitchalert" -->
     <div id="twitchalert_list"></div>
@@ -51,6 +54,7 @@
       <div class="modal-content">
 
         <div class="modal-header text-center">
+          <data name="alert_id"></data>
           <h4 class="modal-title" show-mode="create">New Twitchalert</h4>
           <h4 class="modal-title" show-mode="edit">Edit Alert</h4>
           <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
@@ -141,9 +145,13 @@
 
 <div phantom hidden>
 
-  <div class="row twitchalert" alert-id="-1" onclick="TwitchAlerts.detail(this)">
-    <div class="col discord">[N/A]</div>
-    <div class="col twitch">[N/A]</div>
+  <div class="row twitchalert generic-sub-list" alert-id="-1">
+    <div class="col discord"><span name="discord_channel">[N/A]</span></div>
+    <div class="col twitch"><span name="twitch_channel">[N/A]</span></div>
+    <div class="col-1 action">
+      <button type="submit" class="btn btn-warning icon-btn small" onclick="TwitchAlerts.editModal(this)"><i class="fas fa-edit"></i></button>
+      <button type="submit" class="btn btn-danger icon-btn small" onclick="TwitchAlerts.delete(this)"><i class="fas fa-trash"></i></button>
+    </div>
   </div>
 
 </div>
