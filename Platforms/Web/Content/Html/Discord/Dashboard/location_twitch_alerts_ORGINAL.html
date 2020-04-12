@@ -1,0 +1,124 @@
+<div location="twitch_alerts">
+
+  <div class="container-fluid">
+
+    <div class="center-item-row">
+      <div class="col">
+        <h4>Twitch Alerts: <span id="alert_amount">[N/A]</span></h4>
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-success" onclick="TwitchAlerts.createModal()">New alert</button>
+      </div>
+    </div>
+
+
+    <!-- gets filled with copys of: "[phantom] .twitchalert" -->
+    <div id="twitchalert_list"></div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+  <div class="modal fade" id="alert_modal" edit-alert="" mode="create/edit">
+    <div class="modal-dialog modal-lg " role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title" show-mode="edit">Edit Alert</h4>
+          <h4 class="modal-title" show-mode="create">New Twitchalert</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div show-mode="create">
+            <p>
+              Adding a Twitchalert, will send a Discord message to a channel<br>
+              if a Twitch channel goes live or changes to the game.<br>
+              This is only triggered by LIVE events, restreaming a VOD will not trigger it.<br>
+              Each Twitch channel can only be added once per Discord channel, (obviously)<br>
+              and in total, in 3 Discord channels per guild/server.<br>
+              (i don't know why you even wanna be notified in 2 channels, but this limit is sadly needed... don't ask why)
+            </p>
+            <hr>
+
+            <div>
+              <i class="fab fa-twitch grey-text"></i>
+              <p>
+                Select the Twitch channel you want to track.<br>
+                Just enter the channel name or the entire channel link.
+              </p>
+              <div class="md-form">
+                <input type="text" name="twitch_channel" class="form-controll text-center" style="width:100%;" placeholder="Twitch channel link or name">
+              </div>
+            </div>
+            <hr>
+
+            <div>
+              <i class="fab fa-discord grey-text"></i>
+              <p>
+                Select a Discord channel<br>
+                (Phaaze must have permission to send messages to this channel, obviously)
+              </p>
+              <select class="custom-select form-control" name="discord_channel_id" discord-channel="text"></select>
+            </div>
+            <hr>
+
+          </div>
+
+          <div show-mode="edit">
+            <p>
+              The following twitch channel will trigger a Discord message<br>
+              if it goes live or changes the game<br>
+              <br>
+              You might change the alert content, but you can't change the Discord or Twitch channel.<br>
+              Delete this alert and make a new one if needed.
+            </p>
+            <hr>
+
+            <div>
+              <i class="fab fa-twitch prefix grey-text"></i>
+              <a href="/" name="twitch_link"></a>
+            </div>
+            <hr>
+
+            <div>
+              <i class="fab fa-discord prefix grey-text"></i>
+              <span name="discord_channel_name"></span>
+            </div>
+            <hr>
+
+          </div>
+
+          <!-- bottom text area -->
+          <p>
+            The custom message, only appears on the live event, not gamechange.<br>
+            It's added as text above the alert embed.<br>
+            Leave it empty if you don't want any.
+          </p>
+          <textarea name="custom_msg" rows="8" style="width:100%;"></textarea>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-block btn-warning" onclick="TwitchAlerts.edit()" show-mode="edit">Edit</button>
+          <button type="button" class="btn btn-block btn-danger" onclick="TwitchAlerts.delete()" show-mode="edit">Delete</button>
+          <button type="button" class="btn btn-block btn-success" onclick="TwitchAlerts.create()" show-mode="create">Submit</button>
+        </div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="row twitchalert" alert-id="-1" onclick="TwitchAlerts.detail(this)">
+    <div class="col discord">[N/A]</div>
+    <div class="col twitch">[N/A]</div>
+  </div>
+
+</div>

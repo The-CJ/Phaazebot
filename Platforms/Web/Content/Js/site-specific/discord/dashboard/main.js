@@ -37,6 +37,11 @@ var DiscordDashboard = new (class {
       Quotes.show();
     }
 
+    if (target == "twitch_alerts") {
+      this.setSitePanelSelectedLocation("twitch_alerts");
+      TwitchAlerts.show();
+    }
+
     this.setLocationWindow(target);
     this.setSitePanelCollapse("hide");
   }
@@ -57,12 +62,6 @@ var DiscordDashboard = new (class {
     DynamicURL.set("view", "levels");
     this.showLocationWindow("levels");
     Levels.show();
-  }
-
-  __loadTwitchAlert() {
-    DynamicURL.set("view", "twitch_alerts");
-    this.showLocationWindow("twitch_alerts");
-    TwitchAlerts.show();
   }
 
   __loadAssignRole() {
@@ -257,7 +256,7 @@ var DiscordDashboard = new (class {
     // based on DynamicURL
     var expand = DynamicURL.get("ex");
     var location = DynamicURL.get("view");
-    
+
     if ( isEmpty(expand) ) { expand = null; }
     this.setExpandSitePanelCollapse(expand);
 

@@ -1,6 +1,9 @@
 var Quotes = new (class {
   constructor() {
     this.modal_id = "#quote_modal";
+    this.list_id = "#quote_list";
+    this.total_field_id = "#quote_amount";
+    this.phantom_class = ".quote";
 
     this.default_limit = 10;
     this.default_page = 0;
@@ -33,11 +36,11 @@ var Quotes = new (class {
       // update view
       QuoteO.updatePageIndexButtons(data);
 
-      var QuoteList = $("#quote_list").html("");
-      $("#quote_amount").text(data.total);
+      var QuoteList = $(QuoteO.list_id).html("");
+      $(QuoteO.total_field_id).text(data.total);
 
       for (var quote of data.result) {
-        var Template = $("[phantom] .quote").clone();
+        var Template = $(`[phantom] ${QuoteO.phantom_class}`).clone();
 
         if (quote.content.length > 100) {
           quote.content = quote.content.slice(0, 97) + "...";
@@ -171,7 +174,7 @@ var Quotes = new (class {
     if (!c) {return;}
 
     var QuoteO = this;
-    var Quote = $(HTMLButton).closest(".quote");
+    var Quote = $(HTMLButton).closest(QuoteO.phantom_class);
 
     var req = {
       "guild_id": $("#guild_id").val(),
