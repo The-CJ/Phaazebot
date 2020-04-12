@@ -65,14 +65,47 @@ var TwitchAlerts = new (class {
 
   // utils
   nextPage(last=false) {
-
+    this.current_page += 1;
+    var search = extractData("[location=twitch_alerts] .controlls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
   }
 
   prevPage(first=false) {
+    this.current_page -= 1;
+    if (first) { this.current_page = 0; }
 
+    var search = extractData("[location=twitch_alerts] .controlls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
   }
 
-  updatePageIndexButtons() {}
+  updatePageIndexButtons(data) {
+    this.current_limit = data.limit;
+    this.current_page = data.offset / data.limit;
+    this.current_max_page = (data.total / data.limit);
+    this.current_max_page = parseInt(this.current_max_page)
+
+    // update limit url if needed
+    if (this.current_limit != this.default_limit) {
+      DynamicURL.set("alerts[limit]", this.current_limit);
+    } else {
+      DynamicURL.set("alerts[limit]", null);
+    }
+
+    // update page url if needed
+    if (this.current_page != this.default_page) {
+      DynamicURL.set("alerts[page]", this.current_page);
+    } else {
+      DynamicURL.set("alerts[page]", null);
+    }
+
+    // update html elements
+    $("[location=twitch_alerts] [name=limit]").val(this.current_limit);
+    $("[location=twitch_alerts] .pages .prev").attr("disabled", (this.current_page <= 0) );
+    $("[location=twitch_alerts] .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+    $("[location=twitch_alerts] .pages .page").text(this.current_page+1);
+  }
 
   // create
   createModal() {

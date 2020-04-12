@@ -45,7 +45,9 @@ async def apiDiscordTwitchalertsGet(cls:"WebIndex", WebRequest:Request) -> Respo
 	return cls.response(
 		text=json.dumps( dict(
 			result=[ Alert.toJSON(custom_msg=with_message) for Alert in res_alerts ],
-			total=( await getDiscordServerTwitchAlertsAmount(PhaazeDiscord, guild_id) ),
+			limit=limit,
+			offset=offset,
+			total=(await getDiscordServerTwitchAlertsAmount(PhaazeDiscord, guild_id)),
 			status=200)
 		),
 		content_type="application/json",
