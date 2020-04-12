@@ -169,21 +169,31 @@ var Quotes = new (class {
   }
 
   // delete
-  delete(HTMLButton) {
+  deleteFromList(HTMLButton) {
+    let quote_id = $(HTMLButton).closest(this.phantom_class).attr("quote-id");
+    this.delete(quote_id);
+  }
+
+  deleteFromModal() {
+    let quote_id = $(`${this.modal_id} [name=quote_id]`).val();
+    this.delete(quote_id);
+  }
+
+  delete(quote_id) {
     var c = confirm("Are you sure you want to delete this quote?");
     if (!c) {return;}
 
     var QuoteO = this;
-    var Quote = $(HTMLButton).closest(QuoteO.phantom_class);
 
     var req = {
       "guild_id": $("#guild_id").val(),
-      "quote_id": Quote.attr("quote-id")
+      "quote_id": quote_id
     };
 
     $.post("/api/discord/quotes/delete", req)
     .done(function (data) {
 
+      $(QuoteO.modal_id).modal("hide");
       QuoteO.show();
       Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
 
