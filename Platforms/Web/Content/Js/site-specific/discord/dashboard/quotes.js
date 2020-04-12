@@ -104,8 +104,8 @@ var Quotes = new (class {
 
   // create
   createModal() {
+    resetInput(this.modal_id);
     $(this.modal_id).attr("mode", "create");
-    $(this.modal_id).find("[name=content]").val("");
     $(this.modal_id).modal("show");
   }
 
@@ -133,7 +133,7 @@ var Quotes = new (class {
 
     var req = {
       "guild_id": $("#guild_id").val(),
-      "quote_id": $(HTMLButton).closest(".quote").attr("quote-id")
+      "quote_id": $(HTMLButton).closest(QuoteO.phantom_class).attr("quote-id")
     };
     $.get("/api/discord/quotes/get", req)
     .done(function (data) {
