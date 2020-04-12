@@ -5,26 +5,49 @@ var TwitchAlerts = new (class {
     this.total_field_id = "#alert_amount";
     this.phantom_class = ".twitchalert";
     this.twitchbase = "https://twitch.tv/";
+
+    this.default_limit = 10;
+    this.default_page = 0;
+
+    this.current_limit = 0;
+    this.current_page = 0;
+    this.current_max_page = 0;
   }
 
   show() {
-    var TwitchAlertsO = this;
-    var guild_id = $("#guild_id").val();
-    // var offset = x["offset"] ? x["offset"] : 0; // NOTE: do i need this?
+    // loads in default values or taken from url
+    let limit = DynamicURL.get("alerts[limit]") || this.default_limit;
+    let page = DynamicURL.get("alerts[page]") || this.default_page;
 
-    $.get("/api/discord/twitchalerts/get", {guild_id: guild_id})
+    var req = {
+      limit: limit,
+      offset: (page * limit)
+    };
+
+    this.load( req );
+  }
+
+  load(x={}) {
+    var TwitchAlertsO = this;
+    x["guild_id"] = $("#guild_id").val();
+
+    $.get("/api/discord/twitchalerts/get", x)
     .done(function (data) {
 
-      $(TwitchAlertsO.amount_field_id).text(data.total);
+      // update view
+      TwitchAlertsO.updatePageIndexButtons(data);
 
       var AlertList = $(TwitchAlertsO.list_id).html("");
+      $(TwitchAlerts.total_field_id).text(data.total);
+
       for (var alert of data.result) {
         var Template = $(`[phantom] ${TwitchAlertsO.phantom_class}`).clone();
+
         var twitch_name = alert.twitch_channel_name ? alert.twitch_channel_name : `Unknown channel name, ID: ${alert.twitch_channel_id}`;
         var discord_channel = DiscordDashboard.getDiscordChannelByID(alert.discord_channel_id);
 
-        Template.find(".discord").text(discord_channel ? "#"+discord_channel.name : "(DELETED CHANNEL)");
-        Template.find(".twitch").text(twitch_name);
+        Template.find("[name=discord_channel]").text(discord_channel ? "#"+discord_channel.name : "(DELETED CHANNEL)");
+        Template.find("[name=twitch_channel]").text(twitch_name);
         Template.attr("alert-id", alert.alert_id);
 
         if (isEmpty(discord_channel)) {
@@ -34,18 +57,22 @@ var TwitchAlerts = new (class {
 
         AlertList.append(Template);
       }
-
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not load twitchalerts"} );
     })
   }
 
-  load(x={}) {
+  // utils
+  nextPage(last=false) {
 
   }
 
-  // utils
+  prevPage(first=false) {
+
+  }
+
+  updatePageIndexButtons() {}
 
   // create
   createModal() {
