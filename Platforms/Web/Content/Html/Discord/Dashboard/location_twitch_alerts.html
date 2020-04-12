@@ -2,15 +2,40 @@
 
   <div class="container-fluid">
 
-    <div class="center-item-row">
+    <form class="center-item-row controlls content-box" action="javascript:Quotes.prevPage(1)">
+      <!-- limit -->
       <div class="col">
-        <h4>Twitch Alerts: <span id="alert_amount">[N/A]</span></h4>
+        <select class="custom-select" name="limit">
+          <option value="5">5 Entrys per page</option>
+          <option value="10" selected>10 Entrys per page</option>
+          <option value="25">25 Entrys per page</option>
+          <option value="50">50 Entrys per page</option>
+          <option value="100">100 Entrys per page</option>
+        </select>
       </div>
-      <div class="col">
-        <button type="button" class="btn btn-success" onclick="TwitchAlerts.createModal()">New alert</button>
-      </div>
-    </div>
 
+      <!-- quote contains -->
+      <div class="col">
+        <input type="text" name="content_contains" class="form-control" placeholder="Quote must contain..."/>
+      </div>
+
+      <!-- pages -->
+      <div class="col pages">
+        <button onclick="Quotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+        <button onclick="Quotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+        <span>Page: <span class="page">0</span></span>
+        <button onclick="Quotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+        <button onclick="Quotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+        <span>Total: <span id="quote_amount">[N/A]</span> Quotes</span>
+      </div>
+
+      <!-- buttons -->
+      <div class="col">
+        <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+        <button type="button" class="btn btn-success icon-btn" onclick="Quotes.createModal()"><i class="fas fa-plus"></i></button>
+      </div>
+    </form>
 
     <!-- gets filled with copys of: "[phantom] .twitchalert" -->
     <div id="twitchalert_list"></div>
@@ -21,13 +46,13 @@
 
 <div modal>
 
-  <div class="modal fade" id="alert_modal" edit-alert="" mode="create/edit">
+  <div class="modal fade" id="alert_modal" mode="create|edit">
     <div class="modal-dialog modal-lg " role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
-          <h4 class="modal-title" show-mode="edit">Edit Alert</h4>
           <h4 class="modal-title" show-mode="create">New Twitchalert</h4>
+          <h4 class="modal-title" show-mode="edit">Edit Alert</h4>
           <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 

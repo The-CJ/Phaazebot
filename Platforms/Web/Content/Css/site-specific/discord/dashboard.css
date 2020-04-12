@@ -80,5 +80,5 @@
 
 /* show mode attributes (please say me there is a better method... but i know know)*/
 [mode=configs] [show-mode=configs] { display: block; }
-[mode=new] [show-mode=new] { display: block; }
+[mode=create] [show-mode=create] { display: block; }
 [mode=edit] [show-mode=edit] { display: block; }

@@ -104,7 +104,7 @@ var Quotes = new (class {
 
   // create
   createModal() {
-    $(this.modal_id).attr("mode", "new");
+    $(this.modal_id).attr("mode", "create");
     $(this.modal_id).find("[name=content]").val("");
     $(this.modal_id).modal("show");
   }
