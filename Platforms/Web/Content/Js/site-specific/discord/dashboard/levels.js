@@ -12,15 +12,23 @@ var Levels = new(class {
     this.current_page = 0;
     this.current_max_page = 0;
 
-    // this.modal_id = "#level_modal_edit";
-
-    // this.results_per_page = 50;
-    // this.offset = 0;
-    // this.total = 0;
     // this.current_user_medal = [];
   }
 
-  show(x={}) {
+  show() {
+    // loads in default values or taken from url
+    let limit = DynamicURL.get("levels[limit]") || this.default_limit;
+    let page = DynamicURL.get("levels[page]") || this.default_page;
+
+    var req = {
+      limit: limit,
+      offset: (page * limit)
+    };
+
+    this.load( req );
+  }
+
+  load(x={}) {
     var LevelO = this;
     var guild_id = $("#guild_id").val();
 
