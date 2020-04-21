@@ -1,49 +1,51 @@
-<div location="levels" style="display: none;">
+<div location="levels">
 
   <div class="container-fluid">
 
-    <div class="center-item-row">
-      <span>Public level page:</span>
+    <div class="center-item-row md-form">
+      <span>Public level page for this server:</span>
       <div class="col">
-        <input type="text" readonly value="|<!--#(web_root)#-->|/discord/levels/|<!--#(guild_id)#-->|"  class="form-control text-center">
+        <input type="text" value="|<!--#(web_root)#-->|/discord/levels/|<!--#(guild_id)#-->|" readonly class="white-text text-center" style="width: 100%;">
       </div>
     </div>
 
-    <hr>
+    <div class="center-item-row" id="level_pages">
+      <button onclick="Levels.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+      <button onclick="Levels.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+      <span>Page: <span class="index">0</span></span>
+      <button onclick="Levels.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+      <button onclick="Levels.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+    </div>
 
-    <form class="center-item-row controlls content-box" action="javascript:Levels.prevPage(true)">
-      <!-- limit -->
-      <div class="col">
-        <select class="custom-select" name="limit">
-          <option value="5">5 Entrys per page</option>
-          <option value="10">10 Entrys per page</option>
-          <option value="20">20 Entrys per page</option>
-          <option value="30">30 Entrys per page</option>
-          <option value="40">40 Entrys per page</option>
-          <option value="50" selected>50 Entrys per page</option>
-          <option value="60">60 Entrys per page</option>
-          <option value="70">70 Entrys per page</option>
-          <option value="80">80 Entrys per page</option>
-          <option value="90">90 Entrys per page</option>
-          <option value="100">100 Entrys per page</option>
-        </select>
+    <form class="center-item-row" id="search" action="javascript:Levels.prevPage(1)">
+
+      <div class="col md-form" style="margin: 0;">
+        <input type="text" name="name_contains" placeholder="Name must contain..." style="width: 100%;" class="white-text">
       </div>
 
-      <!-- name contains -->
-      <div class="col">
-        <input type="text" name="name_contains" class="form-control" placeholder="Name must contain..."/>
+      <div class="col" style="margin: 0;">
+        <div class="row">
+          <div class="col">
+            <label>
+              <input type="radio" name="edited" value="0" checked>
+              <span>Show all</span>
+            </label>
+          </div>
+          <div class="col">
+            <label>
+              <input type="radio" name="edited" value="1">
+              <span>Show only unedited</span>
+            </label>
+          </div>
+          <div class="col">
+            <label>
+              <input type="radio" name="edited" value="2">
+              <span>Show only edited</span>
+            </label>
+          </div>
+        </div>
       </div>
 
-      <!-- edited -->
-      <div class="col">
-        <select class="custom-select" name="edited">
-          <option value="0">Show all</option>
-          <option value="1">Show only unedited</option>
-          <option value="2">Show only edited</option>
-        </select>
-      </div>
-
-      <!-- nickname -->
       <div class="col">
         <select class="custom-select" name="nickname">
           <option value="0" selected>Show usernames</option>
@@ -51,27 +53,10 @@
         </select>
       </div>
 
-      <!-- pages -->
-      <div class="col pages">
-        <button onclick="Levels.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
-        <button onclick="Levels.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
-        <span>Page: <span class="page">0</span></span>
-        <button onclick="Levels.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
-        <button onclick="Levels.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
-
-        <span>Total: <span id="level_amount">[N/A]</span> Levels</span>
-      </div>
-
-      <!-- buttons -->
-      <div class="col-1">
-        <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
-      </div>
-
+      <button type="submit" class="btn btn-secondary icon-btn next"><i class="fas fa-search"></i></button>
     </form>
 
-    <hr>
-
-    <div class="header row generic-list">
+    <div class="header row">
       <div class="col-1 rank">Rank</div>
       <div class="col-1 lvl">Level</div>
       <div class="col-1 exp">Exp</div>
@@ -88,7 +73,7 @@
 
 <div modal>
 
-  <div class="modal fade" id="level_modal">
+  <div class="modal fade" id="level_modal_edit" edit-member="">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 

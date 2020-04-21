@@ -1,11 +1,23 @@
 var Levels = new(class {
   constructor() {
-    this.modal_id = "#level_modal_edit";
+    this.modal_id = "#level_modal";
+    this.list_id = "#level_list";
+    this.total_field_id = "#level_amount";
+    this.phantom_class = ".level";
 
-    this.results_per_page = 50;
-    this.offset = 0;
-    this.total = 0;
-    this.current_user_medal = [];
+    this.default_limit = 50;
+    this.default_page = 0;
+
+    this.current_limit = 0;
+    this.current_page = 0;
+    this.current_max_page = 0;
+
+    // this.modal_id = "#level_modal_edit";
+
+    // this.results_per_page = 50;
+    // this.offset = 0;
+    // this.total = 0;
+    // this.current_user_medal = [];
   }
 
   show(x={}) {
