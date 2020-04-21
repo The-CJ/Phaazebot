@@ -42,6 +42,11 @@ var DiscordDashboard = new (class {
       TwitchAlerts.show();
     }
 
+    if (target == "levels") {
+      this.setSitePanelSelectedLocation("levels");
+      Levels.show();
+    }
+
     this.setLocationWindow(target);
     this.setSitePanelCollapse("hide");
   }

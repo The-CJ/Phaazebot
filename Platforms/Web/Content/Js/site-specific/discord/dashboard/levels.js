@@ -30,41 +30,29 @@ var Levels = new(class {
 
   load(x={}) {
     var LevelO = this;
-    var guild_id = $("#guild_id").val();
-
-    x["offset"] = x["offset"] ? x["offset"] : 0;
-    x["guild_id"] = guild_id;
+    x["guild_id"] = $("#guild_id").val();
     x["detailed"] = true;
-    x["limit"] = this.results_per_page;
-    x["nickname"] = $("#search [name=nickname]").val();
-    x["name_contains"] = $("#search [name=name_contains]").val();
-    x["edited"] = $("#search [name=edited]:checked").val();
 
     $.get("/api/discord/levels/get", x)
     .done(function (data) {
 
-      // store a copy of the current number of entrys
-      LevelO.total = data.total;
-      LevelO.offset = data.offset;
+      // update view
       LevelO.updatePageIndexButtons();
 
-      var LevelList = $("#level_list").html("");
+      var LevelList = $(LevelO.list_id).html("");
+      $(LevelO.total_field_id).text(data.total);
 
       for (var level of data.result) {
-        var Template = $("[phantom] .level").clone();
+        var Template = $(`[phantom] ${LevelO.phantom_class}`).clone();
         var avatar = discordUserAvatar(level.member_id, level.avatar);
 
-        Template.find(".rank").text(level.rank);
-        Template.find(".lvl").text(level.level);
-        Template.find(".exp").text(level.exp);
-        Template.find(".currency").text(level.currency);
-        Template.find(".name").text( level.username );
-        Template.find(".avatar").attr("src", avatar);
-        Template.find(".medals").text(level.medals.length);
-        Template.attr("member-id", level.member_id);
+        console.log(level);
+        level.medal_amount = level.medals.length;
+        insertData(Template, level);
+        Template.find("img").attr("src", avatar);
 
         if (level.edited) {
-          Template.find(".exp").addClass("edited");
+          Template.find(".exp").addClass("red");
           Template.find(".exp").attr("title", "This member got edited, the stats can be wrong");
         }
 
@@ -77,20 +65,21 @@ var Levels = new(class {
     })
   }
 
-  prevPage(first) {
-    if (first) {
-      this.offset = 0;
-    } else {
-      this.offset -= (this.results_per_page);
-    }
-    this.show({offset:this.offset});
-  }
-
-  nextPage(last) {
+  // utils
+  nextPage(last=false) {
     if (last) {
       this.offset = parseInt(this.total / this.results_per_page) * this.results_per_page;
     } else {
       this.offset += (this.results_per_page);
+    }
+    this.show({offset:this.offset});
+  }
+
+  prevPage(first=false) {
+    if (first) {
+      this.offset = 0;
+    } else {
+      this.offset -= (this.results_per_page);
     }
     this.show({offset:this.offset});
   }
