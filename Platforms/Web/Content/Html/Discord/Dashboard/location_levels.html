@@ -94,20 +94,21 @@
       <div class="modal-content">
 
         <div class="modal-header text-center">
-          <h4 class="modal-title">Stats edit</h4>
+          <data name="member_id"></data>
+          <h4 class="modal-title">Member details</h4>
           <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
           <button type="button" name="on_server" class="btn btn-block btn-danger" onclick="Levels.setOnServerFalse()">Set inactive</button>
 
-          <!-- avatar -->
+          <!-- avatar & upper info -->
           <div class="center-item-row md-form forced">
             <div class="col-4">
               <img src="" alt="member_avatar" style="border-radius: 50%; border: 2px solid black; height: 128px; width: 128px;">
             </div>
             <div class="col-8">
-              <div class="center-item-col">
+              <div class="center-item-col forced">
                 <input disabled type="text" name="username" style="width: 100%;" class="text-center"/>
                 <input disabled type="text" name="display_id" style="width: 100%;" class="text-center"/>
                 <input disabled type="text" name="display_rank" style="width: 100%;" class="text-center"/>
@@ -120,44 +121,45 @@
           <h4 class="text-center">Stats</h4>
 
           <!-- currency -->
-          <div class="center-item-row forced">
+          <form class="center-item-row forced md-form" action="javascript:Levels.editCurrency()">
             <div class="col-3">
               <span>Currency:</span>
             </div>
-            <form class="col-9 md-form input-group" action="javascript:void(0)" onsubmit="javascript:Levels.editCurrency()">
+            <div class="col">
               <input type="number" name="currency" class="form-control text-center" min="0">
-              <div class="input-group-append">
-                <button type="submit" name="button" class="btn btn-danger m-0 px-3 py-2"><i class="fas fa-save"></i></button>
-              </div>
-            </form>
-          </div>
+            </div>
+            <div class="col-2">
+              <button type="submit" name="button" class="btn btn-danger icon-btn"><i class="fas fa-save"></i></button>
+            </div>
+          </form>
 
           <!-- exp -->
-          <div class="center-item-row forced">
+          <form class="center-item-row forced md-form" action="javascript:Levels.editExp()">
             <div class="col-3">
               <span>EXP:</span>
             </div>
-            <form class="col-9 md-form input-group" action="javascript:void(0)" onsubmit="javascript:Levels.editExp()">
+            <div class="col">
               <input type="number" name="exp" class="form-control text-center">
-              <div class="input-group-append">
-                <button type="submit" name="button" class="btn btn-danger m-0 px-3 py-2"><i class="fas fa-save"></i></button>
-              </div>
-            </form>
-          </div>
+            </div>
+            <div class="col-2">
+              <button type="submit" name="button" class="btn btn-danger icon-btn"><i class="fas fa-save"></i></button>
+            </div>
+          </form>
 
           <!-- level -->
-          <div class="center-item-row forced">
+          <div class="center-item-row forced md-form">
             <div class="col-3">
               <span>Level:</span>
             </div>
-            <div class="col-9 md-form forced">
-              <input disabled type="text" name="level" style="width: 100%;" class="text-center">
+            <div class="col">
+              <input disabled type="number" name="level" class="form-control text-center">
             </div>
+            <div class="col-2"></div>
           </div>
 
           <!-- notes -->
-          <div class="center-item-row forced">
-            <div class="col" style="white-space: unset">
+          <div class="center-item-row forced md-form">
+            <div class="col">
               <span><sub><i>Level is calculated by EXP</i></sub></span>
             </div>
           </div>
@@ -167,13 +169,15 @@
           <h4 class="text-center">Medals</h4>
 
           <!-- medals -->
-          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Levels.addMedal()">
-            <input type="text" id="new_medal" class="form-control">
-            <label for="new_medal">New entry:</label>
-            <div class="input-group-append">
-              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
+          <form class="center-item-row forced md-form" action="javascript:Levels.addMedal()">
+            <div class="col">
+              <input type="text" id="new_medal" class="form-control text-center" placeholder="Add new medal...">
+            </div>
+            <div class="col-2">
+              <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-plus"></i></button>
             </div>
           </form>
+
           <!-- gets filled with copys of: "[phantom] .medal" -->
           <div class="medallist modal-itemlist"></div>
 

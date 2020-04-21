@@ -44,11 +44,16 @@ var Levels = new(class {
 
       for (var level of data.result) {
         var Template = $(`[phantom] ${LevelO.phantom_class}`).clone();
-        var avatar = discordUserAvatar(level.member_id, level.avatar);
 
-        level.medal_amount = (level.medals.length || 0);
-        insertData(Template, level);
+        // set avatar
+        var avatar = discordUserAvatar(level.member_id, level.avatar);
         Template.find("img").attr("src", avatar);
+
+        // extra values
+        level.medal_amount = (level.medals.length || 0);
+
+        insertData(Template, level);
+        Template.attr("member-id", level.member_id);
 
         if (level.edited) {
           Template.find(".exp").addClass("red");
@@ -108,32 +113,29 @@ var Levels = new(class {
     $("[location=levels] .pages .page").text(this.current_page+1);
   }
 
+  // create
 
-
-
-
-  detail(HTMLCommandRow) {
+  // edit
+  editModal(HTMLButton) {
     var LevelO = this;
-    var guild_id = $("#guild_id").val();
-    var member_id = $(HTMLCommandRow).attr("member-id");
-    $.get("/api/discord/levels/get", {guild_id: guild_id, member_id:member_id, detailed: true})
+
+    var req = {
+      "detailed": true,
+      "guild_id": $("#guild_id").val(),
+      "member_id": $(HTMLButton).closest(LevelO.phantom_class).attr("member-id")
+    };
+    $.get("/api/discord/levels/get", req)
     .done(function (data) {
-      var level = data.result[0];
+
+      var level = data.result.pop();
+
+      // extra values
+      level.display_rank = (level.rank ? `Rank: #${level.rank}` : "Rank: [N/A]");
+      level.display_id = (level.member_id ? `ID: ${level.member_id}` : "ID: [N/A]");
 
       // set avatar
       var avatar = discordUserAvatar(level.member_id, level.avatar, 128);
       $(`${LevelO.modal_id} img`).attr("src", avatar);
-
-      // insert medals
-      LevelO.current_user_medal = level.medals;
-      LevelO.buildDetailMedal(LevelO.current_user_medal);
-
-      // edited?
-      $(`${LevelO.modal_id} [name=exp]`).attr("edited", level.edited ? "true" : "false");
-
-      // better format, aka lazy format
-      level["display_rank"] = (level["rank"] ? "Rank: #"+level["rank"] : "Rank: [N/A]");
-      level["display_id"] = (level["rank"] ? "ID: "+level["member_id"] : "ID: [N/A]");
 
       // if name is [N/A], that could mean the user is not on the server, but phaaze did not catch the event to remove him,
       // in this case the owner has the option to remove this user
@@ -141,22 +143,23 @@ var Levels = new(class {
       //       that is a wanted feature since a owner can do this at any time, via a API request
       //       So kids, dont be dumb and call yourself '[N/A]' and delete your avatar or you may get deleted
       if (level["username"] == "[N/A]" && level["avatar"] == null) {
-        $(`${LevelO.modal_id} [name=on_server]`).show();
+        $(`${LevelO.modal_id} button[name=on_server]`).show();
       } else {
-        $(`${LevelO.modal_id} [name=on_server]`).hide();
+        $(`${LevelO.modal_id} button[name=on_server]`).hide();
       }
 
       insertData(LevelO.modal_id, level);
-
-      $(LevelO.modal_id).attr("edit-member", level.member_id);
       $(LevelO.modal_id).modal("show");
-      DynamicURL.set("level_member_id", level.member_id);
+
     })
     .fail(function (data) {
-      Display.showMessage({content: "Could not load level details...", color:Display.color_critical});
-      console.log(data);
-    })
+      generalAPIErrorHandler( {data:data, msg:"Could not load level details"} );
+    });
   }
+
+
+
+
 
   buildDetailMedal(medal_list) {
     var EntryList = $(`${this.modal_id} .medallist`).html("");
