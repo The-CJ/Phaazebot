@@ -37,7 +37,7 @@ var Levels = new(class {
     .done(function (data) {
 
       // update view
-      LevelO.updatePageIndexButtons();
+      LevelO.updatePageIndexButtons(data);
 
       var LevelList = $(LevelO.list_id).html("");
       $(LevelO.total_field_id).text(data.total);
@@ -46,8 +46,7 @@ var Levels = new(class {
         var Template = $(`[phantom] ${LevelO.phantom_class}`).clone();
         var avatar = discordUserAvatar(level.member_id, level.avatar);
 
-        console.log(level);
-        level.medal_amount = level.medals.length;
+        level.medal_amount = (level.medals.length || 0);
         insertData(Template, level);
         Template.find("img").attr("src", avatar);
 
@@ -67,44 +66,51 @@ var Levels = new(class {
 
   // utils
   nextPage(last=false) {
-    if (last) {
-      this.offset = parseInt(this.total / this.results_per_page) * this.results_per_page;
-    } else {
-      this.offset += (this.results_per_page);
-    }
-    this.show({offset:this.offset});
+    this.current_page += 1;
+    var search = extractData("[location=levels] .controlls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
   }
 
   prevPage(first=false) {
-    if (first) {
-      this.offset = 0;
-    } else {
-      this.offset -= (this.results_per_page);
-    }
-    this.show({offset:this.offset});
+    this.current_page -= 1;
+    if (first) { this.current_page = 0; }
+
+    var search = extractData("[location=levels] .controlls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
   }
 
-  updatePageIndexButtons() {
-    var current_page = (this.offset / this.results_per_page) + 1;
-    var max_pages = parseInt((this.total / this.results_per_page) + 1)
+  updatePageIndexButtons(data) {
+    this.current_limit = data.limit;
+    this.current_page = data.offset / data.limit;
+    this.current_max_page = (data.total / data.limit);
+    this.current_max_page = parseInt(this.current_max_page)
 
-    $("#level_pages .index").text(current_page);
-
-    // no more prev pages
-    if (current_page <= 1) {
-      $("#level_pages .prev").attr("disabled", true);
+    // update limit url if needed
+    if (this.current_limit != this.default_limit) {
+      DynamicURL.set("levels[limit]", this.current_limit);
     } else {
-      $("#level_pages .prev").attr("disabled", false);
+      DynamicURL.set("levels[limit]", null);
     }
 
-    // no more next pages
-    if (current_page >= max_pages) {
-      $("#level_pages .next").attr("disabled", true);
+    // update page url if needed
+    if (this.current_page != this.default_page) {
+      DynamicURL.set("levels[page]", this.current_page);
     } else {
-      $("#level_pages .next").attr("disabled", false);
+      DynamicURL.set("levels[page]", null);
     }
 
+    // update html elements
+    $("[location=levels] [name=limit]").val(this.current_limit);
+    $("[location=levels] .pages .prev").attr("disabled", (this.current_page <= 0) );
+    $("[location=levels] .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+    $("[location=levels] .pages .page").text(this.current_page+1);
   }
+
+
+
+
 
   detail(HTMLCommandRow) {
     var LevelO = this;
