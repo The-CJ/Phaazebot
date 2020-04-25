@@ -140,6 +140,7 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/discord/configs/whitelistedlinks{x:/?}{method:.*}', self.apiDiscordConfigsWhitelistedLink)
 		self.Web.router.add_route('*', '/api/discord/configs/exceptionroles{x:/?}{method:.*}', self.apiDiscordConfigsExceptionRoles)
 		self.Web.router.add_route('*', '/api/discord/configs{x:/?}{method:.*}', self.apiDiscordConfigs)
+		self.Web.router.add_route('*', '/api/discord/levels/medals{x:/?}{method:.*}', self.apiDiscordLevelsMedals)
 		self.Web.router.add_route('*', '/api/discord/levels{x:/?}{method:.*}', self.apiDiscordLevels)
 		self.Web.router.add_route('*', '/api/discord/quotes{x:/?}{method:.*}', self.apiDiscordQuotes)
 		self.Web.router.add_route('*', '/api/discord/assignroles{x:/?}{method:.*}', self.apiDiscordAssignroles)
@@ -165,6 +166,7 @@ class WebIndex(object):
 	from .Processing.Api.Discord.Configs.Blacklistedwords.main import apiDiscordConfigsBlacklistedWords
 	from .Processing.Api.Discord.Configs.Whitelistedlinks.main import apiDiscordConfigsWhitelistedLink
 	from .Processing.Api.Discord.Configs.Exceptionroles.main import apiDiscordConfigsExceptionRoles
+	from .Processing.Api.Discord.Levels.Medals.main import apiDiscordLevelsMedals
 	from .Processing.Api.Discord.Configs.main import apiDiscordConfigs
 	from .Processing.Api.Discord.Levels.main import apiDiscordLevels
 	from .Processing.Api.Discord.Quotes.main import apiDiscordQuotes
