@@ -4,6 +4,8 @@ var Levels = new(class {
     this.list_id = "#level_list";
     this.total_field_id = "#level_amount";
     this.phantom_class = ".level";
+    this.medal_list_id = "#medal_list";
+    this.medal_phantom_class = ".medal";
 
     this.default_limit = 50;
     this.default_page = 0;
