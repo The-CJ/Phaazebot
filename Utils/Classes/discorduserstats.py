@@ -12,7 +12,8 @@ class DiscordUserStats(DBContentClass, APIClass):
 	"""
 	def __init__(self, data:dict, server_id:str):
 
-		self.server_id:str = server_id
+		self.guild_id:str = server_id # don't ask
+		self.server_id:str = server_id # don't ask
 		self.member_id:str = data.get("member_id", UNDEFINED)
 		self.rank:int = int( data.get("rank", UNDEFINED) )
 		self.exp:int = int( data.get("exp", 0) )
@@ -38,6 +39,7 @@ class DiscordUserStats(DBContentClass, APIClass):
 
 		j:dict = dict()
 
+		j["guild_id"] = self.toString(self.guild_id)
 		j["member_id"] = self.toString(self.member_id)
 		j["rank"] = self.toInteger(self.rank)
 		j["exp"] = self.toInteger(self.exp)

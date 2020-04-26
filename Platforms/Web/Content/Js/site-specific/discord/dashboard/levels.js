@@ -115,6 +115,28 @@ var Levels = new(class {
     $("[location=levels] .pages .page").text(this.current_page+1);
   }
 
+  loadinModalMedal(guild_id, member_id) {
+    var LevelO = this;
+    var req = {
+      guild_id: guild_id,
+      member_id: member_id
+    };
+    $.get("/api/discord/levels/medals/get", req)
+    .done(function (data) {
+
+      var MedalList = $(LevelO.medal_list_id).html("");
+      for (var entry of data.result) {
+        var Template = $(`[phantom] ${LevelO.medal_phantom_class}`).clone();
+        insertData(Template, entry);
+        MedalList.append(Template);
+      }
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"Could not load medals"} );
+    });
+  }
+
   // create
 
   // edit
@@ -151,25 +173,13 @@ var Levels = new(class {
       }
 
       insertData(LevelO.modal_id, level);
+      LevelO.loadinModalMedal(level.guild_id, level.member_id);
       $(LevelO.modal_id).modal("show");
 
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"Could not load level details"} );
     });
-  }
-
-
-
-
-
-  buildDetailMedal(medal_list) {
-    var EntryList = $(`${this.modal_id} .medallist`).html("");
-    for (var entry of medal_list) {
-      var EntryRow = $("[phantom] .medal").clone();
-      EntryRow.find(".name").text( entry );
-      EntryList.append(EntryRow);
-    }
   }
 
   editExp() {
