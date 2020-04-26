@@ -6,6 +6,7 @@ import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discorduserstats import DiscordUserStats
+from Utils.Classes.discordusermedal import DiscordUserMedal
 from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.discordassignrole import DiscordAssignRole
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
@@ -218,6 +219,69 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:d
 
 	if res:
 		return [DiscordUserStats(x, guild_id) for x in res]
+
+	else:
+		return []
+
+async def getDiscordUsersMedals(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> list:
+	"""
+	Get server levels.
+	Returns a list of DiscordUserMedal().
+
+	Optional keywords:
+	------------------
+	* medal_id `str` or `int` : (Default: None)
+	* member_id `str` : (Default: None)
+	* name `str`: (Default: None)
+	* name_contains `str`: (Default: None) [DB uses LIKE]
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpack
+	medal_id:str or int = search.get("medal_id", 0)
+	member_id:str = search.get("member_id", 0)
+	name:str = search.get("name", None)
+	name_contains:str = search.get("name_contains", None)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
+	sql:str = """
+		SELECT * FROM `discord_user_medal`
+		WHERE `discord_user_medal`.`guild_id` = %s"""
+
+	values:tuple = ( str(guild_id), )
+
+	if medal_id:
+		sql += " AND `discord_user_medal`.`id` = %s"
+		values += ( str(medal_id), )
+
+	if member_id:
+		sql += " AND `discord_user_medal`.`member_id` = %s"
+		values += ( str(member_id), )
+
+	if name:
+		sql += " AND `discord_user_medal`.`name` = %s"
+		values += ( str(name), )
+
+	if name_contains:
+		name_contains = f"%{name_contains}%"
+		sql += " AND `discord_user_medal`.`name` LIKE %s"
+		values += ( str(name_contains), )
+
+	sql += f" {order_str}"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	if res:
+		return [DiscordUserMedal(x, guild_id) for x in res]
 
 	else:
 		return []
@@ -864,6 +928,18 @@ async def getDiscordServerUserAmount(cls:"PhaazebotDiscord", guild_id:str, where
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_user`
 		WHERE `discord_user`.`on_server` = 1 AND `discord_user`.`guild_id` = %s AND {where}"""
+
+	values:tuple = (guild_id,) + where_values
+
+	res:list = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
+async def getDiscordUsersMedalAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_user_medal`
+		WHERE `discord_user_medal`.`guild_id` = %s AND {where}"""
 
 	values:tuple = (guild_id,) + where_values
 
