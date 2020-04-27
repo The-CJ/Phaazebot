@@ -205,6 +205,34 @@ var Levels = new(class {
     });
   }
 
+  // delete
+  deleteMedal(HTMLButton) {
+    var LevelO = this;
+    var medal_id = $(HTMLButton).closest(this.medal_phantom_class).find("[name=medal_id]").val();
+
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "member_id": $(`${this.modal_id} [name=member_id]`).val(),
+      "medal_id": medal_id
+    };
+
+    $.get("/api/discord/levels/medals/delete", req)
+    .done(function (data) {
+
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      LevelO.loadinModalMedal(req.guild_id, req.member_id);
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"Could not delete medal"} );
+    });
+  }
+
+  // TODO: rework
+
+
+
+
   editExp() {
     var c = confirm("Editing the exp will leave a permanent [EDITED] mark, unless resettet to 0, be carefull. Want to continue?");
     if (!c) { return; }
@@ -216,22 +244,6 @@ var Levels = new(class {
   editCurrency() {
     var new_currency = $(`${this.modal_id} [name=currency]`).val();
     this.update( {currency: new_currency} );
-  }
-
-  removeMedal(HTMLButton) {
-    var Entry = $(HTMLButton).closest(".medal");
-    var medal_name = Entry.find(".name").text();
-
-    var req = {
-      "medal_name": medal_name,
-      "medal_action": "remove"
-    };
-    var LevelO = this;
-    this.update(req, function () {
-      var i = LevelO.current_user_medal.indexOf(medal_name);
-      LevelO.current_user_medal.splice(i, 1);
-      LevelO.buildDetailMedal(LevelO.current_user_medal);
-    });
   }
 
   setOnServerFalse() {
