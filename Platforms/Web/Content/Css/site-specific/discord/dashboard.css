@@ -4,7 +4,6 @@
 [mode] [show-mode] { display: none; } /* see file bottom */
 
 /* frame styles */
-
 .main-panel {
   max-height: calc(100vh - 5em);
   overflow-y: auto;
@@ -47,6 +46,10 @@
 [location=levels] .level .avatar { border-radius: 50%; }
 
 /* modal styles */
+.modal-itemlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
+.modal-itemlist > * { padding: 2px; margin: 2px 0; background-color: #525252; }
+.modal-itemlist > *.deleted { background-color: #734343; }
+.modal-itemlist:empty::after { content: "(None)"; }
 
 /* changes for responsiv */
 
@@ -80,7 +83,7 @@
   }
 }
 
-/* show mode attributes (please say me there is a better method... but i know know)*/
+/* show mode attributes (please say me there is a better method... but i don't know)*/
 [mode=configs] [show-mode=configs] { display: block; }
 [mode=create] [show-mode=create] { display: block; }
 [mode=edit] [show-mode=edit] { display: block; }
