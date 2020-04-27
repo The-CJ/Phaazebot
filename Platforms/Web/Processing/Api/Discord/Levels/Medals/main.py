@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response, Request
 from .create import apiDiscordLevelsMedalsCreate
+from .delete import apiDiscordLevelsMedalsDelete
 from .get import apiDiscordLevelsMedalsGet
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
@@ -21,6 +22,9 @@ async def apiDiscordLevelsMedals(cls:"WebIndex", WebRequest:Request) -> Response
 
 	elif method == "create":
 		return await apiDiscordLevelsMedalsCreate(cls, WebRequest)
+
+	elif method == "delete":
+		return await apiDiscordLevelsMedalsDelete(cls, WebRequest)
 
 	elif method == "get":
 		return await apiDiscordLevelsMedalsGet(cls, WebRequest)

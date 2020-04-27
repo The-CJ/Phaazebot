@@ -7,28 +7,25 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
+from Platforms.Web.Processing.Api.errors import apiMissingData
+from Platforms.Discord.utils import getDiscordUsersMedals
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
-from Platforms.Web.Processing.Api.errors import (
-	apiMissingData,
-	apiMissingAuthorisation
-)
-from Platforms.Web.Processing.Api.Discord.errors import (
-	apiDiscordGuildUnknown,
-	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission
-)
-from .errors import apiDiscordUserMedalExists, apiDiscordUserMedalLimit
+from Utils.Classes.discordusermedal import DiscordUserMedal
+from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
+from .errors import apiDiscordUserMedalNotExists
 
-async def apiDiscordLevelsMedalsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordLevelsMedalsDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/levels/medals/create
+		Default url: /api/discord/levels/medals/delete
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
-	# get required stuff
+	# get required vars
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
+	medal_id:str = Data.getStr("medal_id", "", must_be_digit=True)
 	name:str = Data.getStr("name", "", len_max=512)
 
 	# checks
@@ -38,34 +35,21 @@ async def apiDiscordLevelsMedalsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 	if not member_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'member_id'")
 
-	if not name:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'name'")
+	if (not medal_id) and (not name):
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'medal_id' or 'name'")
 
-	# get/check discord
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	# check limit
-	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
-		SELECT
-			COUNT(*) AS `all`,
-			SUM(
-				CASE WHEN LOWER(`discord_user_medal`.`name`) = LOWER(%s)
-				THEN 1 ELSE 0 END
-			) AS `match`
-		FROM `discord_user_medal`
-		WHERE `discord_user_medal`.`guild_id` = %s
-			AND `discord_user_medal`.`member_id` = %s""",
-		( name, guild_id, member_id )
-	)
+	# get medal
+	res_medal:list = await getDiscordUsersMedals(cls.Web.BASE.Discord, guild_id, member_id=member_id, medal_id=medal_id, name=name)
 
-	if res[0]['match']:
-		return await apiDiscordUserMedalExists(cls, WebRequest)
+	if not res_medal:
+		return await apiDiscordUserMedalNotExists(cls, WebRequest, name=name, medal_id=medal_id)
 
-	if res[0]['all'] >= cls.Web.BASE.Limit.DISCORD_LEVEL_MEDAL_AMOUNT:
-		return await apiDiscordUserMedalLimit(cls, WebRequest)
+	MedalToDelete:DiscordUserMedal = res_medal.pop(0)
 
 	# get user info
 	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
@@ -81,19 +65,14 @@ async def apiDiscordLevelsMedalsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(
-		table="discord_user_medal",
-		content={
-			"guild_id": guild_id,
-			"member_id": member_id,
-			"name": name
-		}
+	cls.Web.BASE.PhaazeDB.deleteQuery("""
+		DELETE FROM `discord_user_medal` WHERE `guild_id` = %s AND `id` = %s""",
+		(MedalToDelete.guild_id, MedalToDelete.medal_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) User medal: {guild_id=} {member_id=} added new entry", require="discord:quotes")
-
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Medal: {guild_id=} deleted [{medal_id=}, {name=}]", require="discord:commands")
 	return cls.response(
-		text=json.dumps( dict(msg="Quote: Added new entry", entry=name, status=200) ),
+		text=json.dumps( dict(msg="Medal: Deleted entry", deleted=MedalToDelete.name, status=200) ),
 		content_type="application/json",
 		status=200
 	)
