@@ -38,36 +38,36 @@ async def apiDiscordUserMedalExists(cls:"WebIndex", WebRequest:Request, **kwargs
 		status=400
 	)
 
-async def apiDiscordCommandNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordUserMedalNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
 	Optional keywords:
 	------------------
 	* msg `str` : (Default: None) * [Overwrites default]
-	* trigger `str` *
-	* command_id `str` *
+	* medal_id `str` *
+	* name `str` *
 
 	Default message (*gets altered by optional keywords):
 	----------------------------------------------------
 	No command has been found
 	"""
-	res:dict = dict(status=400, error="discord_command_not_exists")
+	res:dict = dict(status=400, error="discord_user_medal_not_exists")
 
-	trigger:str = kwargs.get("trigger", "")
-	if trigger:
-		res["trigger"] = trigger
+	medal_id:str = kwargs.get("medal_id", "")
+	if medal_id:
+		res["medal_id"] = medal_id
 
-	command_id:str = kwargs.get("command_id", "")
-	if command_id:
-		res["command_id"] = command_id
+	name:str = kwargs.get("name", "")
+	if name:
+		res["name"] = name
 
 	# build message
-	default_msg:str = "No command has been found"
+	default_msg:str = "No Medal has been found"
 
-	if trigger:
-		default_msg += f" with trigger '{trigger}'"
+	if name:
+		default_msg += f" with name '{name}'"
 
-	if command_id:
-		default_msg += f" (Command ID: {command_id})"
+	if medal_id:
+		default_msg += f" (Medal ID: {medal_id})"
 
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
