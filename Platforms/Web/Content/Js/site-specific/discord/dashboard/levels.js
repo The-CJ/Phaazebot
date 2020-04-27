@@ -138,6 +138,29 @@ var Levels = new(class {
   }
 
   // create
+  createMedal() {
+    var LevelO = this;
+    var new_medal = $("#new_medal").val();
+    if (isEmpty(new_medal)) { return; }
+
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "member_id": $(`${this.modal_id} [name=member_id]`).val(),
+      "name": new_medal
+    };
+
+    $.get("/api/discord/levels/medals/create", req)
+    .done(function (data) {
+
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_medal").val("");
+      LevelO.loadinModalMedal(req.guild_id, req.member_id);
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"Could not add new medal"} );
+    });
+  }
 
   // edit
   editModal(HTMLButton) {
@@ -193,26 +216,6 @@ var Levels = new(class {
   editCurrency() {
     var new_currency = $(`${this.modal_id} [name=currency]`).val();
     this.update( {currency: new_currency} );
-  }
-
-  addMedal() {
-    var new_medal = $("#new_medal").val();
-    if (isEmpty(new_medal)) { return; }
-
-    var req = {
-      "medal_name": new_medal,
-      "medal_action": "add"
-    };
-    var LevelO = this;
-    var successfunc = function() {
-      $("#new_medal").val("");
-      LevelO.current_user_medal.push(new_medal);
-      LevelO.buildDetailMedal(LevelO.current_user_medal);
-    }
-    var failfunc = function () {
-      $("#new_medal").val("");
-    }
-    this.update(req, successfunc, failfunc);
   }
 
   removeMedal(HTMLButton) {
