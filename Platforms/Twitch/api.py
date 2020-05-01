@@ -14,7 +14,7 @@ async def twitchAPICall(cls:"Phaazebot", url:str) -> requests.Response:
 		all calles to twitch should been made via this.
 		the function applies header and stuff so twitch knows its us.
 	"""
-	header:dict = {"Client-ID": cls.Access.TWITCH_API_TOKEN}
+	header:dict = {"Client-ID": cls.Access.TWITCH_CLIENT_ID}
 	return requests.get(url, headers=header)
 
 async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=-1) -> list:

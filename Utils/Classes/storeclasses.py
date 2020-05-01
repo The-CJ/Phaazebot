@@ -7,7 +7,8 @@ class AccessStore(object):
 	Settings and Keys to all platforms or entry points that is not us
 	"""
 	def __init__(self, config:ConfigParser):
-		self.TWITCH_API_TOKEN:str = str(config.get("twitch_api_token", ''))
+		self.TWITCH_CLIENT_ID:str = str(config.get("twitch_client_id", ''))
+		self.TWITCH_CLIENT_SECRET:str = str(config.get("twitch_client_secret", ''))
 		self.TWITCH_IRC_TOKEN:str = str(config.get("twitch_irc_token", ''))
 
 		self.DISCORD_TOKEN:str = str(config.get("discord_token", ''))
