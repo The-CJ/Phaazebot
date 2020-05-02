@@ -156,7 +156,7 @@ class DBConn(object):
 
 		return int(Cursor.rowcount)
 
-	def insertQuery(self, table:str=None, content:dict=None, debug:dict={}) -> int:
+	def insertQuery(self, table:str=None, content:dict=None, replace:bool=False, debug:dict={}) -> int:
 		"""
 			dict bases, secured insert query,
 			all special chars will get replaced by byte safe sql counterpart
@@ -178,7 +178,8 @@ class DBConn(object):
 		value_holder:str = ", ".join("%s" for key in content)
 		values:tuple = tuple(content[key] for key in content)
 
-		statement:str = f"""INSERT INTO `{table}` ({keys}) VALUES ({value_holder})"""
+		operation:str = "REPLACE INTO" if replace else "INSERT INTO"
+		statement:str = f"""{operation} `{table}` ({keys}) VALUES ({value_holder})"""
 
 		# setup
 		Conn:MySQLConnection = self.getConnection()
