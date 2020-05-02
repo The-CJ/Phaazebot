@@ -5,6 +5,10 @@ twitch_user_name table.
 To be exact it tryes to get a username entry for every twitch id,
 somewhere in the database.
 twitch_user, discord_twitch_alert, twitch_channel, etc...
+
+CLI Args:
+---------
+* `a` or `automated` [disable print]
 """
 
 import os
