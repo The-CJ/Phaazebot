@@ -1,11 +1,12 @@
-#
-# This protocol will generate
-# discord_user table.
-#
-# To be exact the on_server field.
-# Only guilds, phaaze currenty is on are checked.
-# This protocol is suppost to try if a member is on server and update db.
-#
+"""
+This protocol generate a new twitch token if needed
+it only renews the token if needed
+
+CLI Args:
+---------
+* `f` or `force` [force renew]
+* `a` or `automated` [disable print]
+"""
 
 import os
 import sys
@@ -18,6 +19,10 @@ import urllib.parse
 from main import Phaazebot
 from Platforms.Twitch import api as twitch_api
 from Utils.Classes.dbconn import DBConn
+from Utils.cli import CliArgs
+
+force_renew:bool = any( [CliArgs.get("f"), CliArgs.get("force")] )
+automated:bool = any( [CliArgs.get("a"), CliArgs.get("automated")] )
 
 Phaaze:Phaazebot = Phaazebot()
 DB:DBConn = DBConn(
@@ -29,6 +34,9 @@ DB:DBConn = DBConn(
 )
 
 MIN_LIFETIME:datetime.timedelta = datetime.timedelta(days=3) # renew token if only 3 days are left
+
+def log(x) -> None:
+	if not automated: print(x)
 
 def generateNewToken() -> None:
 	req:dict = dict()
@@ -53,11 +61,12 @@ def generateNewToken() -> None:
 		content = dict(
 			key = "twitch_client_credentials",
 			value = json.dumps(response)
-		)
+		),
+		replace = True
 	)
 
 	token:str = response.get("access_token", "ERROR")
-	print("New Token generated: " + token)
+	log("New Token generated: " + token)
 
 def checkToken(db_entry:dict) -> None:
 
@@ -67,12 +76,16 @@ def checkToken(db_entry:dict) -> None:
 	ExpiresAt:datetime.datetime = datetime.datetime.fromisoformat( token_info.get("expires_at", "2000-01-01") )
 
 	if (ExpiresAt - MIN_LIFETIME) < Now:
-		print("Current token is about to expire -> renewing")
+		log("Current token is about to expire -> renewing")
 		return generateNewToken()
 
-	print("Current token still valid")
-	print("Valid until: " + str(ExpiresAt))
-	print("Renew scheduled: " + str( ExpiresAt - MIN_LIFETIME ))
+	if force_renew:
+		log("Forcing new token")
+		return generateNewToken()
+
+	log("Current token still valid")
+	log("Valid until: " + str(ExpiresAt))
+	log("Renew scheduled: " + str( ExpiresAt - MIN_LIFETIME ))
 
 def main() -> None:
 
@@ -85,8 +98,8 @@ def main() -> None:
 		return checkToken(res[0])
 
 if __name__ == '__main__':
-	print("Starting Protocol...")
+	log("Starting Protocol...")
 
 	main()
 
-	print("Protocol finished")
+	log("Protocol finished")
