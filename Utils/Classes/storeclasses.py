@@ -7,7 +7,8 @@ class AccessStore(object):
 	Settings and Keys to all platforms or entry points that is not us
 	"""
 	def __init__(self, config:ConfigParser):
-		self.TWITCH_API_TOKEN:str = str(config.get("twitch_api_token", ''))
+		self.TWITCH_CLIENT_ID:str = str(config.get("twitch_client_id", ''))
+		self.TWITCH_CLIENT_SECRET:str = str(config.get("twitch_client_secret", ''))
 		self.TWITCH_IRC_TOKEN:str = str(config.get("twitch_irc_token", ''))
 
 		self.DISCORD_TOKEN:str = str(config.get("discord_token", ''))
@@ -108,6 +109,10 @@ class VarsStore(object):
 		self.DISCORD_BOT_ID:str = str(config.get("discord_bot_id", "00000"))
 		self.DISCORD_LOGIN_LINK:str = str(config.get("discord_login_link", "/discord"))
 		self.DISCORD_REDIRECT_LINK:str = str(config.get("discord_redirect_link", "localhost"))
+
+		self.TWITCH_BOT_ID:str = str(config.get("twitch_bot_id", "00000"))
+		self.TWITCH_LOGIN_LINK:str = str(config.get("twitch_login_link", "/twitch"))
+		self.TWITCH_REDIRECT_LINK:str = str(config.get("twitch_redirect_link", "localhost"))
 
 		self.LOGO_OSU:str = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
 		self.LOGO_TWITCH:str = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504"

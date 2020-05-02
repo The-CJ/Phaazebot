@@ -1,7 +1,9 @@
 {
   "version": "0.0.0",
 
-  "twitch_api_token":"secret!..?",
+  "twitch_bot_id":"000",
+  "twitch_client_id":"secret!..?",
+  "twitch_client_secret":"secret!..?",
   "twitch_irc_token":"secret!..?",
 
   "discord_bot_id":"000",
@@ -56,6 +58,8 @@
   "twitch_custom_command_amount":100,
   "twitch_quote_amount":100,
   "twitch_stats_cooldown":5,
+  "twitch_login_link":"https://id.twitch.tv",
+  "twitch_redirect_link":"localhost",
 
   "web_root":"localhost",
   "ssl_dir":"/etc/letsencrypt/live/domain.something/",
