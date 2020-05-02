@@ -7,15 +7,39 @@ from Utils.Classes.twitchstream import TwitchStream
 from Utils.Classes.twitchgame import TwitchGame
 from Utils.Classes.twitchuser import TwitchUser
 
-ROOT_URL = "https://api.twitch.tv/helix/"
+ROOT_URL:str = "https://api.twitch.tv/helix/"
+AUTH_URL:str = "https://id.twitch.tv/"
 
-async def twitchAPICall(cls:"Phaazebot", url:str) -> requests.Response:
+async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Response:
 	"""
-		all calles to twitch should been made via this.
-		the function applies header and stuff so twitch knows its us.
+	all calles to twitch should been made via this.
+	the function applies header and other stuff for authorisation
+	so twitch knows its us.
+
+	Optional keywords:
+	------------------
+	method `str` : (Default: 'GET')
+	client_id `str` : (Default: Access.TWITCH_CLIENT_ID)
+	client_secret `str`
+	auth_type `str` ['Bearer' or 'OAuth']
+	access_token `str`
+
 	"""
-	header:dict = {"Client-ID": cls.Access.TWITCH_CLIENT_ID}
-	return requests.get(url, headers=header)
+	method:str = kwargs.get("method", "GET")
+	client_id:str = kwargs.get("client_id", cls.Access.TWITCH_CLIENT_ID)
+	client_secret:str = kwargs.get("client_secret", "")
+	auth_type:str = kwargs.get("auth_type", "")
+	access_token:str = kwargs.get("access_token", "")
+
+	headers:dict = dict()
+	if client_id:
+		headers["clientID"] = client_id # or? headers["Client-ID"] = client_id
+	if client_secret:
+		headers["clientSecret"] = client_secret
+	if auth_type:
+		headers["Authorization"] = f"{auth_type} {access_token}"
+
+	return requests.request(method, url, headers=headers)
 
 async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=-1) -> list:
 	"""
