@@ -12,6 +12,7 @@ from Utils.config import ConfigParser
 from Utils.logger import PhaazeLogger
 from Utils.threads import Mainframe
 from Utils.Classes.dbconn import DBConn
+from Utils.startuptastk import initStartupTasks
 from Utils.cli import CliArgs
 
 # platforms
@@ -86,6 +87,7 @@ class Phaazebot(object):
 
 	def start(self) -> None:
 		self.Logger.info("Phaazebot Mainframe started -> Starting Threads...")
+		initStartupTasks(self)
 		self.Mainframe.start()
 
 if __name__ == '__main__':

@@ -333,7 +333,7 @@ class PhaazebotTwitchEvents(object):
 			Game:TwitchGame = update_games[game_id]
 			if not Game: continue # could be unfound in api from .fillGameData and still be False
 
-			sql_additions.append( "(%s, %s)" )	
+			sql_additions.append( "(%s, %s)" )
 			sql_values += (Game.game_id, Game.name)
 
 		# no requested games are found in API, SQL whould be invalid -> skip
