@@ -21,15 +21,15 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 	method `str` : (Default: 'GET')
 	client_id `str` : (Default: Access.TWITCH_CLIENT_ID)
 	client_secret `str`
-	auth_type `str` ['Bearer' or 'OAuth']
-	access_token `str`
+	auth_type `str` (Default: 'Bearer') ['Bearer' or 'OAuth']
+	access_token `str` (Default: Access.twitch_client_credential_token)
 
 	"""
 	method:str = kwargs.get("method", "GET")
 	client_id:str = kwargs.get("client_id", cls.Access.TWITCH_CLIENT_ID)
 	client_secret:str = kwargs.get("client_secret", "")
-	auth_type:str = kwargs.get("auth_type", "")
-	access_token:str = kwargs.get("access_token", "")
+	auth_type:str = kwargs.get("auth_type", "Bearer")
+	access_token:str = kwargs.get("access_token", cls.Access.twitch_client_credential_token)
 
 	headers:dict = dict()
 	if client_id:
@@ -39,7 +39,10 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 	if auth_type:
 		headers["Authorization"] = f"{auth_type} {access_token}"
 
-	return requests.request(method, url, headers=headers)
+	Resp:requests.Response = requests.request(method, url, headers=headers)
+	if (Resp.status_code == 401) and (access_token == cls.Access.twitch_client_credential_token):
+		cls.Logger.warning("Twitch API call responsed with invalid auth")
+	return Resp
 
 async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=-1) -> list:
 	"""
