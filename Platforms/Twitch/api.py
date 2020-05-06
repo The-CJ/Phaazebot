@@ -33,9 +33,14 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 
 	headers:dict = dict()
 	if client_id:
-		headers["clientID"] = client_id # or? headers["Client-ID"] = client_id
+		# twitch usage of clientID and Client-ID is strange... i just give all
+		headers["clientID"] = client_id
+		headers["client_id"] = client_id
+		headers["Client-ID"] = client_id
 	if client_secret:
 		headers["clientSecret"] = client_secret
+		headers["client_secret"] = client_secret
+		headers["Client-Secret"] = client_secret
 	if auth_type:
 		headers["Authorization"] = f"{auth_type} {access_token}"
 
