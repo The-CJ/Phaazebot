@@ -21,17 +21,17 @@ Please ignore this file to, its a reminder for me what endpoints there are.
 /api/admin/module
 /api/admin/status
 
-/api/admin/roles
-/api/admin/roles/create
-/api/admin/roles/delete
-/api/admin/roles/edit
-/api/admin/roles/get
-
 /api/admin/users
 /api/admin/users/create
 /api/admin/users/delete
 /api/admin/users/edit
 /api/admin/users/get
+
+/api/admin/roles
+/api/admin/roles/create
+/api/admin/roles/delete
+/api/admin/roles/edit
+/api/admin/roles/get
 
 /api/discord/assignroles
 /api/discord/assignroles/create
@@ -95,15 +95,31 @@ Please ignore this file to, its a reminder for me what endpoints there are.
 /api/discord/configs/whitelistedlinks/delete
 /api/discord/configs/whitelistedlinks/get
 
+/api/discord/configs/whitelistedlinks
+/api/discord/configs/whitelistedlinks/create
+/api/discord/configs/whitelistedlinks/delete
+/api/discord/configs/whitelistedlinks/get
+
 /api/discord/levels
 /api/discord/levels/get
 /api/discord/levels/edit
+
+/api/discord/levels/medals
+/api/discord/levels/medals/create
+/api/discord/levels/medals/delete
+/api/discord/levels/medals/get
 
 /api/discord/quotes
 /api/discord/quotes/create
 /api/discord/quotes/delete
 /api/discord/quotes/edit
 /api/discord/quotes/get
+
+/api/discord/twitchalerts
+/api/discord/twitchalerts/create
+/api/discord/twitchalerts/delete
+/api/discord/twitchalerts/edit
+/api/discord/twitchalerts/get
 
 /api/discord/guild
 /api/discord/userguilds
