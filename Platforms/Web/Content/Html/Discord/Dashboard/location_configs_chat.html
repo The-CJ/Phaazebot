@@ -2,7 +2,104 @@
 
   <div class="container-fluid">
 
+    <!-- blacklist -->
+    <div class="content-box padding">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Blacklist</h4>
+        </div>
+      </div>
 
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>Allowes you to block words, phrases or regex pattern.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChat.showWordBlacklist()">Open word blacklist</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- links -->
+    <div class="content-box padding">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Link protection</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>If link protection is on, all links will be baned by default,</span>
+          <br>
+          <span>But individual links or regex pattern can be allowed.</span>
+        </div>
+        <div class="col">
+          <div class="row">
+            <div class="col pr-0">
+              <button disabled class="btn btn-block option-status" name="blacklist_ban_links" value="x">Currently: </button>
+            </div>
+            <div class="col-4 pl-0">
+              <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsChat.toggleLinks()">Toggle</button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChat.showLinkWhitelist()">Open link whitelist</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- punishment -->
+    <div class="content-box padding">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Punishment</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>What should phaaze do, if someone breaks the rules?</span>
+        </div>
+        <div class="col">
+          <form action="javascript:ConfigsChat.editPunishment()" method="post">
+            <select class="custom-select" name="blacklist_punishment">
+              <option value="delete">Just delete the message</option>
+              <option value="kick">Delete the message and kick the author</option>
+              <option value="ban">Delete the message and ban the author</option>
+            </select>
+            <button type="submit" class="btn btn-block btn-primary">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Exceptions -->
+    <div class="content-box padding">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Exceptions</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>By default, only moderators and the server owner bypass punishment,</span>
+          <br>
+          <span>you may add some roles with punishment immunity.</span>
+          <br>
+          <span>Users with one of these roles can do whatever they want.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChat.showExecptionRoles()">Open role list</button>
+        </div>
+      </div>
+    </div>
 
   </div>
 
