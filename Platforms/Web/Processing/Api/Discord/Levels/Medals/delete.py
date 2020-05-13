@@ -70,7 +70,7 @@ async def apiDiscordLevelsMedalsDelete(cls:"WebIndex", WebRequest:Request) -> Re
 		(MedalToDelete.guild_id, MedalToDelete.medal_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Medal: {guild_id=} deleted [{medal_id=}, {name=}]", require="discord:commands")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Medal: {guild_id=} deleted [{medal_id=}, {name=}]", require="discord:medals")
 	return cls.response(
 		text=json.dumps( dict(msg="Medal: Deleted entry", deleted=MedalToDelete.name, status=200) ),
 		content_type="application/json",

@@ -205,6 +205,43 @@ var Levels = new(class {
     });
   }
 
+  editExp() {
+    var c = confirm("Editing the exp will leave a permanent [EDITED] mark, unless resettet to 0, be carefull. Want to continue?");
+    if (!c) { return; }
+
+    var new_exp = $(`${this.modal_id} [name=exp]`).val();
+    this.edit( {exp: new_exp} );
+  }
+
+  editCurrency() {
+    var new_currency = $(`${this.modal_id} [name=currency]`).val();
+    this.edit( {currency: new_currency} );
+  }
+
+  editOnServer() {
+    var c = confirm("It seems, this member is not on the server anymore and Phaaze did not catch this.\n"+
+      "Do you want to set this member to a inactive state?\n"+
+      "(This action can not be undone until the member joins the server again)");
+    if (!c) { return; }
+
+    this.edit( {on_server: false} );
+  }
+
+  edit(update) {
+    update["guild_id"] = $("#guild_id").val();
+    update["member_id"] = $(`${this.modal_id} [name=member_id]`).val();
+
+    $.post("/api/discord/levels/edit", update)
+    .done(function (data) {
+
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error updating levels"} );
+    })
+  }
+
   // delete
   deleteMedal(HTMLButton) {
     var LevelO = this;
@@ -226,61 +263,6 @@ var Levels = new(class {
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"Could not delete medal"} );
     });
-  }
-
-  // TODO: rework
-
-
-
-
-  editExp() {
-    var c = confirm("Editing the exp will leave a permanent [EDITED] mark, unless resettet to 0, be carefull. Want to continue?");
-    if (!c) { return; }
-
-    var new_exp = $(`${this.modal_id} [name=exp]`).val();
-    this.update( {exp: new_exp} );
-  }
-
-  editCurrency() {
-    var new_currency = $(`${this.modal_id} [name=currency]`).val();
-    this.update( {currency: new_currency} );
-  }
-
-  setOnServerFalse() {
-    var c = confirm("It seems, this member is not on the server anymore and Phaaze did not catch this.\n"+
-      "Do you want to set this member to a inactive state?\n"+
-      "(This action can not be undone until the member joins the server again)");
-    if (!c) { return; }
-
-    var req = {
-      "on_server": false
-    };
-    var LevelO = this;
-    var suc = function () {
-      $(LevelO.modal_id).modal("hide");
-      LevelO.show({offset:LevelO.offset});
-    }
-    this.update(req, suc);
-  }
-
-  update(level_update, success_function, fail_function) {
-    var guild_id = $("#guild_id").val();
-    level_update["guild_id"] = guild_id;
-    var member_id = $(this.modal_id).attr("edit-member");
-    level_update["member_id"] = member_id;
-
-    $.post("/api/discord/levels/edit", level_update)
-    .done(function (data) {
-
-      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
-
-      if (success_function) { success_function.call() }
-
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error updating levels"} );
-      if (fail_function) { fail_function.call() }
-    })
   }
 
 });

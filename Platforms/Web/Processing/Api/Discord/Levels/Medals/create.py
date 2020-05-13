@@ -90,10 +90,10 @@ async def apiDiscordLevelsMedalsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		}
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) User medal: {guild_id=} {member_id=} added new entry", require="discord:quotes")
+	cls.Web.BASE.Logger.debug(f"(API/Discord) User medal: {guild_id=} {member_id=} added new entry", require="discord:medals")
 
 	return cls.response(
-		text=json.dumps( dict(msg="Quote: Added new entry", entry=name, status=200) ),
+		text=json.dumps( dict(msg="Medal: Added new entry", entry=name, status=200) ),
 		content_type="application/json",
 		status=200
 	)
