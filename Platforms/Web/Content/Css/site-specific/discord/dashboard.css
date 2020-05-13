@@ -42,7 +42,6 @@
 /* location specific styles */
 
 [location=home] .guild-name { margin-left: 1em; font-size: 3ch; }
-[location=levels] .avatar { border-radius: 50%; }
 [location=levels] .level .avatar { border-radius: 50%; }
 
 /* modal styles */

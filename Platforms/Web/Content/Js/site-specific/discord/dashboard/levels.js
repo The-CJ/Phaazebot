@@ -58,8 +58,8 @@ var Levels = new(class {
         Template.attr("member-id", level.member_id);
 
         if (level.edited) {
-          Template.find(".exp").addClass("red");
-          Template.find(".exp").attr("title", "This member got edited, the stats can be wrong");
+          Template.find(".level-exp").addClass("red");
+          Template.find(".level-exp").attr("title", "This member got edited, the stats can be wrong");
         }
 
         LevelList.append(Template);
