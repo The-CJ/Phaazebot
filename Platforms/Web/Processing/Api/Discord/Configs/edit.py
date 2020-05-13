@@ -252,7 +252,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 
 	return cls.response(
-		text=json.dumps( dict(msg="Configs: Updated", update=update, status=200) ),
+		text=json.dumps( dict(msg="Configs: Updated", changes=update, status=200) ),
 		content_type="application/json",
 		status=200
 	)
