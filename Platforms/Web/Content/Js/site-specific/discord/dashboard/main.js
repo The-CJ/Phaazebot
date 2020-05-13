@@ -12,7 +12,7 @@ var DiscordDashboard = new (class {
 
   loadLocation(target) {
     // handles all display and view utils
-    // everything except home is support to be outmoved in a extra class
+    // everything except home is suppost to be outmoved in a extra class
     DynamicURL.set("view", target);
 
     if (target == "home") {

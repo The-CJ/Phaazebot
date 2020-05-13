@@ -37,11 +37,14 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 	DiscordDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/main.html")
 	DiscordDash.replace(
 		location_home = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_home.html"),
-		location_configs = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs.html"),
-		location_commands = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands.html"),
-		location_levels = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_levels.html"),
 		location_quotes = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_quotes.html"),
 		location_twitch_alerts = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_twitch_alerts.html"),
+		location_levels = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_levels.html"),
+		location_configs_chat = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_chat.html"),
+
+
+		location_configs = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs.html"),
+		location_commands = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands.html"),
 		location_assign_roles = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_assign_roles.html")
 	)
 	# make it twice, since some included locations also have replaceable items
