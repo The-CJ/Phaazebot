@@ -43,6 +43,12 @@
 
 [location=home] .guild-name { margin-left: 1em; font-size: 3ch; }
 [location=levels] .level .avatar { border-radius: 50%; }
+[location=configs_chat] .option-status { background-color: var(--color-unknown); }
+[location=configs_chat] .option-status:after { content: "UNKNOWN"; }
+[location=configs_chat] .option-status[value=true] { background-color: var(--color-boolish-green); }
+[location=configs_chat] .option-status[value=true]:after { content: "ENABLED"; }
+[location=configs_chat] .option-status[value=false] { background-color: var(--color-boolish-red); }
+[location=configs_chat] .option-status[value=false]:after { content: "DISABLED"; }
 
 /* modal styles */
 .modal-itemlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
