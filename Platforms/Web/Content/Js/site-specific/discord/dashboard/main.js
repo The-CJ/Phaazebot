@@ -52,6 +52,11 @@ var DiscordDashboard = new (class {
       ConfigsChat.show();
     }
 
+    if (target == "configs_event") {
+      this.setSitePanelSelectedLocation("configs");
+      ConfigsEvent.show();
+    }
+
     this.setLocationWindow(target);
     this.setSitePanelCollapse("hide");
   }
