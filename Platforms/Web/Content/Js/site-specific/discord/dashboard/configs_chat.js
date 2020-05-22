@@ -1,6 +1,8 @@
 var ConfigsChat = new(class {
   constructor() {
-
+    this.word_blacklist_modal_id = "#configs_chat_word_blacklist_modal";
+    this.word_blacklist_phantom_class = ".blacklistword";
+    this.word_blacklist_list_id = "#blacklist_list";
   }
 
   show() {
@@ -19,6 +21,26 @@ var ConfigsChat = new(class {
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not load configs for chat"} );
+    })
+  }
+
+  // show
+  showWordBlacklist(x={}) {
+    var ConfigsChatO = this;
+    x["guild_id"] = $("#guild_id").val();
+    $.get("/api/discord/configs/blacklistedwords/get", x)
+    .done(function (data) {
+      var EntryList = $(ConfigsChatO.word_blacklist_list_id).html('');
+      for (var entry of data.result) {
+        var Template = $(`[phantom] ${ConfigsChatO.word_blacklist_phantom_class}`).clone();
+        Template.attr("word_id", entry.word_id);
+        insertData(Template, entry);
+        EntryList.append(Template);
+      }
+      $(ConfigsChatO.word_blacklist_modal_id).modal("show");
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error loading word blacklist"} );
     })
   }
 

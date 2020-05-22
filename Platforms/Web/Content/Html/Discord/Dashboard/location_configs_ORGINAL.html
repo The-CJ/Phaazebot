@@ -2,64 +2,6 @@
 
   <div class="container-fluid">
 
-    <h3 id="config_chat">Chat management</h3>
-    <div>
-      <span>Disallow links, blacklist words and punish members that go agains it.</span>
-
-      <hr>
-
-      <!-- blacklist, roles, links -->
-      <div class="center-item-row">
-
-        <!-- word blacklist -->
-        <div class="col">
-          <div class="content-box config-box">
-            <p>Blacklist</p>
-            <div class="config-info"><span>RE in message = punishment</span></div>
-            <button type="button" class="btn btn-block btn-secondary" onclick="javascript:Configs.showWordBlacklist()">Open blacklist</button>
-          </div>
-        </div>
-
-        <!-- execption roles -->
-        <div class="col">
-          <div class="content-box config-box">
-            <p>Exception roles</p>
-            <div class="config-info"><span>These will bypass punishment</span></div>
-            <button type="button" class="btn btn-block btn-secondary" onclick="javascript:Configs.showExecptionRoles()">Open role list</button>
-          </div>
-        </div>
-
-        <!-- link whitelist -->
-        <div class="col">
-          <div class="content-box config-box">
-            <p>Ban links</p>
-            <form onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
-              <button type="submit" class="btn btn-block toggle-value" name="blacklist_ban_links" value="x">Click to </button>
-            </form>
-            <button type="button" class="btn btn-block btn-secondary" onclick="javascript:Configs.showLinkWhitelist()">Open link whitelist</button>
-          </div>
-        </div>
-
-      </div>
-      <!-- punishment -->
-      <div class="center-item-row">
-
-        <div class="col">
-          <form class="content-box config-box" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
-            <p>Punishment level</p>
-            <div class="config-info"><span>In case someone go against the rules, what should happen?<span></div>
-            <select class="custom-select" name="blacklist_punishment">
-              <option value="delete">Just delete the message</option>
-              <option value="kick">Delete the message and kick the author</option>
-              <option value="ban">Delete the message and ban the author</option>
-            </select>
-            <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
-          </form>
-        </div>
-
-      </div>
-    </div>
-
     <h3 id="config_events">Automated events</h3>
     <div>
       <span>There are some events, that can be used to announce some automated messages or other stuff.</span>
@@ -411,49 +353,6 @@
     </div>
   </div>
 
-  <div class="modal fade" id="config_modal_blacklist_words">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-
-        <div class="modal-header text-center">
-          <h4 class="modal-title">Blacklist</h4>
-          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
-        </div>
-
-        <div class="modal-body text-black">
-
-          <div class="row">
-            <div class="col">
-              <p>Pretty easy to unserstand, everything is handled via <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expressions</a></p>
-              <span>If any Regex is found in the message, execute the punishment</span>
-              <span>Note:</span><br>
-              <span>The message is lowered before checking, so:</span><br>
-              <span>"Hello there my name is CreAtIvU53R1337"</span><br>
-              <span>will be: </span><br>
-              <span>"hello there my name is creativu53r1337"</span>
-            </div>
-          </div>
-
-          <hr>
-          <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:Configs.addToBlacklist()">
-            <input type="text" id="new_blacklistword" class="form-control">
-            <label for="new_blacklistword">New entry:</label>
-            <div class="input-group-append">
-              <button type="submit" name="button" class="btn btn-primary m-0 px-3 py-2">+</button>
-            </div>
-          </form>
-          <hr>
-          <!-- gets filled with copys of: "[phantom] .blacklistword" -->
-          <div class="modal-itemlist"></div>
-
-        </div>
-
-        <div class="modal-footer"></div>
-        <div messagebox></div>
-      </div>
-    </div>
-  </div>
-
   <div class="modal fade" id="config_modal_whitelist_links">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -759,13 +658,6 @@
 </div>
 
 <div phantom hidden>
-
-  <div class="center-item-row forced blacklistword" word-id="-1">
-    <div class="delete">
-      <button type="button" class="btn btn-danger icon-btn" onclick="Configs.removeFromBlacklist(this)"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="col word"></div>
-  </div>
 
   <div class="center-item-row forced whitelistlink" link-id="-1">
     <div class="delete">
