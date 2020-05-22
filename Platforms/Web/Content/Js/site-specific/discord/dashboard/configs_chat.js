@@ -8,6 +8,10 @@ var ConfigsChat = new(class {
     this.link_whitelist_phantom_class = ".whitelistlink";
     this.link_whitelist_list_id = "#whitelist_list";
 
+    this.exeption_role_modal_id = "#configs_chat_exeption_role_modal";
+    this.exeption_role_phantom_class = ".exceptionrole";
+    this.exeption_role_list_id = "#exceptionrole_list";
+
   }
 
   show() {
@@ -68,6 +72,30 @@ var ConfigsChat = new(class {
     })
   }
 
+  showExecptionRoles(x={}) {
+    var ConfigsChatO = this;
+    x["guild_id"] = $("#guild_id").val();
+    $.get("/api/discord/configs/exceptionroles/get", x)
+    .done(function (data) {
+      var EntryList = $(ConfigsChatO.exeption_role_list_id).html('');
+      for (var entry of data.result) {
+        var role = DiscordDashboard.getDiscordRoleByID(entry.role_id);
+        var Template = $(`[phantom] ${ConfigsChatO.exeption_role_phantom_class}`).clone();
+        Template.attr("entry-id", entry.exceptionrole_id);
+        Template.find("[name=role_name]").text( role ? role.name : "(DELETED ROLE)" );
+        if (isEmpty(role)) {
+          Template.addClass("deleted");
+          Template.attr("title", "This role is deleted on the server and can be deleted here as well without any worries");
+        }
+        EntryList.append(Template);
+      }
+      $(ConfigsChatO.exeption_role_modal_id).modal("show");
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error loading role whitelist"} );
+    })
+  }
+
   // create
   createWordBlacklistEntry() {
     var ConfigsChatO = this;
@@ -111,6 +139,27 @@ var ConfigsChat = new(class {
 
   }
 
+  createExecptionRolesEntry() {
+    var ConfigsChatO = this;
+    var new_role_id = $("#new_exceptionrole").val();
+    if (isEmpty(new_role_id)) { return; }
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "role_id": new_role_id
+    };
+
+    $.get("/api/discord/configs/exceptionroles/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_exceptionrole").val("");
+      ConfigsChatO.showExecptionRoles();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error adding role to whitelist"} );
+    });
+
+  }
+
   // delete
   deleteWordBlacklistEntry(HTMLRow) {
     var ConfigsChatO = this;
@@ -148,6 +197,26 @@ var ConfigsChat = new(class {
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error removing link from whitelist"} );
+    });
+
+  }
+
+  deleteExecptionRolesEntry(HTMLRow) {
+    var ConfigsChatO = this;
+    var entry_id = $(HTMLRow).closest(ConfigsChatO.exeption_role_phantom_class).attr("entry-id");
+    if (isEmpty(entry_id)) { return; }
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "exceptionrole_id": entry_id
+    };
+
+    $.post("/api/discord/configs/exceptionroles/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsChatO.showExecptionRoles();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error removing role from whitelist"} );
     });
 
   }

@@ -40,7 +40,6 @@
 }
 
 /* location specific styles */
-
 [location=home] .guild-name { margin-left: 1em; font-size: 3ch; }
 [location=levels] .level .avatar { border-radius: 50%; }
 [location=configs_chat] .option-status { background-color: var(--color-unknown); }
