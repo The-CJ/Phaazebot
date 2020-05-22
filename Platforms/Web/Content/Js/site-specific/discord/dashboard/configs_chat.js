@@ -33,7 +33,7 @@ var ConfigsChat = new(class {
       var EntryList = $(ConfigsChatO.word_blacklist_list_id).html('');
       for (var entry of data.result) {
         var Template = $(`[phantom] ${ConfigsChatO.word_blacklist_phantom_class}`).clone();
-        Template.attr("word_id", entry.word_id);
+        Template.attr("word-id", entry.word_id);
         insertData(Template, entry);
         EntryList.append(Template);
       }
@@ -42,6 +42,49 @@ var ConfigsChat = new(class {
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error loading word blacklist"} );
     })
+  }
+
+  // create
+  createWordBlacklistEntry() {
+    var ConfigsChatO = this;
+    var new_word = $("#new_blacklistword").val();
+    if (isEmpty(new_word)) { return; }
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "word": new_word
+    };
+
+    $.get("/api/discord/configs/blacklistedwords/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_blacklistword").val("");
+      ConfigsChatO.showWordBlacklist();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error adding word to blacklist"} );
+    });
+
+  }
+
+  // delete
+  deleteWordBlacklistEntry(HTMLRow) {
+    var ConfigsChatO = this;
+    var word_id = $(HTMLRow).closest(ConfigsChatO.word_blacklist_phantom_class).attr("word-id");
+    if (isEmpty(word_id)) { return; }
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "word_id": word_id
+    };
+
+    $.post("/api/discord/configs/blacklistedwords/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsChatO.showWordBlacklist();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error removing word from blacklist"} );
+    });
+
   }
 
   // edit
