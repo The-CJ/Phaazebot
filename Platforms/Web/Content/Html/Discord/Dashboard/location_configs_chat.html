@@ -152,6 +152,50 @@
     </div>
   </div>
 
+  <div class="modal fade" id="configs_chat_link_whitelist_modal">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Link whitelist</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <p>By default every link gets punished, but here you can define <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expressions</a> that are allowed.</p>
+              <span>e.g:</span><br>
+              <span>If you ban links, but want to allow all google links, including all subdomains.</span><br>
+              <span>You add this: <span style="color:red">^.*google.com$</span></span>
+            </div>
+          </div>
+
+          <hr>
+
+          <form class="center-item-row forced md-form" action="javascript:ConfigsChat.createLinkWhitelistEntry()">
+            <div class="col">
+              <input type="text" id="new_whitelistlink" class="form-control text-center" placeholder="Add new entry...">
+            </div>
+            <div class="col-2">
+              <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-plus"></i></button>
+            </div>
+          </form>
+
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .whitelistlink" -->
+          <div id="whitelist_list" class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+
 </div>
 
 <div phantom hidden>
@@ -161,6 +205,13 @@
       <button type="button" class="btn btn-danger icon-btn" onclick="ConfigsChat.deleteWordBlacklistEntry(this)"><i class="fas fa-times"></i></button>
     </div>
     <div class="col"><span name="word"></span></div>
+  </div>
+
+  <div class="center-item-row forced whitelistlink" link-id="-1">
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="ConfigsChat.deleteLinkWhitelistEntry(this)"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="col"><span name="link"></span></div>
   </div>
 
 </div>

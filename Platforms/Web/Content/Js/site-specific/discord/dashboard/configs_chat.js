@@ -3,6 +3,11 @@ var ConfigsChat = new(class {
     this.word_blacklist_modal_id = "#configs_chat_word_blacklist_modal";
     this.word_blacklist_phantom_class = ".blacklistword";
     this.word_blacklist_list_id = "#blacklist_list";
+
+    this.link_whitelist_modal_id = "#configs_chat_link_whitelist_modal";
+    this.link_whitelist_phantom_class = ".whitelistlink";
+    this.link_whitelist_list_id = "#whitelist_list";
+
   }
 
   show() {
@@ -44,6 +49,25 @@ var ConfigsChat = new(class {
     })
   }
 
+  showLinkWhitelist(x={}) {
+    var ConfigsChatO = this;
+    x["guild_id"] = $("#guild_id").val();
+    $.get("/api/discord/configs/whitelistedlinks/get", x)
+    .done(function (data) {
+      var EntryList = $(ConfigsChatO.link_whitelist_list_id).html('');
+      for (var entry of data.result) {
+        var Template = $(`[phantom] ${ConfigsChatO.link_whitelist_phantom_class}`).clone();
+        Template.attr("link-id", entry.link_id);
+        insertData(Template, entry);
+        EntryList.append(Template);
+      }
+      $(ConfigsChatO.link_whitelist_modal_id).modal("show");
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error loading link whitelist"} );
+    })
+  }
+
   // create
   createWordBlacklistEntry() {
     var ConfigsChatO = this;
@@ -66,6 +90,27 @@ var ConfigsChat = new(class {
 
   }
 
+  createLinkWhitelistEntry() {
+    var ConfigsChatO = this;
+    var new_link = $("#new_whitelistlink").val();
+    if (isEmpty(new_link)) { return; }
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "link": new_link
+    };
+
+    $.get("/api/discord/configs/whitelistedlinks/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_whitelistlink").val("");
+      ConfigsChatO.showLinkWhitelist();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error adding link to whitelist"} );
+    });
+
+  }
+
   // delete
   deleteWordBlacklistEntry(HTMLRow) {
     var ConfigsChatO = this;
@@ -83,6 +128,26 @@ var ConfigsChat = new(class {
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"error removing word from blacklist"} );
+    });
+
+  }
+
+  deleteLinkWhitelistEntry(HTMLRow) {
+    var ConfigsChatO = this;
+    var link_id = $(HTMLRow).closest(ConfigsChatO.link_whitelist_phantom_class).attr("link-id");
+    if (isEmpty(link_id)) { return; }
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "link_id": link_id
+    };
+
+    $.post("/api/discord/configs/whitelistedlinks/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsChatO.showLinkWhitelist();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error removing link from whitelist"} );
     });
 
   }
