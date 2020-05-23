@@ -22,4 +22,27 @@ var ConfigsEvent = new (class {
     })
   }
 
+  // edit
+  editContentBox(HTMLElement) {
+    var ContentBox = $(HTMLElement).closest(".content-box");
+    var data = extractData(ContentBox);
+    this.edit(data);
+  }
+
+  edit(update) {
+    update["guild_id"] = $("#guild_id").val();
+
+    $.post("/api/discord/configs/edit", update)
+    .done(function (data) {
+
+      insertData("[location=configs_event]", data.changes, true);
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error updating configs for event"} );
+    })
+  }
+
+
 });
