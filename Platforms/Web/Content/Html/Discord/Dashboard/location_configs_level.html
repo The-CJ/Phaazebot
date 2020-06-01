@@ -2,6 +2,32 @@
 
   <div class="container-fluid">
 
+    <!-- level message -->
+    <div class="content-box padding">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Level-up message</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>A message will be sent everytime a member has a level up.</span><br>
+          <span>If no channel is set, it will appear in the same channel the user gained the level-up.</span><br>
+          <span>This message supports tokens.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-grey" onclick="javascript:alert('TODO TOKEN')">Content token</button>
+          <hr>
+          <textarea name="level_custom_msg" rows="6" maxlength="1750" style="width:100%;"></textarea>
+          <hr>
+          <select name="level_announce_chan" class="custom-select" discord-channel="text" discord-channel-none="true"></select>
+          <hr>
+          <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsLevel.editContentBox(this)">Save</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>

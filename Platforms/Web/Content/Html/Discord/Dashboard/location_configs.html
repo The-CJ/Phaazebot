@@ -6,58 +6,6 @@
     <div>
       <span>Level execptions, announce channel and custom messages</span>
 
-      <hr>
-
-      <!-- level msg -->
-      <div class="center-item-row">
-        <div class="col">
-          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
-            <p>Custom level-up message</p>
-            <div class="config-info">
-              <span>Message that appears on level up</span>
-            </div>
-            <textarea class="config-textbox-input" name="level_custom_msg" rows="5"></textarea>
-            <button type="submit" class="btn btn-block btn-primary">Save</button>
-            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('level')">Token</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- level chan -->
-      <div class="center-item-row">
-        <div class="col">
-          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
-            <p>Currency names</p>
-            <div class="config-info">
-              <span>The name of the currency members can collect, default is "Credit(s)"</span>
-            </div>
-            <div class="row">
-              <div class="col">
-                <input type="text" name="currency_name" placeholder="Singular" style="width:100%;" class="text-center text-white">
-              </div>
-              <div class="col">
-                <input type="text" name="currency_name_multi" placeholder="Plural" style="width:100%;" class="text-center text-white">
-              </div>
-            </div>
-            <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- level chan -->
-      <div class="center-item-row">
-        <div class="col">
-          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
-            <p>Level-up channel</p>
-            <div class="config-info">
-              <span>By default, the message will appear in the same channel the user typed, but this can be overwritten, so all level ups go into one channel</span>
-            </div>
-            <select class="custom-select" name="level_announce_chan" discord-channel="text" discord-channel-none="true"></select>
-            <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
-          </form>
-        </div>
-      </div>
-
       <!-- disable single channels -->
       <div class="center-item-row">
         <div class="col">
