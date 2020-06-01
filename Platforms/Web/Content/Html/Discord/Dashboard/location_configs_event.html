@@ -57,6 +57,29 @@
 
     <hr>
 
+    <!-- auto role -->
+    <div class="content-box padding">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Autorole</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>The selected role will be given to every user, that joins the server.</span><br>
+          <span>This must be a role Phaaze has permission to assign or empty.</span>
+        </div>
+        <div class="col">
+          <select class="custom-select" name="autorole_id" discord-role discord-role-none="true"></select>
+          <hr>
+          <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsEvent.editContentBox(this)">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
     <!-- leave -->
     <div class="content-box padding">
       <div class="center-item-row">

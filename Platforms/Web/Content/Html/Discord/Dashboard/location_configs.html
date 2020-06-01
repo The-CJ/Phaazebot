@@ -8,67 +8,6 @@
 
       <hr>
 
-      <!-- welcome and leave -->
-      <div class="center-item-row">
-
-        <!-- welcome msg -->
-        <div class="col">
-          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
-            <div class="center-item-col">
-              <p>Welcome message</p>
-              <div class="config-info"><span>Get's triggered everytime a member joins<span></div>
-              <textarea class="config-textbox-input" name="welcome_msg" rows="5"></textarea>
-              <div class="config-info">
-                <span>The channel where the message appears<span><br>
-                <span>(channel == none or no text content = message turned off)</span>
-              </div>
-              <select class="custom-select" discord-channel="text" discord-channel-none="true" name="welcome_chan">
-                <option value="">(Channel Select)</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
-            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('welcome')">Token</button>
-          </form>
-        </div>
-
-        <!-- leave msg -->
-        <div class="col">
-          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
-            <div class="center-item-col">
-              <p>Leave message</p>
-              <div class="config-info"><span>Get's triggered everytime a member leaves :c<span></div>
-              <textarea class="config-textbox-input" name="leave_msg" rows="5"></textarea>
-              <div class="config-info">
-                <span>The channel where the message appears<span><br>
-                <span>(channel == none or no text content = message turned off)</span>
-              </div>
-              <select class="custom-select" discord-channel="text" discord-channel-none="true" name="leave_chan">
-                <option value="">(Channel Select)</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-block btn-primary config-save">Save</button>
-            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('leave')">Token</button>
-          </form>
-        </div>
-
-      </div>
-      <!-- priv welcome -->
-      <div class="center-item-row">
-
-        <div class="col">
-          <form class="content-box config-box md-form" onsubmit="javascript:Configs.updateField(this)" action="javascript:void(0)" method="post">
-            <p>Private welcome message</p>
-            <div class="config-info">
-              <span>Get's triggered with "Welcome message", except it is sent to the member via DM<span><br>
-              <span>(no text content = message turned off)</span>
-            </div>
-            <textarea class="config-textbox-input" name="welcome_msg_priv" rows="5"></textarea>
-            <button type="submit" class="btn btn-block btn-primary">Save</button>
-            <button type="button" class="btn btn-secondary config-token-btn" onclick="showTokenHelp('priv_welcome')">Token</button>
-          </form>
-        </div>
-
-      </div>
       <!-- autorole -->
       <div class="center-item-row">
 
@@ -78,7 +17,6 @@
             <div class="config-info">
               <span>A role every member gets when they join the server<span>
             </div>
-            <select class="custom-select" name="autorole_id" discord-role discord-role-none="true"></select>
             <button type="submit" class="btn btn-block btn-primary">Save</button>
           </form>
         </div>
