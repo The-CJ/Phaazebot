@@ -17,17 +17,6 @@
         </div>
       </div>
 
-      <!-- master disable level -->
-      <div class="center-item-row">
-        <div class="col">
-          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
-            <span>Master: Level Commands / Progress</span><br>
-            <div class="config-info"><span>Prevents everyone serverwide from gaining exp or using commands associated with level<span></div>
-            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_level" value="x">Click to </button>
-          </form>
-        </div>
-      </div>
-
     </div>
 
     <h3 id="config_channels">Channel execptions</h3>
@@ -86,45 +75,6 @@
         </div>
       </div>
 
-
-    </div>
-
-    <h3 id="config_master">Master controlls</h3>
-    <div>
-      <span>Master configs can only be edited by the server owner, all of them have serverwide impact.</span>
-      <br>
-      <span>A disabled command group can only be used by the server owner and noone else.</span>
-
-      <hr>
-
-      <!-- all master things -->
-      <div class="center-item-row">
-
-        <!-- normal -->
-        <div class="col">
-          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
-            <p>Normal Commands</p>
-            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_normal" value="x">Click to </button>
-          </form>
-        </div>
-
-        <!-- regular -->
-        <div class="col">
-          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
-            <p>Regular Commands</p>
-            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_regular" value="x">Click to </button>
-          </form>
-        </div>
-
-        <!-- mod -->
-        <div class="col">
-          <form class="content-box config-box" onsubmit="javascript:Configs.updateToogleField(this)" action="javascript:void(0)" method="post">
-            <p>Moderator Commands</p>
-            <button type="submit" class="btn btn-block toggle-value reverse" name="owner_disable_mod" value="x">Click to </button>
-          </form>
-        </div>
-
-      </div>
     </div>
 
   </div>
