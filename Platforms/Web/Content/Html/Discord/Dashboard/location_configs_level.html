@@ -10,7 +10,7 @@
         </div>
       </div>
 
-      <div class="center-item-row ">
+      <div class="center-item-row">
         <div class="col text-left">
           <span>A message will be sent everytime a member has a level up.</span><br>
           <span>If no channel is set, it will appear in the same channel the user gained the level-up.</span><br>
@@ -26,6 +26,34 @@
           <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsLevel.editContentBox(this)">Save</button>
         </div>
       </div>
+    </div>
+
+    <hr>
+
+    <div class="content-box padding">
+      <div class="center-item-col">
+        <div class="col text-left">
+          <h4>Currency names</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row">
+        <div class="col text-left">
+          <span>Byside EXP, members may or may not also can collect a currency.</span><br>
+          <span>Please provide both, single- and multiple-name</span><br>
+          <span>These names will be used in all statistics, commands etc,</span><br>
+          <span>so you may want to use something short and easy.</span><br>
+          <span>Default is <b>Credit</b> and <b>Credit's</b></span>
+        </div>
+        <div class="col">
+          <input type="text" name="currency_name" class="form-control" placeholder="Singular">
+          <hr>
+          <input type="text" name="currency_name_multi" class="form-control" placeholder="Plural">
+          <hr>
+          <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsLevel.editContentBox(this)">Save</button>
+        </div>
+      </div>
+
     </div>
 
   </div>
