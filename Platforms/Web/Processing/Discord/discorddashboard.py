@@ -43,6 +43,7 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 		location_configs_chat = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_chat.html"),
 		location_configs_event = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_event.html"),
 		location_configs_level = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_level.html"),
+		location_configs_master = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_master.html"),
 
 
 		location_configs = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs.html"),
