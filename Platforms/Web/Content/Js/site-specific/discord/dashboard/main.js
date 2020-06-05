@@ -62,6 +62,11 @@ var DiscordDashboard = new (class {
       ConfigsLevel.show();
     }
 
+    if (target == "configs_channel") {
+      this.setSitePanelSelectedLocation("configs");
+      ConfigsChannel.show();
+    }
+
     if (target == "configs_master") {
       this.setSitePanelSelectedLocation("configs");
       ConfigsMaster.show();
