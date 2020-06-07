@@ -22,4 +22,20 @@ var ConfigsChannel = new (class {
     })
   }
 
+  showChannelList(list_name) {
+
+    var req = {};
+    req["guild_id"] = $("#guild_id").val();
+
+    $.get(`/api/discord/configs/${channel_list_endpoint}/get`, req)
+    .done(function (data) {
+
+      console.log(data);
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not load configs for channel"} );
+    });
+  }
+
 });
