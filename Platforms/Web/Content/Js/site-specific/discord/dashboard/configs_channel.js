@@ -89,6 +89,12 @@ var ConfigsChannel = new (class {
       for (var entry of data.result) {
         var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
         var Template = $(`[phantom] ${ConfigsChannelO.phantom_class}`).clone();
+        Template.attr("entry-id", entry.entry_id);
+        Template.find("[name=channel_name]").text( channel ? channel.name : "(DELETED CHANNEL)" );
+        if (isEmpty(channel)) {
+          Template.addClass("deleted");
+          Template.attr("title", "This channel is deleted on the server and can be deleted here as well without any worries");
+        }
         EntryList.append(Template);
       }
 
@@ -110,5 +116,36 @@ var ConfigsChannel = new (class {
       generalAPIErrorHandler( {data:data, msg:`could not load configs for ${channel_list} channel exceptions`} );
     });
   }
+
+  // create
+  createChannelEntry() {
+    var ConfigsChannelO = this;
+    var req = {};
+    req["guild_id"] = $("#guild_id").val();
+    req["channel_id"] = $("#new_exceptionchannel").val();
+
+    var operation = $(`${ConfigsChannelO.modal_id} [name=operation]`).val();
+
+    if (operation != this.operation) {
+      console.log("unequal operation stored, wtf");
+      operation = this.operation;
+    }
+
+    var options = this.getOptionDict(operation);
+    if (isEmpty(options)) { throw `can't resolve for operation: ${operation}`; }
+
+    $.get(`/api/discord/configs/${options.endpoint}/create`, req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $("#new_exceptionchannel").val("");
+      ConfigsChannelO.showChannelList(operation);
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error adding entry to list"} );
+    });
+
+  }
+
+  // delete
 
 });
