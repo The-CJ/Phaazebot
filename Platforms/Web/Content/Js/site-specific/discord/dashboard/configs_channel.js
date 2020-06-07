@@ -134,7 +134,7 @@ var ConfigsChannel = new (class {
     var options = this.getOptionDict(operation);
     if (isEmpty(options)) { throw `can't resolve for operation: ${operation}`; }
 
-    $.get(`/api/discord/configs/${options.endpoint}/create`, req)
+    $.post(`/api/discord/configs/${options.endpoint}/create`, req)
     .done(function (data) {
       Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
       $("#new_exceptionchannel").val("");
@@ -147,5 +147,30 @@ var ConfigsChannel = new (class {
   }
 
   // delete
+  deleteChannelEntry(HTMLRow) {
+    var ConfigsChannelO = this;
+    var req = {};
+    req["guild_id"] = $("#guild_id").val();
+    req["entry_id"] = $(HTMLRow).closest(ConfigsChannelO.phantom_class).attr("entry-id");
 
+    var operation = $(`${ConfigsChannelO.modal_id} [name=operation]`).val();
+
+    if (operation != this.operation) {
+      console.log("unequal operation stored, wtf");
+      operation = this.operation;
+    }
+
+    var options = this.getOptionDict(operation);
+    if (isEmpty(options)) { throw `can't resolve for operation: ${operation}`; }
+
+    $.post(`/api/discord/configs/${options.endpoint}/delete`, req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      ConfigsChannelO.showChannelList(operation);
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error deleting entry from list"} );
+    });
+
+  }
 });
