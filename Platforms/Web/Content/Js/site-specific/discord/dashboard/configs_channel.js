@@ -1,5 +1,6 @@
 var ConfigsChannel = new (class {
   constructor() {
+    this.operation = null;
     this.modal_id = "#configs_channel_exeption_modal";
     this.list_id = "#exception_channel_list";
     this.phantom_class = ".exceptionchannel";
@@ -24,68 +25,83 @@ var ConfigsChannel = new (class {
     })
   }
 
-  showChannelList(list_name) {
+  getOptionDict(operation) {
+
+    if (operation == "level") {
+      return {
+        "endpoint":"leveldisabledchannels",
+        "modal_title":"Level disabled channels"
+      }
+    }
+
+    if (operation == "normal") {
+      return {
+        "endpoint":"normaldisabledchannels",
+        "modal_title":"Normal-Command disabled channels"
+      }
+    }
+
+    if (operation == "regular") {
+      return {
+        "endpoint":"regulardisabledchannels",
+        "modal_title":"Regular-Command disabled channels"
+      }
+    }
+
+    if (operation == "quote") {
+      return {
+        "endpoint":"quotedisabledchannels",
+        "modal_title":"Quote-Command disabled channels"
+      }
+    }
+
+    if (operation == "game") {
+      return {
+        "endpoint":"gameenabledchannels",
+        "modal_title":"Game-Command enabled channels"
+      }
+    }
+
+    if (operation == "nsfw") {
+      return {
+        "endpoint":"nsfwenabledchannels",
+        "modal_title":"NSFW-Command enabled channels"
+      }
+    }
+
+    return {}
+
+  }
+
+  showChannelList(operation) {
     var ConfigsChannelO = this;
     var req = {};
     req["guild_id"] = $("#guild_id").val();
 
-    var endpoint = null;
-    var modal_title = "[N/A]";
+    var options = this.getOptionDict(operation);
 
-    switch (list_name.toLowerCase()) {
-      case "level":
-        endpoint = "leveldisabledchannels";
-        modal_title = "Level disabled channels";
-        break;
+    if (isEmpty(options)) { throw `can't resolve for operation: ${operation}`; }
 
-      case "normal":
-        endpoint = "normaldisabledchannels";
-        modal_title = "Normal-Command disabled channels";
-        break;
-
-      case "regular":
-        endpoint = "regulardisabledchannels";
-        modal_title = "Regular-Command disabled channels";
-        break;
-
-      case "quote":
-        endpoint = "quotedisabledchannels";
-        modal_title = "Quote-Command disabled channels";
-        break;
-
-      case "game":
-        endpoint = "gameenabledchannels";
-        modal_title = "Game-Command enabled channels";
-        break;
-
-      case "nsfw":
-        endpoint = "nsfwenabledchannels";
-        modal_title = "NSFW-Command enabled channels";
-        break;
-    }
-
-    if (isEmpty(endpoint)) { throw `can't resolve listname: ${list_name}`; }
-
-    $.get(`/api/discord/configs/${endpoint}/get`, req)
+    $.get(`/api/discord/configs/${options.endpoint}/get`, req)
     .done(function (data) {
 
       var EntryList = $(ConfigsChannelO.list_id).html('');
       for (var entry of data.result) {
         var channel = DiscordDashboard.getDiscordChannelByID(entry.channel_id);
         var Template = $(`[phantom] ${ConfigsChannelO.phantom_class}`).clone();
-
         EntryList.append(Template);
       }
 
       // set stuff for later
-      $(`${ConfigsChannelO.modal_id} [name=list_name]`).val(list_name);
+      ConfigsChannelO.operation = operation;
+      $(`${ConfigsChannelO.modal_id} [name=operation]`).val(operation);
 
       // set description
       $(`${ConfigsChannelO.modal_id} [modal-desc]`).hide();
-      $(`${ConfigsChannelO.modal_id} [modal-desc=${list_name}]`).show();
+      $(`${ConfigsChannelO.modal_id} [modal-desc=${operation}]`).show();
 
       // set title
-      $(`${ConfigsChannelO.modal_id} .modal-title`).text(modal_title);
+      $(`${ConfigsChannelO.modal_id} .modal-title`).text(options.modal_title);
 
       // show modal
       $(ConfigsChannelO.modal_id).modal("show");
