@@ -27,7 +27,37 @@ var ConfigsChannel = new (class {
     var req = {};
     req["guild_id"] = $("#guild_id").val();
 
-    $.get(`/api/discord/configs/${channel_list_endpoint}/get`, req)
+    var endpoint = null;
+
+    switch (list_name.toLowerCase()) {
+      case "level":
+        endpoint = "leveldisabledchannels";
+        break;
+
+      case "normal":
+        endpoint = "normaldisabledchannels";
+        break;
+
+      case "regular":
+        endpoint = "regulardisabledchannels";
+        break;
+
+      case "quote":
+        endpoint = "quotedisabledchannels";
+        break;
+
+      case "game":
+        endpoint = "gameenabledchannels";
+        break;
+
+      case "nsfw":
+        endpoint = "nsfwenabledchannels";
+        break;
+    }
+
+    if (isEmpty(endpoint)) { throw `can't resolve listname: ${list_name}`; }
+
+    $.get(`/api/discord/configs/${endpoint}/get`, req)
     .done(function (data) {
 
       console.log(data);
