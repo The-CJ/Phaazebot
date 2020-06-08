@@ -45,7 +45,7 @@ var CommandsAssign = new (class {
         entry.role_name = role ? role.name : "(DELETED CHANNEL)";
 
         insertData(Template, entry);
-        Template.attr("assignrole-id", alert.assignrole_id);
+        Template.attr("assignrole-id", entry.assignrole_id);
 
         if (isEmpty(role)) {
           Template.addClass("red");
