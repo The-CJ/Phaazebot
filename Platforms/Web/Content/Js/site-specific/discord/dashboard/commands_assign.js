@@ -1,6 +1,6 @@
 var CommandsAssign = new (class {
   constructor() {
-    this.modal_id = "#assignrole_create";
+    this.modal_id = "#assignrole_modal";
     this.list_id = "#assign_role_list";
     this.total_field_id = "#assign_role_amount";
     this.phantom_class = ".assignrole";
@@ -28,9 +28,9 @@ var CommandsAssign = new (class {
 
   load(x={}) {
     var CommandsAssignO = this;
-    var guild_id = $("#guild_id").val();
+    x["guild_id"] = $("#guild_id").val();
 
-    $.get("/api/discord/assignroles/get", {guild_id: guild_id})
+    $.get("/api/discord/assignroles/get", x)
     .done(function (data) {
       // update view
       CommandsAssignO.updatePageIndexButtons(data);
@@ -106,7 +106,6 @@ var CommandsAssign = new (class {
 
   // create
   createModal() {
-    $(`${this.modal_id} .modal-title`).text("New assign role");
     $(this.modal_id).attr("mode", "create");
     $(this.modal_id).modal("show");
   }
