@@ -72,26 +72,19 @@ var DiscordDashboard = new (class {
       ConfigsMaster.show();
     }
 
+    if (target == "commands_assign") {
+      this.setSitePanelSelectedLocation("commands");
+      CommandsAssign.show();
+    }
+
     this.setLocationWindow(target);
     this.setSitePanelCollapse("hide");
-  }
-
-  __loadConfig() {
-    DynamicURL.set("view", "configs");
-    this.showLocationWindow("configs");
-    Configs.show();
   }
 
   __loadCommand() {
     DynamicURL.set("view", "commands");
     this.showLocationWindow("commands");
     Commands.show();
-  }
-
-  __loadLevel() {
-    DynamicURL.set("view", "levels");
-    this.showLocationWindow("levels");
-    Levels.show();
   }
 
   __loadAssignRole() {

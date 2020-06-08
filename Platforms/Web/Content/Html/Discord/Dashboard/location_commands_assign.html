@@ -1,0 +1,65 @@
+<div location="commands_assign" style="display: none">
+
+  <div class="container-fluid">
+
+    <form class="center-item-row controlls content-box" action="javascript:CommandsAssign.prevPage(1)">
+      <!-- limit -->
+      <div class="col">
+        <select class="custom-select" name="limit">
+          <option value="5">5 Entrys per page</option>
+          <option value="10" selected>10 Entrys per page</option>
+          <option value="25">25 Entrys per page</option>
+          <option value="50">50 Entrys per page</option>
+          <option value="100">100 Entrys per page</option>
+        </select>
+      </div>
+
+      <!-- pages -->
+      <div class="col pages">
+        <button onclick="CommandsAssign.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+        <button onclick="CommandsAssign.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+        <span>Page: <span class="page">0</span></span>
+        <button onclick="CommandsAssign.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+        <button onclick="CommandsAssign.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+        <span>Total: <span id="assign_role_amount">[N/A]</span></span>
+      </div>
+
+      <!-- buttons -->
+      <div class="col">
+        <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+        <button type="button" class="btn btn-success icon-btn" onclick="CommandsAssign.createModal()"><i class="fas fa-plus"></i></button>
+      </div>
+    </form>
+
+    <hr>
+
+    <div class="row header generic-list">
+      <div class="col">Trigger</div>
+      <div class="col">Assigned Role</div>
+      <div class="col-1 action">Action</div>
+    </div>
+
+    <!-- gets filled with copys of: "[phantom] .assignrole" -->
+    <div id="assign_role_list"></div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="row assignrole generic-sub-list" assignrole-id="-1">
+    <div class="col"><span name="trigger">[N/A]</span></div>
+    <div class="col"><span name="role_name">[N/A]</span></div>
+    <div class="col-1 action">
+      <button type="submit" class="btn btn-warning icon-btn small" onclick="CommandsAssign.editModal(this)"><i class="fas fa-edit"></i></button>
+      <button type="submit" class="btn btn-danger icon-btn small" onclick="CommandsAssign.deleteFromList(this)"><i class="fas fa-trash"></i></button>
+    </div>
+  </div>
+
+</div>

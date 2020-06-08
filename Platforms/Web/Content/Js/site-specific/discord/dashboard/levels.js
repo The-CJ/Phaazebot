@@ -13,8 +13,6 @@ var Levels = new(class {
     this.current_limit = 0;
     this.current_page = 0;
     this.current_max_page = 0;
-
-    // this.current_user_medal = [];
   }
 
   show() {
