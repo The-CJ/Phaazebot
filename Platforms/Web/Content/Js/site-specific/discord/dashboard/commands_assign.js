@@ -106,6 +106,7 @@ var CommandsAssign = new (class {
 
   // create
   createModal() {
+    resetInput(this.modal_id);
     $(this.modal_id).attr("mode", "create");
     $(this.modal_id).modal("show");
   }
@@ -113,7 +114,24 @@ var CommandsAssign = new (class {
   create() {}
 
   // edit
-  editModal(HTMLButton) {}
+  editModal(HTMLButton) {
+    var AssignRolesO = this;
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "assignrole_id": $(HTMLButton).closest(AssignRolesO.phantom_class).attr("assignrole-id")
+    };
+
+    $.get("/api/discord/assignroles/get", req)
+    .done(function (data) {
+      var entry = data.result.pop();
+      insertData(AssignRolesO.modal_id, entry);
+      $(AssignRolesO.modal_id).attr("mode", "edit");
+      $(AssignRolesO.modal_id).modal("show");
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not load assign role details"} );
+    })
+  }
 
   edit() {}
 
@@ -123,28 +141,7 @@ var CommandsAssign = new (class {
 
 
 
-
-
-
-  detail(HTMLRow) {
-    var AssignRolesO = this;
-    var guild_id = $("#guild_id").val();
-    var assignrole_id = $(HTMLRow).attr("assignrole-id");
-
-    $.get("/api/discord/assignroles/get", {guild_id: guild_id, assignrole_id:assignrole_id})
-    .done(function (data) {
-      var assignrole = data.result[0];
-      insertData(AssignRolesO.modal_id, assignrole);
-      $(`${AssignRolesO.modal_id} .modal-title`).text("Edit assign role");
-      $(AssignRolesO.modal_id).attr("mode", "edit");
-      $(AssignRolesO.modal_id).modal("show");
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"could not load assign role details"} );
-    })
-  }
-
-  create() {
+  _create() {
     var AssignRolesO = this;
     var req = extractData(this.modal_id);
     req["guild_id"] = $("#guild_id").val();
@@ -160,7 +157,7 @@ var CommandsAssign = new (class {
     })
   }
 
-  edit() {
+  _edit() {
     var AssignRolesO = this;
     var req = extractData(this.modal_id);
     req["guild_id"] = $("#guild_id").val();
@@ -177,7 +174,7 @@ var CommandsAssign = new (class {
 
   }
 
-  delete() {
+  _delete() {
     var AssignRolesO = this;
     var req = extractData(this.modal_id);
     req["guild_id"] = $("#guild_id").val();
