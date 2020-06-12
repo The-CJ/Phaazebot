@@ -133,7 +133,23 @@ var CommandsAssign = new (class {
     })
   }
 
-  edit() {}
+  edit() {
+    var AssignRolesO = this;
+
+    var req = extractData(AssignRolesO.modal_id);
+    req["guild_id"] = $("#guild_id").val();
+
+    $.post("/api/discord/assignroles/edit", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $(AssignRolesO.modal_id).modal("hide");
+      AssignRolesO.show();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not edit assign role"} );
+    })
+
+  }
 
   // delete
   delete(assignrole_id) {}
