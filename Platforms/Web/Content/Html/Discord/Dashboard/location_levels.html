@@ -11,60 +11,65 @@
 
     <hr>
 
-    <form class="center-item-row controlls content-box" action="javascript:Levels.prevPage(true)">
-      <!-- limit -->
-      <div class="col">
-        <select class="custom-select" name="limit">
-          <option value="5">5 Entrys per page</option>
-          <option value="10">10 Entrys per page</option>
-          <option value="20">20 Entrys per page</option>
-          <option value="30">30 Entrys per page</option>
-          <option value="40">40 Entrys per page</option>
-          <option value="50" selected>50 Entrys per page</option>
-          <option value="60">60 Entrys per page</option>
-          <option value="70">70 Entrys per page</option>
-          <option value="80">80 Entrys per page</option>
-          <option value="90">90 Entrys per page</option>
-          <option value="100">100 Entrys per page</option>
-        </select>
+    <form class="controlls content-box" action="javascript:Levels.prevPage(true)">
+
+      <div class="center-item-row">
+        <!-- limit -->
+        <div class="col">
+          <select class="custom-select" name="limit">
+            <option value="5">5 Entrys per page</option>
+            <option value="10">10 Entrys per page</option>
+            <option value="20">20 Entrys per page</option>
+            <option value="30">30 Entrys per page</option>
+            <option value="40">40 Entrys per page</option>
+            <option value="50" selected>50 Entrys per page</option>
+            <option value="60">60 Entrys per page</option>
+            <option value="70">70 Entrys per page</option>
+            <option value="80">80 Entrys per page</option>
+            <option value="90">90 Entrys per page</option>
+            <option value="100">100 Entrys per page</option>
+          </select>
+        </div>
+
+        <!-- name contains -->
+        <div class="col">
+          <input type="text" name="name_contains" class="form-control" placeholder="Name must contain..."/>
+        </div>
+
+        <!-- edited -->
+        <div class="col">
+          <select class="custom-select" name="edited">
+            <option value="0">Show all</option>
+            <option value="1">Show only unedited</option>
+            <option value="2">Show only edited</option>
+          </select>
+        </div>
+
+        <!-- nickname -->
+        <div class="col">
+          <select class="custom-select" name="nickname">
+            <option value="0" selected>Show usernames</option>
+            <option value="1">Show server nicknames</option>
+          </select>
+        </div>
       </div>
 
-      <!-- name contains -->
-      <div class="col">
-        <input type="text" name="name_contains" class="form-control" placeholder="Name must contain..."/>
-      </div>
+      <div class="center-item-row">
+        <!-- pages -->
+        <div class="col text-left pages">
+          <button onclick="Levels.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="Levels.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <span>Page: <span class="page">0</span></span>
+          <button onclick="Levels.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="Levels.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
 
-      <!-- edited -->
-      <div class="col">
-        <select class="custom-select" name="edited">
-          <option value="0">Show all</option>
-          <option value="1">Show only unedited</option>
-          <option value="2">Show only edited</option>
-        </select>
-      </div>
+          <span>Total: <span id="level_amount">[N/A]</span></span>
+        </div>
 
-      <!-- nickname -->
-      <div class="col">
-        <select class="custom-select" name="nickname">
-          <option value="0" selected>Show usernames</option>
-          <option value="1">Show server nicknames</option>
-        </select>
-      </div>
-
-      <!-- pages -->
-      <div class="col pages">
-        <button onclick="Levels.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
-        <button onclick="Levels.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
-        <span>Page: <span class="page">0</span></span>
-        <button onclick="Levels.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
-        <button onclick="Levels.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
-
-        <span>Total: <span id="level_amount">[N/A]</span> Levels</span>
-      </div>
-
-      <!-- buttons -->
-      <div class="col-1">
-        <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+        <!-- buttons -->
+        <div class="col text-right">
+          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+        </div>
       </div>
 
     </form>

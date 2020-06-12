@@ -1,6 +1,68 @@
-<div location="commands">
+<div location="commands_command" style="display: none">
 
   <div class="container-fluid">
+
+    <div class="center-item-row">
+      <span>Public command page:</span>
+      <div class="col">
+        <input type="text" readonly value="|<!--#(web_root)#-->|/discord/commands/|<!--#(guild_id)#-->|"  class="form-control text-center">
+      </div>
+    </div>
+
+    <hr>
+
+    <form class="controlls content-box" action="javascript:CommandsCommand.prevPage(1)">
+
+      <div class="center-item-row">
+        <!-- limit -->
+        <div class="col">
+          <select class="custom-select" name="limit">
+            <option value="5">5 Entrys per page</option>
+            <option value="10">10 Entrys per page</option>
+            <option value="25">25 Entrys per page</option>
+            <option value="50" selected>50 Entrys per page</option>
+            <option value="100">100 Entrys per page</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="center-item-row">
+        <!-- pages -->
+        <div class="col text-left pages">
+          <button onclick="CommandsCommand.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="CommandsCommand.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <span>Page: <span class="page">0</span></span>
+          <button onclick="CommandsCommand.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="CommandsCommand.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+          <span>Total: <span id="commands_command_amount">[N/A]</span></span>
+        </div>
+
+        <!-- buttons -->
+        <div class="col text-right">
+          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+          <button type="button" class="btn btn-success icon-btn" onclick="CommandsCommand.createModal()"><i class="fas fa-plus"></i></button>
+        </div>
+      </div>
+
+    </form>
+
+    <hr>
+
+    <div class="header row generic-list">
+      <div class="col-2 trigger">Trigger</div>
+      <div class="col function">Function</div>
+      <div class="col-2 require">Require</div>
+      <div class="col-1 cost">Cost</div>
+      <div class="col-1 uses">Uses</div>
+      <div class="col-1 uses">Cooldown</div>
+    </div>
+    <!-- get filled with copys of: "[phantom] .command -->
+    <div id="command_list"></div>
+
+  </div>
+
+  <div class="container-fluid" hidden>
 
     <div class="center-item-row">
       <div class="col">
@@ -186,7 +248,7 @@
 
 <div phantom hidden>
 
-  <div class="row command" command-id="0" onclick="Commands.detail(this)">
+  <div class="row command" command-id="0" onclick="CommandsCommand.detail(this)">
     <div class="col-2 trigger">[N/A]</div>
     <div class="col function">[N/A]</div>
     <div class="col-2 require">[N/A]</div>

@@ -1,23 +1,28 @@
-var Commands = new (class {
+var CommandsCommand = new (class {
   constructor() {
     this.modal_id = "#command_create";
     this.list_id = "#command_list";
-    this.amount_field_id = "#command_amount";
+    this.total_field_id = "#commands_command_amount";
     this.phantom_class = ".command";
   }
 
   show() {
-    var CommandsO = this;
-    var guild_id = $("#guild_id").val();
+    this.load();
+  }
 
-    $.get("/api/discord/commands/get", {guild_id: guild_id, show_hidden: true})
+  load(x={}) {
+    var CommandsCommandO = this;
+    x["guild_id"] = $("#guild_id").val();
+    x["show_hidden"] = true;
+
+    $.get("/api/discord/commands/get", x)
     .done(function (data) {
 
-      $(CommandsO.amount_field_id).text(data.result.length);
-      var CommandList = $(CommandsO.list_id).html("");
+      $(CommandsCommandO.total_field_id).text(data.total);
+      var EntryList = $(CommandsCommandO.list_id).html("");
 
       for (var command of data.result) {
-        var Template = $(`[phantom] ${CommandsO.phantom_class}`).clone();
+        var Template = $(`[phantom] ${CommandsCommandO.phantom_class}`).clone();
         Template.find(".trigger").text(command.trigger);
         Template.find(".function").text(command.name);
         Template.find(".require").text( discordTranslateRequire(command.require) );
@@ -35,14 +40,15 @@ var Commands = new (class {
           Template.addClass("non-active");
         }
 
-        CommandList.append(Template);
+        EntryList.append(Template);
       }
 
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"Could not load commands"} );
     })
-  }
+
+}
 
   createModal() {
     $(`${this.modal_id} input, ${this.modal_id} textarea`).val("");

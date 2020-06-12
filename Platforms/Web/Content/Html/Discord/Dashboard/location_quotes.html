@@ -11,39 +11,45 @@
 
     <hr>
 
-    <form class="center-item-row controlls content-box" action="javascript:Quotes.prevPage(true)">
-      <!-- limit -->
-      <div class="col">
-        <select class="custom-select" name="limit">
-          <option value="5">5 Entrys per page</option>
-          <option value="10" selected>10 Entrys per page</option>
-          <option value="25">25 Entrys per page</option>
-          <option value="50">50 Entrys per page</option>
-          <option value="100">100 Entrys per page</option>
-        </select>
+    <form class="controlls content-box" action="javascript:Quotes.prevPage(true)">
+
+      <div class="center-item-row">
+        <!-- limit -->
+        <div class="col">
+          <select class="custom-select" name="limit">
+            <option value="5">5 Entrys per page</option>
+            <option value="10" selected>10 Entrys per page</option>
+            <option value="25">25 Entrys per page</option>
+            <option value="50">50 Entrys per page</option>
+            <option value="100">100 Entrys per page</option>
+          </select>
+        </div>
+
+        <!-- quote contains -->
+        <div class="col">
+          <input type="text" name="content_contains" class="form-control" placeholder="Quote must contain..."/>
+        </div>
       </div>
 
-      <!-- quote contains -->
-      <div class="col">
-        <input type="text" name="content_contains" class="form-control" placeholder="Quote must contain..."/>
+      <div class="center-item-row">
+        <!-- pages -->
+        <div class="col pages text-left">
+          <button onclick="Quotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="Quotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <span>Page: <span class="page">0</span></span>
+          <button onclick="Quotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="Quotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+          <span>Total: <span id="quote_amount">[N/A]</span></span>
+        </div>
+
+        <!-- buttons -->
+        <div class="col text-right">
+          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+          <button type="button" class="btn btn-success icon-btn" onclick="Quotes.createModal()"><i class="fas fa-plus"></i></button>
+        </div>
       </div>
 
-      <!-- pages -->
-      <div class="col pages">
-        <button onclick="Quotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
-        <button onclick="Quotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
-        <span>Page: <span class="page">0</span></span>
-        <button onclick="Quotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
-        <button onclick="Quotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
-
-        <span>Total: <span id="quote_amount">[N/A]</span> Quotes</span>
-      </div>
-
-      <!-- buttons -->
-      <div class="col">
-        <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
-        <button type="button" class="btn btn-success icon-btn" onclick="Quotes.createModal()"><i class="fas fa-plus"></i></button>
-      </div>
     </form>
 
     <hr>
