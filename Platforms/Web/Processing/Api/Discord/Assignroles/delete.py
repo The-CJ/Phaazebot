@@ -65,7 +65,7 @@ async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Res
 	AssignRoleToDelete:DiscordAssignRole = res_assignroles.pop(0)
 
 	cls.Web.BASE.PhaazeDB.deleteQuery("""
-		DELETE FROM `discord_assignrole` WHERE `guild_id` = %s `id` = %s""",
+		DELETE FROM `discord_assignrole` WHERE `guild_id` = %s AND `id` = %s""",
 		(AssignRoleToDelete.guild_id, AssignRoleToDelete.assignrole_id)
 	)
 
