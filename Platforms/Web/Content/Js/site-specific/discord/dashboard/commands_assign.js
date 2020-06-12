@@ -111,7 +111,21 @@ var CommandsAssign = new (class {
     $(this.modal_id).modal("show");
   }
 
-  create() {}
+  create() {
+    var AssignRolesO = this;
+    var req = extractData(this.modal_id);
+    req["guild_id"] = $("#guild_id").val();
+
+    $.get("/api/discord/assignroles/create", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $(AssignRolesO.modal_id).modal("hide");
+      AssignRolesO.show();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not create assign role"} );
+    })
+  }
 
   // edit
   editModal(HTMLButton) {
@@ -152,48 +166,22 @@ var CommandsAssign = new (class {
   }
 
   // delete
-  delete(assignrole_id) {}
-
-
-
-
-  _create() {
-    var AssignRolesO = this;
-    var req = extractData(this.modal_id);
-    req["guild_id"] = $("#guild_id").val();
-
-    $.get("/api/discord/assignroles/create", req)
-    .done(function (data) {
-      Display.showMessage({content: data.msg, color:Display.color_success});
-      $(AssignRolesO.modal_id).modal("hide");
-      AssignRolesO.show();
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"could not create assign role"} );
-    })
+  deleteFromList(HTMLButton) {
+    let assignrole_id = $(HTMLButton).closest(this.phantom_class).attr("assignrole-id");
+    this.delete(assignrole_id);
   }
 
-  _edit() {
-    var AssignRolesO = this;
-    var req = extractData(this.modal_id);
-    req["guild_id"] = $("#guild_id").val();
-
-    $.post("/api/discord/assignroles/edit", req)
-    .done(function (data) {
-      Display.showMessage({content: data.msg, color:Display.color_success});
-      $(AssignRolesO.modal_id).modal("hide");
-      AssignRolesO.show();
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"could not edit assign role"} );
-    })
-
+  deleteFromModal() {
+    let assignrole_id = $(`${this.modal_id} [name=assignrole_id]`).val();
+    this.delete(assignrole_id);
   }
 
-  _delete() {
+  delete(assignrole_id) {
     var AssignRolesO = this;
-    var req = extractData(this.modal_id);
-    req["guild_id"] = $("#guild_id").val();
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "assignrole_id": assignrole_id
+    };
 
     if (!confirm("Are you sure you want to delete this assign role?")) { return; }
 
@@ -206,7 +194,6 @@ var CommandsAssign = new (class {
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not delete assign role"} );
     })
-
   }
 
 });
