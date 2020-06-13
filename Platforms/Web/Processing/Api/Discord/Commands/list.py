@@ -17,6 +17,7 @@ async def apiDiscordCommandsList(cls:"WebIndex", WebRequest:Request) -> Response
 	# get required stuff
 	function:str = Data.getStr("function", "")
 	detailed:bool = Data.getBool("detailed", True)
+	recommended:bool = Data.getBool("recommended", False)
 
 	command_list:list = []
 
@@ -36,10 +37,18 @@ async def apiDiscordCommandsList(cls:"WebIndex", WebRequest:Request) -> Response
 
 			# extra information to know what a function wants
 			command["description"] = cmd.get("description", None)
-			command["arguments"] = cmd.get("arguments", list())
+			command["required_arguments"] = cmd.get("required_arguments", [])
+			command["optional_arguments"] = cmd.get("optional_arguments", [])
+			command["endless_arguemnts"] = cmd.get("endless_arguemnts", False)
 			command["need_content"] = cmd.get("need_content", False)
 			command["allowes_content"] = cmd.get("allowes_content", False)
-			command["example"] = cmd.get("example", None)
+			command["example_calls"] = cmd.get("example_calls", [])
+
+		if recommended:
+
+			# recommended values for a command
+			command["recommended_require"] = cmd.get("recommended_require", None)
+			command["recommended_cooldown"] = cmd.get("recommended_cooldown", None)
 
 		command_list.append(command)
 

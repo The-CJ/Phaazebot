@@ -25,8 +25,14 @@ command_register:list = [
 		function = textOnly,
 		description = "A simple text dummy that returns a predefined text, it requires a content,\n"\
 			"this content supports placeholder variables",
-		details = "This command does not take any arguments",
-		need_content = True
+		required_arguments = [],
+		optional_arguments = [],
+		endless_arguemnts = True,
+		need_content = True,
+		allowes_content = True,
+		example_calls = ["!myCommand", ">do_Something"],
+		recommended_require = None,
+		recommended_cooldown = None,
 	),
 	dict(
 		name = "Commands | List",
