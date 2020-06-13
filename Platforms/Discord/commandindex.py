@@ -31,24 +31,37 @@ command_register:list = [
 		need_content = True,
 		allowes_content = True,
 		example_calls = ["!myCommand", ">do_Something", "-text-dummy"],
-		recommended_require = None,
-		recommended_cooldown = None,
+		recommended_require = 1,
+		recommended_cooldown = 10,
 	),
 	dict(
 		name = "Commands | List",
 		function = listCommands,
-		description = "List all commands a server has, also provides a link to the public command website\n"\
-			"It only shows the first 20 commands, after that it only says there are more. Else it would be to spammy",
-		details = "This command does not take any arguments",
-		need_content = False
+		description = "List all* commands a server has, also provides a link to the public command website\n"\
+			"* It only shows the first 20 commands, after that it only says there are more. Else it would be to spammy",
+		required_arguments = [],
+		optional_arguments = [],
+		endless_arguemnts = False,
+		need_content = False,
+		allowes_content = False,
+		example_calls = ["!listcmd", ">cmd", "show_me_commands"],
+		recommended_require = 1,
+		recommended_cooldown = 20,
 	),
 	dict(
 		name = "Quote | Show",
 		function = showQuote,
 		description = "If not defined otherwise, it returns a random quote from this server",
-		details = "This function takes one 1 optional argument.\n"\
-			"(1) ID of the quote you want.",
-		need_content = False
+		required_arguments = [],
+		optional_arguments = [
+			"(1) ID of requested Quote"
+		],
+		endless_arguemnts = False,
+		need_content = False,
+		allowes_content = False,
+		example_calls = ["!quote", ">quote 8", "!quote 221"],
+		recommended_require = 1,
+		recommended_cooldown = 30,
 	),
 	dict(
 		name = "Quote | Add",
