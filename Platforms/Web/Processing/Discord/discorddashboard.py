@@ -46,6 +46,7 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 		location_configs_channel = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_channel.html"),
 		location_configs_master = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_master.html"),
 		location_commands_command = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_command.html"),
+		location_commands_help = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_help.html"),
 		location_commands_assign = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_assign.html"),
 	)
 	# make it twice, since some included locations also have replaceable items

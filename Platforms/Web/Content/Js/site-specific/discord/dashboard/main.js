@@ -72,14 +72,19 @@ var DiscordDashboard = new (class {
       ConfigsMaster.show();
     }
 
-    if (target == "commands_assign") {
-      this.setSitePanelSelectedLocation("commands");
-      CommandsAssign.show();
-    }
-
     if (target == "commands_command") {
       this.setSitePanelSelectedLocation("commands");
       CommandsCommand.show();
+    }
+
+    if (target == "commands_help") {
+      this.setSitePanelSelectedLocation("commands");
+      CommandsHelp.show();
+    }
+
+    if (target == "commands_assign") {
+      this.setSitePanelSelectedLocation("commands");
+      CommandsAssign.show();
     }
 
     this.setLocationWindow(target);
