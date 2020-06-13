@@ -23,14 +23,14 @@ command_register:list = [
 	dict(
 		name = "Text dummy",
 		function = textOnly,
-		description = "A simple text dummy that returns a predefined text, it requires a content,\n"\
-			"this content supports placeholder variables",
+		description = "A simple text dummy that returns a predefined text. It's the simplest thing you can imagine.\n"\
+			"It requires a content, this content supports placeholder variables, like: [user-name], [channel-name] or [member-count], etc...",
 		required_arguments = [],
 		optional_arguments = [],
 		endless_arguemnts = True,
 		need_content = True,
 		allowes_content = True,
-		example_calls = ["!myCommand", ">do_Something"],
+		example_calls = ["!myCommand", ">do_Something", "-text-dummy"],
 		recommended_require = None,
 		recommended_cooldown = None,
 	),

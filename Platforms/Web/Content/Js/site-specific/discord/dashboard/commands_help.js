@@ -1,9 +1,6 @@
 var CommandsHelp = new (class {
   constructor() {
-    this.modal_id = "#";
-    this.list_id = "#";
-    this.total_field_id = "#";
-    this.phantom_class = ".";
+
   }
 
   show() {
@@ -39,13 +36,13 @@ var CommandsHelp = new (class {
   loadCommandInfo(func="") {
 
     if ( isEmpty(func) ) {
-      // loads in default values or taken from url
-      func = DynamicURL.get("commands_help[func]");
+      // get value from select box
+      func = $("[location=commands_help] [name=function]").val();
     }
 
     if ( isEmpty(func) ) {
-      // get value from select box
-      func = $("[location=commands_help] [name=function]").val();
+      // loads in default values or taken from url
+      func = DynamicURL.get("commands_help[func]");
     }
 
     if ( isEmpty(func) ) {
@@ -55,6 +52,29 @@ var CommandsHelp = new (class {
 
     // reset in select, only needed if its set via preselect
     $("[location=commands_help] [name=function]").val(func);
+
+    var req = {
+      "function": func,
+      "detailed": true,
+      "recommended": true
+    };
+
+    $.get("/api/discord/commands/list", req)
+    .done(function (data) {
+
+      var cmd = data.result.pop();
+      if ( isEmpty(cmd) ) { return; }
+
+      DynamicURL.set("commands_help[func]", cmd.function);
+
+      $("[location=commands_help] [name=name]").text(cmd.name);
+      $("[location=commands_help] [name=description]").text(cmd.description);
+
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"Could not load command help"} );
+    })
 
   }
 
