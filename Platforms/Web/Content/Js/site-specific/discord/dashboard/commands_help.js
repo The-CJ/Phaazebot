@@ -7,7 +7,7 @@ var CommandsHelp = new (class {
   }
 
   show() {
-    this.load();
+    this.load( {detailed: false} );
   }
 
   load(x={}) {
