@@ -11,7 +11,7 @@
 
     <hr>
 
-    <form class="controlls content-box" action="javascript:CommandsCommand.prevPage(1)">
+    <form class="controlls content-box pt-2" action="javascript:CommandsCommand.prevPage(1)">
 
       <div class="center-item-row">
         <!-- limit -->
@@ -114,7 +114,7 @@
           <!-- trigger -->
           <div class="center-item-row md-form">
             <div class="col">
-              <input type="text" name="trigger" placeholder="A word to trigger the command..." style="width: 100%;" class="text-center">
+              <input type="text" name="trigger" class="form-control text-center" placeholder="Something to trigger this command, like: !cmd or >some">
             </div>
           </div>
 
@@ -154,7 +154,7 @@
               <span>Cost to use this command:</span>
             </div>
             <div class="col text-center">
-              <input type="number" name="required_currency" value="0" min="0" style="width:100%;">
+              <input type="number" name="required_currency" class="form-control" value="0" min="0">
             </div>
           </div>
 
@@ -177,19 +177,19 @@
             </div>
             <div class="col text-center">
               <div class="center-item-row">
-                <input type="number" name="cooldown" value="10" min="3" max="600" oninput="Commands.updateSlider(this.value)" style="width:20%;">
-                <input type="range" name="cooldown_slider" value="10" min="3" max="600" step="1" oninput="Commands.updateSlider(this.value)" style="width:80%;">
+                <input type="number" name="cooldown" value="10" min="3" max="600" oninput="CommandsCommand.updateCooldownValues(this.value)" style="width:20%;">
+                <input type="range" name="cooldown_slider" value="10" min="3" max="600" step="1" oninput="CommandsCommand.updateCooldownValues(this.value)" style="width:80%;">
               </div>
             </div>
           </div>
 
           <!-- complex -->
-          <div class="center-item-row md-form">
+          <div class="center-item-row md-form" hidden>
             <div class="col text-left">
               <span>What type of command?</span>
             </div>
             <div class="col text-center">
-              <select name="commandtype" class="browser-default custom-select" onchange="Commands.loadCommands(this)">
+              <select name="commandtype" class="custom-select">
                 <option value="">Choose a type...</option>
                 <option value="simple">Simple</option>
                 <option value="complex">Complex</option>
@@ -199,7 +199,7 @@
 
           <hr>
 
-          <div command-setting="simple">
+          <div command-setting="simple" hidden>
 
             <div class="center-item-row md-form">
               <span class="col text-left">Function:</span>
@@ -229,16 +229,16 @@
 
           </div>
 
-          <div command-setting="complex">
+          <div command-setting="complex" hidden>
             <h2 style="color:red">Complex commands are under construction</h2>
           </div>
 
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-block btn-success" onclick="Commands.create()" mode="new">Submit</button>
-          <button type="button" class="btn btn-block btn-warning black-text" onclick="Commands.edit()" mode="edit">Submit changes</button>
-          <button type="button" class="btn btn-block btn-danger" onclick="Commands.delete()" mode="edit">Delete</button>
+          <button type="button" class="btn btn-block btn-success" onclick="CommandsCommand.create()" show-mode="create">Submit</button>
+          <button type="button" class="btn btn-block btn-warning black-text" onclick="CommandsCommand.edit()" show-mode="edit">Submit changes</button>
+          <button type="button" class="btn btn-block btn-danger" onclick="CommandsCommand.delete()" show-mode="edit">Delete</button>
         </div>
         <div messagebox></div>
 

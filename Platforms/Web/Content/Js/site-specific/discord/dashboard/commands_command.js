@@ -46,12 +46,15 @@ var CommandsCommand = new (class {
 
 }
 
+  // utils
+  updateCooldownValues(value) {
+    $(this.modal_id).find("[name=cooldown], [name=cooldown_slider]").val(value);
+  }
+
+  // create
   createModal() {
-    $(`${this.modal_id} input, ${this.modal_id} textarea`).val("");
-    $(`${this.modal_id} [command-setting]`).hide();
-    $(`${this.modal_id} [extra-command-setting], ${this.modal_id} [extra-command-setting] [name=content]`).hide();
-    $(`${this.modal_id} .modal-title`).text("New Command");
-    $(this.modal_id).attr("mode", "new");
+    resetInput(this.modal_id);
+    $(this.modal_id).attr("mode", "create");
     $(this.modal_id).modal("show");
   }
 
@@ -75,6 +78,10 @@ var CommandsCommand = new (class {
     })
 
   }
+
+  // edit
+
+  // delete
 
   delete() {
     var CommandsO = this;
