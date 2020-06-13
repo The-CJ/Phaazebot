@@ -1,6 +1,6 @@
 var CommandsCommand = new (class {
   constructor() {
-    this.modal_id = "#command_create";
+    this.modal_id = "#command_modal";
     this.list_id = "#command_list";
     this.total_field_id = "#commands_command_amount";
     this.phantom_class = ".command";
@@ -23,17 +23,13 @@ var CommandsCommand = new (class {
 
       for (var command of data.result) {
         var Template = $(`[phantom] ${CommandsCommandO.phantom_class}`).clone();
-        Template.find(".trigger").text(command.trigger);
-        Template.find(".function").text(command.name);
-        Template.find(".require").text( discordTranslateRequire(command.require) );
-        Template.find(".cost").text(command.cost);
-        Template.find(".uses").text(command.uses);
-        Template.find(".cooldown").text(command.cooldown);
+        command.require = discordTranslateRequire(command.require);
+        insertData(Template, command);
         Template.attr("command-id", command.command_id);
 
         if (command.hidden) {
-          Template.find(".function").addClass("hidden");
-          Template.find(".function").attr("title", "This is a hidden command and can not be viewed via web, without permissions");
+          Template.addClass("hidden");
+          Template.attr("title", "This is a hidden command and can not be viewed via web, without permissions");
         }
 
         if (!command.active) {

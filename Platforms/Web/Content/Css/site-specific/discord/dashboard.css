@@ -43,6 +43,8 @@
 [location] .content-box span { white-space: pre-line; }
 [location=home] .guild-name { margin-left: 1em; font-size: 3ch; }
 [location=levels] .level .avatar { border-radius: 50%; }
+[location=commands_command] .command.hidden { font-style: italic; }
+[location=commands_command] .command.non-active { border-left: 4px solid red; }
 button.option-status { background-color: var(--color-unknown); }
 button.option-status:after { content: "UNKNOWN"; }
 button.option-status[value=true] { background-color: var(--color-boolish-green); }
