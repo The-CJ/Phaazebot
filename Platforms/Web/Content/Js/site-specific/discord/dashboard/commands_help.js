@@ -45,9 +45,13 @@ var CommandsHelp = new (class {
       func = DynamicURL.get("commands_help[func]");
     }
 
+    $("[location=commands_help] [info-window]").hide();
     if ( isEmpty(func) ) {
-      // forget it
+      // nothing selected, enable placeholder
+      $("[location=commands_help] [info-window=placeholder]").show();
       return;
+    } else {
+      $("[location=commands_help] [info-window=data]").show();
     }
 
     // reset in select, only needed if its set via preselect
@@ -69,7 +73,53 @@ var CommandsHelp = new (class {
 
       $("[location=commands_help] [name=name]").text(cmd.name);
       $("[location=commands_help] [name=description]").text(cmd.description);
+      $("[location=commands_help] [name=recommended_cooldown]").text(cmd.recommended_cooldown);
+      $("[location=commands_help] [name=recommended_require]").text( discordTranslateRequire(cmd.recommended_require) );
 
+      var ArgListRequire = $("[location=commands_help] [arg-list=require]").html('');
+      var ArgListOptional = $("[location=commands_help] [arg-list=optional]").html('');
+      var ExampleList = $("[location=commands_help] [example-list]").html('');
+
+      // require
+      for (var entry of cmd.required_arguments) {
+        var Arg = $("<p></p>");
+        Arg.text(entry);
+        ArgListRequire.append(Arg);
+      }
+
+      // optional
+      for (var entry of cmd.optional_arguments) {
+        var Arg = $("<p></p>");
+        Arg.text(entry);
+        ArgListOptional.append(Arg);
+      }
+
+      // examples
+      for (var entry of cmd.example_calls) {
+        var Example = $("<p></p>");
+        Example.text(entry);
+        ExampleList.append(Example);
+      }
+
+      // endless
+      if (cmd.endless_arguemnts) {
+        $("[location=commands_help] [endless-args]").show();
+      } else {
+        $("[location=commands_help] [endless-args]").hide();
+      }
+
+      $("[location=commands_help] [content-type]").hide();
+      if (cmd.need_content) {
+        $("[location=commands_help] [content-type=need]").show();
+      } else if (cmd.allowes_content) {
+        $("[location=commands_help] [content-type=allows]").show();
+      } else {
+        $("[location=commands_help] [content-type=none]").show();
+      }
+
+
+
+      console.log(cmd);
 
     })
     .fail(function (data) {
