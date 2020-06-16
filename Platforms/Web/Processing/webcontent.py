@@ -17,7 +17,12 @@ async def serveCss(cls:"WebIndex", WebRequest:Request) -> Response:
 	file_location:str = WebRequest.match_info.get("file", None)
 	if not file_location: return noFileDefined(cls)
 
+	# remove all injection things
 	file_location = file_location.replace("..","").strip("/")
+
+	# not found in filesystem
+	if not os.path.isfile(f"{CONTENTFOLDER_CSS}/{file_location}"):
+		return await fileNotFound(cls, file_location)
 
 	try:
 		file_content:bytes = open(f"{CONTENTFOLDER_CSS}/{file_location}", "rb").read()
@@ -64,7 +69,12 @@ async def serveImg(cls:"WebIndex", WebRequest:Request) -> Response:
 	file_location:str = WebRequest.match_info.get("file", None)
 	if not file_location: return noFileDefined(cls)
 
+	# remove all injection things
 	file_location = file_location.replace("..","").strip("/")
+
+	# not found in filesystem
+	if not os.path.isfile(f"{CONTENTFOLDER_IMG}/{file_location}"):
+		return await fileNotFound(cls, file_location)
 
 	try:
 		file_content:bytes = open(f"{CONTENTFOLDER_IMG}/{file_location}", "rb").read()
