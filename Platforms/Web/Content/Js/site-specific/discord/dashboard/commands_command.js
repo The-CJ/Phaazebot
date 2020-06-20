@@ -120,8 +120,8 @@ var CommandsCommand = new (class {
         EntryList.append(Opt);
       }
       if (preselected) {
-        Options.val(preselected);
-        CommandsCommandO.loadCommandsDetails(preselected);
+        EntryList.val(preselected);
+        CommandsCommandO.loadCommandsDetails(null, preselected);
       }
     })
     .fail(function (data) {
@@ -188,6 +188,44 @@ var CommandsCommand = new (class {
   }
 
   // edit
+  editModal(HTMLButton) {
+    var CommandsCommandO = this;
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "command_id": $(HTMLButton).closest(CommandsCommandO.phantom_class).attr("command-id"),
+      "show_hidden": true
+    };
+
+    $.get("/api/discord/commands/get", req)
+    .done(function (data) {
+      var command = data.result.pop();
+
+      insertData(CommandsCommandO.modal_id, command);
+      CommandsCommandO.loadCommands(command.function);
+      $(CommandsCommandO.modal_id).attr("mode", "edit");
+      $(CommandsCommandO.modal_id).modal("show");
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not load command details"} );
+    })
+  }
+
+  edit() {
+    var CommandsCommandO = this;
+
+    var req = extractData(CommandsCommandO.modal_id);
+    req["guild_id"] = $("#guild_id").val();
+
+    $.post("/api/discord/commands/edit", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $(CommandsCommandO.modal_id).modal("hide");
+      CommandsCommandO.show();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not edit command details"} );
+    });
+  }
 
   // delete
 
@@ -211,53 +249,6 @@ var CommandsCommand = new (class {
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"command delete failed"} );
-    })
-  }
-
-  edit() {
-    var CommandsO = this;
-    var req = extractData(this.modal_id);
-    req["complex"] = $(`${this.modal_id} [name=commandtype]`).val() == "complex" ? true : false,
-    req["guild_id"] = $("#guild_id").val();
-
-    $.post("/api/discord/commands/edit", req)
-    .done(function (data) {
-      Display.showMessage({content: "Successfull edited command", color:Display.color_success});
-      $(CommandsO.modal_id).modal("hide");
-      CommandsO.show();
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"command edit failed"} );
-    })
-  }
-
-  detail(HTMLCommandRow) {
-    var CommandsO = this;
-    var guild_id = $("#guild_id").val();
-    var command_id = $(HTMLCommandRow).attr("command-id");
-
-    $.get("/api/discord/commands/get", {guild_id: guild_id, command_id:command_id, show_hidden: true})
-    .done(function (data) {
-      var command = data.result[0];
-
-      insertData(CommandsO.modal_id, command);
-
-      $(`${CommandsO.modal_id} .modal-title`).text("Edit command: "+command.trigger);
-      $(`${CommandsO.modal_id} [name=required_currency]`).val( command.cost );
-      $(`${CommandsO.modal_id} [name=cooldown], ${CommandsO.modal_id} [name=cooldown_slider]`).val( command.cooldown );
-      $(`${CommandsO.modal_id} [name=commandtype]`).val( command.complex ? "complex" : "simple" );
-
-      if (!command.complex) {
-        CommandsO.loadCommands(null, "simple", command.function);
-        CommandsO.loadCommandInfo(null, command.function);
-      }
-
-      $(`${CommandsO.modal_id} [extra-command-setting] [name=content]`).val(command.content);
-      $(CommandsO.modal_id).attr("mode", "edit");
-      $(CommandsO.modal_id).modal("show");
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"could not load command details"} );
     })
   }
 

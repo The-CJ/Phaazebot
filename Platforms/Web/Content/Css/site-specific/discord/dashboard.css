@@ -44,7 +44,7 @@
 [location=home] .guild-name { margin-left: 1em; font-size: 3ch; }
 [location=levels] .level .avatar { border-radius: 50%; }
 [location=commands_command] .command.hidden { font-style: italic; }
-[location=commands_command] .command.non-active { border-left: 4px solid red; }
+[location=commands_command] .command.non-active { box-shadow: -5px 0px 0px red; }
 [location=commands_help] [arg-list]:empty:after { content:"(None)"; font-style: italic; color: lightgrey;}
 button.option-status { background-color: var(--color-unknown); }
 button.option-status:after { content: "UNKNOWN"; }

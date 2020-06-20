@@ -144,7 +144,7 @@ var CommandsAssign = new (class {
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not load assign role details"} );
-    })
+    });
   }
 
   edit() {
@@ -161,8 +161,7 @@ var CommandsAssign = new (class {
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not edit assign role"} );
-    })
-
+    });
   }
 
   // delete
