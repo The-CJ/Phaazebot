@@ -5,6 +5,13 @@ var CommandsCommand = new (class {
     this.total_field_id = "#commands_command_amount";
     this.phantom_class = ".command";
     this.commands = [];
+
+    this.default_limit = 50;
+    this.default_page = 0;
+
+    this.current_limit = 0;
+    this.current_page = 0;
+    this.current_max_page = 0;
   }
 
   show() {
@@ -18,6 +25,8 @@ var CommandsCommand = new (class {
 
     $.get("/api/discord/commands/get", x)
     .done(function (data) {
+      // update view
+      CommandsCommandO.updatePageIndexButtons(data);
 
       $(CommandsCommandO.total_field_id).text(data.total);
       var EntryList = $(CommandsCommandO.list_id).html("");
@@ -48,6 +57,49 @@ var CommandsCommand = new (class {
 }
 
   // utils
+  nextPage(last=false) {
+    this.current_page += 1;
+    var search = extractData("[location=commands_command] .controlls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
+  }
+
+  prevPage(first=false) {
+    this.current_page -= 1;
+    if (first) { this.current_page = 0; }
+
+    var search = extractData("[location=commands_command] .controlls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
+  }
+
+  updatePageIndexButtons(data) {
+    this.current_limit = data.limit;
+    this.current_page = data.offset / data.limit;
+    this.current_max_page = (data.total / data.limit);
+    this.current_max_page = parseInt(this.current_max_page)
+
+    // update limit url if needed
+    if (this.current_limit != this.default_limit) {
+      DynamicURL.set("commands_command[limit]", this.current_limit);
+    } else {
+      DynamicURL.set("commands_command[limit]", null);
+    }
+
+    // update page url if needed
+    if (this.current_page != this.default_page) {
+      DynamicURL.set("commands_command[page]", this.current_page);
+    } else {
+      DynamicURL.set("commands_command[page]", null);
+    }
+
+    // update html elements
+    $("[location=commands_command] [name=limit]").val(this.current_limit);
+    $("[location=commands_command] .pages .prev").attr("disabled", (this.current_page <= 0) );
+    $("[location=commands_command] .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+    $("[location=commands_command] .pages .page").text(this.current_page+1);
+  }
+
   updateCooldownValues(value) {
     $(this.modal_id).find("[name=cooldown], [name=cooldown_slider]").val(value);
   }
