@@ -87,12 +87,15 @@ var CommandsCommand = new (class {
     }
 
     if (!cmd) {
+      // no command found, hide all
       $(`${this.modal_id} [command-setting=description]`).hide();
       $(`${this.modal_id} [command-setting=content]`).hide();
     } else {
+      // command found, insert base info
       $(`${this.modal_id} [name=description]`).text(cmd.description);
       $(`${this.modal_id} [command-setting=description]`).show();
 
+      // content management
       if (cmd.need_content) {
         $(`${this.modal_id} [name=content_management]`).text("This command requires a content");
         $(`${this.modal_id} [command-setting=content]`).show();
@@ -109,24 +112,22 @@ var CommandsCommand = new (class {
   createModal() {
     this.loadCommands();
     resetInput(this.modal_id);
+    $(`${this.modal_id} [command-setting]`).hide();
     $(this.modal_id).attr("mode", "create");
     $(this.modal_id).modal("show");
   }
 
   create() {
-    var CommandsO = this;
+    var CommandsCommandO = this;
     var req = extractData(this.modal_id);
-    req["complex"] = $(`${this.modal_id} [name=commandtype]`).val() == "complex" ? true : false,
+    req["complex"] = false; // for now everything is a simple command
     req["guild_id"] = $("#guild_id").val();
 
     $.post("/api/discord/commands/create", req)
     .done(function (data) {
-      Display.showMessage({content: "Successfull created command", color:Display.color_success});
-      $(CommandsO.modal_id).modal("hide");
-      CommandsO.show();
-      // after successfull command, reset modal
-      $(`${CommandsO.modal_id} input, ${CommandsO.modal_id} textarea`).val("");
-      $(`${CommandsO.modal_id} [command-setting], ${CommandsO.modal_id} [extra-command-setting]`).hide();
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $(CommandsCommandO.modal_id).modal("hide");
+      CommandsCommandO.show();
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"command creation failed"} );
