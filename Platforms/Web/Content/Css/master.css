@@ -120,6 +120,7 @@ pre {
 nav {
 	background-color: var(--color-darkphaaze);
 }
+hr[br] { opacity: 0; }
 
 /* navbar right account btn */
 #account_button {
