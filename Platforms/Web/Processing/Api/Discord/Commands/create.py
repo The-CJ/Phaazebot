@@ -34,6 +34,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	trigger:str = Data.getStr("trigger", "").lower().split(" ")[0]
+	active:bool = Data.getBool("active", True)
 	complex_:bool = Data.getBool("complex", False)
 	function:str = Data.getStr("function", "", len_max=256)
 	content:str = Data.getStr("content", "", len_max=1750)
@@ -103,6 +104,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 		content={
 			"guild_id": guild_id,
 			"trigger": trigger,
+			"active": active,
 			"content": content,
 			"function": function,
 			"complex": complex_,
