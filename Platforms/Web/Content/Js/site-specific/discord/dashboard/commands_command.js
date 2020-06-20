@@ -4,6 +4,7 @@ var CommandsCommand = new (class {
     this.list_id = "#command_list";
     this.total_field_id = "#commands_command_amount";
     this.phantom_class = ".command";
+    this.commands = [];
   }
 
   show() {
@@ -51,8 +52,62 @@ var CommandsCommand = new (class {
     $(this.modal_id).find("[name=cooldown], [name=cooldown_slider]").val(value);
   }
 
+  loadCommands(preselected=null) {
+    var CommandsCommandO = this;
+
+    $.get("/api/discord/commands/list")
+    .done(function (data) {
+      CommandsCommandO.commands = data.result;
+      var EntryList = $(`${CommandsCommandO.modal_id} [name=function]`).html("");
+
+      EntryList.append( $("<option value=''>Choose a function...</option>") );
+      for (var cmd of data.result) {
+        let Opt = $("<option>");
+        Opt.attr("value", cmd.function);
+        Opt.text(cmd.name);
+        EntryList.append(Opt);
+      }
+      if (preselected) {
+        Options.val(preselected);
+        CommandsCommandO.loadCommandsDetails(preselected);
+      }
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not load command list"} );
+    });
+
+  }
+
+  loadCommandsDetails(HTMLSelect, preselected=null) {
+    if (!preselected) { preselected = $(HTMLSelect).val(); }
+
+    var cmd = null;
+    for (let c of this.commands) {
+      if (c["function"] == preselected) { cmd = c; break; }
+    }
+
+    if (!cmd) {
+      $(`${this.modal_id} [command-setting=description]`).hide();
+      $(`${this.modal_id} [command-setting=content]`).hide();
+    } else {
+      $(`${this.modal_id} [name=description]`).text(cmd.description);
+      $(`${this.modal_id} [command-setting=description]`).show();
+
+      if (cmd.need_content) {
+        $(`${this.modal_id} [name=content_management]`).text("This command requires a content");
+        $(`${this.modal_id} [command-setting=content]`).show();
+      } else if (cmd.allowes_content) {
+        $(`${this.modal_id} [name=content_management]`).text("This command supports content");
+        $(`${this.modal_id} [command-setting=content]`).show();
+      } else {
+        $(`${this.modal_id} [command-setting=content]`).hide();
+      }
+    }
+  }
+
   // create
   createModal() {
+    this.loadCommands();
     resetInput(this.modal_id);
     $(this.modal_id).attr("mode", "create");
     $(this.modal_id).modal("show");
@@ -82,6 +137,11 @@ var CommandsCommand = new (class {
   // edit
 
   // delete
+
+
+
+
+
 
   delete() {
     var CommandsO = this;
@@ -148,37 +208,6 @@ var CommandsCommand = new (class {
     })
   }
 
-  loadCommands(HTMLSelect, command_type, preselected) {
-    var CommandsO = this;
-    $(`${this.modal_id} [command-setting]`).hide();
-    var command_type = $(HTMLSelect).val() || command_type;
-    if (command_type == "complex") {
-      $(`${this.modal_id} [command-setting=complex]`).show();
-      return;
-    }
-
-    if (command_type == "simple") {
-
-      $.get("/api/discord/commands/list")
-      .done(function (data) {
-        var Options = $(`${CommandsO.modal_id} [name=function]`).html("");
-        Options.append( $("<option value=''>Choose a function...</option>") );
-        for (var cmd of data.result) {
-          let Opt = $("<option>");
-          Opt.attr("value", cmd.function);
-          Opt.text(cmd.name);
-          Options.append(Opt);
-        }
-        if (preselected) { Options.val(preselected); }
-        $(`${CommandsO.modal_id} [command-setting=simple]`).show();
-      })
-      .fail(function (data) {
-        generalAPIErrorHandler( {data:data, msg:"could ould not load command list"} );
-      })
-
-    }
-  }
-
   loadCommandInfo(HTMLSelect, preselected) {
     var CommandsO = this;
     $(`${this.modal_id} [extra-command-setting], ${this.modal_id} [extra-command-setting] [name=content]`).hide();
@@ -207,9 +236,4 @@ var CommandsCommand = new (class {
     })
   }
 
-  // utils
-  updateSlider(value) {
-    $(`${this.modal_id} [name=cooldown_slider]`).val(value);
-    $(`${this.modal_id} [name=cooldown]`).val(value);
-  }
 });

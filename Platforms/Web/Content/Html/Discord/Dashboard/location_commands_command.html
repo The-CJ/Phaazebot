@@ -203,38 +203,27 @@
 
           <hr>
 
-          <div command-setting="simple" hidden>
-
-            <div class="center-item-row md-form">
-              <span class="col text-left">Function:</span>
-              <select name="function" class="browser-default custom-select" onchange="Commands.loadCommandInfo(this)" >
-                <!-- this div gets filled with all possible commands after "simple" is choosen -->
-              </select>
-            </div>
-
-            <div extra-command-setting>
-
-              <div class="center-item-row">
-                <div class="col"><h4>Description</h4></div>
-              </div>
-              <div class="center-item-row">
-                <div class="col"><p name="description">[N/A]</p></div>
-              </div>
-              <div class="center-item-row">
-                <div class="col"><h4>Details</h4></div>
-              </div>
-              <div class="center-item-row">
-                <div class="col"><p name="details">[N/A]</p></div>
-              </div>
-
-              <textarea name="content" rows="5" style="width: 100%" style="display: none"></textarea>
-
-            </div>
-
+          <!-- command select -->
+          <div class="center-item-col">
+            <h6>What is this command suppost to do?</h6>
+            <select class="custom-select text-center" name="function" onchange="CommandsCommand.loadCommandsDetails(this)"></select>
           </div>
 
-          <div command-setting="complex" hidden>
-            <h2 style="color:red">Complex commands are under construction</h2>
+          <!-- command description -->
+          <div command-setting="description" style="display: none">
+            <hr>
+            <div class="center-item-col">
+              <span name="description" style="white-space: pre-line;">[N/A]</span>
+            </div>
+          </div>
+
+          <!-- command content -->
+          <div command-setting="content" style="display: none">
+            <hr>
+            <div class="center-item-col">
+              <span name="content_management"></span>
+              <textarea name="content" rows="5" style="width: 100%"></textarea>
+            </div>
           </div>
 
         </div>
