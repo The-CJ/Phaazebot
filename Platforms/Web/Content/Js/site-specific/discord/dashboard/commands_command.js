@@ -228,56 +228,34 @@ var CommandsCommand = new (class {
   }
 
   // delete
+  deleteFromList(HTMLButton) {
+    let command_id = $(HTMLButton).closest(this.phantom_class).attr("command-id");
+    this.delete(command_id);
+  }
 
+  deleteFromModal() {
+    let command_id = $(`${this.modal_id} [name=command_id]`).val();
+    this.delete(command_id);
+  }
 
-
-
-
-
-  delete() {
-    var CommandsO = this;
-    var req = extractData(this.modal_id);
-    req["guild_id"] = $("#guild_id").val();
+  delete(command_id) {
+    var CommandsCommandO = this;
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "command_id": command_id
+    };
 
     if (!confirm("Are you sure you want to delete the command?")) { return; }
 
     $.post("/api/discord/commands/delete", req)
     .done(function (data) {
-      Display.showMessage({content: "Successfull deleted command", color:Display.color_success});
-      $(CommandsO.modal_id).modal("hide");
-      CommandsO.show();
+      Display.showMessage({content: data.msg, color:Display.color_success});
+      $(CommandsCommandO.modal_id).modal("hide");
+      CommandsCommandO.show();
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"command delete failed"} );
-    })
-  }
-
-  loadCommandInfo(HTMLSelect, preselected) {
-    var CommandsO = this;
-    $(`${this.modal_id} [extra-command-setting], ${this.modal_id} [extra-command-setting] [name=content]`).hide();
-    var function_ = $(HTMLSelect).val() || preselected;
-    if (isEmpty(function_)) {return;}
-
-    $.get("/api/discord/commands/list", {function: function_})
-    .done(function (data) {
-
-      if (data.result.length == 0) {
-        return Display.showMessage({content: "Could not find your selected command...", color:Display.color_critical});
-      }
-
-      var cmd = data.result[0];
-
-      $(`${CommandsO.modal_id} [extra-command-setting] [name=description]`).text(cmd.description);
-      $(`${CommandsO.modal_id} [extra-command-setting] [name=details]`).text(cmd.details);
-      if (cmd.need_content) {
-        $(`${CommandsO.modal_id} [extra-command-setting] [name=content]`).show();
-      }
-
-      $(`${CommandsO.modal_id} [extra-command-setting]`).show();
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"could not load command details"} );
-    })
+    });
   }
 
 });
