@@ -72,7 +72,7 @@ command_register:list = [
 	dict(
 		name = "Quote | Add",
 		function = addQuote,
-		description = "Adds a new quote to the server quote list.",
+		description = "Adds a new quote to the server quote list. Very usefull if you don't wanna open your web browser and just add it in discord.",
 		required_arguments = [],
 		optional_arguments = [],
 		endless_arguemnts = True,
@@ -85,7 +85,7 @@ command_register:list = [
 	dict(
 		name = "Quote | Remove",
 		function = removeQuote,
-		description = "Removes a quote from the server quote list.",
+		description = "Removes a quote from the server quote list. Do be sure, its recommended to remove them via web.",
 		required_arguments = [
 			"[1] The Quote ID to delete."
 		],
@@ -192,7 +192,7 @@ command_register:list = [
 	dict(
 		name = "Assign role | Add",
 		function = addAssignRole,
-		description = "Add's a new entry for assign roles.",
+		description = "Add's a new entry for assign roles. However doing this via a command in discord can be heavy, its recommended to do this via web.",
 		required_arguments = [
 			"[1] A word as the role-trigger",
 			"[2] A query string for the role: name, mention or ID"
@@ -221,7 +221,7 @@ command_register:list = [
 	dict(
 		name = "Assign role | Remove",
 		function = removeAssignRole,
-		description = "Removes a assign roles.",
+		description = "Removes a assign roles. However doing this via a command in discord can be heavy, its recommended to do this via web.",
 		required_arguments = [
 			"[1] The assign-role trigger"
 		],
