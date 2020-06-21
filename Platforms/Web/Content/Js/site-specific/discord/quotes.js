@@ -1,28 +1,45 @@
 $("document").ready(function () {
-  loadQuotes();
+  PublicQuotes.show();
 })
 
-function loadQuotes() {
+var PublicQuotes = new (class {
+  constructor() {
+    this.list_id = "#quote_list";
+    this.total_amount_field = "#quote_amount";
+    this.phantom_class = ".quote";
 
-  var guild_id = $("#guild_id").val();
+  }
 
-  $.get("/api/discord/quotes/get", {guild_id: guild_id})
-  .done(function (data) {
+  show() {
+    this.load();
+  }
 
-    $("#quote_amount").text(data.result.length);
-    var QuoteList = $("#quote_list").html("");
+  load(x={}) {
+    var PublicQuotesO = this;
+    x["guild_id"] = $("#guild_id").val();
 
-    for (var quote of data.result) {
-      var Template = $("[phantom] .quote").clone();
+    $.get("/api/discord/quotes/get", x)
+    .done(function (data) {
 
-      Template.find("[name=quote_id]").text(quote.quote_id);
-      Template.find("[name=content]").val(quote.content);
+      $(PublicQuotesO.total_amount_field).text(data.total);
+      var EntryList = $(PublicQuotesO.list_id).html("");
 
-      QuoteList.append(Template);
-    }
+      for (var entry of data.result) {
+        var Template = $(`[phantom] ${PublicQuotesO.phantom_class}`).clone();
 
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"could not load quotes"} );
-  })
-}
+        insertData(Template, entry);
+
+        EntryList.append(Template);
+      }
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not load quotes"} );
+    });
+  }
+
+  random() {
+    this.load( {limit:1, random:true} );
+  }
+
+});
