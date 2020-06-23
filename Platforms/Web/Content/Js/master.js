@@ -1,32 +1,4 @@
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function isEmpty(o) {
-  // null
-  if (o == null) { return true; }
-  // string
-  if (typeof o == "string") { if (o != "") { return false; } }
-  // number
-  if (typeof o == "number") { if (o != 0) { return false; } }
-  // object
-  for (var v in o) {
-    if (o.hasOwnProperty(v)) {
-      return false
-    }
-  }
-  return true;
-}
-
-function showEmail() {
-  // i do this, so spam bots don't get the email from the site so easy
-  $("#email_icon").popover({
-    content: ["admin","@", "pha", "aze", ".", "net"].join(""),
-    placement:"bottom",
-    trigger:"hover"
-  }).popover()
-}
-
+// form management
 function resetInput(o) {
   // o = JQuery object | str
 
@@ -134,6 +106,7 @@ function insertData(Obj, data, to_string=false) {
   }
 }
 
+// general utils
 function oppositeValue(v) {
   if (typeof v == "object") { throw "can't switch object type"; }
   else if (typeof v == "boolean") { return !v }
@@ -151,6 +124,36 @@ function oppositeValue(v) {
 
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function isEmpty(o) {
+  // null
+  if (o == null) { return true; }
+  // string
+  if (typeof o == "string") { if (o != "") { return false; } }
+  // number
+  if (typeof o == "number") { if (o != 0) { return false; } }
+  // object
+  for (var v in o) {
+    if (o.hasOwnProperty(v)) {
+      return false
+    }
+  }
+  return true;
+}
+
+function showEmail() {
+  // i do this, so spam bots don't get the email from the site so easy
+  $("#email_icon").popover({
+    content: ["admin","@", "pha", "aze", ".", "net"].join(""),
+    placement:"bottom",
+    trigger:"hover"
+  }).popover()
+}
+
+// request handler
 function generalAPIErrorHandler(x={}) {
   // it does what you whould think it does,
   // give this function the data object from a $.get .post .etc...
@@ -163,13 +166,13 @@ function generalAPIErrorHandler(x={}) {
 
   // x : data :: jquery response
   // x : msg :: str
-  // x : color :: str
-  // x : time :: int
-  // x : no_message :: bool
+  // x : color :: str ::: Display.color_info
+  // x : time :: int ::: Display.default_time.
+  // x : no_message :: bool ::: false
 
   var data = x["data"] ? x["data"] : null;
   var color = x["color"] ? x["color"] : Display.color_critical;
-  var time = x["time"] ? x["time"] : this.default_time;
+  var time = x["time"] ? x["time"] : Display.default_time;
   var alt_msg = x["msg"] ? x["msg"] : null;
 
   // most likely alwys is true, since this is a ERROR function
@@ -187,11 +190,52 @@ function generalAPIErrorHandler(x={}) {
   else { final_message = "Unknown error"; }
 
   if (!x["no_message"]) {
+    console.log({content:final_message, color:color, time:time});
     Display.showMessage( {content:final_message, color:color, time:time} );
   }
   console.log(data);
 }
 
+function hrefLocation(x={}) {
+  // this function can be applied to pretty much all elements
+  // and make it so if has the same functionallity than a anchor <a> element
+  // its recommended to use it via: onmousedown
+  // the target value is only for left clicks and will be overwritten when middle mouse is pressed
+  // giving 'middle' or 'left' a false value will disable this clicktype for the the event
+
+  // x : href :: str
+  // x : target :: str ::: "_self"
+  // x : left :: bool ::: true
+  // x : middle :: bool ::: true
+
+  var href = x["href"] ? x["href"] : null;
+  var target = x["target"] ? x["target"] : "_self";
+  var left = x["left"] ? x["left"] : true;
+  var middle = x["middle"] ? x["middle"] : true;
+
+  if (isEmpty(href)) { throw "missing href"; }
+
+  var button = event.button;
+  if (button == undefined) { throw "could not find presses button"; }
+
+  var Cheese = document.createElement('a');
+  Cheese.href = href;
+  Cheese.target = target;
+
+  // primary or left click
+  if (left && button === 0) {
+    Cheese.click();
+  }
+
+  // middle mouse click
+  if (middle && button === 1) {
+    Cheese.target = "_blank";
+    Cheese.click();
+  }
+
+}
+
+// big classes
 var SessionManager = new (class {
   constructor() {
   }
