@@ -2,11 +2,11 @@ main h1 {
   margin: 1em 0;
 }
 
-div[buttons] a {
+div[buttons] button {
   margin: 3px 0;
 }
 
-div[buttons] > a > button {
+div[buttons] > a > button{
   color: white;
   background: var(--color-listelement-odd);
 }
@@ -19,3 +19,8 @@ div[buttons] > a > button:hover {
 #root_console {
   padding: 0.5em;
 }
+
+
+
+
+.place > i { font-size: 200%; }

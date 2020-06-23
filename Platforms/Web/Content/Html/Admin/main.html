@@ -5,7 +5,14 @@
   <div class="container text-center white-text">
     <h1>Administration</h1>
 
-    <div buttons>
+    <div places class="row">
+      <div class="place col forced content-box p-3" onmousedown="hrefLocation({href:'/admin/manage-user'})">
+        <i class="fas fa-users"></i>
+        <h4>User manager</h4>
+      </div>
+    </div>
+
+    <div buttons hidden>
       <a href="/admin/manage-user">
         <button type="button" class="btn btn-block">User manager</button>
       </a>
