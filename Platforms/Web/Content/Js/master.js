@@ -214,23 +214,24 @@ function hrefLocation(x={}) {
   var middle = x["middle"] ? x["middle"] : true;
 
   if (isEmpty(href)) { throw "missing href"; }
+  if (event.button == undefined) { throw "could not find pressed button"; }
 
-  var button = event.button;
-  if (button == undefined) { throw "could not find presses button"; }
-
-  var Cheese = document.createElement('a');
-  Cheese.href = href;
-  Cheese.target = target;
+  // this is the so called Cheese, so we can click a anchor
+  var Anchor = document.createElement('a');
+  Anchor.href = href;
+  Anchor.target = target;
 
   // primary or left click
-  if (left && button === 0) {
-    Cheese.click();
+  if (left && event.button === 0) {
+    let PrimaryClick = new MouseEvent( "click", {button:0, buttons:1, which:1} );
+    return Anchor.dispatchEvent( PrimaryClick );
   }
 
   // middle mouse click
-  if (middle && button === 1) {
-    Cheese.target = "_blank";
-    Cheese.click();
+  if (middle && event.button === 1) {
+    Anchor.target = "_blank";
+    let AuxClick = new MouseEvent( "click", {button:1, buttons:4, which:2 } );
+    return Anchor.dispatchEvent( AuxClick );
   }
 
 }
