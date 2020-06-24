@@ -236,3 +236,20 @@ function nextPage(last=0) {
   else { res_offset += res_limit; }
   searchUser();
 }
+
+var AdminUser = new (class {
+  constructor() {
+    this.list_id = "#user_list";
+    this.total_amount_field = "#user_amount";
+    this.phantom_class = ".user";
+
+    this.default_limit = 50;
+    this.default_page = 0;
+
+    this.current_limit = 0;
+    this.current_page = 0;
+    this.current_max_page = 0;
+  }
+
+
+});
