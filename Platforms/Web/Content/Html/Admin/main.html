@@ -39,24 +39,34 @@
 
     <hr>
 
-    <button type="button" class="btn btn-block btn-danger" onclick="$('#root_console').collapse('toggle')">System Console ↓</button>
+    <button type="button" class="btn btn-block btn-danger" onclick="toggleConsole()">System Console ↓</button>
+
     <div id="root_console" class="collapse stylish-color-dark">
+
       <pre id="result_data" class="text-left text-white">[Output]</pre>
+
       <div class="center-item-row">
         <label class="btn btn-primary center-item-row">
           <span>Run as corotine &nbsp;</span>
           <input type="checkbox" name="corotine" value="1">
         </label>
       </div>
-      <span>Avariable variables:</span><br>
-      <span><b>cls</b>:WebIndex, <b>WebRequest</b>:Request, <b>Data</b>:WebRequestContent, <b>BASE</b>:Phaazebot</span><br>
-      <span><b>SUPERBASE</b>: GlobalStorage</span>
+
+      <span>Avariable variables:</span>
+      <br>
+      <span><b>cls</b>:WebIndex,</span>
+      <span><b>WebRequest</b>:Request,</span>
+      <span><b>Data</b>:WebRequestContent,</span>
+      <span><b>BASE</b>:Phaazebot,</span>
+      <span><b>SUPERBASE</b>:GlobalStorage</span>
+
       <form action="javascript:evalCommand()" method="post">
         <div class="center-item-row">
-          <input type="text" placeholder="evaluate command" class="black-text" id="eval_command" style="width: 100%">
-          <button type="submit" class="btn ml-auto grey" style="margin:0;padding:0.5em;">→</button>
+          <input type="text" name="command" placeholder="evaluate command" class="black-text form-control">
+          <button type="submit" class="btn icon-btn grey"><i class="fas fa-arrow-right"></i></button>
         </div>
       </form>
+
     </div>
 
   </div>
