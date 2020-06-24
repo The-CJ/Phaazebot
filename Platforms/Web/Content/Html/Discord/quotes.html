@@ -15,7 +15,7 @@
         <!-- limit -->
         <div class="col">
           <select class="custom-select" name="limit">
-            <option value="1">Only one</option>
+            <option value="1" hidden>Only one</option>
             <option value="5">5 Entrys per page</option>
             <option value="10">10 Entrys per page</option>
             <option value="25">25 Entrys per page</option>
@@ -62,12 +62,13 @@
 
 <div phantom hidden>
 
-  <div class="row quote content-box" quote-id="0" onclick="detailCommand(this)">
-    <div class="col-1 info center-item-row">
+  <div class="center-item-row quote content-box p-2" quote-id="0">
+    <div class="col-1 info center-item-col">
       <span>ID: <span name="quote_id">0</span></span>
+      <button type="button" class="btn icon-btn btn-grey" onclick="PublicQuotes.copyQuoteUrl(this)"><i class="fas fa-link"></i></button>
     </div>
     <div class="col content">
-      <textarea name="content" rows="5" readonly></textarea>
+      <span name="content"></span>
     </div>
   </div>
 

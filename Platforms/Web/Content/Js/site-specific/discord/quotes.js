@@ -18,13 +18,21 @@ var PublicQuotes = new (class {
 
   show() {
     // loads in default values or taken from url
-    let limit = DynamicURL.get("quotes[limit]") || this.default_limit;
-    let page = DynamicURL.get("quotes[page]") || this.default_page;
+    let limit = DynamicURL.get("limit") || this.default_limit;
+    let page = DynamicURL.get("page") || this.default_page;
 
     var req = {
       limit: limit,
       offset: (page * limit),
     };
+
+    // overwrite via provied id
+    let quote_id = DynamicURL.get("id");
+    if ( !isEmpty(quote_id) ) {
+      req["quote_id"] = quote_id;
+      req["limit"] = 1;
+      req["offset"] = 0;
+    }
 
     this.load(req);
   }
@@ -46,6 +54,7 @@ var PublicQuotes = new (class {
         var Template = $(`[phantom] ${PublicQuotesO.phantom_class}`).clone();
 
         insertData(Template, entry);
+        Template.attr("quote-id", entry.quote_id);
 
         EntryList.append(Template);
       }
@@ -63,6 +72,10 @@ var PublicQuotes = new (class {
   // utils
   nextPage(last=false) {
     this.current_page += 1;
+
+    // reset id search
+    DynamicURL.set("id", null);
+
     var search = extractData("main form.controlls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
@@ -71,6 +84,9 @@ var PublicQuotes = new (class {
   prevPage(first=false) {
     this.current_page -= 1;
     if (first) { this.current_page = 0; }
+
+    // reset id search
+    DynamicURL.set("id", null);
 
     var search = extractData("main form.controlls");
     search["offset"] = (this.current_page * search["limit"]);
@@ -85,16 +101,16 @@ var PublicQuotes = new (class {
 
     // update limit url if needed
     if (this.current_limit != this.default_limit) {
-      DynamicURL.set("quotes[limit]", this.current_limit);
+      DynamicURL.set("limit", this.current_limit);
     } else {
-      DynamicURL.set("quotes[limit]", null);
+      DynamicURL.set("limit", null);
     }
 
     // update page url if needed
     if (this.current_page != this.default_page) {
-      DynamicURL.set("quotes[page]", this.current_page);
+      DynamicURL.set("page", this.current_page);
     } else {
-      DynamicURL.set("quotes[page]", null);
+      DynamicURL.set("page", null);
     }
 
     // update html elements
@@ -104,4 +120,14 @@ var PublicQuotes = new (class {
     $("main form.controlls .pages .page").text(this.current_page+1);
   }
 
+  copyQuoteUrl(HTMLButton) {
+
+    let quote_id = $(HTMLButton).closest(this.phantom_class).attr("quote-id");
+    let target = `${window.location.origin}${window.location.pathname}?id=${quote_id}`;
+
+    copyToClipboard(target);
+
+    $(HTMLButton).addClass("animated bounce");
+
+  }
 });

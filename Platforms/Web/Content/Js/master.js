@@ -153,6 +153,18 @@ function showEmail() {
   }).popover()
 }
 
+// user in-/out- puts
+function copyToClipboard(content) {
+  var TextA = $('<textarea>');
+  TextA.val(content);
+  TextA.attr("readonly", true);
+  TextA.attr("style", "position:absolute; left: -10000px;");
+  document.body.appendChild(TextA[0]);
+  TextA[0].select();
+  document.execCommand("copy");
+  document.body.removeChild(TextA[0]);
+}
+
 // request handler
 function generalAPIErrorHandler(x={}) {
   // it does what you whould think it does,
@@ -364,6 +376,7 @@ var Display = new (class {
     this.color_info = "#4285FF";
     this.default_time = 10000;
   }
+
   showMessage(m) {
     if (m == null) { throw "missing message"; }
     if (m.content == null) { throw "missing message content"; }
