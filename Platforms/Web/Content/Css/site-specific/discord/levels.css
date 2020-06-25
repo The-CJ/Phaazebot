@@ -2,28 +2,17 @@ main h1 {
   margin: 1em 0;
 }
 
-.container {
-  max-width: none;
-  padding: 0 5em;
-}
+.level .avatar { border-radius: 50%; margin-top: 2px; margin-right: 5px; }
 
-input[name=exp][edited=true], .exp.edited { background-color: #eeaaaaaa; }
-
-.level .member .avatar { border-radius: 50%; }
-.level .member .name { margin-left: 1em; }
-
-.level > *, .header > * {
-  margin: 2px;
-}
-.level {
-  cursor: pointer;
-}
-.level:hover {
-  background: rgba(0,0,0,0.2);
-}
+.level > *, .header > * { margin: 2px; }
 
 .header > div { background: var(--color-listelement-odd); }
 .header > div:nth-child(even) { background: var(--color-listelement-even); }
 
 .level > div { background: var(--color-sub-listelement-odd); }
 .level > div:nth-child(even) { background: var(--color-sub-listelement-even); }
+
+.modal-itemlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
+.modal-itemlist > * { padding: 1em; margin: 5px; background-color: #525252; }
+.modal-itemlist > *.deleted { background-color: #734343; }
+.modal-itemlist:empty::after { content: "(None)"; }
