@@ -73,42 +73,49 @@
 
 </div>
 
-<div class="modal fade" id="edit_create_user" mode="edit/create">
+<div class="modal fade" id="edit_create_user" mode="create/edit">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
 
       <div class="modal-header text-center">
-        <h4 class="modal-title">[N/A]</h4>
+        <h4 class="modal-title" show-mode="create">Create new user</h4>
+        <h4 class="modal-title" show-mode="edit">Edit user</h4>
         <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
       </div>
 
-      <div class="modal-body">
-        <div class="row md-form" dont-show="create">
+      <div class="modal-body" show-mode="edit">
+        <!-- ID -->
+        <div class="center-item-row" show-mode="edit">
           <div class="col"><span>ID:</span></div>
-          <div class="col-8"><input type="text" name="user_id" readonly style="width: 100%;"></div>
+          <div class="col-8"><input type="text" name="user_id" class="form-control" readonly></div>
         </div>
 
-        <div class="row md-form">
+        <!-- username -->
+        <div class="center-item-row">
           <div class="col"><span>Username:</span></div>
-          <div class="col-8"><input type="text" name="username" placeholder="User name" style="width: 100%;"></div>
+          <div class="col-8"><input type="text" name="username" class="form-control" placeholder="User name"></div>
         </div>
 
-        <div class="row md-form" dont-show="create">
+        <!-- user changed -->
+        <div class="center-item-row">
           <div class="col"><span>Username changed:</span></div>
-          <div class="col-8"><input type="text" name="username_changed" readonly style="width: 100%;"></div>
+          <div class="col-8"><input type="text" name="username_changed" class="form-control" readonly></div>
         </div>
 
-        <div class="row md-form">
+        <!-- overwrite -->
+        <div class="center-item-row">
           <div class="col"><span>Set/Overwrite Password:</span></div>
-          <div class="col-8"><input type="password" name="password" placeholder="Password" style="width: 100%;"></div>
+          <div class="col-8"><input type="password" name="password" class="form-control" placeholder="Password"></div>
         </div>
 
-        <div class="row md-form">
+        <!-- email -->
+        <div class="center-item-row">
           <div class="col"><span>E-Mail:</span></div>
-          <div class="col-8"><input type="text" name="email" placeholder="User email" style="width: 100%;"></div>
+          <div class="col-8"><input type="text" name="email" class="form-control" placeholder="User email"></div>
         </div>
 
-        <div class="row" dont-show="create">
+        <!-- verified -->
+        <div class="center-item-row">
           <div class="col">
             <span>Verified:</span>
           </div>
@@ -119,44 +126,45 @@
           </div>
         </div>
 
-        <div class="row md-form" dont-show="create">
+        <!-- create at -->
+        <div class="center-item-row" show-mode="edit">
           <div class="col"><span>Created:</span></div>
-          <div class="col-8"><input type="text" name="created_at" style="width: 100%;" readonly></div>
+          <div class="col-8"><input type="text" name="created_at" class="form-control" readonly></div>
         </div>
 
-        <div class="row md-form" dont-show="create">
+        <!-- last edit -->
+        <div class="center-item-row" show-mode="edit">
           <div class="col"><span>Last edit:</span></div>
-          <div class="col-8"><input type="text" name="edited_at" style="width: 100%;" readonly></div>
+          <div class="col-8"><input type="text" name="edited_at" class="form-control" readonly></div>
         </div>
 
-        <div class="row md-form" dont-show="create">
+        <!-- last login -->
+        <div class="center-item-row" show-mode="edit">
           <div class="col"><span>Last login:</span></div>
-          <div class="col-8"><input type="text" name="last_login" style="width: 100%;" readonly></div>
+          <div class="col-8"><input type="text" name="last_login" class="form-control" readonly></div>
         </div>
 
-        <div class="row" dont-show="create">
-          <div class="col">
-            <h4>Roles:</h4>
-
-            <div class="center-item-row forced">
-              <form class="md-form input-group" action="javascript:void(0)" onsubmit="javascript:addUserRole()">
-                <select class="custom-select" id="new_user_role"></select>
-                <div class="input-group-append">
-                  <button type="submit" class="btn btn-primary m-0 px-3 py-2">+</button>
-                </div>
-              </form>
+        <!-- roles -->
+        <div show-mode="edit">
+          <form class="center-item-row forced md-form" action="javascript:AdminUser.addRole()">
+            <div class="col">
+              <select type="text" id="new_user_role" class="custom-select"></select>
             </div>
+            <div class="col-2 text-center">
+              <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-plus"></i></button>
+            </div>
+          </form>
 
-            <div id="user_role_list"></div>
-          </div>
+          <!-- gets filled with copys of: [phantom] .role -->
+          <div id="user_role_list"></div>
         </div>
 
       </div>
 
       <div class="modal-footer">
-        <button create type="button" class="btn btn-block btn-success" onclick="createUser()">Create</button><br>
-        <button edit type="button" class="btn btn-block btn-success" onclick="editUser()">Save</button>
-        <button edit type="button" class="btn btn-danger" onclick="deleteUser()">Delete</button>
+        <button type="button" show-mode="create" class="btn btn-block btn-success" onclick="createUser()">Create</button><br>
+        <button type="button" show-mode="edit" class="btn btn-block btn-success" onclick="editUser()">Save</button>
+        <button type="button" show-mode="edit" class="btn btn-danger" onclick="deleteUser()">Delete</button>
       </div>
 
       <div messagebox></div>
