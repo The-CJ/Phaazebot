@@ -18,13 +18,14 @@ async def discordView(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	guild_id:str = WebRequest.match_info.get("guild_id", "")
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
-
+	discord.guild.Guild
 	if not Guild:
 		return await cls.discordInvite(WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
 
 	ViewPage:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/view.html")
 	ViewPage.replace(
 		guild_id = Guild.id,
+		guild_icon_url = Guild.icon_url,
 		guild_name = Guild.name
 	)
 

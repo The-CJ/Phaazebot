@@ -1,3 +1,7 @@
 main h1 {
   margin: 1em 0;
 }
+
+.targets .target {
+  margin: 1em;
+}
