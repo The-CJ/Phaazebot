@@ -52,22 +52,36 @@
 
     </form>
 
+    <hr>
+
+    <div class="header row generic-list">
+      <div class="col-1">ID</div>
+      <div class="col">User</div>
+      <div class="col-1">Action</div>
+    </div>
+
     <div id="user_list"></div>
   </div>
 </main>
 
 <div phantom hidden>
 
-  <div class="user" user-id="0" onclick="detailUser(this)">
-    <div class="row">
-      <div class="col"><span class="name">[N/A]</span></div>
-    </div>
-  </div>
-
   <div class="center-item-row forced role">
     <div class="col name"></div>
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="removeUserRole(this)"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div class="row user generic-sub-list" user-id="0">
+    <div class="col-1">
+      <span name="user_id">[N/A]</span>
+    </div>
+    <div class="col">
+      <span name="username">[N/A]</span>
+    </div>
+    <div class="col-1">
+      <button type="submit" class="btn btn-warning icon-btn small" onclick="AdminUser.editModal(this)"><i class="fas fa-edit"></i></button>
     </div>
   </div>
 
