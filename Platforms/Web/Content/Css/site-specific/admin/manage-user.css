@@ -2,7 +2,9 @@ main h1 {
   margin: 1em 0;
 }
 
-#user_list > .user > .row {
+.generic-list > *, .generic-sub-list > * { margin: 2px; padding: 2px; }
+
+/* #user_list > .user > .row {
   margin: .25em;
   padding: .5em;
   background: var(--color-listelement-odd);
@@ -15,4 +17,4 @@ main h1 {
 #edit_create_user[mode=create] .modal-footer button[create] { display:block; }
 #edit_create_user[mode=edit] [dont-show=edit] { display: none;}
 #edit_create_user[mode=create] [dont-show=create] { display: none;}
-#user_role_list .role { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; }
+#user_role_list .role { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; } */
