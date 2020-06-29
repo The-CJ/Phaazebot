@@ -47,18 +47,18 @@ class PhaazebotTwitchEvents(object):
 		return int(self._refresh_time * self._refresh_time_multi)
 
 	async def check(self) -> None:
-		# to reduce twitch requests as much as possible, we only ask channels,
-		# that have at least one discord channel alert or have Phaaze in the twitch channel active
+		# to reduce twitch api requests and prevent double alerts, we only take channel id's
+		# of channel that are managed by phaaze, or have currently at least one entry in discord_twitch_alert
 		res:list = self.BASE.PhaazeDB.selectQuery("""
-			SELECT
+			SELECT DISTINCT
 				`twitch_channel`.`channel_id`,
 				`twitch_channel`.`game_id`,
 				`twitch_channel`.`live`
 			FROM `twitch_channel`
 			LEFT JOIN `discord_twitch_alert`
 				ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_channel`.`channel_id`
-			GROUP BY `twitch_channel`.`channel_id`"""
-		)
+			WHERE `twitch_channel`.`managed` = 1
+				OR `discord_twitch_alert`.`discord_channel_id` IS NOT NULL""")
 
 		if not res:
 			# no alerts at all, skip everything and try again much later
