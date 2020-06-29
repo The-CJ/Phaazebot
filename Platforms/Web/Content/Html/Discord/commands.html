@@ -13,7 +13,44 @@
     <data value="|<!--#(guild_currency)#-->|" id="guild_currency"></data>
     <data value="|<!--#(guild_currency_multi)#-->|" id="guild_currency_multi"></data>
 
-    <h2>Commands: <span id="command_amount">0</span></h2>
+    <form class="controlls content-box pt-2" action="javascript:PublicCommands.prevPage(true)">
+
+      <div class="center-item-row">
+        <!-- limit -->
+        <div class="col">
+          <select class="custom-select" name="limit">
+            <option value="5">5 Entrys per page</option>
+            <option value="10">10 Entrys per page</option>
+            <option value="50" selected>50 Entrys per page</option>
+          </select>
+        </div>
+
+        <!-- quote contains -->
+        <div class="col">
+          <input type="text" name="trigger" class="form-control" placeholder="Trigger contain..."/>
+        </div>
+      </div>
+
+      <div class="center-item-row">
+        <!-- pages -->
+        <div class="col pages text-left">
+          <button onclick="PublicQuotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="PublicQuotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <span>Page: <span class="page">0</span></span>
+          <button onclick="PublicQuotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="PublicQuotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+          <span>Total: <span id="quote_amount">[N/A]</span></span>
+        </div>
+
+        <!-- buttons -->
+        <div class="col text-right">
+          <button onclick="PublicQuotes.random()" type="button" class="btn btn-grey icon-btn"><i class="fas fa-random"></i></button>
+          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+
+    </form>
 
     <hr>
 
