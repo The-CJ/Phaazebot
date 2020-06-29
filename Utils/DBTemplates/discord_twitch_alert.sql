@@ -21,5 +21,7 @@ CREATE TABLE `discord_twitch_alert` (
   `twitch_channel_id` varchar(128) NOT NULL,
   `custom_msg` varchar(1750) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `alert_key` (`discord_channel_id`,`twitch_channel_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  UNIQUE KEY `alert_key` (`discord_channel_id`,`twitch_channel_id`),
+  KEY `index_discord_channel_id` (`discord_channel_id`),
+  KEY `index_twitch_channel_id` (`twitch_channel_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4;
