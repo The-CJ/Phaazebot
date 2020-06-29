@@ -146,14 +146,16 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/discord/assignroles{x:/?}{method:.*}', self.apiDiscordAssignroles)
 		self.Web.router.add_route('*', '/api/discord/twitchalerts{x:/?}{method:.*}', self.apiDiscordTwitchalerts)
 
-	# api
+	# api admin
 	from .Processing.Api.Account.main import apiAccountPhaaze, apiAccountDiscord, apiAccountTwitch
 	from .Processing.Api.errors import apiNothing, apiUnknown
 	from .Processing.Api.Admin.evaluate import apiAdminEvaluate
 	from .Processing.Api.Admin.status import apiAdminStatus
 	from .Processing.Api.Admin.module import apiAdminModule
-	from .Processing.Api.Admin.roles import apiAdminRoles
+	from .Processing.Api.Admin.Roles.main import apiAdminRoles
 	from .Processing.Api.Admin.Users.main import apiAdminUsers
+
+	# api discord
 	from .Processing.Api.Discord.guild import apiDiscordGuild
 	from .Processing.Api.Discord.userguilds import apiDiscordUserGuilds
 	from .Processing.Api.Discord.Commands.main import apiDiscordCommands
