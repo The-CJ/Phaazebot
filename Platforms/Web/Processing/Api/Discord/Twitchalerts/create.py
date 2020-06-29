@@ -122,6 +122,12 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		}
 	)
 
+	# also a second query, where we put the new found name in
+	cls.Web.BASE.PhaazeDB.query(
+		"REPLACE INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES (%s, %s, %s)",
+		(FoundUser.user_id, FoundUser.name, FoundUser.display_name)
+	)
+
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Twitchalert: {guild_id=} added {FoundUser.user_id=}", require="discord:alert")
 	return cls.response(
 		text=json.dumps( dict(msg="Twitchalert: Added new entry", entry=FoundUser.user_type, status=200) ),
