@@ -18,3 +18,7 @@ main h1 {
 #edit_create_user[mode=edit] [dont-show=edit] { display: none;}
 #edit_create_user[mode=create] [dont-show=create] { display: none;}
 #user_role_list .role { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; } */
+
+[mode] [show-mode] { display: none; }
+[mode=create] [show-mode=create] { display: block; }
+[mode=edit] [show-mode=edit] { display: block; }
