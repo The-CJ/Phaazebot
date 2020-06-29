@@ -164,7 +164,7 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:d
 	"""
 	# unpack
 	member_id:str = search.get("member_id", None)
-	edited:int = search.get("order_str", 0)
+	edited:int = search.get("edited", 0)
 	name:str = search.get("name", None)
 	name_contains:str = search.get("name_contains", None)
 	order_str:str = search.get("order_str", "ORDER BY `id`")
