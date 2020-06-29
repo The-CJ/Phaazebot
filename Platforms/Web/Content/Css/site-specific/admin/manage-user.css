@@ -19,6 +19,18 @@ main h1 {
 #edit_create_user[mode=create] [dont-show=create] { display: none;}
 #user_role_list .role { padding: 2px; margin: 2px 0; background-color: #aaaaaaaa; } */
 
+#user_modal input.form-control {
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid white;
+  border-radius: 0;
+  margin: 1px 0;
+}
+
+.modal-body .center-item-row {
+  min-height: 40px;
+}
+
 [mode] [show-mode] { display: none; }
 [mode=create] [show-mode=create] { display: block; }
 [mode=edit] [show-mode=edit] { display: block; }
