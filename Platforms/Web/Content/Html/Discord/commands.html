@@ -25,27 +25,26 @@
           </select>
         </div>
 
-        <!-- quote contains -->
+        <!-- trigger -->
         <div class="col">
-          <input type="text" name="trigger" class="form-control" placeholder="Trigger contain..."/>
+          <input type="text" name="trigger" class="form-control" placeholder="Trigger"/>
         </div>
       </div>
 
       <div class="center-item-row">
         <!-- pages -->
         <div class="col pages text-left">
-          <button onclick="PublicQuotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
-          <button onclick="PublicQuotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <button onclick="PublicCommands.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="PublicCommands.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
           <span>Page: <span class="page">0</span></span>
-          <button onclick="PublicQuotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
-          <button onclick="PublicQuotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+          <button onclick="PublicCommands.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="PublicCommands.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
 
-          <span>Total: <span id="quote_amount">[N/A]</span></span>
+          <span>Total: <span id="command_amount">[N/A]</span></span>
         </div>
 
         <!-- buttons -->
         <div class="col text-right">
-          <button onclick="PublicQuotes.random()" type="button" class="btn btn-grey icon-btn"><i class="fas fa-random"></i></button>
           <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
         </div>
       </div>
@@ -55,11 +54,12 @@
     <hr>
 
     <div class="header row">
-      <div class="col-2 trigger">Trigger</div>
-      <div class="col function">Function</div>
-      <div class="col-2 require">Require</div>
-      <div class="col-1 cost">Cost</div>
-      <div class="col-1 uses">Uses</div>
+      <div class="col-2">Trigger</div>
+      <div class="col">Function</div>
+      <div class="col-2">Require</div>
+      <div class="col-1">Cost</div>
+      <div class="col-1">Uses</div>
+      <div class="col-1">Action</div>
     </div>
 
     <!-- get filled with copys of: "[phantom] .command" -->
@@ -71,23 +71,26 @@
 
 <div phantom hidden>
 
-  <div class="row command" command-id="0" onclick="detailCommand(this)">
-    <div class="col-2 trigger">[N/A]</div>
-    <div class="col function">[N/A]</div>
-    <div class="col-2 require">[N/A]</div>
-    <div class="col-1 cost">[N/A]</div>
-    <div class="col-1 uses">[N/A]</div>
+  <div class="row command" command-id="0">
+    <div class="col-2"><span name="trigger">[N/A]</span></div>
+    <div class="col"><span name="name">[N/A]</span></div>
+    <div class="col-2"><span name="require">[N/A]</span></div>
+    <div class="col-1"><span name="cost">[N/A]</span></div>
+    <div class="col-1"><span name="uses">[N/A]</span></div>
+    <div class="col-1">
+      <button type="button" class="btn btn-info icon-btn small" onclick="PublicCommands.editModal(this)"><i class="fas fa-info"></i></button>
+    </div>
   </div>
 
 </div>
 
-<div class="modal fade" id="command_detail">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="command_modal">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
 
       <div class="modal-header text-center">
         <h4 class="modal-title">Command details</h4>
-        <button type="button" class="close" onclick="$('#command_detail').modal('hide')"><span>&times;</span></button>
+        <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
       </div>
 
       <div class="modal-body text-black">
@@ -111,8 +114,9 @@
         </div>
         <hr>
         <div class="center-item-row">
-          <p class="col text-center" name="name">[N/A]</p>
+          <span class="col text-center" name="name">[N/A]</span>
         </div>
+        <hr br>
         <div class="center-item-row">
           <span class="col text-center" name="description">[N/A]<span>
         </div>
