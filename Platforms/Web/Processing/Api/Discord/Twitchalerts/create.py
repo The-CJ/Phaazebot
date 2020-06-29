@@ -122,11 +122,8 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		}
 	)
 
-	# also a second query, where we put the new found name in
-	cls.Web.BASE.PhaazeDB.query(
-		"REPLACE INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES (%s, %s, %s)",
-		(FoundUser.user_id, FoundUser.name, FoundUser.display_name)
-	)
+	# some after work, with the new data
+	await placeGatheredData(cls, FoundUser)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Twitchalert: {guild_id=} added {FoundUser.user_id=}", require="discord:alert")
 	return cls.response(
@@ -134,3 +131,36 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		content_type="application/json",
 		status=200
 	)
+
+async def placeGatheredData(cls:"WebIndex", AlertUser:TwitchUser) -> None:
+
+	# first thing we do, adding the name to twitch_user_name, so we get the name to a id without asking twitch
+	cls.Web.BASE.PhaazeDB.insertQuery(
+		replace = True,
+		table = "twitch_user_name",
+		content = {
+			"user_id": AlertUser.user_id,
+			"user_name": AlertUser.name,
+			"user_display_name": AlertUser.display_name,
+		}
+	)
+
+	# all alerts require the the twitch channel to be present in the "twitch_channel" table
+	# (a "twitch_setting" entry is not necessary)
+	exists:list = cls.Web.BASE.PhaazeDB.selectQuery("""
+		SELECT COUNT(*) AS `I`
+		FROM `twitch_channel`
+		WHERE `twitch_channel`.`channel_id` = %s""",
+		(AlertUser.user_id,)
+	)
+
+	# it its not found, add it
+	if exists[0]['I'] == 0:
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "twitch_channel",
+			content = {
+				"channel_id": AlertUser.user_id,
+				"managed": 0,
+				"live": 0
+			}
+		)
