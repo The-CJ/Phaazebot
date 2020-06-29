@@ -66,11 +66,11 @@
 
 <div phantom hidden>
 
-  <div class="center-item-row forced role">
-    <div class="col name"></div>
+  <div class="center-item-row forced role" role-id="0">
     <div class="delete">
       <button type="button" class="btn btn-danger icon-btn" onclick="removeUserRole(this)"><i class="fas fa-times"></i></button>
     </div>
+    <div class="col"><span name="name"></span></div>
   </div>
 
   <div class="row user generic-sub-list" user-id="0">
@@ -87,7 +87,7 @@
 
 </div>
 
-<div class="modal fade" id="edit_create_user" mode="create/edit">
+<div class="modal fade" id="user_modal" mode="create/edit">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
 
@@ -97,11 +97,13 @@
         <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
       </div>
 
-      <div class="modal-body" show-mode="edit">
+      <div class="modal-body">
         <!-- ID -->
-        <div class="center-item-row" show-mode="edit">
-          <div class="col"><span>ID:</span></div>
-          <div class="col-8"><input type="text" name="user_id" class="form-control" readonly></div>
+        <div show-mode="edit">
+          <div class="center-item-row">
+            <div class="col"><span>ID:</span></div>
+            <div class="col-8"><input type="text" name="user_id" class="form-control" readonly></div>
+          </div>
         </div>
 
         <!-- username -->
@@ -141,22 +143,30 @@
         </div>
 
         <!-- create at -->
-        <div class="center-item-row" show-mode="edit">
-          <div class="col"><span>Created:</span></div>
-          <div class="col-8"><input type="text" name="created_at" class="form-control" readonly></div>
+        <div show-mode="edit">
+          <div class="center-item-row">
+            <div class="col"><span>Created:</span></div>
+            <div class="col-8"><input type="text" name="created_at" class="form-control" readonly></div>
+          </div>
         </div>
 
         <!-- last edit -->
-        <div class="center-item-row" show-mode="edit">
-          <div class="col"><span>Last edit:</span></div>
-          <div class="col-8"><input type="text" name="edited_at" class="form-control" readonly></div>
+        <div show-mode="edit">
+          <div class="center-item-row">
+            <div class="col"><span>Last edit:</span></div>
+            <div class="col-8"><input type="text" name="edited_at" class="form-control" readonly></div>
+          </div>
         </div>
 
         <!-- last login -->
-        <div class="center-item-row" show-mode="edit">
-          <div class="col"><span>Last login:</span></div>
-          <div class="col-8"><input type="text" name="last_login" class="form-control" readonly></div>
+        <div show-mode="edit">
+          <div class="center-item-row">
+            <div class="col"><span>Last login:</span></div>
+            <div class="col-8"><input type="text" name="last_login" class="form-control" readonly></div>
+          </div>
         </div>
+
+        <hr>
 
         <!-- roles -->
         <div show-mode="edit">
@@ -177,7 +187,7 @@
 
       <div class="modal-footer">
         <button type="button" show-mode="create" class="btn btn-block btn-success" onclick="createUser()">Create</button><br>
-        <button type="button" show-mode="edit" class="btn btn-block btn-success" onclick="editUser()">Save</button>
+        <button type="button" show-mode="edit" class="btn btn-block btn-warning" onclick="AdminUser.edit()">Save</button>
         <button type="button" show-mode="edit" class="btn btn-danger" onclick="deleteUser()">Delete</button>
       </div>
 

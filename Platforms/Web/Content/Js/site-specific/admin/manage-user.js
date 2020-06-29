@@ -23,72 +23,6 @@ function loadUserRoles() {
 
 }
 
-// user
-function getUser(x={}) {
-  x["limit"] = x["limit"] ? x["limit"] : res_limit;
-  x["offset"] = x["offset"] ? x["offset"] : res_offset;
-
-  $.get("/api/admin/users/get", x)
-  .done(function (data) {
-    res_total = data.total;
-    res_offset = data.offset;
-    updatePageButtons();
-
-    var UserList = $("#user_list").html("");
-
-    for (var user of data.result) {
-      var Template = $("[phantom] .user").clone();
-
-      Template.attr("user-id", user.user_id);
-      Template.find(".name").text(user.username);
-
-      UserList.append(Template);
-    }
-
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't load users"} );
-  })
-}
-
-function searchUser(reset_offset) {
-  var req = extractData("#search_menu");
-  if (reset_offset) { res_offset = 0; }
-  getUser(req);
-}
-
-function detailUser(HTMLElement, overwrite_user_id) {
-  var user_id;
-  if (HTMLElement) {
-    var user_id = $(HTMLElement).attr("user-id");
-  } else {
-    user_id = overwrite_user_id;
-  }
-
-
-  $.get("/api/admin/users/get", {user_id:user_id})
-  .done(function (data) {
-    data = data.result.shift();
-
-    $("#edit_create_user .modal-title").text("Edit user: "+data.username);
-    $("#edit_create_user").attr("mode", "edit");
-    $("#edit_create_user [name=password]").val("");
-
-    insertData("#edit_create_user", data);
-    var RoleList = $("#user_role_list").html("");
-    for (var role of data.roles) {
-      var RoleTemplate = $("[phantom] .role").clone();
-      RoleTemplate.find(".name").text(role);
-      RoleList.append(RoleTemplate);
-    }
-
-    $("#edit_create_user").modal("show");
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't load user"} );
-  })
-}
-
 function editUser() {
   var req = extractData("#edit_create_user");
   if (!isEmpty(req["password"])) {
@@ -199,11 +133,12 @@ function removeUserRole(HTMLButton) {
 
 var AdminUser = new (class {
   constructor() {
+    this.modal_id = "#user_modal";
     this.list_id = "#user_list";
     this.total_field_id = "#user_amount";
     this.phantom_class = ".user";
     this.role_list_id = "#user_role_list";
-    this.role_phantom_class = ".user";
+    this.role_phantom_class = ".role";
 
     this.default_limit = 50;
     this.default_page = 0;
@@ -295,5 +230,80 @@ var AdminUser = new (class {
     $("main .controlls .pages .page").text(this.current_page+1);
   }
 
+  loadRolesForUser(user_id) {
+    var AdminUserO = this;
+
+    var req = {
+      "user_id": user_id
+    };
+
+    $.get("/api/admin/roles/get", req)
+    .done(function (data) {
+
+      var EntryList = $(AdminUserO.role_list_id).html("");
+      for (var entry of data.result) {
+        var Template = $(`[phantom] ${AdminUserO.role_phantom_class}`).clone();
+        insertData(Template, entry);
+        Template.attr("role-id", entry.role_id);
+        EntryList.append(Template);
+      }
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't load user"} );
+    })
+
+  }
+
+  // create
+
+  // edit
+  editModal(HTMLButton) {
+    var AdminUserO = this;
+    var req = {
+      "user_id": $(HTMLButton).closest(AdminUserO.phantom_class).attr("user-id")
+    };
+
+    $.get("/api/admin/users/get", req)
+    .done(function (data) {
+      var user = data.result.pop();
+
+      $(AdminUserO.modal_id).attr("mode", "edit");
+
+      // reset password field
+      user.password = "";
+
+      insertData(AdminUserO.modal_id, user);
+      AdminUserO.loadRolesForUser(user.user_id);
+
+      $(AdminUserO.modal_id).modal("show");
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't load user"} );
+    })
+  }
+
+  edit() {
+    var AdminUserO = this;
+    var req = extractData(this.modal_id);
+    if (!isEmpty(req["password"])) {
+      var c = confirm("This will reset the users password, this cannot be undone. Are you sure?");
+      if (!c) { return; }
+    }
+
+    $.post("/api/admin/users/edit", req)
+    .done(function (data) {
+
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      $(AdminUserO.modal_id).modal("hide");
+      AdminUserO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
+    });
+  }
+
+  // delete
 
 });
