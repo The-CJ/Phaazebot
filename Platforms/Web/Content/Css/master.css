@@ -55,6 +55,7 @@
 .icon-btn i {	width: 14px; }
 .icon-btn.small i {	width: 9px; font-size: 1.33ch; }
 label.checkbox-container {
+	all: unset;
 	margin-right: auto;
 	margin-left: auto;
 	margin-top: 0;
