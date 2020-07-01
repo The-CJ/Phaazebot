@@ -23,33 +23,6 @@ function loadUserRoles() {
 
 }
 
-function editUser() {
-  var req = extractData("#edit_create_user");
-  if (!isEmpty(req["password"])) {
-    var c = confirm("This will reset the users password, this cannot be undone. Are you sure?");
-    if (!c) { return; }
-  }
-
-  $.post("/api/admin/users/edit", req)
-  .done(function (data) {
-
-    Display.showMessage( {content:data.msg, color:Display.color_success} );
-    $("#edit_create_user").modal("hide");
-    getUser();
-
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
-  })
-}
-
-function showCreate() {
-  resetInput("#edit_create_user");
-  $("#edit_create_user .modal-title").text("Create new user");
-  $("#edit_create_user").attr("mode", "create");
-  $("#edit_create_user").modal("show");
-}
-
 function createUser() {
 
   var req = extractData("#edit_create_user");
@@ -253,6 +226,15 @@ var AdminUser = new (class {
   }
 
   // create
+  createModal() {
+    resetInput(this.modal_id);
+    $(this.modal_id).attr("mode", "create");
+    $(this.modal_id).modal("show");
+  }
+
+  create() {
+
+  }
 
   // edit
   editModal(HTMLButton) {

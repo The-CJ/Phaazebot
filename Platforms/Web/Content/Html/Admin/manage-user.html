@@ -46,6 +46,7 @@
 
         <!-- buttons -->
         <div class="col text-right">
+          <button type="button" class="btn btn-success icon-btn" onclick="AdminUser.createModal()"><i class="fas fa-plus"></i></button>
           <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
         </div>
       </div>
@@ -113,9 +114,11 @@
         </div>
 
         <!-- user changed -->
-        <div class="center-item-row forced">
-          <div class="col"><span>Username changed:</span></div>
-          <div class="col-8"><input type="text" name="username_changed" class="form-control" readonly></div>
+        <div show-mode="edit">
+          <div class="center-item-row forced">
+            <div class="col"><span>Username changed:</span></div>
+            <div class="col-8"><input type="text" name="username_changed" class="form-control" readonly></div>
+          </div>
         </div>
 
         <!-- overwrite -->
@@ -166,7 +169,7 @@
           </div>
         </div>
 
-        <hr>
+        <hr show-mode="edit">
 
         <!-- roles -->
         <div show-mode="edit">
@@ -186,9 +189,9 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" show-mode="create" class="btn btn-block btn-success" onclick="createUser()">Create</button><br>
+        <button type="button" show-mode="create" class="btn btn-block btn-success" onclick="AdminUser.create()">Create</button><br>
         <button type="button" show-mode="edit" class="btn btn-block btn-warning" onclick="AdminUser.edit()">Save</button>
-        <button type="button" show-mode="edit" class="btn btn-danger" onclick="deleteUser()">Delete</button>
+        <button type="button" show-mode="edit" class="btn btn-danger" onclick="AdminUser.delete()">Delete</button>
       </div>
 
       <div messagebox></div>
