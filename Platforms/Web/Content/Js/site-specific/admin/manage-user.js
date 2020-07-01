@@ -23,23 +23,6 @@ function loadUserRoles() {
 
 }
 
-function createUser() {
-
-  var req = extractData("#edit_create_user");
-  $.post("/api/admin/users/create", req)
-  .done(function (data) {
-
-    Display.showMessage( {content:data.msg, color:Display.color_success} );
-    $("#edit_create_user").modal("hide");
-    getUser();
-
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't create user"} );
-  })
-
-}
-
 function deleteUser() {
   var req = extractData("#edit_create_user");
 
@@ -60,26 +43,6 @@ function deleteUser() {
 
 }
 
-// user roles
-function addUserRole() {
-  var user_id = $("#edit_create_user [name=user_id]").val();
-  var role_id = $("#new_user_role").val();
-  var req = {
-    user_id: user_id,
-    userrole_action: "add",
-    userrole_role: role_id,
-  };
-  $.post("/api/admin/users/edit", req)
-  .done(function (data) {
-
-    Display.showMessage( {content:data.msg, color:Display.color_success} );
-    detailUser(null, user_id)
-
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
-  })
-}
 
 function removeUserRole(HTMLButton) {
   HTMLButton = $(HTMLButton);
@@ -233,6 +196,19 @@ var AdminUser = new (class {
   }
 
   create() {
+    var AdminUserO = this;
+    var req = extractData(this.modal_id);
+    $.post("/api/admin/users/create", req)
+    .done(function (data) {
+
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      $(AdminUserO.modal_id).modal("hide");
+      AdminUserO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't create user"} );
+    })
 
   }
 
@@ -281,6 +257,25 @@ var AdminUser = new (class {
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
     });
+  }
+
+  addRole() {
+    var AdminUserO = this;
+
+    var req = {
+      "user_id": $(`${AdminUserO.modal_id} [name=user_id]`).val(),
+      "role_id": $("#new_user_role").val()
+    };
+    $.post("/api/admin/users/addrole", req)
+    .done(function (data) {
+
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      AdminUserO.loadRolesForUser(user_id);
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
+    })
   }
 
   // delete
