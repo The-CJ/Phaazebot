@@ -16,24 +16,29 @@ from Platforms.Web.Processing.Api.errors import (
 	apiUserNotFound
 )
 
-async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAdminUsersAddrole(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/admin/users/edit
+		Default url: /api/admin/users/addrole
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
 	# get required stuff
-	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
+	user_id:int = Data.getInt("user_id", 0, min_x=1)
+	role_id:int = Data.getInt("role_id", 0, min_x=1)
 
 	# checks
 	if not user_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'user_id'")
+	if not role_id:
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'role_id'")
 
 	# get user that should be edited
 	check_user:list = await getWebUsers(cls, where="`user`.`id` = %s", where_values=(user_id,))
 	if not check_user:
 		return await apiUserNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
+
+	wanted_role:list = cls # <-- TODO
 
 	# check if this is a (super)admin, if so, is the current user a superadmin?
 	# and not himself
