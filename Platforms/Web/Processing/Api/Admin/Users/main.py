@@ -3,10 +3,12 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Response, Request
-from .get import apiAdminUsersGet
-from .edit import apiAdminUsersEdit
+from .addrole import apiAdminUsersAddrole
 from .create import apiAdminUsersCreate
 from .delete import apiAdminUsersDelete
+from .edit import apiAdminUsersEdit
+from .get import apiAdminUsersGet
+from .removerole import apiAdminUsersRemoverole
 from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
@@ -20,16 +22,22 @@ async def apiAdminUsers(cls:"WebIndex", WebRequest:Request) -> Response:
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	elif method == "get":
-		return await apiAdminUsersGet(cls, WebRequest)
-
-	elif method == "edit":
-		return await apiAdminUsersEdit(cls, WebRequest)
+	elif method == "addrole":
+		return await apiAdminUsersAddrole(cls, WebRequest)
 
 	elif method == "create":
 		return await apiAdminUsersCreate(cls, WebRequest)
 
 	elif method == "delete":
 		return await apiAdminUsersDelete(cls, WebRequest)
+
+	elif method == "edit":
+		return await apiAdminUsersEdit(cls, WebRequest)
+
+	elif method == "get":
+		return await apiAdminUsersGet(cls, WebRequest)
+
+	elif method == "removerole":
+		return await apiAdminUsersRemoverole(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")

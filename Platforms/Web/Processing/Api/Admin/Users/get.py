@@ -23,8 +23,8 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	username_contains:str = Data.getStr("username_contains", "", len_max=64)
 	email:str = Data.getStr("email", "", len_max=128)
 	email_contains:str = Data.getStr("email_contains", "", len_max=128)
-	offset:int = Data.getInt("offset", 0, min_x=0)
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1)
+	offset:int = Data.getInt("offset", 0, min_x=0)
 
 	# get user
 	res_users:list = await getWebUsers(cls, user_id=user_id,
