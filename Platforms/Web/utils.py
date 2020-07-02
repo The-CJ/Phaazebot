@@ -99,7 +99,6 @@ async def getWebUsers(cls:"WebIndex", **search:dict) -> list:
 	* order_str `str`: (Default: "ORDER BY user.id")
 	* limit `int`: (Default: None)
 	* offset `int`: (Default: 0)
-
 	"""
 	where:str = search.get("where", "1=1")
 	where_values:str = search.get("where_values", None)
