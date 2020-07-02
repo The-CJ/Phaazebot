@@ -4,6 +4,8 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
+from .addrole import apiAdminUsersAddrole
+from .removerole import apiAdminUsersRemoverole
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.undefined import UNDEFINED
@@ -25,6 +27,7 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# get required stuff
 	user_id:int = Data.getInt("user_id", 0, min_x=1)
+	operation:str = Data.getStr("operation", UNDEFINED, len_max=128)
 
 	# checks
 	if not user_id:
@@ -43,6 +46,12 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		if UserToEdit.user_id != CurrentUser.user_id:
 			if not CurrentUser.checkRoles(["superadmin"]):
 				return await apiNotAllowed(cls, WebRequest, msg=f"Only Superadmin's can edit other (Super)admin user")
+
+	# single action operations
+	if operation == "addrole":
+		return await apiAdminUsersAddrole(cls, WebRequest)
+	if operation == "removerole":
+		return await apiAdminUsersRemoverole(cls, WebRequest)
 
 	# check all update values
 	update:dict = dict()

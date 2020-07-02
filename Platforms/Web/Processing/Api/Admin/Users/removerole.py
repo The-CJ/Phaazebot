@@ -17,4 +17,7 @@ from Platforms.Web.Processing.Api.errors import (
 )
 
 async def apiAdminUsersRemoverole(cls:"WebIndex", WebRequest:Request) -> Response:
+	"""
+	Default url: /api/admin/users?operation=removerole
+	"""
 	pass

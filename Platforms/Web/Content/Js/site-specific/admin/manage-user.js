@@ -264,7 +264,8 @@ var AdminUser = new (class {
 
     var req = {
       "user_id": $(`${AdminUserO.modal_id} [name=user_id]`).val(),
-      "role_id": $("#new_user_role").val()
+      "role_id": $("#new_user_role").val(),
+      "operation": "addrole"
     };
     $.post("/api/admin/users/addrole", req)
     .done(function (data) {

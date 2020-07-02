@@ -18,7 +18,7 @@ from Platforms.Web.Processing.Api.errors import (
 
 async def apiAdminUsersAddrole(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/admin/users/addrole
+	Default url: /api/admin/users?operation=addrole
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
