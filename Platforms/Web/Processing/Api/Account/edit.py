@@ -10,7 +10,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.stringutils import password as password_function
 from Utils.regex import IsEmail
-from Platforms.Web.utils import getWebUsers
+from Platforms.Web.db import getWebUsers
 from Platforms.Web.Processing.Api.errors import apiWrongData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Account.errors import (
 	apiAccountPasswordsDontMatch,

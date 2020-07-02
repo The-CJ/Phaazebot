@@ -9,7 +9,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
 from Utils.stringutils import password as password_function
-from Platforms.Web.utils import getWebUsers
+from Platforms.Web.db import getWebUsers
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
 	apiNotAllowed,
@@ -24,14 +24,14 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	await Data.load()
 
 	# get required stuff
-	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
+	user_id:int = Data.getInt("user_id", 0, min_x=1)
 
 	# checks
 	if not user_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'user_id'")
 
 	# get user that should be edited
-	check_user:list = await getWebUsers(cls, where="`user`.`id` = %s", where_values=(user_id,))
+	check_user:list = await getWebUsers(cls, user_id=user_id)
 	if not check_user:
 		return await apiUserNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
 

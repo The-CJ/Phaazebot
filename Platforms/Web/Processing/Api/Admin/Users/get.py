@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.utils import getWebUsers, getWebUserAmount
+from Platforms.Web.db import getWebUsers, getWebUserAmount
 from Platforms.Web.Processing.Api.errors import apiUserNotFound
 
 DEFAULT_LIMIT:int = 50
@@ -20,24 +20,18 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	# get required stuff
 	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
 	username:str = Data.getStr("username", "", len_max=64)
+	username_contains:str = Data.getStr("username_contains", "", len_max=64)
 	email:str = Data.getStr("email", "", len_max=128)
+	email_contains:str = Data.getStr("email_contains", "", len_max=128)
 	offset:int = Data.getInt("offset", 0, min_x=0)
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1)
 
-	# format
-	where:str = "1=1"
-	values:tuple = ()
-
-	if user_id:
-		where = "`user`.`id` = %s"
-		values = (user_id,)
-
-	elif email or username:
-		where = "`user`.`username` LIKE %s OR `user`.`email` LIKE %s"
-		values = (username, email)
-
 	# get user
-	res_users:list = await getWebUsers(cls, where=where, where_values=values, limit=limit, offset=offset)
+	res_users:list = await getWebUsers(cls, user_id=user_id,
+		username=username, username_contains=username_contains,
+		email=email, email_contains=email_contains,
+		limit=limit, offset=offset
+	)
 
 	if not res_users:
 		return await apiUserNotFound(cls, WebRequest, msg=f"no user found")
@@ -46,7 +40,7 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		result=[ WebUser.toJSON() for WebUser in res_users ],
 		limit=limit,
 		offset=offset,
-		total = await getWebUserAmount(cls, where=where, values=values),
+		total = await getWebUserAmount(cls),
 		status=200
 	)
 

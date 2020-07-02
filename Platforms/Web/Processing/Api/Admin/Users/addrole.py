@@ -9,7 +9,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
 from Utils.stringutils import password as password_function
-from Platforms.Web.utils import getWebUsers
+from Platforms.Web.db import getWebUsers
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
 	apiNotAllowed,
@@ -34,7 +34,7 @@ async def apiAdminUsersAddrole(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'role_id'")
 
 	# get user that should be edited
-	check_user:list = await getWebUsers(cls, where="`user`.`id` = %s", where_values=(user_id,))
+	check_user:list = await getWebUsers(cls, user_id=user_id)
 	if not check_user:
 		return await apiUserNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
 
