@@ -19,8 +19,7 @@ function loadUserRoles() {
   })
   .fail(function (data) {
     generalAPIErrorHandler( {data:data, msg:"can't load roles"} );
-  })
-
+  });
 }
 
 function deleteUser() {
@@ -41,30 +40,6 @@ function deleteUser() {
     generalAPIErrorHandler( {data:data, msg:"can't delete user"} );
   });
 
-}
-
-
-function removeUserRole(HTMLButton) {
-  HTMLButton = $(HTMLButton);
-  var role_name = HTMLButton.closest(".role").find(".name").text();
-  var user_id = HTMLButton.closest(".modal").find("[name=user_id]").val();
-
-  var req = {
-    user_id: user_id,
-    userrole_action: "remove",
-    userrole_role: role_name,
-  };
-
-  $.post("/api/admin/users/edit", req)
-  .done(function (data) {
-
-    Display.showMessage( {content:data.msg, color:Display.color_success} );
-    detailUser(null, user_id)
-
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
-  })
 }
 
 var AdminUser = new (class {
@@ -267,18 +242,63 @@ var AdminUser = new (class {
       "role_id": $("#new_user_role").val(),
       "operation": "addrole"
     };
-    $.post("/api/admin/users/addrole", req)
+    $.post("/api/admin/users/edit", req)
     .done(function (data) {
 
       Display.showMessage( {content:data.msg, color:Display.color_success} );
-      AdminUserO.loadRolesForUser(user_id);
+      AdminUserO.loadRolesForUser(req["user_id"]);
 
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
-    })
+    });
   }
 
   // delete
+  removeRole(HTMLButton) {
+    var AdminUserO = this;
+
+    var req = {
+      "user_id": $(`${AdminUserO.modal_id} [name=user_id]`).val(),
+      "role_id": $(HTMLButton).closest(this.role_phantom_class).attr("role-id"),
+      "operation": "removerole"
+    };
+    $.post("/api/admin/users/edit", req)
+    .done(function (data) {
+
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      AdminUserO.loadRolesForUser(req["user_id"]);
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
+    });
+  }
+
+  deleteFromModal() {
+    var AdminUserO = this;
+
+    var c = confirm("Are you sure you want to delete this user?");
+    if (!c) {return;}
+
+    var user_id = $(this.modal_id).find("[name=user_id]").val();
+    this.delete(user_id);
+  }
+
+  delete(user_id) {
+    var AdminUserO = this;
+    var req = { user_id: user_id };
+    $.post("/api/admin/users/delete", req)
+    .done(function (data) {
+
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      $(AdminUserO.modal_id).modal("hide");
+      AdminUserO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't edit user roles"} );
+    });
+  }
 
 });
