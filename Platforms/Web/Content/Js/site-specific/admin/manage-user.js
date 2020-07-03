@@ -22,26 +22,6 @@ function loadUserRoles() {
   });
 }
 
-function deleteUser() {
-  var req = extractData("#edit_create_user");
-
-  var c = confirm(`Sure you want to delete user:\n'${req["username"]}' [ID:${req["user_id"]}]`);
-  if (!c) { return; }
-
-  $.post("/api/admin/users/delete", req)
-  .done(function (data) {
-
-    Display.showMessage( {content:data.msg, color:Display.color_success} );
-    $("#edit_create_user").modal("hide");
-    getUser();
-
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't delete user"} );
-  });
-
-}
-
 var AdminUser = new (class {
   constructor() {
     this.modal_id = "#user_modal";
