@@ -29,10 +29,10 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
 	if not CheckMember:
-		pass
+		return cls.response(status=302, headers={"Location": f"/discord/view/{guild_id}?error=no_user"} )
 
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		pass
+		return cls.response(status=302, headers={"Location": f"/discord/view/{guild_id}?error=missing_permissions"} )
 
 	DiscordDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/main.html")
 	DiscordDash.replace(
