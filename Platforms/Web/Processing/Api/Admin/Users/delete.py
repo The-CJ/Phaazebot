@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
@@ -28,9 +28,9 @@ async def apiAdminUsersDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'user_id'")
 
 	# get user
-	res_users:list = await getWebUsers(cls, user_id=user_id)
+	res_users:List[WebUserInfo] = await getWebUsers(cls, user_id=user_id)
 	if not res_users:
-		return await apiUserNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
+		return await apiUserNotFound(cls, WebRequest, user_id=user_id)
 	UserToDelete:WebUserInfo = res_users.pop(0)
 
 	# check for higher users
@@ -44,7 +44,7 @@ async def apiAdminUsersDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 		(UserToDelete.user_id,)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API) Deleted user U:{user_id}", require="api:user")
+	cls.Web.BASE.Logger.debug(f"(API) Deleted user {user_id=}", require="api:user")
 
 	return cls.response(
 		text=json.dumps( dict(msg="user successfull deleted", status=200) ),

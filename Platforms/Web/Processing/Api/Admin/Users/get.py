@@ -1,10 +1,11 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Dict, Any
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Web.db import getWebUsers, getWebUserAmount
 from Platforms.Web.Processing.Api.errors import apiUserNotFound
 
@@ -27,20 +28,20 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	offset:int = Data.getInt("offset", 0, min_x=0)
 
 	# get user
-	res_users:list = await getWebUsers(cls, user_id=user_id,
+	res_users:List[WebUserInfo] = await getWebUsers(cls, user_id=user_id,
 		username=username, username_contains=username_contains,
 		email=email, email_contains=email_contains,
 		limit=limit, offset=offset
 	)
 
 	if not res_users:
-		return await apiUserNotFound(cls, WebRequest, msg=f"no user found")
+		return await apiUserNotFound(cls, WebRequest)
 
-	result:dict = dict(
+	result:Dict[str, Any] = dict(
 		result=[ WebUser.toJSON() for WebUser in res_users ],
 		limit=limit,
 		offset=offset,
-		total = await getWebUserAmount(cls),
+		total=(await getWebUserAmount(cls)),
 		status=200
 	)
 
