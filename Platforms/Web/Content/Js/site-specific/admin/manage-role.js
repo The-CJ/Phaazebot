@@ -1,28 +1,6 @@
 $("document").ready(function () {
-  getRoles();
+  AdminRole.show();
 })
-
-function getRoles() {
-  $.get("/api/admin/roles/get")
-  .done(function (data) {
-
-    var RoleList = $("#role_list").html("");
-
-    for (var role of data.result) {
-      var Template = $("[phantom] .role").clone();
-
-      Template.attr("role-id", role.role_id);
-      Template.find(".name").text(role.name);
-      Template.find("[can_be_removed]").attr("can_be_removed", role.can_be_removed ? "true" : "false");
-
-      RoleList.append(Template);
-    }
-
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't load roles"} );
-  })
-}
 
 function detailRole(HTMLElement) {
   var role_id = $(HTMLElement).attr("role-id");
@@ -118,3 +96,50 @@ function removeRole() {
     generalAPIErrorHandler( {data:data, msg:"role delete failed"} );
   });
 }
+
+var AdminRole = new (class {
+  constructor() {
+    this.modal_id = "#";
+    this.list_id = "#role_list";
+    this.phantom_class = ".role";
+  }
+
+  show() {
+    let limit = DynamicURL.get("limit") || this.default_limit;
+    let page = DynamicURL.get("page") || this.default_page;
+
+    var req = {
+      limit: limit,
+      offset: (page * limit)
+    };
+
+    this.load( req );
+  }
+
+  load(x={}) {
+    var AdminRoleO = this;
+    $.get("/api/admin/roles/get", x)
+    .done(function (data) {
+
+      var RoleList = $(AdminRoleO.list_id).html("");
+
+      for (var role of data.result) {
+        var Template = $(`[phantom] ${AdminRoleO.phantom_class}`).clone();
+
+        insertData(Template, role, 0);
+        Template.attr("role-id", role.role_id);
+
+        let icon = role.can_be_removed ? `<i class="fas fa-unlock"></i>` : `<i class="fas fa-lock"></i>`;
+        Template.find("[name=can_be_removed]").html(icon);
+
+        RoleList.append(Template);
+      }
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't load roles"} );
+    });
+  }
+
+
+})
