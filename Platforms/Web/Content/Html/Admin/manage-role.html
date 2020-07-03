@@ -3,19 +3,72 @@
 
 <main>
   <div class="container text-center white-text">
-    <h1>Role manager</h1>
-    <button type="button" class="btn btn-primary" onclick="showCreate()">New</button>
+    <h1><a href="/admin">Administration</a> - Role manager</h1>
+
+    <form class="controlls content-box pt-2" action="javascript:AdminUser.prevPage(true)">
+
+      <!-- search -->
+      <div class="center-item-row">
+        <!-- limit -->
+        <div class="col">
+          <select class="custom-select" name="limit">
+            <option value="10">10 Entrys per page</option>
+            <option value="25">25 Entrys per page</option>
+            <option value="50" selected>50 Entrys per page</option>
+            <option value="100">100 Entrys per page</option>
+          </select>
+        </div>
+
+        <!-- name -->
+        <div class="col">
+          <input type="text" name="name" class="form-control" placeholder="name LIKE"/>
+        </div>
+
+      </div>
+
+      <!-- pages -->
+      <div class="center-item-row">
+        <!-- pages -->
+        <div class="col text-left pages">
+          <button onclick="AdminUser.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="AdminUser.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <span>Page: <span class="page">0</span></span>
+          <button onclick="AdminUser.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="AdminUser.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+          <span>Total: <span id="user_amount">[N/A]</span></span>
+        </div>
+
+        <!-- buttons -->
+        <div class="col text-right">
+          <button type="button" class="btn btn-success icon-btn" onclick="AdminUser.createModal()"><i class="fas fa-plus"></i></button>
+          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+
+    </form>
+
+    <hr>
+
+    <div class="header row generic-list">
+      <div class="col-1">ID</div>
+      <div class="col">Role</div>
+      <div class="col-1">Locked</div>
+      <div class="col-1">Action</div>
+    </div>
+
     <div id="role_list"></div>
   </div>
 </main>
 
 <div phantom hidden>
 
-  <div class="role" role-id="0" onclick="detailRole(this)">
-    <div class="row">
-      <div class="col-1"></div>
-      <div class="col"><span class="name">[N/A]</span></div>
-      <div class="col-1"><span can_be_removed="true"><i class="fas fa-lock"></i></span></div>
+  <div class="row role generic-sub-list" role-id="0">
+    <div class="col-1"><span name="role_id">[N/A]</span></div>
+    <div class="col"><span name="name">[N/A]</span></div>
+    <div class="col-1"><span name="can_be_removed">[N/A]</span></div>
+    <div class="col-1">
+      <button type="button" class="btn btn-warning icon-btn small" onclick="AdminRole.editModal(this)"><i class="fas fa-edit"></i></button>
     </div>
   </div>
 
