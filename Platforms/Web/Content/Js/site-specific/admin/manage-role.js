@@ -99,9 +99,10 @@ function removeRole() {
 
 var AdminRole = new (class {
   constructor() {
-    this.modal_id = "#";
+    this.modal_id = "#role_modal";
     this.list_id = "#role_list";
     this.phantom_class = ".role";
+    this.total_field_id = "#role_amount";
   }
 
   show() {
@@ -121,7 +122,10 @@ var AdminRole = new (class {
     $.get("/api/admin/roles/get", x)
     .done(function (data) {
 
+      AdminRoleO.updatePageIndexButtons(data);
+
       var RoleList = $(AdminRoleO.list_id).html("");
+      $(AdminRoleO.total_field_id).text(data.total);
 
       for (var role of data.result) {
         var Template = $(`[phantom] ${AdminRoleO.phantom_class}`).clone();
@@ -141,5 +145,47 @@ var AdminRole = new (class {
     });
   }
 
+  // utils
+  nextPage(last=false) {
+    this.current_page += 1;
+    var search = extractData("main .controlls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
+  }
 
+  prevPage(first=false) {
+    this.current_page -= 1;
+    if (first) { this.current_page = 0; }
+
+    var search = extractData("main .controlls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
+  }
+
+  updatePageIndexButtons(data) {
+    this.current_limit = data.limit;
+    this.current_page = data.offset / data.limit;
+    this.current_max_page = (data.total / data.limit);
+    this.current_max_page = parseInt(this.current_max_page)
+
+    // update limit url if needed
+    if (this.current_limit != this.default_limit) {
+      DynamicURL.set("limit", this.current_limit);
+    } else {
+      DynamicURL.set("limit", null);
+    }
+
+    // update page url if needed
+    if (this.current_page != this.default_page) {
+      DynamicURL.set("page", this.current_page);
+    } else {
+      DynamicURL.set("page", null);
+    }
+
+    // update html elements
+    $("main .controlls [name=limit]").val(this.current_limit);
+    $("main .controlls .pages .prev").attr("disabled", (this.current_page <= 0) );
+    $("main .controlls .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+    $("main .controlls .pages .page").text(this.current_page+1);
+  }
 })

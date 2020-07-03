@@ -5,7 +5,7 @@
   <div class="container text-center white-text">
     <h1><a href="/admin">Administration</a> - Role manager</h1>
 
-    <form class="controlls content-box pt-2" action="javascript:AdminUser.prevPage(true)">
+    <form class="controlls content-box pt-2" action="javascript:AdminRole.prevPage(true)">
 
       <!-- search -->
       <div class="center-item-row">
@@ -21,7 +21,7 @@
 
         <!-- name -->
         <div class="col">
-          <input type="text" name="name" class="form-control" placeholder="name LIKE"/>
+          <input type="text" name="name_contains" class="form-control" placeholder="name LIKE"/>
         </div>
 
       </div>
@@ -30,18 +30,18 @@
       <div class="center-item-row">
         <!-- pages -->
         <div class="col text-left pages">
-          <button onclick="AdminUser.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
-          <button onclick="AdminUser.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <button onclick="AdminRole.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="AdminRole.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
           <span>Page: <span class="page">0</span></span>
-          <button onclick="AdminUser.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
-          <button onclick="AdminUser.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+          <button onclick="AdminRole.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="AdminRole.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
 
-          <span>Total: <span id="user_amount">[N/A]</span></span>
+          <span>Total: <span id="role_amount">[N/A]</span></span>
         </div>
 
         <!-- buttons -->
         <div class="col text-right">
-          <button type="button" class="btn btn-success icon-btn" onclick="AdminUser.createModal()"><i class="fas fa-plus"></i></button>
+          <button type="button" class="btn btn-success icon-btn" onclick="AdminRole.createModal()"><i class="fas fa-plus"></i></button>
           <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
         </div>
       </div>
@@ -74,7 +74,7 @@
 
 </div>
 
-<div class="modal fade" id="edit_create_role" mode="edit/create">
+<div class="modal fade" id="role_modal" mode="create/edit">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
 
