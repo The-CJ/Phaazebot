@@ -3,7 +3,7 @@
 
 <main>
   <div class="container text-center white-text">
-    <h1>User manager</h1>
+    <h1><a href="/admin">Administration</a> - User manager</h1>
 
     <form class="controlls content-box pt-2" action="javascript:AdminUser.prevPage(true)">
 
@@ -21,12 +21,12 @@
 
         <!-- username -->
         <div class="col">
-          <input type="text" name="username" class="form-control" placeholder="username LIKE"/>
+          <input type="text" name="username_contains" class="form-control" placeholder="username LIKE"/>
         </div>
 
         <!-- username -->
         <div class="col">
-          <input type="text" name="email" class="form-control" placeholder="email LIKE"/>
+          <input type="text" name="email_contains" class="form-control" placeholder="email LIKE"/>
         </div>
 
       </div>
@@ -82,7 +82,7 @@
       <span name="username">[N/A]</span>
     </div>
     <div class="col-1">
-      <button type="submit" class="btn btn-warning icon-btn small" onclick="AdminUser.editModal(this)"><i class="fas fa-edit"></i></button>
+      <button type="button" class="btn btn-warning icon-btn small" onclick="AdminUser.editModal(this)"><i class="fas fa-edit"></i></button>
     </div>
   </div>
 

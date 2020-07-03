@@ -2,17 +2,13 @@ main h1 {
   margin: 1em 0;
 }
 
-.role [can_be_removed=true] { display: none; }
-.role [can_be_removed=false] { display: block; }
+.generic-list > *, .generic-sub-list > * { margin: 2px; padding: 2px; }
 
-#role_list > .role > .row {
-  margin: .25em;
-  padding: .5em;
-  background: var(--color-listelement-odd);
-  cursor: pointer;
+.modal-body .center-item-row,
+.modal-body .row {
+  min-height: 40px;
 }
-#role_list .role:nth-child(even) > .row {background: var(--color-listelement-even); }
-#role_list { padding: 1em; }
-#edit_create_role[mode] [show-mode] { display: none; }
-#edit_create_role[mode=edit] [show-mode=edit] { display: block; }
-#edit_create_role[mode=create] [show-mode=create] { display: block; }
+
+[mode] [show-mode] { display: none; }
+[mode=create] [show-mode=create] { display: block; }
+[mode=edit] [show-mode=edit] { display: block; }
