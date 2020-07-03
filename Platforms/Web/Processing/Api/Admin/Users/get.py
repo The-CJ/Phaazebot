@@ -7,7 +7,6 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Web.db import getWebUsers, getWebUserAmount
-from Platforms.Web.Processing.Api.errors import apiUserNotFound
 
 DEFAULT_LIMIT:int = 50
 
@@ -33,9 +32,6 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		email=email, email_contains=email_contains,
 		limit=limit, offset=offset
 	)
-
-	if not res_users:
-		return await apiUserNotFound(cls, WebRequest)
 
 	result:Dict[str, Any] = dict(
 		result=[ WebUser.toJSON() for WebUser in res_users ],
