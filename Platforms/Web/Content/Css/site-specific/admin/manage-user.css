@@ -9,6 +9,9 @@ main h1 {
   min-height: 40px;
 }
 
+#user_role_list { max-height: 40vh; overflow-y: auto; }
+#user_role_list > .role { padding: 2px; margin: 2px 0; background-color: #525252; }
+
 [mode] [show-mode] { display: none; }
 [mode=create] [show-mode=create] { display: block; }
 [mode=edit] [show-mode=edit] { display: block; }
