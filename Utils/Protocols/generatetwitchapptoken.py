@@ -10,18 +10,20 @@ CLI Args:
 
 import os
 import sys
-sys.path.insert(0, f"{os.path.dirname(__file__)}/../../")
-
+base_dir:str = f"{os.path.dirname(os.path.abspath(__file__))}/../../"
+sys.path.insert(0, base_dir)
 import json
 import requests
 import datetime
 import urllib.parse
 from main import Phaazebot
 from Platforms.Twitch import api as twitch_api
+from Utils.config import ConfigParser
 from Utils.Classes.dbconn import DBConn
 from Utils.cli import CliArgs
 
-Phaaze:Phaazebot = Phaazebot()
+Conf:ConfigParser = ConfigParser(f"{base_dir}/config.json")
+Phaaze:Phaazebot = Phaazebot(PreConfig = Conf)
 DB:DBConn = DBConn(
 	host = Phaaze.Config.get("phaazedb_host", "localhost"),
 	port = Phaaze.Config.get("phaazedb_port", "3306"),
