@@ -10,7 +10,7 @@ from Utils.Classes.twitchuser import TwitchUser
 
 ROOT_URL:str = "https://api.twitch.tv/helix/"
 AUTH_URL:str = "https://id.twitch.tv/"
-T=0
+
 async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Response:
 	"""
 	all calles to twitch should been made via this.
