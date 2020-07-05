@@ -3,13 +3,14 @@ if TYPE_CHECKING:
 	from main import Phaazebot
 
 import requests
+from Platforms.Twitch.utils import emergencyTwitchClientCredentialTokenRefresh
 from Utils.Classes.twitchstream import TwitchStream
 from Utils.Classes.twitchgame import TwitchGame
 from Utils.Classes.twitchuser import TwitchUser
 
 ROOT_URL:str = "https://api.twitch.tv/helix/"
 AUTH_URL:str = "https://id.twitch.tv/"
-
+T=0
 async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Response:
 	"""
 	all calles to twitch should been made via this.
@@ -23,13 +24,14 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 	client_secret `str`
 	auth_type `str` (Default: 'Bearer') ['Bearer' or 'OAuth']
 	access_token `str` (Default: Access.twitch_client_credential_token)
-
+	emergency_refesh_token `bool` (Default: True)
 	"""
 	method:str = kwargs.get("method", "GET")
 	client_id:str = kwargs.get("client_id", cls.Access.TWITCH_CLIENT_ID)
 	client_secret:str = kwargs.get("client_secret", "")
 	auth_type:str = kwargs.get("auth_type", "Bearer")
 	access_token:str = kwargs.get("access_token", cls.Access.twitch_client_credential_token)
+	emergency_refesh_token:bool = kwargs.get("emergency_refesh_token", True)
 
 	headers:dict = dict()
 	if client_id:
@@ -46,7 +48,17 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 
 	Resp:requests.Response = requests.request(method, url, headers=headers)
 	if (Resp.status_code == 401) and (access_token == cls.Access.twitch_client_credential_token):
+		# this will happen if our twitch credentials are outdated, for normal that should not happen, but if it does
+		# we will start the Refresh protocol
 		cls.Logger.warning("Twitch API call responsed with invalid auth")
+		if emergency_refesh_token:
+			emergencyTwitchClientCredentialTokenRefresh(cls)
+			# after we did this the token should be refreshed, sooooo we just retry once and throw it back
+			kwargs["emergency_refesh_token"] = False
+			return await twitchAPICall(cls, url, **kwargs)
+		else:
+			cls.Logger.critical("Token retry runned once, but retry still failed")
+
 	return Resp
 
 async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=-1) -> list:
