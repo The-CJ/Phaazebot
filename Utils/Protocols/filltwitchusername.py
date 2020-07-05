@@ -9,23 +9,26 @@ twitch_user, discord_twitch_alert, twitch_channel, etc...
 CLI Args:
 ---------
 * `a` or `automated` [disable print]
+* `d` or `detailed` [additional information printed]
 """
 
 import os
 import sys
-sys.path.insert(0, f"{os.path.dirname(__file__)}/../../")
+base_dir:str = f"{os.path.dirname(os.path.abspath(__file__))}/../../"
+sys.path.insert(0, base_dir)
 
 import asyncio
+from typing import List
 from Utils.Classes.dbconn import DBConn
 from Utils.Classes.twitchuser import TwitchUser
 from main import Phaazebot
 from Platforms.Twitch.api import getTwitchUsers
+from Utils.config import ConfigParser
 from Utils.cli import CliArgs
+from Utils.startuptastk import loadInTwitchClientCredentials
 
-automated:bool = any( [CliArgs.get("a"), CliArgs.get("automated")] )
-
-Phaaze:Phaazebot = Phaazebot()
-PER_ITER:int = 50
+Conf:ConfigParser = ConfigParser(f"{base_dir}/config.json")
+Phaaze:Phaazebot = Phaazebot(PreConfig = Conf)
 DB:DBConn = DBConn(
 	host = Phaaze.Config.get("phaazedb_host", "localhost"),
 	port = Phaaze.Config.get("phaazedb_port", "3306"),
@@ -34,83 +37,105 @@ DB:DBConn = DBConn(
 	database = Phaaze.Config.get("phaazedb_database", "phaaze")
 )
 
-def log(x) -> None:
-	if not automated: print(x)
+PER_ITER:int = 50
 
-def gatherDBEntrys() -> list:
-	empty_entrys:list = DB.selectQuery("""
-		WITH `collection` AS (
-			SELECT DISTINCT `twitch_user`.`user_id`
-			FROM `twitch_user`
+class FillTwitchUserNames(object):
+	def __init__(self):
+		self.detailed:bool = False
+		self.log_func:callable = print
+		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
 
-			UNION DISTINCT
-			SELECT DISTINCT `twitch_channel`.`channel_id`
-			FROM `twitch_channel`
+	def log(self, txt:str) -> None:
+		if bool(self.log_func):
+			txt = f"({self.__class__.__name__}) {txt}"
+			self.log_func(txt)
 
-			UNION DISTINCT
-			SELECT DISTINCT `discord_twitch_alert`.`twitch_channel_id`
-			FROM `discord_twitch_alert`
+	def main(self) -> None:
+		self.log("This Protocol required Twitch access, running loadInTwitchClientCredentials() from startuptastks")
+		loadInTwitchClientCredentials(Phaaze)
+		self.loop.run_until_complete( self.asyncMain() )
+
+	async def asyncMain(self) -> None:
+
+		empty_entrys:List[str] = await self.gatherMissingDBEntrys()
+		user_list:List[TwitchUser] = []
+		self.log("Gathering information for missing names, this may take a while...")
+
+		while len(empty_entrys) > 0:
+			take_50:List[dict] = empty_entrys[:PER_ITER]
+			if self.detailed: self.log(f"Running checkes for {len(take_50)} entrys")
+			if self.detailed: self.log("    "+str(take_50))
+			empty_entrys = empty_entrys[PER_ITER:] # 'shift' 50 to left
+
+			find_50:List[TwitchUser] = await getTwitchUsers(Phaaze, take_50)
+			if self.detailed: self.log(f"Recived informations for {len(find_50)} twitch user")
+			if self.detailed: self.log("    "+str(find_50))
+
+			user_list += find_50 # add to results
+			if empty_entrys: await asyncio.sleep(3) # we wait because twitch liks timouting everyone
+
+		return await self.insertDataInDB(user_list)
+
+	async def gatherMissingDBEntrys(self) -> List[str]:
+
+		self.log("Selecting missing or empty twitch usernames from all tables...")
+		empty_entrys:list = DB.selectQuery("""
+			WITH `collection` AS (
+				SELECT DISTINCT `twitch_user`.`user_id`
+				FROM `twitch_user`
+
+				UNION DISTINCT
+				SELECT DISTINCT `twitch_channel`.`channel_id`
+				FROM `twitch_channel`
+
+				UNION DISTINCT
+				SELECT DISTINCT `discord_twitch_alert`.`twitch_channel_id`
+				FROM `discord_twitch_alert`
+			)
+			SELECT `collection`.`user_id`
+			FROM `collection`
+			LEFT JOIN `twitch_user_name`
+				ON `collection`.`user_id` = `twitch_user_name`.`user_id`
+			WHERE `twitch_user_name`.`user_display_name` IS NULL
+				OR `twitch_user_name`.`user_name` IS NULL"""
 		)
-		SELECT `collection`.`user_id`
-		FROM `collection`
-		LEFT JOIN `twitch_user_name`
-			ON `collection`.`user_id` = `twitch_user_name`.`user_id`
-		WHERE `twitch_user_name`.`user_display_name` IS NULL
-			OR `twitch_user_name`.`user_name` IS NULL"""
-	)
 
-	if not empty_entrys:
-		log("No empty entrys found!")
-		log("Protocol finished")
-		exit(0)
+		if not empty_entrys:
+			self.log("No empty entrys found!")
+			return []
 
-	log(f"Found {len(empty_entrys)} ID's with missing names")
-	return empty_entrys
+		self.log(f"Found {len(empty_entrys)} ID's with missing names")
+		return [str(i["user_id"]) for i in empty_entrys]
 
-async def main() -> None:
+	async def insertDataInDB(self, twitch_users:List[TwitchUser]) -> None:
+		if not twitch_users:
+			self.log("Can't insert new data in DB, results are empty")
+			return
 
-	empty_entrys:list = gatherDBEntrys()
+		self.log(f"Inserting recived entrys for {len(twitch_users)} Twitch-Userinfos")
 
-	id_list:list = [i["user_id"] for i in empty_entrys]
-	user_list:list = list()
+		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in twitch_users if x)
+		sql_values:tuple = ()
 
-	log("Gathering all found ID's")
-	while len(id_list) > 0:
-		take_50:list = id_list[:PER_ITER]
-		log(f"    Gather another {len(take_50)} ID's")
-		id_list = id_list[PER_ITER:]
+		for User in twitch_users:
+			sql_values += (User.user_id, User.name, User.display_name)
+			if self.detailed: self.log(f"    Update entry, ID={User.user_id} (display)name='{User.display_name}'")
 
-		find_50:list = await getTwitchUsers(Phaaze, take_50)
-		user_list += find_50
-		await asyncio.sleep(3)
-
-	return await fillDB(user_list)
-
-async def fillDB(twitch_users:list) -> None:
-	if not twitch_users:
-		log("Got no user result from Twitch, aborting")
-		exit(0)
-
-	log(f"Recived entrys for {len(twitch_users)} Userinfos")
-
-	sql:str = "REPLACE INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in twitch_users if x)
-	sql_values:tuple = ()
-
-	User:TwitchUser
-	for User in twitch_users:
-
-		sql_values += (User.user_id, User.name, User.display_name)
-		log(f"    Update entry, ID={User.user_id} (display)name='{User.display_name}'")
-
-	DB.query(sql, sql_values)
-	log("Protocol complete!")
+		DB.query(sql, sql_values)
 
 if __name__ == '__main__':
+	# get cli args
+	automated:bool = any( [CliArgs.get("a"), CliArgs.get("automated")] )
+	detailed:bool = any( [CliArgs.get("d"), CliArgs.get("detailed")] )
 
-	log("Starting Protocol...")
+	Protocol:FillTwitchUserNames = FillTwitchUserNames()
 
-	Loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
-	asyncio.set_event_loop(Loop)
-	Loop.run_until_complete( main() )
+	if automated:
+		Protocol.log_func = None
 
-	log("Protocol finished")
+	if detailed:
+		Protocol.detailed = detailed
+
+	Protocol.log("Starting Protocol...")
+	Protocol.main()
+	Protocol.log("Protocol finished")
