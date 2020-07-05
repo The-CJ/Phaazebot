@@ -1,69 +1,78 @@
-function loadStatus() {
-  $.get("/api/admin/status")
-  .done(function (data) {
-    $("#version").text(data.result.version);
-    buildUptime(data.result.uptime);
-    buildModules(data.result.modules);
-    buildDiscord(data.result.discord);
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"loading status failed"} );
-  })
-}
+$("document").ready(function () {
+  AdminStatus.show();
+})
 
-function buildUptime(seconds) {
-  // uptime
-  let minutes = seconds / 60;
-  let hours = minutes / 60
-  seconds = seconds % 60
-  minutes = minutes % 60
-  $("#uptime").text(parseInt(hours)+"h "+parseInt(minutes)+"m "+parseInt(seconds)+"s");
-}
-
-function buildModules(modules) {
-  var Target = $("[part=phaaze] [modules]");
-  for (m in modules) {
-    var Field = $("[phantom] > .module").clone();
-    Field.find(".name").text(m);
-    Field.find(".value").attr("active", modules[m] ? "true" : "false");
-    Target.append(Field);
+var AdminStatus = new (class {
+  constructor() {
+    this.field_version = "#version";
+    this.field_uptime = "#uptime";
+    this.module_phantom_class = ".module";
   }
-}
 
-function buildDiscord(discord) {
-  for (var name in discord) {
-    var Field = $("[part=discord] #" + name);
-    if (name == "bot_avatar_url") {
-      Field.attr("src", discord[name]);
-    } else {
-      Field.text(discord[name]);
+  show() {
+    this.load();
+  }
+
+  load(x={}) {
+    var AdminStatusO = this;
+
+    $.get("/api/admin/status", x)
+    .done(function (data) {
+      $(AdminStatusO.field_version).text(data.result.version);
+
+      AdminStatusO.buildUptime(data.result.uptime);
+      AdminStatusO.buildModules(data.result.modules);
+      AdminStatusO.buildDiscord(data.result.discord);
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"loading status failed"} );
+    });
+  }
+
+  // builder
+  buildUptime(seconds) {
+    // uptime
+    let minutes = seconds / 60;
+    let hours = minutes / 60
+    seconds = seconds % 60
+    minutes = minutes % 60
+    $(this.field_uptime).text(parseInt(hours)+"h "+parseInt(minutes)+"m "+parseInt(seconds)+"s");
+  }
+
+  buildModules(modules) {
+    var Target = $("[part=phaaze] [modules]");
+    for (var module_name in modules) {
+      var Template = $(`[phantom] ${this.module_phantom_class}`).clone();
+      Template.attr("module", module_name);
+      Template.find(".name").text(module_name);
+      Template.find(".value").attr("active", modules[module_name] ? "true" : "false");
+      Target.append(Template);
     }
   }
-}
 
-function changeModuleState(HTMLButton) {
-  var btn = $(HTMLButton);
-  let state = (btn.attr("active") == "true") ? true : false;
-  let name = btn.closest(".module").find(".name").text();
+  buildDiscord(discord) {
+    var Target = $("[part=discord]");
+    insertData(Target, discord);
+    Target.find("img").attr("src", discord.bot_avatar_url);
+  }
 
-  // since we want to change the state, and the current state is a bool, we flip it
-  var new_state = !state;
+  // utils
+  changeModuleState(HTMLButton) {
+    let active_str = $(HTMLButton).attr("active");
+    let module_name = $(HTMLButton).closest(".module").attr("module");
+    let module_state = (active_str == "true");
 
-  let r = {
-    module: name,
-    state: new_state ? "1" : "",
-  };
+    // since we want to change the state, and the current state is a bool, we flip it
+    var new_state = !module_state;
+    let req = { module: module_name, state: new_state };
 
-  $.post("/api/admin/module", r)
-  .done(function (data) {
-    btn.attr("active", new_state);
-    Display.showMessage( {content: data.msg, color:Display.color_success} );
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"changing status failed"} );
-  })
-}
-
-$("document").ready(function () {
-  loadStatus();
-})
+    $.post("/api/admin/module", req)
+    .done(function (data) {
+      $(`[part=phaaze] [modules] [module=${data.changed_module}] button.value`).attr("active", data.new_state);
+      Display.showMessage( {content: data.msg, color:Display.color_success} );
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"changing status failed"} );
+    });
+  }
+});

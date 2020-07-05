@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Any
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
@@ -6,12 +6,13 @@ import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.undefined import UNDEFINED
 from Utils.management import shutdownModule
-from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingValidMethod
+from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingValidMethod, apiWrongData
 
 async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/admin/module
+	Default url: /api/admin/module
 	"""
 
 	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
@@ -22,10 +23,13 @@ async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	# get required stuff
 	module:str = Data.getStr("module", "x")
-	state:bool = Data.getBool("state", False)
+	state:bool = Data.getBool("state", UNDEFINED)
+
+	if state == UNDEFINED:
+		return await apiWrongData(cls, WebRequest, msg="missing boolish field 'state'")
 
 	if not hasattr(cls.Web.BASE.Active, module):
-		return await apiMissingValidMethod(cls, WebRequest, msg=f"module '{module}' not avariable")
+		return await apiMissingValidMethod(cls, apiWrongData, msg=f"module '{module}' not avariable")
 
 	setattr(cls.Web.BASE.Active, module, state)
 	cls.Web.BASE.Logger.warning(f"Module change state: '{module}' now '{state}'")
@@ -34,8 +38,15 @@ async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not state:
 		shutdownModule(cls.Web.BASE, module)
 
+	response:Dict[str, Any] = dict(
+		msg = f"state for module: '{module}' is now: {str(state)}",
+		changed_module = module,
+		new_state = state,
+		status = 200
+	)
+
 	return cls.response(
-		body=json.dumps(dict(msg=f"state for module: '{module}' is now: {str(state)}", status=200)),
+		body=json.dumps( response ),
 		status=200,
 		content_type='application/json'
 	)
