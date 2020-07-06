@@ -8,21 +8,24 @@ This protocol is suppost to try finding the GuildID based on the ChannelID
 
 CLI Args:
 ---------
-* `a` or `automated` [disable log]
+* `a` or `automated` [disable print]
+* `d` or `detailed` [additional information printed]
 """
 
 import os
 import sys
-sys.path.insert(0, f"{os.path.dirname(__file__)}/../../")
+base_dir:str = f"{os.path.dirname(os.path.abspath(__file__))}/../../"
+sys.path.insert(0, base_dir)
 
 import discord
+from typing import List
 from Utils.Classes.dbconn import DBConn
 from main import Phaazebot
+from Utils.config import ConfigParser
 from Utils.cli import CliArgs
 
-automated:bool = any( [CliArgs.get("a"), CliArgs.get("automated")] )
-
-Phaaze:Phaazebot = Phaazebot()
+Conf:ConfigParser = ConfigParser(f"{base_dir}/config.json")
+Phaaze:Phaazebot = Phaazebot(PreConfig = Conf)
 DBC:DBConn = DBConn(
 	host = Phaaze.Config.get("phaazedb_host", "localhost"),
 	port = Phaaze.Config.get("phaazedb_port", "3306"),
@@ -31,61 +34,67 @@ DBC:DBConn = DBConn(
 	database = Phaaze.Config.get("phaazedb_database", "phaaze")
 )
 
-def log(x) -> None:
-	if not automated: print(x)
-
-def getIncompleteEntrys() -> list:
-	sql:str = """
-		SELECT *
-		FROM `discord_twitch_alert`
-		WHERE `discord_twitch_alert`.`discord_guild_id` IS NULL
-			OR `discord_twitch_alert`.`discord_guild_id` IN ('', '-', ' ')"""
-
-	empty_entrys:list = DBC.selectQuery(sql)
-
-	if not empty_entrys:
-		log("No empty entrys found!")
-		log("Protocol finished.")
-		exit(0)
-
-	log(f"Found {len(empty_entrys)} entrys with missing guild_id")
-	return empty_entrys
-
-def main() -> None:
-	entrys_todo:list = getIncompleteEntrys()
-	token:str = Phaaze.Config.get("discord_token","")
-	PDC:PhaazeDiscordConnection = PhaazeDiscordConnection(entrys_todo)
-	PDC.run(token)
-
-class PhaazeDiscordConnection(discord.Client):
-	""" Discord connection for running the protocol """
-	def __init__(self, empty_entrys:list):
+class CompleteDiscordTwitchAlert(discord.Client):
+	def __init__(self):
 		super().__init__()
-		self.empty_entrys = empty_entrys
+		self.detailed:bool = False
+		self.log_func:callable = print
+		self.empty_entrys:List[dict] = []
+
+	def log(self, txt:str) -> None:
+		if bool(self.log_func):
+			txt = f"({self.__class__.__name__}) {txt}"
+			self.log_func(txt)
+
+	def main(self) -> None:
+
+		self.empty_entrys = self.getIncompleteEntrys()
+		if not self.empty_entrys:
+			self.log("Aborting discord connection, no entrys need to be completet")
+			return
+		else:
+			self.log("Starting discord connection...")
+			self.run(Phaaze.Access.DISCORD_TOKEN)
+			# after self.run, the code will continue in self.on_ready
+			self.log("Discord disconnected")
+
+	def getIncompleteEntrys(self) -> List[dict]:
+
+		self.log("Selecting emptys with missing guild_id field on table discord_twitch_alert...")
+		empty_entrys:List[dict] = DBC.selectQuery("""
+			SELECT `discord_twitch_alert`.*
+			FROM `discord_twitch_alert`
+			WHERE `discord_twitch_alert`.`discord_guild_id` IS NULL
+				OR `discord_twitch_alert`.`discord_guild_id` IN ('', '-', ' ')"""
+		)
+
+		if not empty_entrys:
+			self.log("No empty entrys found!")
+			return []
+
+		self.log(f"Found {len(empty_entrys)} entrys with missing guild_id")
+		return empty_entrys
 
 	async def on_ready(self) -> None:
-		global DBC
-		log("Discord Connectet, running checks...")
+		self.log("Discord Connectet, running checks, this may take a while...")
+
 		for entry in self.empty_entrys:
 
-			channel_id:str = entry.get("discord_channel_id", "")
+			channel_id:str = str(entry.get("discord_channel_id", ""))
 			if not channel_id:
-				log(f"A entry is missing a discord channel id: {str(entry)}")
+				if self.detailed: self.log(f"    Missing discord channel id: entry = {str(entry)}")
 				continue
 
-			log(f"Trying to find guild_id for channel_id: {channel_id}")
 			FoundChannel:discord.TextChannel = self.get_channel(int(channel_id))
-
 			if not FoundChannel:
-				log(f"    Could not find a channel for ID: {channel_id}")
+				if self.detailed: self.log(f"    Could not find a channel for {channel_id=}")
 				continue
 
 			guild_id:int = FoundChannel.guild.id
 			if not guild_id:
-				log(f"    Could not find a guild_id for a found channel")
+				if self.detailed: self.log(f"    Could not find a guild_id for {channel_id=}")
 
-			log(f"    Found guild_id {guild_id} for channel_id {channel_id}")
-			log("    Updateing DB...")
+			if self.detailed: self.log(f"    Found {guild_id=} for {channel_id=}, updating DB...")
 			DBC.updateQuery(
 				table = "discord_twitch_alert",
 				content = {"discord_guild_id":guild_id},
@@ -93,15 +102,21 @@ class PhaazeDiscordConnection(discord.Client):
 				where_values = (channel_id,)
 			)
 
-			log("    Updated!")
-
-		log("Protocol complete, logging out")
-		await self.logout()
+		await self.logout() # logout after finished
 
 if __name__ == '__main__':
+	# get cli args
+	automated:bool = any( [CliArgs.get("a"), CliArgs.get("automated")] )
+	detailed:bool = any( [CliArgs.get("d"), CliArgs.get("detailed")] )
 
-	log("Starting Protocol...")
+	Protocol:CompleteDiscordTwitchAlert = CompleteDiscordTwitchAlert()
 
-	main()
+	if automated:
+		Protocol.log_func = None
 
-	log("Protocol finished")
+	if detailed:
+		Protocol.detailed = detailed
+
+	Protocol.log("Starting Protocol...")
+	Protocol.main()
+	Protocol.log("Protocol finished")
