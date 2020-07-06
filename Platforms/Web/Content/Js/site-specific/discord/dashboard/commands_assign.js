@@ -63,6 +63,8 @@ var CommandsAssign = new (class {
   // utils
   nextPage(last=false) {
     this.current_page += 1;
+    if (last) { this.current_page = this.current_max_page; }
+
     var search = extractData("[location=commands_assign] .controlls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
@@ -81,7 +83,7 @@ var CommandsAssign = new (class {
     this.current_limit = data.limit;
     this.current_page = data.offset / data.limit;
     this.current_max_page = (data.total / data.limit);
-    this.current_max_page = parseInt(this.current_max_page)
+    this.current_max_page = Math.ceil(this.current_max_page - 1)
 
     // update limit url if needed
     if (this.current_limit != this.default_limit) {
