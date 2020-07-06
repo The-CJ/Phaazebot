@@ -1,54 +1,71 @@
-#
-# This protocol will try to check all entrys in the databases
-# discord_user table.
-#
-# To be exact the on_server field.
-# Only guilds, phaaze currenty is on are checked.
-# This protocol is suppost to try if a member is on server and update db.
-#
+"""
+This protocol will try to check all entrys in the databases
+discord_user table.
+
+To be exact the on_server field.
+Only guilds, phaaze currenty is on are checked.
+This protocol is suppost to try if a member is on server and update db.
+"""
 
 import os
 import sys
-sys.path.insert(0, f"{os.path.dirname(__file__)}/../../")
+base_dir:str = f"{os.path.dirname(os.path.abspath(__file__))}/../../"
+sys.path.insert(0, base_dir)
 
 import discord
-import asyncio
+from typing import List
+from main import Phaazebot
 from Utils.Classes.dbconn import DBConn
 from Utils.config import ConfigParser
+from Utils.cli import CliArgs
 
-Configs:ConfigParser = ConfigParser()
+Conf:ConfigParser = ConfigParser(f"{base_dir}/config.json")
+Phaaze:Phaazebot = Phaazebot(PreConfig = Conf)
+DBC:DBConn = DBConn(
+	host = Phaaze.Config.get("phaazedb_host", "localhost"),
+	port = Phaaze.Config.get("phaazedb_port", "3306"),
+	user = Phaaze.Config.get("phaazedb_user", "phaaze"),
+	passwd = Phaaze.Config.get("phaazedb_password", ""),
+	database = Phaaze.Config.get("phaazedb_database", "phaaze")
+)
 
-class PhaazeDiscordConnection(discord.Client):
-	""" Discord connection for running the protocol """
+class CheckDiscordOnServer(discord.Client):
 	def __init__(self):
 		super().__init__()
+		self.detailed:bool = False
+		self.log_func:callable = print
+		self.empty_entrys:List[dict] = []
+
+	def log(self, txt:str) -> None:
+		if bool(self.log_func):
+			txt = f"({self.__class__.__name__}) {txt}"
+			self.log_func(txt)
+
+	def main(self) -> None:
+
+		self.log("Starting discord connection...")
+		self.run(Phaaze.Access.DISCORD_TOKEN)
+		# after self.run, the code will continue in self.on_ready
+		self.log("Discord disconnected")
 
 	async def on_ready(self) -> None:
-		print("Discord Connectet!")
+		self.log("Discord Connectet, gathering DB entrys...")
+		self.log(f"Requesting memberlist of {len(self.guilds)} guilds")
 
-		# gather data from DB
-		DBC:DBConn = DBConn(
-			host = Configs.get("phaazedb_host", "localhost"),
-			port = Configs.get("phaazedb_port", "3306"),
-			user = Configs.get("phaazedb_user", "phaaze"),
-			passwd = Configs.get("phaazedb_password", ""),
-			database = Configs.get("phaazedb_database", "phaaze")
-		)
-
-		print("Connecting to Database...")
-		print(f"Requesting memberlist of {len(self.guilds)} guilds")
 
 		guild_id_list:str = ", ".join([str(g.id) for g in self.guilds])
-		check_entrys:list = DBC.selectQuery(f"""
+		if not guild_id_list: guild_id_list = "0"
+		check_entrys:List[dict] = DBC.selectQuery(f"""
 			SELECT `id`, `guild_id`, `member_id`
 			FROM `discord_user`
 			WHERE `discord_user`.`guild_id` IN ({guild_id_list})"""
 		)
 
-		print(f"Found {len(check_entrys)} checkable entrys, running checks")
+		self.log(f"Found {len(check_entrys)} checkable entrys, running checks, this may take a while...")
+		if self.detailed: self.log("    "+str(check_entrys))
 
-		on_server:list = list()
-		not_on_server:list = list()
+		on_server:List[int] = []
+		not_on_server:List[int] = []
 
 		for entry in check_entrys:
 
@@ -60,12 +77,12 @@ class PhaazeDiscordConnection(discord.Client):
 			member_id:int = int(member_id) if member_id.isdigit() else 0
 
 			if not (entry_id and member_id and guild_id):
-				print(f"    Invalid entry: {str(entry)}")
+				if self.detailed: self.log(f"    Invalid entry: {str(entry)}")
 				continue
 
 			Guild:discord.Guild = self.get_guild(guild_id)
 			if not Guild:
-				print(f"    Could not find a Guild for entry: {str(entry)}")
+				if self.detailed: self.log(f"    Could not find a Guild for entry: {str(entry)}")
 				continue
 
 			Member:discord.Member = Guild.get_member(member_id)
@@ -75,11 +92,11 @@ class PhaazeDiscordConnection(discord.Client):
 			else:
 				not_on_server.append(entry_id)
 
-		print("Analytics complete")
-		print(f"{len(not_on_server)} entrys found that are not on server")
-		print(f"{len(on_server)} entrys found that are on server")
-
-		print("Updating DB")
+		self.log("Analytics complete")
+		self.log(f"{len(not_on_server)} entrys found that are not on server")
+		if self.detailed: self.log("    "+str(not_on_server))
+		self.log(f"{len(on_server)} entrys found that are on server")
+		if self.detailed: self.log("    "+str(on_server))
 
 		# ensure no empty list
 		on_server.append(0)
@@ -89,6 +106,7 @@ class PhaazeDiscordConnection(discord.Client):
 		on_server_str:str = ", ".join([str(i) for i in on_server])
 		not_on_server_str:str = ", ".join([str(i) for i in not_on_server])
 
+		self.log("Running DB Update...")
 		DBC.query(f"""
 			UPDATE `discord_user`
 			SET `on_server` = CASE
@@ -97,18 +115,20 @@ class PhaazeDiscordConnection(discord.Client):
 				ELSE `on_server` END"""
 		)
 
-		print("Protocol complete, logging out")
 		await self.logout()
 
 if __name__ == '__main__':
+	automated:bool = any( [CliArgs.get("a"), CliArgs.get("automated")] )
+	detailed:bool = any( [CliArgs.get("d"), CliArgs.get("detailed")] )
 
-	Loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
-	asyncio.set_event_loop(Loop)
+	Protocol:CheckDiscordOnServer = CheckDiscordOnServer()
 
-	print("Starting Protocol...")
+	if automated:
+		Protocol.log_func = None
 
-	PDC:PhaazeDiscordConnection = PhaazeDiscordConnection()
+	if detailed:
+		Protocol.detailed = detailed
 
-	token:str = Configs.get("discord_token","")
-	print("Connecting to Discord...")
-	Loop.run_until_complete( PDC.start(token) )
+	Protocol.log("Starting Protocol...")
+	Protocol.main()
+	Protocol.log("Protocol finished")
