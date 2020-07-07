@@ -103,6 +103,13 @@ var AdminRole = new (class {
     this.list_id = "#role_list";
     this.phantom_class = ".role";
     this.total_field_id = "#role_amount";
+
+    this.default_limit = 50;
+    this.default_page = 0;
+
+    this.current_limit = 0;
+    this.current_page = 0;
+    this.current_max_page = 0;
   }
 
   show() {
