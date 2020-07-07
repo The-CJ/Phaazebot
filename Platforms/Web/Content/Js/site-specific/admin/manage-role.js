@@ -50,17 +50,6 @@ function editRole() {
   });
 }
 
-function showCreate() {
-  $("#edit_create_role").attr("mode", "create");
-  $("#edit_create_role .modal-title").text("Create role:");
-
-  $("#edit_create_role").find("input, textarea").val("");
-  $("#edit_create_role").find("[name=name]").attr("readonly", false);
-  $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);
-
-  $("#edit_create_role").modal("show");
-}
-
 function createRole() {
 
   var req = extractData("#edit_create_role");
@@ -196,5 +185,29 @@ var AdminRole = new (class {
     $("main .controlls .pages .prev").attr("disabled", (this.current_page <= 0) );
     $("main .controlls .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
     $("main .controlls .pages .page").text(this.current_page+1);
+  }
+
+  // create
+  createModal() {
+    $(this.modal_id).attr("mode", "create");
+    resetInput(this.modal_id);
+    $(this.modal_id).modal("show");
+  }
+
+  create() {
+    var AdminRoleO = this;
+    var req = extractData(this.modal_id);
+
+    $.post("/api/admin/roles/create", req)
+    .done(function (data) {
+
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      $(AdminRoleO.modal_id).modal("hide");
+      AdminRoleO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"role create failed"} );
+    });
   }
 })
