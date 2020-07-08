@@ -2,23 +2,6 @@ $("document").ready(function () {
   AdminRole.show();
 })
 
-function editRole() {
-
-  var req = extractData("#edit_create_role[mode=edit]");
-
-  $.post("/api/admin/roles/edit", req)
-  .done(function (data) {
-
-    Display.showMessage( {content:data.msg, color:Display.color_success} );
-    $("#edit_create_role").modal("hide");
-    getRoles();
-
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"edit role failed"} );
-  });
-}
-
 function removeRole() {
   var req = extractData("#edit_create_role");
 
@@ -140,14 +123,12 @@ var AdminRole = new (class {
   }
 
   setElementState(x={}) {
-    console.log(x);
-
     if (x.disable_can_be_remove != undefined) {
       $(`${this.modal_id} [name=can_be_removed]`).attr("disabled", x.disable_can_be_remove);
     }
 
-    if (x.disable_name != undefined) {
-      $(`${this.modal_id} [name=name]`).attr("disabled", x.disable_name);
+    if (x.readonly_name != undefined) {
+      $(`${this.modal_id} [name=name]`).attr("readonly", x.readonly_name);
     }
 
     if (x.show_delete != undefined) {
@@ -161,7 +142,7 @@ var AdminRole = new (class {
   createModal() {
     $(this.modal_id).attr("mode", "create");
     resetInput(this.modal_id);
-    this.setElementState( {disable_name:false, disable_can_be_remove:false, show_delete:false} );
+    this.setElementState( {readonly_name:false, disable_can_be_remove:false, show_delete:false} );
     $(this.modal_id).modal("show");
   }
 
@@ -198,7 +179,7 @@ var AdminRole = new (class {
       insertData(AdminRoleO.modal_id, role);
 
       var state = {};
-      state.disable_name = true;
+      state.readonly_name = !role.can_be_removed;
       state.disable_can_be_remove = !role.can_be_removed;
       state.show_delete = role.can_be_removed;
       AdminRoleO.setElementState(state);
@@ -207,6 +188,33 @@ var AdminRole = new (class {
 
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"can't load role"} );
+    });
+  }
+
+  edit() {
+    var AdminRoleO = this;
+    var req = extractData(this.modal_id);
+
+    if (!req.can_be_removed) {
+      // lets do a cheeky move, when can_be_removed is false and the checkbox is not disabled,
+      // means it was not disabled before, we show a warning
+      let was_disabled = $(`${AdminRoleO.modal_id} [name=can_be_removed]`).is(":disabled");
+      if (!was_disabled) {
+        let c = confirm("Setting 'Can be removed' to false will create a permanent role that cant be removed, continue?");
+        if (!c) {return;}
+      }
+    }
+
+    $.post("/api/admin/roles/edit", req)
+    .done(function (data) {
+
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      $(AdminRoleO.modal_id).modal("hide");
+      AdminRoleO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"edit role failed"} );
     });
   }
 })
