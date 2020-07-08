@@ -15,7 +15,16 @@ var CommandsCommand = new (class {
   }
 
   show() {
-    this.load();
+    // loads in default values or taken from url
+    let limit = DynamicURL.get("commands_command[limit]") || this.default_limit;
+    let page = DynamicURL.get("commands_command[page]") || this.default_page;
+
+    var req = {
+      limit: limit,
+      offset: (page * limit)
+    };
+
+    this.load( req );
   }
 
   load(x={}) {

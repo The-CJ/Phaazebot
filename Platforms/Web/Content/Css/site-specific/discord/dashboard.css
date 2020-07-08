@@ -58,6 +58,7 @@ button.option-status[value=false]:after { content: "DISABLED"; }
 .modal-itemlist > * { padding: 2px; margin: 2px 0; background-color: #525252; }
 .modal-itemlist > *.deleted { background-color: #734343; }
 .modal-itemlist:empty::after { content: "(None)"; }
+.modal-body .center-item-row, .modal-body .row { min-height: 40px; }
 
 /* changes for responsiv */
 
