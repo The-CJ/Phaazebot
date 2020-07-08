@@ -69,7 +69,7 @@ var PublicCommands = new (class {
     this.current_page += 1;
     if (last) { this.current_page = this.current_max_page; }
 
-    var search = extractData("main form.controlls");
+    var search = extractData("main form.controls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);a
   }
@@ -78,7 +78,7 @@ var PublicCommands = new (class {
     this.current_page -= 1;
     if (first) { this.current_page = 0; }
 
-    var search = extractData("main form.controlls");
+    var search = extractData("main form.controls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
   }
@@ -104,10 +104,10 @@ var PublicCommands = new (class {
     }
 
     // update html elements
-    $("main form.controlls [name=limit]").val(this.current_limit);
-    $("main form.controlls .pages .prev").attr("disabled", (this.current_page <= 0) );
-    $("main form.controlls .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
-    $("main form.controlls .pages .page").text(this.current_page+1);
+    $("main form.controls [name=limit]").val(this.current_limit);
+    $("main form.controls .pages .prev").attr("disabled", (this.current_page <= 0) );
+    $("main form.controls .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+    $("main form.controls .pages .page").text(this.current_page+1);
   }
 
   // edit

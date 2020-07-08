@@ -65,7 +65,7 @@ var CommandsAssign = new (class {
     this.current_page += 1;
     if (last) { this.current_page = this.current_max_page; }
 
-    var search = extractData("[location=commands_assign] .controlls");
+    var search = extractData("[location=commands_assign] .controls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
   }
@@ -74,7 +74,7 @@ var CommandsAssign = new (class {
     this.current_page -= 1;
     if (first) { this.current_page = 0; }
 
-    var search = extractData("[location=commands_assign] .controlls");
+    var search = extractData("[location=commands_assign] .controls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
   }

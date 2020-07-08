@@ -68,7 +68,7 @@ var TwitchAlerts = new (class {
     this.current_page += 1;
     if (last) { this.current_page = this.current_max_page; }
 
-    var search = extractData("[location=twitch_alerts] .controlls");
+    var search = extractData("[location=twitch_alerts] .controls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
   }
@@ -77,7 +77,7 @@ var TwitchAlerts = new (class {
     this.current_page -= 1;
     if (first) { this.current_page = 0; }
 
-    var search = extractData("[location=twitch_alerts] .controlls");
+    var search = extractData("[location=twitch_alerts] .controls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
   }

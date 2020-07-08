@@ -243,7 +243,7 @@ var DiscordDashboard = new (class {
   }
 
   setSitePanelCollapse(state) {
-    // controlls site panel and collapse button visibility, classes, etc
+    // controls site panel and collapse button visibility, classes, etc
     // allowed states: "show", "hide", ""
     // empty will toggle it
     if ( isEmpty(state) ) {

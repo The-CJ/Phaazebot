@@ -82,7 +82,7 @@ var AdminUser = new (class {
     this.current_page += 1;
     if (last) { this.current_page = this.current_max_page; }
 
-    var search = extractData("main .controlls");
+    var search = extractData("main .controls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
   }
@@ -91,7 +91,7 @@ var AdminUser = new (class {
     this.current_page -= 1;
     if (first) { this.current_page = 0; }
 
-    var search = extractData("main .controlls");
+    var search = extractData("main .controls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
   }
@@ -117,10 +117,10 @@ var AdminUser = new (class {
     }
 
     // update html elements
-    $("main .controlls [name=limit]").val(this.current_limit);
-    $("main .controlls .pages .prev").attr("disabled", (this.current_page <= 0) );
-    $("main .controlls .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
-    $("main .controlls .pages .page").text(this.current_page+1);
+    $("main .controls [name=limit]").val(this.current_limit);
+    $("main .controls .pages .prev").attr("disabled", (this.current_page <= 0) );
+    $("main .controls .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+    $("main .controls .pages .page").text(this.current_page+1);
   }
 
   loadRolesForUser(user_id) {

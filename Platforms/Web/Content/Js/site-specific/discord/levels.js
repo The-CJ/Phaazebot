@@ -75,7 +75,7 @@ var PublicLevels = new(class {
     this.current_page += 1;
     if (last) { this.current_page = this.current_max_page; }
 
-    var search = extractData(".controlls");
+    var search = extractData(".controls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
   }
@@ -84,7 +84,7 @@ var PublicLevels = new(class {
     this.current_page -= 1;
     if (first) { this.current_page = 0; }
 
-    var search = extractData(".controlls");
+    var search = extractData(".controls");
     search["offset"] = (this.current_page * search["limit"]);
     this.load(search);
   }
@@ -110,10 +110,10 @@ var PublicLevels = new(class {
     }
 
     // update html elements
-    $(".controlls [name=limit]").val(this.current_limit);
-    $(".controlls .pages .prev").attr("disabled", (this.current_page <= 0) );
-    $(".controlls .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
-    $(".controlls .pages .page").text(this.current_page+1);
+    $(".controls [name=limit]").val(this.current_limit);
+    $(".controls .pages .prev").attr("disabled", (this.current_page <= 0) );
+    $(".controls .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+    $(".controls .pages .page").text(this.current_page+1);
   }
 
   loadinModalMedal(guild_id, member_id) {
