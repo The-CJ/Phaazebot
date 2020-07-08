@@ -217,4 +217,30 @@ var AdminRole = new (class {
       generalAPIErrorHandler( {data:data, msg:"edit role failed"} );
     });
   }
+
+  // delete
+  deleteFromModal() {
+    var c = confirm("Are you sure you want to delete this role?");
+    if (!c) {return;}
+
+    var role_id = $(this.modal_id).find("[name=role_id]").val();
+    this.delete(role_id);
+  }
+
+  delete(role_id) {
+    var AdminRoleO = this;
+    var req = {role_id:role_id};
+
+    $.post("/api/admin/roles/delete", req)
+    .done(function (data) {
+
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      $(AdminRoleO.modal_id).modal("hide");
+      AdminRoleO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"role delete failed"} );
+    });
+  }
 })
