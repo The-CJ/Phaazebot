@@ -29,6 +29,8 @@
 	/* remove uppercase */
 	text-transform: none;
 }
+.btn-warning { color: #000; }
+.btn-warning:hover { color: #111; }
 .modal-content {
 	background-color: var(--color-modal-background);
 	color: var(--color-modal-text);

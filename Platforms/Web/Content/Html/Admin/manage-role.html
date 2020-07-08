@@ -123,23 +123,19 @@
         <!-- description -->
         <div class="center-item-col forced">
           <span>Description:</span>
-          <textarea name="description" maxlength="510" class="form-control"></textarea>
+          <textarea name="description" maxlength="510" rows="5" class="form-control"></textarea>
         </div>
 
-         <!-- remove -->
+        <!-- delete -->
         <div show-mode="edit">
-          <div class="center-item-row forced">
-            <div class="col">
-              <button type="button" class="btn btn-block btn-danger" onclick="AdminRole.deleteModal()">Delete</button>
-            </div>
-          </div>
+          <button delete type="button" class="btn btn-block btn-danger" onclick="AdminRole.deleteModal()">Delete</button>
         </div>
 
       </div>
 
       <div class="modal-footer">
         <button show-mode="create" type="button" class="btn btn-block btn-success" onclick="AdminRole.create()">Create</button><br>
-        <button show-mode="edit" type="button" class="btn btn-block btn-success" onclick="AdminRole.edit()">Sumbit changes</button>
+        <button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="AdminRole.edit()">Sumbit changes</button>
       </div>
 
       <div messagebox></div>

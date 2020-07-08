@@ -2,37 +2,6 @@ $("document").ready(function () {
   AdminRole.show();
 })
 
-function detailRole(HTMLElement) {
-  var role_id = $(HTMLElement).attr("role-id");
-
-  $.get("/api/admin/roles/get", {role_id: role_id})
-  .done(function (data) {
-
-    var role = data.result.shift();
-
-    $("#edit_create_role").attr("mode", "edit");
-    $("#edit_create_role .modal-title").text("Edit role:");
-
-    insertData("#edit_create_role", role);
-
-    if (!role.can_be_removed) {
-      $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", true);
-      $("#edit_create_role").find("[name=name]").attr("readonly", true);
-      $("#edit_create_role button[remove]").hide();
-    } else {
-      $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);
-      $("#edit_create_role").find("[name=name]").attr("readonly", false);
-      $("#edit_create_role button[remove]").show();
-    }
-
-    $("#edit_create_role").modal("show");
-  })
-
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't load role"} );
-  });
-}
-
 function editRole() {
 
   var req = extractData("#edit_create_role[mode=edit]");
@@ -170,10 +139,29 @@ var AdminRole = new (class {
     $("main .controlls .pages .page").text(this.current_page+1);
   }
 
+  setElementState(x={}) {
+    console.log(x);
+
+    if (x.disable_can_be_remove != undefined) {
+      $(`${this.modal_id} [name=can_be_removed]`).attr("disabled", x.disable_can_be_remove);
+    }
+
+    if (x.disable_name != undefined) {
+      $(`${this.modal_id} [name=name]`).attr("disabled", x.disable_name);
+    }
+
+    if (x.show_delete != undefined) {
+      if (x.show_delete) { $(`${this.modal_id} [delete]`).show(); }
+      else { $(`${this.modal_id} [delete]`).hide(); }
+    }
+
+  }
+
   // create
   createModal() {
     $(this.modal_id).attr("mode", "create");
     resetInput(this.modal_id);
+    this.setElementState( {disable_name:false, disable_can_be_remove:false, show_delete:false} );
     $(this.modal_id).modal("show");
   }
 
@@ -191,6 +179,34 @@ var AdminRole = new (class {
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"role create failed"} );
+    });
+  }
+
+  // edit
+  editModal(HTMLButton) {
+    var AdminRoleO = this;
+    var req = {
+      "role_id": $(HTMLButton).closest(AdminRoleO.phantom_class).attr("role-id")
+    };
+
+    $.get("/api/admin/roles/get", req)
+    .done(function (data) {
+
+      var role = data.result.pop();
+
+      $(AdminRoleO.modal_id).attr("mode", "edit");
+      insertData(AdminRoleO.modal_id, role);
+
+      var state = {};
+      state.disable_name = true;
+      state.disable_can_be_remove = !role.can_be_removed;
+      state.show_delete = role.can_be_removed;
+      AdminRoleO.setElementState(state);
+      $(AdminRoleO.modal_id).modal("show");
+    })
+
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't load role"} );
     });
   }
 })

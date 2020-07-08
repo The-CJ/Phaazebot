@@ -9,6 +9,8 @@ main h1 {
   min-height: 40px;
 }
 
+.modal [name=description] { white-space: pre-line; }
+
 [mode] [show-mode] { display: none; }
 [mode=create] [show-mode=create] { display: block; }
 [mode=edit] [show-mode=edit] { display: block; }
