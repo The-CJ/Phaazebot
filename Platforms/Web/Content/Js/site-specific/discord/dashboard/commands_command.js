@@ -79,7 +79,7 @@ var CommandsCommand = new (class {
     this.current_limit = data.limit;
     this.current_page = data.offset / data.limit;
     this.current_max_page = (data.total / data.limit);
-    this.current_max_page = Math.ceil(this.current_max_page - 1):
+    this.current_max_page = Math.ceil(this.current_max_page - 1);
 
     // update limit url if needed
     if (this.current_limit != this.default_limit) {
