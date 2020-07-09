@@ -1,6 +1,7 @@
 main h1 { margin: 1em 0; }
 
-.level .avatar { border-radius: 50%; margin-top: 2px; margin-right: 5px; }
+.generic-list > *, .generic-sub-list > * { margin: 2px; padding: 2px; }
+.level .avatar { border-radius: 50%; margin-top: 2px; margin-left: 5px; }
 
 .level > *, .header > * { margin: 2px; }
 
