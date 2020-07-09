@@ -2,25 +2,6 @@ $("document").ready(function () {
   AdminRole.show();
 })
 
-function removeRole() {
-  var req = extractData("#edit_create_role");
-
-  var c = confirm("Sure you want to delete role '"+req["name"]+"'?");
-  if (!c) { return; }
-
-  $.post("/api/admin/roles/delete", req)
-  .done(function (data) {
-
-    Display.showMessage( {content:data.msg, color:Display.color_success} );
-    $("#edit_create_role").modal("hide");
-    getRoles();
-
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"role delete failed"} );
-  });
-}
-
 var AdminRole = new (class {
   constructor() {
     this.modal_id = "#role_modal";
