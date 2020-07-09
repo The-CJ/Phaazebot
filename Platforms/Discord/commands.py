@@ -11,7 +11,7 @@ from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordpermission import DiscordPermission
 from Utils.regex import Discord as ReDiscord
-from Platforms.Discord.utils import getDiscordServerUsers
+from Platforms.Discord.db import getDiscordServerUsers
 from Platforms.Discord.commandindex import getDiscordCommandFunction
 
 class GDCCS():

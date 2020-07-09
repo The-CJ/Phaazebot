@@ -8,7 +8,7 @@ import html
 from aiohttp.web import Response, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Platforms.Discord.utils import getDiscordSeverSettings
+from Platforms.Discord.db import getDiscordSeverSettings
 from Platforms.Web.utils import getNavbar
 from ..errors import notAllowed
 

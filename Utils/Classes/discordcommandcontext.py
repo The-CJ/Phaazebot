@@ -3,7 +3,7 @@ if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import discord
-from Platforms.Discord.utils import getDiscordServerCommands
+from Platforms.Discord.db import getDiscordServerCommands
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordserversettings import DiscordServerSettings
 

@@ -9,7 +9,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordassignrole import DiscordAssignRole
-from Platforms.Discord.utils import getDiscordServerAssignRoles
+from Platforms.Discord.db import getDiscordServerAssignRoles
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,

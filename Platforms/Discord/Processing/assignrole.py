@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import discord
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from Platforms.Discord.utils import getDiscordServerAssignRoles
+from Platforms.Discord.db import getDiscordServerAssignRoles
 
 async def assignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 

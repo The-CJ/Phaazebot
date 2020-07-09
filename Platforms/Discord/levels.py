@@ -6,7 +6,7 @@ import discord
 import math
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
-from .utils import getDiscordServerUsers
+from Platforms.Discord.db import getDiscordServerUsers
 
 DEFAULT_LEVEL_MESSAGE:str = "[mention] is now Level **[lvl]** :tada:"
 

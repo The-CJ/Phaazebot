@@ -9,7 +9,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
-from Platforms.Discord.utils import getDiscordServerTwitchAlerts
+from Platforms.Discord.db import getDiscordServerTwitchAlerts
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordAlertNotExists

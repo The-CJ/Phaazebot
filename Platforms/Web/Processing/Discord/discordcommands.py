@@ -9,8 +9,8 @@ from aiohttp.web import Response, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Web.utils import getNavbar
-from Platforms.Discord.utils import getDiscordSeverSettings
-from ..errors import notAllowed
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Web.Processing.errors import notAllowed
 
 async def discordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""

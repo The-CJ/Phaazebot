@@ -5,7 +5,8 @@ if TYPE_CHECKING:
 import discord
 import traceback
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordChannelFromString, getDiscordRoleFromString
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Discord.utils import getDiscordChannelFromString, getDiscordRoleFromString
 from Platforms.Discord.formater import responseFormater
 from Platforms.Discord.logging import loggingOnMemberJoin, loggingOnMemberRemove
 from Utils.regex import ContainsLink

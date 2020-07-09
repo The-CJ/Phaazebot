@@ -6,7 +6,8 @@ import discord
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discorduserstats import DiscordUserStats
-from Platforms.Discord.utils import getDiscordServerUsers, getDiscordMemberFromString
+from Platforms.Discord.db import getDiscordServerUsers
+from Platforms.Discord.utils import getDiscordMemberFromString
 from Platforms.Discord.levels import Calc as LevelCalc
 from Utils.stringutils import prettifyNumbers
 

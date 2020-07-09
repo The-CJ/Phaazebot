@@ -6,7 +6,7 @@ import discord
 from tabulate import tabulate
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from Platforms.Discord.utils import getDiscordServerUsers
+from Platforms.Discord.db import getDiscordServerUsers
 from Platforms.Discord.levels import Calc as LevelCalc
 from Utils.stringutils import prettifyNumbers
 

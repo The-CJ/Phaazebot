@@ -4,10 +4,10 @@ if TYPE_CHECKING:
 
 import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from .utils import getDiscordSeverSettings
-from .blacklist import checkBlacklist
-from .commands import checkCommands
-from .levels import checkLevel
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Discord.blacklist import checkBlacklist
+from Platforms.Discord.commands import checkCommands
+from Platforms.Discord.levels import checkLevel
 
 async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 

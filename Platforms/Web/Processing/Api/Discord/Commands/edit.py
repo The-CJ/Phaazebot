@@ -11,7 +11,7 @@ from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordcommand import DiscordCommand
-from Platforms.Discord.utils import getDiscordServerCommands
+from Platforms.Discord.db import getDiscordServerCommands
 from Utils.dbutils import validateDBInput
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,

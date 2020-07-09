@@ -10,7 +10,7 @@ from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordQuotesNotExists
-from Platforms.Discord.utils import getDiscordServerQuotes
+from Platforms.Discord.db import getDiscordServerQuotes
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordquote import DiscordQuote
 

@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.utils import getDiscordServerUsers
+from Platforms.Discord.db import getDiscordServerUsers
 from Utils.dbutils import validateDBInput
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discorduserstats import DiscordUserStats

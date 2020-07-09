@@ -8,7 +8,7 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
-from Platforms.Discord.utils import getDiscordServerNsfwEnabledChannels, getDiscordServerNsfwEnabledChannelAmount
+from Platforms.Discord.db import getDiscordServerNsfwEnabledChannels, getDiscordServerNsfwEnabledChannelAmount
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingAuthorisation,
 	apiMissingData

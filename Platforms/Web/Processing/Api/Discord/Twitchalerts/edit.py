@@ -10,7 +10,7 @@ from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.undefined import UNDEFINED
-from Platforms.Discord.utils import getDiscordServerTwitchAlerts
+from Platforms.Discord.db import getDiscordServerTwitchAlerts
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordAlertNotExists

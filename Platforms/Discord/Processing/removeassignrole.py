@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 from Utils.Classes.discordassignrole import DiscordAssignRole
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from Platforms.Discord.utils import getDiscordServerAssignRoles
+from Platforms.Discord.db import getDiscordServerAssignRoles
 
 async def removeAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
