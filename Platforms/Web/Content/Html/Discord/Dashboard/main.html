@@ -145,4 +145,109 @@
   </div>
 
 </main>
+
 <button type="button" class="site-panel-btn btn" onclick="DiscordDashboard.setSitePanelCollapse()"><i class="fas fa-angle-double-right"></i></button>
+
+<div class="modal fade" id="token_help_modal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header text-center">
+        <h4 class="modal-title">Token</h4>
+        <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body text-center">
+
+        <div class="row">
+          <div class="col">
+            <p>Tokens are placeholder that get replaced with informations if the message content is given out.</p>
+            <p>e.g.:</p>
+            <pre>Hello [user-mention], please read <#rules#>. Have a nice day :D</pre>
+            <p>will be:</p>
+            <pre>Hello <span class="clickable">@NewUserName</span>, please read <span class="clickable">#rules</span>. Have a nice day :D</pre>
+            <span>Note: using <#rules#> will make a <span class="clickable">clickable</span> channel mention</span><br>
+            <span>If you just use "#rules", it will be normal text.</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <h3>Token List</h3>
+        <div class="tokenlist">
+
+          <div class="center-item-row" token="all welcome leave priv_welcome level">
+            <div class="col key">[user-name]</div>
+            <div class="col value">The user name</div>
+          </div>
+
+          <div class="center-item-row" token="all welcome leave level">
+            <div class="col key">[user-mention]</div>
+            <div class="col value">A <span class="clickable">@mention</span> of the user</div>
+          </div>
+
+          <div class="center-item-row" token="all level">
+            <div class="col key">[channel-name]</div>
+            <div class="col value">Name of the event channel</div>
+          </div>
+
+          <div class="center-item-row" token="all level">
+            <div class="col key">[channel-mention]</div>
+            <div class="col value">A <span class="clickable">#mention</span> of the event channel</div>
+          </div>
+
+          <div class="center-item-row" token="all welcome leave priv_welcome level">
+            <div class="col key">[server-name]</div>
+            <div class="col value">The event server name</div>
+          </div>
+
+          <div class="center-item-row" token="all welcome leave priv_welcome level">
+            <div class="col key">[member-count]</div>
+            <div class="col value">Current event server member count</div>
+          </div>
+
+          <div class="center-item-row" token="all level">
+            <div class="col key">[lvl]</div>
+            <div class="col value">The users level</div>
+          </div>
+
+          <div class="center-item-row" token="all level">
+            <div class="col key">[exp]</div>
+            <div class="col value">The users exp amount</div>
+          </div>
+
+          <div class="center-item-row" token="all level">
+            <div class="col key">[rank]</div>
+            <div class="col value">The users ranked based on exp</div>
+          </div>
+
+        </div>
+
+        <hr>
+
+        <h3>Special token List</h3>
+        <div class="tokenlist">
+
+          <div class="center-item-row" token="all welcome leave priv_welcome level">
+            <div class="col key"><#name#></div>
+            <div class="col value"><span class="clickable">#mention</span> of channel associated with name*</div>
+          </div>
+
+          <div class="center-item-row" token="all welcome leave priv_welcome level">
+            <div class="col key"><#!id!#></div>
+            <div class="col value"><span class="clickable">#mention</span> of channel associated with id*</div>
+          </div>
+
+          <div class="center-item-row" token="all welcome leave priv_welcome level">
+            <div class="col value">* = If none is found, it's replaced with: (unknown)</div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer"></div>
+      <div messagebox></div>
+    </div>
+  </div>
+</div>

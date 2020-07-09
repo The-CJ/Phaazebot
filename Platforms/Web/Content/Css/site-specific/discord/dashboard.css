@@ -1,5 +1,8 @@
 /* overall styles */
 .generic-list > *, .generic-sub-list > * { margin: 2px; padding: 2px; }
+.clickable { padding: 2px; cursor: pointer; background-color: #7289DA1A; color: #7289DA; transition-duration: 250ms; border-radius: 2px; }
+.clickable:hover { background-color: #7289DA; color: #FFFFFF; }
+.tokenlist [token] > * { background-color: #69696969; margin: 3px; padding: 2px; }
 [location] { padding-top: 1.5em; }
 [mode] [show-mode] { display: none; } /* see file bottom */
 
@@ -61,7 +64,6 @@ button.option-status[value=false]:after { content: "DISABLED"; }
 .modal-body .center-item-row, .modal-body .row { min-height: 40px; }
 
 /* changes for responsiv */
-
 @media (max-width: 1100px) {
   .site-panel {
     left: 0;

@@ -42,6 +42,7 @@
 .modal-content input { color: var(--color-modal-text); }
 .modal-content input:focus { color: var(--color-modal-text); }
 .modal-content input:disabled { color: var(--color-modal-text-disabled); }
+.modal-content pre { color: var(--color-modal-text-disabled); }
 .md-form { margin: 0; }
 .md-form .form-control { margin: 0; }
 

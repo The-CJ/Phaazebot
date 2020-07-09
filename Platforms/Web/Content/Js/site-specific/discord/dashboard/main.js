@@ -6,6 +6,7 @@ $("document").ready(async function () {
 
 var DiscordDashboard = new (class {
   constructor() {
+    this.token_modal_id = "#token_help_modal";
     this.channels = [];
     this.roles = [];
   }
@@ -216,6 +217,17 @@ var DiscordDashboard = new (class {
     }
   }
 
+  showTokenHelp(field) {
+    if (isEmpty(field)) { field = "all"; }
+
+    // show the token modal with the according fields that can be used
+    var TokenHelp = $(this.token_modal_id);
+    TokenHelp.find(`[token]`).hide();
+    TokenHelp.find(`[token~=${field}]`).show();
+    TokenHelp.modal("show");
+
+  }
+
   // getter
   getDiscordChannelByID(id) {
     for (var channel of this.channels) {
@@ -285,12 +297,3 @@ var DiscordDashboard = new (class {
     this.loadLocation(location);
   }
 })
-
-// utils
-function showTokenHelp(field) {
-  if (isEmpty(field)) { field = ""; }
-  else { field = "."+field; }
-  $("#token_modal_help .token").hide();
-  $("#token_modal_help .token"+field).show();
-  $("#token_modal_help").modal("show");
-}
