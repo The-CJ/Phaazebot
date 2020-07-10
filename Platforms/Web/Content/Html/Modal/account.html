@@ -87,36 +87,6 @@
         </div>
       </div>
       <div login="false" style="display:none;">
-        <form action="javascript:SessionManager.login()">
-          <div class="modal-content">
-            <div class="modal-header text-center">
-              <h4 class="modal-title">Sign into Phaaze</h4>
-              <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
-            </div>
-
-            <div class="modal-body text-black">
-              <div class="md-form">
-                <i class="fas fa-user-circle prefix grey-text"></i>
-                <input type="text" id="pun" class="form-control" name="username">
-                <label for="pun">Username or E-mail</label>
-              </div>
-              <div class="md-form">
-                <i class="fas fa-lock prefix grey-text"></i>
-                <input type="password" id="ppw" class="form-control" name="password">
-                <label for="ppw">Password</label>
-              </div>
-            </div>
-
-            <div class="modal-footer center-item-col forced">
-              <div>
-                <button class="btn btn-default" type="submit">Login</button>
-                <a href="/account/create">
-                  <button class="btn btn-secondary" type="button">Register</button>
-                </a>
-              </div>
-            </div>
-          </div>
-        </form>
       </div>
     </div>
 
@@ -220,7 +190,28 @@
           </div>
 
           <div login="false">
-            PHAAZE LOGIN FALSE
+
+            <form action="javascript:SessionManager.login()" class="">
+
+              <div class="center-item-row md-form">
+                <i class="fas fa-user-circle prefix grey-text"></i>
+                <input type="text" class="form-control" name="username" placeholder="Username or E-mail">
+              </div>
+
+              <div class="center-item-row md-form">
+                <i class="fas fa-lock prefix grey-text"></i>
+                <input type="password" class="form-control" name="password" placeholder="Password">
+              </div>
+
+              <hr>
+
+              <button class="btn btn-block btn-default" type="submit">Login</button>
+              <a href="/account/create">
+                <button class="btn btn-block btn-secondary" type="button">Register</button>
+              </a>
+
+            </form>
+
           </div>
         </div>
 
