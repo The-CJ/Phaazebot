@@ -255,12 +255,16 @@ var SessionManager = new (class {
   }
 
   showAccountPanel(field="select") {
+    // hiding everything
     $(`${this.modal_id}[mode] [show-mode]`).hide();
+    $(`${this.modal_id}[mode] [show-mode] [login]`).hide();
+
+    // show selected field and the login loading
     $(`${this.modal_id}[mode] [show-mode=${field}]`).show();
+    $(`${this.modal_id}[mode] [show-mode=${field}] [login=loading]`).show();
     $(this.modal_id).modal('show');
-    if (field != "select") {
-      this.getAccountInfo(field);
-    }
+
+    if (field != "select") { this.getAccountInfo(field); }
   }
 
   getAccountInfo(platform) {
@@ -279,7 +283,11 @@ var SessionManager = new (class {
     .fail(function (data) {
       // only do additional handling if its not a 401, because getting a unauthorised is actully pretty normal for a login question
       if (data.status != 401) { generalAPIErrorHandler( {data:data, msg:`Could not load info for platform: ${platform}`} ); }
-    })
+
+      // hide the login attributes and show login = false
+      $(`${SessionManagerO.modal_id} [show-mode=${platform}] [login]`).hide();
+      $(`${SessionManagerO.modal_id} [show-mode=${platform}] [login=false]`).show();
+    });
   }
 
   displayInfo(platform, data) {
@@ -297,6 +305,10 @@ var SessionManager = new (class {
         `https://cdn.discordapp.com/avatars/${data.user_id}/${data.avatar}?size=256`
       );
     }
+
+    // hide the login attributes and show login = true
+    $(`${this.modal_id} [show-mode=${platform}] [login]`).hide();
+    $(`${this.modal_id} [show-mode=${platform}] [login=true]`).show();
   }
 
   login() {
