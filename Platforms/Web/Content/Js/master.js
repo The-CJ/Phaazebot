@@ -202,7 +202,7 @@ function generalAPIErrorHandler(x={}) {
   else { final_message = "Unknown error"; }
 
   if (!x["no_message"]) {
-    console.log({content:final_message, color:color, time:time});
+    // console.log({content:final_message, color:color, time:time});
     Display.showMessage( {content:final_message, color:color, time:time} );
   }
   console.log(data);
@@ -251,26 +251,34 @@ function hrefLocation(x={}) {
 // big classes
 var SessionManager = new (class {
   constructor() {
+    this.modal_id = "#account_modal";
   }
 
-  showAccountPanel(field="all") {
-    $('#account_modal').modal('show');
-    $('#account_modal [table], #account_modal [login]').hide();
-    $(`#account_modal [table=${field}]`).show();
-    if (field != "all") {
+  showAccountPanel(field="select") {
+    $(`${this.modal_id}[mode] [show-mode]`).hide();
+    $(`${this.modal_id}[mode] [show-mode=${field}]`).show();
+    $(this.modal_id).modal('show');
+    if (field != "select") {
       this.getAccountInfo(field);
     }
   }
 
   getAccountInfo(platform) {
-    var SessMan = this;
-    $.get(`/api/account/${platform}/get`)
+    var SessionManagerO = this;
+    var url = "/api/account";
+
+    if (platform == "phaaze") { url = "/api/account/phaaze/get"; }
+    if (platform == "discord") { url = "/api/account/discord/get"; }
+    if (platform == "twitch") { url = "/api/account/twitch/get"; }
+    if (platform == "osu") { url = "/api/account/osu/get"; }
+
+    $.get(url)
     .done(function (data) {
-      SessMan.displayInfo(platform, data.user);
-      $(`#account_modal [table=${platform}] [login=true]`).show();
+      SessionManagerO.displayInfo(platform, data.user);
     })
     .fail(function (data) {
-      $(`#account_modal [table=${platform}] [login=false]`).show();
+      // only do additional handling if its not a 401, because getting a unauthorised is actully pretty normal for a login question
+      if (data.status != 401) { generalAPIErrorHandler( {data:data, msg:`Could not load info for platform: ${platform}`} ); }
     })
   }
 
@@ -340,6 +348,7 @@ var CookieManager = new (class {
   constructor() {
 
   }
+
   get(cookie) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
@@ -355,6 +364,7 @@ var CookieManager = new (class {
     }
     return "";
   }
+
   set(name, value, expires_in) {
     if (expires_in == null) {
       document.cookie = name+'='+value+'; Path=/';
@@ -363,6 +373,7 @@ var CookieManager = new (class {
       document.cookie = name+'='+value+'; Max-Age=' + expires_in + '; Path=/';
     }
   }
+
   remove(name) {
     document.cookie = name+"=; Max-Age=-1; Path=/"
   }
