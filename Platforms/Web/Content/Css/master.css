@@ -147,16 +147,9 @@ hr[br] { opacity: 0; }
 }
 
 /* global account modal */
-#account_modal h2 {
-	padding: 0;
-	margin: 0;
-}
-#account_modal .platform {
-	border: 1px solid black;
-}
-#account_modal .platform-icon > i {
-	font-size: 45px;
-}
+#account_modal .btn h2 { padding: 0; margin: 0; }
+#account_modal .platform { border: 1px solid black; }
+#account_modal .platform-icon > i { font-size: 45px; }
 
 /* role list under general info */
 #account_modal_roles {
