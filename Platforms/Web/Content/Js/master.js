@@ -144,10 +144,15 @@ function isEmpty(o) {
   return true;
 }
 
-function showEmail() {
+function showEmail(copy=false) {
   // i do this, so spam bots don't get the email from the site so easy
+
+  var email = ["admin","@", "pha", "aze", ".", "net"].join("");
+
+  if (copy) { return copyToClipboard(email); }
+
   $("#email_icon").popover({
-    content: ["admin","@", "pha", "aze", ".", "net"].join(""),
+    content: email,
     placement:"bottom",
     trigger:"hover"
   }).popover()
