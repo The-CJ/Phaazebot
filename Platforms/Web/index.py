@@ -76,6 +76,12 @@ class WebIndex(object):
 		# /discord*
 		self.addWebDiscordRoutes()
 
+		# temporal addded routs due to dev
+		self.Web.router.add_route('GET', '/twitch{x:.*}', self.underDev)
+		self.Web.router.add_route('GET', '/osu{x:.*}', self.underDev)
+		self.Web.router.add_route('GET', '/wiki{x:.*}', self.underDev)
+		self.Web.router.add_route('GET', '/bug{x:.*}', self.underDev)
+
 		# web contents (js, css, img)
 		self.Web.router.add_route('GET', '/img{file:.*}', self.serveImg)
 		self.Web.router.add_route('GET', '/css{file:.*}', self.serveCss)
@@ -197,7 +203,7 @@ class WebIndex(object):
 	from .Processing.webcontent import serveCss, serveJs, serveImg, serveFavicon
 
 	# errors
-	from .Processing.errors import notFound, notAllowed
+	from .Processing.errors import notFound, notAllowed, underDev
 
 	# utils
 	from .utils import getWebUserInfo, getDiscordUserInfo

@@ -50,3 +50,21 @@ async def notAllowed(cls:"WebIndex", WebRequest:Request, msg:str="") -> Response
 		status=401,
 		content_type='text/html'
 	)
+
+async def underDev(cls:"WebIndex", WebRequest:Request, msg:str="") -> Response:
+	cls.Web.BASE.Logger.debug(f"(Web) 400: {WebRequest.path}", require="web:underDev")
+
+	SiteDev:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/underDev.html")
+	site:str = cls.HTMLRoot.replace(
+		replace_empty = True,
+
+		title = "Phaaze | Under development",
+		header = getNavbar(),
+		main = SiteDev.content
+	)
+
+	return cls.response(
+		body=site,
+		status=400,
+		content_type='text/html'
+	)
