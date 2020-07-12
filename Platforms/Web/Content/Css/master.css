@@ -4,6 +4,7 @@
 	--color-darkphaaze: #004299;
 	--color-discord: #7289DA;
 	--color-twitch: #6441A4;
+	--color-osu: #E967A1;
 
 	--color-boolish-green: #12e400;
 	--color-boolish-red: #ff1700;
@@ -117,6 +118,7 @@ label.checkbox-container > span + input[type=checkbox] {
 .color-twitch { background-color: var(--color-twitch); }
 .color-phaaze { background-color: var(--color-phaaze); }
 .color-discord { background-color: var(--color-discord); }
+.color-osu { background-color: var(--color-osu); }
 
 /* element styles */
 pre {
@@ -150,17 +152,19 @@ hr[br] { opacity: 0; }
 #account_modal .btn h2 { padding: 0; margin: 0; }
 #account_modal .platform { border: 1px solid black; }
 #account_modal .platform-icon > i { font-size: 45px; }
+#account_modal i.icon { font-size: 125%; }
 
 /* role list under general info */
-#account_modal_roles {
+#account_modal [user-role-list] {
+	text-align: center;
 	overflow-y: auto;
 	overflow-x: visible;
 	max-height: 10em;
 }
-#account_modal_roles:empty::after {
+#account_modal [user-role-list]:empty::after {
 	content: "None";
 }
-#account_modal_roles > * {
+#account_modal [user-role-list] > .role {
 	padding: 5px;
 	border: 2px solid black;
 	margin: 3px;

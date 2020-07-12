@@ -62,7 +62,7 @@
               <input type="password" class="form-control" placeholder="Your current password" name="password">
             </div>
             <button type="button" class="btn btn-block orange" onclick="$(this).hide();$('#new_password_fields').show()">Set new password</button>
-            <div id="new_password_fields" style="display: none;">
+            <div id="oo" style="display: none;">
               <div class="md-form">
                 <i class="fas fa-key prefix grey-text"></i>
                 <input type="password" class="form-control" placeholder="New password" name="newpassword">
@@ -79,10 +79,8 @@
           </div>
 
           <div class="modal-footer center-item-col forced">
-            <div>
-              <button class="btn btn-primary" type="button" onclick="SessionManager.edit()">Save</button>
-              <button class="btn btn-danger" type="button" onclick="SessionManager.logout('phaaze')">Logout</button>
-            </div>
+            <button class="btn btn-block btn-primary" type="button" onclick="SessionManager.edit()">Save</button>
+            <button class="btn btn-block btn-danger" type="button" onclick="SessionManager.logout('phaaze')">Logout</button>
           </div>
         </div>
       </div>
@@ -169,12 +167,12 @@
             <div class="col"><h2>Discord</h2></div>
           </div>
 
-          <div class="platform center-item-row forced btn btn-block color-twitch white-text" onclick="SessionManager.showAccountPanel('twitch')">
+          <div class="platform center-item-row forced btn btn-block color-twitch white-text" onclick="SessionManager.showAccountPanel('twitch')" hidden>
             <div class="col-3 platform-icon"><i class="fab fa-twitch"></i></div>
             <div class="col"><h2>Twitch</h2></div>
           </div>
 
-          <div class="platform center-item-row forced btn btn-block color-osu white-text" onclick="SessionManager.showAccountPanel('osu')">
+          <div class="platform center-item-row forced btn btn-block color-osu white-text" onclick="SessionManager.showAccountPanel('osu')" hidden>
             <div class="col-3 platform-icon"><i class="fab fa-osu"></i></div>
             <div class="col"><h2>osu!</h2></div>
           </div>
@@ -186,7 +184,70 @@
           <div login="loading"><span>Loading Phaaze informations...</span></div>
 
           <div login="true">
-            PHAAZE LOGIN TRUE
+
+            <h3>General</h3>
+
+            <div class="center-item-row md-form">
+              <div class="col-1">
+                <i class="fas fa-user-circle grey-text icon"></i>
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="Your username" name="username">
+              </div>
+            </div>
+
+            <div class="center-item-row md-form">
+              <div class="col-1">
+                <i class="far fa-envelope grey-text icon"></i>
+              </div>
+              <div class="col">
+                <input type="email" class="form-control" placeholder="Your e-mail" name="email">
+              </div>
+            </div>
+
+            <div class="center-item-row md-form">
+              <div class="col-1">
+                <i class="fas fa-lock grey-text icon" title="needed for changes">*</i>
+              </div>
+              <div class="col">
+                <input type="password" class="form-control" placeholder="Your current password [required on change]" name="password">
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-block btn-warning" onclick="$(this).hide();$('#new_password_fields').show()">Set new password</button>
+            <div id="new_password_fields" style="display: none;">
+
+              <div class="center-item-row md-form">
+                <div class="col-1">
+                  <i class="fas fa-key grey-text icon"></i>
+                </div>
+                <div class="col">
+                  <input type="password" class="form-control" placeholder="New password" name="newpassword">
+                </div>
+              </div>
+
+              <div class="center-item-row md-form">
+                <div class="col-1">
+                  <i class="fas fa-key grey-text icon"></i>
+                </div>
+                <div class="col">
+                  <input type="password" class="form-control" placeholder="Retype password" name="newpassword2">
+                </div>
+              </div>
+
+            </div>
+
+            <hr>
+            <h3>Roles</h3>
+            <!-- get filled with ".role" elements -->
+            <div user-role-list></div>
+
+            <hr>
+            <div class="center-item-col forced">
+              <button class="btn btn-block btn-warning" type="button" onclick="SessionManager.edit()">Save</button>
+              <button class="btn btn-block btn-danger" type="button" onclick="SessionManager.logout('phaaze')">Logout</button>
+            </div>
+
           </div>
 
           <div login="false">
@@ -194,12 +255,12 @@
             <form action="javascript:SessionManager.login()" class="">
 
               <div class="center-item-row md-form">
-                <i class="fas fa-user-circle prefix grey-text"></i>
+                <i class="fas fa-user-circle grey-text icon"></i>
                 <input type="text" class="form-control" name="username" placeholder="Username or E-mail">
               </div>
 
               <div class="center-item-row md-form">
-                <i class="fas fa-lock prefix grey-text"></i>
+                <i class="fas fa-lock grey-text icon"></i>
                 <input type="password" class="form-control" name="password" placeholder="Password">
               </div>
 

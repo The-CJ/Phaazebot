@@ -292,12 +292,13 @@ var SessionManager = new (class {
 
   displayInfo(platform, data) {
     if (platform == "phaaze") {
-      insertData("#account_modal [table=phaaze] [login=true]", data);
-      var RoleList = $("#account_modal_roles").html("");
+      insertData(`${this.modal_id} [show-mode=phaaze] [login=true]`, data);
+      var RoleList = $(`${this.modal_id} [show-mode=phaaze] [login=true] [user-role-list]`).html("");
       for (var role of data.roles) {
         RoleList.append( $("<div class='role'>").text(role) );
       }
     }
+
     if (platform == "discord") {
       $("#current_discord_username").val(data.username);
       $("#current_discord_avatar").attr(
@@ -312,26 +313,34 @@ var SessionManager = new (class {
   }
 
   login() {
-    var login = extractData("#account_modal [table=phaaze] [login=false]");
-    $.post("/api/account/phaaze/login", login)
+    var SessionManagerO = this;
+    var login_data = extractData(`${SessionManagerO.modal_id} [show-mode=phaaze] [login=false]`);
+    $.post("/api/account/phaaze/login", login_data)
     .done(function (data) {
       CookieManager.set("phaaze_session", data.phaaze_session, data.expires_in);
       Display.showMessage({'content': 'You successfull logged in!' ,'color':Display.color_success});
-      $('#account_modal').modal('hide');
+      $(SessionManagerO.modal_id).modal('hide');
     })
     .fail(function (data) {
-      // pun = phaaze user name
-      // ppw = phaaze pass word
-      $("#pun").addClass("animated shake");
-      $("#ppw").addClass("animated shake").val("");
+      var user = $(`${SessionManagerO.modal_id} [show-mode=phaaze] [login=false] [name=username]`).addClass("animated shake");
+      var pass = $(`${SessionManagerO.modal_id} [show-mode=phaaze] [login=false] [name=password]`).addClass("animated shake").val("");
       setTimeout(function () {
-        $("#pun, #ppw").removeClass("animated shake");
+        user.removeClass("animated shake");
+        pass.removeClass("animated shake");
       }, 1000);
     })
   }
 
   logout(platform) {
-    $.post(`/api/account/${platform}/logout`)
+    var SessionManagerO = this;
+    var url = "/api/account";
+
+    if (platform == "phaaze") { url = "/api/account/phaaze/logout"; }
+    if (platform == "discord") { url = "/api/account/discord/logout"; }
+    if (platform == "twitch") { url = "/api/account/twitch/logout"; }
+    if (platform == "osu") { url = "/api/account/osu/logout"; }
+
+    $.post(url)
     .done(function (data) {
       Display.showMessage({"content": `You successfull logged out from ${platform}`,'color':Display.color_success});
       if (platform == "phaaze") { CookieManager.remove("phaaze_session"); }
@@ -341,11 +350,12 @@ var SessionManager = new (class {
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"Unable to logout"} );
-    })
+    });
   }
 
   edit() {
-    var data = extractData("#account_modal [table=phaaze] [login=true]");
+    var SessionManagerO = this;
+    var data = extractData(`${SessionManagerO.modal_id} [show-mode=phaaze] [login=true]`);
     $.post("/api/account/phaaze/edit", data)
     .done(function (data) {
       Display.showMessage({content:data.msg, color:Display.color_success});
