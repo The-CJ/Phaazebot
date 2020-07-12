@@ -300,11 +300,9 @@ var SessionManager = new (class {
     }
 
     if (platform == "discord") {
-      $("#current_discord_username").val(data.username);
-      $("#current_discord_avatar").attr(
-        "src",
-        `https://cdn.discordapp.com/avatars/${data.user_id}/${data.avatar}?size=256`
-      );
+      $(`${this.modal_id} [show-mode=discord] [login=true] [name=current_discord_username]`).val(data.username);
+      let avatar = discordUserAvatar(data.user_id, data.avatar, 256);
+      $(`${this.modal_id} [show-mode=discord] [login=true] [name=current_discord_avatar]`).attr("src", avatar);
     }
 
     // hide the login attributes and show login = true
@@ -346,7 +344,7 @@ var SessionManager = new (class {
       if (platform == "phaaze") { CookieManager.remove("phaaze_session"); }
       if (platform == "discord") { CookieManager.remove("phaaze_discord_session"); }
       if (platform == "twitch") { CookieManager.remove("phaaze_twitch_session"); }
-      $('#account_modal').modal('hide');
+      $(SessionManagerO.modal_id).modal('hide');
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"Unable to logout"} );
