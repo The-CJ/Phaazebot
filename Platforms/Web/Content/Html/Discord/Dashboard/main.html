@@ -2,6 +2,7 @@
 <script src="/js/site-specific/discord/dashboard/main.js" charset="utf-8"></script>
 <script src="/js/site-specific/discord/dashboard/quotes.js" charset="utf-8"></script>
 <script src="/js/site-specific/discord/dashboard/twitchalerts.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/dashboard/regular.js" charset="utf-8"></script>
 <script src="/js/site-specific/discord/dashboard/levels.js" charset="utf-8"></script>
 <script src="/js/site-specific/discord/dashboard/configs_chat.js" charset="utf-8"></script>
 <script src="/js/site-specific/discord/dashboard/configs_event.js" charset="utf-8"></script>
@@ -42,6 +43,13 @@
           <div class="text-left" onclick="DiscordDashboard.loadLocation('twitch_alerts')">
             <i class="fab fa-twitch"></i>
             <span>Twitch Alerts</span>
+          </div>
+        </div>
+
+        <div sidebar-location="regulars">
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('regulars')">
+            <i class="fas fa-star"></i>
+            <span>Regulars</span>
           </div>
         </div>
 
@@ -120,6 +128,8 @@
         |<!--#(location_twitch_alerts)#-->|
 
         |<!--#(location_levels)#-->|
+
+        |<!--#(location_regulars)#-->|
 
         |<!--#(location_configs_chat)#-->|
 

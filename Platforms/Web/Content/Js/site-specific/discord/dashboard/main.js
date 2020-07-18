@@ -43,6 +43,11 @@ var DiscordDashboard = new (class {
       TwitchAlerts.show();
     }
 
+    if (target == "regulars") {
+      this.setSitePanelSelectedLocation("regulars");
+      Regulars.show();
+    }
+
     if (target == "levels") {
       this.setSitePanelSelectedLocation("levels");
       Levels.show();
