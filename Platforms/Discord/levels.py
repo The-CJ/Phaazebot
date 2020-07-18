@@ -1,14 +1,49 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
-import discord
 import math
+import asyncio
+import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
 from Platforms.Discord.db import getDiscordServerUsers
 
+DEFAULT_LEVEL_COOLDOWN:int = 5
 DEFAULT_LEVEL_MESSAGE:str = "[mention] is now Level **[lvl]** :tada:"
+
+class GDLMCS():
+	"""
+	i present the GDLMCS, short for "Global Discord Level Message Cooldown Storage" (my short names get worse, right?)
+	after a command has been used, it's unique key is saved in where
+	while its in there, its in a cool down state, and wont be triggered again
+	after cooldown is gone, remove unique key from here and unlock command
+	"""
+	def __init__(self):
+		self.in_cooldown:Dict[str, bool] = {}
+
+	def check(self, Message:discord.Message) -> bool:
+		key:str = f"{Message.guild.id}-{Message.author.id}"
+		if self.in_cooldown.get(key, None): return True
+		else: return False
+
+	def cooldown(self, Message:discord.Message) -> None:
+		asyncio.ensure_future(self.cooldownCoro(Message))
+
+	async def cooldownCoro(self, Message:discord.Message) -> None:
+		key:str = f"{Message.guild.id}-{Message.author.id}"
+		if self.in_cooldown.get(key, None): return
+
+		# add
+		self.in_cooldown[key] = True
+
+		# wait
+		await asyncio.sleep(DEFAULT_LEVEL_COOLDOWN)
+
+		# remove
+		self.in_cooldown.pop(key, None)
+
+GDLMCS = GDLMCS()
 
 async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
 	"""
@@ -17,19 +52,22 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 		so every user has a entry in the db, for currency and other stuff)
 	"""
 
-	# TODO: Cooldown
+	# author is still in cooldown
+	if GDLMCS.check(Message): return
 
-	result:list = await getDiscordServerUsers(cls, Message.guild.id, member_id=Message.author.id)
+	# are levels disabled in any means?
+	if str(Message.channel.id) in ServerSettings.disabled_levelchannels: return
+	if ServerSettings.owner_disable_level: return
+
+	# get data from db
+	result:List[DiscordUserStats] = await getDiscordServerUsers(cls, Message.guild.id, member_id=Message.author.id)
 
 	if not result:
+		# we check here so we ensure a new user entry, if needed
 		LevelUser:DiscordUserStats = await newUser(cls, Message.guild.id, Message.author.id, username=Message.author.name, nickname=Message.author.nick)
 	else:
 		# there should be only one in the list
 		LevelUser:DiscordUserStats = result.pop(0)
-
-	# we check here so we ensure a new user entry, if needed
-	if str(Message.channel.id) in ServerSettings.disabled_levelchannels: return
-	if ServerSettings.owner_disable_level: return
 
 	LevelUser.exp += 1
 
@@ -44,6 +82,10 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 		( Message.author.name, Message.author.nick, str(LevelUser.server_id), str(LevelUser.member_id) )
 	)
 
+	# add author to cooldown
+	GDLMCS.cooldown(Message)
+
+	# check level progress, send level up messages yes/no?
 	await checkLevelProgress(cls, Message, LevelUser, ServerSettings)
 
 async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_infos:dict) -> DiscordUserStats:
