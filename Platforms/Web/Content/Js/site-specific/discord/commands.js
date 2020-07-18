@@ -51,7 +51,6 @@ var PublicCommands = new (class {
         Template.attr("command-id", entry.command_id);
 
         if (entry.hidden) {
-          // TODO: add hidden
           Template.find("[name=name]").addClass("hidden");
           Template.find("[name=name]").attr("title", "Execute the command in the Discord server to see the result.");
         }
@@ -127,6 +126,11 @@ var PublicCommands = new (class {
       command.cost = command.cost + ' ' + (command.cost == 1 ? curr_single : curr_multi);
       command.uses = `${command.uses} times`;
       command.require = discordTranslateRequire(command.require);
+      if (command.hidden) {
+        command.name = "(Hidden command)";
+        command.description = "Execute this command in the Discord server to see the result.";
+      }
+
       insertData(PublicCommandsO.modal_id, command);
 
       $(PublicCommandsO.modal_id).modal("show");
