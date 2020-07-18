@@ -148,6 +148,7 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/discord/configs{x:/?}{method:.*}', self.apiDiscordConfigs)
 		self.Web.router.add_route('*', '/api/discord/levels/medals{x:/?}{method:.*}', self.apiDiscordLevelsMedals)
 		self.Web.router.add_route('*', '/api/discord/levels{x:/?}{method:.*}', self.apiDiscordLevels)
+		self.Web.router.add_route('*', '/api/discord/regulars{x:/?}{method:.*}', self.apiDiscordRegulars)
 		self.Web.router.add_route('*', '/api/discord/quotes{x:/?}{method:.*}', self.apiDiscordQuotes)
 		self.Web.router.add_route('*', '/api/discord/assignroles{x:/?}{method:.*}', self.apiDiscordAssignroles)
 		self.Web.router.add_route('*', '/api/discord/twitchalerts{x:/?}{method:.*}', self.apiDiscordTwitchalerts)
@@ -177,6 +178,7 @@ class WebIndex(object):
 	from .Processing.Api.Discord.Levels.Medals.main import apiDiscordLevelsMedals
 	from .Processing.Api.Discord.Configs.main import apiDiscordConfigs
 	from .Processing.Api.Discord.Levels.main import apiDiscordLevels
+	from .Processing.Api.Discord.Regulars.main import apiDiscordRegulars
 	from .Processing.Api.Discord.Quotes.main import apiDiscordQuotes
 	from .Processing.Api.Discord.Assignroles.main import apiDiscordAssignroles
 	from .Processing.Api.Discord.Twitchalerts.main import apiDiscordTwitchalerts
