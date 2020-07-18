@@ -26,7 +26,7 @@ var DiscordDashboard = new (class {
         var image = discordGuildAvatar(guild.id, guild.icon, 128);
         $("#icon").attr("src", image);
 
-        insertData("[location='home']", guild);
+        insertData("[location=home]", guild);
       })
       .fail(function (data) {
         generalAPIErrorHandler( {data:data, msg:"loading informations failed"} );

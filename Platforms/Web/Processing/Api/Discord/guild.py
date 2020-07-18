@@ -31,11 +31,12 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	res:list = cls.Web.BASE.PhaazeDB.query("""
 		SELECT
-			(SELECT COUNT(*) FROM `discord_user` WHERE `discord_user`.`guild_id` = %s) AS `level_count`,
-			(SELECT COUNT(*) FROM `discord_command` WHERE `discord_command`.`guild_id` = %s) AS `command_count`,
-			(SELECT COUNT(*) FROM `discord_quote` WHERE `discord_quote`.`guild_id` = %s) AS `quote_count`,
-			(SELECT COUNT(*) FROM `discord_twitch_alert` WHERE `discord_twitch_alert`.`discord_guild_id` = %s) AS `twitch_alert_count`""",
-		(guild_id, guild_id, guild_id, guild_id)
+			(SELECT COUNT(*) FROM `discord_regular` WHERE `discord_regular`.`guild_id` = %(guild_id)s) AS `regular_count`,
+			(SELECT COUNT(*) FROM `discord_user` WHERE `discord_user`.`guild_id` = %(guild_id)s) AS `level_count`,
+			(SELECT COUNT(*) FROM `discord_command` WHERE `discord_command`.`guild_id` = %(guild_id)s) AS `command_count`,
+			(SELECT COUNT(*) FROM `discord_quote` WHERE `discord_quote`.`guild_id` = %(guild_id)s) AS `quote_count`,
+			(SELECT COUNT(*) FROM `discord_twitch_alert` WHERE `discord_twitch_alert`.`discord_guild_id` = %(guild_id)s) AS `twitch_alert_count`""",
+		{"guild_id": guild_id}
 	)
 	stats_info:dict = res[0]
 
@@ -56,6 +57,7 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 		role_count = len(Guild.roles),
 		roles = getAPIRoleList(Guild.roles),
 		command_count = stats_info.get("command_count", 0),
+		regular_count = stats_info.get("regular_count", 0),
 		quote_count = stats_info.get("quote_count", 0),
 		twitch_alert_count = stats_info.get("twitch_alert_count", 0),
 		level_count = stats_info.get("level_count", 0)
