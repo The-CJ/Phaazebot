@@ -7,7 +7,6 @@ import asyncio
 import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
-from Platforms.Discord.db import getDiscordServerUsers
 
 DEFAULT_LEVEL_COOLDOWN:int = 5
 DEFAULT_LEVEL_MESSAGE:str = "[mention] is now Level **[lvl]** :tada:"
@@ -45,7 +44,7 @@ class GDLMCS():
 
 GDLMCS = GDLMCS()
 
-async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
+async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, DiscordUser:DiscordUserStats) -> None:
 	"""
 		Run every time a user writes a message (not edited) and updates the exp.
 		(running checks on every message, even if level progress is disabled,
@@ -59,17 +58,11 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	if str(Message.channel.id) in ServerSettings.disabled_levelchannels: return
 	if ServerSettings.owner_disable_level: return
 
-	# get data from db
-	result:List[DiscordUserStats] = await getDiscordServerUsers(cls, Message.guild.id, member_id=Message.author.id)
-
-	if not result:
+	if not DiscordUser:
 		# we check here so we ensure a new user entry, if needed
-		LevelUser:DiscordUserStats = await newUser(cls, Message.guild.id, Message.author.id, username=Message.author.name, nickname=Message.author.nick)
-	else:
-		# there should be only one in the list
-		LevelUser:DiscordUserStats = result.pop(0)
+		DiscordUser = await newUser(cls, Message.guild.id, Message.author.id, username=Message.author.name, nickname=Message.author.nick)
 
-	LevelUser.exp += 1
+	DiscordUser.exp += 1
 
 	cls.BASE.PhaazeDB.query("""
 		UPDATE `discord_user`
@@ -79,14 +72,14 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 			`nickname` = %s
 		WHERE `discord_user`.`guild_id` = %s
 			AND `discord_user`.`member_id` = %s""",
-		( Message.author.name, Message.author.nick, str(LevelUser.server_id), str(LevelUser.member_id) )
+		( Message.author.name, Message.author.nick, str(DiscordUser.server_id), str(DiscordUser.member_id) )
 	)
 
 	# add author to cooldown
 	GDLMCS.cooldown(Message)
 
 	# check level progress, send level up messages yes/no?
-	await checkLevelProgress(cls, Message, LevelUser, ServerSettings)
+	await checkLevelProgress(cls, Message, DiscordUser, ServerSettings)
 
 async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_infos:dict) -> DiscordUserStats:
 	"""

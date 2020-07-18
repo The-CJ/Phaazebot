@@ -6,16 +6,18 @@ import discord
 import re
 from Utils.regex import ContainsLink
 from Utils.Classes.discordserversettings import DiscordServerSettings
+from Utils.Classes.discorduserstats import DiscordUserStats
 from Utils.Classes.discordpermission import DiscordPermission
 
-async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, DiscordUser:DiscordUserStats) -> bool:
 
 	PhaazePermissions:discord.Permissions = Message.channel.permissions_for(Message.guild.me)
 
+	# if the user has manage_messages or is a regular or higher, skip checks
 	if not PhaazePermissions.manage_messages: return False
-	if DiscordPermission(Message).rank >= 2: return False
+	if DiscordPermission(Message, DiscordUser).rank >= 1: return False
 
-	# if this is True after all checks, punish
+	# if this is True after all checks => punish
 	punish:bool = False
 	reason:str = None
 

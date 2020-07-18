@@ -1,4 +1,5 @@
 import discord
+from Utils.Classes.discorduserstats import DiscordUserStats
 
 class DiscordPermission(object):
 	"""
@@ -14,8 +15,11 @@ class DiscordPermission(object):
 		3 - Server Owner
 		4+  System (NOTE: don't know what it means... maybe developer debug only?)
 	"""
-	def __init__(self, Message:discord.Message):
+	def __init__(self, Message:discord.Message, Member:DiscordUserStats):
 		self.rank = 0
+
+		if Member.regular:
+			self.rank = 1
 
 		if self.checkRoles(Message.author.roles):
 			self.rank = 2

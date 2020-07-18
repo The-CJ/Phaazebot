@@ -47,7 +47,7 @@ class GDCCS():
 
 GDCCS = GDCCS()
 
-async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, DiscordUser:DiscordUserStats) -> bool:
 	"""
 	This function is run on every message and checks if there is a command to execute
 	Returns True if a function is executed, else False
@@ -57,7 +57,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 	CommandContext:DiscordCommandContext = DiscordCommandContext(cls, Message, Settings=ServerSettings)
 
 	# get permission object
-	AuthorPermission:DiscordPermission = DiscordPermission(Message)
+	AuthorPermission:DiscordPermission = DiscordPermission(Message, DiscordUser)
 
 	# random fact, even part 0 can be none, if a image is updated
 	clean_nickname:str = (CommandContext.part(0) or '').replace('!', '')
@@ -124,9 +124,6 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		# command requires a currency payment, check if user can affort it
 		# except mods
 		if Command.required_currency != 0 and AuthorPermission.rank < 2:
-			res:list = await getDiscordServerUsers(cls, Message.guild.id, Message.author.id)
-			if not res: return False
-			DiscordUser:DiscordUserStats = res.pop(0)
 
 			# not enough
 			if not (DiscordUser.currency >= Command.required_currency):
