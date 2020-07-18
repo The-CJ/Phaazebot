@@ -6,6 +6,7 @@ import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discorduserstats import DiscordUserStats
+from Utils.Classes.discordregular import DiscordRegular
 from Utils.Classes.discordusermedal import DiscordUserMedal
 from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.discordassignrole import DiscordAssignRole
@@ -323,6 +324,63 @@ async def getDiscordUsersMedalAmount(cls:"PhaazebotDiscord", guild_id:str, where
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_user_medal`
 		WHERE `discord_user_medal`.`guild_id` = %s AND {where}"""
+
+	values:tuple = (guild_id,) + where_values
+
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
+# discord_regular
+async def getDiscordRegulars(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> List[DiscordRegular]:
+	"""
+	Get server regulars.
+	Returns a list of DiscordRegular().
+
+	Optional keywords:
+	------------------
+	* member_id `str` : (Default: None)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpack
+	member_id:str = search.get("member_id", 0)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
+	sql:str = """
+		SELECT `discord_regular`.* FROM `discord_regular`
+		WHERE `discord_regular`.`guild_id` = %s"""
+
+	values:tuple = ( str(guild_id), )
+
+	if member_id:
+		sql += " AND `discord_regular`.`member_id` = %s"
+		values += ( str(member_id), )
+
+	sql += f" {order_str}"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	if res:
+		return [DiscordRegular(x) for x in res]
+
+	else:
+		return []
+
+async def getDiscordRegularAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_regular`
+		WHERE `discord_regular`.`guild_id` = %s AND {where}"""
 
 	values:tuple = (guild_id,) + where_values
 
