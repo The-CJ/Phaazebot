@@ -45,7 +45,7 @@
 /* location specific styles */
 [location] .content-box span { white-space: pre-line; }
 [location=home] .guild-name { margin-left: 1em; font-size: 3ch; }
-[location=levels] .level .avatar { border-radius: 50%; margin-top: 2px; margin-left: 5px; }
+[location=levels] .level .avatar, [location=regulars] .regular .avatar { border-radius: 50%; margin-top: 2px; margin-left: 5px; margin-right: 5px; }
 [location=commands_command] .command.hidden { font-style: italic; }
 [location=commands_command] .command.non-active { box-shadow: -5px 0px 0px red; }
 [location=commands_help] [arg-list]:empty:after { content:"(None)"; font-style: italic; color: lightgrey;}

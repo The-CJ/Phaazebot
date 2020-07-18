@@ -53,7 +53,7 @@
 
     <div class="header row generic-list">
       <div class="col member">Member</div>
-      <div class="col-2 action">Action</div>
+      <div class="col-1 action">Action</div>
     </div>
 
     <!-- gets filled with copys of: "[phantom] .regular" -->
@@ -169,33 +169,17 @@
 
 <div phantom hidden>
 
-  <div class="row level generic-sub-list" member-id="0">
-    <div class="col-1 rank">#<span name="rank">[N/A]</span></div>
-    <div class="col-2 level-exp">
-      <span name="level">[N/A]</span>
-      <span>[</span>
-      <span name="exp">[N/A]</span>
-      <span>]</span>
-    </div>
+  <div class="row regular generic-sub-list" regular-id="0">
     <div class="col member">
       <div class="center-item-row forced">
         <img src="" alt="avatar" class="avatar" height="32" width="32">
         <span name="username">[N/A]</span>
       </div>
     </div>
-    <div class="col-1 currency"><span name="currency">[N/A]</span></div>
-    <div class="col-1 medals"><span name="medal_amount">[N/A]</span></div>
     <div class="col-1 action">
-      <button type="submit" class="btn btn-warning icon-btn small" onclick="Levels.editModal(this)"><i class="fas fa-edit"></i></button>
+      <button type="submit" class="btn btn-warning icon-btn small" onclick="Regular.editModal(this)"><i class="fas fa-edit"></i></button>
+      <button type="submit" class="btn btn-danger icon-btn small" onclick="Regular.deleteFromList(this)"><i class="fas fa-trash"></i></button>
     </div>
-  </div>
-
-  <div class="center-item-row forced medal">
-    <data name="medal_id"></data>
-    <div class="delete">
-      <button type="button" class="btn btn-danger icon-btn" onclick="Levels.deleteMedal(this)"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="col"><span name="name"></span></div>
   </div>
 
 </div>

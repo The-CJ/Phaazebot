@@ -44,7 +44,7 @@ var Regulars = new(class {
         var Template = $(`[phantom] ${RegularO.phantom_class}`).clone();
 
         // set avatar
-        var avatar = discordUserAvatar(level.member_id, level.avatar);
+        var avatar = discordUserAvatar(entry.member_id, entry.avatar);
         Template.find("img").attr("src", avatar);
 
         insertData(Template, entry);
