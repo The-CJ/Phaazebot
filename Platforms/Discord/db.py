@@ -192,11 +192,15 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:d
 			SELECT
 				`discord_user`.*,
 				GROUP_CONCAT(`discord_user_medal`.`name` SEPARATOR ';;;') AS `medals`,
-				RANK() OVER (ORDER BY `exp` DESC) AS `rank`
+				RANK() OVER (ORDER BY `exp` DESC) AS `rank`,
+				(`discord_regular`.`id` IS NOT NULL) AS `regular`
 			FROM `discord_user`
 			LEFT JOIN `discord_user_medal`
 				ON `discord_user_medal`.`guild_id` = `discord_user`.`guild_id`
 					AND `discord_user_medal`.`member_id` = `discord_user`.`member_id`
+			LEFT JOIN `discord_regular`
+				ON `discord_regular`.`guild_id` = `discord_user`.`guild_id`
+					AND `discord_regular`.`member_id` = `discord_user`.`member_id`
 			WHERE `discord_user`.`on_server` = 1
 				AND `discord_user`.`guild_id` = %s
 			GROUP BY `discord_user`.`guild_id`, `discord_user`.`member_id`

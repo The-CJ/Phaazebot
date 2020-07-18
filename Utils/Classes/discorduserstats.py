@@ -19,6 +19,7 @@ class DiscordUserStats(DBContentClass, APIClass):
 		self.exp:int = int( data.get("exp", 0) )
 		self.currency:int = int( data.get("currency", 0) )
 		self.edited:bool = bool( data.get("edited", False) )
+		self.regular:bool = bool( data.get("regular", False) )
 		self.medals:list = self.fromStringList( data.get("medals", UNDEFINED ), ";;;" )
 
 	def __repr__(self):
@@ -45,6 +46,7 @@ class DiscordUserStats(DBContentClass, APIClass):
 		j["exp"] = self.toInteger(self.exp)
 		j["currency"] = self.toInteger(self.currency)
 		j["edited"] = self.toBoolean(self.edited)
+		j["regular"] = self.toBoolean(self.regular)
 		j["medals"] = self.toList(self.medals)
 
 		return j
