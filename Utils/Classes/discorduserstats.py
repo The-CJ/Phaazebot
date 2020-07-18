@@ -25,14 +25,25 @@ class DiscordUserStats(DBContentClass, APIClass):
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.server_id}' member='{self.member_id}'>"
 
-	async def editCurrency(self, cls:"PhaazebotDiscord", amount:int) -> None:
-		cls.BASE.PhaazeDB.query("""
-			UPDATE `discord_user`
-			SET `currency` = `currency` + %s
-			WHERE `guild_id` = %s AND `member_id` = %s""",
-			( amount, str(self.server_id), str(self.member_id) )
-		)
+	async def editCurrency(self, cls:"PhaazebotDiscord", amount_by:int=None, amount_to:int=None) -> None:
 
+		if amount_by and amount_to: raise AttributeError("'amount_by' and 'amount_to' can't both be given")
+
+		sql:str = "UPDATE `discord_user`"
+		values:tuple = ()
+
+		if amount_by != None:
+			sql += " SET `currency` = `currency` + %s"
+			values += ( int(amount_by) )
+
+		if amount_to != None:
+			sql += " SET `currency` = %s"
+			values += ( int(amount_to) )
+
+		sql += " WHERE `guild_id` = %s AND `member_id` = %s"
+		values += ( str(self.guild_id), str(self.member_id) )
+
+		cls.BASE.PhaazeDB.query(sql, values)
 		cls.BASE.Logger.debug(f"(Discord) Updated currency: S:{self.server_id} U:{self.member_id}", require="discord:command")
 
 	def toJSON(self) -> dict:

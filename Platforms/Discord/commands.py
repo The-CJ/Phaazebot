@@ -133,7 +133,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 				cls.BASE.Logger.debug(f"(Discord) Skipping command call because of insufficient currency: ({DiscordUser.currency} < {Command.required_currency})", require="discord:commands")
 				return False
 
-			await DiscordUser.editCurrency(cls, -Command.required_currency )
+			await DiscordUser.editCurrency(cls, amount_by=-Command.required_currency )
 
 		# add command to cooldown
 		GDCCS.cooldown(Command)
