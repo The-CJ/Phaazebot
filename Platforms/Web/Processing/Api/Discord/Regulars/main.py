@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Response, Request
+from .get import apiDiscordRegularsGet
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordRegulars(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -17,8 +18,8 @@ async def apiDiscordRegulars(cls:"WebIndex", WebRequest:Request) -> Response:
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	# elif method == "get":
-		# return await apiDiscordLevelsGet(cls, WebRequest)
+	elif method == "get":
+		return await apiDiscordRegularsGet(cls, WebRequest)
 
 	# elif method == "edit":
 		# return await apiDiscordLevelsEdit(cls, WebRequest)
