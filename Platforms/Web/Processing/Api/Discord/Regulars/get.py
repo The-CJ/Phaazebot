@@ -26,7 +26,6 @@ async def apiDiscordRegularsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
 	nickname:bool = Data.getBool("nickname", False) # usernames or nicknames?
-	name_contains:str = Data.getStr("name_contains", "")
 	detailed:bool = Data.getBool("detailed", False) # with names, avatar hash etc.
 	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	offset:int = Data.getInt("offset", 0, min_x=0)
@@ -41,7 +40,7 @@ async def apiDiscordRegularsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get regulars
-	res_regulars:List[DiscordRegular] = await getDiscordRegulars(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset, name_contains=name_contains)
+	res_regulars:List[DiscordRegular] = await getDiscordRegulars(PhaazeDiscord, guild_id=guild_id, member_id=member_id, limit=limit, offset=offset)
 
 	return_list:List[dict] = []
 
