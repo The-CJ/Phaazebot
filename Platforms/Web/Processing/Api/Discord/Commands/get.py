@@ -73,6 +73,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	return cls.response(
 		text=json.dumps( dict(
 			result=api_return,
+			show_hidden=show_hidden,
 			limit=limit,
 			offset=offset,
 			total=(await getDiscordServerCommandsAmount(PhaazeDiscord, guild_id)),
