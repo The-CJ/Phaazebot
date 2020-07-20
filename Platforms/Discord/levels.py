@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List
+from typing import TYPE_CHECKING, Dict
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
@@ -9,7 +9,7 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
 
 DEFAULT_LEVEL_COOLDOWN:int = 5
-DEFAULT_LEVEL_MESSAGE:str = "[mention] is now Level **[lvl]** :tada:"
+DEFAULT_LEVEL_MESSAGE:str = "[user-mention] is now Level **[lvl]** :tada:"
 
 class GDLMCS():
 	"""
@@ -142,8 +142,8 @@ async def announceLevelUp(cls:"PhaazebotDiscord", Message:discord.Message, Level
 	else:
 		level_message = DEFAULT_LEVEL_MESSAGE
 
-	level_message = level_message.replace("[mention]", str(Message.author.mention))
-	level_message = level_message.replace("[name]", str(Message.author.name))
+	level_message = level_message.replace("[user-mention]", str(Message.author.mention))
+	level_message = level_message.replace("[user-name]", str(Message.author.name))
 	level_message = level_message.replace("[id]", str(Message.author.id))
 	level_message = level_message.replace("[exp]", str(LevelUser.exp))
 	level_message = level_message.replace("[lvl]", str(level_to_announce))
