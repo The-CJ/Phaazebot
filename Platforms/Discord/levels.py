@@ -8,15 +8,14 @@ import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
 
-DEFAULT_LEVEL_COOLDOWN:int = 5
 DEFAULT_LEVEL_MESSAGE:str = "[user-mention] is now Level **[lvl]** :tada:"
 
 class GDLMCS():
 	"""
 	i present the GDLMCS, short for "Global Discord Level Message Cooldown Storage" (my short names get worse, right?)
-	after a command has been used, it's unique key is saved in where
-	while its in there, its in a cool down state, and wont be triggered again
-	after cooldown is gone, remove unique key from here and unlock command
+	after a user typed something, the unique key is saved.
+	while its in there, a user cant gain xp again
+	after cooldown is gone, remove unique key from here and unlock user
 	"""
 	def __init__(self):
 		self.in_cooldown:Dict[str, bool] = {}
@@ -26,10 +25,10 @@ class GDLMCS():
 		if self.in_cooldown.get(key, None): return True
 		else: return False
 
-	def cooldown(self, Message:discord.Message) -> None:
-		asyncio.ensure_future(self.cooldownCoro(Message))
+	def cooldown(self, cls:"PhaazebotDiscord", Message:discord.Message) -> None:
+		asyncio.ensure_future(self.cooldownCoro(cls, Message))
 
-	async def cooldownCoro(self, Message:discord.Message) -> None:
+	async def cooldownCoro(self, cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 		key:str = f"{Message.guild.id}-{Message.author.id}"
 		if self.in_cooldown.get(key, None): return
 
@@ -37,7 +36,7 @@ class GDLMCS():
 		self.in_cooldown[key] = True
 
 		# wait
-		await asyncio.sleep(DEFAULT_LEVEL_COOLDOWN)
+		await asyncio.sleep(cls.BASE.Limit.DISCORD_LEVEL_COOLDOWN)
 
 		# remove
 		self.in_cooldown.pop(key, None)
@@ -76,7 +75,7 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	)
 
 	# add author to cooldown
-	GDLMCS.cooldown(Message)
+	GDLMCS.cooldown(cls, Message)
 
 	# check level progress, send level up messages yes/no?
 	await checkLevelProgress(cls, Message, DiscordUser, ServerSettings)
