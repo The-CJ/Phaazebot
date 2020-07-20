@@ -49,6 +49,7 @@
   "discord_level_medal_amount":50,
   "discord_quotes_amount":10,
   "discord_assignrole_amount":25,
+  "discord_regular_amount":50,
   "discord_login_link":"https://discordapp.com",
   "discord_redirect_link":"localhost",
   "discord_debug_user_id":"",
