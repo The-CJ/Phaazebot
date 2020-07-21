@@ -105,6 +105,17 @@ var Regulars = new(class {
     $("[location=regulars] .pages .page").text(this.current_page+1);
   }
 
+  //  create
+  createModal() {
+    resetInput(this.modal_id);
+    $(this.modal_id).attr("mode", "create");
+    $(this.modal_id).modal("show");
+  }
+
+  create() {
+    
+  }
+
   // edit
   editModal(HTMLButton) {
     var LevelO = this;

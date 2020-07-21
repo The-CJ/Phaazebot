@@ -44,6 +44,7 @@
         <!-- buttons -->
         <div class="col text-right">
           <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+          <button type="button" class="btn btn-success icon-btn" onclick="Regulars.createModal()"><i class="fas fa-plus"></i></button>
         </div>
       </div>
 
@@ -65,97 +66,37 @@
 
 <div modal>
 
-  <div class="modal fade" id="level_modal">
+  <div class="modal fade" id="regular_modal" mode="create|edit">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
-          <data name="member_id"></data>
-          <h4 class="modal-title">Member details</h4>
+          <data name="regular_id"></data>
+          <h4 class="modal-title" show-mode="create">New Regular</h4>
+          <h4 class="modal-title" show-mode="edit">Edit Regular</h4>
           <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
         <div class="modal-body text-black">
-          <button type="button" name="on_server" class="btn btn-block btn-danger" onclick="Levels.editOnServer()">Set inactive</button>
 
-          <!-- avatar & upper info -->
-          <div class="center-item-row md-form forced">
-            <div class="col-4">
-              <img src="" alt="member_avatar" style="border-radius: 50%; border: 2px solid black; height: 128px; width: 128px;">
+          <div show-mode="create">
+            <p>
+              To add a new regular, please add the User-ID or the <b>FULL user name (NOT NICKNAME).</b><br>
+              The discriminator <i>(e.g.: #1234)</i> is not needed, but is saver when multiple user have the same name.</p>
+            <sub>You can get the User-ID by rightclicking the user when you are in <a href="https://support.discord.com/hc/article_attachments/115002742731/mceclip0.png" target="_blank">developer mode</a></sub>
+
+            <hr>
+
+            <div class="md-form">
+              <input type="text" name="user" placeholder="1234123412341234 or Username#1234" class="form-control text-center">
             </div>
-            <div class="col-8">
-              <div class="center-item-col forced">
-                <input disabled type="text" name="username" style="width: 100%;" class="text-center"/>
-                <input disabled type="text" name="display_id" style="width: 100%;" class="text-center"/>
-                <input disabled type="text" name="display_rank" style="width: 100%;" class="text-center"/>
-              </div>
-            </div>
+
+
           </div>
 
-          <hr>
+          <div show-mode="edit">
 
-          <h4 class="text-center">Stats</h4>
-
-          <!-- currency -->
-          <form class="center-item-row forced md-form" action="javascript:Levels.editCurrency()">
-            <div class="col-3">
-              <span>Currency:</span>
-            </div>
-            <div class="col">
-              <input type="number" name="currency" class="form-control text-center" min="0">
-            </div>
-            <div class="col-2">
-              <button type="submit" name="button" class="btn btn-danger icon-btn"><i class="fas fa-save"></i></button>
-            </div>
-          </form>
-
-          <!-- exp -->
-          <form class="center-item-row forced md-form" action="javascript:Levels.editExp()">
-            <div class="col-3">
-              <span>EXP:</span>
-            </div>
-            <div class="col">
-              <input type="number" name="exp" class="form-control text-center">
-            </div>
-            <div class="col-2">
-              <button type="submit" name="button" class="btn btn-danger icon-btn"><i class="fas fa-save"></i></button>
-            </div>
-          </form>
-
-          <!-- level -->
-          <div class="center-item-row forced md-form">
-            <div class="col-3">
-              <span>Level:</span>
-            </div>
-            <div class="col">
-              <input disabled type="number" name="level" class="form-control text-center">
-            </div>
-            <div class="col-2"></div>
           </div>
-
-          <!-- notes -->
-          <div class="center-item-row forced md-form">
-            <div class="col">
-              <span><sub><i>Level is calculated by EXP</i></sub></span>
-            </div>
-          </div>
-
-          <hr>
-
-          <h4 class="text-center">Medals</h4>
-
-          <!-- medals -->
-          <form class="center-item-row forced md-form" action="javascript:Levels.createMedal()">
-            <div class="col">
-              <input type="text" id="new_medal" class="form-control text-center" placeholder="Add new medal...">
-            </div>
-            <div class="col-2">
-              <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-plus"></i></button>
-            </div>
-          </form>
-
-          <!-- gets filled with copys of: "[phantom] .medal" -->
-          <div id="medal_list" class="modal-itemlist"></div>
 
         </div>
 
