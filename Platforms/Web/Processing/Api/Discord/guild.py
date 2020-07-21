@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
@@ -7,12 +7,12 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from ..errors import apiNotAllowed, apiMissingData
+from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
 async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/guild
+	Default url: /api/discord/guild
 	"""
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	if not PhaazeDiscord: return await apiNotAllowed(cls, WebRequest, msg="Discord module is not active")
@@ -29,7 +29,7 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	res:list = cls.Web.BASE.PhaazeDB.query("""
+	res:List[dict] = cls.Web.BASE.PhaazeDB.selectQuery("""
 		SELECT
 			(SELECT COUNT(*) FROM `discord_regular` WHERE `discord_regular`.`guild_id` = %(guild_id)s) AS `regular_count`,
 			(SELECT COUNT(*) FROM `discord_user` WHERE `discord_user`.`guild_id` = %(guild_id)s) AS `level_count`,
@@ -38,7 +38,7 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 			(SELECT COUNT(*) FROM `discord_twitch_alert` WHERE `discord_twitch_alert`.`discord_guild_id` = %(guild_id)s) AS `twitch_alert_count`""",
 		{"guild_id": guild_id}
 	)
-	stats_info:dict = res[0]
+	stats_info:dict = res.pop(0)
 
 	result:dict = dict(
 		id = str(Guild.id),
@@ -69,42 +69,36 @@ async def apiDiscordGuild(cls:"WebIndex", WebRequest:Request) -> Response:
 		content_type='application/json'
 	)
 
-def getAPIRoleList(roles:list) -> list:
-	formated_roles:list = list()
+def getAPIRoleList(discord_roles:List[discord.Role]) -> List[dict]:
+	formated_roles:List[dict] = []
 
-	for role in roles:
-		r:dict = dict(
-			id = str(role.id),
-			name = role.name
-		)
+	for Role in discord_roles:
+		role_dict:dict = dict( id=str(Role.id), name=Role.name )
 
-		r["managed"] = True if role.managed else False
+		role_dict["managed"] = True if Role.managed else False
 
-		formated_roles.append(r)
+		formated_roles.append(role_dict)
 
 	return formated_roles
 
-def getAPIChannelList(channels:list) -> list:
-	formated_channels:list = list()
+def getAPIChannelList(discord_channels:List[discord.Channel]) -> List[dict]:
+	formated_channels:List[dict] = []
 
-	for channel in channels:
-		c:dict = dict(
-			id = str(channel.id),
-			name = channel.name,
-		)
+	for Channel in discord_channels:
+		channel_dict:dict = dict( id=str(Channel.id), name=Channel.name )
 
-		if type(channel) is discord.TextChannel:
-			c["channel_type"] = "text"
+		if type(Channel) is discord.TextChannel:
+			channel_dict["channel_type"] = "text"
 
-		elif type(channel) is discord.VoiceChannel:
-			c["channel_type"] = "voice"
+		elif type(Channel) is discord.VoiceChannel:
+			channel_dict["channel_type"] = "voice"
 
-		elif type(channel) is discord.CategoryChannel:
-			c["channel_type"] = "category"
+		elif type(Channel) is discord.CategoryChannel:
+			channel_dict["channel_type"] = "category"
 
 		else:
-			c["channel_type"] = "unknown"
+			channel_dict["channel_type"] = "unknown"
 
-		formated_channels.append(c)
+		formated_channels.append(channel_dict)
 
 	return formated_channels
