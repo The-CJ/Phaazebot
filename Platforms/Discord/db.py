@@ -339,12 +339,14 @@ async def getDiscordRegulars(cls:"PhaazebotDiscord", guild_id:str, **search:dict
 
 	Optional keywords:
 	------------------
+	* regular_id `str` : (Default: None)
 	* member_id `str` : (Default: None)
 	* order_str `str`: (Default: "ORDER BY id")
 	* limit `int`: (Default: None)
 	* offset `int`: (Default: 0)
 	"""
 	# unpack
+	regular_id:str = search.get("regular_id", 0)
 	member_id:str = search.get("member_id", 0)
 	order_str:str = search.get("order_str", "ORDER BY `id`")
 	limit:int = search.get("limit", None)
@@ -356,6 +358,10 @@ async def getDiscordRegulars(cls:"PhaazebotDiscord", guild_id:str, **search:dict
 		WHERE `discord_regular`.`guild_id` = %s"""
 
 	values:tuple = ( str(guild_id), )
+
+	if regular_id:
+		sql += " AND `discord_regular`.`id` = %s"
+		values += ( str(regular_id), )
 
 	if member_id:
 		sql += " AND `discord_regular`.`member_id` = %s"
