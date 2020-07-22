@@ -94,6 +94,7 @@ async def searchMember(cls:"WebIndex", WebRequest:WebRequestContent, Data:WebReq
 		"name": str(Member.name),
 		"nick": Member.nick,
 		"id": str(Member.id),
+		"discriminator": Member.discriminator,
 		"avatar": Member.avatar
 	}
 
