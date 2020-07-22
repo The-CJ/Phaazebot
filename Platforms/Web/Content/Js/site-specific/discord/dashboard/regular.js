@@ -112,7 +112,7 @@ var Regulars = new(class {
 
   search() {
     var RegularO = this;
-    var data = extractData(this.modal_id);
+    var data = extractData(`${this.modal_id} [step=1]`);
     var search_user = data.search_user || "";
 
     var x = {};
@@ -132,7 +132,7 @@ var Regulars = new(class {
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"could not find a member", time:1250} );
-    })
+    });
   }
 
   //  create
@@ -144,7 +144,22 @@ var Regulars = new(class {
   }
 
   create() {
+    var RegularO = this;
+    var x = extractData(`${this.modal_id} [step=2]`);
+    x["member_id"] = x.id;
+    x["guild_id"] = $("#guild_id").val();
 
+    $.post("/api/discord/regulars/create", x)
+    .done(function (data) {
+
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $(RegularO.modal_id).modal("hide");
+      RegularO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not add new regular"} );
+    });
   }
 
   // edit
