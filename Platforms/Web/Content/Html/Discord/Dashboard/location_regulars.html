@@ -79,7 +79,7 @@
 
         <div class="modal-body text-black">
 
-          <div step=1>
+          <form method="get" action="javascript:Regulars.search()" step=1>
 
             <p>
               To add a new regular, please add the User-ID, the full user name or the nickname.<br>
@@ -92,11 +92,11 @@
                 <input type="text" name="search_user" placeholder="1234123412341234 or Username#1234" class="form-control text-center">
               </div>
               <div class="col-2">
-                <button type="submit" class="btn btn-primary icon-btn" onclick="Regulars.search()"><i class="fas fa-search"></i></button>
+                <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
               </div>
             </div>
 
-          </div>
+          </form>
 
           <div step=2>
 
@@ -115,6 +115,17 @@
                   <div class="col-3"><span>ID:</span></div>
                   <div class="col"><input type="text" name="id" class="form-control" readonly></div>
                 </div>
+              </div>
+            </div>
+
+            <hr br>
+
+            <div class="center-item-row">
+              <div class="col">
+                <button type="button" class="btn btn-block btn-success" onclick="Regulars.create();">Yes, add it!</button>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-block btn-danger" onclick="Regulars.showStep(1);">No</button>
               </div>
             </div>
 
