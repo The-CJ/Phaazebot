@@ -7,9 +7,19 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.utils import getDiscordGuildFromString
+from Platforms.Discord.utils import (
+	getDiscordGuildFromString,
+	getDiscordMemberFromString,
+	getDiscordRoleFromString,
+	getDiscordChannelFromString
+)
 from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingData
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
+from Platforms.Web.Processing.Api.Discord.errors import (
+	apiDiscordGuildUnknown,
+	apiDiscordMemberNotFound,
+	apiDiscordRoleNotFound,
+	apiDiscordChannelNotFound
+)
 
 SEARCH_OPTIONS:List[str] = ["guild", "member", "role", "channel"]
 
@@ -33,20 +43,129 @@ async def apiDiscordSearch(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingData(cls, WebRequest, msg="invalid or missing 'term'")
 
 	if search == "guild":
-		return await searchGuild(cls, WebRequest, term)
+		return await searchGuild(cls, WebRequest, Data)
 
-async def searchGuild(cls:"WebIndex", WebRequest:WebRequestContent, search_term:str) -> Response:
+	if search == "member":
+		return await searchMember(cls, WebRequest, Data)
 
-	Searched:discord.Guild = getDiscordGuildFromString(cls.Web.BASE.Discord, search_term)
-	if not Searched: return await apiDiscordGuildUnknown(cls, WebRequest)
+	if search == "role":
+		return await searchRole(cls, WebRequest, Data)
+
+	if search == "channel":
+		return await searchChannel(cls, WebRequest, Data)
+
+async def searchGuild(cls:"WebIndex", WebRequest:WebRequestContent, Data:WebRequestContent) -> Response:
+	search_term:str = Data.getStr("term", "")
+
+	Guild:discord.Guild = getDiscordGuildFromString(cls.Web.BASE.Discord, search_term, contains=True)
+	if not Guild: return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	data:dict = {
-		"name": str(Searched.name),
-		"id": str(Searched.id),
-		"owner_id": str(Searched.owner_id),
-		"icon": Searched.icon,
-		"banner": Searched.banner
+		"name": str(Guild.name),
+		"id": str(Guild.id),
+		"owner_id": str(Guild.owner_id),
+		"icon": Guild.icon,
+		"banner": Guild.banner
 	}
+
+	return cls.response(
+		text=json.dumps(
+			dict( result=data, status=200 )
+		),
+		content_type="application/json",
+		status=200
+	)
+
+async def searchMember(cls:"WebIndex", WebRequest:WebRequestContent, Data:WebRequestContent) -> Response:
+	search_term:str = Data.getStr("term", "")
+	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+
+	if not guild_id:
+		return await apiMissingData(cls, WebRequest, msg="invalid or missing 'guild_id'")
+
+	Guild:discord.Guild = discord.utils.get(cls.Web.BASE.Discord.guilds, id=int(guild_id))
+	if not Guild:
+		return await apiDiscordGuildUnknown(cls, WebRequest)
+
+	Member:discord.Member = getDiscordMemberFromString(cls.Web.BASE.Discord, Guild, search_term)
+	if not Member: return await apiDiscordMemberNotFound(cls, WebRequest)
+
+	data:dict = {
+		"name": str(Member.name),
+		"nick": Member.nick,
+		"id": str(Member.id),
+		"avatar": Member.avatar
+	}
+
+	return cls.response(
+		text=json.dumps(
+			dict( result=data, status=200 )
+		),
+		content_type="application/json",
+		status=200
+	)
+
+async def searchRole(cls:"WebIndex", WebRequest:WebRequestContent, Data:WebRequestContent) -> Response:
+	search_term:str = Data.getStr("term", "")
+	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+
+	if not guild_id:
+		return await apiMissingData(cls, WebRequest, msg="invalid or missing 'guild_id'")
+
+	Guild:discord.Guild = discord.utils.get(cls.Web.BASE.Discord.guilds, id=int(guild_id))
+	if not Guild:
+		return await apiDiscordGuildUnknown(cls, WebRequest)
+
+	Role:discord.Role = getDiscordRoleFromString(cls.Web.BASE.Discord, Guild, search_term, contains=True)
+	if not Role: return await apiDiscordRoleNotFound(cls, WebRequest)
+
+	data:dict = {
+		"name": str(Role.name),
+		"id": str(Role.id),
+		"color": Role.color.value,
+		"managed": Role.managed,
+		"position": Role.position
+	}
+
+	return cls.response(
+		text=json.dumps(
+			dict( result=data, status=200 )
+		),
+		content_type="application/json",
+		status=200
+	)
+
+async def searchChannel(cls:"WebIndex", WebRequest:WebRequestContent, Data:WebRequestContent) -> Response:
+	search_term:str = Data.getStr("term", "")
+	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+
+	if not guild_id:
+		return await apiMissingData(cls, WebRequest, msg="invalid or missing 'guild_id'")
+
+	Guild:discord.Guild = discord.utils.get(cls.Web.BASE.Discord.guilds, id=int(guild_id))
+	if not Guild:
+		return await apiDiscordGuildUnknown(cls, WebRequest)
+
+	Channel:discord.abc.GuildChannel = getDiscordChannelFromString(cls.Web.BASE.Discord, Guild, search_term, contains=True)
+	if not Channel: return await apiDiscordChannelNotFound(cls, WebRequest)
+
+	data:dict = {
+		"name": str(Channel.name),
+		"id": str(Channel.id),
+		"position": Channel.position,
+	}
+
+	if type(Channel) is discord.TextChannel:
+		data["channel_type"] = "text"
+
+	elif type(Channel) is discord.VoiceChannel:
+		data["channel_type"] = "voice"
+
+	elif type(Channel) is discord.CategoryChannel:
+		data["channel_type"] = "category"
+
+	else:
+		data["channel_type"] = "unknown"
 
 	return cls.response(
 		text=json.dumps(
