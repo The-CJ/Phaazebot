@@ -182,7 +182,7 @@ var Regulars = new(class {
 
       let avatar = discordUserAvatar(regular.member_id, regular.avatar, 128);
       $(`${RegularO.modal_id} [show-mode=edit] img`).attr("src", avatar);
-      insertData(`${RegularO.modal_id} [show-mode=edit]`, regular);
+      insertData(RegularO.modal_id, regular);
       $(RegularO.modal_id).attr("mode", "edit");
       $(RegularO.modal_id).modal("show");
 
@@ -193,5 +193,36 @@ var Regulars = new(class {
   }
 
   // delete
+  deleteFromList(HTMLButton) {
+    let regular_id = $(HTMLButton).closest(this.phantom_class).attr("regular-id");
+    this.delete(regular_id);
+  }
+
+  deleteFromModal() {
+    let regular_id = $(`${this.modal_id} [name=regular_id]`).val();
+    this.delete(regular_id);
+  }
+
+  delete(regular_id) {
+    var c = confirm("Are you sure you want to delete this regular?");
+    if (!c) {return;}
+
+    var RegularO = this;
+
+    var req = {
+      "guild_id": $("#guild_id").val(),
+      "regular_id": regular_id
+    };
+
+    $.post("/api/discord/regulars/delete", req)
+    .done(function (data) {
+      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+      $(RegularO.modal_id).modal("hide");
+      RegularO.show();
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"error deleting regular"} );
+    });
+  }
 
 });
