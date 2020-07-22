@@ -25,7 +25,7 @@ def getDiscordGuildFromString(cls:"PhaazebotDiscord", search:str or int, contain
 
 	return None
 
-def getDiscordChannelFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None, required_type:str=None) -> discord.abc.GuildChannel or None:
+def getDiscordChannelFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None, required_type:str=None, contains:bool=False) -> discord.abc.GuildChannel or None:
 	"""
 	Tryes to get a channel from a guild, the search input may be,
 	the channel name or the id
@@ -47,6 +47,9 @@ def getDiscordChannelFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, sea
 
 	for Chan in Guild.channels:
 		if (Chan.name == search_str) or (Chan.id == search_id):
+			SearchChannel = Chan
+			break
+		if contains and (search_str in Chan.name):
 			SearchChannel = Chan
 			break
 
@@ -88,7 +91,9 @@ def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, sear
 	if Member:
 		return Member
 
-def getDiscordRoleFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None) -> discord.Role or None:
+	return None
+
+def getDiscordRoleFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None, contains:bool=False) -> discord.Role or None:
 	"""
 	Tryes to get a role from a guild, the search input may be,
 	the role name or the id.
@@ -97,15 +102,20 @@ def getDiscordRoleFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search
 	Also can take Message role mentions in account if Message given
 	"""
 
+	search_str:str = str(search)
+	search_id:int = 0
+	if search_str.isdigit():
+		search_id = int(search)
+
 	# mention
 	if Message:
 		if Message.role_mentions:
 			return Message.role_mentions[0]
 
-	search:str = str(search)
+	for Role in Guild.roles:
+		if (Role.name == search_str) or (Role.id == search_id):
+			return Role
+		if contains and (search_str in Role.name):
+			return Role
 
-	for Ro in Guild.roles:
-		if search.isdigit():
-			if Ro.id == int(search): return Ro
-
-		if Ro.name == search: return Ro
+	return None
