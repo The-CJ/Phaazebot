@@ -135,6 +135,7 @@ class WebIndex(object):
 	def addAPIDiscordRoutes(self) -> None:
 		self.Web.router.add_route('*', '/api/discord/guild', self.apiDiscordGuild)
 		self.Web.router.add_route('*', '/api/discord/userguilds', self.apiDiscordUserGuilds)
+		self.Web.router.add_route('*', '/api/discord/search', self.apiDiscordSearch)
 		self.Web.router.add_route('*', '/api/discord/commands{x:/?}{method:.*}', self.apiDiscordCommands)
 		self.Web.router.add_route('*', '/api/discord/configs/regulardisabledchannels{x:/?}{method:.*}', self.apiDiscordConfigsRegularDisabledChannels)
 		self.Web.router.add_route('*', '/api/discord/configs/normaldisabledchannels{x:/?}{method:.*}', self.apiDiscordConfigsNormalDisabledChannels)
@@ -166,6 +167,7 @@ class WebIndex(object):
 	from .Processing.Api.Discord.guild import apiDiscordGuild
 	from .Processing.Api.Discord.userguilds import apiDiscordUserGuilds
 	from .Processing.Api.Discord.Commands.main import apiDiscordCommands
+	from .Processing.Api.Discord.search import apiDiscordSearch
 	from .Processing.Api.Discord.Configs.Regulardisabledchannels.main import apiDiscordConfigsRegularDisabledChannels
 	from .Processing.Api.Discord.Configs.Normaldisabledchannels.main import apiDiscordConfigsNormalDisabledChannels
 	from .Processing.Api.Discord.Configs.Leveldisabledchannels.main import apiDiscordConfigsLevelDisabledChannels
