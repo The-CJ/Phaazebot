@@ -81,7 +81,7 @@ def getAPIRoleList(discord_roles:List[discord.Role]) -> List[dict]:
 
 	return formated_roles
 
-def getAPIChannelList(discord_channels:List[discord.Channel]) -> List[dict]:
+def getAPIChannelList(discord_channels:List[discord.abc.GuildChannel]) -> List[dict]:
 	formated_channels:List[dict] = []
 
 	for Channel in discord_channels:

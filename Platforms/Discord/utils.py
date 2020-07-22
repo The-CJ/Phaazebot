@@ -5,12 +5,33 @@ if TYPE_CHECKING:
 import discord
 
 # utility functions
+def getDiscordGuildFromString(cls:"PhaazebotDiscord", search:str or int, contains:bool=False) -> discord.Guild or None:
+	"""
+	Tryes to get a guild, known to the bot.
+	Search may be the guilds name or id.
+	Returns first match, else None
+	"""
+
+	search_str:str = str(search)
+	search_id:int = 0
+	if search_str.isdigit():
+		search_id = int(search)
+
+	for Guild in cls.guilds:
+		if (Guild.name == search_str) or (Guild.id == search_id):
+			return Guild
+		if contains and (search_str in Guild.name):
+			return Guild
+
+	return None
+
 def getDiscordChannelFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None, required_type:str=None) -> discord.abc.GuildChannel or None:
 	"""
-		Tryes to get a channel from a guild, the search input may be,
-		the channel name or the id, else None is given
+	Tryes to get a channel from a guild, the search input may be,
+	the channel name or the id
+	Returns first match, else None
 
-		Also can take Message mentions in account if Message given
+	Also can take Message mentions in account if Message given
 	"""
 	SearchChannel:discord.abc.GuildChannel = None
 
@@ -42,10 +63,11 @@ def getDiscordChannelFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, sea
 
 def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None) -> discord.Member or None:
 	"""
-		Tryes to get a member from a guild, the search input may be,
-		the user name or his id, else None is given
+	Tryes to get a member from a guild, the search input may be,
+	the user name or his id.
+	Returns first match, else None
 
-		Also can take Message mentions in account if Message given
+	Also can take Message mentions in account if Message given
 	"""
 
 	# mention
@@ -68,10 +90,11 @@ def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, sear
 
 def getDiscordRoleFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None) -> discord.Role or None:
 	"""
-		Tryes to get a role from a guild, the search input may be,
-		the role name or the id, else None is given
+	Tryes to get a role from a guild, the search input may be,
+	the role name or the id.
+	Returns first match, else None
 
-		Also can take Message role mentions in account if Message given
+	Also can take Message role mentions in account if Message given
 	"""
 
 	# mention
