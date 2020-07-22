@@ -164,44 +164,31 @@ var Regulars = new(class {
 
   // edit
   editModal(HTMLButton) {
-    var LevelO = this;
+    var RegularO = this;
 
     var req = {
       "detailed": true,
       "guild_id": $("#guild_id").val(),
-      "member_id": $(HTMLButton).closest(LevelO.phantom_class).attr("member-id")
+      "regular_id": $(HTMLButton).closest(RegularO.phantom_class).attr("regular-id")
     };
-    $.get("/api/discord/levels/get", req)
+    $.get("/api/discord/regulars/get", req)
     .done(function (data) {
 
-      var level = data.result.pop();
+      var regular = data.result.pop();
 
-      // extra values
-      level.display_rank = (level.rank ? `Rank: #${level.rank}` : "Rank: [N/A]");
-      level.display_id = (level.member_id ? `ID: ${level.member_id}` : "ID: [N/A]");
-
-      // set avatar
-      var avatar = discordUserAvatar(level.member_id, level.avatar, 128);
-      $(`${LevelO.modal_id} img`).attr("src", avatar);
-
-      // if name is [N/A], that could mean the user is not on the server, but phaaze did not catch the event to remove him,
-      // in this case the owner has the option to remove this user
-      // NOTE: if member name themself "[N/A]" there can be removed even duh there are on the server.
-      //       that is a wanted feature since a owner can do this at any time, via a API request
-      //       So kids, dont be dumb and call yourself '[N/A]' and delete your avatar or you may get deleted
-      if (level["username"] == "[N/A]" && level["avatar"] == null) {
-        $(`${LevelO.modal_id} button[name=on_server]`).show();
-      } else {
-        $(`${LevelO.modal_id} button[name=on_server]`).hide();
+      if ( regular.username == "[N/A]" ) {
+        regular.username = "(This User left the server...)";
       }
 
-      insertData(LevelO.modal_id, level);
-      LevelO.loadinModalMedal(level.guild_id, level.member_id);
-      $(LevelO.modal_id).modal("show");
+      let avatar = discordUserAvatar(regular.member_id, regular.avatar, 128);
+      $(`${RegularO.modal_id} [show-mode=edit] img`).attr("src", avatar);
+      insertData(`${RegularO.modal_id} [show-mode=edit]`, regular);
+      $(RegularO.modal_id).attr("mode", "edit");
+      $(RegularO.modal_id).modal("show");
 
     })
     .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"Could not load level details"} );
+      generalAPIErrorHandler( {data:data, msg:"Could not load regular details"} );
     });
   }
 
