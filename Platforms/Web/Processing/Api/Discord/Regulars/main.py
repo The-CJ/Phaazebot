@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from aiohttp.web import Response, Request
 from .get import apiDiscordRegularsGet
 from .create import apiDiscordRegularsCreate
+from .delete import apiDiscordRegularsDelete
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiDiscordRegulars(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -25,7 +26,7 @@ async def apiDiscordRegulars(cls:"WebIndex", WebRequest:Request) -> Response:
 	elif method == "create":
 		return await apiDiscordRegularsCreate(cls, WebRequest)
 
-	# elif method == "edit":
-		# return await apiDiscordLevelsEdit(cls, WebRequest)
+	elif method == "delete":
+		return await apiDiscordRegularsDelete(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")

@@ -37,6 +37,38 @@ async def apiDiscordRegularExists(cls:"WebIndex", WebRequest:Request, **kwargs:d
 		status=400
 	)
 
+async def apiDiscordRegularNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+	"""
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* regular_id `str` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	Regular does not exists
+	"""
+	res:dict = dict(status=400, error="discord_regular_not_exists")
+
+	regular_id:str = kwargs.get("regular_id", "")
+	if regular_id:
+		res["regular_id"] = regular_id
+
+	default_msg:str = "Regular does not exists"
+
+	if regular_id:
+		default_msg += f" (Regular ID:{regular_id})"
+
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Regular does not exists: {WebRequest.path}", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)
+
 async def apiDiscordRegularLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
 	"""
 	Optional keywords:
