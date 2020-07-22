@@ -105,15 +105,46 @@ var Regulars = new(class {
     $("[location=regulars] .pages .page").text(this.current_page+1);
   }
 
+  showStep(step=1) {
+    $(`${this.modal_id} [step]`).hide();
+    $(`${this.modal_id} [step=${step}]`).show();
+  }
+
+  search() {
+    var RegularO = this;
+    var data = extractData(this.modal_id);
+    var search_user = data.search_user || "";
+
+    var x = {};
+    x["search"] = "member";
+    x["term"] = search_user;
+    x["guild_id"] = $("#guild_id").val();
+
+    $.get("/api/discord/search", x)
+    .done(function (data) {
+
+      RegularO.showStep(2);
+      let avatar = discordUserAvatar(data.result.id, data.result.avatar, 128);
+      $(`${RegularO.modal_id} [step=2] img`).attr("src", avatar);
+      data.result.name = `${data.result.name}#${data.result.discriminator}`;
+      insertData(`${RegularO.modal_id} [step=2]`, data.result);
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"could not find a member", time:1250} );
+    })
+  }
+
   //  create
   createModal() {
     resetInput(this.modal_id);
+    this.showStep(1);
     $(this.modal_id).attr("mode", "create");
     $(this.modal_id).modal("show");
   }
 
   create() {
-    
+
   }
 
   // edit

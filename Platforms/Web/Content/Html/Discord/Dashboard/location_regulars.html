@@ -79,22 +79,44 @@
 
         <div class="modal-body text-black">
 
-          <div show-mode="create">
+          <div step=1>
+
             <p>
-              To add a new regular, please add the User-ID or the <b>FULL user name (NOT NICKNAME).</b><br>
-              The discriminator <i>(e.g.: #1234)</i> is not needed, but is saver when multiple user have the same name.</p>
+              To add a new regular, please add the User-ID, the full user name or the nickname.<br>
+              The discriminator <i>(e.g.: #1234)</i> is not needed, but is saver when multiple user have the same name.
+            </p>
             <sub>You can get the User-ID by rightclicking the user when you are in <a href="https://support.discord.com/hc/article_attachments/115002742731/mceclip0.png" target="_blank">developer mode</a></sub>
-
             <hr>
-
-            <div class="md-form">
-              <input type="text" name="user" placeholder="1234123412341234 or Username#1234" class="form-control text-center">
+            <div class="center-item-row md-form">
+              <div class="col">
+                <input type="text" name="search_user" placeholder="1234123412341234 or Username#1234" class="form-control text-center">
+              </div>
+              <div class="col-2">
+                <button type="submit" class="btn btn-primary icon-btn" onclick="Regulars.search()"><i class="fas fa-search"></i></button>
+              </div>
             </div>
-
 
           </div>
 
-          <div show-mode="edit">
+          <div step=2>
+
+            <h3>This one?</h3>
+
+            <div class="center-item-row">
+              <div class="col-4">
+                <img src="" alt="avatar" height="128" width="128">
+              </div>
+              <div class="col-8 md-form">
+                <div class="center-item-row">
+                  <div class="col-3"><span>Username:</span></div>
+                  <div class="col"><input type="text" name="name" class="form-control" readonly></div>
+                </div>
+                <div class="center-item-row">
+                  <div class="col-3"><span>ID:</span></div>
+                  <div class="col"><input type="text" name="id" class="form-control" readonly></div>
+                </div>
+              </div>
+            </div>
 
           </div>
 
