@@ -10,7 +10,7 @@ class DiscordPermission(object):
 		This is purly for Phaaze.
 		The number represets a level:
 		0 - Everyone
-		1 - Regulars (TODO: implement this)
+		1 - Regulars
 		2 - Mods
 		3 - Server Owner
 		4+  System (NOTE: don't know what it means... maybe developer debug only?)
