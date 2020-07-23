@@ -22,7 +22,7 @@ apt-get install python3-pip
 apt-get install python3.8-dev
 python3.8 -m pip install -r requirement.txt
 
-# mariadb
+# mariadb 10
 curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
 apt-get install mariadb-server
 ```
@@ -32,7 +32,7 @@ apt-get install mariadb-server
 CREATE DATABASE `phaaze` DEFAULT CHARACTER SET utf8mb4;
 ```
 ```sh
-# To generate the db strukture
+# To generate the db structure
 cat Utils/DBTemplates/* | mysql phaaze
 ```
 ```sql
@@ -68,6 +68,9 @@ systemctl start phaaze.service
 
 ## Crontab entrys (/etc/crontab)
 ```
+# restart PhaazeOS
+30 0 * * * root systemctl restart phaazebot > /dev/null 2>&1
+
 # renew ssl
 0 1 * * * root certbot renew > /dev/null 2>&1
 
