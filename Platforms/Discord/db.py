@@ -332,7 +332,7 @@ async def getDiscordUsersMedalAmount(cls:"PhaazebotDiscord", guild_id:str, where
 	return res[0]["I"]
 
 # discord_regular
-async def getDiscordRegulars(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> List[DiscordRegular]:
+async def getDiscordServerRegulars(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> List[DiscordRegular]:
 	"""
 	Get server regulars.
 	Returns a list of DiscordRegular().
@@ -382,7 +382,7 @@ async def getDiscordRegulars(cls:"PhaazebotDiscord", guild_id:str, **search:dict
 	else:
 		return []
 
-async def getDiscordRegularAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+async def getDiscordServerRegularAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
 
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_regular`

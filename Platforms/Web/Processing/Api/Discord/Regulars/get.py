@@ -8,7 +8,7 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordregular import DiscordRegular
-from Platforms.Discord.db import getDiscordRegulars, getDiscordRegularAmount
+from Platforms.Discord.db import getDiscordServerRegulars, getDiscordServerRegularAmount
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
@@ -41,7 +41,7 @@ async def apiDiscordRegularsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get regulars
-	res_regulars:List[DiscordRegular] = await getDiscordRegulars(PhaazeDiscord, guild_id=guild_id, regular_id=regular_id, member_id=member_id, limit=limit, offset=offset)
+	res_regulars:List[DiscordRegular] = await getDiscordServerRegulars(PhaazeDiscord, guild_id=guild_id, regular_id=regular_id, member_id=member_id, limit=limit, offset=offset)
 
 	return_list:List[dict] = []
 
@@ -67,7 +67,7 @@ async def apiDiscordRegularsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 		text=json.dumps( dict(
 			result=return_list,
 			detailed=detailed,
-			total=(await getDiscordRegularAmount(PhaazeDiscord, guild_id)),
+			total=(await getDiscordServerRegularAmount(PhaazeDiscord, guild_id)),
 			limit=limit,
 			offset=offset,
 			status=200)

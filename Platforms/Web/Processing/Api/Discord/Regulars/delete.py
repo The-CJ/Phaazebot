@@ -9,7 +9,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordregular import DiscordRegular
-from Platforms.Discord.db import getDiscordRegulars
+from Platforms.Discord.db import getDiscordServerRegulars
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordRegularNotExists
@@ -51,7 +51,7 @@ async def apiDiscordRegularsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
 	# get regular
-	regular_res:List[DiscordRegular] = await getDiscordRegulars(cls.Web.BASE.Discord, guild_id, regular_id=regular_id)
+	regular_res:List[DiscordRegular] = await getDiscordServerRegulars(cls.Web.BASE.Discord, guild_id, regular_id=regular_id)
 
 	if not regular_res:
 		return await apiDiscordRegularNotExists(cls, WebRequest, regular_id=regular_id)
