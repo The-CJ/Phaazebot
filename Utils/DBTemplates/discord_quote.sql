@@ -5,7 +5,7 @@ DESCRIBE `discord_quote`;
 | Field    | Type          | Null | Key | Default | Extra          |
 +----------+---------------+------+-----+---------+----------------+
 | id       | int(11)       | NO   | PRI | NULL    | auto_increment |
-| guild_id | varchar(128)  | NO   |     | NULL    |                |
+| guild_id | varchar(128)  | NO   | MUL | NULL    |                |
 | content  | varchar(1750) | YES  |     | NULL    |                |
 +----------+---------------+------+-----+---------+----------------+
 */
@@ -16,5 +16,6 @@ CREATE TABLE `discord_quote` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `guild_id` varchar(128) NOT NULL,
   `content` varchar(1750) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`id`),
+  KEY `index_guild_id` (`guild_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
