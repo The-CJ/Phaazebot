@@ -122,30 +122,34 @@ async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id", 
 
 	return total_results
 
-async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id") -> List[TwitchUser]:
+async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id", limit:int=-1) -> List[TwitchUser]:
 	"""
 	get all game data based on 'item' and 'item_type'
 	Returns a list of TwitchUser()
 
 	item [required]
 	item_type : what are the contains of `item` (id, login)
+	limit : max result number
 	"""
 
 	if type(item) is not list: item = [item]
 
-	if len(item) > 100:
-		cls.Logger.critical("Requesting more then 100 User -> limiting to 100 : TODO: implement mass requests")
-		item = item[:100]
+	if limit > 0:
+		item = item[:limit]
 
-	query:str = f"?{item_type}={item.pop(0)}"
+	total_results:List[TwitchUser] = []
 
-	for i in item:
-		query += f"&{item_type}={i}"
+	while item:
 
-	link:str = f"{ROOT_URL}users{query}"
+		part_request = item[:TWITCH_REQUEST_LIMIT]
+		item = item[TWITCH_REQUEST_LIMIT:]
 
-	resp:dict = (await twitchAPICall(cls, link)).json()
-	return [ TwitchUser(s) for s in resp.get("data", []) ]
+		part_result:List[TwitchUser] = await partGetTwitchUsers(cls, part_request, item_type)
+		total_results.append(part_result)
+
+		if item: await asyncio.sleep(TWITCH_REQUEST_WAIT)
+
+	return total_results
 
 # part requests (because some request must been broken down into smaller one)
 
@@ -172,3 +176,15 @@ async def partGetTwitchGames(cls:"Phaazebot", item:List[Any], item_type:str) -> 
 
 	resp:dict = (await twitchAPICall(cls, link)).json()
 	return [ TwitchGame(s) for s in resp.get("data", []) ]
+
+async def partGetTwitchUsers(cls:"Phaazebot", item:List[Any], item_type:str) -> List[TwitchUser]:
+
+	query:str = f"?{item_type}={item.pop(0)}"
+
+	for i in item:
+		query += f"&{item_type}={i}"
+
+	link:str = f"{ROOT_URL}users{query}"
+
+	resp:dict = (await twitchAPICall(cls, link)).json()
+	return [ TwitchUser(s) for s in resp.get("data", []) ]
