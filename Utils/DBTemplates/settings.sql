@@ -15,4 +15,4 @@ CREATE TABLE `setting` (
   `key` varchar(128) NOT NULL,
   `value` text DEFAULT NULL,
   PRIMARY KEY (`key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
