@@ -1,16 +1,6 @@
-main h1 {
-  margin: 1em 0;
-}
+main h1 { margin: 1em 0; }
 
-.command > *, .header > * {
-  margin: 2px;
-}
-.command {
-  cursor: pointer;
-}
-.command:hover {
-  background: rgba(0,0,0,0.2);
-}
+.command > *, .header > * { margin: 2px; }
 
 .header div { background: var(--color-listelement-odd); }
 .header div:nth-child(even) { background: var(--color-listelement-even); }
@@ -18,11 +8,11 @@ main h1 {
 .command div { background: var(--color-sub-listelement-odd); }
 .command div:nth-child(even) { background: var(--color-sub-listelement-even); }
 
-.command .function.hidden:after {
+.command [name=name].hidden:after {
   content: "This command is hidden";
   color: grey;
 }
 
-#command_detail [name=name], #command_detail [name=description] {
+#command_modal [name=name], #command_modal [name=description] {
   word-break: break-word; white-space: pre-line;
 }

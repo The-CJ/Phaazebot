@@ -23,11 +23,16 @@ from Platforms.Twitch.main_events import PhaazebotTwitchEvents
 
 class Phaazebot(object):
 	"""
-		mainclass containing all other informations.
-		thats phaaze
+	mainclass containing all other informations.
+	thats phaaze
 	"""
-	def __init__(self, Config:ConfigParser=ConfigParser()):
-		self.Config:ConfigParser = Config
+	def __init__(self, PreConfig:ConfigParser=None):
+
+		if PreConfig:
+			self.Config:ConfigParser = PreConfig
+		else:
+			self.Config:ConfigParser = ConfigParser()
+
 		self.version:str = self.Config.get("version", "[N/A]")
 		self.start_time:int = time.time() # together with another time.time(), used to know how long phaaze is running
 

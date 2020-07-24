@@ -29,20 +29,26 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
 	if not CheckMember:
-		pass
+		return cls.response(status=302, headers={"Location": f"/discord/view/{guild_id}?error=no_user"} )
 
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		pass
+		return cls.response(status=302, headers={"Location": f"/discord/view/{guild_id}?error=missing_permissions"} )
 
 	DiscordDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/main.html")
 	DiscordDash.replace(
 		location_home = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_home.html"),
-		location_configs = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs.html"),
-		location_commands = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands.html"),
-		location_levels = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_levels.html"),
 		location_quotes = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_quotes.html"),
 		location_twitch_alerts = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_twitch_alerts.html"),
-		location_assign_roles = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_assign_roles.html")
+		location_regulars = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_regulars.html"),
+		location_levels = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_levels.html"),
+		location_configs_chat = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_chat.html"),
+		location_configs_event = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_event.html"),
+		location_configs_level = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_level.html"),
+		location_configs_channel = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_channel.html"),
+		location_configs_master = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_master.html"),
+		location_commands_command = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_command.html"),
+		location_commands_help = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_help.html"),
+		location_commands_assign = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_assign.html"),
 	)
 	# make it twice, since some included locations also have replaceable items
 	DiscordDash.replace(

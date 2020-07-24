@@ -7,7 +7,7 @@ import re
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.utils import getWebUsers
+from Platforms.Web.db import getWebUsers
 from Utils.regex import IsEmail
 from Utils.stringutils import password as password_function
 from Platforms.Web.Processing.Api.Account.errors import (

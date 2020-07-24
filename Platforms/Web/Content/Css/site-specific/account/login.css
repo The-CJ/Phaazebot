@@ -6,10 +6,6 @@ main h1 {
   padding: 1em;
 }
 
-#login_space input {
-  width: 100%;
-}
-
 #login_space .center-item-row {
   margin-bottom: 1em;
 }

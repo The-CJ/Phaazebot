@@ -12,9 +12,6 @@
 
 ### kwargs
 
-* --logging=
-    * console *(default)*
-
 * --debug=
     * all
         * Shows everything

@@ -11,7 +11,8 @@ from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordassignrole import DiscordAssignRole
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from Platforms.Discord.utils import getDiscordRoleFromString, getDiscordServerAssignRoles
+from Platforms.Discord.db import getDiscordServerAssignRoles
+from Platforms.Discord.utils import getDiscordRoleFromString
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
 	apiMissingAuthorisation,

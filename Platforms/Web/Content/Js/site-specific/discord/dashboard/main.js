@@ -6,75 +6,95 @@ $("document").ready(async function () {
 
 var DiscordDashboard = new (class {
   constructor() {
+    this.token_modal_id = "#token_help_modal";
     this.channels = [];
     this.roles = [];
   }
 
-  // loader
-  loadHome() {
-    DynamicURL.set("view", false);
-    this.showLocationWindow();
-    var guild_id = $("#guild_id").val();
-    $.get("/api/discord/guild", {guild_id: guild_id})
-    .done(function (data) {
-      var guild = data.result;
+  loadLocation(target) {
+    // handles all display and view utils
+    // everything except home is suppost to be outmoved in a extra class
+    DynamicURL.set("view", target);
 
-      var image = discordGuildAvatar(guild.id, guild.icon, 128);
-      $("#icon").attr("src", image);
-      $("#name").text(guild.name);
+    if (target == "home") {
+      this.setSitePanelSelectedLocation("home");
+      var guild_id = $("#guild_id").val();
+      $.get("/api/discord/guild", {guild_id: guild_id})
+      .done(function (data) {
+        var guild = data.result;
 
-      // stats
-      $("#command_count").text(guild.command_count);
-      $("#quote_count").text(guild.quote_count);
-      $("#twitch_alert_count").text(guild.twitch_alert_count);
-      $("#level_count").text(guild.level_count);
+        var image = discordGuildAvatar(guild.id, guild.icon, 128);
+        $("#icon").attr("src", image);
 
-      // infos
-      $("#member_count").text(guild.member_count);
-      $("#role_count").text(guild.role_count);
-      $("#channel_count").text(guild.channel_count);
-      $("#premium_subscription_count").text(guild.premium_subscription_count ? guild.premium_subscription_count : 0);
+        insertData("[location=home]", guild);
+      })
+      .fail(function (data) {
+        generalAPIErrorHandler( {data:data, msg:"loading informations failed"} );
+      });
+    }
 
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"loading informations failed"} );
-    })
-  }
+    if (target == "quotes") {
+      this.setSitePanelSelectedLocation("quotes");
+      Quotes.show();
+    }
 
-  loadConfig() {
-    DynamicURL.set("view", "configs");
-    this.showLocationWindow("configs");
-    Configs.show();
-  }
+    if (target == "twitch_alerts") {
+      this.setSitePanelSelectedLocation("twitch_alerts");
+      TwitchAlerts.show();
+    }
 
-  loadCommand() {
-    DynamicURL.set("view", "commands");
-    this.showLocationWindow("commands");
-    Commands.show();
-  }
+    if (target == "regulars") {
+      this.setSitePanelSelectedLocation("regulars");
+      Regulars.show();
+    }
 
-  loadLevel() {
-    DynamicURL.set("view", "levels");
-    this.showLocationWindow("levels");
-    Levels.show();
-  }
+    if (target == "levels") {
+      this.setSitePanelSelectedLocation("levels");
+      Levels.show();
+    }
 
-  loadQuote() {
-    DynamicURL.set("view", "quotes");
-    this.showLocationWindow("quotes");
-    Quotes.show();
-  }
+    if (target == "configs_chat") {
+      this.setSitePanelSelectedLocation("configs");
+      ConfigsChat.show();
+    }
 
-  loadTwitchAlert() {
-    DynamicURL.set("view", "twitch_alerts");
-    this.showLocationWindow("twitch_alerts");
-    TwitchAlerts.show();
-  }
+    if (target == "configs_event") {
+      this.setSitePanelSelectedLocation("configs");
+      ConfigsEvent.show();
+    }
 
-  loadAssignRole() {
-    DynamicURL.set("view", "assign_roles");
-    this.showLocationWindow("assign_roles");
-    AssignRoles.show();
+    if (target == "configs_level") {
+      this.setSitePanelSelectedLocation("configs");
+      ConfigsLevel.show();
+    }
+
+    if (target == "configs_channel") {
+      this.setSitePanelSelectedLocation("configs");
+      ConfigsChannel.show();
+    }
+
+    if (target == "configs_master") {
+      this.setSitePanelSelectedLocation("configs");
+      ConfigsMaster.show();
+    }
+
+    if (target == "commands_command") {
+      this.setSitePanelSelectedLocation("commands");
+      CommandsCommand.show();
+    }
+
+    if (target == "commands_help") {
+      this.setSitePanelSelectedLocation("commands");
+      CommandsHelp.show();
+    }
+
+    if (target == "commands_assign") {
+      this.setSitePanelSelectedLocation("commands");
+      CommandsAssign.show();
+    }
+
+    this.setLocationWindow(target);
+    this.setSitePanelCollapse("hide");
   }
 
   // utils
@@ -202,6 +222,17 @@ var DiscordDashboard = new (class {
     }
   }
 
+  showTokenHelp(field) {
+    if (isEmpty(field)) { field = "all"; }
+
+    // show the token modal with the according fields that can be used
+    var TokenHelp = $(this.token_modal_id);
+    TokenHelp.find(`[token]`).hide();
+    TokenHelp.find(`[token~=${field}]`).show();
+    TokenHelp.modal("show");
+
+  }
+
   // getter
   getDiscordChannelByID(id) {
     for (var channel of this.channels) {
@@ -218,45 +249,56 @@ var DiscordDashboard = new (class {
   }
 
   // view utils
-  showLocationWindow(view) {
-    if ( isEmpty(view) ) { view = "home"; }
+  setLocationWindow(view) {
+    // set the selected parts in main-panel
+    // also updates DynamicURL
+    // empty to hide everything
+    if ( isEmpty(view) ) { view = null; }
+    DynamicURL.set("view", view);
     $("[location]").hide();
-    $("[location="+view+"]").show();
-    this.toggleSitePanel("hide");
+    $(`[location=${view}]`).show();
   }
 
-  toggleSitePanel(state) {
-    if (isEmpty(state)) {
+  setSitePanelCollapse(state) {
+    // controls site panel and collapse button visibility, classes, etc
+    // allowed states: "show", "hide", ""
+    // empty will toggle it
+    if ( isEmpty(state) ) {
       state = $(".site-panel").hasClass("show");
       state = state ? "hide" : "show";
     }
-    if (state == "hide") {
-      $(".site-panel").removeClass("show");
-      $(".site-panel-btn").removeClass("show");
-    }
-    if (state == "show") {
-      $(".site-panel").addClass("show");
-      $(".site-panel-btn").addClass("show");
-    }
+
+    if (state == "hide") { $(".site-panel, .site-panel-btn").removeClass("show"); }
+    else if (state == "show") { $(".site-panel, .site-panel-btn").addClass("show"); }
+  }
+
+  setSitePanelSelectedLocation(target) {
+    // set the background color of the last selected site-panel option
+    if ( isEmpty(target) ) { target = null; }
+    $(".site-panel [sidebar-location]").removeClass("active");
+    $(`.site-panel [sidebar-location="${target}"]`).addClass("active");
+  }
+
+  setExpandSitePanelCollapse(expand) {
+    // there are multiple collapse elements in the sitebar
+    // given a expand name will open this collapse and set it in DynamicURL
+    // empty will clear it
+    if ( isEmpty(expand) ) { expand = null; }
+    DynamicURL.set("ex", expand);
+    $(".site-panel .collapse").collapse("hide");
+    $(`.site-panel .collapse[expand="${expand}"]`).collapse("show");
   }
 
   restoreView() {
-    var l = DynamicURL.get("view");
-    if (l == "home" || !l) { this.loadHome(); }
-    else if (l == "configs") { this.loadConfig(); }
-    else if (l == "commands") { this.loadCommand(); }
-    else if (l == "levels") { this.loadLevel(); }
-    else if (l == "quotes") { this.loadQuote(); }
-    else if (l == "twitch_alerts") { this.loadTwitchAlert(); }
-    else if (l == "assign_roles") { this.loadAssignRole(); }
+    // restores all locations and sitebar selections
+    // based on DynamicURL
+    var expand = DynamicURL.get("ex");
+    var location = DynamicURL.get("view");
+
+    if ( isEmpty(expand) ) { expand = null; }
+    this.setExpandSitePanelCollapse(expand);
+
+    if ( isEmpty(location) ) { location = "home"; }
+    this.loadLocation(location);
   }
 })
-
-// utils
-function showTokenHelp(field) {
-  if (isEmpty(field)) { field = ""; }
-  else { field = "."+field; }
-  $("#token_modal_help .token").hide();
-  $("#token_modal_help .token"+field).show();
-  $("#token_modal_help").modal("show");
-}

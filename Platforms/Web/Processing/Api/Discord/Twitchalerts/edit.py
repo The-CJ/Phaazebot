@@ -8,11 +8,12 @@ import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
-from Platforms.Discord.utils import getDiscordServerTwitchAlerts
-from .errors import apiDiscordAlertNotExists
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.undefined import UNDEFINED
+from Platforms.Discord.db import getDiscordServerTwitchAlerts
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from .errors import apiDiscordAlertNotExists
 
 MAX_CONTENT_SIZE:int = 1750
 
@@ -26,7 +27,7 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	alert_id:str = Data.getStr("alert_id", "", must_be_digit=True)
-	custom_msg:str = Data.getStr("custom_msg", "", len_max=1750)
+	custom_msg:str = Data.getStr("custom_msg", UNDEFINED, len_max=1750)
 
 	# checks
 	if not guild_id:
@@ -35,7 +36,7 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 	if not alert_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'alert_id'")
 
-	if not custom_msg or len(custom_msg) > MAX_CONTENT_SIZE:
+	if custom_msg is UNDEFINED or len(custom_msg) > MAX_CONTENT_SIZE:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'custom_msg'")
 
 	# get/check discord

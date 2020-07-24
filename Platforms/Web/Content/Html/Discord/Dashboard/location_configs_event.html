@@ -1,0 +1,124 @@
+<div location="configs_event" style="display: none">
+
+  <div class="container-fluid">
+
+    <h3>Automated Events</h3>
+    <sub>A new member joined? Great, flood them with welcome messages, rule notices and give them a role that blocked them from doing anything until they accepted.</sub>
+    <sub>(Or don't and just say hello)</sub>
+    <hr>
+
+    <!-- welcome -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Welcome message</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>Send a message to a predefined channel, whenever a new user joins.</span><br>
+          <span>If no channel is set or the message is empty, no message will be sent.</span><br>
+          <span>This message supports tokens.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-grey" onclick="javascript:DiscordDashboard.showTokenHelp('welcome')">Content token</button>
+          <hr>
+          <textarea name="welcome_msg" rows="6" maxlength="1750" style="width:100%;"></textarea>
+          <hr>
+          <select name="welcome_chan" class="custom-select" discord-channel="text" discord-channel-none="true"></select>
+          <hr>
+          <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsEvent.editContentBox(this)">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- welcome priv -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Private DM welcome message</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>A message that is sent to a user via DM,</span><br>
+          <span>it gets sent at the same time as the "Welcome message" just via DM.</span><br>
+          <span>Please keep in mind that this message may not reach the user, due to there privacy settings.</span><br>
+          <span>This message supports tokens.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-grey" onclick="javascript:DiscordDashboard.showTokenHelp('priv_welcome')">Content token</button>
+          <hr>
+          <textarea name="welcome_msg_priv" rows="6" maxlength="1750" style="width:100%;"></textarea>
+          <hr>
+          <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsEvent.editContentBox(this)">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- auto role -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Autorole</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>The selected role will be given to every user, that joins the server.</span><br>
+          <span>This must be a role Phaaze has permission to assign or empty.</span>
+        </div>
+        <div class="col">
+          <select class="custom-select" name="autorole_id" discord-role discord-role-none="true"></select>
+          <hr>
+          <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsEvent.editContentBox(this)">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- leave -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Leave message</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>Send a message to a predefined channel, whenever a user leaves.</span><br>
+          <span>If no channel is set or the message is empty, no message will be sent.</span><br>
+          <span>This message supports tokens.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-grey" onclick="javascript:DiscordDashboard.showTokenHelp('leave')">Content token</button>
+          <hr>
+          <textarea name="leave_msg" rows="6" maxlength="1750" style="width:100%;"></textarea>
+          <hr>
+          <select name="leave_chan" class="custom-select" discord-channel="text" discord-channel-none="true"></select>
+          <hr>
+          <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsEvent.editContentBox(this)">Save</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+</div>
+
+<div phantom hidden>
+
+</div>

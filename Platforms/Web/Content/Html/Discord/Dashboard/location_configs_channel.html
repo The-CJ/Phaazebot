@@ -1,0 +1,221 @@
+<div location="configs_channel" style="display: none">
+
+  <div class="container-fluid">
+
+    <h3>Channel Exceptions</h3>
+    <sub>You have channels where some commands are unwanted? Just block certain commands in selected channel. (Or enable them, yeah there are some that need to be enabled first)</sub>
+    <hr>
+
+    <!-- disable level -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Level-System</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>Disable the level system and level related commands in selected channels.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChannel.showChannelList('level')">Open channel list</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- disable normal -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Normal-Commands</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>Disable Normal-Commands in selected channels.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChannel.showChannelList('normal')">Open channel list</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- disable regulars -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Regular-Commands</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>Disable Regular-Commands in selected channels.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChannel.showChannelList('regular')">Open channel list</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- disable quotes -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Quote-Commands</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>Disable Quote related commands in selected channels.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChannel.showChannelList('quote')">Open channel list</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- enable game -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Game-Commands</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>Enable game related commands in selected channels.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChannel.showChannelList('game')">Open channel list</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- enable nsfw -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>NSFW-Commands</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>Enable NSFW commands in selected channels.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChannel.showChannelList('nsfw')">Open channel list</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+  <div class="modal fade" id="configs_channel_exeption_modal">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">[N/A]</h4>
+          <data name="operation" value=""></data>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row" modal-desc="level">
+            <div class="col">
+              <span>Member wont gain EXP in these channels.</span><br>
+              <span>Also no level related commands can be used.</span>
+            </div>
+          </div>
+
+          <div class="row" modal-desc="normal">
+            <div class="col">
+              <span>Member wont gain EXP in these channels.</span><br>
+              <span>Also no level related commands can be used.</span>
+            </div>
+          </div>
+
+          <div class="row" modal-desc="regular">
+            <div class="col">
+              <span>Member wont gain EXP in these channels.</span><br>
+              <span>Also no level related commands can be used.</span>
+            </div>
+          </div>
+
+          <div class="row" modal-desc="quote">
+            <div class="col">
+              <span>Member wont gain EXP in these channels.</span><br>
+              <span>Also no level related commands can be used.</span>
+            </div>
+          </div>
+
+          <div class="row" modal-desc="game">
+            <div class="col">
+              <span>Member wont gain EXP in these channels.</span><br>
+              <span>Also no level related commands can be used.</span>
+            </div>
+          </div>
+
+          <div class="row" modal-desc="nsfw">
+            <div class="col">
+              <span>Member wont gain EXP in these channels.</span><br>
+              <span>Also no level related commands can be used.</span>
+            </div>
+          </div>
+
+          <hr>
+
+          <form class="center-item-row forced md-form" action="javascript:ConfigsChannel.createChannelEntry()">
+            <div class="col">
+              <select class="custom-select" id="new_exceptionchannel" discord-channel="text"></select>
+            </div>
+            <div class="col-2">
+              <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-plus"></i></button>
+            </div>
+          </form>
+
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .exceptionchannel" -->
+          <div id="exception_channel_list" class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="center-item-row forced exceptionchannel" entry-id="-1">
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="ConfigsChannel.deleteChannelEntry(this)"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="col"><span name="channel_name"></span></div>
+  </div>
+
+</div>

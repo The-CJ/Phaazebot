@@ -1,3 +1,4 @@
+from typing import List
 from mysql.connector.cursor import MySQLCursorDict
 from mysql.connector import MySQLConnection
 
@@ -77,7 +78,7 @@ class DBConn(object):
 
 		return res
 
-	def selectQuery(self, sql:str, values:tuple or dict = None, debug:dict={}) -> list:
+	def selectQuery(self, sql:str, values:tuple or dict = None, debug:dict={}) -> List[dict]:
 		"""
 			Pretty much the same as a normal .query()
 			except it ensures a list with sets return
@@ -92,7 +93,7 @@ class DBConn(object):
 		self.executeQuery(Cursor, sql, values, debug)
 
 		# gather stuff
-		res:list = Cursor.fetchall()
+		res:List[dict] = Cursor.fetchall()
 
 		# close?, commit is not necessary in a select
 		if not self.mass_request: Conn.close()

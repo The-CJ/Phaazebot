@@ -9,7 +9,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordquotedisabledchannel import DiscordQuoteDisabledChannel
-from Platforms.Discord.utils import getDiscordServerQuoteDisabledChannels
+from Platforms.Discord.db import getDiscordServerQuoteDisabledChannels
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingAuthorisation,
 	apiMissingData

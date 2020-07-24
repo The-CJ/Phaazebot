@@ -157,10 +157,10 @@ async def apiDiscordAlertSameTwitchChannelLimit(cls:"WebIndex", WebRequest:Reque
 	default_msg:str = "You have hit the limit of same twitchalerts"
 
 	if twitch_name:
-		default_msg = f" for '{twitch_name}'"
+		default_msg += f" for '{twitch_name}'"
 
 	if limit:
-		default_msg = f", the limit is {limit} channels"
+		default_msg += f", the limit is {limit} channels"
 
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg

@@ -16,23 +16,41 @@ async def apiDiscordCommandsList(cls:"WebIndex", WebRequest:Request) -> Response
 
 	# get required stuff
 	function:str = Data.getStr("function", "")
+	detailed:bool = Data.getBool("detailed", True)
+	recommended:bool = Data.getBool("recommended", False)
 
 	command_list:list = []
 
+	cmd:dict
 	for cmd in sorted(command_register, key=lambda c : c["name"]):
 		# user only wantes a specific command/function to be returned (could result in none)
 		if function:
 			if cmd["function"].__name__ != function: continue
 
-		c:dict = dict(
-			name = cmd["name"],
-			description = cmd["description"],
-			function = cmd["function"].__name__,
-			details = cmd["details"],
-			need_content = cmd["need_content"]
-		)
+		command:dict = dict()
 
-		command_list.append(c)
+		# base informations
+		command["name"] = cmd.get("name", "N/A")
+		command["function"] = cmd.get("function", lambda:"N/A").__name__
+
+		if detailed:
+
+			# extra information to know what a function wants
+			command["description"] = cmd.get("description", None)
+			command["required_arguments"] = cmd.get("required_arguments", [])
+			command["optional_arguments"] = cmd.get("optional_arguments", [])
+			command["endless_arguemnts"] = cmd.get("endless_arguemnts", False)
+			command["need_content"] = cmd.get("need_content", False)
+			command["allowes_content"] = cmd.get("allowes_content", False)
+			command["example_calls"] = cmd.get("example_calls", [])
+
+		if recommended:
+
+			# recommended values for a command
+			command["recommended_require"] = cmd.get("recommended_require", None)
+			command["recommended_cooldown"] = cmd.get("recommended_cooldown", None)
+
+		command_list.append(command)
 
 	return cls.response(
 		text=json.dumps( dict(result=command_list, status=200) ),

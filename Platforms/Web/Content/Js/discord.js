@@ -1,16 +1,18 @@
 function discordUserAvatar(member_id, avatar_hash, size=32) {
   if (avatar_hash) {
-    return "https://cdn.discordapp.com/avatars/"+member_id+"/"+avatar_hash+"?size="+size;
+    return `https://cdn.discordapp.com/avatars/${member_id}/${avatar_hash}?size=${size}`;
   } else {
-    return "https://cdn.discordapp.com/embed/avatars/" + (parseInt(member_id) % 5) + ".png";
+    let mem_pic = parseInt(member_id) % 5;
+    return `https://cdn.discordapp.com/embed/avatars/${mem_pic}.png`;
   }
 }
 
 function discordGuildAvatar(guild_id, icon_hash, size=32) {
   if (guild_id) {
-    return "https://cdn.discordapp.com/icons/"+guild_id+"/"+icon_hash+"?size="+size;
+    return `https://cdn.discordapp.com/icons/${guild_id}/${icon_hash}?size=${size}`;
   } else {
-    return "https://cdn.discordapp.com/embed/avatars/" + (parseInt(guild_id) % 5) + ".png";
+    let gui_pic = parseInt(guild_id) % 5;
+    return `https://cdn.discordapp.com/embed/avatars/${gui_pic}.png`;
   }
 }
 

@@ -3,69 +3,139 @@
 
 <main>
   <div class="container text-center white-text">
-    <h1>Role manager</h1>
-    <button type="button" class="btn btn-primary" onclick="showCreate()">New</button>
+    <h1><a href="/admin">Administration</a> - Role manager</h1>
+
+    <form class="controls content-box pt-2" action="javascript:AdminRole.prevPage(true)">
+
+      <!-- search -->
+      <div class="center-item-row">
+        <!-- limit -->
+        <div class="col">
+          <select class="custom-select" name="limit">
+            <option value="10">10 Entrys per page</option>
+            <option value="25">25 Entrys per page</option>
+            <option value="50" selected>50 Entrys per page</option>
+            <option value="100">100 Entrys per page</option>
+          </select>
+        </div>
+
+        <!-- name -->
+        <div class="col">
+          <input type="text" name="name_contains" class="form-control" placeholder="name LIKE"/>
+        </div>
+
+        <!-- can_be_removed -->
+        <div class="col-2">
+          <select class="custom-select" name="can_be_removed">
+            <option value="0">All</option>
+            <option value="1">Only removable</option>
+            <option value="2">Only locked</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- pages -->
+      <div class="center-item-row btn-row">
+        <!-- pages -->
+        <div class="col text-left pages">
+          <button onclick="AdminRole.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="AdminRole.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <span>Page: <span class="page">0</span></span>
+          <button onclick="AdminRole.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="AdminRole.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+          <span>Total: <span id="role_amount">[N/A]</span></span>
+        </div>
+
+        <!-- buttons -->
+        <div class="col text-right">
+          <button type="button" class="btn btn-success icon-btn" onclick="AdminRole.createModal()"><i class="fas fa-plus"></i></button>
+          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+
+    </form>
+
+    <hr>
+
+    <div class="header row generic-list">
+      <div class="col-1">ID</div>
+      <div class="col">Role</div>
+      <div class="col-1">Locked</div>
+      <div class="col-1">Action</div>
+    </div>
+
     <div id="role_list"></div>
   </div>
 </main>
 
 <div phantom hidden>
 
-  <div class="role" role-id="0" onclick="detailRole(this)">
-    <div class="row">
-      <div class="col-1"></div>
-      <div class="col"><span class="name">[N/A]</span></div>
-      <div class="col-1"><span can_be_removed="true"><i class="fas fa-lock"></i></span></div>
+  <div class="row role generic-sub-list" role-id="0">
+    <div class="col-1"><span name="role_id">[N/A]</span></div>
+    <div class="col"><span name="name">[N/A]</span></div>
+    <div class="col-1"><span name="can_be_removed">[N/A]</span></div>
+    <div class="col-1">
+      <button type="button" class="btn btn-warning icon-btn small" onclick="AdminRole.editModal(this)"><i class="fas fa-edit"></i></button>
     </div>
   </div>
 
 </div>
 
-<div class="modal fade" id="edit_create_role" mode="edit/create">
+<div class="modal fade" id="role_modal" mode="create/edit">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
 
       <div class="modal-header text-center">
-        <h4 class="modal-title">[N/A]</h4>
+        <h4 class="modal-title" show-mode="create">Create new role</h4>
+        <h4 class="modal-title" show-mode="edit">Edit role</h4>
         <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
       </div>
 
-      <div class="modal-body text-black">
+      <div class="modal-body">
+        <!-- ID -->
         <div show-mode="edit">
-          <div class="row md-form">
+          <div class="center-item-row forced md-form">
             <div class="col"><span>ID:</span></div>
-            <div class="col-8"><input type="text" name="role_id" readonly style="width: 100%;"></div>
+            <div class="col-8"><input type="text" name="role_id" class="form-control" readonly></div>
           </div>
         </div>
 
-        <div class="row md-form">
+        <!-- name -->
+        <div class="center-item-row forced md-form">
           <div class="col"><span>Name:</span></div>
-          <div class="col-8"><input type="text" name="name" placeholder="Role name" style="width: 100%;"></div>
+          <div class="col-8"><input type="text" name="name" class="form-control"></div>
         </div>
 
-        <div class="row md-form">
-          <div class="col">
-            <span>Description:</span><br>
-            <textarea name="description" maxlength="510" style="width: 100%;"></textarea>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col">
+        <!-- can be removed -->
+        <div class="center-item-row forced md-form">
+          <div class="col"><span>Can be removed:</span></div>
+          <div class="col-8">
             <label class="checkbox-container">
               <input type="checkbox" name="can_be_removed" checked>
-              <span>Can be removed</span>
             </label>
-            <button remove type="button" class="btn btn-block btn-danger" onclick="removeRole()">Remove</button>
           </div>
         </div>
 
+        <hr>
+
+        <!-- description -->
+        <div class="center-item-col forced">
+          <span>Description:</span>
+          <textarea name="description" maxlength="510" rows="5" class="form-control"></textarea>
+        </div>
+
+        <!-- delete -->
+        <div show-mode="edit">
+          <button delete type="button" class="btn btn-block btn-danger" onclick="AdminRole.deleteFromModal()">Delete</button>
+        </div>
 
       </div>
 
       <div class="modal-footer">
-        <button show-mode="create" type="button" class="btn btn-block btn-success" onclick="createRole()">Create</button><br>
-        <button show-mode="edit" type="button" class="btn btn-block btn-success" onclick="editRole()">Save</button>
+        <button show-mode="create" type="button" class="btn btn-block btn-success" onclick="AdminRole.create()">Create</button><br>
+        <button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="AdminRole.edit()">Sumbit changes</button>
       </div>
 
       <div messagebox></div>

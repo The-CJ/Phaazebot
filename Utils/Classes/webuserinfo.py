@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import datetime
 from aiohttp.web import Request
 from Utils.stringutils import password
-from Utils.Classes.undefined import Undefined
+from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.dbcontentclass import DBContentClass
 from Utils.Classes.apiclass import APIClass
 
@@ -255,15 +255,15 @@ class WebUserInfo(DBContentClass, APIClass):
 	async def finishUser(self, data:dict) -> None:
 		self.found = True
 
-		self.user_id = data.get("id", Undefined())
-		self.username = data.get("username", Undefined())
-		self.username_changed = data.get("username_changed", Undefined())
-		self.password = data.get("password", Undefined())
-		self.email = data.get("email", Undefined())
-		self.verified = bool( data.get("verified", Undefined()) )
+		self.user_id = data.get("id", UNDEFINED)
+		self.username = data.get("username", UNDEFINED)
+		self.username_changed = data.get("username_changed", UNDEFINED)
+		self.password = data.get("password", UNDEFINED)
+		self.email = data.get("email", UNDEFINED)
+		self.verified = bool( data.get("verified", UNDEFINED) )
 
-		self.created_at = data.get("created_at", Undefined())
-		self.edited_at = data.get("edited_at", Undefined())
-		self.last_login = data.get("last_login", Undefined())
+		self.created_at = data.get("created_at", UNDEFINED)
+		self.edited_at = data.get("edited_at", UNDEFINED)
+		self.last_login = data.get("last_login", UNDEFINED)
 
 		self.roles = self.fromStringList( data.get("roles", ''), ";;;" )

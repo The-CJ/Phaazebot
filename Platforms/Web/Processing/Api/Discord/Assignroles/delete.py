@@ -9,7 +9,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordassignrole import DiscordAssignRole
-from Platforms.Discord.utils import getDiscordServerAssignRoles
+from Platforms.Discord.db import getDiscordServerAssignRoles
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
@@ -65,7 +65,7 @@ async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Res
 	AssignRoleToDelete:DiscordAssignRole = res_assignroles.pop(0)
 
 	cls.Web.BASE.PhaazeDB.deleteQuery("""
-		DELETE FROM `discord_assignrole` WHERE `guild_id` = %s `id` = %s""",
+		DELETE FROM `discord_assignrole` WHERE `guild_id` = %s AND `id` = %s""",
 		(AssignRoleToDelete.guild_id, AssignRoleToDelete.assignrole_id)
 	)
 

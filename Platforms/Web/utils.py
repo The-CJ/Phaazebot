@@ -11,8 +11,8 @@ from Utils.Classes.storeclasses import GlobalStorage
 # templating and stuff
 def getNavbar(active:str="") -> HTMLFormatter:
 	"""
-		get the upper nav bar html,
-		with all applied styles based on current location
+	get the upper nav bar html,
+	with all applied styles based on current location
 	"""
 
 	Navbar:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Navbar/default.html")
@@ -28,7 +28,7 @@ def getNavbar(active:str="") -> HTMLFormatter:
 
 def getAccountModal() -> HTMLFormatter:
 	"""
-		get the global login form with all applied formated links etc...
+	get the global login form with all applied formated links etc...
 	"""
 	try:
 		discord_login_link:str = GlobalStorage.get("Phaazebot").Vars.DISCORD_LOGIN_LINK
@@ -45,15 +45,15 @@ def getAccountModal() -> HTMLFormatter:
 # web translator
 async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:
 	"""
-		Tryes to get a WebUser, takes get, post, and cookie in process
-		kwargs are given to WebUserInfo
+	Tryes to get a WebUser, takes get, post, and cookie in process
+	kwargs are given to WebUserInfo
 
-		WebUserInfo kwargs:
-			force_method
-			phaaze_session
-			phaaze_token
-			phaaze_username
-			phaaze_password
+	WebUserInfo kwargs:
+		force_method
+		phaaze_session
+		phaaze_token
+		phaaze_username
+		phaaze_password
 	"""
 
 	if hasattr(WebRequest, "WebUser"):
@@ -68,12 +68,12 @@ async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> We
 
 async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> DiscordWebUserInfo:
 	"""
-		Tryes to get a DiscordUser, takes get, post, and cookie in process
-		kwargs are given to DiscordWebUserInfo
+	Tryes to get a DiscordUser, takes get, post, and cookie in process
+	kwargs are given to DiscordWebUserInfo
 
-		DiscordWebUserInfo kwargs:
-			force_method
-			phaaze_discord_session
+	DiscordWebUserInfo kwargs:
+		force_method
+		phaaze_discord_session
 	"""
 
 	if hasattr(WebRequest, "DiscordUser"):
@@ -85,61 +85,3 @@ async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -
 	WebRequest.DiscordUser = DiscordUser
 
 	return WebRequest.DiscordUser
-
-# db managment
-async def getWebUsers(cls:"WebIndex", **search:dict) -> list:
-	"""
-	Get web users
-	Returns a list of WebUserInfo()
-
-	Optional keywords:
-	------------------
-	* where `str`: (Default: "1=1")
-	* where_values `tuple` or `dict`: (Default: None)
-	* order_str `str`: (Default: "ORDER BY user.id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
-
-	"""
-	where:str = search.get("where", "1=1")
-	where_values:str = search.get("where_values", None)
-	order_str:str = search.get("order_str", "ORDER BY `user`.`id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
-
-	statement:str = f"""
-		SELECT
-			`user`.*,
-			GROUP_CONCAT(`role`.`name` SEPARATOR ';;;') AS `roles`
-		FROM `user`
-		LEFT JOIN `user_has_role`
-			ON `user_has_role`.`user_id` = `user`.`id`
-		LEFT JOIN `role`
-			ON `role`.`id` = `user_has_role`.`role_id`
-		WHERE {where}
-		GROUP BY `user`.`id`"""
-
-	if order_str:
-		statement += f" {order_str}"
-
-	if limit:
-		statement += f" LIMIT {limit}"
-		if offset:
-			statement += f" OFFSET {offset}"
-
-	res:list = cls.Web.BASE.PhaazeDB.selectQuery(statement, where_values)
-
-	return_list:list = []
-	for user in res:
-		WebUser:WebUserInfo = WebUserInfo(cls.Web.BASE, None)
-		await WebUser.finishUser(user)
-		return_list.append(WebUser)
-
-	return return_list
-
-async def getWebUserAmount(cls:"WebIndex", where:str="1=1", values:tuple=()) -> int:
-	""" simply gives a number of all matched user """
-
-	res:list = cls.Web.BASE.PhaazeDB.selectQuery(f"SELECT COUNT(*) AS `I` FROM `user` WHERE {where}", values)
-
-	return res[0]['I']

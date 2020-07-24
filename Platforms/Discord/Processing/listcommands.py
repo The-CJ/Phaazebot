@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from Platforms.Discord.utils import getDiscordServerCommands
+from Platforms.Discord.db import getDiscordServerCommands
 
 MAX_SHOW_COMMANDS:int = 20
 

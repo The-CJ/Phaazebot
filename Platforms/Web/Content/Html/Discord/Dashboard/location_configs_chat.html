@@ -1,0 +1,271 @@
+<div location="configs_chat" style="display: none">
+
+  <div class="container-fluid">
+
+    <h3>Chat Management</h3>
+    <sub>Create rules, exceptions and more, to keep the server a place everyone can enjoy.</sub>
+    <hr>
+
+    <!-- blacklist -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Blacklist</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>Allowes you to block words, phrases or regex pattern.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChat.showWordBlacklist()">Open word blacklist</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- links -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Link protection</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>If link protection is on, all links will be baned by default,</span>
+          <br>
+          <span>But individual links or regex pattern can be allowed.</span>
+        </div>
+        <div class="col">
+          <div class="row">
+            <div class="col pr-0">
+              <button disabled class="btn btn-block option-status" name="blacklist_ban_links" value="x">Currently: </button>
+            </div>
+            <div class="col-4 pl-0">
+              <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsChat.toggleLinks()">Toggle</button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChat.showLinkWhitelist()">Open link whitelist</button>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- punishment -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Punishment</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>What should Phaaze do, if someone breaks the rules?</span>
+        </div>
+        <div class="col">
+          <form action="javascript:ConfigsChat.editPunishment()" method="post">
+            <select class="custom-select" name="blacklist_punishment">
+              <option value="delete">Just delete the message</option>
+              <option value="kick">Delete the message and kick the author</option>
+              <option value="ban">Delete the message and ban the author</option>
+            </select>
+            <button type="submit" class="btn btn-block btn-primary">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Exceptions -->
+    <div class="content-box p-2">
+      <div class="center-item-row">
+        <div class="col text-left">
+          <h4>Exceptions</h4>
+        </div>
+      </div>
+
+      <div class="center-item-row ">
+        <div class="col text-left">
+          <span>By default, only moderators and the server owner bypass punishment,</span>
+          <br>
+          <span>you may add some roles with punishment immunity.</span>
+          <br>
+          <span>Users with one of these roles can do whatever they want.</span>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-block btn-secondary" onclick="javascript:ConfigsChat.showExecptionRoles()">Open role list</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+  <div class="modal fade" id="configs_chat_word_blacklist_modal">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Blacklist</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <p>Pretty easy to unserstand, everything is handled via <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expressions</a></p>
+              <span>If any Regex is found in the message, Phaaze will execute the punishment</span><br>
+              <span>Note: The message is lowered before checking, so:</span><br>
+              <span>"Hello there my name is CreAtIvU53R1337"</span><br>
+              <span>will be: </span><br>
+              <span>"hello there my name is creativu53r1337"</span>
+            </div>
+          </div>
+
+          <hr>
+
+          <form class="center-item-row forced md-form" action="javascript:ConfigsChat.createWordBlacklistEntry()">
+            <div class="col">
+              <input type="text" id="new_blacklistword" class="form-control text-center" placeholder="Add new entry...">
+            </div>
+            <div class="col-2">
+              <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-plus"></i></button>
+            </div>
+          </form>
+
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .blacklistword" -->
+          <div id="blacklist_list" class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="configs_chat_link_whitelist_modal">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Link whitelist</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <p>By default every link gets punished, but here you can define <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expressions</a> that are allowed.</p>
+              <span>e.g:</span><br>
+              <span>If you ban links, but want to allow all google links, including all subdomains.</span><br>
+              <span>You add this: <span style="color:red">^.*google.com$</span></span>
+            </div>
+          </div>
+
+          <hr>
+
+          <form class="center-item-row forced md-form" action="javascript:ConfigsChat.createLinkWhitelistEntry()">
+            <div class="col">
+              <input type="text" id="new_whitelistlink" class="form-control text-center" placeholder="Add new entry...">
+            </div>
+            <div class="col-2">
+              <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-plus"></i></button>
+            </div>
+          </form>
+
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .whitelistlink" -->
+          <div id="whitelist_list" class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="configs_chat_exeption_role_modal">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title">Exceptionrole</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div class="row">
+            <div class="col">
+              <span>A member who has at least one of these roles will have full immunity to the blacklist-, link ban- and punishment-system</span>
+            </div>
+          </div>
+
+          <hr>
+
+          <span>Only non-managed roles are shown</span><br>
+          <span>Adding @everyone is not a good idea... i think?</span>
+
+          <form class="center-item-row forced md-form" action="javascript:ConfigsChat.createExecptionRolesEntry()">
+            <div class="col">
+              <select class="custom-select" id="new_exceptionrole" discord-role discord-role-none="true"></select>
+            </div>
+            <div class="col-2">
+              <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-plus"></i></button>
+            </div>
+          </form>
+
+          <hr>
+          <!-- gets filled with copys of: "[phantom] .exceptionrole" -->
+          <div id="exceptionrole_list" class="modal-itemlist"></div>
+
+        </div>
+
+        <div class="modal-footer"></div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<div phantom hidden>
+
+  <div class="center-item-row forced blacklistword" word-id="-1">
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="ConfigsChat.deleteWordBlacklistEntry(this)"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="col"><span name="word"></span></div>
+  </div>
+
+  <div class="center-item-row forced whitelistlink" link-id="-1">
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="ConfigsChat.deleteLinkWhitelistEntry(this)"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="col"><span name="link"></span></div>
+  </div>
+
+  <div class="center-item-row forced exceptionrole" entry-id="-1">
+    <div class="delete">
+      <button type="button" class="btn btn-danger icon-btn" onclick="ConfigsChat.deleteExecptionRolesEntry(this)"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="col"><span name="role_name"></span></div>
+  </div>
+
+</div>

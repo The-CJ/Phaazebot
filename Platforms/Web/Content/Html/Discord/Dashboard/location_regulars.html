@@ -1,0 +1,185 @@
+<div location="regulars" style="display: none;">
+
+  <div class="container-fluid">
+
+    <h3>Regulars</h3>
+    <sub>Regulars are member with special permissions. People who are added as a regular are immune to black- and white-lists and can use regular only commands</sub>
+    <hr>
+
+    <form class="controls content-box pt-2" action="javascript:Regulars.prevPage(true)">
+
+      <div class="center-item-row">
+        <!-- limit -->
+        <div class="col">
+          <select class="custom-select" name="limit">
+            <option value="5">5 Entrys per page</option>
+            <option value="25">25 Entrys per page</option>
+            <option value="50" selected>50 Entrys per page</option>
+            <option value="100">100 Entrys per page</option>
+          </select>
+        </div>
+
+        <!-- nickname -->
+        <div class="col">
+          <select class="custom-select" name="nickname">
+            <option value="0" selected>Show usernames</option>
+            <option value="1">Show server nicknames</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="center-item-row btn-row">
+        <!-- pages -->
+        <div class="col text-left pages">
+          <button onclick="Regulars.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="Regulars.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <span>Page: <span class="page">0</span></span>
+          <button onclick="Regulars.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="Regulars.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+          <span>Total: <span id="regular_amount">[N/A]</span></span>
+        </div>
+
+        <!-- buttons -->
+        <div class="col text-right">
+          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+          <button type="button" class="btn btn-success icon-btn" onclick="Regulars.createModal()"><i class="fas fa-plus"></i></button>
+        </div>
+      </div>
+
+    </form>
+
+    <hr>
+
+    <div class="header row generic-list">
+      <div class="col member">Member</div>
+      <div class="col-1 action">Action</div>
+    </div>
+
+    <!-- gets filled with copys of: "[phantom] .regular" -->
+    <div id="regular_list"></div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+  <div class="modal fade" id="regular_modal" mode="create|edit">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <data name="regular_id"></data>
+          <h4 class="modal-title" show-mode="create">New Regular</h4>
+          <h4 class="modal-title" show-mode="edit">Edit Regular</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <div show-mode=create>
+
+            <form method="get" action="javascript:Regulars.search()" step=1 show-mode=create>
+
+              <p>
+                To add a new regular, please add the User-ID, the full user name or the nickname.<br>
+                The discriminator <i>(e.g.: #1234)</i> is not needed, but is saver when multiple user have the same name.
+              </p>
+              <sub>You can get the User-ID by rightclicking the user when you are in <a href="https://support.discord.com/hc/article_attachments/115002742731/mceclip0.png" target="_blank">developer mode</a></sub>
+              <hr>
+              <div class="center-item-row md-form">
+                <div class="col">
+                  <input type="text" name="search_user" placeholder="1234123412341234 or Username#1234" class="form-control text-center">
+                </div>
+                <div class="col-2">
+                  <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+                </div>
+              </div>
+
+            </form>
+
+            <div step=2>
+
+              <h3>This one?</h3>
+
+              <div class="center-item-row">
+                <div class="col-4">
+                  <img src="" alt="avatar" height="128" width="128">
+                </div>
+                <div class="col-8 md-form">
+                  <div class="center-item-row">
+                    <div class="col-3"><span>Username:</span></div>
+                    <div class="col"><input type="text" name="name" class="form-control" readonly></div>
+                  </div>
+                  <div class="center-item-row">
+                    <div class="col-3"><span>ID:</span></div>
+                    <div class="col"><input type="text" name="id" class="form-control" readonly></div>
+                  </div>
+                </div>
+              </div>
+
+              <hr br>
+
+              <div class="center-item-row">
+                <div class="col">
+                  <button type="button" class="btn btn-block btn-success" onclick="Regulars.create();">Yes, add it!</button>
+                </div>
+                <div class="col">
+                  <button type="button" class="btn btn-block btn-danger" onclick="Regulars.showStep(1);">No</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div show-mode=edit>
+
+            <div class="center-item-row">
+              <div class="col-4">
+                <img src="" alt="avatar" height="128" width="128">
+              </div>
+              <div class="col-8 md-form">
+                <div class="center-item-row">
+                  <div class="col-3"><span>Username:</span></div>
+                  <div class="col"><input type="text" name="username" class="form-control" readonly></div>
+                </div>
+                <div class="center-item-row">
+                  <div class="col-3"><span>ID:</span></div>
+                  <div class="col"><input type="text" name="member_id" class="form-control" readonly></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" show-mode=edit class="btn btn-block btn-danger" onclick="Regulars.deleteFromModal()">Delete</button>
+        </div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="row regular generic-sub-list" regular-id="0">
+    <div class="col member">
+      <div class="center-item-row forced">
+        <img src="" alt="avatar" class="avatar" height="32" width="32">
+        <span name="username">[N/A]</span>
+      </div>
+    </div>
+    <div class="col-1 action">
+      <button type="submit" class="btn btn-warning icon-btn small" onclick="Regulars.editModal(this)"><i class="fas fa-edit"></i></button>
+      <button type="submit" class="btn btn-danger icon-btn small" onclick="Regulars.deleteFromList(this)"><i class="fas fa-trash"></i></button>
+    </div>
+  </div>
+
+</div>

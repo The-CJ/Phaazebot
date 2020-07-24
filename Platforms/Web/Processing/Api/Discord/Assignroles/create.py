@@ -79,16 +79,23 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 		SELECT
 			COUNT(*) AS `all`,
 			SUM(
-				CASE WHEN `discord_assignrole`.`role_id` = %s OR LOWER(`discord_assignrole`.`trigger`) = LOWER(%s)
+				CASE WHEN `discord_assignrole`.`role_id` = %s
 				THEN 1 ELSE 0 END
-			) AS `match`
+			) AS `match_role_id`,
+			SUM(
+				CASE WHEN LOWER(`discord_assignrole`.`trigger`) = LOWER(%s)
+				THEN 1 ELSE 0 END
+			) AS `match_trigger`
 		FROM `discord_assignrole`
 		WHERE `discord_assignrole`.`guild_id` = %s""",
 		( role_id, trigger, guild_id )
 	)
 
-	if res[0]["match"]:
-		return await apiDiscordAssignRoleExists(cls, WebRequest, role_id=role_id, trigger=trigger, role_name=AssignRole.name)
+	if res[0]["match_role_id"]:
+		return await apiDiscordAssignRoleExists(cls, WebRequest, role_id=role_id, role_name=AssignRole.name)
+
+	if res[0]["match_trigger"]:
+		return await apiDiscordAssignRoleExists(cls, WebRequest, trigger=trigger)
 
 	if res[0]["all"] >= cls.Web.BASE.Limit.DISCORD_ASSIGNROLE_AMOUNT:
 		return await apiDiscordAssignRoleLimit(cls, WebRequest, limit=cls.Web.BASE.Limit.DISCORD_ASSIGNROLE_AMOUNT)

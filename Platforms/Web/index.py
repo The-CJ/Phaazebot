@@ -76,6 +76,12 @@ class WebIndex(object):
 		# /discord*
 		self.addWebDiscordRoutes()
 
+		# temporal addded routs due to dev
+		self.Web.router.add_route('GET', '/twitch{x:.*}', self.underDev)
+		self.Web.router.add_route('GET', '/osu{x:.*}', self.underDev)
+		self.Web.router.add_route('GET', '/wiki{x:.*}', self.underDev)
+		self.Web.router.add_route('GET', '/bug{x:.*}', self.underDev)
+
 		# web contents (js, css, img)
 		self.Web.router.add_route('GET', '/img{file:.*}', self.serveImg)
 		self.Web.router.add_route('GET', '/css{file:.*}', self.serveCss)
@@ -129,6 +135,7 @@ class WebIndex(object):
 	def addAPIDiscordRoutes(self) -> None:
 		self.Web.router.add_route('*', '/api/discord/guild', self.apiDiscordGuild)
 		self.Web.router.add_route('*', '/api/discord/userguilds', self.apiDiscordUserGuilds)
+		self.Web.router.add_route('*', '/api/discord/search', self.apiDiscordSearch)
 		self.Web.router.add_route('*', '/api/discord/commands{x:/?}{method:.*}', self.apiDiscordCommands)
 		self.Web.router.add_route('*', '/api/discord/configs/regulardisabledchannels{x:/?}{method:.*}', self.apiDiscordConfigsRegularDisabledChannels)
 		self.Web.router.add_route('*', '/api/discord/configs/normaldisabledchannels{x:/?}{method:.*}', self.apiDiscordConfigsNormalDisabledChannels)
@@ -140,22 +147,27 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/discord/configs/whitelistedlinks{x:/?}{method:.*}', self.apiDiscordConfigsWhitelistedLink)
 		self.Web.router.add_route('*', '/api/discord/configs/exceptionroles{x:/?}{method:.*}', self.apiDiscordConfigsExceptionRoles)
 		self.Web.router.add_route('*', '/api/discord/configs{x:/?}{method:.*}', self.apiDiscordConfigs)
+		self.Web.router.add_route('*', '/api/discord/levels/medals{x:/?}{method:.*}', self.apiDiscordLevelsMedals)
 		self.Web.router.add_route('*', '/api/discord/levels{x:/?}{method:.*}', self.apiDiscordLevels)
+		self.Web.router.add_route('*', '/api/discord/regulars{x:/?}{method:.*}', self.apiDiscordRegulars)
 		self.Web.router.add_route('*', '/api/discord/quotes{x:/?}{method:.*}', self.apiDiscordQuotes)
 		self.Web.router.add_route('*', '/api/discord/assignroles{x:/?}{method:.*}', self.apiDiscordAssignroles)
 		self.Web.router.add_route('*', '/api/discord/twitchalerts{x:/?}{method:.*}', self.apiDiscordTwitchalerts)
 
-	# api
+	# api admin
 	from .Processing.Api.Account.main import apiAccountPhaaze, apiAccountDiscord, apiAccountTwitch
 	from .Processing.Api.errors import apiNothing, apiUnknown
 	from .Processing.Api.Admin.evaluate import apiAdminEvaluate
 	from .Processing.Api.Admin.status import apiAdminStatus
 	from .Processing.Api.Admin.module import apiAdminModule
-	from .Processing.Api.Admin.roles import apiAdminRoles
+	from .Processing.Api.Admin.Roles.main import apiAdminRoles
 	from .Processing.Api.Admin.Users.main import apiAdminUsers
+
+	# api discord
 	from .Processing.Api.Discord.guild import apiDiscordGuild
 	from .Processing.Api.Discord.userguilds import apiDiscordUserGuilds
 	from .Processing.Api.Discord.Commands.main import apiDiscordCommands
+	from .Processing.Api.Discord.search import apiDiscordSearch
 	from .Processing.Api.Discord.Configs.Regulardisabledchannels.main import apiDiscordConfigsRegularDisabledChannels
 	from .Processing.Api.Discord.Configs.Normaldisabledchannels.main import apiDiscordConfigsNormalDisabledChannels
 	from .Processing.Api.Discord.Configs.Leveldisabledchannels.main import apiDiscordConfigsLevelDisabledChannels
@@ -165,8 +177,10 @@ class WebIndex(object):
 	from .Processing.Api.Discord.Configs.Blacklistedwords.main import apiDiscordConfigsBlacklistedWords
 	from .Processing.Api.Discord.Configs.Whitelistedlinks.main import apiDiscordConfigsWhitelistedLink
 	from .Processing.Api.Discord.Configs.Exceptionroles.main import apiDiscordConfigsExceptionRoles
+	from .Processing.Api.Discord.Levels.Medals.main import apiDiscordLevelsMedals
 	from .Processing.Api.Discord.Configs.main import apiDiscordConfigs
 	from .Processing.Api.Discord.Levels.main import apiDiscordLevels
+	from .Processing.Api.Discord.Regulars.main import apiDiscordRegulars
 	from .Processing.Api.Discord.Quotes.main import apiDiscordQuotes
 	from .Processing.Api.Discord.Assignroles.main import apiDiscordAssignroles
 	from .Processing.Api.Discord.Twitchalerts.main import apiDiscordTwitchalerts
@@ -193,7 +207,7 @@ class WebIndex(object):
 	from .Processing.webcontent import serveCss, serveJs, serveImg, serveFavicon
 
 	# errors
-	from .Processing.errors import notFound, notAllowed
+	from .Processing.errors import notFound, notAllowed, underDev
 
 	# utils
 	from .utils import getWebUserInfo, getDiscordUserInfo

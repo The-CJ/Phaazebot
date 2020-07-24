@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 	from Platforms.Twitch.main_events import StatusEntry
@@ -8,29 +8,29 @@ import discord
 TWITCH_COLOR:int = 0x6441A4
 TWITCH_STREAM_URL:str = "https://twitch.tv/"
 
-async def discordHandleLive(cls:"PhaazebotDiscord", event_list:list) -> None:
+async def discordHandleLive(cls:"PhaazebotDiscord", event_list:List["StatusEntry"]) -> None:
 	"""
-		With a list status entrys from twitch,
-		we format and send all live announcements to all discord channels
+	With a list status entrys from twitch,
+	we format and send all live announcements to all discord channels
 	"""
 
 	if not cls: return #Discord Client not ready or off
 
-	Event:StatusEntry
 	event_channel_list:str = ",".join(str(Event.channel_id) for Event in event_list)
+	if not event_channel_list: event_channel_list = "0"
 
-	res:list = cls.BASE.PhaazeDB.selectQuery(f"""
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(f"""
 		SELECT
-			`twitch_channel_id`,
-			`discord_channel_id`,
-			`custom_msg`
+			`discord_twitch_alert`.`twitch_channel_id`,
+			`discord_twitch_alert`.`discord_channel_id`,
+			`discord_twitch_alert`.`custom_msg`
 		FROM `discord_twitch_alert`
 		WHERE `discord_twitch_alert`.`twitch_channel_id` IN ({event_channel_list})"""
 	)
 
 	for db_entry in res:
 
-		Event = getStreamFromDBResult(event_list, db_entry["twitch_channel_id"])
+		Event:"StatusEntry" = getStreamFromDBResult(event_list, db_entry["twitch_channel_id"])
 		if Event == None: continue # should never happen
 
 		# we only care about live alerts,
@@ -79,28 +79,28 @@ async def discordHandleLive(cls:"PhaazebotDiscord", event_list:list) -> None:
 		except:
 			cls.BASE.Logger.warning(f"Can't send Twitch Alert to Discord Channel ID: {discord_chan_id}")
 
-async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:list) -> None:
+async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:List["StatusEntry"]) -> None:
 	"""
-		With a list status entrys from twitch,
-		we format and send all gamechange announcements to all discord channels
+	With a list status entrys from twitch,
+	we format and send all gamechange announcements to all discord channels
 	"""
 
 	if not cls: return #Discord Client not ready or off
 
-	Event:StatusEntry
 	event_channel_list:str = ",".join(Event.channel_id for Event in event_list)
+	if not event_channel_list: event_channel_list = "0"
 
 	res:list = cls.BASE.PhaazeDB.selectQuery(f"""
 		SELECT
-			`twitch_channel_id`,
-			`discord_channel_id`
+			`discord_twitch_alert`.`twitch_channel_id`,
+			`discord_twitch_alert`.`discord_channel_id`
 		FROM `discord_twitch_alert`
 		WHERE `discord_twitch_alert`.`twitch_channel_id` IN ({event_channel_list})"""
 	)
 
 	for db_entry in res:
 
-		Event = getStreamFromDBResult(event_list, db_entry["twitch_channel_id"])
+		Event:"StatusEntry" = getStreamFromDBResult(event_list, db_entry["twitch_channel_id"])
 		if Event == None: continue # should never happen
 
 		# we only care about live alerts,
@@ -138,13 +138,12 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:list) -> No
 		Emb.set_thumbnail(url = Event.User.profile_image_url)
 
 		discord_chan_id:str = db_entry.get("discord_channel_id", "-1")
-		discord_custom_msg:str = db_entry.get("custom_msg", None) or None
 
 		try:
 			Chan:discord.TextChannel = cls.get_channel( int(discord_chan_id) )
 			if not Chan: continue
 
-			await Chan.send( content = discord_custom_msg, embed = Emb )
+			await Chan.send( embed = Emb )
 
 		except:
 			cls.BASE.Logger.warning(f"Can't send Twitch Alert to Discord Channel ID: {discord_chan_id}")
@@ -152,8 +151,7 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:list) -> No
 async def discordHandleOffline(cls:"PhaazebotDiscord", status_list:list) -> None:
 	return # for now do nothing
 
-def getStreamFromDBResult(events, channel_id) -> "StatusEntry" or None:
-	Ev:StatusEntry
+def getStreamFromDBResult(events:List["StatusEntry"], channel_id:str) -> "StatusEntry" or None:
 	for Ev in events:
 		if str(Ev.channel_id) == str(channel_id): return Ev
 	return None

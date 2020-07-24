@@ -1,0 +1,260 @@
+<div location="commands_command" style="display: none">
+
+  <div class="container-fluid">
+
+    <h3>Server Commands</h3>
+    <sub>You can make your own commands here, or what did you think will happen? If you are looking for help, check out the "Command help" section or the Phaaze-Wiki</sub>
+    <hr>
+
+    <div class="center-item-row">
+      <span>Public command page:</span>
+      <div class="col">
+        <input type="text" readonly value="|<!--#(web_root)#-->|/discord/commands/|<!--#(guild_id)#-->|"  class="form-control text-center">
+      </div>
+    </div>
+
+    <hr>
+
+    <form class="controls content-box pt-2" action="javascript:CommandsCommand.prevPage(1)">
+
+      <div class="center-item-row">
+        <!-- limit -->
+        <div class="col">
+          <select class="custom-select" name="limit">
+            <option value="5">5 Entrys per page</option>
+            <option value="10">10 Entrys per page</option>
+            <option value="25">25 Entrys per page</option>
+            <option value="50" selected>50 Entrys per page</option>
+            <option value="100">100 Entrys per page</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="center-item-row btn-row">
+        <!-- pages -->
+        <div class="col text-left pages">
+          <button onclick="CommandsCommand.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="CommandsCommand.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <span>Page: <span class="page">0</span></span>
+          <button onclick="CommandsCommand.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="CommandsCommand.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+          <span>Total: <span id="commands_command_amount">[N/A]</span></span>
+        </div>
+
+        <!-- buttons -->
+        <div class="col text-right">
+          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+          <button type="button" class="btn btn-success icon-btn" onclick="CommandsCommand.createModal()"><i class="fas fa-plus"></i></button>
+        </div>
+      </div>
+
+    </form>
+
+    <hr>
+
+    <div class="header row generic-list">
+      <div class="col-2">Trigger</div>
+      <div class="col">Function</div>
+      <div class="col-1">Require</div>
+      <div class="col-1">Cost</div>
+      <div class="col-1">Uses</div>
+      <div class="col-1">Cooldown</div>
+      <div class="col-1">Action</div>
+    </div>
+    <!-- get filled with copys of: "[phantom] .command -->
+    <div id="command_list"></div>
+
+  </div>
+
+  <div class="container-fluid" hidden>
+
+    <div class="center-item-row">
+      <div class="col">
+        <h4>Commands: <span id="command_amount">[N/A]</span></h4>
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-success" onclick="Commands.createModal()">New Command</button>
+      </div>
+    </div>
+
+    <div class="center-item-row md-form">
+      <span>Public command page for this server:</span>
+      <div class="col">
+        <input type="text" value="|<!--#(web_root)#-->|/discord/commands/|<!--#(guild_id)#-->|" readonly class="white-text text-center" style="width: 100%;">
+      </div>
+    </div>
+
+    <div class="header row">
+      <div class="col-2 trigger">Trigger</div>
+      <div class="col function">Function</div>
+      <div class="col-2 require">Require</div>
+      <div class="col-1 cost">Cost</div>
+      <div class="col-1 uses">Uses</div>
+      <div class="col-1 uses">Cooldown</div>
+    </div>
+    <!-- get filled with copys of: "[phantom] .command -->
+    <div id="command_list"></div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+  <div class="modal fade" id="command_modal" mode="create|edit">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <h4 class="modal-title" show-mode="create">New command</h4>
+          <h4 class="modal-title" show-mode="edit">Edit command</h4>
+          <data name="command_id"></data>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+
+          <!-- trigger -->
+          <div class="center-item-row md-form">
+            <div class="col">
+              <input type="text" name="trigger" class="form-control text-center" placeholder="Something to trigger this command, like: !cmd or >some">
+            </div>
+          </div>
+
+          <hr>
+
+          <!-- active -->
+          <div class="center-item-row">
+            <div class="col text-left">
+              <span>Active:</span>
+            </div>
+            <div class="col text-center">
+              <label class="checkbox-container">
+                <input type="checkbox" name="active" checked>
+              </label>
+            </div>
+          </div>
+
+          <!-- require -->
+          <div class="center-item-row md-form">
+            <div class="col text-left">
+              <span>Can be used by:</span>
+            </div>
+            <div class="col text-center">
+              <select name="require" class="browser-default custom-select">
+                <option value="" selected>Select requirement...</option>
+                <option value="0">Everyone</option>
+                <option value="1">Regular</option>
+                <option value="2">Moderator</option>
+                <option value="3">Server Owner</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- require_currency -->
+          <div class="center-item-row md-form">
+            <div class="col text-left">
+              <span>Cost to use this command:</span>
+            </div>
+            <div class="col text-center">
+              <input type="number" name="required_currency" class="form-control" value="0" min="0">
+            </div>
+          </div>
+
+          <!-- hidden -->
+          <div class="center-item-row">
+            <div class="col text-left">
+              <span>Hidden command?</span>
+            </div>
+            <div class="col text-center">
+              <label class="checkbox-container">
+                <input type="checkbox" name="hidden">
+              </label>
+            </div>
+          </div>
+
+          <!-- cooldown -->
+          <div class="center-item-row md-form">
+            <div class="col text-left">
+              <span>Cooldown in sec.</span>
+            </div>
+            <div class="col text-center">
+              <div class="center-item-row">
+                <input type="number" name="cooldown" value="10" min="3" max="600" oninput="CommandsCommand.updateCooldownValues(this.value)" style="width:20%;">
+                <input type="range" name="cooldown_slider" value="10" min="3" max="600" step="1" oninput="CommandsCommand.updateCooldownValues(this.value)" style="width:80%;">
+              </div>
+            </div>
+          </div>
+
+          <!-- complex -->
+          <div class="center-item-row md-form" hidden>
+            <div class="col text-left">
+              <span>What type of command?</span>
+            </div>
+            <div class="col text-center">
+              <select name="commandtype" class="custom-select">
+                <option value="">Choose a type...</option>
+                <option value="simple">Simple</option>
+                <option value="complex">Complex</option>
+              </select>
+            </div>
+          </div>
+
+          <hr>
+
+          <!-- command select -->
+          <div class="center-item-col">
+            <h6>What is this command suppost to do?</h6>
+            <select class="custom-select text-center" name="function" onchange="CommandsCommand.loadCommandsDetails(this)"></select>
+          </div>
+
+          <!-- command description -->
+          <div command-setting="description" style="display: none">
+            <hr>
+            <div class="center-item-col">
+              <span name="description" style="white-space: pre-line;">[N/A]</span>
+            </div>
+          </div>
+
+          <!-- command content -->
+          <div command-setting="content" style="display: none">
+            <hr>
+            <button type="button" class="btn btn-block btn-grey" onclick="DiscordDashboard.showTokenHelp('command')">Content Token</button>
+            <div class="center-item-col">
+              <span name="content_management"></span>
+              <textarea name="content" rows="5" style="width: 100%"></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-block btn-success" onclick="CommandsCommand.create()" show-mode="create">Submit</button>
+          <button type="button" class="btn btn-block btn-warning black-text" onclick="CommandsCommand.edit()" show-mode="edit">Submit changes</button>
+          <button type="button" class="btn btn-block btn-danger" onclick="CommandsCommand.deleteFromModal()" show-mode="edit">Delete</button>
+        </div>
+        <div messagebox></div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="row command generic-sub-list" command-id="0">
+    <div class="col-2"><span name="trigger">[N/A]</span></div>
+    <div class="col"><span name="name">[N/A]</span></div>
+    <div class="col-1"><span name="require">[N/A]</span></div>
+    <div class="col-1"><span name="cost">[N/A]</span></div>
+    <div class="col-1"><span name="uses">[N/A]</span></div>
+    <div class="col-1"><span name="cooldown">[N/A]</span></div>
+    <div class="col-1">
+      <button type="submit" class="btn btn-warning icon-btn small" onclick="CommandsCommand.editModal(this)"><i class="fas fa-edit"></i></button>
+      <button type="submit" class="btn btn-danger icon-btn small" onclick="CommandsCommand.deleteFromList(this)"><i class="fas fa-trash"></i></button>
+    </div>
+  </div>
+
+</div>

@@ -170,7 +170,8 @@ async def apiUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> R
 	Optional keywords:
 	------------------
 	* msg `str` : (Default: None) * [Overwrites default]
-	* username `str`
+	* user_id `str` *
+	* username `str` *
 	* password `str`
 
 	Default message (*gets altered by optional keywords):
@@ -183,6 +184,10 @@ async def apiUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> R
 	if username:
 		res["username"] = username
 
+	user_id:str = kwargs.get("user_id", "")
+	if user_id:
+		res["user_id"] = user_id
+
 	password:str = kwargs.get("password", "")
 	if password:
 		# S0m3th1ngC00L -> S0m**********
@@ -190,6 +195,13 @@ async def apiUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> R
 
 	# build message
 	default_msg:str = "No user could be found"
+
+	if username:
+		default_msg += f" with username '{username}'"
+
+	if user_id:
+		default_msg += f" (User ID: {user_id})"
+
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 

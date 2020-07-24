@@ -11,7 +11,8 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from Platforms.Discord.utils import getDiscordSeverSettings, getDiscordRoleFromString
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Discord.utils import getDiscordRoleFromString
 from Platforms.Discord.blacklist import checkBlacklistPunishmentString
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
@@ -252,7 +253,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 
 	return cls.response(
-		text=json.dumps( dict(msg="Configs: Updated", update=update, status=200) ),
+		text=json.dumps( dict(msg="Configs: Updated", changes=update, status=200) ),
 		content_type="application/json",
 		status=200
 	)

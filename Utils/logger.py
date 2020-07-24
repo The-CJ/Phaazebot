@@ -1,21 +1,21 @@
 import logging
 import os
-import sys
 import inspect
 from Utils.cli import CliArgs
-try: from cysystemd.journal import JournaldLogHandler
-except ImportError:	pass
 
 class PhaazeLoggerFormatter(logging.Formatter):
 	""" custom logging colors """
-	default_color:str = "\033[00m"
-	colors:dict = dict(
-		DEBUG = "\033[90m",
-		INFO = "\033[36m",
-		WARNING = "\033[93m",
-		ERROR = "\033[33m",
-		CRITICAL = "\033[31m",
-	)
+
+	def __init__(self, fmt:str):
+		super().__init__(fmt)
+		self.default_color:str = "\033[00m"
+		self.colors:dict = dict(
+			DEBUG = "\033[90m",
+			INFO = "\033[36m",
+			WARNING = "\033[93m",
+			ERROR = "\033[33m",
+			CRITICAL = "\033[31m",
+		)
 
 	def formatMessage(self, Record:logging.LogRecord) -> None:
 		lvl:str = Record.levelname
@@ -28,24 +28,18 @@ class PhaazeLogger(object):
 	def __init__(self):
 		self.Log:logging.Logger = logging.getLogger("Phaazebot")
 		self.Log.setLevel(logging.DEBUG)
-		self.Formatter:PhaazeLoggerFormatter = PhaazeLoggerFormatter("[%(levelname)s]: %(message)s")
-		self.active_debugs:list = [a.lower() for a in CliArgs.get("debug", "").split(",")]
 
-		self.logging_type:str = CliArgs.get("logging" , "console")
+		# we lock if there are already handlers applied, we do this because its not bound to the Logger object but to the module 'logging'
+		# when we call logging.getLogger("Phaazebot") we may get a object that already has handlers.
+		# most likly happens when the main programm calls in protocol executions that copy a clean Phaazebot() from main
+		if not self.Log.handlers:
+			self.Formatter:PhaazeLoggerFormatter = PhaazeLoggerFormatter("[%(levelname)s]: %(message)s")
+			self.active_debugs:list = [a.lower() for a in CliArgs.get("debug", "").split(",")]
 
-		if self.logging_type in ["systemd", "cysystemd"] and "cysystemd" in sys.modules:
-			# TODO: rework this
-			JH = JournaldLogHandler()
-			JH.setFormatter(self.Formatter)
-			self.Log.addHandler(JH)
-
-		elif self.logging_type == "console":
+			# default stream handler
 			PhaazeStreamHandler:logging.StreamHandler = logging.StreamHandler()
 			PhaazeStreamHandler.setFormatter(self.Formatter)
 			self.Log.addHandler(PhaazeStreamHandler)
-
-		else:
-			pass
 
 	def info(self, msg:str) -> None:
 		self.Log.info(msg)
@@ -62,7 +56,7 @@ class PhaazeLogger(object):
 	def debug(self, msg:str, require:str="all") -> None:
 		show:bool = False
 		if require == "": show = True
-		
+
 		for ad in self.active_debugs:
 			if ad == "all": show = True; break
 			if require == ad: show = True; break

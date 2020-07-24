@@ -1,46 +1,43 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Dict, Any
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.webrole import WebRole
 from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.webrole import WebRole
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
 from Utils.stringutils import password as password_function
-from Platforms.Web.utils import getWebUsers
+from Platforms.Web.db import getWebUsers, getWebRoles
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
-	apiWrongData,
 	apiNotAllowed,
-	apiUserNotFound
+	apiUserNotFound,
+	apiWrongData
 )
+from Platforms.Web.Processing.Api.Admin.Roles.errors import apiAdminRoleNotExists
 
 async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/admin/users/edit
+	Default url: /api/admin/users/edit
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
 	# get required stuff
-	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
+	user_id:int = Data.getInt("user_id", 0, min_x=1)
+	operation:str = Data.getStr("operation", UNDEFINED, len_max=128)
 
 	# checks
 	if not user_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'user_id'")
 
-	# single actions
-	action:str = Data.getStr("userrole_action", UNDEFINED)
-	if action:
-		return await singleActionUserRole(cls, WebRequest, action, Data)
-
 	# get user that should be edited
-	check_user:list = await getWebUsers(cls, where="user.id = %s", where_values=(user_id,))
+	check_user:List[WebUserInfo] = await getWebUsers(cls, user_id=user_id)
 	if not check_user:
-		return await apiUserNotFound(cls, WebRequest, msg=f"no user found with id: {user_id}")
+		return await apiUserNotFound(cls, WebRequest, user_id=user_id)
 
 	# check if this is a (super)admin, if so, is the current user a superadmin?
 	# and not himself
@@ -51,9 +48,15 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 			if not CurrentUser.checkRoles(["superadmin"]):
 				return await apiNotAllowed(cls, WebRequest, msg=f"Only Superadmin's can edit other (Super)admin user")
 
+	# single action operations
+	if operation == "addrole":
+		return await apiAdminUsersOperationAddrole(cls, WebRequest, Data, UserToEdit, CurrentUser)
+	if operation == "removerole":
+		return await apiAdminUsersOperationRemoverole(cls, WebRequest, Data, UserToEdit, CurrentUser)
+
 	# check all update values
-	update:dict = dict()
-	db_update:dict = dict()
+	update:Dict[str, Any] = dict()
+	db_update:[str, Any] = dict()
 
 	# username
 	value:str = Data.getStr("username", UNDEFINED, len_max=64)
@@ -97,75 +100,74 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		status=200
 	)
 
-async def singleActionUserRole(cls:"WebIndex", WebRequest:Request, action:str, Data:WebRequestContent) -> Response:
+async def apiAdminUsersOperationAddrole(cls:"WebIndex", WebRequest:Request, Data:WebRequestContent, EditUser:WebUserInfo, CurrentUser:WebUserInfo) -> Response:
 	"""
-		Default url: /api/admin/users/edit?userrole_action=something
+	Default url: /api/admin/users?operation=addrole
 	"""
-	user_id:str = Data.getStr("user_id", "")
-	action = action.lower()
-	userrole_role:str = Data.getStr("userrole_role", "")
+	# get required stuff
+	role_id:int = Data.getInt("role_id", 0, min_x=1)
 
-	if not user_id:
-		# should never happen
-		return await apiMissingData(cls, WebRequest, msg="missing field 'user_id'")
+	# checks
+	if not role_id:
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'role_id'")
 
-	if not userrole_role:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid field 'userrole_role'")
+	res:List[WebRole] = await getWebRoles(cls, role_id=role_id)
+	if not res:
+		return await apiAdminRoleNotExists(cls, WebRequest, role_id=role_id)
 
-	# if it's not a number, try to get id from name, else... just select it again... REEEE
-	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
-		SELECT *
-		FROM `role`
-		WHERE LOWER(`role`.`name`) = LOWER(%s)
-			OR `role`.`id` = %s""",
-		(userrole_role, userrole_role)
+	WantedRole:WebRole = res.pop(0)
+
+	if EditUser.checkRoles(WantedRole.name):
+		return await apiWrongData(cls, WebRequest, msg=f"{EditUser.username} already has role: {WantedRole.name}")
+
+	if WantedRole.name.lower() in ["superadmin", "admin"]:
+		if not ( CurrentUser.checkRoles("superadmin") ):
+			return await apiNotAllowed(cls, WebRequest, msg=f"Only Superadmin's can assign/remove {WantedRole.name} to user")
+
+	cls.Web.BASE.PhaazeDB.insertQuery(
+		table="user_has_role",
+		content={"user_id":EditUser.user_id, "role_id":WantedRole.role_id}
 	)
 
+	return cls.response(
+		text=json.dumps( dict(msg="User: added role", add=WantedRole.name, status=200) ),
+		content_type="application/json",
+		status=200
+	)
+
+async def apiAdminUsersOperationRemoverole(cls:"WebIndex", WebRequest:Request, Data:WebRequestContent, EditUser:WebUserInfo, CurrentUser:WebUserInfo) -> Response:
+	"""
+	Default url: /api/admin/users?operation=removerole
+	"""
+	# get required stuff
+	role_id:int = Data.getInt("role_id", 0, min_x=1)
+
+	# checks
+	if not role_id:
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'role_id'")
+
+	res:List[WebRole] = await getWebRoles(cls, role_id=role_id)
 	if not res:
-		return await apiWrongData(cls, WebRequest, msg=f"role '{userrole_role}' could not be resolved as a role")
+		return await apiAdminRoleNotExists(cls, WebRequest, role_id=role_id)
 
-	# here we hope there is only one result, in theory there can be more, BUT since this is a admin endpoint,
-	# i wont will do much error handling
-	Role:WebRole = WebRole(res.pop(0))
+	UnwantedRole:WebRole = res.pop(0)
 
-	# prevent role missabuse
-	if Role.name.lower() in ["superadmin", "admin"]:
-		if not ( await cls.getWebUserInfo(WebRequest) ).checkRoles(["superadmin"]):
-			return await apiNotAllowed(cls, WebRequest, msg=f"Only Superadmin's can assign/remove '{Role.name}' to user")
+	if not EditUser.checkRoles(UnwantedRole.name):
+		return await apiWrongData(cls, WebRequest, msg=f"{EditUser.username} don't have role: {UnwantedRole.name}")
 
-	if action == "add":
-		try:
-			cls.Web.BASE.PhaazeDB.insertQuery(
-				table = "user_has_role",
-				content = dict(
-					user_id = user_id,
-					role_id = Role.role_id
-				)
-			)
-			return cls.response(
-				text=json.dumps( dict(msg="user roles successfull updated", add=Role.name, status=200) ),
-				content_type="application/json",
-				status=200
-			)
-		except:
-			return await apiWrongData(cls, WebRequest, msg=f"user already has role: '{Role.name}'")
+	if UnwantedRole.name.lower() in ["superadmin", "admin"]:
+		if not ( CurrentUser.checkRoles("superadmin") ):
+			return await apiNotAllowed(cls, WebRequest, msg=f"Only Superadmin's can assign/remove {UnwantedRole.name} to user")
 
-	elif action == "remove":
-		try:
-			cls.Web.BASE.PhaazeDB.deleteQuery("""
-				DELETE FROM `user_has_role`
-				WHERE `role_id` = %s
-					AND `user_id` = %s""",
-				(Role.role_id, user_id)
-			)
+	cls.Web.BASE.PhaazeDB.deleteQuery("""
+		DELETE FROM `user_has_role`
+		WHERE `user_id` = %s
+			AND `role_id` = %s""",
+		(EditUser.user_id, UnwantedRole.role_id)
+	)
 
-			return cls.response(
-				text=json.dumps( dict(msg="user roles successfull updated", rem=Role.name, status=200) ),
-				content_type="application/json",
-				status=200
-			)
-		except:
-			return await apiWrongData(cls, WebRequest, msg=f"user don't has role: '{Role.name}'")
-
-	else:
-		return await apiWrongData(cls, WebRequest)
+	return cls.response(
+		text=json.dumps( dict(msg="User: removed role", remove=UnwantedRole.name, status=200) ),
+		content_type="application/json",
+		status=200
+	)

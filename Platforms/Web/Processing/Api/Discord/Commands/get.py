@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
@@ -7,9 +7,10 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData
-from Platforms.Discord.utils import getDiscordServerCommands, getDiscordServerCommandsAmount
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordcommand import DiscordCommand
+from Platforms.Web.Processing.Api.errors import apiMissingData
+from Platforms.Discord.db import getDiscordServerCommands, getDiscordServerCommandsAmount
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 
@@ -62,16 +63,17 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 				msg = "'administrator' or 'manage_guild' permission required to show commands with hidden properties"
 			)
 
-	res_commands:list = await getDiscordServerCommands(PhaazeDiscord, guild_id, command_id=command_id, trigger=trigger, show_nonactive=show_hidden, limit=limit, offset=offset)
+	res_commands:List[DiscordCommand] = await getDiscordServerCommands(PhaazeDiscord, guild_id, command_id=command_id, trigger=trigger, show_nonactive=show_hidden, limit=limit, offset=offset)
 
 	# this point is only reached when command can be hidden or user requested hidden props has access
-	api_return:list = list()
+	api_return:List[dict] = []
 	for Command in res_commands:
 		api_return.append(Command.toJSON(show_hidden=show_hidden))
 
 	return cls.response(
 		text=json.dumps( dict(
 			result=api_return,
+			show_hidden=show_hidden,
 			limit=limit,
 			offset=offset,
 			total=(await getDiscordServerCommandsAmount(PhaazeDiscord, guild_id)),

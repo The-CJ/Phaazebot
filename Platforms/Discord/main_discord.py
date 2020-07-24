@@ -57,7 +57,7 @@ class PhaazebotDiscord(discord.Client):
 			return await openChannel(self, Message)
 
 		else:
-			self.BASE.Logger.warning("TODO: privat channel")
+			self.BASE.Logger.warning("Phaaze received message via a privat channel")
 
 	async def on_message_edit(self, Before:discord.Message, After:discord.Message) -> None:
 		"""

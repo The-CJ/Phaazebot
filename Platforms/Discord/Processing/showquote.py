@@ -6,7 +6,7 @@ import discord
 from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from Platforms.Discord.utils import getDiscordServerQuotes
+from Platforms.Discord.db import getDiscordServerQuotes
 
 async def showQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 

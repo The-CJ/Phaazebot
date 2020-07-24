@@ -23,8 +23,8 @@ async def discordQuotes(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Guild:
 		return await cls.discordInvite(WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
 
-	DiscordCommand:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/quotes.html")
-	DiscordCommand.replace(
+	DiscordQuote:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/quotes.html")
+	DiscordQuote.replace(
 		guild_name = html.escape(Guild.name),
 		guild_id = str(Guild.id),
 	)
@@ -34,7 +34,7 @@ async def discordQuotes(cls:"WebIndex", WebRequest:Request) -> Response:
 
 		title = f"Phaaze | Discord - Quotes: {Guild.name}",
 		header = getNavbar(active="discord"),
-		main = DiscordCommand
+		main = DiscordQuote
 	)
 
 	return cls.response(

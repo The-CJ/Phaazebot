@@ -1,120 +1,227 @@
 $("document").ready(function () {
-  getRoles();
+  AdminRole.show();
 })
 
-function getRoles() {
-  $.get("/api/admin/roles/get")
-  .done(function (data) {
+var AdminRole = new (class {
+  constructor() {
+    this.modal_id = "#role_modal";
+    this.list_id = "#role_list";
+    this.phantom_class = ".role";
+    this.total_field_id = "#role_amount";
 
-    var RoleList = $("#role_list").html("");
+    this.default_limit = 50;
+    this.default_page = 0;
 
-    for (var role of data.result) {
-      var Template = $("[phantom] .role").clone();
+    this.current_limit = 0;
+    this.current_page = 0;
+    this.current_max_page = 0;
+  }
 
-      Template.attr("role-id", role.role_id);
-      Template.find(".name").text(role.name);
-      Template.find("[can_be_removed]").attr("can_be_removed", role.can_be_removed ? "true" : "false");
+  show() {
+    let limit = DynamicURL.get("limit") || this.default_limit;
+    let page = DynamicURL.get("page") || this.default_page;
 
-      RoleList.append(Template);
-    }
+    var req = {
+      limit: limit,
+      offset: (page * limit)
+    };
 
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't load roles"} );
-  })
-}
+    this.load( req );
+  }
 
-function detailRole(HTMLElement) {
-  var role_id = $(HTMLElement).attr("role-id");
+  load(x={}) {
+    var AdminRoleO = this;
+    $.get("/api/admin/roles/get", x)
+    .done(function (data) {
 
-  $.get("/api/admin/roles/get", {role_id: role_id})
-  .done(function (data) {
+      AdminRoleO.updatePageIndexButtons(data);
 
-    var role = data.result.shift();
+      var RoleList = $(AdminRoleO.list_id).html("");
+      $(AdminRoleO.total_field_id).text(data.total);
 
-    $("#edit_create_role").attr("mode", "edit");
-    $("#edit_create_role .modal-title").text("Edit role:");
+      for (var role of data.result) {
+        var Template = $(`[phantom] ${AdminRoleO.phantom_class}`).clone();
 
-    insertData("#edit_create_role", role);
+        insertData(Template, role, 0);
+        Template.attr("role-id", role.role_id);
 
-    if (!role.can_be_removed) {
-      $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", true);
-      $("#edit_create_role").find("[name=name]").attr("readonly", true);
-      $("#edit_create_role button[remove]").hide();
+        let icon = role.can_be_removed ? `<i class="fas fa-unlock"></i>` : `<i class="fas fa-lock"></i>`;
+        Template.find("[name=can_be_removed]").html(icon);
+
+        RoleList.append(Template);
+      }
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't load roles"} );
+    });
+  }
+
+  // utils
+  nextPage(last=false) {
+    this.current_page += 1;
+    if (last) { this.current_page = this.current_max_page; }
+
+    var search = extractData("main .controls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
+  }
+
+  prevPage(first=false) {
+    this.current_page -= 1;
+    if (first) { this.current_page = 0; }
+
+    var search = extractData("main .controls");
+    search["offset"] = (this.current_page * search["limit"]);
+    this.load(search);
+  }
+
+  updatePageIndexButtons(data) {
+    this.current_limit = data.limit;
+    this.current_page = data.offset / data.limit;
+    this.current_max_page = (data.total / data.limit);
+    this.current_max_page = Math.ceil(this.current_max_page - 1);
+
+    // update limit url if needed
+    if (this.current_limit != this.default_limit) {
+      DynamicURL.set("limit", this.current_limit);
     } else {
-      $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);
-      $("#edit_create_role").find("[name=name]").attr("readonly", false);
-      $("#edit_create_role button[remove]").show();
+      DynamicURL.set("limit", null);
     }
 
-    $("#edit_create_role").modal("show");
-  })
+    // update page url if needed
+    if (this.current_page != this.default_page) {
+      DynamicURL.set("page", this.current_page);
+    } else {
+      DynamicURL.set("page", null);
+    }
 
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"can't load role"} );
-  });
-}
+    // update html elements
+    $("main .controls [name=limit]").val(this.current_limit);
+    $("main .controls .pages .prev").attr("disabled", (this.current_page <= 0) );
+    $("main .controls .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+    $("main .controls .pages .page").text(this.current_page+1);
+  }
 
-function editRole() {
+  setElementState(x={}) {
+    if (x.disable_can_be_remove != undefined) {
+      $(`${this.modal_id} [name=can_be_removed]`).attr("disabled", x.disable_can_be_remove);
+    }
 
-  var req = extractData("#edit_create_role[mode=edit]");
+    if (x.readonly_name != undefined) {
+      $(`${this.modal_id} [name=name]`).attr("readonly", x.readonly_name);
+    }
 
-  $.post("/api/admin/roles/edit", req)
-  .done(function (data) {
+    if (x.show_delete != undefined) {
+      if (x.show_delete) { $(`${this.modal_id} [delete]`).show(); }
+      else { $(`${this.modal_id} [delete]`).hide(); }
+    }
 
-    Display.showMessage( {content:data.msg, color:Display.color_success} );
-    $("#edit_create_role").modal("hide");
-    getRoles();
+  }
 
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"edit role failed"} );
-  });
-}
+  // create
+  createModal() {
+    $(this.modal_id).attr("mode", "create");
+    resetInput(this.modal_id);
+    this.setElementState( {readonly_name:false, disable_can_be_remove:false, show_delete:false} );
+    $(this.modal_id).modal("show");
+  }
 
-function showCreate() {
-  $("#edit_create_role").attr("mode", "create");
-  $("#edit_create_role .modal-title").text("Create role:");
+  create() {
+    var AdminRoleO = this;
+    var req = extractData(this.modal_id);
 
-  $("#edit_create_role").find("input, textarea").val("");
-  $("#edit_create_role").find("[name=name]").attr("readonly", false);
-  $("#edit_create_role").find("[name=can_be_removed]").attr("disabled", false);
+    $.post("/api/admin/roles/create", req)
+    .done(function (data) {
 
-  $("#edit_create_role").modal("show");
-}
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      $(AdminRoleO.modal_id).modal("hide");
+      AdminRoleO.show();
 
-function createRole() {
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"role create failed"} );
+    });
+  }
 
-  var req = extractData("#edit_create_role");
-  $.post("/api/admin/roles/create", req)
-  .done(function (data) {
+  // edit
+  editModal(HTMLButton) {
+    var AdminRoleO = this;
+    var req = {
+      "role_id": $(HTMLButton).closest(AdminRoleO.phantom_class).attr("role-id")
+    };
 
-    Display.showMessage( {content:data.msg, color:Display.color_success} );
-    $("#edit_create_role").modal("hide");
-    getRoles();
+    $.get("/api/admin/roles/get", req)
+    .done(function (data) {
 
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"role create failed"} );
-  });
+      var role = data.result.pop();
 
-}
+      $(AdminRoleO.modal_id).attr("mode", "edit");
+      insertData(AdminRoleO.modal_id, role);
 
-function removeRole() {
-  var req = extractData("#edit_create_role");
+      var state = {};
+      state.readonly_name = !role.can_be_removed;
+      state.disable_can_be_remove = !role.can_be_removed;
+      state.show_delete = role.can_be_removed;
+      AdminRoleO.setElementState(state);
+      $(AdminRoleO.modal_id).modal("show");
+    })
 
-  var c = confirm("Sure you want to delete role '"+req["name"]+"'?");
-  if (!c) { return; }
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"can't load role"} );
+    });
+  }
 
-  $.post("/api/admin/roles/delete", req)
-  .done(function (data) {
+  edit() {
+    var AdminRoleO = this;
+    var req = extractData(this.modal_id);
 
-    Display.showMessage( {content:data.msg, color:Display.color_success} );
-    $("#edit_create_role").modal("hide");
-    getRoles();
+    if (!req.can_be_removed) {
+      // lets do a cheeky move, when can_be_removed is false and the checkbox is not disabled,
+      // means it was not disabled before, we show a warning
+      let was_disabled = $(`${AdminRoleO.modal_id} [name=can_be_removed]`).is(":disabled");
+      if (!was_disabled) {
+        let c = confirm("Setting 'Can be removed' to false will create a permanent role that cant be removed, continue?");
+        if (!c) {return;}
+      }
+    }
 
-  })
-  .fail(function (data) {
-    generalAPIErrorHandler( {data:data, msg:"role delete failed"} );
-  });
-}
+    $.post("/api/admin/roles/edit", req)
+    .done(function (data) {
+
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      $(AdminRoleO.modal_id).modal("hide");
+      AdminRoleO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"edit role failed"} );
+    });
+  }
+
+  // delete
+  deleteFromModal() {
+    var c = confirm("Are you sure you want to delete this role?");
+    if (!c) {return;}
+
+    var role_id = $(this.modal_id).find("[name=role_id]").val();
+    this.delete(role_id);
+  }
+
+  delete(role_id) {
+    var AdminRoleO = this;
+    var req = {role_id:role_id};
+
+    $.post("/api/admin/roles/delete", req)
+    .done(function (data) {
+
+      Display.showMessage( {content:data.msg, color:Display.color_success} );
+      $(AdminRoleO.modal_id).modal("hide");
+      AdminRoleO.show();
+
+    })
+    .fail(function (data) {
+      generalAPIErrorHandler( {data:data, msg:"role delete failed"} );
+    });
+  }
+})

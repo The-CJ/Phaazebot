@@ -1,32 +1,4 @@
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function isEmpty(o) {
-  // null
-  if (o == null) { return true; }
-  // string
-  if (typeof o == "string") { if (o != "") { return false; } }
-  // number
-  if (typeof o == "number") { if (o != 0) { return false; } }
-  // object
-  for (var v in o) {
-    if (o.hasOwnProperty(v)) {
-      return false
-    }
-  }
-  return true;
-}
-
-function showEmail() {
-  // i do this, so spam bots don't get the email from the site so easy
-  $("#email_icon").popover({
-    content: ["admin","@", "pha", "aze", ".", "net"].join(""),
-    placement:"bottom",
-    trigger:"hover"
-  }).popover()
-}
-
+// form management
 function resetInput(o) {
   // o = JQuery object | str
 
@@ -134,6 +106,7 @@ function insertData(Obj, data, to_string=false) {
   }
 }
 
+// general utils
 function oppositeValue(v) {
   if (typeof v == "object") { throw "can't switch object type"; }
   else if (typeof v == "boolean") { return !v }
@@ -151,6 +124,53 @@ function oppositeValue(v) {
 
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function isEmpty(o) {
+  // null
+  if (o == null) { return true; }
+  // string
+  if (typeof o == "string") { if (o != "") { return false; } }
+  // number
+  if (typeof o == "number") { if (o != 0) { return false; } }
+  // object
+  for (var v in o) {
+    if (o.hasOwnProperty(v)) {
+      return false
+    }
+  }
+  return true;
+}
+
+function showEmail(copy=false) {
+  // i do this, so spam bots don't get the email from the site so easy
+
+  var email = ["admin","@", "pha", "aze", ".", "net"].join("");
+
+  if (copy) { return copyToClipboard(email); }
+
+  $("#email_icon").popover({
+    content: email,
+    placement:"bottom",
+    trigger:"hover"
+  }).popover()
+}
+
+// user in-/out- puts
+function copyToClipboard(content) {
+  var TextA = $('<textarea>');
+  TextA.val(content);
+  TextA.attr("readonly", true);
+  TextA.attr("style", "position:absolute; left: -10000px;");
+  document.body.appendChild(TextA[0]);
+  TextA[0].select();
+  document.execCommand("copy");
+  document.body.removeChild(TextA[0]);
+}
+
+// request handler
 function generalAPIErrorHandler(x={}) {
   // it does what you whould think it does,
   // give this function the data object from a $.get .post .etc...
@@ -163,13 +183,13 @@ function generalAPIErrorHandler(x={}) {
 
   // x : data :: jquery response
   // x : msg :: str
-  // x : color :: str
-  // x : time :: int
-  // x : no_message :: bool
+  // x : color :: str ::: Display.color_info
+  // x : time :: int ::: Display.default_time.
+  // x : no_message :: bool ::: false
 
   var data = x["data"] ? x["data"] : null;
   var color = x["color"] ? x["color"] : Display.color_critical;
-  var time = x["time"] ? x["time"] : this.default_time;
+  var time = x["time"] ? x["time"] : Display.default_time;
   var alt_msg = x["msg"] ? x["msg"] : null;
 
   // most likely alwys is true, since this is a ERROR function
@@ -187,88 +207,158 @@ function generalAPIErrorHandler(x={}) {
   else { final_message = "Unknown error"; }
 
   if (!x["no_message"]) {
+    // console.log({content:final_message, color:color, time:time});
     Display.showMessage( {content:final_message, color:color, time:time} );
   }
   console.log(data);
 }
 
-var SessionManager = new (class {
-  constructor() {
+function hrefLocation(x={}) {
+  // this function can be applied to pretty much all elements
+  // and make it so if has the same functionallity than a anchor <a> element
+  // its recommended to use it via: onmousedown
+  // the target value is only for left clicks and will be overwritten when middle mouse is pressed
+  // giving 'middle' or 'left' a false value will disable this clicktype for the the event
+
+  // x : href :: str
+  // x : target :: str ::: "_self"
+  // x : left :: bool ::: true
+  // x : middle :: bool ::: true
+
+  var href = x["href"] ? x["href"] : null;
+  var target = x["target"] ? x["target"] : "_self";
+  var left = x["left"] ? x["left"] : true;
+  var middle = x["middle"] ? x["middle"] : true;
+
+  if (isEmpty(href)) { throw "missing href"; }
+  if (event.button == undefined) { throw "could not find pressed button"; }
+
+  // this is the so called Cheese, so we can click a anchor
+  var Anchor = document.createElement('a');
+  Anchor.href = href;
+  Anchor.target = target;
+
+  // primary or left click
+  if (left && event.button === 0) {
+    let PrimaryClick = new MouseEvent( "click", {button:0, buttons:1, which:1} );
+    return Anchor.dispatchEvent( PrimaryClick );
   }
 
-  showAccountPanel(field="all") {
-    $('#account_modal').modal('show');
-    $('#account_modal [table], #account_modal [login]').hide();
-    $(`#account_modal [table=${field}]`).show();
-    if (field != "all") {
-      this.getAccountInfo(field);
-    }
+  // middle mouse click
+  if (middle && event.button === 1) {
+    Anchor.target = "_blank";
+    let AuxClick = new MouseEvent( "click", {button:1, buttons:4, which:2 } );
+    return Anchor.dispatchEvent( AuxClick );
+  }
+
+}
+
+// big classes
+var SessionManager = new (class {
+  constructor() {
+    this.modal_id = "#account_modal";
+  }
+
+  showAccountPanel(field="select") {
+    // hiding everything
+    $(`${this.modal_id}[mode] [show-mode]`).hide();
+    $(`${this.modal_id}[mode] [show-mode] [login]`).hide();
+
+    // show selected field and the login loading
+    $(`${this.modal_id}[mode] [show-mode=${field}]`).show();
+    $(`${this.modal_id}[mode] [show-mode=${field}] [login=loading]`).show();
+    $(this.modal_id).modal('show');
+
+    if (field != "select") { this.getAccountInfo(field); }
   }
 
   getAccountInfo(platform) {
-    var SessMan = this;
-    $.get(`/api/account/${platform}/get`)
+    var SessionManagerO = this;
+    var url = "/api/account";
+
+    if (platform == "phaaze") { url = "/api/account/phaaze/get"; }
+    if (platform == "discord") { url = "/api/account/discord/get"; }
+    if (platform == "twitch") { url = "/api/account/twitch/get"; }
+    if (platform == "osu") { url = "/api/account/osu/get"; }
+
+    $.get(url)
     .done(function (data) {
-      SessMan.displayInfo(platform, data.user);
-      $(`#account_modal [table=${platform}] [login=true]`).show();
+      SessionManagerO.displayInfo(platform, data.user);
     })
     .fail(function (data) {
-      $(`#account_modal [table=${platform}] [login=false]`).show();
-    })
+      // only do additional handling if its not a 401, because getting a unauthorised is actully pretty normal for a login question
+      if (data.status != 401) { generalAPIErrorHandler( {data:data, msg:`Could not load info for platform: ${platform}`} ); }
+
+      // hide the login attributes and show login = false
+      $(`${SessionManagerO.modal_id} [show-mode=${platform}] [login]`).hide();
+      $(`${SessionManagerO.modal_id} [show-mode=${platform}] [login=false]`).show();
+    });
   }
 
   displayInfo(platform, data) {
     if (platform == "phaaze") {
-      insertData("#account_modal [table=phaaze] [login=true]", data);
-      var RoleList = $("#account_modal_roles").html("");
+      insertData(`${this.modal_id} [show-mode=phaaze] [login=true]`, data);
+      var RoleList = $(`${this.modal_id} [show-mode=phaaze] [login=true] [user-role-list]`).html("");
       for (var role of data.roles) {
         RoleList.append( $("<div class='role'>").text(role) );
       }
     }
+
     if (platform == "discord") {
-      $("#current_discord_username").val(data.username);
-      $("#current_discord_avatar").attr(
-        "src",
-        `https://cdn.discordapp.com/avatars/${data.user_id}/${data.avatar}?size=256`
-      );
+      $(`${this.modal_id} [show-mode=discord] [login=true] [name=current_discord_username]`).val(data.username);
+      let avatar = discordUserAvatar(data.user_id, data.avatar, 256);
+      $(`${this.modal_id} [show-mode=discord] [login=true] [name=current_discord_avatar]`).attr("src", avatar);
     }
+
+    // hide the login attributes and show login = true
+    $(`${this.modal_id} [show-mode=${platform}] [login]`).hide();
+    $(`${this.modal_id} [show-mode=${platform}] [login=true]`).show();
   }
 
   login() {
-    var login = extractData("#account_modal [table=phaaze] [login=false]");
-    $.post("/api/account/phaaze/login", login)
+    var SessionManagerO = this;
+    var login_data = extractData(`${SessionManagerO.modal_id} [show-mode=phaaze] [login=false]`);
+    $.post("/api/account/phaaze/login", login_data)
     .done(function (data) {
       CookieManager.set("phaaze_session", data.phaaze_session, data.expires_in);
       Display.showMessage({'content': 'You successfull logged in!' ,'color':Display.color_success});
-      $('#account_modal').modal('hide');
+      $(SessionManagerO.modal_id).modal('hide');
     })
     .fail(function (data) {
-      // pun = phaaze user name
-      // ppw = phaaze pass word
-      $("#pun").addClass("animated shake");
-      $("#ppw").addClass("animated shake").val("");
+      var user = $(`${SessionManagerO.modal_id} [show-mode=phaaze] [login=false] [name=username]`).addClass("animated shake");
+      var pass = $(`${SessionManagerO.modal_id} [show-mode=phaaze] [login=false] [name=password]`).addClass("animated shake").val("");
       setTimeout(function () {
-        $("#pun, #ppw").removeClass("animated shake");
+        user.removeClass("animated shake");
+        pass.removeClass("animated shake");
       }, 1000);
     })
   }
 
   logout(platform) {
-    $.post(`/api/account/${platform}/logout`)
+    var SessionManagerO = this;
+    var url = "/api/account";
+
+    if (platform == "phaaze") { url = "/api/account/phaaze/logout"; }
+    if (platform == "discord") { url = "/api/account/discord/logout"; }
+    if (platform == "twitch") { url = "/api/account/twitch/logout"; }
+    if (platform == "osu") { url = "/api/account/osu/logout"; }
+
+    $.post(url)
     .done(function (data) {
       Display.showMessage({"content": `You successfull logged out from ${platform}`,'color':Display.color_success});
       if (platform == "phaaze") { CookieManager.remove("phaaze_session"); }
       if (platform == "discord") { CookieManager.remove("phaaze_discord_session"); }
       if (platform == "twitch") { CookieManager.remove("phaaze_twitch_session"); }
-      $('#account_modal').modal('hide');
+      $(SessionManagerO.modal_id).modal('hide');
     })
     .fail(function (data) {
       generalAPIErrorHandler( {data:data, msg:"Unable to logout"} );
-    })
+    });
   }
 
   edit() {
-    var data = extractData("#account_modal [table=phaaze] [login=true]");
+    var SessionManagerO = this;
+    var data = extractData(`${SessionManagerO.modal_id} [show-mode=phaaze] [login=true]`);
     $.post("/api/account/phaaze/edit", data)
     .done(function (data) {
       Display.showMessage({content:data.msg, color:Display.color_success});
@@ -283,6 +373,7 @@ var CookieManager = new (class {
   constructor() {
 
   }
+
   get(cookie) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
@@ -298,6 +389,7 @@ var CookieManager = new (class {
     }
     return "";
   }
+
   set(name, value, expires_in) {
     if (expires_in == null) {
       document.cookie = name+'='+value+'; Path=/';
@@ -306,6 +398,7 @@ var CookieManager = new (class {
       document.cookie = name+'='+value+'; Max-Age=' + expires_in + '; Path=/';
     }
   }
+
   remove(name) {
     document.cookie = name+"=; Max-Age=-1; Path=/"
   }
@@ -319,6 +412,7 @@ var Display = new (class {
     this.color_info = "#4285FF";
     this.default_time = 10000;
   }
+
   showMessage(m) {
     if (m == null) { throw "missing message"; }
     if (m.content == null) { throw "missing message content"; }
@@ -358,7 +452,7 @@ var Display = new (class {
 
 var DynamicURL = new (class {
   constructor() {
-    this.values = {};
+    this.values = this.getAll();
   }
 
   set(key, value, update=true) {
@@ -370,8 +464,26 @@ var DynamicURL = new (class {
     let value = this.values[key];
     if (value == null) {
       value = this.getFromLocation(key);
+      this.values[key] = value;
     }
     return value
+  }
+
+  getAll() {
+    var search = location.search.substring(1);
+    search = search.replace(/&/g, '","');
+    search = search.replace(/=/g, '":"');
+
+    if (isEmpty(search)) { return {}; }
+
+    try {
+      return JSON.parse( `{"${search}"}`,
+        function(key, value) { return (key==="") ? value : decodeURIComponent(value); }
+      )
+    } catch (e) {
+      return {};
+    }
+
   }
 
   update() {
@@ -382,7 +494,7 @@ var DynamicURL = new (class {
       let value = this.values[key];
       if (isEmpty(value)) { continue; }
 
-      ucurl = ucurl + pre + key + "=" + value;
+      ucurl = ucurl + pre + key + "=" + encodeURIComponent(value);
       pre = "&";
 
     }

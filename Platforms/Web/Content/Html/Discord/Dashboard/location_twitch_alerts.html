@@ -1,16 +1,54 @@
-<div location="twitch_alerts">
+<div location="twitch_alerts" style="display: none;">
 
   <div class="container-fluid">
 
-    <div class="center-item-row">
-      <div class="col">
-        <h4>Twitch Alerts: <span id="alert_amount">[N/A]</span></h4>
-      </div>
-      <div class="col">
-        <button type="button" class="btn btn-success" onclick="TwitchAlerts.createModal()">New alert</button>
-      </div>
-    </div>
+    <h3>Twitch alerts</h3>
+    <sub>Missed a stream of your favorite streamer because you been to focused to play with your friends? Well lets change this and get notified.</sub>
+    <hr>
 
+    <form class="controls content-box pt-2" action="javascript:TwitchAlerts.prevPage(1)">
+
+      <div class="center-item-row">
+        <!-- limit -->
+        <div class="col">
+          <select class="custom-select" name="limit">
+            <option value="5">5 Entrys per page</option>
+            <option value="10" selected>10 Entrys per page</option>
+            <option value="25">25 Entrys per page</option>
+            <option value="50">50 Entrys per page</option>
+            <option value="100">100 Entrys per page</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="center-item-row btn-row">
+        <!-- pages -->
+        <div class="col text-left pages">
+          <button onclick="TwitchAlerts.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="TwitchAlerts.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <span>Page: <span class="page">0</span></span>
+          <button onclick="TwitchAlerts.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="TwitchAlerts.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+          <span>Total: <span id="alert_amount">[N/A]</span></span>
+        </div>
+
+        <!-- buttons -->
+        <div class="col text-right">
+          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+          <button type="button" class="btn btn-success icon-btn" onclick="TwitchAlerts.createModal()"><i class="fas fa-plus"></i></button>
+        </div>
+      </div>
+
+    </form>
+
+    <hr>
+
+    <div class="row header generic-list">
+      <div class="col discord">Discord Channel</div>
+      <div class="col twitch">Twitch Channel</div>
+      <div class="col-1 action">Action</div>
+    </div>
 
     <!-- gets filled with copys of: "[phantom] .twitchalert" -->
     <div id="twitchalert_list"></div>
@@ -21,13 +59,14 @@
 
 <div modal>
 
-  <div class="modal fade" id="alert_modal" edit-alert="" mode="create/edit">
+  <div class="modal fade" id="alert_modal" mode="create|edit">
     <div class="modal-dialog modal-lg " role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
-          <h4 class="modal-title" show-mode="edit">Edit Alert</h4>
+          <data name="alert_id"></data>
           <h4 class="modal-title" show-mode="create">New Twitchalert</h4>
+          <h4 class="modal-title" show-mode="edit">Edit Alert</h4>
           <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
@@ -80,7 +119,7 @@
 
             <div>
               <i class="fab fa-twitch prefix grey-text"></i>
-              <a href="/" name="twitch_link"></a>
+              <a href="/" name="twitch_link" target="_blank"></a>
             </div>
             <hr>
 
@@ -98,14 +137,14 @@
             It's added as text above the alert embed.<br>
             Leave it empty if you don't want any.
           </p>
-          <textarea name="custom_msg" rows="8" style="width:100%;"></textarea>
+          <textarea name="custom_msg" rows="8" style="width:100%;" maxlength="1750"></textarea>
 
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-block btn-warning" onclick="TwitchAlerts.edit()" show-mode="edit">Edit</button>
-          <button type="button" class="btn btn-block btn-danger" onclick="TwitchAlerts.delete()" show-mode="edit">Delete</button>
-          <button type="button" class="btn btn-block btn-success" onclick="TwitchAlerts.create()" show-mode="create">Submit</button>
+          <button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="TwitchAlerts.edit()">Submit changes</button>
+          <button show-mode="edit" type="button" class="btn btn-block btn-danger" onclick="TwitchAlerts.deleteFromModal()">Delete</button>
+          <button show-mode="create" type="button" class="btn btn-block btn-success" onclick="TwitchAlerts.create()">Submit</button>
         </div>
         <div messagebox></div>
       </div>
@@ -116,9 +155,13 @@
 
 <div phantom hidden>
 
-  <div class="row twitchalert" alert-id="-1" onclick="TwitchAlerts.detail(this)">
-    <div class="col discord">[N/A]</div>
-    <div class="col twitch">[N/A]</div>
+  <div class="row twitchalert generic-sub-list" alert-id="-1">
+    <div class="col discord"><span name="discord_channel">[N/A]</span></div>
+    <div class="col twitch"><span name="twitch_channel">[N/A]</span></div>
+    <div class="col-1 action">
+      <button type="submit" class="btn btn-warning icon-btn small" onclick="TwitchAlerts.editModal(this)"><i class="fas fa-edit"></i></button>
+      <button type="submit" class="btn btn-danger icon-btn small" onclick="TwitchAlerts.deleteFromList(this)"><i class="fas fa-trash"></i></button>
+    </div>
   </div>
 
 </div>

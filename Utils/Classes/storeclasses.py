@@ -82,6 +82,7 @@ class LimitStore(object):
 		self.DISCORD_LEVEL_MEDAL_AMOUNT:int = int(config.get("discord_level_medal_amount", 50))
 		self.DISCORD_QUOTES_AMOUNT:int = int(config.get("discord_quotes_amount", 100))
 		self.DISCORD_ASSIGNROLE_AMOUNT:int = int(config.get("discord_assignrole_amount", 25))
+		self.DISCORD_REGULAR_AMOUNT:int = int(config.get("discord_regular_amount", 50))
 
 		self.TWITCH_TIMEOUT_MESSAGE_COOLDOWN:int = int(config.get("twitch_timeout_message_cooldown", 20))
 		self.TWITCH_BLACKLIST_REMEMBER_TIME:int = int(config.get("twitch_blacklist_remember_time", 180))
@@ -117,10 +118,6 @@ class VarsStore(object):
 
 		self.LOGO_OSU:str = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
 		self.LOGO_TWITCH:str = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504"
-
-	@property
-	def LOGO(self):
-		return "TODO: return logo"
 
 class GlobalStorage(object):
 	"""

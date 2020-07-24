@@ -1,37 +1,67 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
-import discord
 import math
+import asyncio
+import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
-from .utils import getDiscordServerUsers
 
-DEFAULT_LEVEL_MESSAGE:str = "[mention] is now Level **[lvl]** :tada:"
+DEFAULT_LEVEL_MESSAGE:str = "[user-mention] is now Level **[lvl]** :tada:"
 
-async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> None:
+class GDLMCS():
+	"""
+	i present the GDLMCS, short for "Global Discord Level Message Cooldown Storage" (my short names get worse, right?)
+	after a user typed something, the unique key is saved.
+	while its in there, a user cant gain xp again
+	after cooldown is gone, remove unique key from here and unlock user
+	"""
+	def __init__(self):
+		self.in_cooldown:Dict[str, bool] = {}
+
+	def check(self, Message:discord.Message) -> bool:
+		key:str = f"{Message.guild.id}-{Message.author.id}"
+		if self.in_cooldown.get(key, None): return True
+		else: return False
+
+	def cooldown(self, cls:"PhaazebotDiscord", Message:discord.Message) -> None:
+		asyncio.ensure_future(self.cooldownCoro(cls, Message))
+
+	async def cooldownCoro(self, cls:"PhaazebotDiscord", Message:discord.Message) -> None:
+		key:str = f"{Message.guild.id}-{Message.author.id}"
+		if self.in_cooldown.get(key, None): return
+
+		# add
+		self.in_cooldown[key] = True
+
+		# wait
+		await asyncio.sleep(cls.BASE.Limit.DISCORD_LEVEL_COOLDOWN)
+
+		# remove
+		self.in_cooldown.pop(key, None)
+
+GDLMCS = GDLMCS()
+
+async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, DiscordUser:DiscordUserStats) -> None:
 	"""
 		Run every time a user writes a message (not edited) and updates the exp.
 		(running checks on every message, even if level progress is disabled,
 		so every user has a entry in the db, for currency and other stuff)
 	"""
 
-	# TODO: Cooldown
+	# author is still in cooldown
+	if GDLMCS.check(Message): return
 
-	result:list = await getDiscordServerUsers(cls, Message.guild.id, member_id=Message.author.id)
-
-	if not result:
-		LevelUser:DiscordUserStats = await newUser(cls, Message.guild.id, Message.author.id, username=Message.author.name, nickname=Message.author.nick)
-	else:
-		# there should be only one in the list
-		LevelUser:DiscordUserStats = result.pop(0)
-
-	# we check here so we ensure a new user entry, if needed
+	# are levels disabled in any means?
 	if str(Message.channel.id) in ServerSettings.disabled_levelchannels: return
 	if ServerSettings.owner_disable_level: return
 
-	LevelUser.exp += 1
+	if not DiscordUser:
+		# we check here so we ensure a new user entry, if needed
+		DiscordUser = await newUser(cls, Message.guild.id, Message.author.id, username=Message.author.name, nickname=Message.author.nick)
+
+	DiscordUser.exp += 1
 
 	cls.BASE.PhaazeDB.query("""
 		UPDATE `discord_user`
@@ -41,10 +71,14 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 			`nickname` = %s
 		WHERE `discord_user`.`guild_id` = %s
 			AND `discord_user`.`member_id` = %s""",
-		( Message.author.name, Message.author.nick, str(LevelUser.server_id), str(LevelUser.member_id) )
+		( Message.author.name, Message.author.nick, str(DiscordUser.server_id), str(DiscordUser.member_id) )
 	)
 
-	await checkLevelProgress(cls, Message, LevelUser, ServerSettings)
+	# add author to cooldown
+	GDLMCS.cooldown(cls, Message)
+
+	# check level progress, send level up messages yes/no?
+	await checkLevelProgress(cls, Message, DiscordUser, ServerSettings)
 
 async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_infos:dict) -> DiscordUserStats:
 	"""
@@ -107,8 +141,8 @@ async def announceLevelUp(cls:"PhaazebotDiscord", Message:discord.Message, Level
 	else:
 		level_message = DEFAULT_LEVEL_MESSAGE
 
-	level_message = level_message.replace("[mention]", str(Message.author.mention))
-	level_message = level_message.replace("[name]", str(Message.author.name))
+	level_message = level_message.replace("[user-mention]", str(Message.author.mention))
+	level_message = level_message.replace("[user-name]", str(Message.author.name))
 	level_message = level_message.replace("[id]", str(Message.author.id))
 	level_message = level_message.replace("[exp]", str(LevelUser.exp))
 	level_message = level_message.replace("[lvl]", str(level_to_announce))

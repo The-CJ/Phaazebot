@@ -15,7 +15,8 @@ async def textOnly(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 		"channel-mention": CommandContext.Message.channel.mention,
 		"server-name": CommandContext.Message.guild.name,
 		"member-count": str(CommandContext.Message.guild.member_count),
-		"uses": str(Command.uses)
+		"uses": str(Command.uses),
+		"cost": str(Command.required_currency)
 	}
 
 	additional_kwargs:dict = dict(
