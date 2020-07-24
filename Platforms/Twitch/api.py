@@ -1,7 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Any
 if TYPE_CHECKING:
 	from main import Phaazebot
 
+import asyncio
 import requests
 from Platforms.Twitch.utils import emergencyTwitchClientCredentialTokenRefresh
 from Utils.Classes.twitchstream import TwitchStream
@@ -61,14 +62,14 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 
 	return Resp
 
-async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=-1) -> list:
+async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=-1) -> List[TwitchStream]:
 	"""
-		get all currently live streams based on 'item' and 'item_type'
-		Returns a list of TwitchStream()
+	get all currently live streams based on 'item' and 'item_type'
+	Returns a list of TwitchStream()
 
-		item [required]
-		item_type : what are the contains of `item` (user_id, user_login, game_id, language)
-		limit : max result number
+	item [required]
+	item_type : what are the contains of `item` (user_id, user_login, game_id, language)
+	limit : max result number
 	"""
 
 	if type(item) is not list: item = [item]
@@ -76,27 +77,27 @@ async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="use
 	if limit > 0:
 		item = item[:limit]
 
-	if len(item) > 100:
-		cls.Logger.critical("Requesting more then 100 Streams -> limiting to 100 : TODO: implement mass requests")
-		item = item[:100]
+	total_results:List[TwitchStream] = []
 
-	query:str = f"?first={len(item)}"
+	while item:
 
-	for i in item:
-		query += f"&{item_type}={i}"
+		part_request = item[:50]
+		item = item[50:]
 
-	link:str = f"{ROOT_URL}streams{query}"
+		part_result:List[TwitchStream] = await partGetTwitchStreams(cls, part_request, item_type)
+		total_results.append(part_result)
 
-	resp:dict = (await twitchAPICall(cls, link)).json()
-	return [ TwitchStream(s) for s in resp.get("data", []) ]
+		if item: await asyncio.sleep(2) # maybe add dynamic time?
 
-async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id") -> list:
+	return total_results
+
+async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id") -> List[TwitchGame]:
 	"""
-		get all game data based on 'item' and 'item_type'
-		Returns a list of TwitchGame()
+	get all game data based on 'item' and 'item_type'
+	Returns a list of TwitchGame()
 
-		item [required]
-		item_type : what are the contains of `item` (id, name) | name must be exact, not good for search
+	item [required]
+	item_type : what are the contains of `item` (id, name) | name must be exact, not good for search
 	"""
 
 	if type(item) is not list: item = [item]
@@ -115,13 +116,13 @@ async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id") 
 	resp:dict = (await twitchAPICall(cls, link)).json()
 	return [ TwitchGame(s) for s in resp.get("data", []) ]
 
-async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id") -> list:
+async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id") -> List[TwitchUser]:
 	"""
-		get all game data based on 'item' and 'item_type'
-		Returns a list of TwitchUser()
+	get all game data based on 'item' and 'item_type'
+	Returns a list of TwitchUser()
 
-		item [required]
-		item_type : what are the contains of `item` (id, login)
+	item [required]
+	item_type : what are the contains of `item` (id, login)
 	"""
 
 	if type(item) is not list: item = [item]
@@ -139,3 +140,17 @@ async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id") 
 
 	resp:dict = (await twitchAPICall(cls, link)).json()
 	return [ TwitchUser(s) for s in resp.get("data", []) ]
+
+# part requests (because some request must been broken down into smaller one)
+
+async def partGetTwitchStreams(cls:"Phaazebot", item:List[Any], item_type:str) -> List[TwitchStream]:
+
+	query:str = f"?first={len(item)}"
+
+	for i in item:
+		query += f"&{item_type}={str(i)}"
+
+	link:str = f"{ROOT_URL}streams{query}"
+
+	resp:dict = (await twitchAPICall(cls, link)).json()
+	return [ TwitchStream(s) for s in resp.get("data", []) ]
