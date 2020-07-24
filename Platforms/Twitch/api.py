@@ -11,6 +11,8 @@ from Utils.Classes.twitchuser import TwitchUser
 
 ROOT_URL:str = "https://api.twitch.tv/helix/"
 AUTH_URL:str = "https://id.twitch.tv/"
+TWITCH_REQUEST_LIMIT:int = 100
+TWITCH_REQUEST_WAIT:int = 2
 
 async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Response:
 	"""
@@ -81,40 +83,44 @@ async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="use
 
 	while item:
 
-		part_request = item[:50]
-		item = item[50:]
+		part_request = item[:TWITCH_REQUEST_LIMIT]
+		item = item[TWITCH_REQUEST_LIMIT:]
 
 		part_result:List[TwitchStream] = await partGetTwitchStreams(cls, part_request, item_type)
 		total_results.append(part_result)
 
-		if item: await asyncio.sleep(2) # maybe add dynamic time?
+		if item: await asyncio.sleep(TWITCH_REQUEST_WAIT)
 
 	return total_results
 
-async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id") -> List[TwitchGame]:
+async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id", limit:int=-1) -> List[TwitchGame]:
 	"""
 	get all game data based on 'item' and 'item_type'
 	Returns a list of TwitchGame()
 
 	item [required]
 	item_type : what are the contains of `item` (id, name) | name must be exact, not good for search
+	limit : max result number
 	"""
 
 	if type(item) is not list: item = [item]
 
-	if len(item) > 100:
-		cls.Logger.critical("Requesting more then 100 Games -> limiting to 100 : TODO: implement mass requests")
-		item = item[:100]
+	if limit > 0:
+		item = item[:limit]
 
-	query:str = f"?{item_type}={item.pop(0)}"
+	total_results:List[TwitchGame] = []
 
-	for i in item:
-		query += f"&{item_type}={i}"
+	while item:
 
-	link:str = f"{ROOT_URL}games{query}"
+		part_request = item[:TWITCH_REQUEST_LIMIT]
+		item = item[TWITCH_REQUEST_LIMIT:]
 
-	resp:dict = (await twitchAPICall(cls, link)).json()
-	return [ TwitchGame(s) for s in resp.get("data", []) ]
+		part_result:List[TwitchGame] = await partGetTwitchGames(cls, part_request, item_type)
+		total_results.append(part_result)
+
+		if item: await asyncio.sleep(TWITCH_REQUEST_WAIT)
+
+	return total_results
 
 async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id") -> List[TwitchUser]:
 	"""
@@ -154,3 +160,15 @@ async def partGetTwitchStreams(cls:"Phaazebot", item:List[Any], item_type:str) -
 
 	resp:dict = (await twitchAPICall(cls, link)).json()
 	return [ TwitchStream(s) for s in resp.get("data", []) ]
+
+async def partGetTwitchGames(cls:"Phaazebot", item:List[Any], item_type:str) -> List[TwitchGame]:
+
+	query:str = f"?{item_type}={item.pop(0)}" # because we must start with a ?
+
+	for i in item:
+		query += f"&{item_type}={i}"
+
+	link:str = f"{ROOT_URL}games{query}"
+
+	resp:dict = (await twitchAPICall(cls, link)).json()
+	return [ TwitchGame(s) for s in resp.get("data", []) ]
