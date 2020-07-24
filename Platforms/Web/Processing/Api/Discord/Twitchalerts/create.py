@@ -12,13 +12,15 @@ from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.twitchuser import TwitchUser
 from Utils.regex import Twitch as TwitchRe
 from Platforms.Twitch.api import getTwitchUsers
-from .errors import apiDiscordAlertExists, apiDiscordAlertSameTwitchChannelLimit
+from Platforms.Discord.utils import getDiscordChannelFromString
 from Platforms.Web.Processing.Api.Twitch.errors import apiTwitchUserNotFound
 from Platforms.Web.Processing.Api.errors import apiMissingData,	apiMissingAuthorisation
+from .errors import apiDiscordAlertExists, apiDiscordAlertSameTwitchChannelLimit
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission
+	apiDiscordMissingPermission,
+	apiDiscordChannelNotFound
 )
 
 MAX_SAME_TWITCH_ALERTS_PER_GUILD:int = 3
@@ -52,6 +54,10 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
+	TargetDiscordChannel:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, discord_channel_id, required_type="text")
+	if not TargetDiscordChannel:
+		return await apiDiscordChannelNotFound(cls, WebRequest, msg=f"Could not find a valid text channel")
+
 	Match:re.Match = TwitchRe().ChannelLink.match(twitch_channel)
 	if Match:
 		twitch_channel = Match.group("name")
@@ -83,7 +89,7 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		WHERE `discord_twitch_alert`.`discord_guild_id` = %(discord_guild_id)s""",
 		dict(
 			discord_guild_id = guild_id,
-			discord_channel_id = discord_channel_id,
+			discord_channel_id = str(TargetDiscordChannel.id),
 			twitch_channel_id = FoundUser.user_id
 		)
 	)
@@ -96,7 +102,7 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		pass
 
 	if res[0]["both_match"] >= 1:
-		return await apiDiscordAlertExists(cls, WebRequest, twitch_name=FoundUser.name, discord_id=discord_channel_id)
+		return await apiDiscordAlertExists(cls, WebRequest, twitch_name=FoundUser.name, discord_id=TargetDiscordChannel.id)
 
 	# get user info
 	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
@@ -116,7 +122,7 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		table="discord_twitch_alert",
 		content={
 			"discord_guild_id": guild_id,
-			"discord_channel_id": discord_channel_id,
+			"discord_channel_id": str(TargetDiscordChannel.id),
 			"twitch_channel_id": FoundUser.user_id,
 			"custom_msg": custom_msg
 		}
@@ -134,7 +140,7 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 
 async def placeGatheredData(cls:"WebIndex", AlertUser:TwitchUser) -> None:
 
-	# first thing we do, adding the name to twitch_user_name, so we get the name to a id without asking twitch
+	# first thing we do, adding the name to twitch_user_name, so we get the name to a id without asking twitch again
 	cls.Web.BASE.PhaazeDB.insertQuery(
 		replace = True,
 		table = "twitch_user_name",
