@@ -1,4 +1,5 @@
 /* overall styles */
+.guild-icon {border-radius: 50%;}
 .generic-list > *, .generic-sub-list > * { margin: 2px; padding: 2px; }
 .clickable { padding: 2px; cursor: pointer; background-color: #7289DA1A; color: #7289DA; transition-duration: 250ms; border-radius: 2px; }
 .clickable:hover { background-color: #7289DA; color: #FFFFFF; }
