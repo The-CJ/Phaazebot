@@ -87,7 +87,7 @@ async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="use
 		item = item[TWITCH_REQUEST_LIMIT:]
 
 		part_result:List[TwitchStream] = await partGetTwitchStreams(cls, part_request, item_type)
-		total_results.append(part_result)
+		total_results.extend(part_result)
 
 		if item: await asyncio.sleep(TWITCH_REQUEST_WAIT)
 
@@ -116,7 +116,7 @@ async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id", 
 		item = item[TWITCH_REQUEST_LIMIT:]
 
 		part_result:List[TwitchGame] = await partGetTwitchGames(cls, part_request, item_type)
-		total_results.append(part_result)
+		total_results.extend(part_result)
 
 		if item: await asyncio.sleep(TWITCH_REQUEST_WAIT)
 
@@ -145,7 +145,7 @@ async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id", 
 		item = item[TWITCH_REQUEST_LIMIT:]
 
 		part_result:List[TwitchUser] = await partGetTwitchUsers(cls, part_request, item_type)
-		total_results.append(part_result)
+		total_results.extend(part_result)
 
 		if item: await asyncio.sleep(TWITCH_REQUEST_WAIT)
 
