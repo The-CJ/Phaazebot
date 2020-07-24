@@ -18,4 +18,4 @@ CREATE TABLE `discord_quote` (
   `content` varchar(1750) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_guild_id` (`guild_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
