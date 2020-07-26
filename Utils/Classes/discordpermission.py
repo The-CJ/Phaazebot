@@ -18,7 +18,7 @@ class DiscordPermission(object):
 	def __init__(self, Message:discord.Message, Member:DiscordUserStats):
 		self.rank = 0
 
-		if Member.regular:
+		if Member and Member.regular:
 			self.rank = 1
 
 		if self.checkRoles(Message.author.roles):

@@ -5,6 +5,7 @@
   "twitch_client_id":"secret!..?",
   "twitch_client_secret":"secret!..?",
   "twitch_irc_token":"secret!..?",
+  "twitch_irc_nickname":"secret!..?",
 
   "discord_bot_id":"000",
   "discord_token":"secret!..?",
