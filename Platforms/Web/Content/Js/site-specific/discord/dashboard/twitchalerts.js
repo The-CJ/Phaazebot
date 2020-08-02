@@ -12,6 +12,9 @@ var TwitchAlerts = new (class {
     this.current_limit = 0;
     this.current_page = 0;
     this.current_max_page = 0;
+
+    this.bool_true_icon = `<i class="fas fa-check"></i>`;
+    this.bool_false_icon = `<i class="fas fa-times"></i>`;
   }
 
   show() {
@@ -48,6 +51,7 @@ var TwitchAlerts = new (class {
 
         Template.find("[name=discord_channel]").text(discord_channel ? "#"+discord_channel.name : "(DELETED CHANNEL)");
         Template.find("[name=twitch_channel]").text(twitch_name);
+        Template.find("[name=suppress_gamechange]").html(alert.suppress_gamechange ? TwitchAlertsO.bool_false_icon : TwitchAlertsO.bool_true_icon);
         Template.attr("alert-id", alert.alert_id);
 
         if (isEmpty(discord_channel)) {

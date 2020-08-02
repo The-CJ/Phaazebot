@@ -37,6 +37,7 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 	discord_channel_id:str = Data.getStr("discord_channel_id", "", must_be_digit=True)
 	twitch_channel:str = Data.getStr("twitch_channel", "")
 	custom_msg:str = Data.getStr("custom_msg", "", len_max=1750)
+	suppress_gamechange:bool = Data.getBool("suppress_gamechange", False)
 
 	# checks
 	if not guild_id:
@@ -124,7 +125,8 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 			"discord_guild_id": guild_id,
 			"discord_channel_id": str(TargetDiscordChannel.id),
 			"twitch_channel_id": FoundUser.user_id,
-			"custom_msg": custom_msg
+			"custom_msg": custom_msg,
+			"suppress_gamechange": suppress_gamechange
 		}
 	)
 
