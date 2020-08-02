@@ -90,10 +90,11 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:List["Statu
 	event_channel_list:str = ",".join(Event.channel_id for Event in event_list)
 	if not event_channel_list: event_channel_list = "0"
 
-	res:list = cls.BASE.PhaazeDB.selectQuery(f"""
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(f"""
 		SELECT
 			`discord_twitch_alert`.`twitch_channel_id`,
-			`discord_twitch_alert`.`discord_channel_id`
+			`discord_twitch_alert`.`discord_channel_id`,
+			`discord_twitch_alert`.`suppress_gamechange`
 		FROM `discord_twitch_alert`
 		WHERE `discord_twitch_alert`.`twitch_channel_id` IN ({event_channel_list})"""
 	)
@@ -102,6 +103,9 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:List["Statu
 
 		Event:"StatusEntry" = getStreamFromDBResult(event_list, db_entry["twitch_channel_id"])
 		if Event == None: continue # should never happen
+
+		# ignore gamechange events for alert
+		if db_entry.get("suppress_gamechange", 0): continue
 
 		# we only care about live alerts,
 		# there should be no other types, but we go save here

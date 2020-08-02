@@ -11,7 +11,7 @@ from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.undefined import UNDEFINED
 from Platforms.Discord.db import getDiscordServerTwitchAlerts
-from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation, apiWrongData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordAlertNotExists
 
@@ -28,6 +28,7 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
 	alert_id:str = Data.getStr("alert_id", "", must_be_digit=True)
 	custom_msg:str = Data.getStr("custom_msg", UNDEFINED, len_max=1750)
+	suppress_gamechange:bool = Data.getBool("suppress_gamechange", UNDEFINED)
 
 	# checks
 	if not guild_id:
@@ -67,7 +68,16 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 
 	CurrentEditAlert:DiscordTwitchAlert = res_alerts.pop(0)
 
-	changes:dict = {"custom_msg": custom_msg}
+	changes:dict = {}
+
+	if custom_msg != UNDEFINED:
+		changes["custom_msg"] = custom_msg
+
+	if suppress_gamechange != UNDEFINED:
+		changes["suppress_gamechange"] = suppress_gamechange
+
+	if not changes:
+		return await apiWrongData(cls, WebRequest, msg=f"No changes, please add at least one")
 
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_twitch_alert",

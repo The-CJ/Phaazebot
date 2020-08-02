@@ -1,15 +1,16 @@
 /*
 DESCRIBE `discord_twitch_alert`;
 
-+--------------------+---------------+------+-----+---------+----------------+
-| Field              | Type          | Null | Key | Default | Extra          |
-+--------------------+---------------+------+-----+---------+----------------+
-| id                 | int(11)       | NO   | PRI | NULL    | auto_increment |
-| discord_guild_id   | varchar(128)  | NO   | MUL | NULL    |                |
-| discord_channel_id | varchar(128)  | NO   | MUL | NULL    |                |
-| twitch_channel_id  | varchar(128)  | NO   | MUL | NULL    |                |
-| custom_msg         | varchar(1750) | YES  |     | NULL    |                |
-+--------------------+---------------+------+-----+---------+----------------+
++---------------------+---------------+------+-----+---------+----------------+
+| Field               | Type          | Null | Key | Default | Extra          |
++---------------------+---------------+------+-----+---------+----------------+
+| id                  | int(11)       | NO   | PRI | NULL    | auto_increment |
+| discord_guild_id    | varchar(128)  | NO   | MUL | NULL    |                |
+| discord_channel_id  | varchar(128)  | NO   | MUL | NULL    |                |
+| twitch_channel_id   | varchar(128)  | NO   | MUL | NULL    |                |
+| custom_msg          | varchar(1750) | YES  |     | NULL    |                |
+| suppress_gamechange | tinyint(1)    | NO   |     | 0       |                |
++---------------------+---------------+------+-----+---------+----------------+
 */
 
 -- SHOW CREATE TABLE `discord_twitch_alert`;
@@ -20,6 +21,7 @@ CREATE TABLE `discord_twitch_alert` (
   `discord_channel_id` varchar(128) NOT NULL,
   `twitch_channel_id` varchar(128) NOT NULL,
   `custom_msg` varchar(1750) DEFAULT NULL,
+  `suppress_gamechange` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `alert_key` (`discord_channel_id`,`twitch_channel_id`),
   KEY `index_discord_guild_id` (`discord_guild_id`),

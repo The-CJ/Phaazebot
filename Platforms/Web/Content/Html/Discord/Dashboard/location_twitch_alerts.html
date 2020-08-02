@@ -47,6 +47,7 @@
     <div class="row header generic-list">
       <div class="col discord">Discord Channel</div>
       <div class="col twitch">Twitch Channel</div>
+      <div class="col-2 gamechange">Announce gamechange?</div>
       <div class="col-1 action">Action</div>
     </div>
 
@@ -89,9 +90,7 @@
                 Select the Twitch channel you want to track.<br>
                 Just enter the channel name or the entire channel link.
               </p>
-              <div class="md-form">
-                <input type="text" name="twitch_channel" class="form-controll text-center" style="width:100%;" placeholder="Twitch channel link or name">
-              </div>
+              <input type="text" name="twitch_channel" class="form-control text-center black-text" placeholder="Twitch channel link or name">
             </div>
             <hr>
 
@@ -112,7 +111,7 @@
               The following twitch channel will trigger a Discord message<br>
               if it goes live or changes the game<br>
               <br>
-              You might change the alert content, but you can't change the Discord or Twitch channel.<br>
+              You might change the alert content and the game change alert, but you can't change the Discord or Twitch channel.<br>
               Delete this alert and make a new one if needed.
             </p>
             <hr>
@@ -130,6 +129,24 @@
             <hr>
 
           </div>
+
+          <!-- game change -->
+          <p>
+            Phaaze will send a alert, when the channel initially goes live and whenever the game changes.<br>
+            However, some channel may not be able to decide what to play. Then you might wanna silence this.<br>
+            Also, remember: Changing the stream title without changing the game will NOT trigger a alert.
+          </p>
+          <div class="center-item-row content-box">
+            <div class="col text-left">
+              <span>Suppress game change alert?</span>
+            </div>
+            <div class="col-3">
+              <label class="checkbox-container text-center">
+                <input type="checkbox" name="suppress_gamechange">
+              </label>
+            </div>
+          </div>
+          <hr>
 
           <!-- bottom text area -->
           <p>
@@ -158,6 +175,7 @@
   <div class="row twitchalert generic-sub-list" alert-id="-1">
     <div class="col discord"><span name="discord_channel">[N/A]</span></div>
     <div class="col twitch"><span name="twitch_channel">[N/A]</span></div>
+    <div class="col-2 game"><span name="suppress_gamechange">[N/A]</span></div>
     <div class="col-1 action">
       <button type="submit" class="btn btn-warning icon-btn small" onclick="TwitchAlerts.editModal(this)"><i class="fas fa-edit"></i></button>
       <button type="submit" class="btn btn-danger icon-btn small" onclick="TwitchAlerts.deleteFromList(this)"><i class="fas fa-trash"></i></button>

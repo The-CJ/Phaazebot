@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
@@ -7,6 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
 from Platforms.Discord.db import getDiscordServerTwitchAlerts, getDiscordServerTwitchAlertsAmount
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
@@ -37,7 +38,7 @@ async def apiDiscordTwitchalertsGet(cls:"WebIndex", WebRequest:Request) -> Respo
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get alerts
-	res_alerts:list = await getDiscordServerTwitchAlerts(PhaazeDiscord, guild_id, alert_id=alert_id, limit=limit, offset=offset)
+	res_alerts:List[DiscordTwitchAlert] = await getDiscordServerTwitchAlerts(PhaazeDiscord, guild_id, alert_id=alert_id, limit=limit, offset=offset)
 
 	# if only one is requestet, also send custom content
 	with_message:bool = True if alert_id else False
