@@ -153,6 +153,7 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/discord/quotes{x:/?}{method:.*}', self.apiDiscordQuotes)
 		self.Web.router.add_route('*', '/api/discord/assignroles{x:/?}{method:.*}', self.apiDiscordAssignroles)
 		self.Web.router.add_route('*', '/api/discord/twitchalerts{x:/?}{method:.*}', self.apiDiscordTwitchalerts)
+		self.Web.router.add_route('*', '/api/discord/logs{x:/?}{method:.*}', self.apiDiscordLogs)
 
 	# api admin
 	from .Processing.Api.Account.main import apiAccountPhaaze, apiAccountDiscord, apiAccountTwitch
@@ -184,6 +185,7 @@ class WebIndex(object):
 	from .Processing.Api.Discord.Quotes.main import apiDiscordQuotes
 	from .Processing.Api.Discord.Assignroles.main import apiDiscordAssignroles
 	from .Processing.Api.Discord.Twitchalerts.main import apiDiscordTwitchalerts
+	from .Processing.Api.Discord.Logs.main import apiDiscordLogs
 
 	# web
 	from .Processing.mainsite import mainSite
