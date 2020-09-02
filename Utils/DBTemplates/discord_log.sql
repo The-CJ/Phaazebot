@@ -1,15 +1,16 @@
 /*
 DESCRIBE `discord_log`;
 
-+--------------+---------------+------+-----+---------+----------------+
-| Field        | Type          | Null | Key | Default | Extra          |
-+--------------+---------------+------+-----+---------+----------------+
-| id           | int(11)       | NO   | PRI | NULL    | auto_increment |
-| guild_id     | varchar(128)  | NO   | MUL | NULL    |                |
-| event_value  | bigint(20)    | NO   |     | NULL    |                |
-| initiator_id | varchar(128)  | YES  |     | NULL    |                |
-| content      | varchar(1750) | YES  |     | NULL    |                |
-+--------------+---------------+------+-----+---------+----------------+
++--------------+---------------+------+-----+---------------------+----------------+
+| Field        | Type          | Null | Key | Default             | Extra          |
++--------------+---------------+------+-----+---------------------+----------------+
+| id           | int(11)       | NO   | PRI | NULL                | auto_increment |
+| guild_id     | varchar(128)  | NO   | MUL | NULL                |                |
+| event_value  | bigint(20)    | NO   |     | NULL                |                |
+| created_at   | datetime      | YES  |     | current_timestamp() |                |
+| initiator_id | varchar(128)  | YES  |     | NULL                |                |
+| content      | varchar(1750) | YES  |     | NULL                |                |
++--------------+---------------+------+-----+---------------------+----------------+
 */
 
 -- SHOW CREATE TABLE `discord_log`;

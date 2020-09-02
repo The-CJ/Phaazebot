@@ -42,7 +42,17 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 	"""
 	link_in_name:bool = kwargs.get("link_in_name", False)
 
-	if not ("Member.join" in Settings.track_options): return # track option not active
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS["Member.join"],
+			"initiator_id": str(NewMember.id),
+			"content": f"{NewMember.name} joined the server"
+		}
+	)
+
+	if not ("Member.join" in Settings.track_options): return # track option not active, skip message to discord server
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, NewMember.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
@@ -73,7 +83,17 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 	"""
 	link_in_name:bool = kwargs.get("link_in_name", False)
 
-	if not ("Member.remove" in Settings.track_options): return # track option not active
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS["Member.remove"],
+			"initiator_id": str(OldMember.id),
+			"content": f"{OldMember.name} left the server"
+		}
+	)
+
+	if not ("Member.remove" in Settings.track_options): return # track option not active, skip message to discord server
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, OldMember.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
