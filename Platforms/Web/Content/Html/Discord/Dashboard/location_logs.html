@@ -1,0 +1,127 @@
+<div location="logs" style="display: none;">
+
+  <div class="container-fluid">
+
+    <h3>Logs</h3>
+    <sub>Wanna know what happend while you where gone? Every Phaaze specific event is logged here, for everything discord related look into the audit-logs</sub>
+
+    <hr>
+
+    <form class="controls content-box pt-2" action="javascript:Logs.prevPage(true)">
+
+      <div class="center-item-row">
+        <!-- limit -->
+        <div class="col">
+          <select class="custom-select" name="limit">
+            <option value="5">5 Entrys per page</option>
+            <option value="10">10 Entrys per page</option>
+            <option value="25">25 Entrys per page</option>
+            <option value="50" selected>50 Entrys per page</option>
+            <option value="100">100 Entrys per page</option>
+          </select>
+        </div>
+
+        <!-- log contains -->
+        <div class="col">
+          <input type="text" name="content_contains" class="form-control" placeholder="Log entry must contain..."/>
+        </div>
+
+        <!-- log event -->
+        <div class="col">
+          <select class="custom-select" name="event_type">
+            <option value="">All Events</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="center-item-row">
+
+        <!-- log date -->
+        <div class="col">
+          <input type="datetime-local" name="date_from" class="form-control" placeholder="From">
+        </div>
+        <span> &lt; Event Date &lt; </span>
+        <div class="col">
+          <input type="datetime-local" name="date_to" class="form-control" placeholder="To">
+        </div>
+
+      </div>
+
+      <div class="center-item-row btn-row">
+        <!-- pages -->
+        <div class="col pages text-left">
+          <button onclick="Logs.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+          <button onclick="Logs.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+          <span>Page: <span class="page">0</span></span>
+          <button onclick="Logs.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+          <button onclick="Logs.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+          <span>Total: <span id="log_amount">[N/A]</span></span>
+        </div>
+
+        <div class="col text-right">
+          <button type="button" class="btn btn-block btn-secondary icon-btn">Configure In-Discord messages</button>
+        </div>
+
+        <!-- buttons -->
+        <div class="col text-right">
+          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+
+    </form>
+
+    <hr>
+
+    <div class="row header generic-list">
+      <div class="col-2 date">Date</div>
+      <div class="col-1 event">Event</div>
+      <div class="col content">Content</div>
+    </div>
+
+    <!-- gets filled with copys of: "[phantom] .log" -->
+    <div id="log_list"></div>
+
+  </div>
+
+</div>
+
+<div modal>
+
+  <div class="modal fade" id="quote_modal" mode="create|edit">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header text-center">
+          <data name="quote_id"></data>
+          <h4 class="modal-title" show-mode="create">New Quote</h4>
+          <h4 class="modal-title" show-mode="edit">Edit Quote</h4>
+          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+        </div>
+
+        <div class="modal-body text-black">
+          <sub>Max length: 1750 chars.</sub>
+          <textarea rows="8" style="width: 100%" name="content" maxlength="1750"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="Quotes.edit()">Submit changes</button>
+          <button show-mode="edit" type="button" class="btn btn-block btn-danger" onclick="Quotes.deleteFromModal()">Delete</button>
+          <button show-mode="create" type="button" class="btn btn-block btn-success" onclick="Quotes.create()">Save</button>
+        </div>
+        <div messagebox></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div phantom hidden>
+
+  <div class="row log generic-sub-list" log-id="0">
+    <div class="col-2 date"><span name="created_at">[N/A]</span></div>
+    <div class="col-1 event"><span name="event_name">[N/A]</span></div>
+    <div class="col content"><span name="content">[N/A]</span></div>
+  </div>
+
+</div>
