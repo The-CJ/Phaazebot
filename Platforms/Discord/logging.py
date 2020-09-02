@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
@@ -9,7 +9,25 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Discord.utils import getDiscordChannelFromString
 
 # there is only a small amount, because most things are handled by discord audit logs
-TRACK_OPTIONS:list = [ "Member.join", "Member.remove" ]
+TRACK_OPTIONS:Dict[str, int] = {
+	"Member.join": 1,
+	"Member.remove": 1<<1,
+	"Quote.create": 1<<2,
+	"Quote.edit": 1<<3,
+	"Quote.delete": 1<<4,
+	"Command.create": 1<<5,
+	"Command.edit": 1<<6,
+	"Command.delete": 1<<7,
+	"Twitchalert.create": 1<<8,
+	"Twitchalert.edit": 1<<9,
+	"Twitchalert.delete": 1<<10,
+	"Regular.create": 1<<11,
+	"Regular.delete": 1<<12,
+	"Level.edit": 1<<13,
+	"Levelmedal.create": 1<<14,
+	"Levelmedal.delete": 1<<15,
+	"Config.edit": 1<<16,
+}
 EVENT_COLOR_POSITIVE:int = 0x00FF00
 EVENT_COLOR_NEGATIVE:int = 0xFF0000
 

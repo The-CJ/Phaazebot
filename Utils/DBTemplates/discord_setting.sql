@@ -17,9 +17,10 @@ DESCRIBE `discord_setting`;
 | level_custom_msg      | varchar(1750) | YES  |     | NULL    |                |
 | owner_disable_level   | tinyint(1)    | YES  |     | 0       |                |
 | owner_disable_mod     | tinyint(1)    | YES  |     | 0       |                |
-| owner_disable_normal  | tinyint(1)    | YES  |     | 0       |                |
 | owner_disable_regular | tinyint(1)    | YES  |     | 0       |                |
+| owner_disable_normal  | tinyint(1)    | YES  |     | 0       |                |
 | track_channel         | varchar(128)  | YES  |     | NULL    |                |
+| track_value           | bigint(20)    | YES  |     | 0       |                |
 | welcome_chan          | varchar(128)  | YES  |     | NULL    |                |
 | welcome_msg           | varchar(1750) | YES  |     | NULL    |                |
 | welcome_msg_priv      | varchar(1750) | YES  |     | NULL    |                |
@@ -45,6 +46,7 @@ CREATE TABLE `discord_setting` (
   `owner_disable_regular` tinyint(1) DEFAULT 0,
   `owner_disable_normal` tinyint(1) DEFAULT 0,
   `track_channel` varchar(128) DEFAULT NULL,
+  `track_value` bigint(20) DEFAULT 0,
   `welcome_chan` varchar(128) DEFAULT NULL,
   `welcome_msg` varchar(1750) DEFAULT NULL,
   `welcome_msg_priv` varchar(1750) DEFAULT NULL,
