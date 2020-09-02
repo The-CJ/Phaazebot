@@ -49,6 +49,7 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 		location_commands_command = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_command.html"),
 		location_commands_help = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_help.html"),
 		location_commands_assign = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_assign.html"),
+		location_logs = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_logs.html"),
 	)
 	# make it twice, since some included locations also have replaceable items
 	DiscordDash.replace(

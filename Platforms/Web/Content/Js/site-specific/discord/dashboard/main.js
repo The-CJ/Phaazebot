@@ -93,6 +93,11 @@ var DiscordDashboard = new (class {
       CommandsAssign.show();
     }
 
+    if (target == "logs") {
+      this.setSitePanelSelectedLocation("logs");
+      Logs.show();
+    }
+
     this.setLocationWindow(target);
     this.setSitePanelCollapse("hide");
   }

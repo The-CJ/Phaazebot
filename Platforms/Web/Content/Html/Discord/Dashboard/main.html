@@ -12,6 +12,7 @@
 <script src="/js/site-specific/discord/dashboard/commands_command.js" charset="utf-8"></script>
 <script src="/js/site-specific/discord/dashboard/commands_help.js" charset="utf-8"></script>
 <script src="/js/site-specific/discord/dashboard/commands_assign.js" charset="utf-8"></script>
+<script src="/js/site-specific/discord/dashboard/logs.js" charset="utf-8"></script>
 
 <main>
 
@@ -117,6 +118,14 @@
             </div>
           </div>
         </div>
+
+        <div sidebar-location="logs">
+          <div class="text-left" onclick="DiscordDashboard.loadLocation('logs')">
+            <i class="far fa-list-alt"></i>
+            <span>Logs</span>
+          </div>
+        </div>
+
       </div>
 
       <div class="col main-panel">
@@ -146,6 +155,8 @@
         |<!--#(location_commands_help)#-->|
 
         |<!--#(location_commands_assign)#-->|
+
+        |<!--#(location_logs)#-->|
 
       </div>
 
