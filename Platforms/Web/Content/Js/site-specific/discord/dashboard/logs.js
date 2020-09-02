@@ -16,17 +16,18 @@ var Logs = new (class {
   show() {
     // loads in default values or taken from url
     let limit = DynamicURL.get("logs[limit]") || this.default_limit;
-		let page = DynamicURL.get("logs[page]") || this.default_page;
-		let date_from = DynamicURL.get("logs[page]") || "";
+    let page = DynamicURL.get("logs[page]") || this.default_page;
+    let date_from = DynamicURL.get("logs[page]") || "";
     let date_to = DynamicURL.get("logs[page]") || "";
 
     var req = {
       limit: limit,
       offset: (page * limit),
-			date_from: date_from,
-			date_to: date_to
+      date_from: date_from,
+      date_to: date_to
     };
 
+    this.loadTrackOptions();
     this.load( req );
   }
 
@@ -56,6 +57,21 @@ var Logs = new (class {
       generalAPIErrorHandler( {data:data, msg:"could not load logs"} );
     })
   }
+
+  loadTrackOptions() {
+    $.get("/api/discord/logs/list")
+    .done(function (data) {
+
+      var TrackList = $(`[location=logs] .controls [name=event_value]`).html("");
+
+      TrackList.append( $("<option value='0'>All Events</option>") );
+      for (var track_name in data.result) {
+        let track_value = data.result[track_name];
+        TrackList.append( $(`<option value='${track_value}'>${track_name}</option>`) );
+      }
+
+    });
+	}
 
   // utils
   nextPage(last=false) {
