@@ -1,162 +1,162 @@
 var Logs = new (class {
-  constructor() {
-    this.modal_id = "#log_modal";
-    this.list_id = "#log_list";
-    this.total_field_id = "#log_amount";
-    this.phantom_class = ".log";
+	constructor() {
+		this.modal_id = "#log_modal";
+		this.list_id = "#log_list";
+		this.total_field_id = "#log_amount";
+		this.phantom_class = ".log";
 
-    this.default_limit = 50;
-    this.default_page = 0;
+		this.default_limit = 50;
+		this.default_page = 0;
 
-    this.current_limit = 0;
-    this.current_page = 0;
-    this.current_max_page = 0;
-  }
-
-  show() {
-    // loads in default values or taken from url
-    let limit = DynamicURL.get("logs[limit]") || this.default_limit;
-    let page = DynamicURL.get("logs[page]") || this.default_page;
-    let date_from = DynamicURL.get("logs[page]") || "";
-    let date_to = DynamicURL.get("logs[page]") || "";
-
-    var req = {
-      limit: limit,
-      offset: (page * limit),
-      date_from: date_from,
-      date_to: date_to
-    };
-
-    this.loadTrackOptions();
-    this.load( req );
-  }
-
-  load(x={}) {
-    var LogsO = this;
-    x["guild_id"] = $("#guild_id").val();
-
-    $.get("/api/discord/logs/get", x)
-    .done(function (data) {
-
-      // update view
-      LogsO.updatePageIndexButtons(data);
-
-      var LogsList = $(LogsO.list_id).html("");
-      $(LogsO.total_field_id).text(data.total);
-
-      for (var log of data.result) {
-        var Template = $(`[phantom] ${LogsO.phantom_class}`).clone();
-
-        insertData(Template, log);
-        Template.attr("log-id", log.log_id);
-
-        LogsList.append(Template);
-      }
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"could not load logs"} );
-    })
-  }
-
-  loadTrackOptions() {
-    $.get("/api/discord/logs/list")
-    .done(function (data) {
-
-      var TrackList = $(`[location=logs] .controls [name=event_value]`).html("");
-
-      TrackList.append( $("<option value='0'>All Events</option>") );
-      for (var track_name in data.result) {
-        let track_value = data.result[track_name];
-        TrackList.append( $(`<option value='${track_value}'>${track_name}</option>`) );
-      }
-
-    });
+		this.current_limit = 0;
+		this.current_page = 0;
+		this.current_max_page = 0;
 	}
 
-  // utils
-  nextPage(last=false) {
-    this.current_page += 1;
-    if (last) { this.current_page = this.current_max_page; }
+	show() {
+		// loads in default values or taken from url
+		let limit = DynamicURL.get("logs[limit]") || this.default_limit;
+		let page = DynamicURL.get("logs[page]") || this.default_page;
+		let date_from = DynamicURL.get("logs[page]") || "";
+		let date_to = DynamicURL.get("logs[page]") || "";
 
-    var search = extractData("[location=logs] .controls");
-    search["offset"] = (this.current_page * search["limit"]);
-    this.load(search);
-  }
+		var req = {
+			limit: limit,
+			offset: (page * limit),
+			date_from: date_from,
+			date_to: date_to
+		};
 
-  prevPage(first=false) {
-    this.current_page -= 1;
-    if (first) { this.current_page = 0; }
+		this.loadTrackOptions();
+		this.load( req );
+	}
 
-    var search = extractData("[location=logs] .controls");
-    search["offset"] = (this.current_page * search["limit"]);
-    this.load(search);
-  }
+	load(x={}) {
+		var LogsO = this;
+		x["guild_id"] = $("#guild_id").val();
 
-  updatePageIndexButtons(data) {
-    this.current_limit = data.limit;
-    this.current_page = data.offset / data.limit;
-    this.current_max_page = (data.total / data.limit);
-    this.current_max_page = Math.ceil(this.current_max_page - 1);
+		$.get("/api/discord/logs/get", x)
+		.done(function (data) {
 
-    // update limit url if needed
-    if (this.current_limit != this.default_limit) {
-      DynamicURL.set("logs[limit]", this.current_limit);
-    } else {
-      DynamicURL.set("logs[limit]", null);
-    }
+			// update view
+			LogsO.updatePageIndexButtons(data);
 
-    // update page url if needed
-    if (this.current_page != this.default_page) {
-      DynamicURL.set("logs[page]", this.current_page);
-    } else {
-      DynamicURL.set("logs[page]", null);
-    }
+			var LogsList = $(LogsO.list_id).html("");
+			$(LogsO.total_field_id).text(data.total);
 
-    // update html elements
-    $("[location=logs] [name=limit]").val(this.current_limit);
-    $("[location=logs] .pages .prev").attr("disabled", (this.current_page <= 0) );
-    $("[location=logs] .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
-    $("[location=logs] .pages .page").text(this.current_page+1);
-  }
+			for (var log of data.result) {
+				var Template = $(`[phantom] ${LogsO.phantom_class}`).clone();
 
-  // edit
-  editModal(HTMLButton) {
-    var QuoteO = this;
+				insertData(Template, log);
+				Template.attr("log-id", log.log_id);
 
-    var req = {
-      "guild_id": $("#guild_id").val(),
-      "quote_id": $(HTMLButton).closest(QuoteO.phantom_class).attr("quote-id")
-    };
-    $.get("/api/discord/quotes/get", req)
-    .done(function (data) {
+				LogsList.append(Template);
+			}
+		})
+		.fail(function (data) {
+			generalAPIErrorHandler( {data:data, msg:"could not load logs"} );
+		})
+	}
 
-      var quote = data.result.pop();
-      insertData(QuoteO.modal_id, quote);
-      $(QuoteO.modal_id).attr("mode", "edit");
-      $(QuoteO.modal_id).modal("show");
+	loadTrackOptions() {
+		$.get("/api/discord/logs/list")
+		.done(function (data) {
 
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error displaying quote"} );
-    })
-  }
+			var TrackList = $(`[location=logs] .controls [name=event_value]`).html("");
 
-  edit() {
-    var QuoteO = this;
+			TrackList.append( $("<option value='0'>All Events</option>") );
+			for (var track_name in data.result) {
+				let track_value = data.result[track_name];
+				TrackList.append( $(`<option value='${track_value}'>${track_name}</option>`) );
+			}
 
-    var req = extractData(this.modal_id);
-    req["guild_id"] = $("#guild_id").val();
+		});
+	}
 
-    $.post("/api/discord/quotes/edit", req)
-    .done(function (data) {
+	// utils
+	nextPage(last=false) {
+		this.current_page += 1;
+		if (last) { this.current_page = this.current_max_page; }
 
-      $(QuoteO.modal_id).modal("hide");
-      QuoteO.show();
-      Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+		var search = extractData("[location=logs] .controls");
+		search["offset"] = (this.current_page * search["limit"]);
+		this.load(search);
+	}
 
-    })
-    .fail(function (data) {
-      generalAPIErrorHandler( {data:data, msg:"error updating quote"} );
-    })
-  }
+	prevPage(first=false) {
+		this.current_page -= 1;
+		if (first) { this.current_page = 0; }
+
+		var search = extractData("[location=logs] .controls");
+		search["offset"] = (this.current_page * search["limit"]);
+		this.load(search);
+	}
+
+	updatePageIndexButtons(data) {
+		this.current_limit = data.limit;
+		this.current_page = data.offset / data.limit;
+		this.current_max_page = (data.total / data.limit);
+		this.current_max_page = Math.ceil(this.current_max_page - 1);
+
+		// update limit url if needed
+		if (this.current_limit != this.default_limit) {
+			DynamicURL.set("logs[limit]", this.current_limit);
+		} else {
+			DynamicURL.set("logs[limit]", null);
+		}
+
+		// update page url if needed
+		if (this.current_page != this.default_page) {
+			DynamicURL.set("logs[page]", this.current_page);
+		} else {
+			DynamicURL.set("logs[page]", null);
+		}
+
+		// update html elements
+		$("[location=logs] [name=limit]").val(this.current_limit);
+		$("[location=logs] .pages .prev").attr("disabled", (this.current_page <= 0) );
+		$("[location=logs] .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
+		$("[location=logs] .pages .page").text(this.current_page+1);
+	}
+
+	// edit
+	editModal(HTMLButton) {
+		var QuoteO = this;
+
+		var req = {
+			"guild_id": $("#guild_id").val(),
+			"quote_id": $(HTMLButton).closest(QuoteO.phantom_class).attr("quote-id")
+		};
+		$.get("/api/discord/quotes/get", req)
+		.done(function (data) {
+
+			var quote = data.result.pop();
+			insertData(QuoteO.modal_id, quote);
+			$(QuoteO.modal_id).attr("mode", "edit");
+			$(QuoteO.modal_id).modal("show");
+
+		})
+		.fail(function (data) {
+			generalAPIErrorHandler( {data:data, msg:"error displaying quote"} );
+		})
+	}
+
+	edit() {
+		var QuoteO = this;
+
+		var req = extractData(this.modal_id);
+		req["guild_id"] = $("#guild_id").val();
+
+		$.post("/api/discord/quotes/edit", req)
+		.done(function (data) {
+
+			$(QuoteO.modal_id).modal("hide");
+			QuoteO.show();
+			Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
+
+		})
+		.fail(function (data) {
+			generalAPIErrorHandler( {data:data, msg:"error updating quote"} );
+		})
+	}
 });
