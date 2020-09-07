@@ -96,6 +96,7 @@ button.option-status[value=false]:after { content: "DISABLED"; }
 }
 
 /* show mode attributes (please say me there is a better method... but i don't know)*/
+[mode=view] [show-mode=view] { display: block; }
 [mode=configs] [show-mode=configs] { display: block; }
 [mode=create] [show-mode=create] { display: block; }
 [mode=edit] [show-mode=edit] { display: block; }
