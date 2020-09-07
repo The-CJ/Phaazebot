@@ -52,7 +52,7 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 		}
 	)
 
-	if not ("Member.join" in Settings.track_options): return # track option not active, skip message to discord server
+	if not (TRACK_OPTIONS["Member.join"] & Settings.track_value): return # track option not active, skip message to discord server
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, NewMember.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
@@ -93,7 +93,7 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 		}
 	)
 
-	if not ("Member.remove" in Settings.track_options): return # track option not active, skip message to discord server
+	if not (TRACK_OPTIONS["Member.remove"] & Settings.track_value): return # track option not active, skip message to discord server
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, OldMember.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
