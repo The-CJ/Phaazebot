@@ -69,7 +69,6 @@ var Logs = new (class {
 				let track_value = data.result[track_name];
 				TrackList.append( $(`<option value='${track_value}'>${track_name}</option>`) );
 			}
-
 		});
 	}
 
@@ -120,25 +119,41 @@ var Logs = new (class {
 	}
 
 	// edit
-	editModal(HTMLButton) {
-		var QuoteO = this;
-
+	editModal() {
+		// To display the current track state we require the discord settings and a list of all track options.
+		var LogsO = this;
 		var req = {
-			"guild_id": $("#guild_id").val(),
-			"quote_id": $(HTMLButton).closest(QuoteO.phantom_class).attr("quote-id")
+			"guild_id": $("#guild_id").val()
 		};
-		$.get("/api/discord/quotes/get", req)
-		.done(function (data) {
 
-			var quote = data.result.pop();
-			insertData(QuoteO.modal_id, quote);
-			$(QuoteO.modal_id).attr("mode", "edit");
-			$(QuoteO.modal_id).modal("show");
-
+		$.get("/api/discord/configs/get", req)
+		.done(function (config_data) {
+			$.get("/api/discord/logs/list")
+			.done(function (track_data) {
+				buildTrackModal(config_data, track_data);
+			})
+			.fail(function (data) {
+				generalAPIErrorHandler( {data:data, msg:"could not load track options"} );
+			});
 		})
 		.fail(function (data) {
-			generalAPIErrorHandler( {data:data, msg:"error displaying quote"} );
-		})
+			generalAPIErrorHandler( {data:data, msg:"error loading track settings"} );
+		});
+
+		function buildTrackModal(config_data, track_data) {
+			var current_track_config = config_data.result.track_value || 0;
+
+			for (var track_name in track_data.result) {
+				let track_value = track_data.result[track_name];
+				if (current_track_config & v) {
+					console.log(`${name} | ${current_track_config} & ${v} => ${current_track_config & v}`);
+				}
+			}
+
+			// console.log(config_data);
+			// console.log(track_data);
+		}
+
 	}
 
 	edit() {

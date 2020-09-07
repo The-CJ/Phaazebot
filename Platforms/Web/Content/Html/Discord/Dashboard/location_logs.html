@@ -57,8 +57,9 @@
           <span>Total: <span id="log_amount">[N/A]</span></span>
         </div>
 
+		<!-- message config -->
         <div class="col text-right">
-          <button type="button" class="btn btn-block btn-secondary icon-btn">Configure In-Discord messages</button>
+          <button type="button" class="btn btn-block btn-secondary icon-btn" onclick="Logs.editModal()">Configure In-Discord messages</button>
         </div>
 
         <!-- buttons -->
@@ -86,14 +87,12 @@
 
 <div modal>
 
-  <div class="modal fade" id="quote_modal" mode="create|edit">
+  <div class="modal fade" id="log_modal" mode="view|edit">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
 
         <div class="modal-header text-center">
-          <data name="quote_id"></data>
-          <h4 class="modal-title" show-mode="create">New Quote</h4>
-          <h4 class="modal-title" show-mode="edit">Edit Quote</h4>
+          <h4 class="modal-title" show-mode="edit">Edit In-Discord Messages</h4>
           <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
         </div>
 
@@ -103,9 +102,7 @@
         </div>
 
         <div class="modal-footer">
-          <button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="Quotes.edit()">Submit changes</button>
-          <button show-mode="edit" type="button" class="btn btn-block btn-danger" onclick="Quotes.deleteFromModal()">Delete</button>
-          <button show-mode="create" type="button" class="btn btn-block btn-success" onclick="Quotes.create()">Save</button>
+          <button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="Logs.edit()">Submit changes</button>
         </div>
         <div messagebox></div>
       </div>
