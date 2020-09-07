@@ -141,17 +141,23 @@ var Logs = new (class {
 		});
 
 		function buildTrackModal(config_data, track_data) {
+
+			// that actully only selects the channel, but hey
+			insertData(LogsO.modal_id, config_data.result);
+
+			// build track options
 			var current_track_config = config_data.result.track_value || 0;
 
 			for (var track_name in track_data.result) {
 				let track_value = track_data.result[track_name];
-				if (current_track_config & v) {
-					console.log(`${name} | ${current_track_config} & ${v} => ${current_track_config & v}`);
+				if (current_track_config & track_value) {
+					// TODO
+					console.log(`${track_name} | ${current_track_config} & ${track_value} => ${current_track_config & track_value}`);
 				}
 			}
 
-			// console.log(config_data);
-			// console.log(track_data);
+			$(LogsO.modal_id).attr("mode", "edit");
+			$(LogsO.modal_id).modal("show");
 		}
 
 	}
