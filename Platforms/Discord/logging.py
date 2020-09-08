@@ -140,12 +140,15 @@ async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	------------------
 	* Creator `discord.Member`
 	* quote_content `str`
+	* quote_id `str`
 	"""
 	Creator:discord.Member = kwargs.get("Creator", None)
-	quote_content:str = kwargs.get("quote_content", False)
+	quote_content:str = kwargs.get("quote_content", None)
+	quote_id:str = kwargs.get("quote_id", None)
 
 	if not Creator: raise AttributeError("missing `Creator`")
 	if not quote_content: raise AttributeError("missing `quote_content`")
+	if not quote_id: raise AttributeError("missing `quote_id`")
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -153,7 +156,7 @@ async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 			"guild_id": Settings.server_id,
 			"event_value": TRACK_OPTIONS["Quote.create"],
 			"initiator_id": str(Creator.id),
-			"content": f"New Quote Created: {quote_content}"
+			"content": f"New Quote Created (#{quote_id}): {quote_content}"
 		}
 	)
 
@@ -161,6 +164,20 @@ async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Creator.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Creator.name} created a new quote. (#{quote_id})",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_INFO
+	)
+	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
+	Emb.set_author(name="Log Event - [Quote Create]")
+	Emb.add_field(name="Content:", value=quote_content[:500], inline=True)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 	Emb:discord.Embed = discord.Embed(
 		description = f"{Creator.name} created a new quote.",

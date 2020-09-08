@@ -170,7 +170,7 @@ class DBConn(object):
 
 			INSERT INTO `test` (`A`, `B`, `C`) VALUES ('123', 'abc', 420);
 
-			Returns
+			Returns the id of the most resent row
 		"""
 		if not table or not content: raise AttributeError("'table', and 'content' must be given")
 

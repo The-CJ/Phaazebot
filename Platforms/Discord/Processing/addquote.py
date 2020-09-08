@@ -40,7 +40,7 @@ async def addQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 	Emb.set_footer(text=f'ID: {new_quote_id}')
 
 	# Log
-	log_coro:Coroutine = loggingOnQuoteCreate(cls, CommandContext.ServerSettings, Creator=CommandContext.Message.author, quote_content=new_quote)
+	log_coro:Coroutine = loggingOnQuoteCreate(cls, CommandContext.ServerSettings, Creator=CommandContext.Message.author, quote_content=new_quote, quote_id=new_quote_id)
 	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
 	return {"content": ":white_check_mark: Quote added", "embed": Emb}

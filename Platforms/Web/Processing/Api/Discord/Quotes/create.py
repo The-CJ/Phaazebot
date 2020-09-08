@@ -72,7 +72,7 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
 		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(
+	new_quote_id:int = cls.Web.BASE.PhaazeDB.insertQuery(
 		table="discord_quote",
 		content={
 			"guild_id": guild_id,
@@ -81,7 +81,7 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 	)
 
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
-	log_coro:Coroutine = loggingOnQuoteCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, quote_content=content)
+	log_coro:Coroutine = loggingOnQuoteCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, quote_content=content, quote_id=new_quote_id)
 	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Quote: {guild_id=} added new entry", require="discord:quotes")
