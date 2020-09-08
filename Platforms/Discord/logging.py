@@ -29,6 +29,7 @@ TRACK_OPTIONS:Dict[str, int] = {
 	"Config.edit": 1<<16,
 }
 EVENT_COLOR_POSITIVE:int = 0x00FF00
+EVENT_COLOR_WARNING:int = 0xFFAA00
 EVENT_COLOR_NEGATIVE:int = 0xFF0000
 EVENT_COLOR_INFO:int = 0x00FFFF
 
@@ -179,14 +180,52 @@ async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-	Emb:discord.Embed = discord.Embed(
-		description = f"{Creator.name} created a new quote.",
-		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_INFO
+# Quote.edit : 1000
+async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone edits a quote, doesn't matter if in discord or web. (You can only do this in web duh)
+	If track option `Quote.create` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* ChangeMember `discord.Member`
+	* quote_id `str`
+	* old_content `str`
+	* new_content `str`
+	"""
+	ChangeMember:discord.Member = kwargs.get("ChangeMember", None)
+	quote_id:str = kwargs.get("quote_id", None)
+	old_content:str = kwargs.get("old_content", None)
+	new_content:str = kwargs.get("new_content", None)
+
+	if not ChangeMember: raise AttributeError("missing `ChangeMember`")
+	if not quote_id: raise AttributeError("missing `quote_id`")
+	if not old_content: raise AttributeError("missing `old_content`")
+	if not new_content: raise AttributeError("missing `new_content`")
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS["Quote.edit"],
+			"initiator_id": str(ChangeMember.id),
+			"content": f"Quote (#{quote_id}) Updated: {old_content} -> {new_content}"
+		}
 	)
-	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
-	Emb.set_author(name="Log Event - [Quote Create]")
-	Emb.add_field(name="Content:", value=quote_content[:500], inline=True)
+
+	if not (TRACK_OPTIONS["Quote.edit"] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, ChangeMember.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{ChangeMember.name} changed a quote.",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_WARNING
+	)
+	Emb.set_thumbnail(url=ChangeMember.avatar_url or ChangeMember.default_avatar_url)
+	Emb.set_author(name="Log Event - [Quote Edit]")
+	Emb.add_field(name="Content:", value=f"{old_content[:500]} -> {new_content[:500]}", inline=True)
 
 	try:
 		await TargetChannel.send(embed=Emb)
