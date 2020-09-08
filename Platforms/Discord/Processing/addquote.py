@@ -1,8 +1,10 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
+import asyncio
 import discord
+from Platforms.Discord.logging import loggingOnQuoteCreate
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 
@@ -36,5 +38,9 @@ async def addQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 
 	Emb = discord.Embed(description=new_quote, color=0x11EE11)
 	Emb.set_footer(text=f'ID: {new_quote_id}')
+
+	# Log
+	log_coro:Coroutine = loggingOnQuoteCreate(cls, CommandContext.ServerSettings, Creator=CommandContext.Message.author, quote_content=new_quote)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
 	return {"content": ":white_check_mark: Quote added", "embed": Emb}

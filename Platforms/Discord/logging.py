@@ -30,17 +30,26 @@ TRACK_OPTIONS:Dict[str, int] = {
 }
 EVENT_COLOR_POSITIVE:int = 0x00FF00
 EVENT_COLOR_NEGATIVE:int = 0xFF0000
+EVENT_COLOR_INFO:int = 0x00FFFF
 
-async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, NewMember:discord.Member, **kwargs:dict) -> None:
+# Member.join : 1
+async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
-	Sends logging message on member join event to Settings.track_channel.
-	Requires track option `Member.join` active
+	Logs the event when a member is added (joins) a guild.
+	If track option `Member.join` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* NewMember `discord.Member`
 
 	Optional keywords:
 	------------------
 	* link_in_name `bool` : (Default: False)
 	"""
+	NewMember:discord.Member = kwargs.get("NewMember", None)
 	link_in_name:bool = kwargs.get("link_in_name", False)
+
+	if not NewMember: raise AttributeError("missing `NewMember`")
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -72,16 +81,24 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, OldMember:discord.Member, **kwargs:dict) -> None:
+# Member.remove : 10
+async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
-	Sends logging message on member remove event to Settings.track_channel.
-	Requires track option `Member.remove` active
+	Logs the event when a member was removed from a guild.
+	If track option `Member.remove` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* OldMember `discord.Member`
 
 	Optional keywords:
 	------------------
 	* link_in_name `bool` : (Default: False)
 	"""
+	OldMember:discord.Member = kwargs.get("OldMember", None)
 	link_in_name:bool = kwargs.get("link_in_name", False)
+
+	if not OldMember: raise AttributeError("missing `OldMember`")
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -107,6 +124,52 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 	Emb.set_author(name="Log Event - [Member remove]")
 	if link_in_name:
 		Emb.add_field(":warning: Blocked public announcements", "Link in name", inline=True)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Quote.create : 100
+async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone creates a new quote, doesn't matter if in discord or web.
+	If track option `Quote.create` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Creator `discord.Member`
+	* quote_content `str`
+	"""
+	Creator:discord.Member = kwargs.get("Creator", None)
+	quote_content:str = kwargs.get("quote_content", False)
+
+	if not Creator: raise AttributeError("missing `Creator`")
+	if not quote_content: raise AttributeError("missing `quote_content`")
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS["Quote.create"],
+			"initiator_id": str(Creator.id),
+			"content": f"New Quote Created: {quote_content}"
+		}
+	)
+
+	if not (TRACK_OPTIONS["Quote.create"] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Creator.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Creator.name} created a new quote.",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_INFO
+	)
+	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
+	Emb.set_author(name="Log Event - [Quote Create]")
+	Emb.add_field(name="Content:", value=quote_content[:500], inline=True)
 
 	try:
 		await TargetChannel.send(embed=Emb)
