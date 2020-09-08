@@ -4,6 +4,8 @@ var Logs = new (class {
 		this.list_id = "#log_list";
 		this.total_field_id = "#log_amount";
 		this.phantom_class = ".log";
+		this.track_list_id = "#log_track_list";
+		this.track_phantom_class = ".track-option";
 
 		this.default_limit = 50;
 		this.default_page = 0;
@@ -147,13 +149,19 @@ var Logs = new (class {
 
 			// build track options
 			var current_track_config = config_data.result.track_value || 0;
+			var TrackOptionList = $(LogsO.track_list_id).html('');
 
 			for (var track_name in track_data.result) {
-				let track_value = track_data.result[track_name];
+				var track_value = track_data.result[track_name];
+
+				var NextTrackOption = $(`[phantom] ${LogsO.track_phantom_class}`).clone();
+
+				NextTrackOption.find("[name=track_name]").text(track_name);
+				NextTrackOption.find("[name=track_value]").val(track_value);
 				if (current_track_config & track_value) {
-					// TODO
-					console.log(`${track_name} | ${current_track_config} & ${track_value} => ${current_track_config & track_value}`);
+					NextTrackOption.find("[name=is_enabled]").prop("checked", true);
 				}
+				TrackOptionList.append(NextTrackOption);
 			}
 
 			$(LogsO.modal_id).attr("mode", "edit");
@@ -163,21 +171,21 @@ var Logs = new (class {
 	}
 
 	edit() {
-		var QuoteO = this;
+		var LogsO = this;
 
 		var req = extractData(this.modal_id);
 		req["guild_id"] = $("#guild_id").val();
 
-		$.post("/api/discord/quotes/edit", req)
+		$.post("/api/discord/configs/edit", req)
 		.done(function (data) {
 
-			$(QuoteO.modal_id).modal("hide");
-			QuoteO.show();
+			$(LogsO.modal_id).modal("hide");
+			LogsO.show();
 			Display.showMessage({content: data.msg, color:Display.color_success, time:1500});
 
 		})
 		.fail(function (data) {
-			generalAPIErrorHandler( {data:data, msg:"error updating quote"} );
-		})
+			generalAPIErrorHandler( {data:data, msg:"error updating logs"} );
+		});
 	}
 });
