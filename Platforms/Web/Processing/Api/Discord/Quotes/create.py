@@ -21,7 +21,7 @@ from .errors import apiDiscordQuoteLimit
 
 async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/quotes/create
+	Default url: /api/discord/quotes/create
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
