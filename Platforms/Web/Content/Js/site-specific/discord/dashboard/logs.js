@@ -49,6 +49,10 @@ var Logs = new (class {
 			for (var log of data.result) {
 				var Template = $(`[phantom] ${LogsO.phantom_class}`).clone();
 
+				if (log.content.length > 100) {
+					log.content = log.content.replace("\n"," ").slice(0, 97) + "...";
+				}
+
 				insertData(Template, log);
 				Template.attr("log-id", log.log_id);
 
