@@ -173,8 +173,18 @@ var Logs = new (class {
 	edit() {
 		var LogsO = this;
 
-		var req = extractData(this.modal_id);
+		var req = {};
 		req["guild_id"] = $("#guild_id").val();
+		req["track_channel"] = $(`${LogsO.modal_id} [name=track_channel]`).val();
+		req["track_value"] = 0;
+
+		$(`${LogsO.track_list_id} ${LogsO.track_phantom_class}`).each(function (x, Track) {
+			Track = $(Track);
+			if ( Track.find("[name=is_enabled]").is(":checked") ) {
+				let v = parseInt( Track.find("[name=track_value]").val() );
+				req["track_value"] = req["track_value"] | v;
+			}
+		})
 
 		$.post("/api/discord/configs/edit", req)
 		.done(function (data) {
