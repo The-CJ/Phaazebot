@@ -231,3 +231,52 @@ async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 		await TargetChannel.send(embed=Emb)
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Quote.delete : 10000
+async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone deletes a quote, doesn't matter if in discord or web.
+	If track option `Quote.create` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Deleter `discord.Member`
+	* quote_id `str`
+	* deleted_content `str`
+	"""
+	Deleter:discord.Member = kwargs.get("Deleter", None)
+	quote_id:str = kwargs.get("quote_id", None)
+	deleted_content:str = kwargs.get("deleted_content", None)
+
+	if not Deleter: raise AttributeError("missing `Deleter`")
+	if not quote_id: raise AttributeError("missing `quote_id`")
+	if not deleted_content: raise AttributeError("missing `deleted_content`")
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS["Quote.delete"],
+			"initiator_id": str(Deleter.id),
+			"content": f"Quote (#{quote_id}) deleted: {deleted_content}"
+		}
+	)
+
+	if not (TRACK_OPTIONS["Quote.delete"] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Deleter.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Deleter.name} deleted a quote.",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_WARNING
+	)
+	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
+	Emb.set_author(name="Log Event - [Quote Deleted]")
+	Emb.add_field(name="Content:", value=deleted_content[:500], inline=True)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")

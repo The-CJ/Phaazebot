@@ -152,13 +152,13 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 async def formatCommand(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext, direct_call:bool=False) -> dict:
 	"""
-		This function is suppost to do everything.
-		It takes the placeholder in Command.content and replaces them with the wanted data.
-		That also applies to module/function calls in Command.content.
+	This function is suppost to do everything.
+	It takes the placeholder in Command.content and replaces them with the wanted data.
+	That also applies to module/function calls in Command.content.
 
-		There are 2 main stages a command can have,
-		a 'simple' commands that has one clear return from a function
-		and 'complex' commands that may have multiple fields in which single return values from a function are inserted
+	There are 2 main stages a command can have,
+	a 'simple' commands that has one clear return from a function
+	and 'complex' commands that may have multiple fields in which single return values from a function are inserted
 	"""
 
 	# it's a 'simple' function

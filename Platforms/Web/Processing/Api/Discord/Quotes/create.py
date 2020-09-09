@@ -7,9 +7,9 @@ import json
 import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Discord.db import getDiscordSeverSettings
 from Platforms.Discord.logging import loggingOnQuoteCreate
 from Platforms.Web.Processing.Api.errors import (
@@ -85,7 +85,6 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Quote: {guild_id=} added new entry", require="discord:quotes")
-
 	return cls.response(
 		text=json.dumps( dict(msg="Quote: Added new entry", entry=content, status=200) ),
 		content_type="application/json",
