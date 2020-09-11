@@ -19,7 +19,7 @@ from .errors import apiDiscordQuotesNotExists
 
 async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/quotes/delete
+	Default url: /api/discord/quotes/delete
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
