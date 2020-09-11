@@ -47,22 +47,21 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 	------------------
 	* link_in_name `bool` : (Default: False)
 	"""
-	NewMember:discord.Member = kwargs.get("NewMember", None)
+	logging_signature:str = "Member.join"
+	NewMember:discord.Member = kwargs.get("NewMember")
 	link_in_name:bool = kwargs.get("link_in_name", False)
-
-	if not NewMember: raise AttributeError("missing `NewMember`")
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
-			"event_value": TRACK_OPTIONS["Member.join"],
+			"event_value": TRACK_OPTIONS[logging_signature],
 			"initiator_id": str(NewMember.id),
 			"content": f"{NewMember.name} joined the server"
 		}
 	)
 
-	if not (TRACK_OPTIONS["Member.join"] & Settings.track_value): return # track option not active, skip message to discord server
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, NewMember.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
@@ -73,7 +72,7 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 		color = EVENT_COLOR_POSITIVE
 	)
 	Emb.set_thumbnail(url=NewMember.avatar_url or NewMember.default_avatar_url)
-	Emb.set_author(name="Log Event - [Member Join]")
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	if link_in_name:
 		Emb.add_field(":warning: Blocked public announcements", "Link in name", inline=True)
 
@@ -96,22 +95,21 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 	------------------
 	* link_in_name `bool` : (Default: False)
 	"""
-	OldMember:discord.Member = kwargs.get("OldMember", None)
+	logging_signature:str = "Member.remove"
+	OldMember:discord.Member = kwargs.get("OldMember")
 	link_in_name:bool = kwargs.get("link_in_name", False)
-
-	if not OldMember: raise AttributeError("missing `OldMember`")
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
-			"event_value": TRACK_OPTIONS["Member.remove"],
+			"event_value": TRACK_OPTIONS[logging_signature],
 			"initiator_id": str(OldMember.id),
 			"content": f"{OldMember.name} left the server"
 		}
 	)
 
-	if not (TRACK_OPTIONS["Member.remove"] & Settings.track_value): return # track option not active, skip message to discord server
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, OldMember.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
@@ -122,7 +120,7 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 		color = EVENT_COLOR_NEGATIVE
 	)
 	Emb.set_thumbnail(url=OldMember.avatar_url or OldMember.default_avatar_url)
-	Emb.set_author(name="Log Event - [Member remove]")
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	if link_in_name:
 		Emb.add_field(":warning: Blocked public announcements", "Link in name", inline=True)
 
@@ -143,36 +141,33 @@ async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	* quote_content `str`
 	* quote_id `str`
 	"""
-	Creator:discord.Member = kwargs.get("Creator", None)
-	quote_content:str = kwargs.get("quote_content", None)
-	quote_id:str = kwargs.get("quote_id", None)
-
-	if not Creator: raise AttributeError("missing `Creator`")
-	if not quote_content: raise AttributeError("missing `quote_content`")
-	if not quote_id: raise AttributeError("missing `quote_id`")
+	logging_signature:str = "Quote.create"
+	Creator:discord.Member = kwargs.get("Creator")
+	quote_content:str = kwargs.get("quote_content")
+	quote_id:str = kwargs.get("quote_id")
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
-			"event_value": TRACK_OPTIONS["Quote.create"],
+			"event_value": TRACK_OPTIONS[logging_signature],
 			"initiator_id": str(Creator.id),
-			"content": f"New Quote Created (#{quote_id}): {quote_content}"
+			"content": f"{Creator.name} created a new quote (#{quote_id}): {quote_content}"
 		}
 	)
 
-	if not (TRACK_OPTIONS["Quote.create"] & Settings.track_value): return # track option not active, skip message to discord server
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Creator.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
-		description = f"{Creator.name} created a new quote. (#{quote_id})",
+		description = f"{Creator.name} created a new quote.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_INFO
+		color = EVENT_COLOR_POSITIVE
 	)
 	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
-	Emb.set_author(name="Log Event - [Quote Create]")
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Content:", value=quote_content[:500], inline=True)
 
 	try:
@@ -193,27 +188,23 @@ async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 	* old_content `str`
 	* new_content `str`
 	"""
-	ChangeMember:discord.Member = kwargs.get("ChangeMember", None)
-	quote_id:str = kwargs.get("quote_id", None)
-	old_content:str = kwargs.get("old_content", None)
-	new_content:str = kwargs.get("new_content", None)
-
-	if not ChangeMember: raise AttributeError("missing `ChangeMember`")
-	if not quote_id: raise AttributeError("missing `quote_id`")
-	if not old_content: raise AttributeError("missing `old_content`")
-	if not new_content: raise AttributeError("missing `new_content`")
+	logging_signature:str = "Quote.edit"
+	ChangeMember:discord.Member = kwargs.get("ChangeMember")
+	quote_id:str = kwargs.get("quote_id")
+	old_content:str = kwargs.get("old_content")
+	new_content:str = kwargs.get("new_content")
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
-			"event_value": TRACK_OPTIONS["Quote.edit"],
+			"event_value": TRACK_OPTIONS[logging_signature],
 			"initiator_id": str(ChangeMember.id),
-			"content": f"Quote (#{quote_id}) Updated: {old_content} -> {new_content}"
+			"content": f"{ChangeMember.name} changed quote #{quote_id}: {old_content} -> {new_content}"
 		}
 	)
 
-	if not (TRACK_OPTIONS["Quote.edit"] & Settings.track_value): return # track option not active, skip message to discord server
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, ChangeMember.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
@@ -224,7 +215,7 @@ async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 		color = EVENT_COLOR_WARNING
 	)
 	Emb.set_thumbnail(url=ChangeMember.avatar_url or ChangeMember.default_avatar_url)
-	Emb.set_author(name="Log Event - [Quote Edit]")
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Content:", value=f"{old_content[:500]} -> {new_content[:500]}", inline=True)
 
 	try:
@@ -244,25 +235,22 @@ async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	* quote_id `str`
 	* deleted_content `str`
 	"""
-	Deleter:discord.Member = kwargs.get("Deleter", None)
-	quote_id:str = kwargs.get("quote_id", None)
-	deleted_content:str = kwargs.get("deleted_content", None)
-
-	if not Deleter: raise AttributeError("missing `Deleter`")
-	if not quote_id: raise AttributeError("missing `quote_id`")
-	if not deleted_content: raise AttributeError("missing `deleted_content`")
+	logging_signature:str = "Quote.delete"
+	Deleter:discord.Member = kwargs.get("Deleter")
+	quote_id:str = kwargs.get("quote_id")
+	deleted_content:str = kwargs.get("deleted_content")
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
-			"event_value": TRACK_OPTIONS["Quote.delete"],
+			"event_value": TRACK_OPTIONS[logging_signature],
 			"initiator_id": str(Deleter.id),
-			"content": f"Quote (#{quote_id}) deleted: {deleted_content}"
+			"content": f"{Deleter.name} deleted quote #{quote_id}: {deleted_content}"
 		}
 	)
 
-	if not (TRACK_OPTIONS["Quote.delete"] & Settings.track_value): return # track option not active, skip message to discord server
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Deleter.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
@@ -273,7 +261,7 @@ async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 		color = EVENT_COLOR_NEGATIVE
 	)
 	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
-	Emb.set_author(name="Log Event - [Quote Deleted]")
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Content:", value=deleted_content[:500], inline=True)
 
 	try:
@@ -293,25 +281,22 @@ async def loggingOnCommandCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	* command_trigger `str`
 	* command_info `dict`
 	"""
-	Creator:discord.Member = kwargs.get("Creator", None)
-	command_trigger:str = kwargs.get("command_trigger", None)
-	command_info:dict = kwargs.get("command_info", None)
-
-	if not Creator: raise AttributeError("missing `Creator`")
-	if not command_trigger: raise AttributeError("missing `command_trigger`")
-	if not command_info: raise AttributeError("missing `command_info`")
+	logging_signature:str = "Command.create"
+	Creator:discord.Member = kwargs.get("Creator")
+	command_trigger:str = kwargs.get("command_trigger")
+	command_info:dict = kwargs.get("command_info")
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
-			"event_value": TRACK_OPTIONS["Command.create"],
+			"event_value": TRACK_OPTIONS[logging_signature],
 			"initiator_id": str(Creator.id),
-			"content": f"Command ({command_trigger}) created. {str(command_info)}"
+			"content": f"{Creator.name} created a new command ({command_trigger}) : {str(command_info)}"
 		}
 	)
 
-	if not (TRACK_OPTIONS["Command.create"] & Settings.track_value): return # track option not active, skip message to discord server
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
 
 	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Creator.guild, Settings.track_channel, required_type="text")
 	if not TargetChannel: return # no channel found
@@ -322,7 +307,7 @@ async def loggingOnCommandCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 		color = EVENT_COLOR_POSITIVE
 	)
 	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
-	Emb.set_author(name="Log Event - [Command Created]")
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="New Trigger:", value=command_trigger, inline=True)
 
 	try:
