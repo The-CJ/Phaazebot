@@ -26,7 +26,9 @@ TRACK_OPTIONS:Dict[str, int] = {
 	"Level.edit": 1<<13,
 	"Levelmedal.create": 1<<14,
 	"Levelmedal.delete": 1<<15,
-	"Config.edit": 1<<16,
+	"Assignrole.create": 1<<16,
+	"Assignrole.delete": 1<<17,
+	"Config.edit": 1<<18,
 }
 EVENT_COLOR_POSITIVE:int = 0x00FF00
 EVENT_COLOR_WARNING:int = 0xFFAA00
@@ -399,6 +401,53 @@ async def loggingOnCommandDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
 	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Deleted command:", value=command_trigger, inline=True)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Command.delete : 100000000
+async def loggingOnTwitchalertCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone creates a new twitch alert (mostly) via web.
+	If track option `Twitchalert.create` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Creator `discord.Member`
+	* discord_channel `str`
+	* discord_channel `str`
+	"""
+	logging_signature:str = "Twitchalert.create"
+	Creator:discord.Member = kwargs.get("Creator")
+	twitch_channel:str = kwargs.get("twitch_channel")
+	discord_channel:str = kwargs.get("discord_channel")
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Creator.id),
+			"content": f"{Creator.name} created a new Twitch-Alert for {twitch_channel} in #{discord_channel}"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Creator.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Creator.name} created a Twitch-Alert.",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_POSITIVE
+	)
+	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="Twitch channel:", value=twitch_channel, inline=False)
+	Emb.add_field(name="Discord channel:", value='#'+discord_channel, inline=False)
 
 	try:
 		await TargetChannel.send(embed=Emb)

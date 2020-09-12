@@ -266,7 +266,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_setting",
 		content = db_update,
-		where = "discord_setting.guild_id = %s",
+		where = "`discord_setting`.`guild_id` = %s",
 		where_values = (guild_id,)
 	)
 
