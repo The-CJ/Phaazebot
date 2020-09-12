@@ -82,10 +82,6 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 	if not changes:
 		return await apiWrongData(cls, WebRequest, msg=f"No changes, please add at least one")
 
-	# logging
-	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
-	log_coro:Coroutine = loggingOnTwitchalertEdit(PhaazeDiscord, GuildSettings, ChangeMember=CheckMember, twitch_channel=CurrentEditAlert.twitch_channel_name, changes=changes)
-	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_twitch_alert",
@@ -93,6 +89,11 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 		where = "`discord_twitch_alert`.`discord_guild_id` = %s AND `discord_twitch_alert`.`id` = %s",
 		where_values = (CurrentEditAlert.guild_id, CurrentEditAlert.alert_id)
 	)
+
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnTwitchalertEdit(PhaazeDiscord, GuildSettings, ChangeMember=CheckMember, twitch_channel=CurrentEditAlert.twitch_channel_name, changes=changes)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Twitchalert: {guild_id=} edited {alert_id=}", require="discord:alerts")
 	return cls.response(

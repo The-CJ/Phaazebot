@@ -416,7 +416,7 @@ async def loggingOnTwitchalertCreate(cls:"PhaazebotDiscord", Settings:DiscordSer
 	Required keywords:
 	------------------
 	* Creator `discord.Member`
-	* discord_channel `str`
+	* twitch_channel `str`
 	* discord_channel `str`
 	"""
 	logging_signature:str = "Twitchalert.create"
@@ -464,6 +464,7 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 	------------------
 	* ChangeMember `discord.Member`
 	* twitch_channel `str`
+	* discord_channel `str`
 	* changes `dict`
 	"""
 	logging_signature:str = "Twitchalert.edit"
@@ -492,6 +493,51 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 		color = EVENT_COLOR_WARNING
 	)
 	Emb.set_thumbnail(url=ChangeMember.avatar_url or ChangeMember.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="Twitch channel:", value=twitch_channel, inline=False)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Twitchalert.delete : 10000000000
+async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone deletes a twitch alert (mostly) via web.
+	If track option `Twitchalert.delete` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Deleter `discord.Member`
+	* twitch_channel `str`
+	* discord_channel `str`
+	"""
+	logging_signature:str = "Twitchalert.delete"
+	Deleter:discord.Member = kwargs.get("Deleter")
+	twitch_channel:str = kwargs.get("twitch_channel")
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Deleter.id),
+			"content": f"{Deleter.name} deleted the Twitch-Alert for {twitch_channel}"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Deleter.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Deleter.name} deleted a Twitch-Alert.",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_NEGATIVE
+	)
+	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
 	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Twitch channel:", value=twitch_channel, inline=False)
 
