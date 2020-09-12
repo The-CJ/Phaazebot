@@ -80,6 +80,7 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 		}
 	)
 
+	# logging
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
 	log_coro:Coroutine = loggingOnQuoteCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, quote_content=content, quote_id=new_quote_id)
 	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)

@@ -1,17 +1,20 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
 from Platforms.Discord.commandindex import command_register
+from Utils.Classes.discordserversettings import DiscordServerSettings
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.discordcommand import DiscordCommand
-from Platforms.Discord.db import getDiscordServerCommands
+from Platforms.Discord.db import getDiscordServerCommands, getDiscordSeverSettings
+from Platforms.Discord.logging import loggingOnCommandEdit
 from Utils.dbutils import validateDBInput
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
@@ -30,7 +33,7 @@ from .errors import (
 
 async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/commands/edit
+	Default url: /api/discord/commands/edit
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -166,8 +169,12 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		where_values = (CurrentEditCommand.server_id, CurrentEditCommand.command_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Commands: {guild_id=} edited {command_id=}", require="discord:commands")
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnCommandEdit(PhaazeDiscord, GuildSettings, Editor=CheckMember, command_trigger=CurrentEditCommand.trigger, command_info=update)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Commands: {guild_id=} edited {command_id=}", require="discord:commands")
 	return cls.response(
 		text=json.dumps( dict(msg="Commands: Edited entry", changes=update, status=200) ),
 		content_type="application/json",

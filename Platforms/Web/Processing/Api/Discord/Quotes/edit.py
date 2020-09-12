@@ -78,6 +78,7 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		where_values = (CurrentEditQuote.guild_id, CurrentEditQuote.quote_id)
 	)
 
+	# logging
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
 	log_coro:Coroutine = loggingOnQuoteEdit(
 		PhaazeDiscord,

@@ -66,6 +66,7 @@ async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response
 		(QuoteToDelete.guild_id, QuoteToDelete.quote_id)
 	)
 
+	# logging
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
 	log_coro:Coroutine = loggingOnQuoteDelete(PhaazeDiscord, GuildSettings, Deleter=CheckMember, quote_id=QuoteToDelete.quote_id, deleted_content=QuoteToDelete.content)
 	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)

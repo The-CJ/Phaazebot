@@ -119,6 +119,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 		}
 	)
 
+	# logging prep
 	log_dict:dict = {
 		"trigger": trigger,
 		"active": active,
@@ -130,6 +131,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 		"cooldown": cooldown
 	}
 
+	# logging
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
 	log_coro:Coroutine = loggingOnCommandCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, command_trigger=trigger, command_info=log_dict)
 	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
