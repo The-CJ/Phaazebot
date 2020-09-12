@@ -35,7 +35,7 @@ EVENT_COLOR_WARNING:int = 0xFFAA00
 EVENT_COLOR_NEGATIVE:int = 0xFF0000
 EVENT_COLOR_INFO:int = 0x00FFFF
 
-# Member.join : 1
+# Member.join : 1 : 1
 async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when a member is added (joins) a guild.
@@ -83,7 +83,7 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Member.remove : 10
+# Member.remove : 10 : 2
 async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when a member was removed from a guild.
@@ -131,7 +131,7 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Quote.create : 100
+# Quote.create : 100 : 4
 async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone creates a new quote, doesn't matter if in discord or web.
@@ -177,7 +177,7 @@ async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Quote.edit : 1000
+# Quote.edit : 1000 : 8
 async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone edits a quote, doesn't matter if in discord or web. (You can only do this in web duh)
@@ -225,7 +225,7 @@ async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Quote.delete : 10000
+# Quote.delete : 10000 : 16
 async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone deletes a quote, doesn't matter if in discord or web.
@@ -271,7 +271,7 @@ async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Command.create : 100000
+# Command.create : 100000 : 32
 async def loggingOnCommandCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone creates a new command (mostly) via web.
@@ -317,7 +317,7 @@ async def loggingOnCommandCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Command.edit : 1000000
+# Command.edit : 1000000 : 64
 async def loggingOnCommandEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone edits a command (mostly) via web.
@@ -363,7 +363,7 @@ async def loggingOnCommandEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Command.delete : 10000000
+# Command.delete : 10000000 : 128
 async def loggingOnCommandDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone deletes a command (mostly) via web.
@@ -407,7 +407,7 @@ async def loggingOnCommandDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Twitchalert.create : 100000000
+# Twitchalert.create : 100000000 : 256
 async def loggingOnTwitchalertCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone creates a new twitch alert (mostly) via web.
@@ -454,7 +454,7 @@ async def loggingOnTwitchalertCreate(cls:"PhaazebotDiscord", Settings:DiscordSer
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Twitchalert.edit : 1000000000
+# Twitchalert.edit : 1000000000 : 512
 async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone changes a twitch alert (mostly) via web.
@@ -464,12 +464,14 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 	------------------
 	* ChangeMember `discord.Member`
 	* twitch_channel `str`
-	* discord_channel `str`
+	* discord_channel_id `str`
 	* changes `dict`
 	"""
 	logging_signature:str = "Twitchalert.edit"
 	ChangeMember:discord.Member = kwargs.get("ChangeMember")
 	twitch_channel:str = kwargs.get("twitch_channel")
+	discord_channel_id:str = kwargs.get("discord_channel_id")
+	discord_channel_name:str = getDiscordChannelFromString(cls, ChangeMember.guild, discord_channel_id, required_type="text") or "(Unknown)"
 	changes:str = kwargs.get("changes")
 
 	cls.BASE.PhaazeDB.insertQuery(
@@ -478,7 +480,7 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 			"guild_id": Settings.server_id,
 			"event_value": TRACK_OPTIONS[logging_signature],
 			"initiator_id": str(ChangeMember.id),
-			"content": f"{ChangeMember.name} changed the Twitch-Alert for {twitch_channel}: {str(changes)}"
+			"content": f"{ChangeMember.name} changed the Twitch-Alert for {twitch_channel} in #{discord_channel_name}: {str(changes)}"
 		}
 	)
 
@@ -501,7 +503,7 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Twitchalert.delete : 10000000000
+# Twitchalert.delete : 10000000000 : 1024
 async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone deletes a twitch alert (mostly) via web.
@@ -511,11 +513,13 @@ async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordSer
 	------------------
 	* Deleter `discord.Member`
 	* twitch_channel `str`
-	* discord_channel `str`
+	* discord_channel_id `str`
 	"""
 	logging_signature:str = "Twitchalert.delete"
 	Deleter:discord.Member = kwargs.get("Deleter")
 	twitch_channel:str = kwargs.get("twitch_channel")
+	discord_channel_id:str = kwargs.get("discord_channel_id")
+	discord_channel_name:str = getDiscordChannelFromString(cls, Deleter.guild, discord_channel_id, required_type="text") or "(Unknown)"
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -523,7 +527,7 @@ async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordSer
 			"guild_id": Settings.server_id,
 			"event_value": TRACK_OPTIONS[logging_signature],
 			"initiator_id": str(Deleter.id),
-			"content": f"{Deleter.name} deleted the Twitch-Alert for {twitch_channel}"
+			"content": f"{Deleter.name} deleted the Twitch-Alert for {twitch_channel} in #{discord_channel_name}"
 		}
 	)
 

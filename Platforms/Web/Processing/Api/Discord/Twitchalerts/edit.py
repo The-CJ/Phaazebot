@@ -92,7 +92,12 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 
 	# logging
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
-	log_coro:Coroutine = loggingOnTwitchalertEdit(PhaazeDiscord, GuildSettings, ChangeMember=CheckMember, twitch_channel=CurrentEditAlert.twitch_channel_name, changes=changes)
+	log_coro:Coroutine = loggingOnTwitchalertEdit(PhaazeDiscord, GuildSettings,
+		ChangeMember=CheckMember,
+		twitch_channel=CurrentEditAlert.twitch_channel_name,
+		discord_channel_id=CurrentEditAlert.discord_channel_id,
+		changes=changes
+	)
 	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Twitchalert: {guild_id=} edited {alert_id=}", require="discord:alerts")

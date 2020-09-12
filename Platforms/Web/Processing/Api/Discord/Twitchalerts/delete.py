@@ -68,7 +68,11 @@ async def apiDiscordTwitchalertsDelete(cls:"WebIndex", WebRequest:Request) -> Re
 
 	# logging
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
-	log_coro:Coroutine = loggingOnTwitchalertDelete(PhaazeDiscord, GuildSettings, Deleter=CheckMember, twitch_channel=AlertToDelete.twitch_channel_name)
+	log_coro:Coroutine = loggingOnTwitchalertDelete(PhaazeDiscord, GuildSettings,
+		Deleter=CheckMember,
+		twitch_channel=AlertToDelete.twitch_channel_name,
+		discord_channel_id=AlertToDelete.discord_channel_id
+	)
 	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Twitchalert: {guild_id=} deleted {alert_id=}", require="discord:alert")
