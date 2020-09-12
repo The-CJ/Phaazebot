@@ -477,7 +477,7 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 			"guild_id": Settings.server_id,
 			"event_value": TRACK_OPTIONS[logging_signature],
 			"initiator_id": str(ChangeMember.id),
-			"content": f"{ChangeMember.name} created the Twitch-Alert for {twitch_channel}: {str(changes)}"
+			"content": f"{ChangeMember.name} changed the Twitch-Alert for {twitch_channel}: {str(changes)}"
 		}
 	)
 
