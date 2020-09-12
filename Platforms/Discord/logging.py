@@ -360,3 +360,47 @@ async def loggingOnCommandEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 		await TargetChannel.send(embed=Emb)
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Command.delete : 10000000
+async def loggingOnCommandDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone deletes a command (mostly) via web.
+	If track option `Command.delete` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Deleter `discord.Member`
+	* command_trigger `str`
+	"""
+	logging_signature:str = "Command.delete"
+	Deleter:discord.Member = kwargs.get("Deleter")
+	command_trigger:str = kwargs.get("command_trigger")
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Deleter.id),
+			"content": f"{Deleter.name} deleted the command: {command_trigger}"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Deleter.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Deleter.name} deleted a command.",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_NEGATIVE
+	)
+	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="Deleted command:", value=command_trigger, inline=True)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
