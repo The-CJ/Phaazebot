@@ -3,74 +3,74 @@
 
 <main>
 
-  <div class="container text-center white-text">
+	<div class="container text-center white-text">
 
-    <a href="/discord/view/|<!--#(guild_id)#-->|">
-      <h1 id="guild_name">|<!--#(guild_name)#-->|</h1>
-    </a>
-    <data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
+		<a href="/discord/view/|<!--#(guild_id)#-->|">
+			<h1 id="guild_name">|<!--#(guild_name)#-->|</h1>
+		</a>
+		<data value="|<!--#(guild_id)#-->|" id="guild_id"></data>
 
-    <form class="controls content-box pt-2" action="javascript:PublicQuotes.prevPage(true)">
+		<form class="controls content-box pt-2" action="javascript:PublicQuotes.prevPage(true)">
 
-      <div class="center-item-row">
-        <!-- limit -->
-        <div class="col">
-          <select class="custom-select" name="limit">
-            <option value="1" hidden>Only one</option>
-            <option value="5">5 Entrys per page</option>
-            <option value="10">10 Entrys per page</option>
-            <option value="25">25 Entrys per page</option>
-            <option value="50" selected>50 Entrys per page</option>
-            <option value="100">100 Entrys per page</option>
-          </select>
-        </div>
+			<div class="center-item-row">
+				<!-- limit -->
+				<div class="col">
+					<select class="custom-select" name="limit">
+						<option value="1" hidden>Only one</option>
+						<option value="5">5 Entrys per page</option>
+						<option value="10">10 Entrys per page</option>
+						<option value="25">25 Entrys per page</option>
+						<option value="50" selected>50 Entrys per page</option>
+						<option value="100">100 Entrys per page</option>
+					</select>
+				</div>
 
-        <!-- quote contains -->
-        <div class="col">
-          <input type="text" name="content_contains" class="form-control" placeholder="Quote must contain..."/>
-        </div>
-      </div>
+				<!-- quote contains -->
+				<div class="col">
+					<input type="text" name="content_contains" class="form-control" placeholder="Quote must contain..."/>
+				</div>
+			</div>
 
-      <div class="center-item-row btn-row">
-        <!-- pages -->
-        <div class="col pages text-left">
-          <button onclick="PublicQuotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
-          <button onclick="PublicQuotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
-          <span>Page: <span class="page">0</span></span>
-          <button onclick="PublicQuotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
-          <button onclick="PublicQuotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+			<div class="center-item-row btn-row">
+				<!-- pages -->
+				<div class="col pages text-left">
+					<button onclick="PublicQuotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+					<button onclick="PublicQuotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+					<span>Page: <span class="page">0</span></span>
+					<button onclick="PublicQuotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+					<button onclick="PublicQuotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
 
-          <span>Total: <span id="quote_amount">[N/A]</span></span>
-        </div>
+					<span>Total: <span id="quote_amount">[N/A]</span></span>
+				</div>
 
-        <!-- buttons -->
-        <div class="col text-right">
-          <button onclick="PublicQuotes.random()" type="button" class="btn btn-grey icon-btn"><i class="fas fa-random"></i></button>
-          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
-        </div>
-      </div>
+				<!-- buttons -->
+				<div class="col text-right">
+					<button onclick="PublicQuotes.random()" type="button" class="btn btn-grey icon-btn"><i class="fas fa-random"></i></button>
+					<button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+				</div>
+			</div>
 
-    </form>
+		</form>
 
-    <hr>
+		<hr>
 
-    <!-- gets filled with copys of: "[phantom] .quote" -->
-    <div id="quote_list"></div>
+		<!-- gets filled with copys of: "[phantom] .quote" -->
+		<div id="quote_list"></div>
 
-  </div>
+	</div>
 
 </main>
 
 <div phantom hidden>
 
-  <div class="center-item-row quote content-box p-2" quote-id="0">
-    <div class="col-1 info center-item-col">
-      <span>ID: <span name="quote_id">0</span></span>
-      <button type="button" class="btn icon-btn btn-grey" onclick="PublicQuotes.copyQuoteUrl(this)"><i class="fas fa-link"></i></button>
-    </div>
-    <div class="col content">
-      <span name="content"></span>
-    </div>
-  </div>
+	<div class="center-item-row quote content-box p-2" quote-id="0">
+		<div class="col-1 info center-item-col">
+			<span>ID: <span name="quote_id">0</span></span>
+			<button type="button" class="btn icon-btn btn-grey" onclick="PublicQuotes.copyQuoteUrl(this)"><i class="fas fa-link"></i></button>
+		</div>
+		<div class="col content">
+			<span name="content"></span>
+		</div>
+	</div>
 
 </div>

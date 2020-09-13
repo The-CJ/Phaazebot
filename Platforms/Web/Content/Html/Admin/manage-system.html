@@ -2,63 +2,63 @@
 <script src="/js/site-specific/admin/manage-system.js" charset="utf-8"></script>
 
 <main>
-  <div class="container text-center white-text">
-    <h1>System manager</h1>
+	<div class="container text-center white-text">
+		<h1>System manager</h1>
 
-    <div class="content-box p-2" part="phaaze">
-      <h2>Phaaze status</h2>
-      <hr>
-      <div class="row">
-        <div class="col"><h3>Version:</h3></div>
-        <div class="col"><h3 id="version">[N/A]</h3></div>
-      </div>
-      <div class="row">
-        <div class="col"><h3>Uptime:</h3></div>
-        <div class="col"><h3 id="uptime">[N/A]</h3></div>
-      </div>
-      <hr>
-      <div modules></div>
-    </div>
+		<div class="content-box p-2" part="phaaze">
+			<h2>Phaaze status</h2>
+			<hr>
+			<div class="row">
+				<div class="col"><h3>Version:</h3></div>
+				<div class="col"><h3 id="version">[N/A]</h3></div>
+			</div>
+			<div class="row">
+				<div class="col"><h3>Uptime:</h3></div>
+				<div class="col"><h3 id="uptime">[N/A]</h3></div>
+			</div>
+			<hr>
+			<div modules></div>
+		</div>
 
-    <hr>
+		<hr>
 
-    <div class="content-box p-2" part="discord">
-      <h2>Discord status</h2>
-      <hr>
-      <div class="row">
+		<div class="content-box p-2" part="discord">
+			<h2>Discord status</h2>
+			<hr>
+			<div class="row">
 
-        <div class="col">
-          <h4>Name: <span name="bot_name">[N/A]</span></h4>
-          <h4>ID: <span name="bot_id">[N/A]</span></h4>
-          <h4>Discriminator: <span name="bot_discriminator">[N/A]</span></h4>
-          <h4>Unique users: <span name="unique_users">[N/A]</span></h4>
-          <h4>Unique guilds: <span name="unique_guilds">[N/A]</span></h4>
+				<div class="col">
+					<h4>Name: <span name="bot_name">[N/A]</span></h4>
+					<h4>ID: <span name="bot_id">[N/A]</span></h4>
+					<h4>Discriminator: <span name="bot_discriminator">[N/A]</span></h4>
+					<h4>Unique users: <span name="unique_users">[N/A]</span></h4>
+					<h4>Unique guilds: <span name="unique_guilds">[N/A]</span></h4>
 
-          <label class="btn btn-block btn-secondary text-center"><input type="file" id="new_avatar"></label>
-          <button type="button" class="btn btn-block btn-primary">Upload avatar</button>
-        </div>
+					<label class="btn btn-block btn-secondary text-center"><input type="file" id="new_avatar"></label>
+					<button type="button" class="btn btn-block btn-primary">Upload avatar</button>
+				</div>
 
-        <div class="col center-item-col">
-          <img src="" alt="discord_avatar" height="256" width="256">
-        </div>
+				<div class="col center-item-col">
+					<img src="" alt="discord_avatar" height="256" width="256">
+				</div>
 
-      </div>
-    </div>
+			</div>
+		</div>
 
-    <hr>
+		<hr>
 
-    <div class="content-box p-2" part="twitch">
-      <h2>Twitch status</h2>
-    </div>
+		<div class="content-box p-2" part="twitch">
+			<h2>Twitch status</h2>
+		</div>
 
-  </div>
+	</div>
 </main>
 
 <div phantom hidden>
 
-  <div class="row module" module="unknown">
-    <div class="col"><h3 class="name"></h3></div>
-    <div class="col"><button type="button" class="value btn" onclick="AdminStatus.changeModuleState(this)" active="unknown"></button></div>
-  </div>
+	<div class="row module" module="unknown">
+		<div class="col"><h3 class="name"></h3></div>
+		<div class="col"><button type="button" class="value btn" onclick="AdminStatus.changeModuleState(this)" active="unknown"></button></div>
+	</div>
 
 </div>

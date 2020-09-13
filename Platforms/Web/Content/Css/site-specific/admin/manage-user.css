@@ -1,12 +1,12 @@
 main h1 {
-  margin: 1em 0;
+	margin: 1em 0;
 }
 
 .generic-list > *, .generic-sub-list > * { margin: 2px; padding: 2px; }
 
 .modal-body .center-item-row,
 .modal-body .row {
-  min-height: 40px;
+	min-height: 40px;
 }
 
 #user_role_list { max-height: 40vh; overflow-y: auto; }

@@ -9,16 +9,16 @@
 
 /* frame styles */
 .main-panel {
-  max-height: calc(100vh - 5em);
-  overflow-y: auto;
+	max-height: calc(100vh - 5em);
+	overflow-y: auto;
 }
 
 .site-panel {
-  height: calc(100vh - 5em);
-  overflow-y: auto;
-  padding-top: 1.5em;
-  padding-left: 0;
-  padding-right: 0;
+	height: calc(100vh - 5em);
+	overflow-y: auto;
+	padding-top: 1.5em;
+	padding-left: 0;
+	padding-right: 0;
 }
 
 .site-panel [onclick] { cursor: pointer; margin: 5px; }
@@ -32,15 +32,15 @@
 .site-panel i { width: 1ch; margin-right: 1em; }
 
 .site-panel-btn {
-  display: none;
-  position: fixed;
-  left: 2px;
-  bottom: 2px;
-  border-radius: 7.5em;
-  line-height: 0;
-  background-color: lightgreen;
-  color: black;
-  z-index: 2;
+	display: none;
+	position: fixed;
+	left: 2px;
+	bottom: 2px;
+	border-radius: 7.5em;
+	line-height: 0;
+	background-color: lightgreen;
+	color: black;
+	z-index: 2;
 }
 
 /* location specific styles */
@@ -66,33 +66,33 @@ button.option-status[value=false]:after { content: "DISABLED"; }
 
 /* changes for responsiv */
 @media (max-width: 1100px) {
-  .site-panel {
-    left: 0;
-    top: 5em;
-    position: fixed;
-    visibility: collapse;
-    height: 100vh;
-    width: 0vw;
-    max-width: 75vw;
-    z-index: 1;
-    border-right: 2px solid black;
-    transition-duration: 0.25s;
-    transition-timing-function: linear;
-  }
+	.site-panel {
+	left: 0;
+	top: 5em;
+	position: fixed;
+	visibility: collapse;
+	height: 100vh;
+	width: 0vw;
+	max-width: 75vw;
+	z-index: 1;
+	border-right: 2px solid black;
+	transition-duration: 0.25s;
+	transition-timing-function: linear;
+	}
 
-  .site-panel.show {
-    width: 75vw;
-    visibility: visible;
-  }
+	.site-panel.show {
+	width: 75vw;
+	visibility: visible;
+	}
 
-  .site-panel-btn {
-    display: block;
-  }
+	.site-panel-btn {
+	display: block;
+	}
 
-  .site-panel-btn.show {
-    background-color: darkred;
-    color: white;
-  }
+	.site-panel-btn.show {
+	background-color: darkred;
+	color: white;
+	}
 }
 
 /* show mode attributes (please say me there is a better method... but i don't know)*/

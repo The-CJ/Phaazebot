@@ -1,21 +1,21 @@
 main h1 {
-  margin: 1em 0;
+	margin: 1em 0;
 }
 
 #manage_field {
-  padding: 1em;
+	padding: 1em;
 }
 
 #manage_field button {
-  margin: 5px 0;
+	margin: 5px 0;
 }
 
 #role_list > .role {
-  width: 100%;
-  border: 2px solid black;
-  margin: 2px;
-  background: #4d4d4d;
+	width: 100%;
+	border: 2px solid black;
+	margin: 2px;
+	background: #4d4d4d;
 }
 #role_list:empty::after {
-  content: "None";
+	content: "None";
 }

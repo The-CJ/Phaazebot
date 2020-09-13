@@ -1,127 +1,127 @@
 <div location="configs_master" style="display: none">
 
-  <div class="container-fluid">
+	<div class="container-fluid">
 
-    <h3>Master Controlls</h3>
-    <sub>All options here will have server wide impact, that's why only the server owner can change stuff here.</sub>
-    <hr>
+		<h3>Master Controlls</h3>
+		<sub>All options here will have server wide impact, that's why only the server owner can change stuff here.</sub>
+		<hr>
 
-    <!-- Level system -->
-    <div class="content-box p-2">
-      <div class="center-item-row">
-        <div class="col text-left">
-          <h4>Disable Level system</h4>
-        </div>
-      </div>
+		<!-- Level system -->
+		<div class="content-box p-2">
+			<div class="center-item-row">
+				<div class="col text-left">
+					<h4>Disable Level system</h4>
+				</div>
+			</div>
 
-      <div class="center-item-row ">
-        <div class="col text-left">
-          <span>If this is enabled, the entire level system is server wide disabled.</span><br>
-          <span>Means no level-up messages, no EXP gain, no currency actions and also,</span><br>
-          <span>no commands that use the level system. Commands like: "Statistics" or "Leaderboard"</span><br>
-          <span>(The serverowner will always be able to use all commands)</span>
-        </div>
-        <div class="col">
-          <div class="row">
-            <div class="col pr-0">
-              <button disabled class="btn btn-block option-status" name="owner_disable_level" value="x">Currently: </button>
-            </div>
-            <div class="col-4 pl-0">
-              <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsMaster.toggleOption('owner_disable_level')">Toggle</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+			<div class="center-item-row ">
+				<div class="col text-left">
+					<span>If this is enabled, the entire level system is server wide disabled.</span><br>
+					<span>Means no level-up messages, no EXP gain, no currency actions and also,</span><br>
+					<span>no commands that use the level system. Commands like: "Statistics" or "Leaderboard"</span><br>
+					<span>(The serverowner will always be able to use all commands)</span>
+				</div>
+				<div class="col">
+					<div class="row">
+						<div class="col pr-0">
+							<button disabled class="btn btn-block option-status" name="owner_disable_level" value="x">Currently: </button>
+						</div>
+						<div class="col-4 pl-0">
+							<button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsMaster.toggleOption('owner_disable_level')">Toggle</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <hr>
+		<hr>
 
-    <!-- Normal commands -->
-    <div class="content-box p-2">
-      <div class="center-item-row">
-        <div class="col text-left">
-          <h4>Disable all Normal-Commands</h4>
-        </div>
-      </div>
+		<!-- Normal commands -->
+		<div class="content-box p-2">
+			<div class="center-item-row">
+				<div class="col text-left">
+					<h4>Disable all Normal-Commands</h4>
+				</div>
+			</div>
 
-      <div class="center-item-row ">
-        <div class="col text-left">
-          <span>If this is enabled, all commands with a requirement of 'Everyone' are disabled.</span><br>
-          <span>However, commands that require 'Regular' or 'Mod' will still work.</span><br>
-          <span>(The serverowner will always be able to use all commands)</span>
-        </div>
-        <div class="col">
-          <div class="row">
-            <div class="col pr-0">
-              <button disabled class="btn btn-block option-status" name="owner_disable_normal" value="x">Currently: </button>
-            </div>
-            <div class="col-4 pl-0">
-              <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsMaster.toggleOption('owner_disable_normal')">Toggle</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+			<div class="center-item-row ">
+				<div class="col text-left">
+					<span>If this is enabled, all commands with a requirement of 'Everyone' are disabled.</span><br>
+					<span>However, commands that require 'Regular' or 'Mod' will still work.</span><br>
+					<span>(The serverowner will always be able to use all commands)</span>
+				</div>
+				<div class="col">
+					<div class="row">
+						<div class="col pr-0">
+							<button disabled class="btn btn-block option-status" name="owner_disable_normal" value="x">Currently: </button>
+						</div>
+						<div class="col-4 pl-0">
+							<button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsMaster.toggleOption('owner_disable_normal')">Toggle</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <hr>
+		<hr>
 
-    <!-- Regular commands -->
-    <div class="content-box p-2">
-      <div class="center-item-row">
-        <div class="col text-left">
-          <h4>Disable all Regular-Commands</h4>
-        </div>
-      </div>
+		<!-- Regular commands -->
+		<div class="content-box p-2">
+			<div class="center-item-row">
+				<div class="col text-left">
+					<h4>Disable all Regular-Commands</h4>
+				</div>
+			</div>
 
-      <div class="center-item-row ">
-        <div class="col text-left">
-          <span>If this is enabled, all commands with a requirement of 'Regular' are disabled.</span><br>
-          <span>However, commands that require 'Everyone' or 'Mod' will still work.</span><br>
-          <span>(The serverowner will always be able to use all commands)</span>
-        </div>
-        <div class="col">
-          <div class="row">
-            <div class="col pr-0">
-              <button disabled class="btn btn-block option-status" name="owner_disable_regular" value="x">Currently: </button>
-            </div>
-            <div class="col-4 pl-0">
-              <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsMaster.toggleOption('owner_disable_regular')">Toggle</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+			<div class="center-item-row ">
+				<div class="col text-left">
+					<span>If this is enabled, all commands with a requirement of 'Regular' are disabled.</span><br>
+					<span>However, commands that require 'Everyone' or 'Mod' will still work.</span><br>
+					<span>(The serverowner will always be able to use all commands)</span>
+				</div>
+				<div class="col">
+					<div class="row">
+						<div class="col pr-0">
+							<button disabled class="btn btn-block option-status" name="owner_disable_regular" value="x">Currently: </button>
+						</div>
+						<div class="col-4 pl-0">
+							<button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsMaster.toggleOption('owner_disable_regular')">Toggle</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <hr>
+		<hr>
 
-    <!-- Mod commands -->
-    <div class="content-box p-2">
-      <div class="center-item-row">
-        <div class="col text-left">
-          <h4>Disable all Mod-Commands</h4>
-        </div>
-      </div>
+		<!-- Mod commands -->
+		<div class="content-box p-2">
+			<div class="center-item-row">
+				<div class="col text-left">
+					<h4>Disable all Mod-Commands</h4>
+				</div>
+			</div>
 
-      <div class="center-item-row ">
-        <div class="col text-left">
-          <span>If this is enabled, all commands with a requirement of 'Mod' are disabled.</span><br>
-          <span>However, commands that require 'Everyone' or 'Regular' will still work.</span><br>
-          <span>(The serverowner will always be able to use all commands)</span>
-        </div>
-        <div class="col">
-          <div class="row">
-            <div class="col pr-0">
-              <button disabled class="btn btn-block option-status" name="owner_disable_mod" value="x">Currently: </button>
-            </div>
-            <div class="col-4 pl-0">
-              <button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsMaster.toggleOption('owner_disable_mod')">Toggle</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+			<div class="center-item-row ">
+				<div class="col text-left">
+					<span>If this is enabled, all commands with a requirement of 'Mod' are disabled.</span><br>
+					<span>However, commands that require 'Everyone' or 'Regular' will still work.</span><br>
+					<span>(The serverowner will always be able to use all commands)</span>
+				</div>
+				<div class="col">
+					<div class="row">
+						<div class="col pr-0">
+							<button disabled class="btn btn-block option-status" name="owner_disable_mod" value="x">Currently: </button>
+						</div>
+						<div class="col-4 pl-0">
+							<button type="button" class="btn btn-block btn-primary" onclick="javascript:ConfigsMaster.toggleOption('owner_disable_mod')">Toggle</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-  </div>
+	</div>
 
 </div>
 

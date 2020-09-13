@@ -9,10 +9,10 @@ main h1 { margin: 1em 0; }
 .command div:nth-child(even) { background: var(--color-sub-listelement-even); }
 
 .command [name=name].hidden:after {
-  content: "This command is hidden";
-  color: grey;
+	content: "This command is hidden";
+	color: grey;
 }
 
 #command_modal [name=name], #command_modal [name=description] {
-  word-break: break-word; white-space: pre-line;
+	word-break: break-word; white-space: pre-line;
 }

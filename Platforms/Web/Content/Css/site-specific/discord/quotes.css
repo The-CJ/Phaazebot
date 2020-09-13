@@ -1,15 +1,15 @@
 main h1 {
-  margin: 1em 0;
+	margin: 1em 0;
 }
 
 #quote_list .quote {
-  margin: 1em 0;
+	margin: 1em 0;
 }
 
 #quote_list .quote .info {
-  color: grey;
+	color: grey;
 }
 
 #quote_list .quote [name=content] {
-  white-space: pre-line;
+	white-space: pre-line;
 }
