@@ -39,18 +39,24 @@
 
 		<hr>
 
-		<button type="button" class="btn btn-block btn-danger" onclick="toggleConsole()">System Console ↓</button>
+		<button type="button" class="btn btn-block btn-danger" onclick="Admin.toggleConsole()">System Console ↓</button>
 
 		<div id="root_console" class="collapse stylish-color-dark">
 
-			<pre id="result_data" class="text-left text-white">[Output]</pre>
+			<br>
 
 			<div class="center-item-row">
-				<label class="btn btn-primary center-item-row">
-					<span>Run as corotine &nbsp;</span>
-					<input type="checkbox" name="corotine" value="1">
-				</label>
+				<div class="col">
+					<span>Run as corotine?</span>
+				</div>
+				<div class="col">
+					<label class="checkbox-container">
+						<input type="checkbox" name="corotine">
+					</label>
+				</div>
 			</div>
+
+			<hr>
 
 			<span>Avariable variables:</span>
 			<br>
@@ -60,12 +66,16 @@
 			<span><b>BASE</b>:Phaazebot,</span>
 			<span><b>SUPERBASE</b>:GlobalStorage</span>
 
-			<form action="javascript:evalCommand()" method="post">
+			<form action="javascript:Admin.evalCommand()" method="post">
 				<div class="center-item-row">
 					<input type="text" name="command" placeholder="evaluate command" class="black-text form-control">
 					<button type="submit" class="btn icon-btn grey"><i class="fas fa-arrow-right"></i></button>
 				</div>
 			</form>
+
+			<pre id="console_output" class="text-left text-white">[Output]</pre>
+
+			<pre id="console_trace" class="text-left text-white">[Trace]</pre>
 
 		</div>
 
