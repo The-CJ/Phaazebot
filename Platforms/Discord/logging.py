@@ -6,7 +6,7 @@ import discord
 import traceback
 import datetime
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Platforms.Discord.utils import getDiscordChannelFromString, getDiscordMemberFromString
+from Platforms.Discord.utils import getDiscordChannelFromString, getDiscordMemberFromString, getDiscordRoleFromString
 
 # there is only a small amount, because most things are handled by discord audit logs
 TRACK_OPTIONS:Dict[str, int] = {
@@ -790,6 +790,56 @@ async def loggingOnLevelmedalDelete(cls:"PhaazebotDiscord", Settings:DiscordServ
 	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Target member:", value=medal_member_name, inline=False)
 	Emb.add_field(name="Medal:", value=medal_name, inline=False)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Assignrole.create : 10000000000000000 : 65536
+async def loggingOnAssignroleCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone deletes a discordmember medal via web.
+	If track option `Assignrole.create` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Creator `discord.Member`
+	* assign_role_id `str`
+	* trigger `str`
+	"""
+	logging_signature:str = "Assignrole.create"
+	Creator:discord.Member = kwargs["Creator"]
+	assign_role_id:str = kwargs["assign_role_id"]
+	trigger:str = kwargs["trigger"]
+
+	AssignRole:discord.Role = getDiscordRoleFromString(cls, Creator.guild, assign_role_id)
+	assign_role_name:str = AssignRole.name if AssignRole else "(Unknown)"
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Creator.id),
+			"content": f"{Creator.name} created a new assign role {assign_role_name} with {trigger=}"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Creator.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Creator.name} created a assignrole",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_POSITIVE
+	)
+	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="Trigger:", value=trigger, inline=False)
+	Emb.add_field(name="Linked with role:", value=assign_role_name, inline=False)
 
 	try:
 		await TargetChannel.send(embed=Emb)
