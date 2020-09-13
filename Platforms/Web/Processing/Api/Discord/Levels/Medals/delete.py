@@ -1,23 +1,26 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Web.Processing.Api.errors import apiMissingData
-from Platforms.Discord.db import getDiscordUsersMedals
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordusermedal import DiscordUserMedal
+from Platforms.Discord.db import getDiscordUsersMedals, getDiscordSeverSettings
+from Platforms.Discord.logging import loggingOnLevelmedalDelete
+from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordUserMedalNotExists
 
 async def apiDiscordLevelsMedalsDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/levels/medals/delete
+	Default url: /api/discord/levels/medals/delete
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -69,6 +72,15 @@ async def apiDiscordLevelsMedalsDelete(cls:"WebIndex", WebRequest:Request) -> Re
 		DELETE FROM `discord_user_medal` WHERE `guild_id` = %s AND `id` = %s""",
 		(MedalToDelete.guild_id, MedalToDelete.medal_id)
 	)
+
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnLevelmedalDelete(PhaazeDiscord, GuildSettings,
+		Deleter=CheckMember,
+		medal_member_id=MedalToDelete.member_id,
+		medal_name=MedalToDelete.name
+	)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Medal: {guild_id=} deleted [{medal_id=}, {name=}]", require="discord:medals")
 	return cls.response(

@@ -696,10 +696,10 @@ async def loggingOnLevelEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
-# Level.edit : 100000000000000 : 16384
+# Levelmedal.create : 100000000000000 : 16384
 async def loggingOnLevelmedalCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
-	Logs the event when someone edits a discordmember-level via web.
+	Logs the event when someone creates a discordmember medal via web.
 	If track option `Levelmedal.create` is active, it will send a message to discord
 
 	Required keywords:
@@ -708,7 +708,7 @@ async def loggingOnLevelmedalCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 	* medal_member_id `str`
 	* medal_name `str`
 	"""
-	logging_signature:str = "Level.edit"
+	logging_signature:str = "Levelmedal.create"
 	Creator:discord.Member = kwargs["Creator"]
 	medal_member_id:str = kwargs["medal_member_id"]
 	medal_name:dict = kwargs["medal_name"]
@@ -740,6 +740,56 @@ async def loggingOnLevelmedalCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Target member:", value=medal_member_name, inline=False)
 	Emb.add_field(name="New Medal:", value=medal_name, inline=False)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Levelmedal.delete : 1000000000000000 : 32768
+async def loggingOnLevelmedalDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone deletes a discordmember medal via web.
+	If track option `Levelmedal.delete` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Deleter `discord.Member`
+	* medal_member_id `str`
+	* medal_name `str`
+	"""
+	logging_signature:str = "Levelmedal.delete"
+	Deleter:discord.Member = kwargs["Deleter"]
+	medal_member_id:str = kwargs["medal_member_id"]
+	medal_name:dict = kwargs["medal_name"]
+
+	MedalMember:discord.Member = getDiscordMemberFromString(cls, Deleter.guild, medal_member_id)
+	medal_member_name:str = MedalMember.name if MedalMember else "(Unknown)"
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Deleter.id),
+			"content": f"{Deleter.name} removed a medal from: {medal_member_name}, old medal: {medal_name}"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Deleter.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Deleter.name} removed a medal",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_NEGATIVE
+	)
+	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="Target member:", value=medal_member_name, inline=False)
+	Emb.add_field(name="Medal:", value=medal_name, inline=False)
 
 	try:
 		await TargetChannel.send(embed=Emb)
