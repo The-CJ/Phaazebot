@@ -649,7 +649,7 @@ async def loggingOnRegularDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 async def loggingOnLevelEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone edits a discordmember-level via web.
-	If track option `Regular.delete` is active, it will send a message to discord
+	If track option `Level.edit` is active, it will send a message to discord
 
 	Required keywords:
 	------------------
@@ -690,6 +690,56 @@ async def loggingOnLevelEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 	Emb.add_field(name="Edited member:", value=level_member_name, inline=False)
 	if changes.get("edited", False):
 		Emb.add_field(name="Warning:", value="EXP got changed, this member now has a [EDITED] mark", inline=False)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Level.edit : 100000000000000 : 16384
+async def loggingOnLevelmedalCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone edits a discordmember-level via web.
+	If track option `Levelmedal.create` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Creator `discord.Member`
+	* medal_member_id `str`
+	* medal_name `str`
+	"""
+	logging_signature:str = "Level.edit"
+	Creator:discord.Member = kwargs["Creator"]
+	medal_member_id:str = kwargs["medal_member_id"]
+	medal_name:dict = kwargs["medal_name"]
+
+	MedalMember:discord.Member = getDiscordMemberFromString(cls, Creator.guild, medal_member_id)
+	medal_member_name:str = MedalMember.name if MedalMember else "(Unknown)"
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Creator.id),
+			"content": f"{Creator.name} gave a new medal to: {medal_member_name}, new medal: {medal_name}"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Creator.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Creator.name} created a new medal",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_POSITIVE
+	)
+	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="Target member:", value=medal_member_name, inline=False)
+	Emb.add_field(name="New Medal:", value=medal_name, inline=False)
 
 	try:
 		await TargetChannel.send(embed=Emb)

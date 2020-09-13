@@ -1,13 +1,17 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.webrequestcontent import WebRequestContent
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Discord.logging import loggingOnLevelmedalCreate
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
 	apiMissingAuthorisation
@@ -21,7 +25,7 @@ from .errors import apiDiscordUserMedalExists, apiDiscordUserMedalLimit
 
 async def apiDiscordLevelsMedalsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/levels/medals/create
+	Default url: /api/discord/levels/medals/create
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -90,8 +94,12 @@ async def apiDiscordLevelsMedalsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		}
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) User medal: {guild_id=} {member_id=} added new entry", require="discord:medals")
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnLevelmedalCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, medal_member_id=member_id, medal_name=name)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
+	cls.Web.BASE.Logger.debug(f"(API/Discord) User medal: {guild_id=} {member_id=} added new entry", require="discord:medals")
 	return cls.response(
 		text=json.dumps( dict(msg="Medal: Added new entry", entry=name, status=200) ),
 		content_type="application/json",
