@@ -50,7 +50,7 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 	* link_in_name `bool` : (Default: False)
 	"""
 	logging_signature:str = "Member.join"
-	NewMember:discord.Member = kwargs.get("NewMember")
+	NewMember:discord.Member = kwargs["NewMember"]
 	link_in_name:bool = kwargs.get("link_in_name", False)
 
 	cls.BASE.PhaazeDB.insertQuery(
@@ -98,7 +98,7 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 	* link_in_name `bool` : (Default: False)
 	"""
 	logging_signature:str = "Member.remove"
-	OldMember:discord.Member = kwargs.get("OldMember")
+	OldMember:discord.Member = kwargs["OldMember"]
 	link_in_name:bool = kwargs.get("link_in_name", False)
 
 	cls.BASE.PhaazeDB.insertQuery(
@@ -144,9 +144,9 @@ async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	* quote_id `str`
 	"""
 	logging_signature:str = "Quote.create"
-	Creator:discord.Member = kwargs.get("Creator")
-	quote_content:str = kwargs.get("quote_content")
-	quote_id:str = kwargs.get("quote_id")
+	Creator:discord.Member = kwargs["Creator"]
+	quote_content:str = kwargs["quote_content"]
+	quote_id:str = kwargs["quote_id"]
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -191,10 +191,10 @@ async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 	* new_content `str`
 	"""
 	logging_signature:str = "Quote.edit"
-	ChangeMember:discord.Member = kwargs.get("ChangeMember")
-	quote_id:str = kwargs.get("quote_id")
-	old_content:str = kwargs.get("old_content")
-	new_content:str = kwargs.get("new_content")
+	ChangeMember:discord.Member = kwargs["ChangeMember"]
+	quote_id:str = kwargs["quote_id"]
+	old_content:str = kwargs["old_content"]
+	new_content:str = kwargs["new_content"]
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -238,9 +238,9 @@ async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	* deleted_content `str`
 	"""
 	logging_signature:str = "Quote.delete"
-	Deleter:discord.Member = kwargs.get("Deleter")
-	quote_id:str = kwargs.get("quote_id")
-	deleted_content:str = kwargs.get("deleted_content")
+	Deleter:discord.Member = kwargs["Deleter"]
+	quote_id:str = kwargs["quote_id"]
+	deleted_content:str = kwargs["deleted_content"]
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -284,9 +284,9 @@ async def loggingOnCommandCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	* command_info `dict`
 	"""
 	logging_signature:str = "Command.create"
-	Creator:discord.Member = kwargs.get("Creator")
-	command_trigger:str = kwargs.get("command_trigger")
-	command_info:dict = kwargs.get("command_info")
+	Creator:discord.Member = kwargs["Creator"]
+	command_trigger:str = kwargs["command_trigger"]
+	command_info:dict = kwargs["command_info"]
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -330,9 +330,9 @@ async def loggingOnCommandEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	* command_info `dict`
 	"""
 	logging_signature:str = "Command.edit"
-	Editor:discord.Member = kwargs.get("Editor")
-	command_trigger:str = kwargs.get("command_trigger")
-	command_info:dict = kwargs.get("command_info")
+	Editor:discord.Member = kwargs["Editor"]
+	command_trigger:str = kwargs["command_trigger"]
+	command_info:dict = kwargs["command_info"]
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -375,8 +375,8 @@ async def loggingOnCommandDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	* command_trigger `str`
 	"""
 	logging_signature:str = "Command.delete"
-	Deleter:discord.Member = kwargs.get("Deleter")
-	command_trigger:str = kwargs.get("command_trigger")
+	Deleter:discord.Member = kwargs["Deleter"]
+	command_trigger:str = kwargs["command_trigger"]
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -420,9 +420,9 @@ async def loggingOnTwitchalertCreate(cls:"PhaazebotDiscord", Settings:DiscordSer
 	* discord_channel `str`
 	"""
 	logging_signature:str = "Twitchalert.create"
-	Creator:discord.Member = kwargs.get("Creator")
-	twitch_channel:str = kwargs.get("twitch_channel")
-	discord_channel:str = kwargs.get("discord_channel")
+	Creator:discord.Member = kwargs["Creator"]
+	twitch_channel:str = kwargs["twitch_channel"]
+	discord_channel:str = kwargs["discord_channel"]
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -468,10 +468,10 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 	* changes `dict`
 	"""
 	logging_signature:str = "Twitchalert.edit"
-	ChangeMember:discord.Member = kwargs.get("ChangeMember")
-	twitch_channel:str = kwargs.get("twitch_channel")
-	discord_channel_id:str = kwargs.get("discord_channel_id")
-	changes:str = kwargs.get("changes")
+	ChangeMember:discord.Member = kwargs["ChangeMember"]
+	twitch_channel:str = kwargs["twitch_channel"]
+	discord_channel_id:str = kwargs["discord_channel_id"]
+	changes:str = kwargs["changes"]
 
 	Chan:discord.TextChannel = getDiscordChannelFromString(cls, ChangeMember.guild, discord_channel_id, required_type="text")
 	discord_channel_name:str = Chan.name if Chan else "(Unknown)"
@@ -518,9 +518,9 @@ async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordSer
 	* discord_channel_id `str`
 	"""
 	logging_signature:str = "Twitchalert.delete"
-	Deleter:discord.Member = kwargs.get("Deleter")
-	twitch_channel:str = kwargs.get("twitch_channel")
-	discord_channel_id:str = kwargs.get("discord_channel_id")
+	Deleter:discord.Member = kwargs["Deleter"]
+	twitch_channel:str = kwargs["twitch_channel"]
+	discord_channel_id:str = kwargs["discord_channel_id"]
 
 	Chan:discord.TextChannel = getDiscordChannelFromString(cls, Deleter.guild, discord_channel_id, required_type="text")
 	discord_channel_name:str = Chan.name if Chan else "(Unknown)"
@@ -566,8 +566,8 @@ async def loggingOnRegularCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	* NewRegular `discord.Member`
 	"""
 	logging_signature:str = "Regular.create"
-	Creator:discord.Member = kwargs.get("Creator")
-	NewRegular:discord.Member = kwargs.get("NewRegular")
+	Creator:discord.Member = kwargs["Creator"]
+	NewRegular:discord.Member = kwargs["NewRegular"]
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -610,8 +610,8 @@ async def loggingOnRegularDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	* old_regular_id `str`
 	"""
 	logging_signature:str = "Regular.delete"
-	Remover:discord.Member = kwargs.get("Remover")
-	old_regular_id:str = kwargs.get("old_regular_id")
+	Remover:discord.Member = kwargs["Remover"]
+	old_regular_id:str = kwargs["old_regular_id"]
 
 	OldRegular:discord.Member = getDiscordMemberFromString(cls, Remover.guild, old_regular_id)
 	old_regular_name:str = OldRegular.name if OldRegular else "(Unknown)"
@@ -658,9 +658,9 @@ async def loggingOnLevelEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 	* changes `dict`
 	"""
 	logging_signature:str = "Level.edit"
-	Editor:discord.Member = kwargs.get("Editor")
-	changed_member_id:str = kwargs.get("changed_member_id")
-	changes:dict = kwargs.get("changes")
+	Editor:discord.Member = kwargs["Editor"]
+	changed_member_id:str = kwargs["changed_member_id"]
+	changes:dict = kwargs["changes"]
 
 	LevelMember:discord.Member = getDiscordMemberFromString(cls, Editor.guild, changed_member_id)
 	level_member_name:str = LevelMember.name if LevelMember else "(Unknown)"
