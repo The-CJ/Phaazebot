@@ -36,6 +36,9 @@ EVENT_COLOR_WARNING:int = 0xFFAA00
 EVENT_COLOR_NEGATIVE:int = 0xFF0000
 EVENT_COLOR_INFO:int = 0x00FFFF
 
+def makeWebAccessLink(cls:"PhaazebotDiscord", guild_id:str or int, log_id:str or int) -> str:
+	return f"{cls.BASE.Vars.WEB_ROOT}/discord/dashboard/{str(guild_id)}?view=logs&logs[log_id]={str(log_id)}"
+
 # Member.join : 1 : 1
 async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
@@ -54,7 +57,7 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 	NewMember:discord.Member = kwargs["NewMember"]
 	link_in_name:bool = kwargs.get("link_in_name", False)
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -70,12 +73,13 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"Initial name: {NewMember.name}\nMention: {NewMember.mention}\nID: {NewMember.id}",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_POSITIVE
+		color = EVENT_COLOR_POSITIVE,
+		url = makeWebAccessLink(cls, NewMember.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=NewMember.avatar_url or NewMember.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	if link_in_name:
 		Emb.add_field(":warning: Blocked public announcements", "Link in name", inline=True)
 
@@ -102,7 +106,7 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 	OldMember:discord.Member = kwargs["OldMember"]
 	link_in_name:bool = kwargs.get("link_in_name", False)
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -118,12 +122,13 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"User name: {OldMember.name}\nLast known nickname: {OldMember.nick}\nMention: {OldMember.mention}\nID: {OldMember.id}",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_NEGATIVE
+		color = EVENT_COLOR_NEGATIVE,
+		url = makeWebAccessLink(cls, OldMember.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=OldMember.avatar_url or OldMember.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	if link_in_name:
 		Emb.add_field(":warning: Blocked public announcements", "Link in name", inline=True)
 
@@ -149,7 +154,7 @@ async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	quote_content:str = kwargs["quote_content"]
 	quote_id:str = kwargs["quote_id"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -165,12 +170,13 @@ async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Creator.name} created a new quote.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_POSITIVE
+		color = EVENT_COLOR_POSITIVE,
+		url = makeWebAccessLink(cls, Creator.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Content:", value=quote_content[:500], inline=True)
 
 	try:
@@ -197,7 +203,7 @@ async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 	old_content:str = kwargs["old_content"]
 	new_content:str = kwargs["new_content"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -213,12 +219,13 @@ async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{ChangeMember.name} changed a quote.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_WARNING
+		color = EVENT_COLOR_WARNING,
+		url = makeWebAccessLink(cls, ChangeMember.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=ChangeMember.avatar_url or ChangeMember.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Content:", value=f"{old_content[:500]} -> {new_content[:500]}", inline=True)
 
 	try:
@@ -243,7 +250,7 @@ async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	quote_id:str = kwargs["quote_id"]
 	deleted_content:str = kwargs["deleted_content"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -259,12 +266,13 @@ async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Deleter.name} deleted a quote.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_NEGATIVE
+		color = EVENT_COLOR_NEGATIVE,
+		url = makeWebAccessLink(cls, Deleter.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Content:", value=deleted_content[:500], inline=True)
 
 	try:
@@ -289,7 +297,7 @@ async def loggingOnCommandCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	command_trigger:str = kwargs["command_trigger"]
 	command_info:dict = kwargs["command_info"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -305,12 +313,13 @@ async def loggingOnCommandCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Creator.name} created a command.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_POSITIVE
+		color = EVENT_COLOR_POSITIVE,
+		url = makeWebAccessLink(cls, Creator.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="New Trigger:", value=command_trigger, inline=True)
 
 	try:
@@ -335,7 +344,7 @@ async def loggingOnCommandEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	command_trigger:str = kwargs["command_trigger"]
 	command_info:dict = kwargs["command_info"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -351,12 +360,13 @@ async def loggingOnCommandEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Editor.name} edited a command.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_WARNING
+		color = EVENT_COLOR_WARNING,
+		url = makeWebAccessLink(cls, Editor.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Editor.avatar_url or Editor.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Changed command:", value=command_trigger, inline=True)
 
 	try:
@@ -379,7 +389,7 @@ async def loggingOnCommandDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	Deleter:discord.Member = kwargs["Deleter"]
 	command_trigger:str = kwargs["command_trigger"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -395,12 +405,13 @@ async def loggingOnCommandDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Deleter.name} deleted a command.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_NEGATIVE
+		color = EVENT_COLOR_NEGATIVE,
+		url = makeWebAccessLink(cls, Deleter.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Deleted command:", value=command_trigger, inline=True)
 
 	try:
@@ -425,7 +436,7 @@ async def loggingOnTwitchalertCreate(cls:"PhaazebotDiscord", Settings:DiscordSer
 	twitch_channel:str = kwargs["twitch_channel"]
 	discord_channel:str = kwargs["discord_channel"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -441,12 +452,13 @@ async def loggingOnTwitchalertCreate(cls:"PhaazebotDiscord", Settings:DiscordSer
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Creator.name} created a Twitch-Alert.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_POSITIVE
+		color = EVENT_COLOR_POSITIVE,
+		url = makeWebAccessLink(cls, Creator.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Twitch channel:", value=twitch_channel, inline=False)
 	Emb.add_field(name="Discord channel:", value='#'+discord_channel, inline=False)
 
@@ -477,7 +489,7 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 	Chan:discord.TextChannel = getDiscordChannelFromString(cls, ChangeMember.guild, discord_channel_id, required_type="text")
 	discord_channel_name:str = Chan.name if Chan else "(Unknown)"
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -493,12 +505,13 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{ChangeMember.name} changed a Twitch-Alert.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_WARNING
+		color = EVENT_COLOR_WARNING,
+		url = makeWebAccessLink(cls, ChangeMember.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=ChangeMember.avatar_url or ChangeMember.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Twitch channel:", value=twitch_channel, inline=False)
 
 	try:
@@ -526,7 +539,7 @@ async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordSer
 	Chan:discord.TextChannel = getDiscordChannelFromString(cls, Deleter.guild, discord_channel_id, required_type="text")
 	discord_channel_name:str = Chan.name if Chan else "(Unknown)"
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -542,12 +555,13 @@ async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordSer
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Deleter.name} deleted a Twitch-Alert.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_NEGATIVE
+		color = EVENT_COLOR_NEGATIVE,
+		url = makeWebAccessLink(cls, Deleter.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Twitch channel:", value=twitch_channel, inline=False)
 
 	try:
@@ -570,7 +584,7 @@ async def loggingOnRegularCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	Creator:discord.Member = kwargs["Creator"]
 	NewRegular:discord.Member = kwargs["NewRegular"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -586,12 +600,13 @@ async def loggingOnRegularCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Creator.name} added a new regular.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_POSITIVE
+		color = EVENT_COLOR_POSITIVE,
+		url = makeWebAccessLink(cls, Creator.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="New Regular:", value=NewRegular.name, inline=False)
 
 	try:
@@ -617,7 +632,7 @@ async def loggingOnRegularDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	OldRegular:discord.Member = getDiscordMemberFromString(cls, Remover.guild, old_regular_id)
 	old_regular_name:str = OldRegular.name if OldRegular else "(Unknown)"
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -633,12 +648,13 @@ async def loggingOnRegularDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Remover.name} removed a regular.",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_NEGATIVE
+		color = EVENT_COLOR_NEGATIVE,
+		url = makeWebAccessLink(cls, Remover.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Remover.avatar_url or Remover.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Old Regular:", value=old_regular_name, inline=False)
 
 	try:
@@ -666,7 +682,7 @@ async def loggingOnLevelEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 	LevelMember:discord.Member = getDiscordMemberFromString(cls, Editor.guild, changed_member_id)
 	level_member_name:str = LevelMember.name if LevelMember else "(Unknown)"
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -682,12 +698,13 @@ async def loggingOnLevelEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Editor.name} edited level stats",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_WARNING
+		color = EVENT_COLOR_WARNING,
+		url = makeWebAccessLink(cls, Editor.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Editor.avatar_url or Editor.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Edited member:", value=level_member_name, inline=False)
 	if changes.get("edited", False):
 		Emb.add_field(name="Warning:", value="EXP got changed, this member now has a [EDITED] mark", inline=False)
@@ -717,7 +734,7 @@ async def loggingOnLevelmedalCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 	MedalMember:discord.Member = getDiscordMemberFromString(cls, Creator.guild, medal_member_id)
 	medal_member_name:str = MedalMember.name if MedalMember else "(Unknown)"
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -733,12 +750,13 @@ async def loggingOnLevelmedalCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Creator.name} created a new medal",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_POSITIVE
+		color = EVENT_COLOR_POSITIVE,
+		url = makeWebAccessLink(cls, Creator.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Target member:", value=medal_member_name, inline=False)
 	Emb.add_field(name="New Medal:", value=medal_name, inline=False)
 
@@ -767,7 +785,7 @@ async def loggingOnLevelmedalDelete(cls:"PhaazebotDiscord", Settings:DiscordServ
 	MedalMember:discord.Member = getDiscordMemberFromString(cls, Deleter.guild, medal_member_id)
 	medal_member_name:str = MedalMember.name if MedalMember else "(Unknown)"
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -783,12 +801,13 @@ async def loggingOnLevelmedalDelete(cls:"PhaazebotDiscord", Settings:DiscordServ
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Deleter.name} removed a medal",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_NEGATIVE
+		color = EVENT_COLOR_NEGATIVE,
+		url = makeWebAccessLink(cls, Deleter.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Target member:", value=medal_member_name, inline=False)
 	Emb.add_field(name="Medal:", value=medal_name, inline=False)
 
@@ -817,7 +836,7 @@ async def loggingOnAssignroleCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 	AssignRole:discord.Role = getDiscordRoleFromString(cls, Creator.guild, assign_role_id)
 	assign_role_name:str = AssignRole.name if AssignRole else "(Unknown)"
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -833,12 +852,13 @@ async def loggingOnAssignroleCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Creator.name} created a assignrole",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_POSITIVE
+		color = EVENT_COLOR_POSITIVE,
+		url = makeWebAccessLink(cls, Creator.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Trigger:", value=trigger, inline=False)
 	Emb.add_field(name="Linked with role:", value=assign_role_name, inline=False)
 
@@ -864,7 +884,7 @@ async def loggingOnAssignroleEdit(cls:"PhaazebotDiscord", Settings:DiscordServer
 	assign_role_trigger:str = kwargs["assign_role_trigger"]
 	changes:dict = kwargs["changes"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -880,12 +900,13 @@ async def loggingOnAssignroleEdit(cls:"PhaazebotDiscord", Settings:DiscordServer
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Editor.name} edited a assignrole",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_WARNING
+		color = EVENT_COLOR_WARNING,
+		url = makeWebAccessLink(cls, Editor.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Editor.avatar_url or Editor.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Role trigger:", value=assign_role_trigger, inline=False)
 
 	try:
@@ -908,7 +929,7 @@ async def loggingOnAssignroleDelete(cls:"PhaazebotDiscord", Settings:DiscordServ
 	Deleter:discord.Member = kwargs["Deleter"]
 	assign_role_trigger:str = kwargs["assign_role_trigger"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -924,12 +945,13 @@ async def loggingOnAssignroleDelete(cls:"PhaazebotDiscord", Settings:DiscordServ
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Deleter.name} deleted a assignrole",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_NEGATIVE
+		color = EVENT_COLOR_NEGATIVE,
+		url = makeWebAccessLink(cls, Deleter.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Role trigger:", value=assign_role_trigger, inline=False)
 
 	try:
@@ -952,7 +974,7 @@ async def loggingOnConfigEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 	Editor:discord.Member = kwargs["Editor"]
 	changes:dict = kwargs["changes"]
 
-	cls.BASE.PhaazeDB.insertQuery(
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
 		content={
 			"guild_id": Settings.server_id,
@@ -968,12 +990,13 @@ async def loggingOnConfigEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 	if not TargetChannel: return # no channel found
 
 	Emb:discord.Embed = discord.Embed(
+		title = f"Log Event - [{logging_signature}]",
 		description = f"{Editor.name} made changes to the server settings",
 		timestamp = datetime.datetime.now(),
-		color = EVENT_COLOR_WARNING
+		color = EVENT_COLOR_WARNING,
+		url = makeWebAccessLink(cls, Editor.guild.id, new_log_id)
 	)
 	Emb.set_thumbnail(url=Editor.avatar_url or Editor.default_avatar_url)
-	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 
 	try:
 		await TargetChannel.send(embed=Emb)
