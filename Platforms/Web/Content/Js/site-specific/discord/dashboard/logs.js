@@ -19,14 +19,16 @@ var Logs = new (class {
 		// loads in default values or taken from url
 		let limit = DynamicURL.get("logs[limit]") || this.default_limit;
 		let page = DynamicURL.get("logs[page]") || this.default_page;
-		let date_from = DynamicURL.get("logs[page]") || "";
-		let date_to = DynamicURL.get("logs[page]") || "";
+		let date_from = DynamicURL.get("logs[date_from]") || "";
+		let date_to = DynamicURL.get("logs[date_to]") || "";
+		let log_id = DynamicURL.get("logs[log_id]") || "";
 
 		var req = {
 			limit: limit,
 			offset: (page * limit),
 			date_from: date_from,
-			date_to: date_to
+			date_to: date_to,
+			log_id: log_id
 		};
 
 		this.loadTrackOptions();
@@ -117,11 +119,39 @@ var Logs = new (class {
 			DynamicURL.set("logs[page]", null);
 		}
 
+		// reset id (tat normally should only be a link from discord)
+		DynamicURL.set("logs[log_id]", null);
 		// update html elements
 		$("[location=logs] [name=limit]").val(this.current_limit);
 		$("[location=logs] .pages .prev").attr("disabled", (this.current_page <= 0) );
 		$("[location=logs] .pages .next").attr("disabled", (this.current_page >= this.current_max_page) );
 		$("[location=logs] .pages .page").text(this.current_page+1);
+	}
+
+	// view
+	viewModal(HTMLButton) {
+		var LogsO = this;
+		var log_id = $(HTMLButton).closest(this.phantom_class).attr("log-id");
+
+		var req = {
+			"guild_id": $("#guild_id").val(),
+			"log_id": log_id
+		};
+
+		$.get("/api/discord/logs/get", req)
+		.done(function (data) {
+
+			var log = data.result.shift();
+
+			insertData(LogsO.modal_id, log);
+
+			$(LogsO.modal_id).attr("mode", "view");
+			$(LogsO.modal_id).modal("show");
+		})
+		.fail(function (data) {
+			generalAPIErrorHandler( {data:data, msg:"could not load logs"} );
+		})
+
 	}
 
 	// edit
