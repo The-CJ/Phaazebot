@@ -1,18 +1,22 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import re
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.twitchuser import TwitchUser
-from Utils.regex import Twitch as TwitchRe
 from Platforms.Twitch.api import getTwitchUsers
+from Platforms.Discord.db import getDiscordSeverSettings
 from Platforms.Discord.utils import getDiscordChannelFromString
+from Platforms.Discord.logging import loggingOnTwitchalertCreate
+from Utils.regex import Twitch as TwitchRe
 from Platforms.Web.Processing.Api.Twitch.errors import apiTwitchUserNotFound
 from Platforms.Web.Processing.Api.errors import apiMissingData,	apiMissingAuthorisation
 from .errors import apiDiscordAlertExists, apiDiscordAlertSameTwitchChannelLimit
@@ -23,11 +27,12 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordChannelNotFound
 )
 
+# did i mention that it is sadness that i need to added this...
 MAX_SAME_TWITCH_ALERTS_PER_GUILD:int = 3
 
 async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/twitchalerts/create
+	Default url: /api/discord/twitchalerts/create
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -130,9 +135,13 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		}
 	)
 
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnTwitchalertCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, discord_channel=TargetDiscordChannel.name, twitch_channel=FoundUser.name)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
+
 	# some after work, with the new data
 	await placeGatheredData(cls, FoundUser)
-
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Twitchalert: {guild_id=} added {FoundUser.user_id=}", require="discord:alert")
 	return cls.response(
 		text=json.dumps( dict(msg="Twitchalert: Added new entry", entry=FoundUser.user_type, status=200) ),

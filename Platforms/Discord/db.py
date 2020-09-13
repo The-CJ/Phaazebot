@@ -20,6 +20,7 @@ from Utils.Classes.discordnormaldisabledchannel import DiscordNormalDisabledChan
 from Utils.Classes.discordquotedisabledchannel import DiscordQuoteDisabledChannel
 from Utils.Classes.discordgameenablededchannel import DiscordGameEnabledChannel
 from Utils.Classes.discordnsfwenablededchannel import DiscordNsfwEnabledChannel
+from Utils.Classes.discordlog import DiscordLog
 
 # discord_setting
 async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message or str or int, prevent_new:bool=False) -> DiscordServerSettings:
@@ -57,9 +58,7 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:discord.Message
 			(SELECT GROUP_CONCAT(`discord_blacklist_whitelistlink`.`link` SEPARATOR ";;;") FROM `discord_blacklist_whitelistlink` WHERE `discord_blacklist_whitelistlink`.`guild_id` = `discord_setting`.`guild_id`)
 				AS `blacklist_whitelistlinks`,
 			(SELECT GROUP_CONCAT(`discord_blacklist_blacklistword`.`word` SEPARATOR ";;;") FROM `discord_blacklist_blacklistword` WHERE `discord_blacklist_blacklistword`.`guild_id` = `discord_setting`.`guild_id`)
-				AS `blacklist_blacklistwords`,
-			(SELECT GROUP_CONCAT(`discord_track_option`.`option` SEPARATOR ";;;") FROM `discord_track_option` WHERE `discord_track_option`.`guild_id` = `discord_setting`.`guild_id`)
-				AS `track_options`
+				AS `blacklist_blacklistwords`
 		FROM `discord_setting`
 		WHERE `discord_setting`.`guild_id` = %s
 		GROUP BY `discord_setting`.`guild_id`""",
@@ -1167,6 +1166,94 @@ async def getDiscordServerNsfwEnabledChannelAmount(cls:"PhaazebotDiscord", guild
 	sql:str = f"""
 		SELECT COUNT(*) AS `I` FROM `discord_enabled_nsfwchannel`
 		WHERE `discord_enabled_nsfwchannel`.`guild_id` = %s AND {where}"""
+
+	values:tuple = ( str(guild_id), ) + where_values
+
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
+# discord_log
+async def getDiscordServerLogs(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> List[DiscordLog]:
+	"""
+	Get log entrys from a guild.
+	Returns a list of DiscordLog().
+
+	Optional keywords:
+	------------------
+	* log_id `str` or `int`: (Default: None)
+	* event_value `int`: (Default: None)
+	* content `str`: (Default: None)
+	* content_contains `str`: (Default: None) [DB uses LIKE]
+	* date_from `str`: (Default: None)
+	* date_to `str`: (Default: None)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpack
+	log_id:str or int = search.get("log_id", None)
+	event_value:int = search.get("event_value", None)
+	content:str = search.get("content", None)
+	content_contains:str = search.get("content_contains", None)
+	date_from:str = search.get("date_from", None)
+	date_to:str = search.get("date_to", None)
+	order_str:str = search.get("order_str", "ORDER BY `id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
+	sql:str = """
+		SELECT `discord_log`.* FROM `discord_log`
+		WHERE `discord_log`.`guild_id` = %s"""
+
+	values:tuple = ( str(guild_id), )
+
+	if log_id:
+		sql += " AND `discord_log`.`id` = %s"
+		values += ( int(log_id), )
+
+	if event_value:
+		sql += " AND `discord_log`.`event_value` = %s"
+		values += ( int(event_value), )
+
+	if content:
+		sql += " AND `discord_log`.`content` = %s"
+		values += ( str(content), )
+
+	if content_contains:
+		content_contains = f"%{content_contains}%"
+		sql += " AND `discord_log`.`content` LIKE %s"
+		values += ( str(content_contains), )
+
+	if date_from:
+		sql += " AND `discord_log`.`created_at` > %s"
+		values += ( str(date_from), )
+
+	if date_to:
+		sql += " AND `discord_log`.`created_at` < %s"
+		values += ( str(date_to), )
+
+	sql += f" {order_str}"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	if res:
+		return [DiscordLog(x, guild_id) for x in res]
+
+	else:
+		return []
+
+async def getDiscordServerLogAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `discord_log`
+		WHERE `discord_log`.`guild_id` = %s AND {where}"""
 
 	values:tuple = ( str(guild_id), ) + where_values
 

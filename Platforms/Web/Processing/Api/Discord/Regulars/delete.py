@@ -1,15 +1,18 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordregular import DiscordRegular
-from Platforms.Discord.db import getDiscordServerRegulars
+from Platforms.Discord.db import getDiscordServerRegulars, getDiscordSeverSettings
+from Platforms.Discord.logging import loggingOnRegularDelete
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordRegularNotExists
@@ -62,6 +65,11 @@ async def apiDiscordRegularsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 		DELETE FROM `discord_regular` WHERE `guild_id` = %s AND `id` = %s""",
 		(RegularToDelete.guild_id, RegularToDelete.regular_id)
 	)
+
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnRegularDelete(PhaazeDiscord, GuildSettings, Remover=CheckMember, old_regular_id=RegularToDelete.member_id)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Regular: {guild_id=} deleted {regular_id=}", require="discord:regular")
 	return cls.response(

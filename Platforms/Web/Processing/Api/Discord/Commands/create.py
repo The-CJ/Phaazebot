@@ -1,13 +1,17 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordserversettings import DiscordServerSettings
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Discord.logging import loggingOnCommandCreate
 from Platforms.Discord.commandindex import command_register
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
@@ -26,7 +30,7 @@ from .errors import (
 
 async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/commands/create
+	Default url: /api/discord/commands/create
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -114,6 +118,23 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 			"cooldown": cooldown
 		}
 	)
+
+	# logging prep
+	log_dict:dict = {
+		"trigger": trigger,
+		"active": active,
+		"content": content,
+		"function": function,
+		"hidden": hidden,
+		"require": require,
+		"required_currency": required_currency,
+		"cooldown": cooldown
+	}
+
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnCommandCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, command_trigger=trigger, command_info=log_dict)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Commands: {guild_id=} added: {trigger=}", require="discord:commands")
 	return cls.response(

@@ -1,234 +1,234 @@
 <div location="levels" style="display: none;">
 
-  <div class="container-fluid">
+	<div class="container-fluid">
 
-    <h3>Levels</h3>
-    <sub>View and manage the levels of each member, or just figure out who wasted the most time (or spam's the most, same thing LULW)</sub>
-    <hr>
+		<h3>Levels</h3>
+		<sub>View and manage the levels of each member, or just figure out who wasted the most time (or spam's the most, same thing LULW)</sub>
+		<hr>
 
-    <div class="center-item-row">
-      <span>Public level page:</span>
-      <div class="col">
-        <input type="text" readonly value="|<!--#(web_root)#-->|/discord/levels/|<!--#(guild_id)#-->|"  class="form-control text-center">
-      </div>
-    </div>
+		<div class="center-item-row">
+			<span>Public level page:</span>
+			<div class="col">
+				<input type="text" readonly value="|<!--#(web_root)#-->|/discord/levels/|<!--#(guild_id)#-->|"  class="form-control text-center">
+			</div>
+		</div>
 
-    <hr>
+		<hr>
 
-    <form class="controls content-box pt-2" action="javascript:Levels.prevPage(true)">
+		<form class="controls content-box pt-2" action="javascript:Levels.prevPage(true)">
 
-      <div class="center-item-row">
-        <!-- limit -->
-        <div class="col">
-          <select class="custom-select" name="limit">
-            <option value="5">5 Entrys per page</option>
-            <option value="10">10 Entrys per page</option>
-            <option value="20">20 Entrys per page</option>
-            <option value="30">30 Entrys per page</option>
-            <option value="40">40 Entrys per page</option>
-            <option value="50" selected>50 Entrys per page</option>
-            <option value="60">60 Entrys per page</option>
-            <option value="70">70 Entrys per page</option>
-            <option value="80">80 Entrys per page</option>
-            <option value="90">90 Entrys per page</option>
-            <option value="100">100 Entrys per page</option>
-          </select>
-        </div>
+			<div class="center-item-row">
+				<!-- limit -->
+				<div class="col">
+					<select class="custom-select" name="limit">
+						<option value="5">5 Entrys per page</option>
+						<option value="10">10 Entrys per page</option>
+						<option value="20">20 Entrys per page</option>
+						<option value="30">30 Entrys per page</option>
+						<option value="40">40 Entrys per page</option>
+						<option value="50" selected>50 Entrys per page</option>
+						<option value="60">60 Entrys per page</option>
+						<option value="70">70 Entrys per page</option>
+						<option value="80">80 Entrys per page</option>
+						<option value="90">90 Entrys per page</option>
+						<option value="100">100 Entrys per page</option>
+					</select>
+				</div>
 
-        <!-- name contains -->
-        <div class="col">
-          <input type="text" name="name_contains" class="form-control" placeholder="Name must contain..."/>
-        </div>
+				<!-- name contains -->
+				<div class="col">
+					<input type="text" name="name_contains" class="form-control" placeholder="Name must contain..."/>
+				</div>
 
-        <!-- edited -->
-        <div class="col">
-          <select class="custom-select" name="edited">
-            <option value="0">Show all</option>
-            <option value="1">Show only unedited</option>
-            <option value="2">Show only edited</option>
-          </select>
-        </div>
+				<!-- edited -->
+				<div class="col">
+					<select class="custom-select" name="edited">
+						<option value="0">Show all</option>
+						<option value="1">Show only unedited</option>
+						<option value="2">Show only edited</option>
+					</select>
+				</div>
 
-        <!-- nickname -->
-        <div class="col">
-          <select class="custom-select" name="nickname">
-            <option value="0" selected>Show usernames</option>
-            <option value="1">Show server nicknames</option>
-          </select>
-        </div>
-      </div>
+				<!-- nickname -->
+				<div class="col">
+					<select class="custom-select" name="nickname">
+						<option value="0" selected>Show usernames</option>
+						<option value="1">Show server nicknames</option>
+					</select>
+				</div>
+			</div>
 
-      <div class="center-item-row btn-row">
-        <!-- pages -->
-        <div class="col text-left pages">
-          <button onclick="Levels.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
-          <button onclick="Levels.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
-          <span>Page: <span class="page">0</span></span>
-          <button onclick="Levels.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
-          <button onclick="Levels.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+			<div class="center-item-row btn-row">
+				<!-- pages -->
+				<div class="col text-left pages">
+					<button onclick="Levels.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+					<button onclick="Levels.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+					<span>Page: <span class="page">0</span></span>
+					<button onclick="Levels.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+					<button onclick="Levels.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
 
-          <span>Total: <span id="level_amount">[N/A]</span></span>
-        </div>
+					<span>Total: <span id="level_amount">[N/A]</span></span>
+				</div>
 
-        <!-- buttons -->
-        <div class="col text-right">
-          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
-        </div>
-      </div>
+				<!-- buttons -->
+				<div class="col text-right">
+					<button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+				</div>
+			</div>
 
-    </form>
+		</form>
 
-    <hr>
+		<hr>
 
-    <div class="header row generic-list">
-      <div class="col-1 rank">#Rank</div>
-      <div class="col-2 level-exp">Level [ Exp ]</div>
-      <div class="col member">Member</div>
-      <div class="col-1 currency">Currency</div>
-      <div class="col-1 medals">Medals</div>
-      <div class="col-1 action">Action</div>
-    </div>
+		<div class="header row generic-list">
+			<div class="col-1 rank">#Rank</div>
+			<div class="col-2 level-exp">Level [ Exp ]</div>
+			<div class="col member">Member</div>
+			<div class="col-1 currency">Currency</div>
+			<div class="col-1 medals">Medals</div>
+			<div class="col-1 action">Action</div>
+		</div>
 
-    <!-- gets filled with copys of: "[phantom] .level" -->
-    <div id="level_list"></div>
+		<!-- gets filled with copys of: "[phantom] .level" -->
+		<div id="level_list"></div>
 
-  </div>
+	</div>
 
 </div>
 
 <div modal>
 
-  <div class="modal fade" id="level_modal">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
+	<div class="modal fade" id="level_modal">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
 
-        <div class="modal-header text-center">
-          <data name="member_id"></data>
-          <h4 class="modal-title">Member details</h4>
-          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
-        </div>
+				<div class="modal-header text-center">
+					<data name="member_id"></data>
+					<h4 class="modal-title">Member details</h4>
+					<button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+				</div>
 
-        <div class="modal-body text-black">
-          <button type="button" name="on_server" class="btn btn-block btn-danger" onclick="Levels.editOnServer()">Set inactive</button>
+				<div class="modal-body text-black">
+					<button type="button" name="on_server" class="btn btn-block btn-danger" onclick="Levels.editOnServer()">Set inactive</button>
 
-          <!-- avatar & upper info -->
-          <div class="center-item-row md-form forced">
-            <div class="col-4">
-              <img src="" alt="member_avatar" style="border-radius: 50%; border: 2px solid black; height: 128px; width: 128px;">
-            </div>
-            <div class="col-8">
-              <div class="center-item-col forced">
-                <input disabled type="text" name="username" style="width: 100%;" class="text-center"/>
-                <input disabled type="text" name="display_id" style="width: 100%;" class="text-center"/>
-                <input disabled type="text" name="display_rank" style="width: 100%;" class="text-center"/>
-              </div>
-            </div>
-          </div>
+					<!-- avatar & upper info -->
+					<div class="center-item-row md-form forced">
+						<div class="col-4">
+							<img src="" alt="member_avatar" style="border-radius: 50%; border: 2px solid black; height: 128px; width: 128px;">
+						</div>
+						<div class="col-8">
+							<div class="center-item-col forced">
+								<input disabled type="text" name="username" style="width: 100%;" class="text-center"/>
+								<input disabled type="text" name="display_id" style="width: 100%;" class="text-center"/>
+								<input disabled type="text" name="display_rank" style="width: 100%;" class="text-center"/>
+							</div>
+						</div>
+					</div>
 
-          <hr>
+					<hr>
 
-          <h4 class="text-center">Stats</h4>
+					<h4 class="text-center">Stats</h4>
 
-          <!-- currency -->
-          <form class="center-item-row forced md-form" action="javascript:Levels.editCurrency()">
-            <div class="col-3">
-              <span>Currency:</span>
-            </div>
-            <div class="col">
-              <input type="number" name="currency" class="form-control text-center" min="0">
-            </div>
-            <div class="col-2">
-              <button type="submit" name="button" class="btn btn-danger icon-btn"><i class="fas fa-save"></i></button>
-            </div>
-          </form>
+					<!-- currency -->
+					<form class="center-item-row forced md-form" action="javascript:Levels.editCurrency()">
+						<div class="col-3">
+							<span>Currency:</span>
+						</div>
+						<div class="col">
+							<input type="number" name="currency" class="form-control text-center" min="0">
+						</div>
+						<div class="col-2">
+							<button type="submit" name="button" class="btn btn-danger icon-btn"><i class="fas fa-save"></i></button>
+						</div>
+					</form>
 
-          <!-- exp -->
-          <form class="center-item-row forced md-form" action="javascript:Levels.editExp()">
-            <div class="col-3">
-              <span>EXP:</span>
-            </div>
-            <div class="col">
-              <input type="number" name="exp" class="form-control text-center">
-            </div>
-            <div class="col-2">
-              <button type="submit" name="button" class="btn btn-danger icon-btn"><i class="fas fa-save"></i></button>
-            </div>
-          </form>
+					<!-- exp -->
+					<form class="center-item-row forced md-form" action="javascript:Levels.editExp()">
+						<div class="col-3">
+							<span>EXP:</span>
+						</div>
+						<div class="col">
+							<input type="number" name="exp" class="form-control text-center">
+						</div>
+						<div class="col-2">
+							<button type="submit" name="button" class="btn btn-danger icon-btn"><i class="fas fa-save"></i></button>
+						</div>
+					</form>
 
-          <!-- level -->
-          <div class="center-item-row forced md-form">
-            <div class="col-3">
-              <span>Level:</span>
-            </div>
-            <div class="col">
-              <input disabled type="number" name="level" class="form-control text-center">
-            </div>
-            <div class="col-2"></div>
-          </div>
+					<!-- level -->
+					<div class="center-item-row forced md-form">
+						<div class="col-3">
+							<span>Level:</span>
+						</div>
+						<div class="col">
+							<input disabled type="number" name="level" class="form-control text-center">
+						</div>
+						<div class="col-2"></div>
+					</div>
 
-          <!-- notes -->
-          <div class="center-item-row forced md-form">
-            <div class="col">
-              <span><sub><i>Level is calculated by EXP</i></sub></span>
-            </div>
-          </div>
+					<!-- notes -->
+					<div class="center-item-row forced md-form">
+						<div class="col">
+							<span><sub><i>Level is calculated by EXP</i></sub></span>
+						</div>
+					</div>
 
-          <hr>
+					<hr>
 
-          <h4 class="text-center">Medals</h4>
+					<h4 class="text-center">Medals</h4>
 
-          <!-- medals -->
-          <form class="center-item-row forced md-form" action="javascript:Levels.createMedal()">
-            <div class="col">
-              <input type="text" id="new_medal" class="form-control text-center" placeholder="Add new medal...">
-            </div>
-            <div class="col-2">
-              <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-plus"></i></button>
-            </div>
-          </form>
+					<!-- medals -->
+					<form class="center-item-row forced md-form" action="javascript:Levels.createMedal()">
+						<div class="col">
+							<input type="text" id="new_medal" class="form-control text-center" placeholder="Add new medal...">
+						</div>
+						<div class="col-2">
+							<button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-plus"></i></button>
+						</div>
+					</form>
 
-          <!-- gets filled with copys of: "[phantom] .medal" -->
-          <div id="medal_list" class="modal-itemlist"></div>
+					<!-- gets filled with copys of: "[phantom] .medal" -->
+					<div id="medal_list" class="modal-itemlist"></div>
 
-        </div>
+				</div>
 
-        <div class="modal-footer"></div>
-        <div messagebox></div>
-      </div>
-    </div>
-  </div>
+				<div class="modal-footer"></div>
+				<div messagebox></div>
+			</div>
+		</div>
+	</div>
 
 </div>
 
 <div phantom hidden>
 
-  <div class="row level generic-sub-list" member-id="0">
-    <div class="col-1 rank">#<span name="rank">[N/A]</span></div>
-    <div class="col-2 level-exp">
-      <span name="level">[N/A]</span>
-      <span>[</span>
-      <span name="exp">[N/A]</span>
-      <span>]</span>
-    </div>
-    <div class="col member">
-      <div class="center-item-row forced">
-        <img src="" alt="avatar" class="avatar" height="32" width="32">
-        <span name="username">[N/A]</span>
-      </div>
-    </div>
-    <div class="col-1 currency"><span name="currency">[N/A]</span></div>
-    <div class="col-1 medals"><span name="medal_amount">[N/A]</span></div>
-    <div class="col-1 action">
-      <button type="submit" class="btn btn-warning icon-btn small" onclick="Levels.editModal(this)"><i class="fas fa-edit"></i></button>
-    </div>
-  </div>
+	<div class="row level generic-sub-list" member-id="0">
+		<div class="col-1 rank">#<span name="rank">[N/A]</span></div>
+		<div class="col-2 level-exp">
+			<span name="level">[N/A]</span>
+			<span>[</span>
+			<span name="exp">[N/A]</span>
+			<span>]</span>
+		</div>
+		<div class="col member">
+			<div class="center-item-row forced">
+				<img src="" alt="avatar" class="avatar" height="32" width="32">
+				<span name="username">[N/A]</span>
+			</div>
+		</div>
+		<div class="col-1 currency"><span name="currency">[N/A]</span></div>
+		<div class="col-1 medals"><span name="medal_amount">[N/A]</span></div>
+		<div class="col-1 action">
+			<button type="submit" class="btn btn-warning icon-btn small" onclick="Levels.editModal(this)"><i class="fas fa-edit"></i></button>
+		</div>
+	</div>
 
-  <div class="center-item-row forced medal">
-    <data name="medal_id"></data>
-    <div class="delete">
-      <button type="button" class="btn btn-danger icon-btn" onclick="Levels.deleteMedal(this)"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="col"><span name="name"></span></div>
-  </div>
+	<div class="center-item-row forced medal">
+		<data name="medal_id"></data>
+		<div class="delete">
+			<button type="button" class="btn btn-danger icon-btn" onclick="Levels.deleteMedal(this)"><i class="fas fa-times"></i></button>
+		</div>
+		<div class="col"><span name="name"></span></div>
+	</div>
 
 </div>

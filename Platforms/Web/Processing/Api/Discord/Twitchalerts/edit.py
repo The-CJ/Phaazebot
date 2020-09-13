@@ -1,16 +1,19 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
+from Utils.Classes.discordserversettings import DiscordServerSettings
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.undefined import UNDEFINED
-from Platforms.Discord.db import getDiscordServerTwitchAlerts
+from Platforms.Discord.db import getDiscordServerTwitchAlerts, getDiscordSeverSettings
+from Platforms.Discord.logging import loggingOnTwitchalertEdit
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation, apiWrongData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordAlertNotExists
@@ -19,7 +22,7 @@ MAX_CONTENT_SIZE:int = 1750
 
 async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/twitchalerts/edit
+	Default url: /api/discord/twitchalerts/edit
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -79,12 +82,23 @@ async def apiDiscordTwitchalertsEdit(cls:"WebIndex", WebRequest:Request) -> Resp
 	if not changes:
 		return await apiWrongData(cls, WebRequest, msg=f"No changes, please add at least one")
 
+
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_twitch_alert",
 		content = changes,
 		where = "`discord_twitch_alert`.`discord_guild_id` = %s AND `discord_twitch_alert`.`id` = %s",
 		where_values = (CurrentEditAlert.guild_id, CurrentEditAlert.alert_id)
 	)
+
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnTwitchalertEdit(PhaazeDiscord, GuildSettings,
+		ChangeMember=CheckMember,
+		twitch_channel=CurrentEditAlert.twitch_channel_name,
+		discord_channel_id=CurrentEditAlert.discord_channel_id,
+		changes=changes
+	)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Twitchalert: {guild_id=} edited {alert_id=}", require="discord:alerts")
 	return cls.response(

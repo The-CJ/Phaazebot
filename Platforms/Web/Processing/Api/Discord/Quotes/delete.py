@@ -1,22 +1,25 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordquote import DiscordQuote
-from Platforms.Discord.db import getDiscordServerQuotes
+from Platforms.Discord.db import getDiscordServerQuotes, getDiscordSeverSettings
+from Platforms.Discord.logging import loggingOnQuoteDelete
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordQuotesNotExists
 
 async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/quotes/delete
+	Default url: /api/discord/quotes/delete
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -62,6 +65,11 @@ async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response
 		DELETE FROM `discord_quote`	WHERE `guild_id` = %s AND `id` = %s""",
 		(QuoteToDelete.guild_id, QuoteToDelete.quote_id)
 	)
+
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnQuoteDelete(PhaazeDiscord, GuildSettings, Deleter=CheckMember, quote_id=QuoteToDelete.quote_id, deleted_content=QuoteToDelete.content)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Quote: {guild_id=} deleted {quote_id=}", require="discord:quote")
 	return cls.response(

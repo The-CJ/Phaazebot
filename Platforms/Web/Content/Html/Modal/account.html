@@ -1,206 +1,206 @@
 <div class="modal fade" id="account_modal" mode="select|phaaze|discord|twitch|osu">
-  <div class="modal-dialog" role="document">
+	<div class="modal-dialog" role="document">
 
-    <div class="modal-content">
+		<div class="modal-content">
 
-      <div class="modal-header text-center">
-        <h4 class="modal-title" show-mode="select">Choose Platform</h4>
-        <h4 class="modal-title" show-mode="phaaze">Phaaze account</h4>
-        <h4 class="modal-title" show-mode="discord">Discord account</h4>
-        <h4 class="modal-title" show-mode="twitch">Twitch account</h4>
-        <h4 class="modal-title" show-mode="osu">Osu account</h4>
-        <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
-      </div>
+			<div class="modal-header text-center">
+				<h4 class="modal-title" show-mode="select">Choose Platform</h4>
+				<h4 class="modal-title" show-mode="phaaze">Phaaze account</h4>
+				<h4 class="modal-title" show-mode="discord">Discord account</h4>
+				<h4 class="modal-title" show-mode="twitch">Twitch account</h4>
+				<h4 class="modal-title" show-mode="osu">Osu account</h4>
+				<button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+			</div>
 
-      <div class="modal-body">
+			<div class="modal-body">
 
-        <!-- a list with all platforms to login -->
-        <div show-mode="select" class="center-item-col">
+				<!-- a list with all platforms to login -->
+				<div show-mode="select" class="center-item-col">
 
-          <div class="platform center-item-row forced btn btn-block color-phaaze black-text" onclick="SessionManager.showAccountPanel('phaaze')">
-            <div class="col-3 platform-icon"><img src="/img/favicon.ico" alt="logo" width="45"></div>
-            <div class="col"><h2>Phaaze</h2></div>
-          </div>
+					<div class="platform center-item-row forced btn btn-block color-phaaze black-text" onclick="SessionManager.showAccountPanel('phaaze')">
+						<div class="col-3 platform-icon"><img src="/img/favicon.ico" alt="logo" width="45"></div>
+						<div class="col"><h2>Phaaze</h2></div>
+					</div>
 
-          <div class="platform center-item-row forced btn btn-block color-discord white-text" onclick="SessionManager.showAccountPanel('discord')">
-            <div class="col-3 platform-icon"><i class="fab fa-discord"></i></div>
-            <div class="col"><h2>Discord</h2></div>
-          </div>
+					<div class="platform center-item-row forced btn btn-block color-discord white-text" onclick="SessionManager.showAccountPanel('discord')">
+						<div class="col-3 platform-icon"><i class="fab fa-discord"></i></div>
+						<div class="col"><h2>Discord</h2></div>
+					</div>
 
-          <div class="platform center-item-row forced btn btn-block color-twitch white-text" onclick="SessionManager.showAccountPanel('twitch')" hidden>
-            <div class="col-3 platform-icon"><i class="fab fa-twitch"></i></div>
-            <div class="col"><h2>Twitch</h2></div>
-          </div>
+					<div class="platform center-item-row forced btn btn-block color-twitch white-text" onclick="SessionManager.showAccountPanel('twitch')" hidden>
+						<div class="col-3 platform-icon"><i class="fab fa-twitch"></i></div>
+						<div class="col"><h2>Twitch</h2></div>
+					</div>
 
-          <div class="platform center-item-row forced btn btn-block color-osu white-text" onclick="SessionManager.showAccountPanel('osu')" hidden>
-            <div class="col-3 platform-icon"><i class="fab fa-osu"></i></div>
-            <div class="col"><h2>osu!</h2></div>
-          </div>
+					<div class="platform center-item-row forced btn btn-block color-osu white-text" onclick="SessionManager.showAccountPanel('osu')" hidden>
+						<div class="col-3 platform-icon"><i class="fab fa-osu"></i></div>
+						<div class="col"><h2>osu!</h2></div>
+					</div>
 
-        </div>
+				</div>
 
-        <!-- phaaze login and info -->
-        <div show-mode="phaaze">
-          <div login="loading"><span>Loading Phaaze informations...</span></div>
+				<!-- phaaze login and info -->
+				<div show-mode="phaaze">
+					<div login="loading"><span>Loading Phaaze informations...</span></div>
 
-          <div login="true">
+					<div login="true">
 
-            <h3>General</h3>
+						<h3>General</h3>
 
-            <div class="center-item-row md-form">
-              <div class="col-1">
-                <i class="fas fa-user-circle grey-text icon"></i>
-              </div>
-              <div class="col">
-                <input type="text" class="form-control" placeholder="Your username" name="username">
-              </div>
-            </div>
+						<div class="center-item-row md-form">
+							<div class="col-1">
+								<i class="fas fa-user-circle grey-text icon"></i>
+							</div>
+							<div class="col">
+								<input type="text" class="form-control" placeholder="Your username" name="username">
+							</div>
+						</div>
 
-            <div class="center-item-row md-form">
-              <div class="col-1">
-                <i class="far fa-envelope grey-text icon"></i>
-              </div>
-              <div class="col">
-                <input type="email" class="form-control" placeholder="Your e-mail" name="email">
-              </div>
-            </div>
+						<div class="center-item-row md-form">
+							<div class="col-1">
+								<i class="far fa-envelope grey-text icon"></i>
+							</div>
+							<div class="col">
+								<input type="email" class="form-control" placeholder="Your e-mail" name="email">
+							</div>
+						</div>
 
-            <div class="center-item-row md-form">
-              <div class="col-1">
-                <i class="fas fa-lock grey-text icon" title="needed for changes">*</i>
-              </div>
-              <div class="col">
-                <input type="password" class="form-control" placeholder="Your current password [required on change]" name="password">
-              </div>
-            </div>
+						<div class="center-item-row md-form">
+							<div class="col-1">
+								<i class="fas fa-lock grey-text icon" title="needed for changes">*</i>
+							</div>
+							<div class="col">
+								<input type="password" class="form-control" placeholder="Your current password [required on change]" name="password">
+							</div>
+						</div>
 
-            <button type="button" class="btn btn-block btn-warning" onclick="$(this).hide();$('#new_password_fields').show()">Set new password</button>
-            <div id="new_password_fields" style="display: none;">
+						<button type="button" class="btn btn-block btn-warning" onclick="$(this).hide();$('#new_password_fields').show()">Set new password</button>
+						<div id="new_password_fields" style="display: none;">
 
-              <div class="center-item-row md-form">
-                <div class="col-1">
-                  <i class="fas fa-key grey-text icon"></i>
-                </div>
-                <div class="col">
-                  <input type="password" class="form-control" placeholder="New password" name="newpassword">
-                </div>
-              </div>
+							<div class="center-item-row md-form">
+								<div class="col-1">
+									<i class="fas fa-key grey-text icon"></i>
+								</div>
+								<div class="col">
+									<input type="password" class="form-control" placeholder="New password" name="newpassword">
+								</div>
+							</div>
 
-              <div class="center-item-row md-form">
-                <div class="col-1">
-                  <i class="fas fa-key grey-text icon"></i>
-                </div>
-                <div class="col">
-                  <input type="password" class="form-control" placeholder="Retype password" name="newpassword2">
-                </div>
-              </div>
+							<div class="center-item-row md-form">
+								<div class="col-1">
+									<i class="fas fa-key grey-text icon"></i>
+								</div>
+								<div class="col">
+									<input type="password" class="form-control" placeholder="Retype password" name="newpassword2">
+								</div>
+							</div>
 
-            </div>
+						</div>
 
-            <hr>
-            <h3>Roles</h3>
-            <!-- get filled with ".role" elements -->
-            <div user-role-list></div>
+						<hr>
+						<h3>Roles</h3>
+						<!-- get filled with ".role" elements -->
+						<div user-role-list></div>
 
-            <hr>
-            <div class="center-item-col forced">
-              <button class="btn btn-block btn-warning" type="button" onclick="SessionManager.edit()">Save</button>
-              <button class="btn btn-block btn-danger" type="button" onclick="SessionManager.logout('phaaze')">Logout</button>
-            </div>
+						<hr>
+						<div class="center-item-col forced">
+							<button class="btn btn-block btn-warning" type="button" onclick="SessionManager.edit()">Save</button>
+							<button class="btn btn-block btn-danger" type="button" onclick="SessionManager.logout('phaaze')">Logout</button>
+						</div>
 
-          </div>
+					</div>
 
-          <div login="false">
+					<div login="false">
 
-            <form action="javascript:SessionManager.login()" class="">
+						<form action="javascript:SessionManager.login()" class="">
 
-              <div class="center-item-row md-form">
-                <i class="fas fa-user-circle grey-text prefix"></i>
-                <input type="text" class="form-control" name="username" placeholder="Username or E-mail">
-              </div>
+							<div class="center-item-row md-form">
+								<i class="fas fa-user-circle grey-text prefix"></i>
+								<input type="text" class="form-control" name="username" placeholder="Username or E-mail">
+							</div>
 
-              <div class="center-item-row md-form">
-                <i class="fas fa-lock grey-text prefix"></i>
-                <input type="password" class="form-control" name="password" placeholder="Password">
-              </div>
+							<div class="center-item-row md-form">
+								<i class="fas fa-lock grey-text prefix"></i>
+								<input type="password" class="form-control" name="password" placeholder="Password">
+							</div>
 
-              <hr>
+							<hr>
 
-              <button class="btn btn-block btn-default" type="submit">Login</button>
-              <a href="/account/create">
-                <button class="btn btn-block btn-secondary" type="button">Register</button>
-              </a>
+							<button class="btn btn-block btn-default" type="submit">Login</button>
+							<a href="/account/create">
+								<button class="btn btn-block btn-secondary" type="button">Register</button>
+							</a>
 
-            </form>
+						</form>
 
-          </div>
-        </div>
+					</div>
+				</div>
 
-        <!-- discord login and info -->
-        <div show-mode="discord">
-          <div login="loading"><span>Loading Discord informations...</span></div>
+				<!-- discord login and info -->
+				<div show-mode="discord">
+					<div login="loading"><span>Loading Discord informations...</span></div>
 
-          <div login="true">
+					<div login="true">
 
-            <h3>Currently logged in as:</h3>
+						<h3>Currently logged in as:</h3>
 
-            <div class="center-item-row md-form">
-              <i class="fas fa-user-circle grey-text icon"></i>
-              <input type="text" name="current_discord_username" class="form-control text-center" readonly>
-            </div>
-            <br>
-            <div class="center-item-col forced">
-              <img src="" alt="discord_avatar" name="current_discord_avatar" height="256" width="256" style="border-radius: 50%; border: 2px solid black;">
-            </div>
-            <br>
-            <button class="btn btn-block btn-danger" type="button" onclick="SessionManager.logout('discord')">Logout</button>
+						<div class="center-item-row md-form">
+							<i class="fas fa-user-circle grey-text icon"></i>
+							<input type="text" name="current_discord_username" class="form-control text-center" readonly>
+						</div>
+						<br>
+						<div class="center-item-col forced">
+							<img src="" alt="discord_avatar" name="current_discord_avatar" height="256" width="256" style="border-radius: 50%; border: 2px solid black;">
+						</div>
+						<br>
+						<button class="btn btn-block btn-danger" type="button" onclick="SessionManager.logout('discord')">Logout</button>
 
-          </div>
+					</div>
 
-          <div login="false">
+					<div login="false">
 
-            <div class="center-item-col forced">
-              <h5>Head over to Discord and log in</h5>
-              <a class="color-discord inner-part white-text col text-center" href="|<!--#(discord_login_link)#-->|" style="font-size: 75px;">
-                <span><i class="fab fa-discord"></i>Discord</span>
-              </a>
-            </div>
+						<div class="center-item-col forced">
+							<h5>Head over to Discord and log in</h5>
+							<a class="color-discord inner-part white-text col text-center" href="|<!--#(discord_login_link)#-->|" style="font-size: 75px;">
+								<span><i class="fab fa-discord"></i>Discord</span>
+							</a>
+						</div>
 
-          </div>
+					</div>
 
-        </div>
+				</div>
 
-        <!-- twitch login and info -->
-        <div show-mode="twitch">
-          <div login="loading"><span>Loading Twitch informations...</span></div>
+				<!-- twitch login and info -->
+				<div show-mode="twitch">
+					<div login="loading"><span>Loading Twitch informations...</span></div>
 
-          <div login="true">
-            TWITCH LOGIN TRUE
-          </div>
+					<div login="true">
+						TWITCH LOGIN TRUE
+					</div>
 
-          <div login="false">
-            TWITCH LOGIN FALSE
-          </div>
-        </div>
+					<div login="false">
+						TWITCH LOGIN FALSE
+					</div>
+				</div>
 
-        <!-- osu login and info -->
-        <div show-mode="osu">
-          <div login="loading"><span>Loading osu! informations...</span></div>
+				<!-- osu login and info -->
+				<div show-mode="osu">
+					<div login="loading"><span>Loading osu! informations...</span></div>
 
-          <div login="true">
-            OSU LOGIN TRUE
-          </div>
+					<div login="true">
+						OSU LOGIN TRUE
+					</div>
 
-          <div login="false">
-            OSU LOGIN FALSE
-          </div>
-        </div>
+					<div login="false">
+						OSU LOGIN FALSE
+					</div>
+				</div>
 
-      </div>
+			</div>
 
-      <div class="modal-footer"></div>
-      <div messagebox></div>
-    </div>
+			<div class="modal-footer"></div>
+			<div messagebox></div>
+		</div>
 
-  </div>
+	</div>
 </div>

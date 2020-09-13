@@ -1,115 +1,115 @@
 <div location="quotes" style="display: none;">
 
-  <div class="container-fluid">
+	<div class="container-fluid">
 
-    <h3>Quotes</h3>
-    <sub>View quotes, or create a new one. Was something funny? was it a typo? Did someone said something out of context? doesn't matter, just quote it!</sub>
-    <hr>
+		<h3>Quotes</h3>
+		<sub>View quotes, or create a new one. Was something funny? was it a typo? Did someone said something out of context? doesn't matter, just quote it!</sub>
+		<hr>
 
-    <div class="center-item-row">
-      <span>Public quote page:</span>
-      <div class="col">
-        <input type="text" readonly value="|<!--#(web_root)#-->|/discord/quotes/|<!--#(guild_id)#-->|" class="form-control text-center">
-      </div>
-    </div>
+		<div class="center-item-row">
+			<span>Public quote page:</span>
+			<div class="col">
+				<input type="text" readonly value="|<!--#(web_root)#-->|/discord/quotes/|<!--#(guild_id)#-->|" class="form-control text-center">
+			</div>
+		</div>
 
-    <hr>
+		<hr>
 
-    <form class="controls content-box pt-2" action="javascript:Quotes.prevPage(true)">
+		<form class="controls content-box pt-2" action="javascript:Quotes.prevPage(true)">
 
-      <div class="center-item-row">
-        <!-- limit -->
-        <div class="col">
-          <select class="custom-select" name="limit">
-            <option value="5">5 Entrys per page</option>
-            <option value="10" selected>10 Entrys per page</option>
-            <option value="25">25 Entrys per page</option>
-            <option value="50">50 Entrys per page</option>
-            <option value="100">100 Entrys per page</option>
-          </select>
-        </div>
+			<div class="center-item-row">
+				<!-- limit -->
+				<div class="col">
+					<select class="custom-select" name="limit">
+						<option value="5">5 Entrys per page</option>
+						<option value="10" selected>10 Entrys per page</option>
+						<option value="25">25 Entrys per page</option>
+						<option value="50">50 Entrys per page</option>
+						<option value="100">100 Entrys per page</option>
+					</select>
+				</div>
 
-        <!-- quote contains -->
-        <div class="col">
-          <input type="text" name="content_contains" class="form-control" placeholder="Quote must contain..."/>
-        </div>
-      </div>
+				<!-- quote contains -->
+				<div class="col">
+					<input type="text" name="content_contains" class="form-control" placeholder="Quote must contain..."/>
+				</div>
+			</div>
 
-      <div class="center-item-row btn-row">
-        <!-- pages -->
-        <div class="col pages text-left">
-          <button onclick="Quotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
-          <button onclick="Quotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
-          <span>Page: <span class="page">0</span></span>
-          <button onclick="Quotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
-          <button onclick="Quotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+			<div class="center-item-row btn-row">
+				<!-- pages -->
+				<div class="col pages text-left">
+					<button onclick="Quotes.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+					<button onclick="Quotes.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+					<span>Page: <span class="page">0</span></span>
+					<button onclick="Quotes.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+					<button onclick="Quotes.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
 
-          <span>Total: <span id="quote_amount">[N/A]</span></span>
-        </div>
+					<span>Total: <span id="quote_amount">[N/A]</span></span>
+				</div>
 
-        <!-- buttons -->
-        <div class="col text-right">
-          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
-          <button type="button" class="btn btn-success icon-btn" onclick="Quotes.createModal()"><i class="fas fa-plus"></i></button>
-        </div>
-      </div>
+				<!-- buttons -->
+				<div class="col text-right">
+					<button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+					<button type="button" class="btn btn-success icon-btn" onclick="Quotes.createModal()"><i class="fas fa-plus"></i></button>
+				</div>
+			</div>
 
-    </form>
+		</form>
 
-    <hr>
+		<hr>
 
-    <div class="row header generic-list">
-      <div class="col-1 id">ID</div>
-      <div class="col content">Content</div>
-      <div class="col-1 action">Action</div>
-    </div>
+		<div class="row header generic-list">
+			<div class="col-1 id">ID</div>
+			<div class="col content">Content</div>
+			<div class="col-1 action">Action</div>
+		</div>
 
-    <!-- gets filled with copys of: "[phantom] .quote" -->
-    <div id="quote_list"></div>
+		<!-- gets filled with copys of: "[phantom] .quote" -->
+		<div id="quote_list"></div>
 
-  </div>
+	</div>
 
 </div>
 
 <div modal>
 
-  <div class="modal fade" id="quote_modal" mode="create|edit">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
+	<div class="modal fade" id="quote_modal" mode="create|edit">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
 
-        <div class="modal-header text-center">
-          <data name="quote_id"></data>
-          <h4 class="modal-title" show-mode="create">New Quote</h4>
-          <h4 class="modal-title" show-mode="edit">Edit Quote</h4>
-          <button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
-        </div>
+				<div class="modal-header text-center">
+					<data name="quote_id"></data>
+					<h4 class="modal-title" show-mode="create">New Quote</h4>
+					<h4 class="modal-title" show-mode="edit">Edit Quote</h4>
+					<button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+				</div>
 
-        <div class="modal-body text-black">
-          <sub>Max length: 1750 chars.</sub>
-          <textarea rows="8" style="width: 100%" name="content" maxlength="1750"></textarea>
-        </div>
+				<div class="modal-body text-black">
+					<sub>Max length: 1750 chars.</sub>
+					<textarea rows="8" style="width: 100%" name="content" maxlength="1750"></textarea>
+				</div>
 
-        <div class="modal-footer">
-          <button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="Quotes.edit()">Submit changes</button>
-          <button show-mode="edit" type="button" class="btn btn-block btn-danger" onclick="Quotes.deleteFromModal()">Delete</button>
-          <button show-mode="create" type="button" class="btn btn-block btn-success" onclick="Quotes.create()">Save</button>
-        </div>
-        <div messagebox></div>
-      </div>
-    </div>
-  </div>
+				<div class="modal-footer">
+					<button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="Quotes.edit()">Submit changes</button>
+					<button show-mode="edit" type="button" class="btn btn-block btn-danger" onclick="Quotes.deleteFromModal()">Delete</button>
+					<button show-mode="create" type="button" class="btn btn-block btn-success" onclick="Quotes.create()">Save</button>
+				</div>
+				<div messagebox></div>
+			</div>
+		</div>
+	</div>
 
 </div>
 
 <div phantom hidden>
 
-  <div class="row quote generic-sub-list" quote-id="0">
-    <div class="col-1 id"><span name="quote_id">[N/A]</span></div>
-    <div class="col content"><span name="content">[N/A]</span></div>
-    <div class="col-1 action">
-      <button type="submit" class="btn btn-warning icon-btn small" onclick="Quotes.editModal(this)"><i class="fas fa-edit"></i></button>
-      <button type="submit" class="btn btn-danger icon-btn small" onclick="Quotes.deleteFromList(this)"><i class="fas fa-trash"></i></button>
-    </div>
-  </div>
+	<div class="row quote generic-sub-list" quote-id="0">
+		<div class="col-1 id"><span name="quote_id">[N/A]</span></div>
+		<div class="col content"><span name="content">[N/A]</span></div>
+		<div class="col-1 action">
+			<button type="submit" class="btn btn-warning icon-btn small" onclick="Quotes.editModal(this)"><i class="fas fa-edit"></i></button>
+			<button type="submit" class="btn btn-danger icon-btn small" onclick="Quotes.deleteFromList(this)"><i class="fas fa-trash"></i></button>
+		</div>
+	</div>
 
 </div>

@@ -1,7 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
+import asyncio
 import discord
 import traceback
 from Utils.Classes.discordserversettings import DiscordServerSettings
@@ -26,7 +27,8 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 	link_in_name:bool = bool( ContainsLink.match(Member.name) )
 
 	# logging message
-	await loggingOnMemberJoin(cls, Settings, Member, link_in_name=link_in_name)
+	log_coro:Coroutine = loggingOnMemberJoin(cls, Settings, NewMember=Member, link_in_name=link_in_name)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
 	# send welcome message
 	if Settings.welcome_chan and Settings.welcome_msg and (not link_in_name):
@@ -91,7 +93,8 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 	link_in_name:bool = bool( ContainsLink.match(Member.name) )
 
 	# logging message
-	await loggingOnMemberRemove(cls, Settings, Member, link_in_name=link_in_name)
+	log_coro:Coroutine = loggingOnMemberRemove(cls, Settings, OldMember=Member, link_in_name=link_in_name)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
 	# send leave message
 	if Settings.leave_chan and Settings.leave_msg and (not link_in_name):

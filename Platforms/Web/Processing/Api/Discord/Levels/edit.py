@@ -1,32 +1,30 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.db import getDiscordServerUsers
-from Utils.dbutils import validateDBInput
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discorduserstats import DiscordUserStats
 from Utils.Classes.undefined import UNDEFINED
-from Platforms.Web.Processing.Api.errors import (
-	apiMissingAuthorisation,
-	apiMissingData,
-	apiWrongData
-)
+from Platforms.Discord.db import getDiscordServerUsers, getDiscordSeverSettings
+from Platforms.Discord.logging import loggingOnLevelEdit
+from Utils.dbutils import validateDBInput
+from Platforms.Web.Processing.Api.errors import	apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
 	apiDiscordMemberNotFound,
 	apiDiscordMissingPermission
 )
-from .errors import apiDiscordLevelMedalLimit
 
 async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/levels/edit
+	Default url: /api/discord/levels/edit
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -114,6 +112,11 @@ async def apiDiscordLevelsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		where = "`discord_user`.`guild_id` = %s AND `discord_user`.`member_id` = %s",
 		where_values = (CurrentLevelUser.guild_id, CurrentLevelUser.member_id)
 	)
+
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnLevelEdit(PhaazeDiscord, GuildSettings, Editor=CheckMember, changed_member_id=CurrentLevelUser.member_id, changes=changes)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Level: {guild_id=} {member_id=} updated", require="discord:levels")
 	return cls.response(

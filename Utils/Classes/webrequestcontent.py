@@ -13,7 +13,7 @@ def forcable(f:Callable) -> Callable:
 class WebRequestContent(object):
 	"""
 		Takes a Request and acts as a central point for variable source,
-		same vars from different sourcees get overwritten.
+		same vars from different sources get overwritten.
 		Access via X.get(a, b) - if a not found and b is not given,
 		it returnes Undefined else b
 
@@ -69,16 +69,16 @@ class WebRequestContent(object):
 
 	def get(self, a:str, b:Any = UNDEFINED) -> Any:
 		"""
-			get any value from the stored content
+		get any value from the stored content
 		"""
 		if not self.loaded: raise RuntimeError("Content not loaded, call 'await X.load()' before")
 		return self.content.get(a, b)
 
 	def getBool(self, x:str, alternativ:bool) -> bool:
 		"""
-			get a value as bool.
-			Flase = "0", "false", "False", ""
-			True = Everything else
+		get a value as bool.
+		Flase = "0", "false", "False", ""
+		True = Everything else
 		"""
 		value:str or Undefined = self.get(x)
 		if type(value) is Undefined: return alternativ
@@ -88,11 +88,11 @@ class WebRequestContent(object):
 
 	def getStr(self, x:str, alternativ:str, len_min:int=-math.inf, len_max:int=math.inf, must_be_digit:bool=False, strip:bool=True) -> str:
 		"""
-			get a value as string.
-			test it it only contains digits, it its to short or to long,
-			if one failes, return alternativ
+		get a value as string.
+		test it it only contains digits, it its to short or to long,
+		if one failes, return alternativ
 
-			by default, strip's spaces + line breaks at start and end
+		by default, strip's spaces + line breaks at start and end
 		"""
 		value:str or Undefined = self.get(x)
 		if type(value) is Undefined: return alternativ
@@ -106,10 +106,10 @@ class WebRequestContent(object):
 
 	def getInt(self, x:str, alternativ:int, min_x:int=-math.inf, max_x:int=math.inf) -> int:
 		"""
-			get a value as a int.
-			if convertion is not possible
-			or the found value is not in min <= X <= max
-			return alternativ
+		get a value as a int.
+		if convertion is not possible
+		or the found value is not in min <= X <= max
+		return alternativ
 		"""
 
 		value:str or Undefined = self.get(x)

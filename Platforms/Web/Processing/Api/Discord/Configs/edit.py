@@ -1,18 +1,20 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
 from Platforms.Discord.db import getDiscordSeverSettings
-from Platforms.Discord.utils import getDiscordRoleFromString
+from Platforms.Discord.utils import getDiscordRoleFromString, getDiscordChannelFromString
+from Platforms.Discord.logging import loggingOnConfigEdit
 from Platforms.Discord.blacklist import checkBlacklistPunishmentString
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
@@ -27,7 +29,7 @@ from Platforms.Web.Processing.Api.Discord.errors import (
 
 async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/configs/edit
+	Default url: /api/discord/configs/edit
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -73,11 +75,12 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# update["x"] = true
 	# db_update["x"] = "1"
 
-	value:str = Data.getStr("autorole_id", UNDEFINED)
+	value:str = Data.getStr("autorole_id", UNDEFINED, len_max=128)
 	if value != UNDEFINED:
 		error:bool = False
-		if not value: value = None
-		elif value.isdigit():
+		if not value:
+			value = None
+		else:
 			Role:discord.Role = getDiscordRoleFromString(PhaazeDiscord, Guild, value)
 			if not Role:
 				error = True
@@ -85,11 +88,9 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 				return await apiWrongData(cls, WebRequest, msg=f"The Role `{Role.name}` is to high")
 			else:
 				value = str(Role.id)
-		else:
-			error = True
 
 		if error:
-			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord role id")
+			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord role")
 
 		db_update["autorole_id"] = validateDBInput(str, value, allow_null=True)
 		update["autorole_id"] = value
@@ -122,21 +123,20 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		update["currency_name_multi"] = value
 
 	# leave_chan
-	value:str = Data.getStr("leave_chan", UNDEFINED)
+	value:str = Data.getStr("leave_chan", UNDEFINED, len_max=128)
 	if value != UNDEFINED:
 		error:bool = False
-		if not value: value = None
-		elif value.isdigit():
-			Chan:discord.abc.Messageable = discord.utils.get(Guild.channels, id=int(value))
-			if type(Chan) != discord.TextChannel:
+		if not value:
+			value = None
+		else:
+			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, value, required_type="text")
+			if not Chan:
 				error = True
 			else:
 				value = str(Chan.id)
-		else:
-			error = True
 
 		if error:
-			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
+			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel")
 
 		db_update["leave_chan"] = validateDBInput(str, value, allow_null=True)
 		update["leave_chan"] = value
@@ -156,21 +156,19 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		update["level_custom_msg"] = value
 
 	# level_announce_chan
-	value:str = Data.getStr("level_announce_chan", UNDEFINED)
+	value:str = Data.getStr("level_announce_chan", UNDEFINED, len_max=128)
 	if value != UNDEFINED:
 		error:bool = False
 		if not value: value = None
-		elif value.isdigit():
-			Chan:discord.abc.Messageable = discord.utils.get(Guild.channels, id=int(value))
-			if type(Chan) != discord.TextChannel:
+		else:
+			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, value, required_type="text")
+			if not Chan:
 				error = True
 			else:
 				value = str(Chan.id)
-		else:
-			error = True
 
 		if error:
-			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
+			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel")
 
 		db_update["level_announce_chan"] = validateDBInput(str, value, allow_null=True)
 		update["level_announce_chan"] = value
@@ -207,22 +205,44 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		db_update["owner_disable_mod"] = validateDBInput(bool, value)
 		update["owner_disable_mod"] = value
 
-	# welcome_chan
-	value:str = Data.getStr("welcome_chan", UNDEFINED)
+	# track_channel
+	value:str = Data.getStr("track_channel", UNDEFINED, len_max=128)
 	if value != UNDEFINED:
 		error:bool = False
 		if not value: value = None
-		elif value.isdigit():
-			Chan:discord.abc.Messageable = discord.utils.get(Guild.channels, id=int(value))
-			if type(Chan) != discord.TextChannel:
+		else:
+			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, value, required_type="text")
+			if not Chan:
 				error = True
 			else:
 				value = str(Chan.id)
-		else:
-			error = True
 
 		if error:
-			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel id")
+			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel")
+
+		db_update["track_channel"] = validateDBInput(str, value, allow_null=True)
+		update["track_channel"] = value
+
+	# track_value
+	value:str = Data.getInt("track_value", UNDEFINED, min_x=0)
+	if value != UNDEFINED:
+		db_update["track_value"] = validateDBInput(int, value)
+		update["track_value"] = value
+
+	# welcome_chan
+	value:str = Data.getStr("welcome_chan", UNDEFINED, len_max=128)
+	if value != UNDEFINED:
+		error:bool = False
+		if not value: value = None
+		else:
+			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, value, required_type="text")
+			if not Chan:
+				error = True
+			else:
+				value = str(Chan.id)
+
+		if error:
+			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel")
 
 		db_update["welcome_chan"] = validateDBInput(str, value, allow_null=True)
 		update["welcome_chan"] = value
@@ -244,14 +264,18 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not db_update:
 		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Configs: {guild_id=} updated", require="discord:configs")
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_setting",
 		content = db_update,
-		where = "discord_setting.guild_id = %s",
+		where = "`discord_setting`.`guild_id` = %s",
 		where_values = (guild_id,)
 	)
 
+	# logging
+	log_coro:Coroutine = loggingOnConfigEdit(PhaazeDiscord, Configs, Editor=CheckMember, changes=update)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Configs: {guild_id=} updated", require="discord:configs")
 	return cls.response(
 		text=json.dumps( dict(msg="Configs: Updated", changes=update, status=200) ),
 		content_type="application/json",

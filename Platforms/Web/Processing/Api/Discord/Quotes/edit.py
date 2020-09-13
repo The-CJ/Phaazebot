@@ -1,24 +1,27 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
+from Utils.Classes.discordserversettings import DiscordServerSettings
+from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
 from .errors import apiDiscordQuotesNotExists
-from Platforms.Discord.db import getDiscordServerQuotes
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Platforms.Discord.db import getDiscordServerQuotes, getDiscordSeverSettings
+from Platforms.Discord.logging import loggingOnQuoteEdit
 from Utils.Classes.discordquote import DiscordQuote
 
 MAX_QUOTE_SIZE:int = 1750
 
 async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/quotes/edit
+	Default url: /api/discord/quotes/edit
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -74,6 +77,18 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		where = "`discord_quote`.`guild_id` = %s AND `discord_quote`.`id` = %s",
 		where_values = (CurrentEditQuote.guild_id, CurrentEditQuote.quote_id)
 	)
+
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnQuoteEdit(
+		PhaazeDiscord,
+		GuildSettings,
+		ChangeMember=CheckMember,
+		quote_id=CurrentEditQuote.quote_id,
+		old_content=CurrentEditQuote.content,
+		new_content=changes.get("content", "")
+	)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Quote: {guild_id=} edited {quote_id=}", require="discord:quotes")
 	return cls.response(

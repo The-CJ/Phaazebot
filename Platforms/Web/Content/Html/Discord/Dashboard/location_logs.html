@@ -1,0 +1,163 @@
+<div location="logs" style="display: none;">
+
+	<div class="container-fluid">
+
+		<h3>Logs</h3>
+		<sub>Wanna know what happend while you where gone? Every Phaaze specific event is logged here, for everything discord related look into the audit-logs</sub>
+
+		<hr>
+
+		<form class="controls content-box pt-2" action="javascript:Logs.prevPage(true)">
+
+			<div class="center-item-row">
+				<!-- limit -->
+				<div class="col">
+					<select class="custom-select" name="limit">
+						<option value="5">5 Entrys per page</option>
+						<option value="10">10 Entrys per page</option>
+						<option value="25">25 Entrys per page</option>
+						<option value="50" selected>50 Entrys per page</option>
+						<option value="100">100 Entrys per page</option>
+					</select>
+				</div>
+
+				<!-- log contains -->
+				<div class="col">
+					<input type="text" name="content_contains" class="form-control" placeholder="Log entry must contain..."/>
+				</div>
+
+				<!-- log event -->
+				<div class="col">
+					<select class="custom-select" name="event_value"></select>
+				</div>
+			</div>
+
+			<div class="center-item-row">
+
+				<!-- log date -->
+				<div class="col">
+					<input type="datetime-local" name="date_from" class="form-control" placeholder="From">
+				</div>
+				<span> &lt; Event Date &lt; </span>
+				<div class="col">
+					<input type="datetime-local" name="date_to" class="form-control" placeholder="To">
+				</div>
+
+			</div>
+
+			<div class="center-item-row btn-row">
+				<!-- pages -->
+				<div class="col pages text-left">
+					<button onclick="Logs.prevPage(1)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-step-backward"></i></button>
+					<button onclick="Logs.prevPage(0)" type="button" name="button" class="btn btn-secondary icon-btn prev"><i class="fas fa-arrow-left"></i></button>
+					<span>Page: <span class="page">0</span></span>
+					<button onclick="Logs.nextPage(0)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-arrow-right"></i></button>
+					<button onclick="Logs.nextPage(1)" type="button" name="button" class="btn btn-secondary icon-btn next"><i class="fas fa-step-forward"></i></button>
+
+					<span>Total: <span id="log_amount">[N/A]</span></span>
+				</div>
+
+				<!-- message config -->
+				<div class="col text-right">
+					<button type="button" class="btn btn-block btn-secondary icon-btn" onclick="Logs.editModal()">Configure In-Discord messages</button>
+				</div>
+
+				<!-- buttons -->
+				<div class="col text-right">
+					<button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+				</div>
+			</div>
+
+		</form>
+
+		<hr>
+
+		<div class="row header generic-list">
+			<div class="col-2 date">Date</div>
+			<div class="col-2 event">Event</div>
+			<div class="col content">Content</div>
+			<div class="col-1 action">Action</div>
+		</div>
+
+		<!-- gets filled with copys of: "[phantom] .log" -->
+		<div id="log_list"></div>
+
+	</div>
+
+</div>
+
+<div modal>
+
+	<div class="modal fade" id="log_modal" mode="view|edit">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header text-center">
+					<h4 class="modal-title" show-mode="view">Log View</h4>
+					<h4 class="modal-title" show-mode="edit">Edit In-Discord Messages</h4>
+					<button type="button" class="close" onclick="$(this).closest('.modal').modal('hide')"><span>&times;</span></button>
+				</div>
+
+				<div class="modal-body text-black" show-mode="view">
+					<div class="center-item-row" title="In case the user changed the name, you can still find the original with the ID">
+						<div class="col"><span>Log ID</span></div>
+						<div class="col"><span name="log_id"></span></div>
+					</div>
+					<div class="center-item-row" title="In case the user changed the name, you can still find the original with the ID">
+						<div class="col"><span>Event Name</span></div>
+						<div class="col"><span name="event_name"></span> (<span name="event_value"></span>)</div>
+					</div>
+					<div class="center-item-row" title="In case the user changed the name, you can still find the original with the ID">
+						<div class="col"><span>Initiator ID</span></div>
+						<div class="col"><span name="initiator_id"></span></div>
+					</div>
+					<textarea name="content" rows="8" cols="80" readonly></textarea>
+				</div>
+
+				<div class="modal-body text-black" show-mode="edit">
+					<p>
+						Here you can choose if some events should also be posted directly into discord.<br>
+						If you don't select them they will still be logged, so don't spam yourself.<br>
+						You must have a valid channel selected, else no events will be send.
+					</p>
+					<hr>
+
+					<h4>Destination channel</h4>
+					<select class="custom-select form-control" name="track_channel" discord-channel="text" discord-channel-none=true></select>
+					<hr>
+
+					<div id="log_track_list"></div>
+				</div>
+
+				<div class="modal-footer">
+					<button show-mode="edit" type="button" class="btn btn-block btn-warning" onclick="Logs.edit()">Submit changes</button>
+				</div>
+				<div messagebox></div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<div phantom hidden>
+
+	<div class="row log generic-sub-list" log-id="0">
+		<div class="col-2 date"><span name="created_at">[N/A]</span></div>
+		<div class="col-2 event"><span name="event_name">[N/A]</span></div>
+		<div class="col content"><span name="content">[N/A]</span></div>
+		<div class="col-1 action">
+			<button type="submit" class="btn btn-info icon-btn small" onclick="Logs.viewModal(this)"><i class="fas fa-eye"></i></button>
+		</div>
+	</div>
+
+	<div class="center-item-row track-option">
+		<div class="col"><span name="track_name">[N/A]</span></div>
+		<data name="track_value" value="0"></data>
+		<div class="col">
+			<label class="checkbox-container">
+				<input type="checkbox" name="is_enabled">
+			</label>
+		</div>
+	</div>
+
+</div>

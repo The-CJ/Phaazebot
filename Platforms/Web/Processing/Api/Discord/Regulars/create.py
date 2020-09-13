@@ -1,14 +1,18 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Platforms.Discord.utils import getDiscordMemberFromString
-from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.webrequestcontent import WebRequestContent
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Discord.utils import getDiscordMemberFromString
+from Platforms.Discord.logging import loggingOnRegularCreate
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
 	apiMissingAuthorisation
@@ -89,8 +93,12 @@ async def apiDiscordRegularsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 		}
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Regular: {guild_id=} added new entry {member_id=}", require="discord:regulars")
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnRegularCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, NewRegular=ActionMember)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Regular: {guild_id=} added new entry {member_id=}", require="discord:regulars")
 	return cls.response(
 		text=json.dumps( dict(msg="Regulars: Added new entry", entry=ActionMember.name, status=200) ),
 		content_type="application/json",

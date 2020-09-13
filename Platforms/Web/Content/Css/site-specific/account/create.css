@@ -1,9 +1,9 @@
 #register_space {
-  padding: 1em;
+	padding: 1em;
 }
 main h1 {
-  margin: 1em 0;
+	margin: 1em 0;
 }
 #register_space [type=submit] {
-  margin-top: 2em;
+	margin-top: 2em;
 }

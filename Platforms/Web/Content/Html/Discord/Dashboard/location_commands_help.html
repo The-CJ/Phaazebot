@@ -1,117 +1,117 @@
 <div location="commands_help" style="display: none">
 
-  <div class="container-fluid">
+	<div class="container-fluid">
 
-    <h3>Command help</h3>
-    <sub>Here we will explain the commands and their required and optional arguments. If more help is needed check out the Phaaze-Wiki</sub>
-    <hr br>
+		<h3>Command help</h3>
+		<sub>Here we will explain the commands and their required and optional arguments. If more help is needed check out the Phaaze-Wiki</sub>
+		<hr br>
 
-    <form class="controls content-box" action="javascript:CommandsHelp.loadCommandInfo()">
+		<form class="controls content-box" action="javascript:CommandsHelp.loadCommandInfo()">
 
-      <div class="center-item-row">
-        <!-- select -->
-        <div class="col text-left">
-          <select class="custom-select" name="function"></select>
-        </div>
+			<div class="center-item-row">
+				<!-- select -->
+				<div class="col text-left">
+					<select class="custom-select" name="function"></select>
+				</div>
 
-        <!-- buttons -->
-        <div class="col-1 text-right">
-          <button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
-        </div>
-      </div>
+				<!-- buttons -->
+				<div class="col-1 text-right">
+					<button type="submit" class="btn btn-primary icon-btn"><i class="fas fa-search"></i></button>
+				</div>
+			</div>
 
-    </form>
+		</form>
 
-    <hr>
+		<hr>
 
-    <div info-window="placeholder" style="display: none;">
-      <h3><i style="color:grey">Please select a command, you want to know more.</i></h3>
-    </div>
+		<div info-window="placeholder" style="display: none;">
+			<h3><i style="color:grey">Please select a command, you want to know more.</i></h3>
+		</div>
 
-    <div info-window="data" style="display: none;">
+		<div info-window="data" style="display: none;">
 
-      <h2 name="name">[N/A]</h2>
+			<h2 name="name">[N/A]</h2>
 
-      <hr>
+			<hr>
 
-      <div class="row content-box p-2">
-        <div class="col" name="description" style="white-space: pre-line;">[N/A]</div>
-      </div>
+			<div class="row content-box p-2">
+				<div class="col" name="description" style="white-space: pre-line;">[N/A]</div>
+			</div>
 
-      <hr br>
+			<hr br>
 
-      <div class="row content-box p-2">
-        <div class="col">
-          <h3>Arguments</h3>
-          <hr>
+			<div class="row content-box p-2">
+				<div class="col">
+					<h3>Arguments</h3>
+					<hr>
 
-          <div class="row">
-            <div class="col">
-              <h4>Required</h4>
-              <div class="center-item-col" arg-list="require"></div>
-            </div>
+					<div class="row">
+						<div class="col">
+							<h4>Required</h4>
+							<div class="center-item-col" arg-list="require"></div>
+						</div>
 
-            <div class="col">
-              <h4>Optional</h4>
-              <div class="center-item-col" arg-list="optional"></div>
-            </div>
-          </div>
+						<div class="col">
+							<h4>Optional</h4>
+							<div class="center-item-col" arg-list="optional"></div>
+						</div>
+					</div>
 
-          <div class="row" endless-args>
-            <div class="col">
-              <hr>
-              <p>This function is marked to take an endless amount of arguments, means that everything after required and optional arguments (if there are any) will be proccessed.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+					<div class="row" endless-args>
+						<div class="col">
+							<hr>
+							<p>This function is marked to take an endless amount of arguments, means that everything after required and optional arguments (if there are any) will be proccessed.</p>
+						</div>
+					</div>
+				</div>
+			</div>
 
-      <hr br>
+			<hr br>
 
-      <!-- example -->
-      <div class="row content-box p-2">
-        <div class="col">
-          <h3>Examples</h3>
-          <hr>
-          <div class="center-item-col" example-list></div>
-        </div>
-      </div>
+			<!-- example -->
+			<div class="row content-box p-2">
+				<div class="col">
+					<h3>Examples</h3>
+					<hr>
+					<div class="center-item-col" example-list></div>
+				</div>
+			</div>
 
-      <hr br>
+			<hr br>
 
-      <!-- content -->
-      <div class="row content-box p-2">
-        <div class="col">
-          <h3>Content handling</h3>
-          <sub>This is only needed upon command creation, some command will support a predefined content, some will require it.</sub>
-          <hr>
-          <p content-type="none">[None] This command does not take any predefined content.</p>
-          <p content-type="allows">[Allowed] This command allowes a predefined content, but its not required. However adding content my change the command behavior.</p>
-          <p content-type="need">[Required] This command needs you to add a predefined content upon creation.</p>
-        </div>
-      </div>
+			<!-- content -->
+			<div class="row content-box p-2">
+				<div class="col">
+					<h3>Content handling</h3>
+					<sub>This is only needed upon command creation, some command will support a predefined content, some will require it.</sub>
+					<hr>
+					<p content-type="none">[None] This command does not take any predefined content.</p>
+					<p content-type="allows">[Allowed] This command allowes a predefined content, but its not required. However adding content my change the command behavior.</p>
+					<p content-type="need">[Required] This command needs you to add a predefined content upon creation.</p>
+				</div>
+			</div>
 
-      <hr br>
+			<hr br>
 
-      <!-- recommend -->
-      <div class="row content-box p-2">
-        <div class="col">
-          <h3>Recommended settings</h3>
-          <sub>You don't have to create your commands with this, but you may wanna keep it in mind.</sub>
-          <hr>
-          <div class="row">
-            <div class="col">
-              <span>Recommended Cooldown: <span name="recommended_cooldown">[N/A]</span> seconds</span>
-            </div>
-            <div class="col">
-              <span>Recommended require: <span name="recommended_require">[N/A]</span> or higher</span>
-            </div>
-          </div>
-        </div>
-      </div>
+			<!-- recommend -->
+			<div class="row content-box p-2">
+				<div class="col">
+					<h3>Recommended settings</h3>
+					<sub>You don't have to create your commands with this, but you may wanna keep it in mind.</sub>
+					<hr>
+					<div class="row">
+						<div class="col">
+							<span>Recommended Cooldown: <span name="recommended_cooldown">[N/A]</span> seconds</span>
+						</div>
+						<div class="col">
+							<span>Recommended require: <span name="recommended_require">[N/A]</span> or higher</span>
+						</div>
+					</div>
+				</div>
+			</div>
 
-    </div>
+		</div>
 
-  </div>
+	</div>
 
 </div>

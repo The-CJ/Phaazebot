@@ -1,11 +1,13 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
+import asyncio
 from Utils.Classes.discordquote import DiscordQuote
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Platforms.Discord.db import getDiscordServerQuotes
+from Platforms.Discord.logging import loggingOnQuoteDelete
 
 async def removeQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
@@ -30,5 +32,8 @@ async def removeQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 		AND `discord_quote`.`id` = %s""",
 		( str(DQuote.guild_id), str(DQuote.quote_id) )
 	)
+
+	log_coro:Coroutine = loggingOnQuoteDelete(cls, CommandContext.ServerSettings, Deleter=CommandContext.Message.author, quote_id=DQuote.quote_id, deleted_content=DQuote.content)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
 	return {"content": f":white_check_mark: Quote #{specific_id} removed"}
