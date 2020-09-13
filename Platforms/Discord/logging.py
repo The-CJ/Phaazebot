@@ -850,8 +850,8 @@ async def loggingOnAssignroleCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 # Assignrole.edit : 100000000000000000 : 131072
 async def loggingOnAssignroleEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
-	Logs the event when someone creates a new assignrole via web.
-	If track option `Assignrole.create` is active, it will send a message to discord
+	Logs the event when someone edits assignrole via web.
+	If track option `Assignrole.edit` is active, it will send a message to discord
 
 	Required keywords:
 	------------------
@@ -859,7 +859,7 @@ async def loggingOnAssignroleEdit(cls:"PhaazebotDiscord", Settings:DiscordServer
 	* assign_role_trigger `str`
 	* changes `dict`
 	"""
-	logging_signature:str = "Assignrole.create"
+	logging_signature:str = "Assignrole.edit"
 	Editor:discord.Member = kwargs["Editor"]
 	assign_role_trigger:str = kwargs["assign_role_trigger"]
 	changes:dict = kwargs["changes"]
@@ -885,6 +885,50 @@ async def loggingOnAssignroleEdit(cls:"PhaazebotDiscord", Settings:DiscordServer
 		color = EVENT_COLOR_WARNING
 	)
 	Emb.set_thumbnail(url=Editor.avatar_url or Editor.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="Role trigger:", value=assign_role_trigger, inline=False)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Assignrole.delete : 1000000000000000000 : 262144
+async def loggingOnAssignroleDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone deletes a assignrole via web.
+	If track option `Assignrole.delete` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Deleter `discord.Member`
+	* assign_role_trigger `str`
+	"""
+	logging_signature:str = "Assignrole.delete"
+	Deleter:discord.Member = kwargs["Deleter"]
+	assign_role_trigger:str = kwargs["assign_role_trigger"]
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Deleter.id),
+			"content": f"{Deleter.name} deleted a assign role with trigger='{assign_role_trigger}'"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Deleter.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Deleter.name} deleted a assignrole",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_NEGATIVE
+	)
+	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
 	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Role trigger:", value=assign_role_trigger, inline=False)
 

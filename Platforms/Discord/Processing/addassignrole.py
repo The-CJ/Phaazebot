@@ -1,11 +1,13 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
+import asyncio
 import discord
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Platforms.Discord.utils import getDiscordRoleFromString
+from Platforms.Discord.logging import loggingOnQuoteCreate
 
 async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
@@ -52,5 +54,9 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 			trigger = trigger
 		)
 	)
+
+	# Log
+	log_coro:Coroutine = loggingOnQuoteCreate(cls, CommandContext.ServerSettings, Creator=CommandContext.Message.author, assign_role_id=str(AssignRole.id), trigger=trigger)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
 	return {"content": f":white_check_mark: Successfull added assign role `{str(AssignRole)}` with trigger `{trigger}`"}

@@ -1,15 +1,18 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordassignrole import DiscordAssignRole
-from Platforms.Discord.db import getDiscordServerAssignRoles
+from Platforms.Discord.db import getDiscordServerAssignRoles, getDiscordSeverSettings
+from Platforms.Discord.logging import loggingOnAssignroleDelete
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 from Platforms.Web.Processing.Api.Discord.errors import (
 	apiDiscordGuildUnknown,
@@ -20,7 +23,7 @@ from .errors import apiDiscordAssignRoleNotExists
 
 async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/assignroles/delete
+	Default url: /api/discord/assignroles/delete
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -68,6 +71,14 @@ async def apiDiscordAssignrolesDelete(cls:"WebIndex", WebRequest:Request) -> Res
 		DELETE FROM `discord_assignrole` WHERE `guild_id` = %s AND `id` = %s""",
 		(AssignRoleToDelete.guild_id, AssignRoleToDelete.assignrole_id)
 	)
+
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnAssignroleDelete(PhaazeDiscord, GuildSettings,
+		Deleter=CheckMember,
+		assign_role_trigger=AssignRoleToDelete.trigger,
+	)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Assignroles: {guild_id=} deleted [{role_id}, {assignrole_id=}]", require="discord:role")
 	return cls.response(
