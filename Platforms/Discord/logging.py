@@ -27,8 +27,9 @@ TRACK_OPTIONS:Dict[str, int] = {
 	"Levelmedal.create": 1<<14,
 	"Levelmedal.delete": 1<<15,
 	"Assignrole.create": 1<<16,
-	"Assignrole.delete": 1<<17,
-	"Config.edit": 1<<18,
+	"Assignrole.edit": 1<<17,
+	"Assignrole.delete": 1<<18,
+	"Config.edit": 1<<19,
 }
 EVENT_COLOR_POSITIVE:int = 0x00FF00
 EVENT_COLOR_WARNING:int = 0xFFAA00
@@ -799,7 +800,7 @@ async def loggingOnLevelmedalDelete(cls:"PhaazebotDiscord", Settings:DiscordServ
 # Assignrole.create : 10000000000000000 : 65536
 async def loggingOnAssignroleCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
 	"""
-	Logs the event when someone deletes a discordmember medal via web.
+	Logs the event when someone creates a new assignrole via web.
 	If track option `Assignrole.create` is active, it will send a message to discord
 
 	Required keywords:
@@ -840,6 +841,52 @@ async def loggingOnAssignroleCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Trigger:", value=trigger, inline=False)
 	Emb.add_field(name="Linked with role:", value=assign_role_name, inline=False)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Assignrole.edit : 100000000000000000 : 131072
+async def loggingOnAssignroleEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone creates a new assignrole via web.
+	If track option `Assignrole.create` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Editor `discord.Member`
+	* assign_role_trigger `str`
+	* changes `dict`
+	"""
+	logging_signature:str = "Assignrole.create"
+	Editor:discord.Member = kwargs["Editor"]
+	assign_role_trigger:str = kwargs["assign_role_trigger"]
+	changes:dict = kwargs["changes"]
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Editor.id),
+			"content": f"{Editor.name} edited the assign role with trigger='{assign_role_trigger}' changes: {str(changes)}"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Editor.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Editor.name} edited a assignrole",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_WARNING
+	)
+	Emb.set_thumbnail(url=Editor.avatar_url or Editor.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="Role trigger:", value=assign_role_trigger, inline=False)
 
 	try:
 		await TargetChannel.send(embed=Emb)

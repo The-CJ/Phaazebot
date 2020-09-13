@@ -1,18 +1,21 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordassignrole import DiscordAssignRole
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from Platforms.Discord.db import getDiscordServerAssignRoles
+from Platforms.Discord.db import getDiscordServerAssignRoles, getDiscordSeverSettings
 from Platforms.Discord.utils import getDiscordRoleFromString
+from Platforms.Discord.logging import loggingOnAssignroleEdit
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
 	apiMissingAuthorisation,
@@ -31,7 +34,7 @@ from .errors import (
 
 async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/discord/assignroles/edit
+	Default url: /api/discord/assignroles/edit
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
@@ -112,6 +115,15 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 		where = "`discord_assignrole`.`guild_id` = %s AND `discord_assignrole`.`id` = %s",
 		where_values = (AssignRoleToEdit.guild_id, AssignRoleToEdit.assignrole_id)
 	)
+
+	# logging
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	log_coro:Coroutine = loggingOnAssignroleEdit(PhaazeDiscord, GuildSettings,
+		Editor=CheckMember,
+		assign_role_trigger=AssignRoleToEdit.trigger,
+		changes=update
+	)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
 
 	cls.Web.BASE.Logger.debug(f"(API/Discord) Assignrole: {guild_id=} edited {assignrole_id=}", require="discord:role")
 	return cls.response(
