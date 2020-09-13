@@ -644,3 +644,54 @@ async def loggingOnRegularDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 		await TargetChannel.send(embed=Emb)
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Level.edit : 10000000000000 : 8192
+async def loggingOnLevelEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone edits a discordmember-level via web.
+	If track option `Regular.delete` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Remover `discord.Member`
+	* changed_member_id `str`
+	* changes `dict`
+	"""
+	logging_signature:str = "Level.edit"
+	Editor:discord.Member = kwargs.get("Editor")
+	changed_member_id:str = kwargs.get("changed_member_id")
+	changes:dict = kwargs.get("changes")
+
+	LevelMember:discord.Member = getDiscordMemberFromString(cls, Editor.guild, changed_member_id)
+	level_member_name:str = LevelMember.name if LevelMember else "(Unknown)"
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Editor.id),
+			"content": f"{Editor.name} edited the level stats of: {level_member_name} changes: {str(changes)}"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Editor.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Editor.name} edited level stats",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_WARNING
+	)
+	Emb.set_thumbnail(url=Editor.avatar_url or Editor.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="Edited member:", value=level_member_name, inline=False)
+	if changes.get("edited", False):
+		Emb.add_field(name="Warning:", value="EXP got changed, this member now has a [EDITED] mark", inline=False)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
