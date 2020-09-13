@@ -1,18 +1,20 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
+import asyncio
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
 from Platforms.Discord.db import getDiscordSeverSettings
 from Platforms.Discord.utils import getDiscordRoleFromString, getDiscordChannelFromString
+from Platforms.Discord.logging import loggingOnConfigEdit
 from Platforms.Discord.blacklist import checkBlacklistPunishmentString
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
@@ -262,7 +264,6 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not db_update:
 		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Configs: {guild_id=} updated", require="discord:configs")
 	cls.Web.BASE.PhaazeDB.updateQuery(
 		table = "discord_setting",
 		content = db_update,
@@ -270,6 +271,11 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		where_values = (guild_id,)
 	)
 
+	# logging
+	log_coro:Coroutine = loggingOnConfigEdit(PhaazeDiscord, Configs, Editor=CheckMember, changes=update)
+	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
+
+	cls.Web.BASE.Logger.debug(f"(API/Discord) Configs: {guild_id=} updated", require="discord:configs")
 	return cls.response(
 		text=json.dumps( dict(msg="Configs: Updated", changes=update, status=200) ),
 		content_type="application/json",

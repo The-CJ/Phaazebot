@@ -936,3 +936,46 @@ async def loggingOnAssignroleDelete(cls:"PhaazebotDiscord", Settings:DiscordServ
 		await TargetChannel.send(embed=Emb)
 	except Exception as E:
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Config.edit : 10000000000000000000 : 524288
+async def loggingOnConfigEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone makes any changes to configs via web.
+	If track option `Config.edit` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Editor `discord.Member`
+	* changes `dict`
+	"""
+	logging_signature:str = "Config.edit"
+	Editor:discord.Member = kwargs["Editor"]
+	changes:dict = kwargs["changes"]
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Editor.id),
+			"content": f"{Editor.name} made changes to the server settings: {str(changes)}"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Editor.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Editor.name} made changes to the server settings",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_WARNING
+	)
+	Emb.set_thumbnail(url=Editor.avatar_url or Editor.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
