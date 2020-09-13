@@ -6,7 +6,7 @@ import discord
 import traceback
 import datetime
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Platforms.Discord.utils import getDiscordChannelFromString
+from Platforms.Discord.utils import getDiscordChannelFromString, getDiscordMemberFromString
 
 # there is only a small amount, because most things are handled by discord audit logs
 TRACK_OPTIONS:Dict[str, int] = {
@@ -471,8 +471,10 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 	ChangeMember:discord.Member = kwargs.get("ChangeMember")
 	twitch_channel:str = kwargs.get("twitch_channel")
 	discord_channel_id:str = kwargs.get("discord_channel_id")
-	discord_channel_name:str = getDiscordChannelFromString(cls, ChangeMember.guild, discord_channel_id, required_type="text") or "(Unknown)"
 	changes:str = kwargs.get("changes")
+
+	Chan:discord.TextChannel = getDiscordChannelFromString(cls, ChangeMember.guild, discord_channel_id, required_type="text")
+	discord_channel_name:str = Chan.name if Chan else "(Unknown)"
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -519,7 +521,9 @@ async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordSer
 	Deleter:discord.Member = kwargs.get("Deleter")
 	twitch_channel:str = kwargs.get("twitch_channel")
 	discord_channel_id:str = kwargs.get("discord_channel_id")
-	discord_channel_name:str = getDiscordChannelFromString(cls, Deleter.guild, discord_channel_id, required_type="text") or "(Unknown)"
+
+	Chan:discord.TextChannel = getDiscordChannelFromString(cls, Deleter.guild, discord_channel_id, required_type="text")
+	discord_channel_name:str = Chan.name if Chan else "(Unknown)"
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_log",
@@ -544,6 +548,97 @@ async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordSer
 	Emb.set_thumbnail(url=Deleter.avatar_url or Deleter.default_avatar_url)
 	Emb.set_author(name=f"Log Event - [{logging_signature}]")
 	Emb.add_field(name="Twitch channel:", value=twitch_channel, inline=False)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Regular.create : 100000000000 : 2048
+async def loggingOnRegularCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone adds a discord regular via web.
+	If track option `Regular.create` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Creator `discord.Member`
+	* NewRegular `discord.Member`
+	"""
+	logging_signature:str = "Regular.create"
+	Creator:discord.Member = kwargs.get("Creator")
+	NewRegular:discord.Member = kwargs.get("NewRegular")
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Creator.id),
+			"content": f"{Creator.name} added {NewRegular.name} as a regular"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Creator.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Creator.name} added a new regular.",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_POSITIVE
+	)
+	Emb.set_thumbnail(url=Creator.avatar_url or Creator.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="New Regular:", value=NewRegular.name, inline=False)
+
+	try:
+		await TargetChannel.send(embed=Emb)
+	except Exception as E:
+		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
+
+# Regular.delete : 1000000000000 : 4096
+async def loggingOnRegularDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when someone removes a discord regular via web.
+	If track option `Regular.delete` is active, it will send a message to discord
+
+	Required keywords:
+	------------------
+	* Remover `discord.Member`
+	* old_regular_id `str`
+	"""
+	logging_signature:str = "Regular.delete"
+	Remover:discord.Member = kwargs.get("Remover")
+	old_regular_id:str = kwargs.get("old_regular_id")
+
+	OldRegular:discord.Member = getDiscordMemberFromString(cls, Remover.guild, old_regular_id)
+	old_regular_name:str = OldRegular.name if OldRegular else "(Unknown)"
+
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_log",
+		content={
+			"guild_id": Settings.server_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": str(Remover.id),
+			"content": f"{Remover.name} removed {old_regular_name} as a regular"
+		}
+	)
+
+	if not (TRACK_OPTIONS[logging_signature] & Settings.track_value): return # track option not active, skip message to discord server
+
+	TargetChannel:discord.TextChannel = getDiscordChannelFromString(cls, Remover.guild, Settings.track_channel, required_type="text")
+	if not TargetChannel: return # no channel found
+
+	Emb:discord.Embed = discord.Embed(
+		description = f"{Remover.name} removed a regular.",
+		timestamp = datetime.datetime.now(),
+		color = EVENT_COLOR_NEGATIVE
+	)
+	Emb.set_thumbnail(url=Remover.avatar_url or Remover.default_avatar_url)
+	Emb.set_author(name=f"Log Event - [{logging_signature}]")
+	Emb.add_field(name="Old Regular:", value=old_regular_name, inline=False)
 
 	try:
 		await TargetChannel.send(embed=Emb)
