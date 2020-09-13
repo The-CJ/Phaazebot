@@ -70,7 +70,7 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 		if not AssignRole:
 			return await apiDiscordRoleNotFound(cls, WebRequest, guild_name=Guild.name, guild_id=Guild.id, role_name=value )
 
-		if AssignRole > Guild.me.top_role:
+		if AssignRole > Guild.me.top_role or AssignRole == Guild.default_role:
 			return await apiWrongData(cls, WebRequest, msg=f"The Role `{AssignRole.name}` is to high")
 
 		db_update["role_id"] = validateDBInput(str, value)

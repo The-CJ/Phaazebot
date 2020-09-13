@@ -75,7 +75,7 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 	if not AssignRole:
 		return await apiDiscordRoleNotFound(cls, WebRequest, guild_id=Guild.name, guild_name=Guild.name, role_id=role_id)
 
-	if AssignRole >= Guild.me.top_role:
+	if AssignRole >= Guild.me.top_role or AssignRole == Guild.default_role:
 		return await apiWrongData(cls, WebRequest, msg=f"The Role `{AssignRole.name}` is to high")
 
 	# check if already exists and limits
