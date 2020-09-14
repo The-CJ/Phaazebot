@@ -7,6 +7,7 @@ var AdminStatus = new (class {
 		this.field_version = "#version";
 		this.field_uptime = "#uptime";
 		this.module_phantom_class = ".module";
+		this.discord_avatar_input = "#new_discord_avatar"
 	}
 
 	show() {
@@ -74,5 +75,20 @@ var AdminStatus = new (class {
 		.fail(function (data) {
 			generalAPIErrorHandler( {data:data, msg:"changing status failed"} );
 		});
+	}
+
+	updateDiscordAvatarFile() {
+
+		var req = {
+			"url": "/api/admin/avatar",
+			"data": {
+				"platform": "discord",
+				"file": $(this.discord_avatar_input)[0].files[0]
+			},
+			"done_function": function (data) { console.log(data); },
+			"fail_function": function (data) { generalAPIErrorHandler({data:data, msg:"changing avatar failed"}); }
+		};
+
+		formUpdate(req);
 	}
 });
