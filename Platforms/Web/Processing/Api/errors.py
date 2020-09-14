@@ -236,3 +236,36 @@ async def apiMissingData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Re
 		content_type="application/json",
 		status=400
 	)
+
+async def apiTimeout(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+	"""
+	Optional keywords:
+	------------------
+	* msg `str` : (Default: None) * [Overwrites default]
+	* time `int` *
+
+	Default message (*gets altered by optional keywords):
+	----------------------------------------------------
+	An timeout occurred during the request
+	"""
+	res:dict = dict(status=400, error="timeout_occurred")
+
+	time:str = kwargs.get("time", None)
+	if time:
+		res["time"] = time
+
+	# build message
+	default_msg:str = "An timeout occurred during the request"
+
+	if time:
+		default_msg += f": [{time=}s]"
+
+	msg:str = kwargs.get("msg", default_msg)
+	res["msg"] = msg
+
+	cls.Web.BASE.Logger.debug(f"(Web/API) Timeout Request", require="api:400")
+	return cls.response(
+		text=json.dumps( res ),
+		content_type="application/json",
+		status=400
+	)
