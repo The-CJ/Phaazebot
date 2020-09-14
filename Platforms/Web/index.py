@@ -129,6 +129,7 @@ class WebIndex(object):
 		self.Web.router.add_route('*', '/api/admin/module', self.apiAdminModule)
 		self.Web.router.add_route('*', '/api/admin/evaluate', self.apiAdminEvaluate)
 		self.Web.router.add_route('*', '/api/admin/status', self.apiAdminStatus)
+		self.Web.router.add_route('*', '/api/admin/avatar', self.apiAdminAvatar)
 		self.Web.router.add_route('*', '/api/admin/roles{x:/?}{method:.*}', self.apiAdminRoles)
 		self.Web.router.add_route('*', '/api/admin/users{x:/?}{method:.*}', self.apiAdminUsers)
 
@@ -161,6 +162,7 @@ class WebIndex(object):
 	from .Processing.Api.Admin.evaluate import apiAdminEvaluate
 	from .Processing.Api.Admin.status import apiAdminStatus
 	from .Processing.Api.Admin.module import apiAdminModule
+	from .Processing.Api.Admin.avatar import apiAdminAvatar
 	from .Processing.Api.Admin.Roles.main import apiAdminRoles
 	from .Processing.Api.Admin.Users.main import apiAdminUsers
 
