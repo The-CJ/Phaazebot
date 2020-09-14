@@ -171,6 +171,46 @@ function copyToClipboard(content) {
 }
 
 // request handler
+function formUpdate(x={}) {
+	// this is like a extended version of JQuerys $.get or $post
+	// if can be used like any other {key: value} request,
+	// but this one supports File object and some other classes in the value spot
+
+	var url = x["url"] ? x["url"] : "";
+	var method = x["method"] ? x["method"] : "POST";
+	var data = x["data"] ? x["data"] : {};
+	var done_function = x["done_function"] ? x["done_function"] : function (x) {};
+	var fail_function = x["fail_function"] ? x["fail_function"] : function (x) {};
+
+	var RequestHandler = new XMLHttpRequest();
+	var RequestForm = new FormData();
+
+	for (var key in data) {
+		let value = data[key];
+		RequestForm.append(key, value);
+	}
+
+	RequestHandler.onload = function () {
+		if( this.getResponseHeader("content-type") == "application/json") {
+			let responseJSON = JSON.parse(this.responseText);
+			done_function(responseJSON);
+		} else {
+			done_function(this.responseText);
+		}
+	}
+	RequestHandler.onfail = function () {
+		if( this.getResponseHeader("content-type") == "application/json") {
+			let responseJSON = JSON.parse(this.responseText);
+			fail_function(responseJSON);
+		} else {
+			fail_function(this.responseText);
+		}
+	}
+	RequestHandler.open(method, url);
+	RequestHandler.send(RequestForm);
+
+}
+
 function generalAPIErrorHandler(x={}) {
 	// it does what you whould think it does,
 	// give this function the data object from a $.get .post .etc...
