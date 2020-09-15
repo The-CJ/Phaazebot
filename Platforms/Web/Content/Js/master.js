@@ -451,6 +451,7 @@ var Display = new (class {
 		this.color_critical = "#e83d3d";
 		this.color_info = "#4285FF";
 		this.default_time = 10000;
+		this.loading_tag_name = "__loading__screen__";
 	}
 
 	showMessage(m) {
@@ -488,7 +489,43 @@ var Display = new (class {
 			m.time
 		);
 	}
-})()
+
+	loadingScreen(state, message="Loading...") {
+		var FoundScreens = $(`[name=${this.loading_tag_name}]`);
+		if (!state) { FoundScreens.remove(); }
+		else {
+			if (FoundScreens.length != 0) { return; /* there are already some active*/ }
+
+			var LoadingScreen = $("<div/>");
+			LoadingScreen.attr("class", "center-item-row");
+			LoadingScreen.attr("name", this.loading_tag_name);
+
+			var LoadingScreenInner = $("<div/>");
+			LoadingScreenInner.attr("class", "center-item-col w-100");
+
+			LoadingScreen.append(LoadingScreenInner);
+
+			// img
+			let Img = $("<img>");
+			Img.attr("src", "/img/favicon.ico");
+			Img.attr("alt", "logo");
+			Img.attr("class", "animation-spin");
+			LoadingScreenInner.append(Img);
+
+			// msg
+			let Msg = $("<h1>");
+			Msg.text(message);
+			Msg.attr("class", "text-white");
+			LoadingScreenInner.append(Msg);
+
+			// disable click
+			LoadingScreen.attr("onclick", "Display.loadingScreen(false);");
+			$("body").prepend(LoadingScreen);
+		}
+
+	}
+
+})
 
 var DynamicURL = new (class {
 	constructor() {

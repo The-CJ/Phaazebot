@@ -172,7 +172,7 @@ data { display: none; }
 	background: rgba(0, 0, 0, 0.25);
 }
 
-/*global messages*/
+/* global messages */
 #main_message_field {
 	width: 100%;
 	z-index: 500;
@@ -236,4 +236,14 @@ data { display: none; }
 		margin: 0 50%;
 		width: 0%;
 	}
+}
+
+/* loading screen */
+div[name=__loading__screen__] {
+	top: 0; left: 0;
+	height: 100vh; width: 100vw;
+	position: fixed;
+	z-index: 10000;
+	background-color: rgba(0, 0, 0, 0.75);
+	cursor: pointer;
 }

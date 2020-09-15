@@ -85,10 +85,17 @@ var AdminStatus = new (class {
 				"platform": "discord",
 				"file": $(this.discord_avatar_input)[0].files[0]
 			},
-			"done_function": function (data) { console.log(data); },
-			"fail_function": function (data) { generalAPIErrorHandler({data:data, msg:"changing avatar failed"}); }
+			"done_function": function (data) {
+				console.log(data);
+				Display.loadingScreen(false)
+			},
+			"fail_function": function (data) {
+				generalAPIErrorHandler({data:data, msg:"changing avatar failed"});
+				Display.loadingScreen(false)
+			}
 		};
 
+		Display.loadingScreen(true, "Uploading new Discord-Avatar...");
 		formUpdate(req);
 	}
 });
