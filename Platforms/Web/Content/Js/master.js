@@ -190,22 +190,22 @@ function formUpdate(x={}) {
 		RequestForm.append(key, value);
 	}
 
-	RequestHandler.onload = function () {
-		if( this.getResponseHeader("content-type") == "application/json") {
-			let responseJSON = JSON.parse(this.responseText);
-			done_function(responseJSON);
-		} else {
-			done_function(this.responseText);
+	RequestHandler.onreadystatechange= function () {
+		if (this.readyState != 4) { return; }
+		var content_type = this.getResponseHeader("content-type") || "";
+
+		var final_response = this.responseText;
+		if (content_type.startsWith("application/json")) { final_response = JSON.parse(final_response); }
+
+		if (200 <= this.status && this.status <= 299) {
+			done_function(final_response);
+		} else if (300 <= this.status && this.status <= 399) {
+			console.log("mm yes good question, we got a 300 <= X <= 399");
+		} else if (400 <= this.status && this.status <= 599) {
+			fail_function(final_response);
 		}
 	}
-	RequestHandler.onfail = function () {
-		if( this.getResponseHeader("content-type") == "application/json") {
-			let responseJSON = JSON.parse(this.responseText);
-			fail_function(responseJSON);
-		} else {
-			fail_function(this.responseText);
-		}
-	}
+
 	RequestHandler.open(method, url);
 	RequestHandler.send(RequestForm);
 

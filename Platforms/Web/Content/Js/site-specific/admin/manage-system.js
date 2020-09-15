@@ -87,6 +87,7 @@ var AdminStatus = new (class {
 			},
 			"done_function": function (data) {
 				console.log(data);
+				Display.showMessage( {content: data.msg, color:Display.color_success} );
 				Display.loadingScreen(false)
 			},
 			"fail_function": function (data) {
