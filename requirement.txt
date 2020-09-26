@@ -6,3 +6,4 @@ tabulate
 aiohttp
 git+https://github.com/The-CJ/osu_irc.py.git#egg=osu_irc
 git+https://github.com/The-CJ/twitch_irc.py.git#egg=twitch_irc
+git+https://github.com/The-CJ/phzcf.py.git#egg=phzcf

@@ -1,5 +1,5 @@
-import re
 import json
+import phzcf
 import traceback
 from typing import Any, Dict
 from Utils.cli import CliArgs
@@ -50,32 +50,8 @@ class ConfigParser(object):
 			print(f'Config > unknown error: {str(E)}')
 			traceback.print_exc()
 
-
 	def loadPHZCF(self, content:bytes) -> None:
-		# loose code for now, maybe i make a own lib or so
-
-		Struc:"re.Pattern" = re.compile(r"^\[(.+)\].*?=(.*)$")
-
-		line:bytes
-		for line in content.splitlines():
-			# strip
-			line = line.strip(b' ').strip(b'\t')
-			line:str = line.decode("UTF-8")
-
-			# ignore empty lines
-			if not line: continue
-
-			# ignore comments
-			if line[0] == '#': continue
-
-			Found:re.Match = re.search(Struc, line)
-			if Found:
-				var_name:str = Found.group(1)
-				var_value:str = Found.group(2).strip(' ')
-
-				var_value:Any = json.loads(var_value)
-
-				self.content[var_name] = var_value
+		self.content = phzcf.load( content )
 
 	def loadJSON(self, content:bytes) -> None:
 		self.content = json.loads( content )
