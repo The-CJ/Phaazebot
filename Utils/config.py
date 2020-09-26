@@ -10,7 +10,7 @@ class ConfigParser(object):
 	This class is suppost to provide a raw accesspoint for configuration data.
 	There are multiple ways to load config in this class, from there, all other Sub-Config classes that info from here
 	"""
-	def __init__(self, file_path:str="config.phzcf", file_type:str="phzcf"):
+	def __init__(self, file_path:str="Config/config.phzcf", file_type:str="phzcf"):
 		self.loaded:bool = False
 		self.content:Dict[str, Any] = {}
 		self.file_type:str = file_type

@@ -1,35 +1,3 @@
-# Config Example for Phaazebot
-# Format is .phzcf [PhaazeConfigFile], a selfmade config type, because i was bored.
-# (yeah, that is actually the only reason, because json works just fine :3)
-#
-# lines starting with # are comments... as you might already found out
-# spaces before and after a line, are stripped as well as tabs
-#
-# line format:
-# [Var name] = Var value
-#
-# e.g.:
-# [Version] = "1.3.3.7"
-# [limit] = 32
-# [or float] = 3.2
-#
-# - spaces in var names don't matter
-# - var names may be overwritten multiple times
-# - the default json decode/encode rules are applied for values
-# 	- "Something" == good
-# 	- 'something' == bad
-# 	- 8.4 == good,
-# 	- "8.4" == also good, but its a string,
-# 	- 8,4 == bad
-#	- true == good
-#	- True == bad
-#
-# var values can also be entire json objects, because why not
-# [a list] = [1,2,3,4,5,6,"A","B"]
-# [even more] = {"A":"111", "B":222, "C":3.33}
-
-################################################################################
-
 [Version] = "0.0.0"
 
 # Module starting state
