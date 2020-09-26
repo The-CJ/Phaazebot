@@ -1,0 +1,92 @@
+[Version] = "0.0.0"
+
+# Module starting state
+	[active_main] = true
+	[active_api] = false
+	[active_web] = false
+	[active_discord] = false
+	[active_twitch_irc] = false
+	[active_twitch_events] = false
+	[active_osu_irc] = false
+	[active_twitter] = false
+	[active_youtube] = false
+
+# Database
+	[phaazedb_user] = "secret!..?"
+	[phaazedb_password] = "secret!..?"
+	[phaazedb_host] = "localhost"
+	[phaazedb_database] = "phaaze"
+	[phaazedb_port] = "3306"
+
+# Web
+	[web_root] = "localhost"
+	[ssl_dir] = "/etc/letsencrypt/live/domain.something/"
+	# that 5MB
+	[web_client_max_size] = 5242880
+	# targets links
+	[discord_login_link] = "https://discordapp.com"
+	[discord_redirect_link] = "localhost"
+	[twitch_login_link] = "https://id.twitch.tv"
+	[twitch_redirect_link] = "localhost"
+
+# Discord:
+	# Access
+		[discord_bot_id] = "1337"
+		[discord_secret] = "6969696969"
+		[discord_token] = "1234567890"
+	# Limits
+		[discord_custom_commands_amount] = 100
+		[discord_level_medal_amount] = 50
+		[discord_quotes_amount] = 100
+		[discord_assignrole_amount] = 25
+		[discord_regular_amount] = 50
+	# Vars
+		[discord_debug_user_id] = ["1337", "00000", "42069"]
+		[discord_motd] = "Oh... hello there"
+		[default_discord_currency] = "Discord coin"
+		[default_discord_currency_multi] = "Discord coins"
+	# Cooldowns
+		[discord_private_cooldown] = 1
+		[discord_normal_cooldown] = 1
+		[discord_mod_cooldown] = 3
+		[discord_owner_cooldown] = 5
+		[discord_custom_commands_cooldown] = 3
+		[discord_level_cooldown] = 3
+
+# Twitch:
+	# Access
+		[twitch_bot_id] = "6969"
+		# API Access
+			[twitch_client_id] = "secret!..?"
+			[twitch_client_secret] = "secret!..?"
+		# IRC Access
+			[twitch_irc_token] = "secret!..?"
+			[twitch_irc_nickname] = "secret!..?"
+	# Vars
+		[default_twitch_currency] = "Twitch coin"
+		[default_twitch_currency_multi] = "Twitch coins"
+	# Cooldowns
+		[twitch_timeout_message_cooldown] = 20
+		[twitch_blacklist_remember_time] = 180
+		[default_twitch_currency] = "Twitch coin"
+	# Limits
+		[twitch_custom_command_amount] = 100
+		[twitch_quote_amount] = 100
+		[twitch_stats_cooldown] = 5
+
+# osu!
+	# API Access
+		[osu_api_token] = "secret!..?"
+	# IRC Access
+		[osu_irc_username] = "secret!..?"
+		[osu_irc_token] = "secret!..?"
+
+# Twitter:
+	[twitter_token] = "secret!..?"
+	[twitter_token_key] = "secret!..?"
+	[twitter_consumer_key] = "secret!..?"
+	[twitter_consumer_secret] = "secret!..?"
+
+# Access to other 3rd partys
+	[cleverbot_token] = "secret!..?"
+	[mashape_token] = "secret!..?"

@@ -2,4 +2,6 @@
 __pycache__
 .ropeproject
 config.json*
+config.phzcf*
 !config.json.example
+!config.phzcf.example

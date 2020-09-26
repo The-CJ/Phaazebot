@@ -2,7 +2,7 @@ import sys
 import re
 from Utils.Classes.undefined import UNDEFINED
 
-class CliArgs(object):
+class CliArgsClass(object):
 	"""Contains arguments added by programm start """
 	def __init__(self):
 		self.args:dict = dict()
@@ -31,4 +31,4 @@ class CliArgs(object):
 		except:
 			return UNDEFINED
 
-CliArgs = CliArgs()
+CliArgs = CliArgsClass()
