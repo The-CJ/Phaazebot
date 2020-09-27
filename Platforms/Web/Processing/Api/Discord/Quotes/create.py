@@ -55,7 +55,7 @@ async def apiDiscordQuotesCreate(cls:"WebIndex", WebRequest:Request) -> Response
 		( guild_id, )
 	)
 
-	if res[0]['I'] >= cls.Web.BASE.Limit.DISCORD_QUOTES_AMOUNT:
+	if res[0]['I'] >= cls.Web.BASE.Limit.discord_quotes_amount:
 		return await apiDiscordQuoteLimit(cls, WebRequest)
 
 	# get user info

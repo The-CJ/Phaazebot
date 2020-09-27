@@ -25,7 +25,7 @@ async def addQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 		(Command.server_id,)
 	)
 
-	if res[0]["I"] >= cls.BASE.Limit.DISCORD_QUOTES_AMOUNT:
+	if res[0]["I"] >= cls.BASE.Limit.discord_quotes_amount:
 		return {"content": ":no_entry_sign: This server hit the quote limit, please remove some first."}
 
 	new_quote_id:int = cls.BASE.PhaazeDB.insertQuery(
