@@ -24,7 +24,7 @@ class PhaazebotWeb(web.Application):
 		if CliArgs.get("http", "test") == "live":
 			self.port:int = 443
 			self.SSLContext:ssl.SSLContext = ssl.SSLContext()
-			sslroot:str = self.BASE.Vars.SSL_DIR.rstrip("/")
+			sslroot:str = self.BASE.Vars.ssl_dir.rstrip("/")
 			self.SSLContext.load_cert_chain(f"{sslroot}/fullchain.pem", keyfile=f"{sslroot}/privkey.pem")
 			self.BASE.Logger.info(f"Configured webserver Port={self.port} (live)")
 
