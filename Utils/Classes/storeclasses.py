@@ -25,7 +25,7 @@ class AccessStore(object):
 
 		self.phaazedb_host:str = str(config.get("phaazedb_host", "localhost"))
 		self.phaazedb_user:str = str(config.get("phaazedb_user", "phaaze"))
-		self.PHAAZEDB_PASSWORD:str = str(config.get("phaazedb_password", ''))
+		self.phaazedb_password:str = str(config.get("phaazedb_password", ''))
 		self.PHAAZEDB_DATABASE:str = str(config.get("phaazedb_database", "phaaze"))
 		self.phaazedb_port:str = str(config.get("phaazedb_port", "3306"))
 

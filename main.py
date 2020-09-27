@@ -86,7 +86,7 @@ class Phaazebot(object):
 			host = self.Access.phaazedb_host,
 			port = self.Access.phaazedb_port,
 			user = self.Access.phaazedb_user,
-			passwd = self.Access.PHAAZEDB_PASSWORD,
+			passwd = self.Access.phaazedb_password,
 			database = self.Access.PHAAZEDB_DATABASE
 		)
 
