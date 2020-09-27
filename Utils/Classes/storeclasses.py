@@ -74,7 +74,7 @@ class LimitStore(object):
 		self.discord_commands_amount:int = int(config.get("discord_custom_commands_amount", 100))
 		self.discord_commands_cooldown_min:int = int(config.get("discord_custom_commands_cooldown_min", 3))
 		self.discord_commands_cooldown_max:int = int(config.get("discord_custom_commands_cooldown_max", 600))
-		self.DISCORD_LEVEL_COOLDOWN:int = int(config.get("discord_level_cooldown", 3))
+		self.discord_level_cooldown:int = int(config.get("discord_level_cooldown", 3))
 		self.DISCORD_LEVEL_MEDAL_AMOUNT:int = int(config.get("discord_level_medal_amount", 50))
 		self.DISCORD_QUOTES_AMOUNT:int = int(config.get("discord_quotes_amount", 100))
 		self.DISCORD_ASSIGNROLE_AMOUNT:int = int(config.get("discord_assignrole_amount", 25))

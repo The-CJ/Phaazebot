@@ -36,7 +36,7 @@ class GDLMCS():
 		self.in_cooldown[key] = True
 
 		# wait
-		await asyncio.sleep(cls.BASE.Limit.DISCORD_LEVEL_COOLDOWN)
+		await asyncio.sleep(cls.BASE.Limit.discord_level_cooldown)
 
 		# remove
 		self.in_cooldown.pop(key, None)
