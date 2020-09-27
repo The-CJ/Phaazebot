@@ -31,7 +31,7 @@ class AccessStore(object):
 
 		self.twitter_token:str = str(config.get("twitter_token",''))
 		self.twitter_token_key:str = str(config.get("twitter_token_key",''))
-		self.TWITTER_CONSUMER_KEY:str = str(config.get("twitter_consumer_key",''))
+		self.twitter_consumer_key:str = str(config.get("twitter_consumer_key",''))
 		self.TWITTER_CONSUMER_SECRET:str = str(config.get("twitter_consumer_secret",''))
 
 class ActiveStore(object):
