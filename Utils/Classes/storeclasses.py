@@ -104,7 +104,7 @@ class VarsStore(object):
 		self.web_root:str = str(config.get("web_root", "localhost"))
 		self.ssl_dir:str = str(config.get("ssl_dir", "/etc/letsencrypt/live/domain.something/"))
 
-		self.DISCORD_BOT_ID:str = str(config.get("discord_bot_id", "00000"))
+		self.discord_bot_id:str = str(config.get("discord_bot_id", "00000"))
 		self.DISCORD_LOGIN_LINK:str = str(config.get("discord_login_link", "/discord"))
 		self.DISCORD_REDIRECT_LINK:str = str(config.get("discord_redirect_link", "localhost"))
 

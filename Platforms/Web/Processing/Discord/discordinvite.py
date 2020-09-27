@@ -19,7 +19,7 @@ async def discordInvite(cls:"WebIndex", WebRequest:Request, msg:str="", guild_id
 	guild_id:str = WebRequest.query.get("guild", guild_id)
 	Perm:discord.Permissions = discord.Permissions(permissions=8)
 	Guild:discord.Object = discord.Object(id=guild_id)
-	invite_link:str = discord.utils.oauth_url(cls.Web.BASE.Vars.DISCORD_BOT_ID, permissions=Perm, guild=Guild, redirect_uri=None)
+	invite_link:str = discord.utils.oauth_url(cls.Web.BASE.Vars.discord_bot_id, permissions=Perm, guild=Guild, redirect_uri=None)
 
 	InvitePage:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/invite.html")
 	InvitePage.replace(
