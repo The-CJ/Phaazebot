@@ -29,7 +29,7 @@ class AccessStore(object):
 		self.phaazedb_database:str = str(config.get("phaazedb_database", "phaaze"))
 		self.phaazedb_port:str = str(config.get("phaazedb_port", "3306"))
 
-		self.TWITTER_TOKEN:str = str(config.get("twitter_token",''))
+		self.twitter_token:str = str(config.get("twitter_token",''))
 		self.TWITTER_TOKEN_KEY:str = str(config.get("twitter_token_key",''))
 		self.TWITTER_CONSUMER_KEY:str = str(config.get("twitter_consumer_key",''))
 		self.TWITTER_CONSUMER_SECRET:str = str(config.get("twitter_consumer_secret",''))
