@@ -93,7 +93,7 @@ class VarsStore(object):
 	filled with permanent vars/const, or functions to get values
 	"""
 	def __init__(self, config:ConfigParser):
-		self.DISCORD_MODT:str = str(config.get("discord_motd", "Hello there"))
+		self.discord_modt:str = str(config.get("discord_motd", "Hello there"))
 		self.DISCORD_DEBUG_USER_ID:str = str(config.get("discord_debug_user_id", ''))
 
 		self.DEFAULT_TWITCH_CURRENCY:str = str(config.get("default_twitch_currency", "Credit"))

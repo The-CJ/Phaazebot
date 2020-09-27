@@ -25,7 +25,7 @@ class PhaazebotDiscord(discord.Client):
 		"""
 		try:
 			await self.change_presence(
-				activity = discord.Game(name = self.BASE.Vars.DISCORD_MODT),
+				activity = discord.Game(name = self.BASE.Vars.discord_modt),
 				status = discord.Status.online,
 				afk = False
 			)
