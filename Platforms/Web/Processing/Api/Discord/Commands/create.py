@@ -54,7 +54,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	if not trigger:
 		return await apiMissingData(cls, WebRequest, msg="missing 'trigger'")
 
-	if not (cls.Web.BASE.Limit.discord_commands_cooldown_min <= cooldown <= cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX ):
+	if not (cls.Web.BASE.Limit.discord_commands_cooldown_min <= cooldown <= cls.Web.BASE.Limit.discord_commands_cooldown_max ):
 		return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
 
 	# if not complex

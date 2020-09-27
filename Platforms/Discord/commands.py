@@ -116,9 +116,9 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 			cls.BASE.Logger.debug(f"(Discord) command cooldown < discord_commands_cooldown_min cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
 			Command.cooldown = cls.BASE.Limit.discord_commands_cooldown_min
 
-		if Command.cooldown > cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX:
-			cls.BASE.Logger.debug(f"(Discord) command cooldown > DISCORD_COMMANDS_COOLDOWN_MAX cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
-			Command.cooldown = cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX
+		if Command.cooldown > cls.BASE.Limit.discord_commands_cooldown_max:
+			cls.BASE.Logger.debug(f"(Discord) command cooldown > discord_commands_cooldown_max cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
+			Command.cooldown = cls.BASE.Limit.discord_commands_cooldown_max
 
 		# command requires a currency payment, check if user can affort it
 		# except mods
