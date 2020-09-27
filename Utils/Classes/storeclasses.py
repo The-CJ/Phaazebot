@@ -82,7 +82,7 @@ class LimitStore(object):
 
 		self.twitch_timeout_message_cooldown:int = int(config.get("twitch_timeout_message_cooldown", 20))
 		self.twitch_blacklist_remember_time:int = int(config.get("twitch_blacklist_remember_time", 180))
-		self.TWITCH_CUSTOM_COMMAND_AMOUNT:int = int(config.get("twitch_custom_command_amount", 100))
+		self.twitch_custom_command_amount:int = int(config.get("twitch_custom_command_amount", 100))
 		self.TWITCH_QUOTE_AMOUNT:int = int(config.get("twitch_quote_amount", 100))
 		self.TWITCH_STATS_COOLDOWN:int = int(config.get("twitch_stats_cooldown", 5))
 
