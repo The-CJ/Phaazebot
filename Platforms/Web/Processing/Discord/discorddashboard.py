@@ -55,7 +55,7 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 	DiscordDash.replace(
 		guild_name = html.escape(Guild.name),
 		guild_id = Guild.id,
-		web_root = cls.Web.BASE.Vars.WEB_ROOT
+		web_root = cls.Web.BASE.Vars.web_root
 	)
 
 	site:str = cls.HTMLRoot.replace(

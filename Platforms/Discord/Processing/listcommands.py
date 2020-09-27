@@ -10,7 +10,7 @@ MAX_SHOW_COMMANDS:int = 20
 
 async def listCommands(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
-	command_link:str = f"{cls.BASE.Vars.WEB_ROOT}/discord/commands/{Command.server_id}"
+	command_link:str = f"{cls.BASE.Vars.web_root}/discord/commands/{Command.server_id}"
 	all_commands:list = await getDiscordServerCommands(cls, Command.server_id)
 
 	finished_str:str = ":link: All commands on this server in one place\n"

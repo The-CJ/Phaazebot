@@ -37,7 +37,7 @@ EVENT_COLOR_NEGATIVE:int = 0xFF0000
 EVENT_COLOR_INFO:int = 0x00FFFF
 
 def makeWebAccessLink(cls:"PhaazebotDiscord", guild_id:str or int, log_id:str or int) -> str:
-	return f"{cls.BASE.Vars.WEB_ROOT}/discord/dashboard/{str(guild_id)}?view=logs&logs[log_id]={str(log_id)}"
+	return f"{cls.BASE.Vars.web_root}/discord/dashboard/{str(guild_id)}?view=logs&logs[log_id]={str(log_id)}"
 
 # Member.join : 1 : 1
 async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:

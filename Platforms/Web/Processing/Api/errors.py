@@ -32,12 +32,12 @@ async def apiNothing(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respon
 
 	Default message (*gets altered by optional keywords):
 	----------------------------------------------------
-	Trying to find out the PhaazeAPI?. Try looking at WEB_ROOT/wiki/api
+	Trying to find out the PhaazeAPI?. Try looking at web_root/wiki/api
 	"""
 	res:dict = dict(status=400, error="no_path")
 
 	# build message
-	default_msg:str = f"Trying to find out the PhaazeAPI?. Try looking at {cls.Web.BASE.Vars.WEB_ROOT}/wiki/api"
+	default_msg:str = f"Trying to find out the PhaazeAPI?. Try looking at {cls.Web.BASE.Vars.web_root}/wiki/api"
 
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
