@@ -101,8 +101,8 @@ async def apiDiscordAssignrolesCreate(cls:"WebIndex", WebRequest:Request) -> Res
 	if res[0]["match_trigger"]:
 		return await apiDiscordAssignRoleExists(cls, WebRequest, trigger=trigger)
 
-	if res[0]["all"] >= cls.Web.BASE.Limit.DISCORD_ASSIGNROLE_AMOUNT:
-		return await apiDiscordAssignRoleLimit(cls, WebRequest, limit=cls.Web.BASE.Limit.DISCORD_ASSIGNROLE_AMOUNT)
+	if res[0]["all"] >= cls.Web.BASE.Limit.discord_assignrole_amount:
+		return await apiDiscordAssignRoleLimit(cls, WebRequest, limit=cls.Web.BASE.Limit.discord_assignrole_amount)
 
 	cls.Web.BASE.PhaazeDB.insertQuery(
 		table="discord_assignrole",

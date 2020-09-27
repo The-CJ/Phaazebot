@@ -77,7 +77,7 @@ class LimitStore(object):
 		self.discord_level_cooldown:int = int(config.get("discord_level_cooldown", 3))
 		self.discord_level_medal_amount:int = int(config.get("discord_level_medal_amount", 50))
 		self.discord_quotes_amount:int = int(config.get("discord_quotes_amount", 100))
-		self.DISCORD_ASSIGNROLE_AMOUNT:int = int(config.get("discord_assignrole_amount", 25))
+		self.discord_assignrole_amount:int = int(config.get("discord_assignrole_amount", 25))
 		self.DISCORD_REGULAR_AMOUNT:int = int(config.get("discord_regular_amount", 50))
 
 		self.TWITCH_TIMEOUT_MESSAGE_COOLDOWN:int = int(config.get("twitch_timeout_message_cooldown", 20))
