@@ -17,7 +17,7 @@ class AccessStore(object):
 
 		self.osu_api_token:str = str(config.get("osu_api_token", ''))
 		self.osu_irc_username:str = str(config.get("osu_irc_username", ''))
-		self.OSU_IRC_TOKEN:str = str(config.get("osu_irc_token", ''))
+		self.osu_irc_token:str = str(config.get("osu_irc_token", ''))
 
 		self.CLEVERBOT_TOKEN:str = str(config.get("cleverbot_token", ''))
 
