@@ -46,7 +46,7 @@ class PhaazebotDiscord(discord.Client):
 		if not self.BASE.IsReady.discord: return
 		if Message.author == self.user: return
 		if Message.author.bot: return
-		if str(Message.author.id) == str(self.BASE.Vars.DISCORD_DEBUG_USER_ID):
+		if str(Message.author.id) in self.BASE.Vars.discord_debug_user_id:
 			await self.debugCall(Message)
 
 		if "phaaze" in Message.content.lower():
@@ -91,14 +91,14 @@ class PhaazebotDiscord(discord.Client):
 	async def debugCall(self, Message:discord.Message):
 		"""
 		string evaluation on user input,
-		only for the user assosiated with self.BASE.Vars.DISCORD_DEBUG_USER_ID
+		only for the user assosiated with self.BASE.Vars.discord_debug_user_id
 		starting a message with ### or !!! will execute everything after this
 		### is a normal call
 		!!! a corotine
 		"""
 
 		# we check again... just to be sure
-		if not ( str(Message.author.id) == str(self.BASE.Vars.DISCORD_DEBUG_USER_ID) ):
+		if not ( str(Message.author.id) == str(self.BASE.Vars.discord_debug_user_id) ):
 			return
 
 		corotine:bool = False
