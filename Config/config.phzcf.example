@@ -46,10 +46,6 @@
 		[default_discord_currency] = "Discord coin"
 		[default_discord_currency_multi] = "Discord coins"
 	# Cooldowns
-		[discord_private_cooldown] = 1
-		[discord_normal_cooldown] = 1
-		[discord_mod_cooldown] = 3
-		[discord_owner_cooldown] = 5
 		[discord_custom_commands_cooldown] = 3
 		[discord_level_cooldown] = 3
 

@@ -71,10 +71,6 @@ class LimitStore(object):
 	gets configs from config file and provides alternative default
 	"""
 	def __init__(self, config:ConfigParser):
-		self.DISCORD_PRIVATE_COOLDOWN:int = int(config.get("discord_private_cooldown", 1))
-		self.DISCORD_NORMAL_COOLDOWN:int = int(config.get("discord_normal_cooldown", 1))
-		self.DISCORD_MOD_COOLDOWN:int = int(config.get("discord_mod_cooldown", 3))
-		self.DISCORD_OWNER_COOLDOWN:int = int(config.get("discord_owner_cooldown", 5))
 		self.DISCORD_COMMANDS_AMOUNT:int = int(config.get("discord_custom_commands_amount", 100))
 		self.DISCORD_COMMANDS_COOLDOWN_MIN:int = int(config.get("discord_custom_commands_cooldown_min", 3))
 		self.DISCORD_COMMANDS_COOLDOWN_MAX:int = int(config.get("discord_custom_commands_cooldown_max", 600))
