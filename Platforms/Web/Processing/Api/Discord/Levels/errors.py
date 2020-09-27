@@ -22,7 +22,7 @@ async def apiDiscordLevelMedalLimit(cls:"WebIndex", WebRequest:Request, **kwargs
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_LEVEL_MEDAL_AMOUNT)
+	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.discord_level_medal_amount)
 	if limit:
 		res["limit"] = limit
 

@@ -68,7 +68,7 @@ async def apiDiscordLevelsMedalsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 	if res[0]['match']:
 		return await apiDiscordUserMedalExists(cls, WebRequest)
 
-	if res[0]['all'] >= cls.Web.BASE.Limit.DISCORD_LEVEL_MEDAL_AMOUNT:
+	if res[0]['all'] >= cls.Web.BASE.Limit.discord_level_medal_amount:
 		return await apiDiscordUserMedalLimit(cls, WebRequest)
 
 	# get user info
