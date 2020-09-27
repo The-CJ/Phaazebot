@@ -97,7 +97,7 @@ class DiscordThread(threading.Thread):
 			self.BASE.DiscordLoop:asyncio.AbstractEventLoop = self.loop
 
 			self.BASE.IsReady.discord = False
-			self.loop.run_until_complete( self.BASE.Discord.start(self.BASE.Access.DISCORD_TOKEN, reconnect=True) )
+			self.loop.run_until_complete( self.BASE.Discord.start(self.BASE.Access.discord_token, reconnect=True) )
 
 			# we only reach this point when discord is ended gracefull
 			# which means a wanted disconnect,

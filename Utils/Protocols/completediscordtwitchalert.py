@@ -54,7 +54,7 @@ class CompleteDiscordTwitchAlert(discord.Client):
 			return
 		else:
 			self.log("Starting discord connection...")
-			self.run(Phaaze.Access.DISCORD_TOKEN)
+			self.run(Phaaze.Access.discord_token)
 			# after self.run, the code will continue in self.on_ready
 			self.log("Discord disconnected")
 

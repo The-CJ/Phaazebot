@@ -12,7 +12,7 @@ class AccessStore(object):
 		self.twitch_client_credential_token:str = "[N/A]"
 		self.twitch_irc_token:str = str(config.get("twitch_irc_token", ''))
 
-		self.DISCORD_TOKEN:str = str(config.get("discord_token", ''))
+		self.discord_token:str = str(config.get("discord_token", ''))
 		self.DISCORD_SECRET:str = str(config.get("discord_secret", ''))
 
 		self.OSU_API_TOKEN:str = str(config.get("osu_api_token", ''))
