@@ -43,7 +43,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	function:str = Data.getStr("function", "", len_max=256)
 	content:str = Data.getStr("content", "", len_max=1750)
 	hidden:str = Data.getBool("hidden", False)
-	cooldown:int = Data.getInt("cooldown", cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN)
+	cooldown:int = Data.getInt("cooldown", cls.Web.BASE.Limit.discord_commands_cooldown_min)
 	require:int = Data.getInt("require", 0, min_x=0)
 	required_currency:int = Data.getInt("required_currency", 0, min_x=0)
 
@@ -54,7 +54,7 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	if not trigger:
 		return await apiMissingData(cls, WebRequest, msg="missing 'trigger'")
 
-	if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN <= cooldown <= cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX ):
+	if not (cls.Web.BASE.Limit.discord_commands_cooldown_min <= cooldown <= cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX ):
 		return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
 
 	# if not complex

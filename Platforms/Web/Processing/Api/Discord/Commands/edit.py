@@ -87,7 +87,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 	value:int = Data.getInt("cooldown", UNDEFINED, min_x=0)
 	if value != UNDEFINED:
 		# wants a invalid cooldown
-		if not (cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN <= value <= cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX ):
+		if not (cls.Web.BASE.Limit.discord_commands_cooldown_min <= value <= cls.Web.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX ):
 			return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
 
 		db_update["cooldown"] = validateDBInput(int, value)

@@ -112,9 +112,9 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 			if AuthorPermission.rank != 3: return False
 
 		# always have a minimum cooldown
-		if Command.cooldown < cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN:
-			cls.BASE.Logger.debug(f"(Discord) command cooldown < DISCORD_COMMANDS_COOLDOWN_MIN cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
-			Command.cooldown = cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MIN
+		if Command.cooldown < cls.BASE.Limit.discord_commands_cooldown_min:
+			cls.BASE.Logger.debug(f"(Discord) command cooldown < discord_commands_cooldown_min cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
+			Command.cooldown = cls.BASE.Limit.discord_commands_cooldown_min
 
 		if Command.cooldown > cls.BASE.Limit.DISCORD_COMMANDS_COOLDOWN_MAX:
 			cls.BASE.Logger.debug(f"(Discord) command cooldown > DISCORD_COMMANDS_COOLDOWN_MAX cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
