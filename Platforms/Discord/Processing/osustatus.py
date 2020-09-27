@@ -68,7 +68,7 @@ async def osuStats(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 	Emb.add_field(name="Ranks:", value=f"```{tabulate(rank_table, tablefmt='plain')}```")
 
 	Emb.set_thumbnail(url=f"https://a.ppy.sh/{User.user_id}")
-	Emb.set_footer(text="Provided by osu!", icon_url=cls.BASE.Vars.LOGO_OSU)
+	Emb.set_footer(text="Provided by osu!", icon_url=cls.BASE.Vars.logo_osu)
 	Emb.set_author(name=f"Stats for: {User.mode}")
 
 	return {"embed": Emb}

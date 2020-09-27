@@ -63,7 +63,7 @@ async def discordHandleLive(cls:"PhaazebotDiscord", event_list:List["StatusEntry
 		)
 		Emb.set_footer(
 			text = "Provided by twitch.tv",
-			icon_url = cls.BASE.Vars.LOGO_TWITCH
+			icon_url = cls.BASE.Vars.logo_twitch
 		)
 		Emb.set_image(url = Event.User.profile_image_url)
 
@@ -137,7 +137,7 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:List["Statu
 		)
 		Emb.set_footer(
 			text = "Provided by twitch.tv",
-			icon_url = cls.BASE.Vars.LOGO_TWITCH
+			icon_url = cls.BASE.Vars.logo_twitch
 		)
 		Emb.set_thumbnail(url = Event.User.profile_image_url)
 
