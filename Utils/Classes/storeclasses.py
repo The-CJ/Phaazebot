@@ -21,7 +21,7 @@ class AccessStore(object):
 
 		self.cleverbot_token:str = str(config.get("cleverbot_token", ''))
 
-		self.MASHAPE_TOKEN:str = str(config.get("mashape_token", ''))
+		self.mashape_token:str = str(config.get("mashape_token", ''))
 
 		self.PHAAZEDB_HOST:str = str(config.get("phaazedb_host", "localhost"))
 		self.PHAAZEDB_PORT:str = str(config.get("phaazedb_port", "3306"))
