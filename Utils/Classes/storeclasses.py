@@ -13,7 +13,7 @@ class AccessStore(object):
 		self.twitch_irc_token:str = str(config.get("twitch_irc_token", ''))
 
 		self.discord_token:str = str(config.get("discord_token", ''))
-		self.DISCORD_SECRET:str = str(config.get("discord_secret", ''))
+		self.discord_secret:str = str(config.get("discord_secret", ''))
 
 		self.OSU_API_TOKEN:str = str(config.get("osu_api_token", ''))
 		self.OSU_IRC_USERNAME:str = str(config.get("osu_irc_username", ''))

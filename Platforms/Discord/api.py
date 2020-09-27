@@ -20,7 +20,7 @@ async def translateDiscordToken(cls:"Phaazebot", WebRequest:Request) -> dict or 
 
 	req:dict = dict(
 		client_id = cls.Vars.DISCORD_BOT_ID,
-		client_secret = cls.Access.DISCORD_SECRET,
+		client_secret = cls.Access.discord_secret,
 		grant_type = "authorization_code",
 		code = code,
 		redirect_uri = cls.Vars.DISCORD_REDIRECT_LINK
