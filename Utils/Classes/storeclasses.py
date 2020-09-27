@@ -15,7 +15,7 @@ class AccessStore(object):
 		self.discord_token:str = str(config.get("discord_token", ''))
 		self.discord_secret:str = str(config.get("discord_secret", ''))
 
-		self.OSU_API_TOKEN:str = str(config.get("osu_api_token", ''))
+		self.osu_api_token:str = str(config.get("osu_api_token", ''))
 		self.OSU_IRC_USERNAME:str = str(config.get("osu_irc_username", ''))
 		self.OSU_IRC_TOKEN:str = str(config.get("osu_irc_token", ''))
 

@@ -18,7 +18,7 @@ async def getOsuUser(cls:"Phaazebot", search:str, mode:str="0", is_id:bool=False
 	if not search: return None
 
 	req:dict = dict(
-		k = cls.Access.OSU_API_TOKEN,
+		k = cls.Access.osu_api_token,
 		m = mode,
 		type = "id" if is_id else "string",
 		u = search
