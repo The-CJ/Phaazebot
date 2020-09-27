@@ -57,7 +57,7 @@ class GenerateTwitchCredentials(object):
 
 	def generateNewToken(self) -> str:
 		req:dict = dict()
-		req["client_id"] = Phaaze.Access.TWITCH_CLIENT_ID
+		req["client_id"] = Phaaze.Access.twitch_client_id
 		req["client_secret"] = Phaaze.Access.TWITCH_CLIENT_SECRET
 		req["grant_type"] = "client_credentials"
 

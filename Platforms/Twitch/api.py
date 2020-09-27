@@ -23,14 +23,14 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 	Optional keywords:
 	------------------
 	method `str` : (Default: 'GET')
-	client_id `str` : (Default: Access.TWITCH_CLIENT_ID)
+	client_id `str` : (Default: Access.twitch_client_id)
 	client_secret `str`
 	auth_type `str` (Default: 'Bearer') ['Bearer' or 'OAuth']
 	access_token `str` (Default: Access.twitch_client_credential_token)
 	emergency_refesh_token `bool` (Default: True)
 	"""
 	method:str = kwargs.get("method", "GET")
-	client_id:str = kwargs.get("client_id", cls.Access.TWITCH_CLIENT_ID)
+	client_id:str = kwargs.get("client_id", cls.Access.twitch_client_id)
 	client_secret:str = kwargs.get("client_secret", "")
 	auth_type:str = kwargs.get("auth_type", "Bearer")
 	access_token:str = kwargs.get("access_token", cls.Access.twitch_client_credential_token)
