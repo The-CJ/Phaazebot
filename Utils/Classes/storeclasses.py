@@ -84,7 +84,7 @@ class LimitStore(object):
 		self.twitch_blacklist_remember_time:int = int(config.get("twitch_blacklist_remember_time", 180))
 		self.twitch_custom_command_amount:int = int(config.get("twitch_custom_command_amount", 100))
 		self.twitch_quote_amount:int = int(config.get("twitch_quote_amount", 100))
-		self.TWITCH_STATS_COOLDOWN:int = int(config.get("twitch_stats_cooldown", 5))
+		self.twitch_stats_cooldown:int = int(config.get("twitch_stats_cooldown", 5))
 
 		self.WEB_CLIENT_MAX_SIZE:int = int(config.get("web_client_max_size", 5242880)) #5MB
 
