@@ -12,7 +12,7 @@ class PhaazebotWeb(web.Application):
 	def __init__(self, BASE:"Phaazebot"):
 		super().__init__()
 		self.BASE:"Phaazebot" = BASE
-		self._client_max_size = self.BASE.Limit.WEB_CLIENT_MAX_SIZE
+		self._client_max_size = self.BASE.Limit.web_client_max_size
 		self.port:int = 9001
 		self.SSLContext:ssl.SSLContext = None
 		self.Index:WebIndex = None
