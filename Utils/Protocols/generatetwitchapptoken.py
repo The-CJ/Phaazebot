@@ -58,7 +58,7 @@ class GenerateTwitchCredentials(object):
 	def generateNewToken(self) -> str:
 		req:dict = dict()
 		req["client_id"] = Phaaze.Access.twitch_client_id
-		req["client_secret"] = Phaaze.Access.TWITCH_CLIENT_SECRET
+		req["client_secret"] = Phaaze.Access.twitch_client_secret
 		req["grant_type"] = "client_credentials"
 
 		target_url:str = twitch_api.AUTH_URL + "oauth2/token?" + urllib.parse.urlencode(req)
