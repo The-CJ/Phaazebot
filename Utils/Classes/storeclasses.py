@@ -96,7 +96,7 @@ class VarsStore(object):
 		self.discord_modt:str = str(config.get("discord_motd", "Hello there"))
 		self.discord_debug_user_id:list = list(config.get("discord_debug_user_id", []))
 
-		self.DEFAULT_TWITCH_CURRENCY:str = str(config.get("default_twitch_currency", "Credit"))
+		self.default_twitch_currency:str = str(config.get("default_twitch_currency", "Credit"))
 		self.DEFAULT_TWITCH_CURRENCY_MULTI:str = str(config.get("default_twitch_currency_multi", "Credits"))
 		self.DEFAULT_DISCORD_CURRENCY:str = str(config.get("default_discord_currency", "Credit"))
 		self.DEFAULT_DISCORD_CURRENCY_MULTI:str = str(config.get("default_discord_currency_multi", "Credits"))
