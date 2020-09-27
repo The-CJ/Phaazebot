@@ -86,8 +86,8 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	if res[0]["match"]:
 		return await apiDiscordCommandExists(cls, WebRequest, trigger=trigger)
 
-	if res[0]["all"] >= cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT:
-		return await apiDiscordCommandLimit(cls, WebRequest, limit=cls.Web.BASE.Limit.DISCORD_COMMANDS_AMOUNT)
+	if res[0]["all"] >= cls.Web.BASE.Limit.discord_commands_amount:
+		return await apiDiscordCommandLimit(cls, WebRequest, limit=cls.Web.BASE.Limit.discord_commands_amount)
 
 	# get user info
 	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
