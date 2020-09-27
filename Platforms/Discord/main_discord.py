@@ -98,7 +98,7 @@ class PhaazebotDiscord(discord.Client):
 		"""
 
 		# we check again... just to be sure
-		if not ( str(Message.author.id) == str(self.BASE.Vars.discord_debug_user_id) ):
+		if not str(Message.author.id) in self.BASE.Vars.discord_debug_user_id:
 			return
 
 		corotine:bool = False
