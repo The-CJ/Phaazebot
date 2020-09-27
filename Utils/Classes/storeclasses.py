@@ -26,7 +26,7 @@ class AccessStore(object):
 		self.phaazedb_host:str = str(config.get("phaazedb_host", "localhost"))
 		self.phaazedb_user:str = str(config.get("phaazedb_user", "phaaze"))
 		self.phaazedb_password:str = str(config.get("phaazedb_password", ''))
-		self.PHAAZEDB_DATABASE:str = str(config.get("phaazedb_database", "phaaze"))
+		self.phaazedb_database:str = str(config.get("phaazedb_database", "phaaze"))
 		self.phaazedb_port:str = str(config.get("phaazedb_port", "3306"))
 
 		self.TWITTER_TOKEN:str = str(config.get("twitter_token",''))

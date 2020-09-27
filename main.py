@@ -87,7 +87,7 @@ class Phaazebot(object):
 			port = self.Access.phaazedb_port,
 			user = self.Access.phaazedb_user,
 			passwd = self.Access.phaazedb_password,
-			database = self.Access.PHAAZEDB_DATABASE
+			database = self.Access.phaazedb_database
 		)
 
 	def start(self) -> None:
