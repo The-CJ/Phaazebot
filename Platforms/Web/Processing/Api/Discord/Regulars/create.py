@@ -68,7 +68,7 @@ async def apiDiscordRegularsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	if res[0]["match"]:
 		return await apiDiscordRegularExists(cls, WebRequest)
 
-	if res[0]["all"] >= cls.Web.BASE.Limit.DISCORD_REGULAR_AMOUNT:
+	if res[0]["all"] >= cls.Web.BASE.Limit.discord_regular_amount:
 		return await apiDiscordRegularLimit(cls, WebRequest)
 
 	# get user info

@@ -86,7 +86,7 @@ async def apiDiscordRegularLimit(cls:"WebIndex", WebRequest:Request, **kwargs:di
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.DISCORD_REGULAR_AMOUNT)
+	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.discord_regular_amount)
 	if limit:
 		res["limit"] = limit
 
