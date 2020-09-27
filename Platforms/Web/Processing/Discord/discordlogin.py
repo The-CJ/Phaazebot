@@ -29,7 +29,7 @@ async def discordLogin(cls:"WebIndex", WebRequest:Request, msg:str="") -> Respon
 		replace_empty = True,
 
 		msg = msg,
-		login_link = cls.Web.BASE.Vars.DISCORD_LOGIN_LINK
+		login_link = cls.Web.BASE.Vars.discord_login_link
 	)
 
 	site:str = cls.HTMLRoot.replace(

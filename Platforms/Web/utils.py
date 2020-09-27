@@ -31,7 +31,7 @@ def getAccountModal() -> HTMLFormatter:
 	get the global login form with all applied formated links etc...
 	"""
 	try:
-		discord_login_link:str = GlobalStorage.get("Phaazebot").Vars.DISCORD_LOGIN_LINK
+		discord_login_link:str = GlobalStorage.get("Phaazebot").Vars.discord_login_link
 	except:
 		discord_login_link:str = "/discord?error"
 
