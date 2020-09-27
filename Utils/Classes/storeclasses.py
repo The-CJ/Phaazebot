@@ -98,7 +98,7 @@ class VarsStore(object):
 
 		self.default_twitch_currency:str = str(config.get("default_twitch_currency", "Credit"))
 		self.default_twitch_currency_multi:str = str(config.get("default_twitch_currency_multi", "Credits"))
-		self.DEFAULT_DISCORD_CURRENCY:str = str(config.get("default_discord_currency", "Credit"))
+		self.default_discord_currency:str = str(config.get("default_discord_currency", "Credit"))
 		self.DEFAULT_DISCORD_CURRENCY_MULTI:str = str(config.get("default_discord_currency_multi", "Credits"))
 
 		self.WEB_ROOT:str = str(config.get("web_root", "localhost"))

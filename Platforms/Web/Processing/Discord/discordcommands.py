@@ -27,7 +27,7 @@ async def discordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(cls.Web.BASE.Discord, guild_id, prevent_new=True)
 
-	currency_name:str = GuildSettings.currency_name if GuildSettings.currency_name else cls.Web.BASE.Vars.DEFAULT_DISCORD_CURRENCY
+	currency_name:str = GuildSettings.currency_name if GuildSettings.currency_name else cls.Web.BASE.Vars.default_discord_currency
 	currency_name_multi:str = GuildSettings.currency_name_multi if GuildSettings.currency_name_multi else cls.Web.BASE.Vars.DEFAULT_DISCORD_CURRENCY_MULTI
 
 	DiscordCommand:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/commands.html")
