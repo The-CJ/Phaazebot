@@ -85,7 +85,7 @@ class Phaazebot(object):
 		self.PhaazeDB:DBConn = DBConn(
 			host = self.Access.phaazedb_host,
 			port = self.Access.phaazedb_port,
-			user = self.Access.PHAAZEDB_USER,
+			user = self.Access.phaazedb_user,
 			passwd = self.Access.PHAAZEDB_PASSWORD,
 			database = self.Access.PHAAZEDB_DATABASE
 		)
