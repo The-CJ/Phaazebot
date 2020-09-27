@@ -109,7 +109,7 @@ class VarsStore(object):
 		self.discord_redirect_link:str = str(config.get("discord_redirect_link", "localhost"))
 
 		self.twitch_bot_id:str = str(config.get("twitch_bot_id", "00000"))
-		self.TWITCH_LOGIN_LINK:str = str(config.get("twitch_login_link", "/twitch"))
+		self.twitch_login_link:str = str(config.get("twitch_login_link", "/twitch"))
 		self.TWITCH_REDIRECT_LINK:str = str(config.get("twitch_redirect_link", "localhost"))
 
 		self.LOGO_OSU:str = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
