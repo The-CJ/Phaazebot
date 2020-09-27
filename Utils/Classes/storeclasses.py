@@ -106,7 +106,7 @@ class VarsStore(object):
 
 		self.discord_bot_id:str = str(config.get("discord_bot_id", "00000"))
 		self.discord_login_link:str = str(config.get("discord_login_link", "/discord"))
-		self.DISCORD_REDIRECT_LINK:str = str(config.get("discord_redirect_link", "localhost"))
+		self.discord_redirect_link:str = str(config.get("discord_redirect_link", "localhost"))
 
 		self.TWITCH_BOT_ID:str = str(config.get("twitch_bot_id", "00000"))
 		self.TWITCH_LOGIN_LINK:str = str(config.get("twitch_login_link", "/twitch"))
