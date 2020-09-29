@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
 	from main import Phaazebot
 
@@ -30,6 +30,9 @@ class PhaazebotTwitch(twitch_irc.Client):
 		if not self.BASE.IsReady.twitch: return
 		if Message.Author.name == self.nickname: return
 
+		if str(Message.Author.id) in self.BASE.Vars.twitch_debug_user_id:
+			await self.debugCall(Message)
+
 	# errors
 	async def onError(self, Ex:Exception):
 		"""
@@ -47,4 +50,29 @@ class PhaazebotTwitch(twitch_irc.Client):
 		### is a normal call
 		!!! a corotine
 		"""
-		pass
+		# we check again... just to be sure
+		if not str(Message.Author.id) in self.BASE.Vars.twitch_debug_user_id:
+			return
+
+		corotine:bool = False
+		command:str = None
+
+		if Message.content.startswith("###"):
+			command = Message.content.replace("###", '', 1)
+			corotine = False
+
+		elif Message.content.startswith("!!!"):
+			command = Message.content.replace("!!!", '', 1)
+			corotine = True
+		else:
+			return
+
+		try:
+			res:Any = eval(command)
+			if corotine: res = await res
+			return await self.sendMessage(Message.Channel, str(res))
+
+		except Exception as Fail:
+			tb = traceback.format_exc()
+			re:str = f"Exception: {str(Fail)} : {str(tb)}"
+			return await self.sendMessage(Message.Channel, re[:199])
