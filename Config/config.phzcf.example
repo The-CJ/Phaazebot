@@ -74,8 +74,8 @@
 	# API Access
 		[osu_api_token] = "secret!..?"
 	# IRC Access
-		[osu_irc_username] = "secret!..?"
 		[osu_irc_token] = "secret!..?"
+		[osu_irc_nickname] = "secret!..?"
 
 # Twitter:
 	[twitter_token] = "secret!..?"

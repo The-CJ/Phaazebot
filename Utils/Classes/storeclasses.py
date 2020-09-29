@@ -11,13 +11,14 @@ class AccessStore(object):
 		self.twitch_client_secret:str = str(config.get("twitch_client_secret", ''))
 		self.twitch_client_credential_token:str = "[N/A]"
 		self.twitch_irc_token:str = str(config.get("twitch_irc_token", ''))
+		self.twitch_irc_nickname:str = str(config.get("twitch_irc_nickname", ''))
 
 		self.discord_token:str = str(config.get("discord_token", ''))
 		self.discord_secret:str = str(config.get("discord_secret", ''))
 
 		self.osu_api_token:str = str(config.get("osu_api_token", ''))
-		self.osu_irc_username:str = str(config.get("osu_irc_username", ''))
 		self.osu_irc_token:str = str(config.get("osu_irc_token", ''))
+		self.osu_irc_nickname:str = str(config.get("osu_irc_nickname", ''))
 
 		self.cleverbot_token:str = str(config.get("cleverbot_token", ''))
 
