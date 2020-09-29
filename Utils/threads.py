@@ -43,14 +43,14 @@ class Mainframe(threading.Thread):
 		while self.BASE.Active.main:
 
 			for module_name in self.modules:
-				module = self.modules[module_name]["current"]
+				PhaazeModule:threading.Thread = self.modules[module_name]["current"]
 
 				# get from Phaazebot.Active if the module should be started or not
 				start:bool = bool( getattr(self.BASE.Active, module_name.lower(), False) )
 				if module_name.lower() == "worker": start = True # exception for worker, that always run
 
-				if not module.isAlive() and start:
-					self.BASE.Logger.info(f"Booting Thread: {module.name}")
+				if not PhaazeModule.is_alive() and start:
+					self.BASE.Logger.info(f"Booting Thread: {PhaazeModule.name}")
 					self.modules[module_name]["current"] = (self.modules[module_name]["tpl"])(self.BASE)
 					self.modules[module_name]["current"].start()
 
@@ -64,7 +64,7 @@ class WorkerThread(threading.Thread):
 		self.daemon:bool = True
 		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
 
-	async def sleepy(self) ->None:
+	async def sleepy(self) -> None:
 		while 1: await asyncio.sleep(0.005)
 
 	def run(self) -> None:
@@ -72,7 +72,7 @@ class WorkerThread(threading.Thread):
 			asyncio.set_event_loop(self.loop)
 			asyncio.ensure_future(self.sleepy())
 
-			self.BASE.WorkerLoop:asyncio.AbstractEventLoop = self.loop
+			self.BASE.WorkerLoop = self.loop
 
 			self.BASE.Logger.info(f"Started Worker Thread")
 			self.loop.run_forever()
@@ -94,11 +94,19 @@ class DiscordThread(threading.Thread):
 			asyncio.set_event_loop(self.loop)
 			from Platforms.Discord.main_discord import PhaazebotDiscord
 
-			self.BASE.Discord:PhaazebotDiscord = PhaazebotDiscord(self.BASE)
-			self.BASE.DiscordLoop:asyncio.AbstractEventLoop = self.loop
+			self.BASE.Discord = PhaazebotDiscord(self.BASE)
+			self.BASE.DiscordLoop = self.loop
 
 			self.BASE.IsReady.discord = False
-			self.loop.run_until_complete( self.BASE.Discord.start(self.BASE.Access.discord_token, reconnect=True) )
+
+			# Coro gen
+			DiscordCoro:Coroutine = self.BASE.Discord.start(
+				self.BASE.Access.discord_token,
+				reconnect=True
+			)
+
+			# let's go
+			self.loop.run_until_complete( DiscordCoro )
 
 			# we only reach this point when discord is ended gracefull
 			# which means a wanted disconnect,
@@ -127,8 +135,8 @@ class WebThread(threading.Thread):
 			asyncio.set_event_loop(self.loop)
 			from Platforms.Web.main_web import PhaazebotWeb
 
-			self.BASE.Web:PhaazebotWeb = PhaazebotWeb(self.BASE)
-			self.BASE.WebLoop:asyncio.AbstractEventLoop = self.loop
+			self.BASE.Web = PhaazebotWeb(self.BASE)
+			self.BASE.WebLoop = self.loop
 
 			self.BASE.Web.start() # blocking call, takes asyncio.loop
 
@@ -152,11 +160,19 @@ class OsuThread(threading.Thread):
 			asyncio.set_event_loop(self.loop)
 			from Platforms.Osu.main_osu import PhaazebotOsu
 
-			self.BASE.Osu:PhaazebotOsu = PhaazebotOsu(self.BASE)
-			self.BASE.OsuLoop:asyncio.AbstractEventLoop = self.loop
+			self.BASE.Osu = PhaazebotOsu(self.BASE)
+			self.BASE.OsuLoop = self.loop
 
 			self.BASE.IsReady.osu = False
-			self.loop.run_until_complete( self.BASE.Osu.start(token=self.BASE.Access.osu_irc_token, nickname=self.BASE.Access.osu_irc_username, reconnect=True) )
+
+			# coro gen
+			OsuCoro:Coroutine = self.BASE.Osu.start(
+				token = self.BASE.Access.osu_irc_token,
+				nickname = self.BASE.Access.osu_irc_username
+			)
+
+			# let's go
+			self.loop.run_until_complete( OsuCoro )
 
 			# we only should reach this point when osu is ended gracefull
 			# which means a wanted disconnect,
@@ -180,8 +196,8 @@ class TwitchEventsThread(threading.Thread):
 			asyncio.set_event_loop(self.loop)
 			from Platforms.Twitch.main_events import PhaazebotTwitchEvents
 
-			self.BASE.TwitchEvents:PhaazebotTwitchEvents = PhaazebotTwitchEvents(self.BASE)
-			self.BASE.TwitchEventsLoop:asyncio.AbstractEventLoop = self.loop
+			self.BASE.TwitchEvents = PhaazebotTwitchEvents(self.BASE)
+			self.BASE.TwitchEventsLoop = self.loop
 
 			self.loop.run_until_complete( self.BASE.TwitchEvents.start() )
 
