@@ -17,6 +17,10 @@ class PhaazebotTwitch(twitch_irc.Client):
 		"""
 		Called when Phaaze is first connected, or sometimes when reconnected
 		"""
+		self.BASE.Logger.info("Twitch connected")
+		self.BASE.IsReady.twitch = True
+
+		await self.joinChannel(self.nickname)
 
 	async def onMessage(self, Message:twitch_irc.Message) -> None:
 		"""
@@ -44,5 +48,3 @@ class PhaazebotTwitch(twitch_irc.Client):
 		!!! a corotine
 		"""
 		pass
-
-PhaazebotTwitch().onerr
