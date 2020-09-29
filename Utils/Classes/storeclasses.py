@@ -94,25 +94,34 @@ class VarsStore(object):
 	filled with permanent vars/const, or functions to get values
 	"""
 	def __init__(self, config:ConfigParser):
-		self.discord_modt:str = str(config.get("discord_motd", "Hello there"))
+		# debug
 		self.discord_debug_user_id:list = list(config.get("discord_debug_user_id", []))
+		self.twitch_debug_user_id:list = list(config.get("twitch_debug_user_id", []))
 
+		# IDs
+		self.discord_bot_id:str = str(config.get("discord_bot_id", "00000"))
+		self.twitch_bot_id:str = str(config.get("twitch_bot_id", "00000"))
+
+		# currency names
 		self.default_twitch_currency:str = str(config.get("default_twitch_currency", "Credit"))
 		self.default_twitch_currency_multi:str = str(config.get("default_twitch_currency_multi", "Credits"))
 		self.default_discord_currency:str = str(config.get("default_discord_currency", "Credit"))
 		self.default_discord_currency_multi:str = str(config.get("default_discord_currency_multi", "Credits"))
 
+		# (redirect) links
+		self.twitch_login_link:str = str(config.get("twitch_login_link", "/twitch"))
+		self.discord_login_link:str = str(config.get("discord_login_link", "/discord"))
+		self.discord_redirect_link:str = str(config.get("discord_redirect_link", "localhost"))
+		self.twitch_redirect_link:str = str(config.get("twitch_redirect_link", "localhost"))
+
+		# other
+		self.discord_modt:str = str(config.get("discord_motd", "Hello there"))
+
+		# web stuff
 		self.web_root:str = str(config.get("web_root", "localhost"))
 		self.ssl_dir:str = str(config.get("ssl_dir", "/etc/letsencrypt/live/domain.something/"))
 
-		self.discord_bot_id:str = str(config.get("discord_bot_id", "00000"))
-		self.discord_login_link:str = str(config.get("discord_login_link", "/discord"))
-		self.discord_redirect_link:str = str(config.get("discord_redirect_link", "localhost"))
-
-		self.twitch_bot_id:str = str(config.get("twitch_bot_id", "00000"))
-		self.twitch_login_link:str = str(config.get("twitch_login_link", "/twitch"))
-		self.twitch_redirect_link:str = str(config.get("twitch_redirect_link", "localhost"))
-
+		# Logos
 		self.logo_osu:str = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
 		self.logo_twitch:str = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504"
 
