@@ -208,3 +208,39 @@ class TwitchEventsThread(threading.Thread):
 		except Exception as e:
 			self.BASE.Logger.error(f"Twitch Events Thread crashed: {str(e)}")
 			traceback.print_exc()
+
+class TwitchThread(threading.Thread):
+	def __init__(self, BASE:"Phaazebot"):
+		super().__init__()
+		self.BASE:"Phaazebot" = BASE
+		self.name:str = "Twitch"
+		self.daemon:bool = True
+		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
+
+	def run(self) -> None:
+		try:
+			asyncio.set_event_loop(self.loop)
+			from Platforms.Twitch.main_twitch import PhaazebotTwitch
+
+			self.BASE.Twitch = PhaazebotTwitch(self.BASE)
+			self.BASE.TwitchLoop = self.loop
+
+			self.BASE.IsReady.twitch = False
+
+			# coro gen
+			TwitchCoro:Coroutine = self.BASE.Twitch.start(
+				token = self.BASE.Access.twitch_irc_token,
+				nickname = self.BASE.Access.twitch_irc_nickname,
+			)
+
+			# let's go
+			self.loop.run_until_complete( TwitchCoro )
+
+			# we only should reach this point when twitch is ended gracefull
+			# which means a wanted disconnect,
+			# else it will always call a exception
+			self.BASE.Logger.info("Twitch disconnected")
+
+		except Exception as e:
+			self.BASE.Logger.error(f"Twitch Thread crashed: {str(e)}")
+			traceback.print_exc()

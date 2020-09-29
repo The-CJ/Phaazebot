@@ -19,6 +19,7 @@ from Utils.cli import CliArgs
 from Platforms.Discord.main_discord import PhaazebotDiscord
 from Platforms.Web.main_web import PhaazebotWeb
 from Platforms.Osu.main_osu import PhaazebotOsu
+from Platforms.Twitch.main_twitch import PhaazebotTwitch
 from Platforms.Twitch.main_events import PhaazebotTwitchEvents
 
 class Phaazebot(object):
@@ -58,7 +59,7 @@ class Phaazebot(object):
 		self.Discord:PhaazebotDiscord = PhaazebotDiscord(self)
 		self.DiscordLoop:asyncio.AbstractEventLoop = None
 
-		self.Twitch = None
+		self.Twitch:PhaazebotTwitch = PhaazebotTwitch(self)
 		self.TwitchLoop:asyncio.AbstractEventLoop = None
 
 		self.TwitchEvents:PhaazebotTwitchEvents = PhaazebotTwitchEvents(self)
