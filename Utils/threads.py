@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
 	from main import Phaazebot
 
@@ -20,11 +20,12 @@ class Mainframe(threading.Thread):
 		# a new idea, current is the thread that is actully running, after its crashed, use tpl, to generate a new one
 		# making it so and can be looped from a dict
 		self.modules:dict = dict(
-			discord = dict(current=DiscordThread(BASE), tpl=DiscordThread),
 			worker = dict(current=WorkerThread(BASE), tpl=WorkerThread),
 			web = dict(current=WebThread(BASE), tpl=WebThread),
-			osu_irc = dict(current=OsuThread(BASE), tpl=OsuThread),
+			discord = dict(current=DiscordThread(BASE), tpl=DiscordThread),
+			twitch_irc = dict(current=TwitchThread(BASE), tpl=TwitchThread),
 			twitch_events = dict(current=TwitchEventsThread(BASE), tpl=TwitchEventsThread),
+			osu_irc = dict(current=OsuThread(BASE), tpl=OsuThread),
 		)
 
 	def run(self) -> None:
