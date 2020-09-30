@@ -2,11 +2,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from main import Phaazebot
 
-import osu_irc as osu
+import osu_irc
 
-class PhaazebotOsu(osu.Client):
-	def __init__(self, BASE):
-		super().__init__()
+class PhaazebotOsu(osu_irc.Client):
+	def __init__(self, BASE:"Phaazebot", *args:list, **kwargs:dict):
+		super().__init__(*args, **kwargs)
 		self.BASE:"Phaazebot" = BASE
 
 	def __bool__(self):
@@ -16,5 +16,5 @@ class PhaazebotOsu(osu.Client):
 		self.BASE.Logger.info("osu! connected")
 		self.BASE.IsReady.osu = True
 
-	async def onMessage(self, message):
+	async def onMessage(self, Message:osu_irc.Message):
 		pass

@@ -153,26 +153,28 @@ class OsuThread(threading.Thread):
 		self.BASE:"Phaazebot" = BASE
 		self.name:str = "Osu"
 		self.daemon:bool = True
-		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
+		self.Loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
 
 	def run(self) -> None:
 		try:
-			asyncio.set_event_loop(self.loop)
+			asyncio.set_event_loop(self.Loop)
 			from Platforms.Osu.main_osu import PhaazebotOsu
 
-			self.BASE.Osu = PhaazebotOsu(self.BASE)
-			self.BASE.OsuLoop = self.loop
-
-			self.BASE.IsReady.osu = False
-
-			# coro gen
-			OsuCoro:Coroutine = self.BASE.Osu.start(
+			# set loop in main object
+			self.BASE.OsuLoop = self.Loop
+			# generate osu! object
+			self.BASE.Osu = PhaazebotOsu(
+				self.BASE,
+				Loop = self.Loop,
 				token = self.BASE.Access.osu_irc_token,
-				nickname = self.BASE.Access.osu_irc_username
+				nickname = self.BASE.Access.osu_irc_nickname
 			)
 
+			# reset ready state, if not already
+			self.BASE.IsReady.osu = False
+
 			# let's go
-			self.loop.run_until_complete( OsuCoro )
+			self.BASE.Osu.run()
 
 			# we only should reach this point when osu is ended gracefull
 			# which means a wanted disconnect,
