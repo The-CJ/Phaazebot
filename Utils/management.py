@@ -24,6 +24,9 @@ def shutdownModule(BASE:"Phaazebot", module_name:str) -> bool:
 	elif module_name == "twitch_irc":
 		return shutdownModuleTwitchIRC(BASE)
 
+	elif module_name == "osu_irc":
+		return shutdownModuleOsuIRC(BASE)
+
 	elif module_name == "web":
 		return shutdownModuleWeb(BASE)
 
@@ -46,6 +49,14 @@ def shutdownModuleTwitchIRC(BASE:"Phaazebot") -> bool:
 	the twitch thread will be done after stop is done
 	"""
 	BASE.Twitch.stop()
+	return True
+
+def shutdownModuleOsuIRC(BASE:"Phaazebot") -> bool:
+	"""
+	shutdown the twitch module aka just stop everything
+	the twitch thread will be done after stop is done
+	"""
+	BASE.Osu.stop()
 	return True
 
 def shutdownModuleWeb(BASE:"Phaazebot") -> bool:
