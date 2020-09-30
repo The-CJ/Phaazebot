@@ -6,8 +6,8 @@ import twitch_irc
 import traceback
 
 class PhaazebotTwitch(twitch_irc.Client):
-	def __init__(self, BASE:"Phaazebot"):
-		super().__init__()
+	def __init__(self, BASE:"Phaazebot", *args:list, **kwargs:dict):
+		super().__init__(*args, **kwargs)
 		self.BASE:"Phaazebot" = BASE
 
 	def __bool__(self):

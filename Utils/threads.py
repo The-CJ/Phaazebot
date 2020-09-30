@@ -215,26 +215,29 @@ class TwitchThread(threading.Thread):
 		self.BASE:"Phaazebot" = BASE
 		self.name:str = "Twitch"
 		self.daemon:bool = True
-		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
+		self.Loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
 
 	def run(self) -> None:
 		try:
-			asyncio.set_event_loop(self.loop)
+			asyncio.set_event_loop(self.Loop)
 			from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
-			self.BASE.Twitch = PhaazebotTwitch(self.BASE)
-			self.BASE.TwitchLoop = self.loop
+			# set loop in main object
+			self.BASE.TwitchLoop = self.Loop
 
-			self.BASE.IsReady.twitch = False
-
-			# coro gen
-			TwitchCoro:Coroutine = self.BASE.Twitch.start(
+			# generate Twitch object
+			self.BASE.Twitch = PhaazebotTwitch(
+				self.BASE,
+				Loop = self.Loop,
 				token = self.BASE.Access.twitch_irc_token,
 				nickname = self.BASE.Access.twitch_irc_nickname,
 			)
 
+			# reset ready state, if not already
+			self.BASE.IsReady.twitch = False
+
 			# let's go
-			self.loop.run_until_complete( TwitchCoro )
+			self.BASE.Twitch.run()
 
 			# we only should reach this point when twitch is ended gracefull
 			# which means a wanted disconnect,
