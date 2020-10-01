@@ -59,6 +59,7 @@
 			[twitch_irc_token] = "secret!..?"
 			[twitch_irc_nickname] = "secret!..?"
 	# Vars
+		[twitch_debug_user_id] = ["1337", "00000", "42069"]
 		[default_twitch_currency] = "Twitch coin"
 		[default_twitch_currency_multi] = "Twitch coins"
 	# Cooldowns

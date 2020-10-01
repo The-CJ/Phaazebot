@@ -49,7 +49,7 @@
   "discord_regular_amount":50,
   "discord_login_link":"https://discordapp.com",
   "discord_redirect_link":"localhost",
-  "discord_debug_user_id":"",
+  "discord_debug_user_id":[],
 
   "twitch_timeout_message_cooldown":20,
   "twitch_blacklist_remember_time":180,
@@ -58,6 +58,7 @@
   "twitch_stats_cooldown":5,
   "twitch_login_link":"https://id.twitch.tv",
   "twitch_redirect_link":"localhost",
+  "twitch_debug_user_id":[],
 
   "web_root":"localhost",
   "ssl_dir":"/etc/letsencrypt/live/domain.something/",

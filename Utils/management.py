@@ -21,6 +21,12 @@ def shutdownModule(BASE:"Phaazebot", module_name:str) -> bool:
 	if module_name == "discord":
 		return shutdownModuleDiscord(BASE)
 
+	elif module_name == "twitch_irc":
+		return shutdownModuleTwitchIRC(BASE)
+
+	elif module_name == "osu_irc":
+		return shutdownModuleOsuIRC(BASE)
+
 	elif module_name == "web":
 		return shutdownModuleWeb(BASE)
 
@@ -35,6 +41,22 @@ def shutdownModuleDiscord(BASE:"Phaazebot") -> bool:
 	the discord thread will be done after logout
 	"""
 	asyncio.ensure_future(BASE.Discord.logout(), loop=BASE.DiscordLoop)
+	return True
+
+def shutdownModuleTwitchIRC(BASE:"Phaazebot") -> bool:
+	"""
+	shutdown the twitch module aka just stop everything
+	the twitch thread will be done after stop is done
+	"""
+	BASE.Twitch.stop()
+	return True
+
+def shutdownModuleOsuIRC(BASE:"Phaazebot") -> bool:
+	"""
+	shutdown the twitch module aka just stop everything
+	the twitch thread will be done after stop is done
+	"""
+	BASE.Osu.stop()
 	return True
 
 def shutdownModuleWeb(BASE:"Phaazebot") -> bool:
