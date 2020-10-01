@@ -14,7 +14,7 @@ var Admin = new (class {
 		var AdminO = this;
 		var ex = extractData(this.console_wrap);
 
-		$.post("/api/admin/evaluate", x)
+		$.post("/api/admin/evaluate", ex)
 		.done(function (data) {
 			$(AdminO.console_output).text(data.result);
 			$(AdminO.console_trace).text(data.traceback);
