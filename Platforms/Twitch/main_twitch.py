@@ -3,6 +3,7 @@ if TYPE_CHECKING:
 	from main import Phaazebot
 
 import twitch_irc
+import asyncio
 import traceback
 
 class PhaazebotTwitch(twitch_irc.Client):
@@ -21,6 +22,7 @@ class PhaazebotTwitch(twitch_irc.Client):
 		self.BASE.IsReady.twitch = True
 
 		await self.joinChannel(self.nickname)
+		await self.joinAllChannels()
 
 	async def onMessage(self, Message:twitch_irc.Message) -> None:
 		"""
@@ -33,13 +35,40 @@ class PhaazebotTwitch(twitch_irc.Client):
 		if str(Message.Author.id) in self.BASE.Vars.twitch_debug_user_id:
 			await self.debugCall(Message)
 
-	# errors
 	async def onError(self, Ex:Exception):
 		"""
 		Default error funtion, called everytime someting went wrong
 		"""
 		tb = traceback.format_exc()
 		self.BASE.Logger.error(f'(Twitch) Ignoring exception {Ex}\n{tb}')
+
+	async def joinAllChannels(self) -> None:
+		"""
+		Join all channels we know in the database that have a menaged=true
+		"""
+		twitch_res:list = self.BASE.PhaazeDB.selectQuery("""
+			SELECT
+				`twitch_channel`.`channel_id` AS `channel_id`,
+				`twitch_user_name`.`user_name` AS `channel_name`
+			FROM `twitch_channel`
+			LEFT JOIN `twitch_user_name`
+				ON `twitch_user_name`.`user_id` = `twitch_channel`.`channel_id`
+			WHERE `twitch_channel`.`managed` = 1""")
+
+		if not twitch_res: return
+		self.BASE.Logger.info(f"Twitch Joining {len(twitch_res)} channels...")
+
+		# we could just spam all JOIN commands in one go, the twitch_irc lib would handle all ratelimits
+		# but we dont
+
+		for entry in twitch_res:
+			channel_name:str = entry.get("channel_name", None)
+			if not channel_name: continue
+			self.BASE.Logger.debug(f"Joining twitch channel: {channel_name}", require="twitch:join")
+			await self.joinChannel(channel_name)
+			await asyncio.sleep(19/30) # save request limit
+
+		self.BASE.Logger.info(f"Twitch joined all {len(twitch_res)} channels!")
 
 	# debug
 	async def debugCall(self, Message:twitch_irc.Message):
@@ -76,3 +105,6 @@ class PhaazebotTwitch(twitch_irc.Client):
 			tb = traceback.format_exc()
 			re:str = f"Exception: {str(Fail)} : {str(tb)}"
 			return await self.sendMessage(Message.Channel, re[:199])
+
+	async def onUnknown(self, raw:str) -> None:
+		self.BASE.Logger.error(f"Twitch IRC Unknown Data: {raw}")
