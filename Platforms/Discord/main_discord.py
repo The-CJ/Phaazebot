@@ -13,6 +13,14 @@ from .events import (
 
 class PhaazebotDiscord(discord.Client):
 	def __init__(self, BASE:"Phaazebot", *args:list, **kwargs:dict):
+		PhaazeIntents:discord.Intents = discord.Intents()
+
+		# changes to recieve wanted events
+		PhaazeIntents.guilds = True
+		PhaazeIntents.members = True
+		PhaazeIntents.messages = True
+		kwargs["intents"] = PhaazeIntents
+
 		super().__init__(*args, **kwargs)
 		self.BASE:"Phaazebot" = BASE
 
