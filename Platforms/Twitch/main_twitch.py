@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import twitch_irc
 import asyncio
 import traceback
+from Platforms.Twitch.openchannel import openChannel
 
 class PhaazebotTwitch(twitch_irc.Client):
 	def __init__(self, BASE:"Phaazebot", *args:tuple, **kwargs:dict):
@@ -34,6 +35,8 @@ class PhaazebotTwitch(twitch_irc.Client):
 
 		if str(Message.Author.id) in self.BASE.Vars.twitch_debug_user_id:
 			await self.debugCall(Message)
+
+		return await openChannel(self, Message)
 
 	async def onError(self, Ex:Exception):
 		"""
