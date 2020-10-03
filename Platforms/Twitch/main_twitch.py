@@ -7,7 +7,7 @@ import asyncio
 import traceback
 
 class PhaazebotTwitch(twitch_irc.Client):
-	def __init__(self, BASE:"Phaazebot", *args:list, **kwargs:dict):
+	def __init__(self, BASE:"Phaazebot", *args:tuple, **kwargs:dict):
 		super().__init__(*args, **kwargs)
 		self.BASE:"Phaazebot" = BASE
 

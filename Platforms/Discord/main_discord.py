@@ -12,7 +12,7 @@ from .events import (
 )
 
 class PhaazebotDiscord(discord.Client):
-	def __init__(self, BASE:"Phaazebot", *args:list, **kwargs:dict):
+	def __init__(self, BASE:"Phaazebot", *args:tuple, **kwargs:dict):
 		PhaazeIntents:discord.Intents = discord.Intents()
 
 		# changes to recieve wanted events
