@@ -5,8 +5,8 @@ if TYPE_CHECKING:
 import discord
 import asyncio
 import traceback
-from .openchannel import openChannel
-from .events import (
+from Platforms.Discord.openchannel import openChannel
+from Platforms.Discord.events import (
 	eventOnMemberJoin,
 	eventOnMemberRemove
 )

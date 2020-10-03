@@ -4,13 +4,15 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordServerSettings(DBContentClass, APIClass):
 	"""
-		Contains and represents all possible discord server settings
+	Contains and represents all possible discord server settings
 	"""
 	def __init__(self, infos:dict = {}):
 
 		self.__found = False
 		if infos:
 			self.__found = True
+
+		self.guild_id:str = infos.get("guild_id", UNDEFINED)
 
 		self.autorole_id:str = infos.get("autorole_id", UNDEFINED)
 		self.blacklist_ban_links:bool = bool( infos.get("blacklist_ban_links", UNDEFINED) )
@@ -34,7 +36,6 @@ class DiscordServerSettings(DBContentClass, APIClass):
 		self.owner_disable_normal:bool = bool( infos.get("owner_disable_normal", UNDEFINED) )
 		self.owner_disable_regular:bool = bool( infos.get("owner_disable_regular", UNDEFINED) )
 		self.owner_disable_mod:bool = bool( infos.get("owner_disable_mod", UNDEFINED) )
-		self.server_id:str = infos.get("guild_id", UNDEFINED)
 		self.track_channel:str = infos.get("track_channel", UNDEFINED)
 		self.track_value:int = infos.get("track_value", UNDEFINED)
 		self.welcome_chan:str = infos.get("welcome_chan", UNDEFINED)
@@ -84,3 +85,7 @@ class DiscordServerSettings(DBContentClass, APIClass):
 		j["welcome_msg_priv"] = self.toString(self.welcome_msg_priv)
 
 		return j
+
+	@property
+	def server_id(self) -> str:
+		return self.guild_id
