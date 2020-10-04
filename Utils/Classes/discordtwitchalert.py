@@ -4,7 +4,7 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordTwitchAlert(DBContentClass, APIClass):
 	"""
-		Contains and represents stuff for a discord twitch alert
+	Contains and represents stuff for a discord twitch alert
 	"""
 	def __init__(self, data:dict):
 

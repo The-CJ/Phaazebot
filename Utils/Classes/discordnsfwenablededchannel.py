@@ -4,7 +4,7 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordNsfwEnabledChannel(DBContentClass, APIClass):
 	"""
-		Contains and represents stuff for a nsfw enabled discord channel
+	Contains and represents stuff for a nsfw enabled discord channel
 	"""
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' channel_id='{self.channel_id}'>"

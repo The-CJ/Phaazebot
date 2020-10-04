@@ -4,7 +4,7 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordBlacklistedWord(DBContentClass, APIClass):
 	"""
-		Contains and represents a blacklisted word in discord
+	Contains and represents a blacklisted word in discord
 	"""
 	def __init__(self, data:dict, guild_id:str):
 

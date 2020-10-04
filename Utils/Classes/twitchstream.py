@@ -3,7 +3,7 @@ from Utils.Classes.apiclass import APIClass
 
 class TwitchStream(APIClass):
 	"""
-		Contains and represents a twitch stream
+	Contains and represents a twitch stream
 	"""
 	def __init__(self, data:dict):
 

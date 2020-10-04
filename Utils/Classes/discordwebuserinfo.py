@@ -12,9 +12,9 @@ def forcable(f:Callable) -> Callable:
 
 class DiscordWebUserInfo(object):
 	"""
-		Used for authorisation of a discord web user request
-		variable search way:
-			System -> header/cookies
+	Used for authorisation of a discord web user request
+	variable search way:
+		System -> header/cookies
 	"""
 	def __init__(self, BASE:"Phaazebot", WebRequest:Request, force_method:str=None, **kwargs:Any):
 		self.BASE:"Phaazebot" = BASE

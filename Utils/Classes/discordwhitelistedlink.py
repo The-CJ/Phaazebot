@@ -4,9 +4,9 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordWhitelistedLink(DBContentClass, APIClass):
 	"""
-		Contains and represents a whitelisted link in discord
-		Whitelisted means that even if links are banned, this link (regex)
-		is a allowed exception
+	Contains and represents a whitelisted link in discord
+	Whitelisted means that even if links are banned, this link (regex)
+	is a allowed exception
 	"""
 	def __init__(self, data:dict, guild_id:str):
 

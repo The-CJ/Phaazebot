@@ -3,8 +3,7 @@ from Utils.Classes.apiclass import APIClass
 
 class TwitchUser(APIClass):
 	"""
-		Contains and represents a twitch user
-
+	Contains and represents a twitch user
 	"""
 	def __init__(self, data:dict):
 

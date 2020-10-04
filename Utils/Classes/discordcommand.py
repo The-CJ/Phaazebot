@@ -8,6 +8,9 @@ from Utils.Classes.apiclass import APIClass
 from Utils.Classes.storeclasses import GlobalStorage
 
 class DiscordCommand(DBContentClass, APIClass):
+	"""
+	Contains and represents a discord command
+	"""
 	def __init__(self, data:dict, server_id:str):
 		self.server_id:str = server_id
 		self.command_id:int = data.get("id", UNDEFINED)

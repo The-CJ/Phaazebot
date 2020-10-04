@@ -8,7 +8,7 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordUserStats(DBContentClass, APIClass):
 	"""
-		Contains and represents all phaaze values for a Discord user
+	Contains and represents all phaaze values for a Discord user
 	"""
 	def __init__(self, data:dict, server_id:str):
 

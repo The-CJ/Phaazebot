@@ -15,10 +15,10 @@ def forcable(f:Callable) -> Callable:
 
 class WebUserInfo(DBContentClass, APIClass):
 	"""
-		Used for authorisation of a phaaze web user request
-		It should if possible, avoid reading in POST content when not needed
-		variable search way:
-			System -> header/cookies -> GET -> POST/JSON
+	Used for authorisation of a phaaze web user request
+	It should if possible, avoid reading in POST content when not needed
+	variable search way:
+		System -> header/cookies -> GET -> POST/JSON
 	"""
 	def __init__(self, BASE:"Phaazebot", WebRequest:Request, force_method:str=None, **kwargs:Any):
 		self.BASE:"Phaazebot" = BASE

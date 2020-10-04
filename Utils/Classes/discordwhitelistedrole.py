@@ -4,8 +4,8 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordWhitelistedRole(DBContentClass, APIClass):
 	"""
-		Contains and represents a whitelisted role in discord
-		Whitelisted means there are a exception to the blacklist and spam filter
+	Contains and represents a whitelisted role in discord
+	Whitelisted means there are a exception to the blacklist and spam filter
 	"""
 	def __init__(self, data:dict, guild_id:str):
 

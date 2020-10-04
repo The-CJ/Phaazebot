@@ -1,6 +1,6 @@
 class Undefined():
 	"""
-		This class is never (un)equal, bigger, smaller und else to everything, its nothing
+	This class is never (un)equal, bigger, smaller und else to everything, its nothing
 	"""
 	def __init__(self): pass
 

@@ -3,7 +3,7 @@ from Utils.Classes.apiclass import APIClass
 
 class TwitchGame(APIClass):
 	"""
-		Contains and represents a twitch game
+	Contains and represents a twitch game
 	"""
 	def __init__(self, data:dict):
 

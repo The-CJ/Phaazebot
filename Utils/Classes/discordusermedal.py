@@ -4,7 +4,7 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordUserMedal(DBContentClass, APIClass):
 	"""
-		Contains and represents stuff for a discord user medal
+	Contains and represents stuff for a discord user medal
 	"""
 	def __init__(self, data:dict, guild_id:str):
 

@@ -9,7 +9,7 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 
 class DiscordCommandContext(object):
 	"""
-	This Class acts as a holder for inital message and the ServerSettings.abs(n)
+	This Class acts as a holder for inital message and the ServerSettings.
 	Also has a part function. (Because i know, if i don't have it here i will do it in 50 places and forgot i did it and do it again. LULW)
 	And this class is used to get the command class that should be executed.
 	"""

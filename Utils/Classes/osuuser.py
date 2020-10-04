@@ -4,7 +4,7 @@ from Utils.Classes.apiclass import APIClass
 
 class OsuUser(APIClass):
 	"""
-		Represents a osu! user with all its stats in a specific game mode
+	Represents a osu! user with all its stats in a specific game mode
 	"""
 	def __repr__(self):
 		return f"<{self.__class__.__name__} name='{self.username}' mode='{self.mode}'>"

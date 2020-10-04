@@ -4,7 +4,7 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordAssignRole(DBContentClass, APIClass):
 	"""
-		Contains and represents stuff for a discord assign role
+	Contains and represents stuff for a discord assign role
 	"""
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' role_id='{self.role_id}' trigger='{self.trigger}'>"

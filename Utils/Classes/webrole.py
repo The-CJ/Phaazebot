@@ -4,7 +4,7 @@ from Utils.Classes.apiclass import APIClass
 
 class WebRole(DBContentClass, APIClass):
 	"""
-		Contains and represents a role for the web server
+	Contains and represents a role for the web server
 	"""
 	def __init__(self, data:dict):
 		self.role_id:int = data.get("id", UNDEFINED)
