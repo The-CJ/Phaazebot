@@ -11,18 +11,18 @@ DESCRIBE `twitch_setting`;
 | active_quote               | tinyint(1)   | YES  |     | 0       |                |
 | blacklist_ban_links        | tinyint(1)   | YES  |     | 0       |                |
 | blacklist_link_msg         | varchar(475) | YES  |     | NULL    |                |
-| blacklist_notify           | tinyint(1)   | YES  |     | 0       |                |
 | blacklist_msg              | varchar(475) | YES  |     | NULL    |                |
+| blacklist_notify           | tinyint(1)   | YES  |     | 0       |                |
 | blacklist_punishment       | tinyint(1)   | YES  |     | 0       |                |
 | currency_name              | varchar(64)  | YES  |     | NULL    |                |
 | currency_name_multi        | varchar(64)  | YES  |     | NULL    |                |
 | gain_currency              | int(8)       | YES  |     | 1       |                |
-| gain_currency_message      | int(8)       | YES  |     | 1       |                |
 | gain_currency_active_multi | float        | YES  |     | 1       |                |
-| owner_disable_mod          | tinyint(1)   | YES  |     | 0       |                |
-| owner_disable_normal       | tinyint(1)   | YES  |     | 0       |                |
+| gain_currency_message      | int(8)       | YES  |     | 1       |                |
 | osurequestformat_osu       | varchar(475) | YES  |     | NULL    |                |
 | osurequestformat_twtich    | varchar(475) | YES  |     | NULL    |                |
+| owner_disable_mod          | tinyint(1)   | YES  |     | 0       |                |
+| owner_disable_normal       | tinyint(1)   | YES  |     | 0       |                |
 +----------------------------+--------------+------+-----+---------+----------------+
 */
 
@@ -36,18 +36,18 @@ CREATE TABLE `twitch_setting` (
   `active_quote` tinyint(1) DEFAULT 0,
   `blacklist_ban_links` tinyint(1) DEFAULT 0,
   `blacklist_link_msg` varchar(475) DEFAULT NULL,
-  `blacklist_notify` tinyint(1) DEFAULT 0,
   `blacklist_msg` varchar(475) DEFAULT NULL,
+  `blacklist_notify` tinyint(1) DEFAULT 0,
   `blacklist_punishment` tinyint(1) DEFAULT 0,
   `currency_name` varchar(64) DEFAULT NULL,
   `currency_name_multi` varchar(64) DEFAULT NULL,
   `gain_currency` int(8) DEFAULT 1,
-  `gain_currency_message` int(8) DEFAULT 1,
   `gain_currency_active_multi` float DEFAULT 1,
-  `owner_disable_mod` tinyint(1) DEFAULT 0,
-  `owner_disable_normal` tinyint(1) DEFAULT 0,
+  `gain_currency_message` int(8) DEFAULT 1,
   `osurequestformat_osu` varchar(475) DEFAULT NULL,
   `osurequestformat_twtich` varchar(475) DEFAULT NULL,
+  `owner_disable_mod` tinyint(1) DEFAULT 0,
+  `owner_disable_normal` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `channel_id` (`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
