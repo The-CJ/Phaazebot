@@ -9,11 +9,11 @@ class DiscordAssignRole(DBContentClass, APIClass):
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' role_id='{self.role_id}' trigger='{self.trigger}'>"
 
-	def __init__(self, data:dict, guild_id:str):
+	def __init__(self, data:dict):
 
 		# key
 		self.assignrole_id:int = data.get("id", UNDEFINED)
-		self.guild_id:str = guild_id
+		self.guild_id:str = data.get("guild_id", UNDEFINED)
 
 		# vars
 		self.role_id:str = data.get("role_id", UNDEFINED)

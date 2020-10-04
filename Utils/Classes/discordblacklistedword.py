@@ -6,11 +6,11 @@ class DiscordBlacklistedWord(DBContentClass, APIClass):
 	"""
 	Contains and represents a blacklisted word in discord
 	"""
-	def __init__(self, data:dict, guild_id:str):
+	def __init__(self, data:dict):
 
 		# key
-		self.guild_id:str = guild_id
 		self.word_id:int = data.get("id", UNDEFINED)
+		self.guild_id:str = data.get("guild_id", UNDEFINED)
 
 		# vars
 		self.word:str = data.get("word", UNDEFINED)

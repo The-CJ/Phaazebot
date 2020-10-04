@@ -9,11 +9,11 @@ class DiscordGameEnabledChannel(DBContentClass, APIClass):
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' channel_id='{self.channel_id}'>"
 
-	def __init__(self, data:dict, guild_id:str):
+	def __init__(self, data:dict):
 
 		# key
 		self.entry_id:int = data.get("id", UNDEFINED)
-		self.guild_id:str = guild_id
+		self.guild_id:str = data.get("guild_id", UNDEFINED)
 
 		# vars
 		self.channel_id:str = data.get("channel_id", UNDEFINED)

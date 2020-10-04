@@ -18,18 +18,9 @@ class DiscordServerSettings(DBContentClass, APIClass):
 		# vars
 		self.autorole_id:str = infos.get("autorole_id", UNDEFINED)
 		self.blacklist_ban_links:bool = bool( infos.get("blacklist_ban_links", UNDEFINED) )
-		self.blacklist_whitelistroles:list = self.fromStringList( infos.get("blacklist_whitelistroles", UNDEFINED) )
-		self.blacklist_whitelistlinks:list = self.fromStringList( infos.get("blacklist_whitelistlinks", UNDEFINED), ";;;" )
-		self.blacklist_blacklistwords:list = self.fromStringList( infos.get("blacklist_blacklistwords", UNDEFINED), ";;;" )
 		self.blacklist_punishment:str = infos.get("blacklist_punishment", UNDEFINED)
 		self.currency_name:str = infos.get("currency_name", UNDEFINED)
 		self.currency_name_multi:str = infos.get("currency_name_multi", UNDEFINED)
-		self.disabled_levelchannels:list = self.fromStringList( infos.get("disabled_levelchannels", UNDEFINED) )
-		self.disabled_quotechannels:list = self.fromStringList( infos.get("disabled_quotechannels", UNDEFINED) )
-		self.disabled_normalchannels:list = self.fromStringList( infos.get("disabled_normalchannels", UNDEFINED) )
-		self.disabled_regularchannels:list = self.fromStringList( infos.get("disabled_regularchannels", UNDEFINED) )
-		self.enabled_gamechannels:list = self.fromStringList( infos.get("enabled_gamechannels", UNDEFINED) )
-		self.enabled_nsfwchannels:list = self.fromStringList( infos.get("enabled_nsfwchannels", UNDEFINED) )
 		self.leave_chan:str = infos.get("leave_chan", UNDEFINED)
 		self.leave_msg:str = infos.get("leave_msg", UNDEFINED)
 		self.level_announce_chan:str = infos.get("level_announce_chan", UNDEFINED)
@@ -43,6 +34,17 @@ class DiscordServerSettings(DBContentClass, APIClass):
 		self.welcome_chan:str = infos.get("welcome_chan", UNDEFINED)
 		self.welcome_msg:str = infos.get("welcome_msg", UNDEFINED)
 		self.welcome_msg_priv:str = infos.get("welcome_msg_priv", UNDEFINED)
+
+		# calc
+		self.blacklist_whitelistroles:list = self.fromStringList( infos.get("blacklist_whitelistroles", UNDEFINED) )
+		self.blacklist_whitelistlinks:list = self.fromStringList( infos.get("blacklist_whitelistlinks", UNDEFINED), ";;;" )
+		self.blacklist_blacklistwords:list = self.fromStringList( infos.get("blacklist_blacklistwords", UNDEFINED), ";;;" )
+		self.disabled_levelchannels:list = self.fromStringList( infos.get("disabled_levelchannels", UNDEFINED) )
+		self.disabled_quotechannels:list = self.fromStringList( infos.get("disabled_quotechannels", UNDEFINED) )
+		self.disabled_normalchannels:list = self.fromStringList( infos.get("disabled_normalchannels", UNDEFINED) )
+		self.disabled_regularchannels:list = self.fromStringList( infos.get("disabled_regularchannels", UNDEFINED) )
+		self.enabled_gamechannels:list = self.fromStringList( infos.get("enabled_gamechannels", UNDEFINED) )
+		self.enabled_nsfwchannels:list = self.fromStringList( infos.get("enabled_nsfwchannels", UNDEFINED) )
 
 	def __bool__(self):
 		return self.__found

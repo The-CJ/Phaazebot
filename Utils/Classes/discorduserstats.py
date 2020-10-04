@@ -10,11 +10,10 @@ class DiscordUserStats(DBContentClass, APIClass):
 	"""
 	Contains and represents all phaaze values for a Discord user
 	"""
-	def __init__(self, data:dict, server_id:str):
+	def __init__(self, data:dict):
 
 		# key
-		self.guild_id:str = server_id # don't ask
-		self.server_id:str = server_id # don't ask
+		self.guild_id:str = data.get("guild_id", UNDEFINED) # don't ask
 		self.member_id:str = data.get("member_id", UNDEFINED)
 
 		# vars
@@ -72,3 +71,7 @@ class DiscordUserStats(DBContentClass, APIClass):
 		j["medals"] = self.toList(self.medals)
 
 		return j
+
+	@property
+	def server_id(self) -> str:
+		return self.guild_id

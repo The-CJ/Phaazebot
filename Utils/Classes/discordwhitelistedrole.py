@@ -7,11 +7,11 @@ class DiscordWhitelistedRole(DBContentClass, APIClass):
 	Contains and represents a whitelisted role in discord
 	Whitelisted means there are a exception to the blacklist and spam filter
 	"""
-	def __init__(self, data:dict, guild_id:str):
+	def __init__(self, data:dict):
 
 		# key
 		self.exceptionrole_id:int = data.get("id", UNDEFINED)
-		self.guild_id:str = guild_id
+		self.guild_id:str = data.get("guild_id", UNDEFINED)
 
 		# vars
 		self.role_id:str = data.get("role_id", UNDEFINED)

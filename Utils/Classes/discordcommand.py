@@ -11,11 +11,11 @@ class DiscordCommand(DBContentClass, APIClass):
 	"""
 	Contains and represents a discord command
 	"""
-	def __init__(self, data:dict, server_id:str):
+	def __init__(self, data:dict):
 
 		# key
 		self.command_id:int = data.get("id", UNDEFINED)
-		self.server_id:str = server_id
+		self.server_id:str = data.get("guild_id", UNDEFINED)
 		self.trigger:str = data.get("trigger", UNDEFINED)
 
 		# vars

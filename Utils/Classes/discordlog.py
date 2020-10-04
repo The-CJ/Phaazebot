@@ -13,7 +13,7 @@ class DiscordLog(DBContentClass, APIClass):
 
 		# key
 		self.log_id:int = data.get("id", UNDEFINED)
-		self.guild_id:str = guild_id
+		self.guild_id:str = data.get("guild_id", UNDEFINED)
 
 		# vars
 		self.content:str = data.get("content", UNDEFINED)

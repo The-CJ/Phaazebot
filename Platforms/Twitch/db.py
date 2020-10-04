@@ -128,7 +128,6 @@ async def getTwitchChannelUsers(cls:"PhaazebotTwitch", channel_id:str, **search:
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	print(sql)
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:

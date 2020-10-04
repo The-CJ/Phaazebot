@@ -144,7 +144,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, **searc
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordCommand(x, guild_id) for x in res]
+		return [DiscordCommand(x) for x in res]
 
 	else:
 		return []
@@ -237,7 +237,7 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:d
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordUserStats(x, guild_id) for x in res]
+		return [DiscordUserStats(x) for x in res]
 
 	else:
 		return []
@@ -313,7 +313,7 @@ async def getDiscordUsersMedals(cls:"PhaazebotDiscord", guild_id:str, **search:d
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordUserMedal(x, guild_id) for x in res]
+		return [DiscordUserMedal(x) for x in res]
 
 	else:
 		return []
@@ -449,7 +449,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search:
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordQuote(x, guild_id) for x in res]
+		return [DiscordQuote(x) for x in res]
 
 	else:
 		return []
@@ -518,7 +518,7 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, **se
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordAssignRole(x, guild_id) for x in res]
+		return [DiscordAssignRole(x) for x in res]
 
 	else:
 		return []
@@ -652,7 +652,7 @@ async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", guild_id:str,
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordBlacklistedWord(x, guild_id) for x in res]
+		return [DiscordBlacklistedWord(x) for x in res]
 
 	else:
 		return []
@@ -715,7 +715,7 @@ async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", guild_id:str, *
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordWhitelistedRole(x, guild_id) for x in res]
+		return [DiscordWhitelistedRole(x) for x in res]
 
 	else:
 		return []
@@ -778,7 +778,7 @@ async def getDiscordServerWhitelistedLinks(cls:"PhaazebotDiscord", guild_id:str,
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordWhitelistedLink(x, guild_id) for x in res]
+		return [DiscordWhitelistedLink(x) for x in res]
 
 	else:
 		return []
@@ -904,7 +904,7 @@ async def getDiscordServerRegularDisabledChannels(cls:"PhaazebotDiscord", guild_
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordRegularDisabledChannel(x, guild_id) for x in res]
+		return [DiscordRegularDisabledChannel(x) for x in res]
 
 	else:
 		return []
@@ -967,7 +967,7 @@ async def getDiscordServerNormalDisabledChannels(cls:"PhaazebotDiscord", guild_i
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordNormalDisabledChannel(x, guild_id) for x in res]
+		return [DiscordNormalDisabledChannel(x) for x in res]
 
 	else:
 		return []
@@ -1030,7 +1030,7 @@ async def getDiscordServerQuoteDisabledChannels(cls:"PhaazebotDiscord", guild_id
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordQuoteDisabledChannel(x, guild_id) for x in res]
+		return [DiscordQuoteDisabledChannel(x) for x in res]
 
 	else:
 		return []
@@ -1093,7 +1093,7 @@ async def getDiscordServerGameEnabledChannels(cls:"PhaazebotDiscord", guild_id:s
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordGameEnabledChannel(x, guild_id) for x in res]
+		return [DiscordGameEnabledChannel(x) for x in res]
 
 	else:
 		return []
@@ -1156,7 +1156,7 @@ async def getDiscordServerNsfwEnabledChannels(cls:"PhaazebotDiscord", guild_id:s
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordNsfwEnabledChannel(x, guild_id) for x in res]
+		return [DiscordNsfwEnabledChannel(x) for x in res]
 
 	else:
 		return []
@@ -1244,7 +1244,7 @@ async def getDiscordServerLogs(cls:"PhaazebotDiscord", guild_id:str, **search:di
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordLog(x, guild_id) for x in res]
+		return [DiscordLog(x) for x in res]
 
 	else:
 		return []
