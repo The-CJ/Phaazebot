@@ -19,7 +19,7 @@ class DiscordPermission(object):
 	def __init__(self, Message:discord.Message, Member:DiscordUserStats):
 		self.rank = 0
 
-		if Message.author.premium_since: # should mean its a discord boost... right?
+		if Message.author.premium_since != None: # should mean its a discord boost... right?
 			self.rank = 1
 
 		if Member and Member.regular:
