@@ -6,6 +6,7 @@ import twitch_irc
 import asyncio
 import traceback
 from Platforms.Twitch.openchannel import openChannel
+from Utils.cli import CliArgs
 
 class PhaazebotTwitch(twitch_irc.Client):
 	def __init__(self, BASE:"Phaazebot", *args:tuple, **kwargs:dict):
@@ -49,6 +50,10 @@ class PhaazebotTwitch(twitch_irc.Client):
 		"""
 		Join all channels we know in the database that have a menaged=true
 		"""
+
+		if CliArgs.get("no-twitch-join", False):
+			return self.BASE.Logger.warning(f"`no-twitch-join` active, skipping channel join.")
+
 		twitch_res:list = self.BASE.PhaazeDB.selectQuery("""
 			SELECT
 				`twitch_channel`.`channel_id` AS `channel_id`,
