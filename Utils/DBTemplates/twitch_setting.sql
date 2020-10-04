@@ -13,7 +13,7 @@ DESCRIBE `twitch_setting`;
 | blacklist_link_msg         | varchar(475) | YES  |     | NULL    |                |
 | blacklist_msg              | varchar(475) | YES  |     | NULL    |                |
 | blacklist_notify           | tinyint(1)   | YES  |     | 0       |                |
-| blacklist_punishment       | tinyint(1)   | YES  |     | 0       |                |
+| blacklist_punishment       | int(8)       | YES  |     | 30      |                |
 | currency_name              | varchar(64)  | YES  |     | NULL    |                |
 | currency_name_multi        | varchar(64)  | YES  |     | NULL    |                |
 | gain_currency              | int(8)       | YES  |     | 1       |                |
@@ -38,7 +38,7 @@ CREATE TABLE `twitch_setting` (
   `blacklist_link_msg` varchar(475) DEFAULT NULL,
   `blacklist_msg` varchar(475) DEFAULT NULL,
   `blacklist_notify` tinyint(1) DEFAULT 0,
-  `blacklist_punishment` tinyint(1) DEFAULT 0,
+  `blacklist_punishment` int(8) DEFAULT 30,
   `currency_name` varchar(64) DEFAULT NULL,
   `currency_name_multi` varchar(64) DEFAULT NULL,
   `gain_currency` int(8) DEFAULT 1,
