@@ -8,8 +8,11 @@ class DiscordQuote(DBContentClass, APIClass):
 	"""
 	def __init__(self, data:dict, guild_id:str):
 
-		self.guild_id:str = guild_id
+		# key
 		self.quote_id:int = data.get("id", UNDEFINED)
+		self.guild_id:str = guild_id
+
+		# vars
 		self.content:str = data.get("content", UNDEFINED)
 
 	def __repr__(self):

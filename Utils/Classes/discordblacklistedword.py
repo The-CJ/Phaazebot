@@ -8,8 +8,11 @@ class DiscordBlacklistedWord(DBContentClass, APIClass):
 	"""
 	def __init__(self, data:dict, guild_id:str):
 
+		# key
 		self.guild_id:str = guild_id
 		self.word_id:int = data.get("id", UNDEFINED)
+
+		# vars
 		self.word:str = data.get("word", UNDEFINED)
 
 	def __repr__(self):

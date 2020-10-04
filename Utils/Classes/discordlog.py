@@ -11,12 +11,15 @@ class DiscordLog(DBContentClass, APIClass):
 	"""
 	def __init__(self, data:dict, guild_id:str):
 
-		self.guild_id:str = guild_id
+		# key
 		self.log_id:int = data.get("id", UNDEFINED)
-		self.event_value:int = data.get("event_value", UNDEFINED)
-		self.created_at:datetime.datetime = data.get("created_at", UNDEFINED)
-		self.initiator_id:str = data.get("initiator_id", UNDEFINED)
+		self.guild_id:str = guild_id
+
+		# vars
 		self.content:str = data.get("content", UNDEFINED)
+		self.created_at:datetime.datetime = data.get("created_at", UNDEFINED)
+		self.event_value:int = data.get("event_value", UNDEFINED)
+		self.initiator_id:str = data.get("initiator_id", UNDEFINED)
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' log='{self.log_id}'>"
@@ -27,12 +30,11 @@ class DiscordLog(DBContentClass, APIClass):
 		j:dict = dict()
 
 		j["log_id"] = self.toString(self.log_id)
-		j["guild_id"] = self.toString(self.guild_id)
-		j["event_value"] = self.toInteger(self.event_value)
-		j["event_name"] = self.toString(self.event_name)
-		j["created_at"] = self.toString(self.created_at)
-		j["initiator_id"] = self.toString(self.initiator_id)
 		j["content"] = self.toString(self.content)
+		j["created_at"] = self.toString(self.created_at)
+		j["event_name"] = self.toString(self.event_name)
+		j["event_value"] = self.toInteger(self.event_value)
+		j["initiator_id"] = self.toString(self.initiator_id)
 
 		return j
 

@@ -11,8 +11,11 @@ class DiscordAssignRole(DBContentClass, APIClass):
 
 	def __init__(self, data:dict, guild_id:str):
 
-		self.guild_id:str = guild_id
+		# key
 		self.assignrole_id:int = data.get("id", UNDEFINED)
+		self.guild_id:str = guild_id
+
+		# vars
 		self.role_id:str = data.get("role_id", UNDEFINED)
 		self.trigger:str = data.get("trigger", UNDEFINED)
 

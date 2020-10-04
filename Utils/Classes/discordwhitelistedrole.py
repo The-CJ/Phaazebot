@@ -9,8 +9,11 @@ class DiscordWhitelistedRole(DBContentClass, APIClass):
 	"""
 	def __init__(self, data:dict, guild_id:str):
 
-		self.guild_id:str = guild_id
+		# key
 		self.exceptionrole_id:int = data.get("id", UNDEFINED)
+		self.guild_id:str = guild_id
+
+		# vars
 		self.role_id:str = data.get("role_id", UNDEFINED)
 
 	def __repr__(self):

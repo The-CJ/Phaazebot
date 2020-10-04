@@ -8,8 +8,11 @@ class DiscordRegular(DBContentClass, APIClass):
 	"""
 	def __init__(self, data:dict):
 
+		# key
 		self.regular_id:str = data.get("id", UNDEFINED)
 		self.guild_id:str = data.get("guild_id", UNDEFINED)
+
+		# vars
 		self.member_id:int =data.get("member_id", UNDEFINED)
 
 	def __repr__(self):

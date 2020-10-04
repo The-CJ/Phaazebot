@@ -11,8 +11,11 @@ class DiscordNormalDisabledChannel(DBContentClass, APIClass):
 
 	def __init__(self, data:dict, guild_id:str):
 
-		self.guild_id:str = guild_id
+		# key
 		self.entry_id:int = data.get("id", UNDEFINED)
+		self.guild_id:str = guild_id
+
+		#vars
 		self.channel_id:str = data.get("channel_id", UNDEFINED)
 
 	def toJSON(self) -> dict:

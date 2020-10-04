@@ -12,8 +12,10 @@ class DiscordServerSettings(DBContentClass, APIClass):
 		if infos:
 			self.__found = True
 
+		# key
 		self.guild_id:str = infos.get("guild_id", UNDEFINED)
 
+		# vars
 		self.autorole_id:str = infos.get("autorole_id", UNDEFINED)
 		self.blacklist_ban_links:bool = bool( infos.get("blacklist_ban_links", UNDEFINED) )
 		self.blacklist_whitelistroles:list = self.fromStringList( infos.get("blacklist_whitelistroles", UNDEFINED) )
@@ -58,26 +60,26 @@ class DiscordServerSettings(DBContentClass, APIClass):
 
 		j["autorole_id"] = self.toString(self.autorole_id)
 		j["blacklist_ban_links"] = self.toBoolean(self.blacklist_ban_links)
-		j["blacklist_whitelistroles"] = self.toList(self.blacklist_whitelistroles)
-		j["blacklist_whitelistlinks"] = self.toList(self.blacklist_whitelistlinks)
 		j["blacklist_blacklistwords"] = self.toList(self.blacklist_blacklistwords)
 		j["blacklist_punishment"] = self.toString(self.blacklist_punishment)
+		j["blacklist_whitelistlinks"] = self.toList(self.blacklist_whitelistlinks)
+		j["blacklist_whitelistroles"] = self.toList(self.blacklist_whitelistroles)
 		j["currency_name"] = self.toString(self.currency_name)
 		j["currency_name_multi"] = self.toString(self.currency_name_multi)
 		j["disabled_levelchannels"] = self.toList(self.disabled_levelchannels)
-		j["disabled_quotechannels"] = self.toList(self.disabled_quotechannels)
 		j["disabled_normalchannels"] = self.toList(self.disabled_normalchannels)
+		j["disabled_quotechannels"] = self.toList(self.disabled_quotechannels)
 		j["disabled_regularchannels"] = self.toList(self.disabled_regularchannels)
 		j["enabled_gamechannels"] = self.toList(self.enabled_gamechannels)
 		j["enabled_nsfwchannels"] = self.toList(self.enabled_nsfwchannels)
+		j["leave_chan"] = self.toString(self.leave_chan)
+		j["leave_msg"] = self.toString(self.leave_msg)
 		j["level_announce_chan"] = self.toString(self.level_announce_chan)
 		j["level_custom_msg"] = self.toString(self.level_custom_msg)
-		j["leave_msg"] = self.toString(self.leave_msg)
-		j["leave_chan"] = self.toString(self.leave_chan)
 		j["owner_disable_level"] = self.toBoolean(self.owner_disable_level)
+		j["owner_disable_mod"] = self.toBoolean(self.owner_disable_mod)
 		j["owner_disable_normal"] = self.toBoolean(self.owner_disable_normal)
 		j["owner_disable_regular"] = self.toBoolean(self.owner_disable_regular)
-		j["owner_disable_mod"] = self.toBoolean(self.owner_disable_mod)
 		j["track_channel"] = self.toString(self.track_channel)
 		j["track_value"] = self.toInteger(self.track_value)
 		j["welcome_chan"] = self.toString(self.welcome_chan)

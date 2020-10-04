@@ -10,8 +10,11 @@ class DiscordWhitelistedLink(DBContentClass, APIClass):
 	"""
 	def __init__(self, data:dict, guild_id:str):
 
-		self.guild_id:str = guild_id
+		# key
 		self.link_id:int = data.get("id", UNDEFINED)
+		self.guild_id:str = guild_id
+
+		# vars
 		self.link:str = data.get("link", UNDEFINED)
 
 	def __repr__(self):
