@@ -15,7 +15,7 @@ from Utils.dbutils import validateDBInput
 from Platforms.Discord.db import getDiscordSeverSettings
 from Platforms.Discord.utils import getDiscordRoleFromString, getDiscordChannelFromString
 from Platforms.Discord.logging import loggingOnConfigEdit
-from Platforms.Discord.blacklist import checkBlacklistPunishmentString
+from Platforms.Discord.punish import checkPunishmentString
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
 	apiWrongData,
@@ -104,7 +104,7 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	# blacklist_punishment
 	value:str = Data.getStr("blacklist_punishment", UNDEFINED, len_max=32)
 	if value != UNDEFINED:
-		value = checkBlacklistPunishmentString(value)
+		value = checkPunishmentString(value)
 		db_update["blacklist_punishment"] = validateDBInput(str, value)
 		update["blacklist_punishment"] = value
 

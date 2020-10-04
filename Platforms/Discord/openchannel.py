@@ -6,7 +6,7 @@ import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
 from Platforms.Discord.db import getDiscordSeverSettings, getDiscordServerUsers
-from Platforms.Discord.blacklist import checkBlacklist
+from Platforms.Discord.punish import checkPunish
 from Platforms.Discord.commands import checkCommands
 from Platforms.Discord.levels import checkLevel
 
@@ -22,7 +22,7 @@ async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 
 	# Blacklist: only run blacklist module if links are banned or at least on entry on the blacklist
 	if ServerSettings.blacklist_ban_links or ServerSettings.blacklist_blacklistwords:
-		executed_punishment:bool = await checkBlacklist(cls, Message, ServerSettings, DiscordUser)
+		executed_punishment:bool = await checkPunish(cls, Message, ServerSettings, DiscordUser)
 		if executed_punishment:
 			cls.BASE.Logger.debug(f"(Discord) executed blacklist punishment guild_id={Message.guild.id} punish={ServerSettings.blacklist_punishment}", require="discord:blacklist")
 			return
