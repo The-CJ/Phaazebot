@@ -9,7 +9,7 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
 from Utils.Classes.discordpermission import DiscordPermission
 
-async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, DiscordUser:DiscordUserStats) -> bool:
+async def checkPunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, DiscordUser:DiscordUserStats) -> bool:
 
 	PhaazePermissions:discord.Permissions = Message.channel.permissions_for(Message.guild.me)
 
@@ -77,7 +77,7 @@ async def checkWordBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Se
 	return False
 
 async def executePunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, reason:str = None) -> None:
-	ServerSettings.blacklist_punishment = checkBlacklistPunishmentString(ServerSettings.blacklist_punishment)
+	ServerSettings.blacklist_punishment = checkPunishmentString(ServerSettings.blacklist_punishment)
 	try:
 		if ServerSettings.blacklist_punishment == "delete":
 			await Message.delete()
@@ -98,7 +98,7 @@ async def executePunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 	except:
 		raise
 
-def checkBlacklistPunishmentString(p:str) -> str:
+def checkPunishmentString(p:str) -> str:
 	p = p.lower()
 	if p in ["delete","kick","ban"]:
 		return p
