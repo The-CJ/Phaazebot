@@ -10,22 +10,26 @@ class DiscordPermission(object):
 	This is purly for Phaaze.
 	The number represets a level:
 	0 - Everyone
-	1 - Regulars
-	2 - Mods
-	3 - Server Owner
-	4+  System (NOTE: don't know what it means... maybe developer debug only?)
+	1 - Booster
+	2 - Regulars
+	3 - Mods
+	4 - Server Owner
+	5+  System (NOTE: don't know what it means... maybe developer debug only?)
 	"""
 	def __init__(self, Message:discord.Message, Member:DiscordUserStats):
 		self.rank = 0
 
-		if Member and Member.regular:
+		if Message.author.premium_since: # should mean its a discord boost... right?
 			self.rank = 1
 
-		if self.checkRoles(Message.author.roles):
+		if Member and Member.regular:
 			self.rank = 2
 
-		if Message.author == Message.guild.owner:
+		if self.checkRoles(Message.author.roles):
 			self.rank = 3
+
+		if Message.author == Message.guild.owner:
+			self.rank = 4
 
 	def checkRoles(self, roles:list, to_check:list = ["admin" ,"mod" ,"bot commander"]) -> bool:
 		for Role in roles:

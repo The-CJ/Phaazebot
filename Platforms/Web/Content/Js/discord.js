@@ -18,8 +18,9 @@ function discordGuildAvatar(guild_id, icon_hash, size=32) {
 
 function discordTranslateRequire(level) {
 	if (level == 0) { return "Everyone"; }
-	if (level == 1) { return "Regulars"; }
-	if (level == 2) { return "Moderators"; }
-	if (level == 3) { return "Server Owner"; }
-	if (level >= 4) { return "System"; }
+	if (level == 1) { return "Booster"; }
+	if (level == 2) { return "Regulars"; }
+	if (level == 3) { return "Moderators"; }
+	if (level == 4) { return "Server Owner"; }
+	if (level >= 5) { return "System"; }
 }
