@@ -36,6 +36,9 @@ class TwitchChannelSettings(DBContentClass, APIClass):
 		self.owner_disable_normal:bool = bool( infos.get("owner_disable_normal", UNDEFINED) )
 		self.owner_disable_regular:bool = bool( infos.get("owner_disable_regular", UNDEFINED) )
 
+		# calc
+		self.blacklist_blacklistwords:list = self.fromStringList( infos.get("blacklist_blacklistwords", UNDEFINED) )
+
 	def __bool__(self):
 		return self.__found
 
