@@ -25,7 +25,9 @@ async def getTwitchChannelSettings(cls:"PhaazebotTwitch", origin:twitch_irc.Mess
 
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery("""
 		SELECT
-			`twitch_setting`.*
+			`twitch_setting`.*,
+			(SELECT GROUP_CONCAT(`twitch_blacklist_blacklistword`.`word` SEPARATOR ';;;') FROM `twitch_blacklist_blacklistword` WHERE `twitch_blacklist_blacklistword`.`channel_id` = `twitch_setting`.`channel_id`)
+				AS `blacklist_blacklistwords`
 		FROM `twitch_setting`
 		WHERE `twitch_setting`.`channel_id` = %s
 		GROUP BY `twitch_setting`.`channel_id`""",
