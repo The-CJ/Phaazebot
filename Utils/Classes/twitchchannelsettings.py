@@ -23,7 +23,7 @@ class TwitchChannelSettings(DBContentClass, APIClass):
 		self.blacklist_link_msg:str = infos.get("blacklist_link_msg", UNDEFINED)
 		self.blacklist_msg:str = infos.get("blacklist_msg", UNDEFINED)
 		self.blacklist_notify:bool = bool( infos.get("blacklist_notify", UNDEFINED) )
-		self.blacklist_punishment:str = infos.get("blacklist_punishment", UNDEFINED)
+		self.blacklist_punishment:int = infos.get("blacklist_punishment", UNDEFINED)
 		self.currency_name:str = infos.get("currency_name", UNDEFINED)
 		self.currency_name_multi:str = infos.get("currency_name_multi", UNDEFINED)
 		self.gain_currency:int = infos.get("gain_currency", UNDEFINED)

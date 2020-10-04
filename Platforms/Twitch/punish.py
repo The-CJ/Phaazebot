@@ -71,11 +71,11 @@ class GTTRS():
 
 GTTRS = GTTRS()
 
-async def checkBlacklist(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, DiscordUser:TwitchUserStats) -> bool:
+async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, DiscordUser:TwitchUserStats) -> bool:
 
 	PhaazePermissions:twitch_irc.UserState = Message.Channel.me
 
-	# if the bot cant do anything or the author is a regular or higher, skip checks
+	# if the bot can't do anything or the author is a regular or higher, skip checks
 	if not PhaazePermissions.mod: return False
 	if TwitchPermission(Message, DiscordUser).rank >= 2: return False
 
@@ -85,12 +85,13 @@ async def checkBlacklist(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chan
 
 	# links are not allowed
 	if ChannelSettings.blacklist_ban_links:
-		punish = await checkBanLinks(cls, Message, ChannelSettings)
-		reason = "ban-links"
+		punish = await checkLinks(cls, Message, ChannelSettings)
+		reason = "links"
 
+	# blacklisted words
 	if ChannelSettings.blacklist_blacklistwords and not punish:
-		punish = await checkWordBlacklist(cls, Message, ChannelSettings)
-		reason = "word-blacklist"
+		punish = await checkBlacklist(cls, Message, ChannelSettings)
+		reason = "blacklist"
 
 	if punish:
 		await executePunish(cls, Message, ChannelSettings, reason=reason)
@@ -99,11 +100,45 @@ async def checkBlacklist(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chan
 	else:
 		return False
 
-async def checkBanLinks(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+# checks
+async def checkBlacklist(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
 	pass
 
-async def checkWordBlacklist(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+async def checkLinks(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+	pass
+
+async def checkEmotes(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+	pass
+
+async def checkCaps(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+	pass
+
+async def checkCopyPast(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+	pass
+
+async def checkUnicode(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+	pass
+
+# finals and utils
+
+def getNotifyMessage(ChannelSettings:TwitchChannelSettings, reason:str, level:int) -> str:
 	pass
 
 async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, reason:str = None) -> None:
-	pass
+	punish_time:int = max(ChannelSettings.blacklist_punishment, 10) # at least 10
+	current_user_state:int = GTTRS.check(Message)
+
+	if current_user_state == 2: # user fucked up in grace_two, aka we ban now
+		await cls.sendMessage(Message.room_name, f"/ban {Message.room_name}")
+
+	elif current_user_state == 1: # user timeout again in grace_one, double timeout and grace
+		GTTRS.grace(Message, 2, punish_time * 4)
+		await cls.sendMessage(Message.room_name, f"/timeout {Message.room_name} {punish_time * 2}")
+
+	elif current_user_state == 0: # user didn't learn from warning, timeout and grace
+		GTTRS.grace(Message, 1, punish_time * 2)
+		await cls.sendMessage(Message.room_name, f"/timeout {Message.room_name} {punish_time}")
+
+	else: # someone did a casual oopsi, thats ok, give a warning
+		GTTRS.grace(Message, 0, 180)
+		await cls.sendMessage(Message.room_name, f"/timeout {Message.room_name} 3")
