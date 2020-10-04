@@ -15,7 +15,7 @@ async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Server
 
 	# if the user has manage_messages or is a regular or higher, skip checks
 	if not PhaazePermissions.manage_messages: return False
-	if DiscordPermission(Message, DiscordUser).rank >= 1: return False
+	if DiscordPermission(Message, DiscordUser).rank >= 2: return False
 
 	# if this is True after all checks => punish
 	punish:bool = False
