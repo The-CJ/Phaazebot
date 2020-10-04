@@ -110,9 +110,9 @@ class PhaazebotTwitch(twitch_irc.Client):
 			return await self.sendMessage(Message.Channel, str(res))
 
 		except Exception as Fail:
-			tb = traceback.format_exc()
-			re:str = f"Exception: {str(Fail)} : {str(tb)}"
-			return await self.sendMessage(Message.Channel, re[:199])
+			tb = str(traceback.format_exc()).replace("\n",' ').replace("\r", '')
+			re:str = f"Exception: {str(Fail)} : {tb}"
+			return await self.sendMessage(Message.Channel, re[:499])
 
 	async def onUnknown(self, raw:str) -> None:
 		self.BASE.Logger.error(f"Twitch IRC Unknown Data: {raw}")
