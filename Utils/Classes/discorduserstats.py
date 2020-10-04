@@ -12,13 +12,21 @@ class DiscordUserStats(DBContentClass, APIClass):
 	"""
 	def __init__(self, data:dict, server_id:str):
 
+		# key
 		self.guild_id:str = server_id # don't ask
 		self.server_id:str = server_id # don't ask
 		self.member_id:str = data.get("member_id", UNDEFINED)
-		self.rank:int = int( data.get("rank", UNDEFINED) )
-		self.exp:int = int( data.get("exp", 0) )
+
+		# vars
 		self.currency:int = int( data.get("currency", 0) )
 		self.edited:bool = bool( data.get("edited", False) )
+		self.exp:int = int( data.get("exp", 0) )
+		self.nickname:str = data.get("nickname", UNDEFINED)
+		self.on_server:bool = bool( data.get("on_server", UNDEFINED) )
+		self.username:str = data.get("username", UNDEFINED)
+
+		# calc
+		self.rank:int = int( data.get("rank", UNDEFINED) )
 		self.regular:bool = bool( data.get("regular", False) )
 		self.medals:list = self.fromStringList( data.get("medals", UNDEFINED ), ";;;" )
 
@@ -53,10 +61,13 @@ class DiscordUserStats(DBContentClass, APIClass):
 
 		j["guild_id"] = self.toString(self.guild_id)
 		j["member_id"] = self.toString(self.member_id)
-		j["rank"] = self.toInteger(self.rank)
-		j["exp"] = self.toInteger(self.exp)
 		j["currency"] = self.toInteger(self.currency)
 		j["edited"] = self.toBoolean(self.edited)
+		j["exp"] = self.toInteger(self.exp)
+		j["nickname"] = self.toString(self.nickname)
+		j["on_server"] = self.toInteger(self.on_server)
+		j["username"] = self.toString(self.username)
+		j["rank"] = self.toInteger(self.rank)
 		j["regular"] = self.toBoolean(self.regular)
 		j["medals"] = self.toList(self.medals)
 
