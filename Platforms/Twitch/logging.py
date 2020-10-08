@@ -16,6 +16,8 @@ TRACK_OPTIONS:Dict[str, int] = {
 	"Regular.create": 1<<4,
 	"Regular.delete": 1<<5,
 	"Level.edit": 1<<6,
+	"Moderation.timeout": 1<<7,
+	"Moderation.ban": 1<<8,
 }
 EVENT_COLOR_POSITIVE:int = 0x00FF00
 EVENT_COLOR_WARNING:int = 0xFFAA00
@@ -29,7 +31,6 @@ def makeWebAccessLink(cls:"PhaazebotTwitch", channel_id:str or int, log_id:str o
 async def loggingOnConfigEdit(cls:"PhaazebotTwitch", Settings:TwitchChannelSettings, **kwargs:dict) -> None:
 	"""
 	Logs the event when someone makes any changes to configs via web.
-	If track option `Config.edit` is active, it will send a message to discord
 
 	Required keywords:
 	------------------
@@ -37,3 +38,35 @@ async def loggingOnConfigEdit(cls:"PhaazebotTwitch", Settings:TwitchChannelSetti
 	"""
 	logging_signature:str = "Config.edit"
 	changes:dict = kwargs["changes"]
+
+# Moderation.timeout : 128 : 10000000
+async def loggingOnModerationTimeout(cls:"PhaazebotTwitch", Settings:TwitchChannelSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when phaaze timeouts a user in chat.
+
+	Required keywords:
+	------------------
+	* user_name `str`
+	* reason `str`
+	* timeout `int`
+	* level `int`
+	"""
+	logging_signature:str = "Moderation.timeout"
+	user_name:str = kwargs["user_name"]
+	reason:str = kwargs["reason"]
+	timeout:int = kwargs["timeout"]
+	level:int = kwargs["timeout"]
+
+# Moderation.ban : 256 : 100000000
+async def loggingOnModerationBan(cls:"PhaazebotTwitch", Settings:TwitchChannelSettings, **kwargs:dict) -> None:
+	"""
+	Logs the event when phaaze bans a user in chat.
+
+	Required keywords:
+	------------------
+	* user_name `str`
+	* reason `str`
+	"""
+	logging_signature:str = "Moderation.ban"
+	user_name:str = kwargs["user_name"]
+	reason:str = kwargs["reason"]

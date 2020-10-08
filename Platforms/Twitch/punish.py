@@ -9,6 +9,7 @@ import re
 from Utils.Classes.twitchchannelsettings import TwitchChannelSettings
 from Utils.Classes.twitchuserstats import TwitchUserStats
 from Utils.Classes.twitchpermission import TwitchPermission
+from Platforms.Twitch.logging import loggingOnModerationTimeout, loggingOnModerationBan
 
 class GTTRS():
 	"""
@@ -137,20 +138,24 @@ async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 
 	if current_user_state == 2: # user fucked up in grace_two, aka we ban now
 		await cls.sendMessage(Message.room_name, f"/ban {Message.user_name}")
+		await loggingOnModerationBan(cls, user_name=Message.user_name, reason=reason)
 
 	elif current_user_state == 1: # user timeout again in grace_one, double timeout and grace
 		GTTRS.grace(Message, 2, punish_time * 4)
 		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} {punish_time * 2}")
+		await loggingOnModerationTimeout(cls, user_name=Message.user_name, reason=reason, timeout=punish_time, level=2)
 
 	elif current_user_state == 0: # user didn't learn from warning, timeout and grace
 		GTTRS.grace(Message, 1, punish_time * 2)
 		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} {punish_time}")
+		await loggingOnModerationTimeout(cls, user_name=Message.user_name, reason=reason, timeout=punish_time, level=1)
 
 	else: # someone did a casual oopsi, thats ok, give a warning
 		GTTRS.grace(Message, 0, 180)
 		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} 3")
+		await loggingOnModerationTimeout(cls, user_name=Message.user_name, reason=reason, timeout=3, level=0)
 
-	return await notifyMessagAndLogging(ChannelSettings, reason, current_user_state)
+	await notifyMessage(ChannelSettings, reason, current_user_state)
 
 DEFAULT_PUNISH_MSG_WORDS:str = "[warn-level] @[user-display-name], you posted a blacklisted word!"
 DEFAULT_PUNISH_MSG_CAPS:str = "[warn-level] @[user-display-name], stop using huge amounts of CAPS!"
@@ -160,5 +165,5 @@ DEFAULT_PUNISH_MSG_LINKS:str = "[warn-level] @[user-display-name], stop posting 
 DEFAULT_PUNISH_MSG_UNICODE:str = "[warn-level] @[user-display-name], stop using ㄩ几丨匚ㄖᗪ乇 Messages!"
 DEFAULT_UNKNOWN:str = "[warn-level] @[user-display-name], whatever you just done, stop it!"
 
-async def notifyMessagAndLogging(ChannelSettings:TwitchChannelSettings, reason:str, level:int or None) -> None:
+async def notifyMessage(ChannelSettings:TwitchChannelSettings, reason:str, level:int or None) -> None:
 	if not ChannelSettings.punish_notify: return # notify messages are unwanted
