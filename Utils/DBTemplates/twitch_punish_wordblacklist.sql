@@ -1,5 +1,5 @@
 /*
-DESCRIBE `twitch_blacklist_blacklistword`;
+DESCRIBE `twitch_punish_wordblacklist`;
 
 +------------+--------------+------+-----+---------+----------------+
 | Field      | Type         | Null | Key | Default | Extra          |
@@ -10,9 +10,9 @@ DESCRIBE `twitch_blacklist_blacklistword`;
 +------------+--------------+------+-----+---------+----------------+
 */
 
--- SHOW CREATE TABLE `twitch_blacklist_blacklistword`;
+-- SHOW CREATE TABLE `twitch_punish_wordblacklist`;
 
-CREATE TABLE `twitch_blacklist_blacklistword` (
+CREATE TABLE `twitch_punish_wordblacklist` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `channel_id` varchar(128) NOT NULL,
   `word` varchar(512) NOT NULL,
