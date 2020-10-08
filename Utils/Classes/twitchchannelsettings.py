@@ -47,7 +47,7 @@ class TwitchChannelSettings(DBContentClass, APIClass):
 		self.punish_timeout:int = infos.get("punish_timeout", UNDEFINED)
 
 		# calc
-		self.punish_wordblacklist:List[str] = self.fromStringList( infos.get("punish_wordblacklist", UNDEFINED) )
+		self.punish_wordblacklist:List[str] = self.fromStringList( infos.get("punish_wordblacklist", UNDEFINED), seperator=";;;" )
 
 	def __bool__(self):
 		return self.__found

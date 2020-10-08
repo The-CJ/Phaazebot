@@ -91,7 +91,7 @@ async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channel
 		reason = "links"
 
 	# blacklist is active, check for bad words
-	if not punish and ChannelSettings.punish_msg_words:
+	if not punish and ChannelSettings.punish_option_words:
 		punish = await checkBlacklist(cls, Message, ChannelSettings)
 		reason = "wordblacklist"
 
@@ -136,20 +136,20 @@ def getNotifyMessage(ChannelSettings:TwitchChannelSettings, reason:str, level:in
 	pass
 
 async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, reason:str = None) -> None:
-	punish_time:int = max(ChannelSettings.blacklist_punishment, 10) # at least 10
+	punish_time:int = max(ChannelSettings.punish_timeout, 10) # at least 10
 	current_user_state:int = GTTRS.check(Message)
 
 	if current_user_state == 2: # user fucked up in grace_two, aka we ban now
-		await cls.sendMessage(Message.room_name, f"/ban {Message.room_name}")
+		await cls.sendMessage(Message.room_name, f"/ban {Message.user_name}")
 
 	elif current_user_state == 1: # user timeout again in grace_one, double timeout and grace
 		GTTRS.grace(Message, 2, punish_time * 4)
-		await cls.sendMessage(Message.room_name, f"/timeout {Message.room_name} {punish_time * 2}")
+		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} {punish_time * 2}")
 
 	elif current_user_state == 0: # user didn't learn from warning, timeout and grace
 		GTTRS.grace(Message, 1, punish_time * 2)
-		await cls.sendMessage(Message.room_name, f"/timeout {Message.room_name} {punish_time}")
+		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} {punish_time}")
 
 	else: # someone did a casual oopsi, thats ok, give a warning
 		GTTRS.grace(Message, 0, 180)
-		await cls.sendMessage(Message.room_name, f"/timeout {Message.room_name} 3")
+		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} 3")
