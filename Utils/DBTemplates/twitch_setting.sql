@@ -26,7 +26,7 @@ DESCRIBE `twitch_setting`;
 | punish_msg_links           | varchar(475) | YES  |     | NULL    |                |
 | punish_msg_unicode         | varchar(475) | YES  |     | NULL    |                |
 | punish_msg_words           | varchar(475) | YES  |     | NULL    |                |
-| punish_notify              | tinyint(1)   | YES  |     | 0       |                |
+| punish_notify              | tinyint(1)   | YES  |     | 1       |                |
 | punish_option_caps         | tinyint(1)   | YES  |     | 0       |                |
 | punish_option_copypasta    | tinyint(1)   | YES  |     | 0       |                |
 | punish_option_emotes       | tinyint(1)   | YES  |     | 0       |                |
@@ -62,7 +62,7 @@ CREATE TABLE `twitch_setting` (
   `punish_msg_links` varchar(475) DEFAULT NULL,
   `punish_msg_unicode` varchar(475) DEFAULT NULL,
   `punish_msg_words` varchar(475) DEFAULT NULL,
-  `punish_notify` tinyint(1) DEFAULT 0,
+  `punish_notify` tinyint(1) DEFAULT 1,
   `punish_option_caps` tinyint(1) DEFAULT 0,
   `punish_option_copypasta` tinyint(1) DEFAULT 0,
   `punish_option_emotes` tinyint(1) DEFAULT 0,

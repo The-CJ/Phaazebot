@@ -131,10 +131,6 @@ async def checkUnicode(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channe
 	pass
 
 # finals and utils
-
-def getNotifyMessage(ChannelSettings:TwitchChannelSettings, reason:str, level:int) -> str:
-	pass
-
 async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, reason:str = None) -> None:
 	punish_time:int = max(ChannelSettings.punish_timeout, 10) # at least 10
 	current_user_state:int = GTTRS.check(Message)
@@ -153,3 +149,16 @@ async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 	else: # someone did a casual oopsi, thats ok, give a warning
 		GTTRS.grace(Message, 0, 180)
 		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} 3")
+
+	return await notifyMessagAndLogging(ChannelSettings, reason, current_user_state)
+
+DEFAULT_PUNISH_MSG_WORDS:str = "[warn-level] @[user-display-name], you posted a blacklisted word!"
+DEFAULT_PUNISH_MSG_CAPS:str = "[warn-level] @[user-display-name], stop using huge amounts of CAPS!"
+DEFAULT_PUNISH_MSG_COPYPASTA:str = "[warn-level] @[user-display-name], stop using Copy-Pasta messages!"
+DEFAULT_PUNISH_MSG_EMOTES:str = "[warn-level] @[user-display-name], emotes are cool, too many are not!"
+DEFAULT_PUNISH_MSG_LINKS:str = "[warn-level] @[user-display-name], stop posting links!"
+DEFAULT_PUNISH_MSG_UNICODE:str = "[warn-level] @[user-display-name], stop using ㄩ几丨匚ㄖᗪ乇 Messages!"
+DEFAULT_UNKNOWN:str = "[warn-level] @[user-display-name], whatever you just done, stop it!"
+
+async def notifyMessagAndLogging(ChannelSettings:TwitchChannelSettings, reason:str, level:int or None) -> None:
+	if not ChannelSettings.punish_notify: return # notify messages are unwanted
