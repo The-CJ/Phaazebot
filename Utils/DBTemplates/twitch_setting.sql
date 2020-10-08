@@ -16,8 +16,10 @@ DESCRIBE `twitch_setting`;
 | gain_currency_message      | int(8)       | YES  |     | 1       |                |
 | osurequestformat_osu       | varchar(475) | YES  |     | NULL    |                |
 | osurequestformat_twtich    | varchar(475) | YES  |     | NULL    |                |
+| owner_disable_level        | tinyint(1)   | YES  |     | 0       |                |
 | owner_disable_mod          | tinyint(1)   | YES  |     | 0       |                |
 | owner_disable_normal       | tinyint(1)   | YES  |     | 0       |                |
+| owner_disable_regular      | tinyint(1)   | YES  |     | 0       |                |
 | punish_msg_caps            | varchar(475) | YES  |     | NULL    |                |
 | punish_msg_copypasta       | varchar(475) | YES  |     | NULL    |                |
 | punish_msg_emotes          | varchar(475) | YES  |     | NULL    |                |
@@ -50,8 +52,10 @@ CREATE TABLE `twitch_setting` (
   `gain_currency_message` int(8) DEFAULT 1,
   `osurequestformat_osu` varchar(475) DEFAULT NULL,
   `osurequestformat_twtich` varchar(475) DEFAULT NULL,
+  `owner_disable_level` tinyint(1) DEFAULT 0,
   `owner_disable_mod` tinyint(1) DEFAULT 0,
   `owner_disable_normal` tinyint(1) DEFAULT 0,
+  `owner_disable_regular` tinyint(1) DEFAULT 0,
   `punish_msg_caps` varchar(475) DEFAULT NULL,
   `punish_msg_copypasta` varchar(475) DEFAULT NULL,
   `punish_msg_emotes` varchar(475) DEFAULT NULL,
