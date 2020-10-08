@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import asyncio
 import twitch_irc
-# import re
+import re
 # from Utils.regex import ContainsLink
 from Utils.Classes.twitchchannelsettings import TwitchChannelSettings
 from Utils.Classes.twitchuserstats import TwitchUserStats
@@ -71,27 +71,29 @@ class GTTRS():
 
 GTTRS = GTTRS()
 
+DEBUG = True
+
 async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, DiscordUser:TwitchUserStats) -> bool:
 
 	PhaazePermissions:twitch_irc.UserState = Message.Channel.me
 
 	# if the bot can't do anything or the author is a regular or higher, skip checks
-	if not PhaazePermissions.mod: return False
-	if TwitchPermission(Message, DiscordUser).rank >= 2: return False
+	if not PhaazePermissions.mod and not DEBUG: return False
+	if TwitchPermission(Message, DiscordUser).rank >= 2 and not DEBUG: return False
 
 	# if this is True after all checks => punish
 	punish:bool = False
 	reason:str = None
 
-	# links are not allowed
-	if ChannelSettings.blacklist_ban_links:
+	# link option is active, check for links
+	if ChannelSettings.punish_option_links: # TODO: add link whitlist first
 		punish = await checkLinks(cls, Message, ChannelSettings)
 		reason = "links"
 
-	# blacklisted words
-	if ChannelSettings.blacklist_blacklistwords and not punish:
+	# blacklist is active, check for bad words
+	if not punish and ChannelSettings.punish_msg_words:
 		punish = await checkBlacklist(cls, Message, ChannelSettings)
-		reason = "blacklist"
+		reason = "wordblacklist"
 
 	if punish:
 		await executePunish(cls, Message, ChannelSettings, reason=reason)
@@ -102,7 +104,16 @@ async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channel
 
 # checks
 async def checkBlacklist(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
-	pass
+	message_text:str = Message.content.lower()
+
+	for re_pattern in ChannelSettings.punish_wordblacklist:
+		try:
+			if re.search(re_pattern, message_text):
+				return True
+		except:
+			pass
+
+	return False
 
 async def checkLinks(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
 	pass
