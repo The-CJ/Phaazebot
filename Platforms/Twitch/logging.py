@@ -47,15 +47,34 @@ async def loggingOnModerationTimeout(cls:"PhaazebotTwitch", Settings:TwitchChann
 	Required keywords:
 	------------------
 	* user_name `str`
+	* user_id `str`
 	* reason `str`
 	* timeout `int`
 	* level `int`
 	"""
 	logging_signature:str = "Moderation.timeout"
 	user_name:str = kwargs["user_name"]
+	user_id:str = kwargs["user_id"]
 	reason:str = kwargs["reason"]
 	timeout:int = kwargs["timeout"]
-	level:int = kwargs["timeout"]
+	level:int = kwargs["level"]
+
+	if level == 1: warn_level:str = "2nd warning"
+	elif level == 2: warn_level:str = "Last warning"
+	else: warn_level:str = "Warning"
+
+	new_log_id:int = cls.BASE.PhaazeDB.insertQuery(
+		table="twitch_log",
+		content={
+			"channel_id": Settings.channel_id,
+			"event_value": TRACK_OPTIONS[logging_signature],
+			"initiator_id": user_id,
+			"initiator_name": user_name,
+			"content": f"{user_name} got a '{warn_level}' and a {timeout}s timeout, triggered reason: {reason}"
+		}
+	)
+
+	new_log_id # unused for now
 
 # Moderation.ban : 256 : 100000000
 async def loggingOnModerationBan(cls:"PhaazebotTwitch", Settings:TwitchChannelSettings, **kwargs:dict) -> None:
@@ -65,8 +84,10 @@ async def loggingOnModerationBan(cls:"PhaazebotTwitch", Settings:TwitchChannelSe
 	Required keywords:
 	------------------
 	* user_name `str`
+	* user_id `str`
 	* reason `str`
 	"""
 	logging_signature:str = "Moderation.ban"
 	user_name:str = kwargs["user_name"]
+	user_id:str = kwargs["user_id"]
 	reason:str = kwargs["reason"]
