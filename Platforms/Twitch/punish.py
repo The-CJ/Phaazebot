@@ -138,32 +138,57 @@ async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 
 	if current_user_state == 2: # user fucked up in grace_two, aka we ban now
 		await cls.sendMessage(Message.room_name, f"/ban {Message.user_name}")
-		await loggingOnModerationBan(cls, user_name=Message.user_name, reason=reason)
+		await loggingOnModerationBan(cls, ChannelSettings, user_name=Message.user_name, user_id=Message.user_id, reason=reason)
 
 	elif current_user_state == 1: # user timeout again in grace_one, double timeout and grace
 		GTTRS.grace(Message, 2, punish_time * 4)
 		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} {punish_time * 2}")
-		await loggingOnModerationTimeout(cls, user_name=Message.user_name, reason=reason, timeout=punish_time, level=2)
+		await loggingOnModerationTimeout(cls, ChannelSettings, user_name=Message.user_name, user_id=Message.user_id, reason=reason, timeout=punish_time * 2, level=2)
+		await notifyMessage(cls, Message, ChannelSettings, reason, 2)
 
 	elif current_user_state == 0: # user didn't learn from warning, timeout and grace
 		GTTRS.grace(Message, 1, punish_time * 2)
 		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} {punish_time}")
-		await loggingOnModerationTimeout(cls, user_name=Message.user_name, reason=reason, timeout=punish_time, level=1)
+		await loggingOnModerationTimeout(cls, ChannelSettings, user_name=Message.user_name, user_id=Message.user_id, reason=reason, timeout=punish_time, level=1)
+		await notifyMessage(cls, Message, ChannelSettings, reason, 1)
 
 	else: # someone did a casual oopsi, thats ok, give a warning
 		GTTRS.grace(Message, 0, 180)
 		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} 3")
-		await loggingOnModerationTimeout(cls, user_name=Message.user_name, reason=reason, timeout=3, level=0)
+		await loggingOnModerationTimeout(cls, ChannelSettings, user_name=Message.user_name, user_id=Message.user_id, reason=reason, timeout=3, level=0)
+		await notifyMessage(cls, Message, ChannelSettings, reason, 0)
 
-	await notifyMessage(ChannelSettings, reason, current_user_state)
 
-DEFAULT_PUNISH_MSG_WORDS:str = "[warn-level] @[user-display-name], you posted a blacklisted word!"
-DEFAULT_PUNISH_MSG_CAPS:str = "[warn-level] @[user-display-name], stop using huge amounts of CAPS!"
-DEFAULT_PUNISH_MSG_COPYPASTA:str = "[warn-level] @[user-display-name], stop using Copy-Pasta messages!"
-DEFAULT_PUNISH_MSG_EMOTES:str = "[warn-level] @[user-display-name], emotes are cool, too many are not!"
-DEFAULT_PUNISH_MSG_LINKS:str = "[warn-level] @[user-display-name], stop posting links!"
-DEFAULT_PUNISH_MSG_UNICODE:str = "[warn-level] @[user-display-name], stop using ㄩ几丨匚ㄖᗪ乇 Messages!"
-DEFAULT_UNKNOWN:str = "[warn-level] @[user-display-name], whatever you just done, stop it!"
+DEFAULT_PUNISH_MSG_WORDS: str = "[[warn-level]] @[user-display-name], you posted a blacklisted word!"
+DEFAULT_PUNISH_MSG_CAPS: str = "[[warn-level]] @[user-display-name], stop using huge amounts of CAPS!"
+DEFAULT_PUNISH_MSG_COPYPASTA: str = "[[warn-level]] @[user-display-name], stop using Copy-Pasta messages!"
+DEFAULT_PUNISH_MSG_EMOTES:str = "[[warn-level]] @[user-display-name], emotes are cool, too many are not!"
+DEFAULT_PUNISH_MSG_LINKS:str = "[[warn-level]] @[user-display-name], stop posting links!"
+DEFAULT_PUNISH_MSG_UNICODE:str = "[[warn-level]] @[user-display-name], stop using ㄩ几丨匚ㄖᗪ乇 Messages!"
+DEFAULT_UNKNOWN:str = "[[warn-level]] @[user-display-name], whatever you just done, stop it!"
 
-async def notifyMessage(ChannelSettings:TwitchChannelSettings, reason:str, level:int or None) -> None:
+async def notifyMessage(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, reason:str, level:int or None) -> None:
 	if not ChannelSettings.punish_notify: return # notify messages are unwanted
+
+	notify_msg:str = ""
+	if reason == "wordblacklist":
+		notify_msg = ChannelSettings.punish_msg_words or DEFAULT_PUNISH_MSG_WORDS
+	elif reason == "links":
+		notify_msg = ChannelSettings.punish_msg_links or DEFAULT_PUNISH_MSG_LINKS
+
+	if not notify_msg:
+		notify_msg = DEFAULT_UNKNOWN
+
+	if level == 1: warn_level:str = "2nd warning"
+	elif level == 2: warn_level:str = "Last warning"
+	else: warn_level:str = "Warning"
+
+	notify_msg = notify_msg.replace("[warn-level]", warn_level)
+	notify_msg = notify_msg.replace("[reason]", reason)
+	notify_msg = notify_msg.replace("[user-name]", Message.user_name)
+	notify_msg = notify_msg.replace("[user-display-name]", Message.display_name)
+	notify_msg = notify_msg.replace("[user-id", Message.user_id)
+	notify_msg = notify_msg.replace("[room-id", Message.room_id)
+	notify_msg = notify_msg.replace("[room-name", Message.room_name)
+
+	await cls.sendMessage(Message.room_name, notify_msg)
