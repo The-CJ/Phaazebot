@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import twitch_irc
 
 from Utils.Classes.twitchchannelsettings import TwitchChannelSettings
+from Utils.Classes.twitchuserstats import TwitchUserStats
 from Platforms.Twitch.db import getTwitchChannelSettings, getTwitchChannelUsers
 from Platforms.Twitch.punish import checkPunish
 
@@ -14,8 +15,8 @@ async def openChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -> None
 	ChannelSettings:TwitchChannelSettings = await getTwitchChannelSettings(cls, Message)
 
 	# Base: get user entry
-	TwitchUser:TwitchChannelSettings = None
-	user_res:List[TwitchUser] = await getTwitchChannelUsers(cls, Message.room_id, user_id=Message.user_id)
+	TwitchUser:TwitchUserStats = None
+	user_res:List[TwitchUserStats] = await getTwitchChannelUsers(cls, Message.room_id, user_id=Message.user_id)
 	if user_res: TwitchUser = user_res.pop(0)
 
 	# Protection: runs word blacklist, links, caps, spam, emotes, etc
