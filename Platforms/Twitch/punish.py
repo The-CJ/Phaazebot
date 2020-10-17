@@ -101,6 +101,11 @@ async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channel
 		punish = await checkEmotes(cls, Message, ChannelSettings)
 		reason = "emotes"
 
+	# huge amount of caps
+	if not punish and ChannelSettings.punish_option_caps:
+		punish = await checkCaps(cls, Message, ChannelSettings)
+		reason = "caps"
+
 	if punish:
 		await executePunish(cls, Message, ChannelSettings, reason=reason)
 		return True
@@ -163,7 +168,24 @@ async def checkEmotes(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channel
 	return False
 
 async def checkCaps(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
-	pass
+
+	total:int = 0
+	caps:int = 0
+
+	for char in Message.content:
+		total += 1
+		if char.isupper():
+			caps += 1
+
+	# i think short CAPS words are ok
+	if total < 16:
+		return False
+
+	ratio:float = caps / total
+	if ratio > (2/3): # 66%
+		return True
+
+	return False
 
 async def checkCopyPasta(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
 	pass
@@ -216,6 +238,8 @@ async def notifyMessage(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 		notify_msg = ChannelSettings.punish_msg_links or DEFAULT_PUNISH_MSG_LINKS
 	elif reason == "emotes":
 		notify_msg = ChannelSettings.punish_msg_emotes or DEFAULT_PUNISH_MSG_EMOTES
+	elif reason == "caps":
+		notify_msg = ChannelSettings.punish_msg_caps or DEFAULT_PUNISH_MSG_CAPS
 
 	if not notify_msg:
 		notify_msg = DEFAULT_UNKNOWN
