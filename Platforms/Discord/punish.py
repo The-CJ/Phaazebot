@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
@@ -43,7 +43,7 @@ async def checkLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	# check if user has a role that is allowed to post links
 	if any( [True if role.id in ServerSettings.blacklist_whitelistroles else False for role in Message.author.roles] ): return False
 
-	found_links:iter = re.finditer(ContainsLink, Message.content)
+	found_links:Iterator = re.finditer(ContainsLink, Message.content)
 
 	if not found_links: return False
 
