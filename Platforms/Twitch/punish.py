@@ -188,10 +188,10 @@ async def checkCaps(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSe
 	return False
 
 async def checkCopyPasta(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
-	pass
+	pass # TODO: yeah good idea, i will makle this later
 
 async def checkUnicode(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
-	pass
+	pass # TODO: Unicode could be extra tricky... because there is Japanese and whatever, which by diffinition are all unicode... horaay
 
 # finals and utils
 async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, reason:str = None) -> None:
