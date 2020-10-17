@@ -96,6 +96,11 @@ async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channel
 		punish = await checkBlacklist(cls, Message, ChannelSettings)
 		reason = "wordblacklist"
 
+	# huge amount of emotes
+	if not punish and ChannelSettings.punish_option_emotes:
+		punish = await checkEmotes(cls, Message, ChannelSettings)
+		reason = "emotes"
+
 	if punish:
 		await executePunish(cls, Message, ChannelSettings, reason=reason)
 		return True
@@ -141,7 +146,21 @@ async def checkLinks(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelS
 	return False
 
 async def checkEmotes(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
-	pass
+
+	# channel is in a emote only mode, user can't type normally... so we disable this check for now
+	if Message.Channel.emote_only: return False
+
+	# good question... what is a good amount of maximum emotes? 10 for now,
+	# also take in consideration that this message is emote only, no text
+	# maybe add a slider to set individual limit
+	if Message.emote_only and Message.emote_count >= 10:
+		return True
+
+	# with text of any kind we allow 2 emote more because... duh?
+	if Message.emote_count >= 12:
+		return True
+
+	return False
 
 async def checkCaps(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
 	pass
@@ -195,6 +214,8 @@ async def notifyMessage(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 		notify_msg = ChannelSettings.punish_msg_words or DEFAULT_PUNISH_MSG_WORDS
 	elif reason == "links":
 		notify_msg = ChannelSettings.punish_msg_links or DEFAULT_PUNISH_MSG_LINKS
+	elif reason == "emotes":
+		notify_msg = ChannelSettings.punish_msg_emotes or DEFAULT_PUNISH_MSG_EMOTES
 
 	if not notify_msg:
 		notify_msg = DEFAULT_UNKNOWN
