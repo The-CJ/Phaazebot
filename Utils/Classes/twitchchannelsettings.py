@@ -48,6 +48,7 @@ class TwitchChannelSettings(DBContentClass, APIClass):
 
 		# calc
 		self.punish_wordblacklist:List[str] = self.fromStringList( infos.get("punish_wordblacklist", UNDEFINED), seperator=";;;" )
+		self.punish_linkwhitelist:List[str] = self.fromStringList( infos.get("punish_linkwhitelist", UNDEFINED), seperator=";;;" )
 
 	def __bool__(self):
 		return self.__found

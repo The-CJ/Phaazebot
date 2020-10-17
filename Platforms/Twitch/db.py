@@ -27,7 +27,9 @@ async def getTwitchChannelSettings(cls:"PhaazebotTwitch", origin:twitch_irc.Mess
 		SELECT
 			`twitch_setting`.*,
 			(SELECT GROUP_CONCAT(`twitch_punish_wordblacklist`.`word` SEPARATOR ';;;') FROM `twitch_punish_wordblacklist` WHERE `twitch_punish_wordblacklist`.`channel_id` = `twitch_setting`.`channel_id`)
-				AS `punish_wordblacklist`
+				AS `punish_wordblacklist`,
+			(SELECT GROUP_CONCAT(`twitch_punish_linkwhitelist`.`link` SEPARATOR ';;;') FROM `twitch_punish_linkwhitelist` WHERE `twitch_punish_linkwhitelist`.`channel_id` = `twitch_setting`.`channel_id`)
+				AS `punish_linkwhitelist`
 		FROM `twitch_setting`
 		WHERE `twitch_setting`.`channel_id` = %s
 		GROUP BY `twitch_setting`.`channel_id`""",
