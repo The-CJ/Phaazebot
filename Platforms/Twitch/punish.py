@@ -1,11 +1,11 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
 import asyncio
 import twitch_irc
 import re
-# from Utils.regex import ContainsLink
+from Utils.regex import ContainsLink
 from Utils.Classes.twitchchannelsettings import TwitchChannelSettings
 from Utils.Classes.twitchuserstats import TwitchUserStats
 from Utils.Classes.twitchpermission import TwitchPermission
@@ -87,7 +87,7 @@ async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channel
 	reason:str = None
 
 	# link option is active, check for links
-	if ChannelSettings.punish_option_links: # TODO: add link whitlist first
+	if ChannelSettings.punish_option_links:
 		punish = await checkLinks(cls, Message, ChannelSettings)
 		reason = "links"
 
@@ -117,7 +117,28 @@ async def checkBlacklist(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chan
 	return False
 
 async def checkLinks(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
-	pass
+
+	found_links:Iterator = re.finditer(ContainsLink, Message.content)
+
+	if not found_links: return False
+
+	# check all found link, by default, every link is punished
+	for found_link in found_links:
+		allowed = False
+
+		# check all whitelisted link regex
+		for allowed_link in ChannelSettings.punish_linkwhitelist:
+			# link is whitelisted, allow it, break allowed_link search
+			if re.search(allowed_link, found_link.group(0)):
+				allowed = True
+				break
+
+		# link is not in whitelist
+		if not allowed:
+			return True
+
+	# all links could be found in the whitelist
+	return False
 
 async def checkEmotes(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
 	pass
@@ -157,7 +178,6 @@ async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} 3")
 		await loggingOnModerationTimeout(cls, ChannelSettings, user_name=Message.user_name, user_id=Message.user_id, reason=reason, timeout=3, level=0)
 		await notifyMessage(cls, Message, ChannelSettings, reason, 0)
-
 
 DEFAULT_PUNISH_MSG_WORDS: str = "[[warn-level]] @[user-display-name], you posted a blacklisted word!"
 DEFAULT_PUNISH_MSG_CAPS: str = "[[warn-level]] @[user-display-name], stop using huge amounts of CAPS!"
