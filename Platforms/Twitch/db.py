@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import twitch_irc
 
 from Utils.Classes.twitchchannelsettings import TwitchChannelSettings
+from Utils.Classes.twitchcommand import TwitchCommand
 from Utils.Classes.twitchuserstats import TwitchUserStats
 
 # twitch_settings
@@ -63,6 +64,75 @@ async def makeTwitchChannelSettings(cls:"PhaazebotTwitch", channel_id:str) -> Tw
 	except:
 		cls.BASE.Logger.critical(f"(Twitch) New channel settings failed: {channel_id=}")
 		raise RuntimeError("Creating new DB entry failed")
+
+# twitch_commands
+async def getTwitchChannelCommands(cls:"PhaazebotTwitch", channel_id:str, **search:dict) -> List[TwitchCommand]:
+	"""
+	Get channel commands.
+	Returns a list of TwitchCommand()
+
+	Optional keywords:
+	------------------
+	* trigger `str` : (Default: None)
+	* command_id `str` or `int` : (Default: None)
+	* show_nonactive `bool`: (Default: False)
+	* order_str `str`: (Default: "ORDER BY id")
+	* limit `int`: (Default: None)
+	* offset `int`: (Default: 0)
+	"""
+	# unpack
+	trigger:str = search.get("trigger", None)
+	command_id:str or int = search.get("command_id", None)
+	show_nonactive:bool = search.get("show_nonactive", False)
+	order_str:str = search.get("order_str", "ORDER BY `twitch_command`.`id`")
+	limit:int = search.get("limit", None)
+	offset:int = search.get("offset", 0)
+
+	# process
+	sql:str = """
+		SELECT `twitch_command`.*
+		FROM `twitch_command`
+		WHERE `twitch_command`.`channel_id` = %s"""
+	values:tuple = ( str(channel_id), )
+
+	if not show_nonactive:
+		sql += " AND `twitch_command`.`active` = 1"
+
+	if command_id:
+		sql += " AND `twitch_command`.`id` = %s"
+		values += ( int(command_id), )
+
+	if trigger:
+		sql += " AND `twitch_command`.`trigger` = %s"
+		values += ( str(trigger), )
+
+	sql += f" {order_str}"
+
+	if limit:
+		sql += f" LIMIT {limit}"
+		if offset:
+			sql += f" OFFSET {offset}"
+
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	if res:
+		return [TwitchCommand(x) for x in res]
+
+	else:
+		return []
+
+async def getTwitchChannelCommandsAmount(cls:"PhaazebotTwitch", channel_id:str, where:str="1=1", where_values:tuple=()) -> int:
+
+	sql:str = f"""
+		SELECT COUNT(*) AS `I` FROM `twitch_command`
+		WHERE `twitch_command`.`channel_id` = %s AND {where}"""
+
+	values:tuple = (channel_id,) + where_values
+
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+
+	return res[0]["I"]
+
 
 # twitch_user
 async def getTwitchChannelUsers(cls:"PhaazebotTwitch", channel_id:str, **search:dict) -> List[TwitchUserStats]:
