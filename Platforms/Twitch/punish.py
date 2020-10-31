@@ -72,15 +72,13 @@ class GTTRS():
 
 GTTRS = GTTRS()
 
-DEBUG = True
-
 async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, TwitchUser:TwitchUserStats) -> bool:
 
 	PhaazePermissions:twitch_irc.UserState = Message.Channel.me
 
 	# if the bot can't do anything or the author is a regular or higher, skip checks
-	if not PhaazePermissions.mod and not DEBUG: return False
-	if TwitchPermission(Message, TwitchUser).rank >= 2 and not DEBUG: return False
+	if not PhaazePermissions.mod: return False
+	if TwitchPermission(Message, TwitchUser).rank >= 2: return False
 
 	# if this is True after all checks => punish
 	punish:bool = False
