@@ -43,3 +43,83 @@ class GTCCS():
 		self.in_cooldown.pop(cmd_id, None)
 
 GTCCS = GTCCS()
+
+async def checkCommands(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, TwitchUser:TwitchUserStats) -> bool:
+	"""
+	This function is run on every message and checks if there is a command to execute
+	Returns True if a function is executed, else False
+	(Thats needed for level stats, because commands dont give exp)
+	"""
+
+	CommandContext:TwitchCommandContext = TwitchCommandContext(cls, Message, Settings=ChannelSettings)
+
+	# get permission object
+	AuthorPermission:TwitchPermission = TwitchPermission(Message, TwitchUser)
+
+	# a normal call, so we check first
+	await CommandContext.check()
+
+	if CommandContext.found:
+
+		Command:TwitchCommand = CommandContext.Command
+
+		if not Command.active: return False
+
+		# check if command is in cooldown
+		if GTCCS.check(Command): return False
+
+		# check caller access level and command require level
+		if not AuthorPermission.rank >= Command.require: return False
+
+		# owner disables normal commands in the channel
+		if ChannelSettings.owner_disable_normal and Command.require == TwitchConst.REQUIRE_EVERYONE:
+			# noone except the owner can use them
+			if AuthorPermission.rank < TwitchConst.REQUIRE_OWNER: return False
+
+		# owner disables regular commands in the channel
+		if ChannelSettings.owner_disable_regular and Command.require == TwitchConst.REQUIRE_REGULAR:
+			# noone except the owner can use them
+			if AuthorPermission.rank < TwitchConst.REQUIRE_OWNER: return False
+
+		# owner disables mod commands serverwide,
+		if ChannelSettings.owner_disable_mod and Command.require == TwitchConst.REQUIRE_MOD:
+			# noone except the owner can use them
+			if AuthorPermission.rank < TwitchConst.REQUIRE_OWNER: return False
+
+		# always have a minimum cooldown
+		Command.cooldown = max(Command.cooldown, TwitchConst.COOLDOWN_MIN)
+		# but also be to long
+		Command.cooldown = min(Command.cooldown, TwitchConst.COOLDOWN_MAX)
+
+		# command requires a currency payment, check if user can affort it
+		# except mods
+		if Command.required_currency != 0 and AuthorPermission.rank < TwitchConst.REQUIRE_MOD:
+
+			# not enough
+			if not (TwitchUser.amount_currency >= Command.required_currency):
+				cls.BASE.Logger.debug(f"(Twitch) Skipping command call because of insufficient currency: ({TwitchUser.amount_currency} < {Command.required_currency})", require="twitch:commands")
+				return False
+
+			await TwitchUser.editCurrency(cls, amount_by=-Command.required_currency )
+
+		# add command to cooldown
+		GTCCS.cooldown(Command)
+
+		# increase use
+		await Command.increaseUse(cls)
+
+		# throw it to formatCommand and send the return values
+		final_result:dict = await formatCommand(cls, Command, CommandContext)
+
+		# there a commands that not have a direct return value,
+		# but are still valid and successfull
+		if final_result:
+			return_content:str = final_result.get("content", None)
+			if not return_content: return False
+			await Message.Channel.sendMessage(cls, return_content)
+
+		return True
+
+	else:
+		return False
+
