@@ -30,3 +30,6 @@ async def openChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -> None
 	executed_command:bool = await checkCommands(cls, Message, ChannelSettings, TwitchUser)
 
 	# Level: only execute if its a new message and its not a command
+	if executed_command:
+		pass
+		# await checkLevel(cls, Message, ChannelSettings, TwitchUser)
