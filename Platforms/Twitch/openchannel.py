@@ -3,12 +3,12 @@ if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
 import twitch_irc
-
 from Utils.Classes.twitchchannelsettings import TwitchChannelSettings
 from Utils.Classes.twitchuserstats import TwitchUserStats
 from Platforms.Twitch.db import getTwitchChannelSettings, getTwitchChannelUsers
-from Platforms.Twitch.commands import checkCommands
 from Platforms.Twitch.punish import checkPunish
+from Platforms.Twitch.commands import checkCommands
+from Platforms.Twitch.levels import checkLevel
 
 async def openChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -> None:
 
@@ -30,6 +30,5 @@ async def openChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -> None
 	executed_command:bool = await checkCommands(cls, Message, ChannelSettings, TwitchUser)
 
 	# Level: only execute if its a new message and its not a command
-	if executed_command:
-		pass
-		# await checkLevel(cls, Message, ChannelSettings, TwitchUser)
+	if not executed_command:
+		await checkLevel(cls, Message, ChannelSettings, TwitchUser)
