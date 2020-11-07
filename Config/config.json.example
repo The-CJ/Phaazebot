@@ -41,7 +41,8 @@
   "active_youtube":false,
 
   "discord_custom_commands_amount":100,
-  "discord_custom_commands_cooldown":3,
+  "discord_custom_commands_cooldown_min":3,
+  "discord_custom_commands_cooldown_max":600,
   "discord_level_cooldown":3,
   "discord_level_medal_amount":50,
   "discord_quotes_amount":10,
@@ -56,6 +57,7 @@
   "twitch_custom_command_amount":100,
   "twitch_quote_amount":100,
   "twitch_stats_cooldown":5,
+  "twitch_client_credential_token":"",
   "twitch_login_link":"https://id.twitch.tv",
   "twitch_redirect_link":"localhost",
   "twitch_debug_user_id":[],
