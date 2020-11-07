@@ -1,57 +1,187 @@
-from typing import Any
-from Utils.config import ConfigParser
-from Utils.Classes.undefined import UNDEFINED
+from typing import TYPE_CHECKING, Any
+if TYPE_CHECKING:
+	from main import Phaazebot
 
-class AccessStore(object):
+from Utils.Classes.undefined import UNDEFINED, Undefined
+
+class StoreStructure(object):
+	"""
+	Simple class with some utility functions
+	"""
+	def __init__(self, BASE:"Phaazebot"):
+		self.Phaaze:"Phaazebot" = BASE
+		if not self.Phaaze.Config:
+			raise AttributeError("Missing or unloaded ConfigParser in main Phaaze object")
+
+		self.load()
+
+	def load(self) -> None:
+		"""
+		This func. must be overwritten
+		"""
+		raise AttributeError("load() must be overwritten by Sub-Classes")
+
+	def getFromConfig(self, a:str, b:Any, required:bool) -> Any:
+		"""
+		get `a` from configs else, return `b`
+		if `required` and `a` was not found: panic
+		"""
+		value:Any = self.Phaaze.Config.get(a, UNDEFINED)
+		if type(value) is Undefined:
+
+			if required:
+				errmsg:str = f"could not find '{a}' in configs, but is marked as required"
+				self.Phaaze.Logger.error(errmsg)
+				raise AttributeError(errmsg)
+
+			warmsg:str = f"could not find '{a}' in configs, alernative '{str(b)}' is taken"
+			self.Phaaze.Logger.debug(warmsg, require="config")
+			return b
+		else:
+			return value
+
+	def getBoolFromConfig(self, a:str, b:bool=UNDEFINED, required:bool=False) -> bool:
+		"""
+		get value from configs as a bool
+		"""
+		value:Any = self.getFromConfig(a, b, required)
+		return bool(value)
+
+	def getStrFromConfig(self, a:str, b:str=UNDEFINED, required:bool=False) -> str:
+		"""
+		get value from configs as a str
+		"""
+		value:Any = self.getFromConfig(a, b, required)
+		return str(value)
+
+	def getIntFromConfig(self, a:str, b:str=UNDEFINED, required:bool=False) -> int:
+		"""
+		get value from configs as a int
+		"""
+		value:Any = self.getFromConfig(a, b, required)
+
+		try:
+			return int(value)
+		except:
+			return 0
+
+class AccessStore(StoreStructure):
 	"""
 	Settings and Keys to all platforms or entry points that is not us
 	"""
-	def __init__(self, config:ConfigParser):
-		self.twitch_client_id:str = str(config.get("twitch_client_id", ''))
-		self.twitch_client_secret:str = str(config.get("twitch_client_secret", ''))
-		self.twitch_client_credential_token:str = "[N/A]"
-		self.twitch_irc_token:str = str(config.get("twitch_irc_token", ''))
-		self.twitch_irc_nickname:str = str(config.get("twitch_irc_nickname", ''))
+	def load(self):
+		# twitch
+		self.twitch_client_credential_token:str = self.getStrFromConfig("twitch_client_credential_token")
+		self.twitch_client_id:str = self.getStrFromConfig("twitch_client_id")
+		self.twitch_client_secret:str = self.getStrFromConfig("twitch_client_secret")
+		self.twitch_irc_nickname:str = self.getStrFromConfig("twitch_irc_nickname")
+		self.twitch_irc_token:str = self.getStrFromConfig("twitch_irc_token")
 
-		self.discord_token:str = str(config.get("discord_token", ''))
-		self.discord_secret:str = str(config.get("discord_secret", ''))
+		# discord
+		self.discord_secret:str = self.getStrFromConfig("discord_secret")
+		self.discord_token:str = self.getStrFromConfig("discord_token")
 
-		self.osu_api_token:str = str(config.get("osu_api_token", ''))
-		self.osu_irc_token:str = str(config.get("osu_irc_token", ''))
-		self.osu_irc_nickname:str = str(config.get("osu_irc_nickname", ''))
+		# osu
+		self.osu_api_token:str = self.getStrFromConfig("osu_api_token")
+		self.osu_irc_nickname:str = self.getStrFromConfig("osu_irc_nickname")
+		self.osu_irc_token:str = self.getStrFromConfig("osu_irc_token")
 
-		self.cleverbot_token:str = str(config.get("cleverbot_token", ''))
+		# other
+		self.cleverbot_token:str = self.getStrFromConfig("cleverbot_token")
+		self.mashape_token:str = self.getStrFromConfig("mashape_token")
 
-		self.mashape_token:str = str(config.get("mashape_token", ''))
+		# database
+		self.phaazedb_database:str = self.getStrFromConfig("phaazedb_database", "phaaze")
+		self.phaazedb_host:str = self.getStrFromConfig("phaazedb_host", "localhost")
+		self.phaazedb_password:str = self.getStrFromConfig("phaazedb_password", "")
+		self.phaazedb_port:int = self.getIntFromConfig("phaazedb_port", 3306)
+		self.phaazedb_user:str = self.getStrFromConfig("phaazedb_user", "phaaze")
 
-		self.phaazedb_host:str = str(config.get("phaazedb_host", "localhost"))
-		self.phaazedb_user:str = str(config.get("phaazedb_user", "phaaze"))
-		self.phaazedb_password:str = str(config.get("phaazedb_password", ''))
-		self.phaazedb_database:str = str(config.get("phaazedb_database", "phaaze"))
-		self.phaazedb_port:str = str(config.get("phaazedb_port", "3306"))
+		# twitter
+		self.twitter_consumer_key:str = self.getStrFromConfig("twitter_consumer_key")
+		self.twitter_consumer_secret:str = self.getStrFromConfig("twitter_consumer_secret")
+		self.twitter_token_key:str = self.getStrFromConfig("twitter_token_key")
+		self.twitter_token:str = self.getStrFromConfig("twitter_token")
 
-		self.twitter_token:str = str(config.get("twitter_token",''))
-		self.twitter_token_key:str = str(config.get("twitter_token_key",''))
-		self.twitter_consumer_key:str = str(config.get("twitter_consumer_key",''))
-		self.twitter_consumer_secret:str = str(config.get("twitter_consumer_secret",''))
-
-class ActiveStore(object):
+class ActiveStore(StoreStructure):
 	"""
 	used to keep track of all modules, if they should run or not
 	gets configs from config file and provides alternative default
 	"""
-	def __init__(self, config:ConfigParser):
+	def load(self):
 		# if this is not True, the program shuts down immediately
-		self.main = bool(config.get("active_main", True))
+		self.main:bool = self.getBoolFromConfig("active_main", True, required=True)
 
-		self.api:bool = bool(config.get("active_api", False))
-		self.web:bool = bool(config.get("active_web", False))
-		self.discord:bool = bool(config.get("active_discord", False))
-		self.twitch_irc:bool = bool(config.get("active_twitch_irc", False))
-		self.twitch_events:bool = bool(config.get("active_twitch_events", False))
-		self.osu_irc:bool = bool(config.get("active_osu_irc", False))
-		self.twitter:bool = bool(config.get("active_twitter", False))
-		self.youtube:bool = bool(config.get("active_youtube", False))
+		self.api:bool = self.getBoolFromConfig("active_api", False, required=True)
+		self.web:bool = self.getBoolFromConfig("active_web", False, required=True)
+		self.discord:bool = self.getBoolFromConfig("active_discord", False, required=True)
+		self.twitch_irc:bool = self.getBoolFromConfig("active_twitch_irc", False, required=True)
+		self.twitch_events:bool = self.getBoolFromConfig("active_twitch_events", False, required=True)
+		self.osu_irc:bool = self.getBoolFromConfig("active_osu_irc", False, required=True)
+		self.twitter:bool = self.getBoolFromConfig("active_twitter", False, required=True)
+		self.youtube:bool = self.getBoolFromConfig("active_youtube", False, required=True)
+
+class LimitStore(StoreStructure):
+	"""
+	contains user limits for all addeble things, like command amount and so on
+	gets configs from config file and provides alternative default
+	"""
+	def load(self):
+		# amount's
+		self.discord_assignrole_amount:int = self.getIntFromConfig("discord_assignrole_amount", 25)
+		self.discord_commands_amount:int = self.getIntFromConfig("discord_custom_commands_amount", 100)
+		self.discord_level_medal_amount:int = self.getIntFromConfig("discord_level_medal_amount", 50)
+		self.discord_quotes_amount:int = self.getIntFromConfig("discord_quotes_amount", 100)
+		self.discord_regular_amount:int = self.getIntFromConfig("discord_regular_amount", 50)
+		self.twitch_custom_command_amount:int = self.getIntFromConfig("twitch_custom_command_amount", 100)
+		self.twitch_quote_amount:int = self.getIntFromConfig("twitch_quote_amount", 100)
+
+		# cooldown's
+		self.discord_commands_cooldown_max:int = self.getIntFromConfig("discord_custom_commands_cooldown_max", 600)
+		self.discord_commands_cooldown_min:int = self.getIntFromConfig("discord_custom_commands_cooldown_min", 3)
+		self.discord_level_cooldown:int = self.getIntFromConfig("discord_level_cooldown", 3)
+		self.twitch_stats_cooldown:int = self.getIntFromConfig("twitch_stats_cooldown", 5)
+		self.twitch_timeout_message_cooldown:int = self.getIntFromConfig("twitch_timeout_message_cooldown", 20)
+
+		# other's
+		self.twitch_blacklist_remember_time:int = self.getIntFromConfig("twitch_blacklist_remember_time", 180)
+		self.web_client_max_size:int = self.getIntFromConfig("web_client_max_size", 5242880) #5MB
+
+class VarsStore(StoreStructure):
+	"""
+	filled with permanent vars/const, or functions to get values
+	"""
+	def load(self):
+		# debug
+		self.discord_debug_user_id:list = list(self.getFromConfig("discord_debug_user_id", [], False))
+		self.twitch_debug_user_id:list = list(self.getFromConfig("twitch_debug_user_id", [], False))
+
+		# IDs
+		self.discord_bot_id:str = self.getStrFromConfig("discord_bot_id", "")
+		self.twitch_bot_id:str = self.getStrFromConfig("twitch_bot_id", "")
+
+		# currency names
+		self.default_discord_currency_multi:str = self.getStrFromConfig("default_discord_currency_multi", "Credits")
+		self.default_discord_currency:str = self.getStrFromConfig("default_discord_currency", "Credits")
+		self.default_twitch_currency_multi:str = self.getStrFromConfig("default_twitch_currency_multi", "Credits")
+		self.default_twitch_currency:str = self.getStrFromConfig("default_twitch_currency", "Credit")
+
+		# (redirect) links
+		self.discord_login_link:str = self.getStrFromConfig("discord_login_link", "/discord", required=True)
+		self.discord_redirect_link:str = self.getStrFromConfig("discord_redirect_link", "localhost", required=True)
+		self.twitch_login_link:str = self.getStrFromConfig("twitch_login_link", "/twitch", required=True)
+		self.twitch_redirect_link:str = self.getStrFromConfig("twitch_redirect_link", "localhost", required=True)
+
+		# other
+		self.discord_modt:str = self.getStrFromConfig("discord_motd", "Hello there")
+
+		# web stuff
+		self.web_root:str = self.getStrFromConfig("web_root", "localhost")
+		self.ssl_dir:str = self.getStrFromConfig("ssl_dir", "/etc/letsencrypt/live/domain.something/")
+
+		# Logos
+		self.logo_osu:str = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
+		self.logo_twitch:str = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504"
 
 class IsReadyStore(object):
 	"""
@@ -59,71 +189,12 @@ class IsReadyStore(object):
 	all start False, turn True when connected
 	"""
 	def __init__(self):
-		self.web:bool = False
 		self.discord:bool = False
-		self.twitch:bool = False
 		self.osu:bool = False
+		self.twitch:bool = False
 		self.twitter:bool = False
+		self.web:bool = False
 		self.youtube:bool = False
-
-class LimitStore(object):
-	"""
-	contains user limits for all addeble things, like command amount and so on
-	gets configs from config file and provides alternative default
-	"""
-	def __init__(self, config:ConfigParser):
-		self.discord_commands_amount:int = int(config.get("discord_custom_commands_amount", 100))
-		self.discord_commands_cooldown_min:int = int(config.get("discord_custom_commands_cooldown_min", 3))
-		self.discord_commands_cooldown_max:int = int(config.get("discord_custom_commands_cooldown_max", 600))
-		self.discord_level_cooldown:int = int(config.get("discord_level_cooldown", 3))
-		self.discord_level_medal_amount:int = int(config.get("discord_level_medal_amount", 50))
-		self.discord_quotes_amount:int = int(config.get("discord_quotes_amount", 100))
-		self.discord_assignrole_amount:int = int(config.get("discord_assignrole_amount", 25))
-		self.discord_regular_amount:int = int(config.get("discord_regular_amount", 50))
-
-		self.twitch_timeout_message_cooldown:int = int(config.get("twitch_timeout_message_cooldown", 20))
-		self.twitch_blacklist_remember_time:int = int(config.get("twitch_blacklist_remember_time", 180))
-		self.twitch_custom_command_amount:int = int(config.get("twitch_custom_command_amount", 100))
-		self.twitch_quote_amount:int = int(config.get("twitch_quote_amount", 100))
-		self.twitch_stats_cooldown:int = int(config.get("twitch_stats_cooldown", 5))
-
-		self.web_client_max_size:int = int(config.get("web_client_max_size", 5242880)) #5MB
-
-class VarsStore(object):
-	"""
-	filled with permanent vars/const, or functions to get values
-	"""
-	def __init__(self, config:ConfigParser):
-		# debug
-		self.discord_debug_user_id:list = list(config.get("discord_debug_user_id", []))
-		self.twitch_debug_user_id:list = list(config.get("twitch_debug_user_id", []))
-
-		# IDs
-		self.discord_bot_id:str = str(config.get("discord_bot_id", "00000"))
-		self.twitch_bot_id:str = str(config.get("twitch_bot_id", "00000"))
-
-		# currency names
-		self.default_twitch_currency:str = str(config.get("default_twitch_currency", "Credit"))
-		self.default_twitch_currency_multi:str = str(config.get("default_twitch_currency_multi", "Credits"))
-		self.default_discord_currency:str = str(config.get("default_discord_currency", "Credit"))
-		self.default_discord_currency_multi:str = str(config.get("default_discord_currency_multi", "Credits"))
-
-		# (redirect) links
-		self.twitch_login_link:str = str(config.get("twitch_login_link", "/twitch"))
-		self.discord_login_link:str = str(config.get("discord_login_link", "/discord"))
-		self.discord_redirect_link:str = str(config.get("discord_redirect_link", "localhost"))
-		self.twitch_redirect_link:str = str(config.get("twitch_redirect_link", "localhost"))
-
-		# other
-		self.discord_modt:str = str(config.get("discord_motd", "Hello there"))
-
-		# web stuff
-		self.web_root:str = str(config.get("web_root", "localhost"))
-		self.ssl_dir:str = str(config.get("ssl_dir", "/etc/letsencrypt/live/domain.something/"))
-
-		# Logos
-		self.logo_osu:str = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Osu%21Logo_%282015%29.png/600px-Osu%21Logo_%282015%29.png"
-		self.logo_twitch:str = "https://i.redditmedia.com/za3YAsq33WcZc66FVb1cBw6mY5EibKpD_5hfLz0AbaE.jpg?w=320&s=53cf0ff252d84c5bb460b6ec0b195504"
 
 class GlobalStorage(object):
 	"""
