@@ -37,20 +37,20 @@ class Phaazebot(object):
 		self.version:str = self.Config.get("version", "[N/A]")
 		self.start_time:int = time.time() # together with another time.time(), used to know how long phaaze is running
 
-		# get the active/load class, aka, what sould get started
-		self.Active:ActiveStore = ActiveStore(self.Config)
-
-		# a class filled with permanent vars, mainly from external sources or whatever
-		self.Vars:VarsStore = VarsStore(self.Config)
-
-		# the key to everything, that will be needed to connect to everything thats not ourself
-		self.Access:AccessStore = AccessStore(self.Config)
-
-		# contains user limits for all addeble things, like custom command amount
-		self.Limit:LimitStore = LimitStore(self.Config)
-
 		# log to handler of choice
 		self.Logger:PhaazeLogger = PhaazeLogger()
+
+		# get the active/load class, aka, what sould get started
+		self.Active:ActiveStore = ActiveStore(self)
+
+		# a class filled with permanent vars, mainly from external sources or whatever
+		self.Vars:VarsStore = VarsStore(self)
+
+		# the key to everything, that will be needed to connect to everything thats not ourself
+		self.Access:AccessStore = AccessStore(self)
+
+		# contains user limits for all addeble things, like custom command amount
+		self.Limit:LimitStore = LimitStore(self)
 
 		# all featured "superclasses" aka, stuff that makes calls to somewhere
 		# all of these get added by self.Mainframe when started
