@@ -10,6 +10,9 @@
   -log-sql
     * prints all SQL Statements with inserted values to the console
 
+  -show-configs
+    * prints all successfully found config entrys
+
   -no-twitch-join
     * TwitchIRC only joins Client.nickname and no other channels
 

@@ -3,6 +3,7 @@ if TYPE_CHECKING:
 	from main import Phaazebot
 
 from Utils.Classes.undefined import UNDEFINED, Undefined
+from Utils.cli import CliArgs
 
 class StoreStructure(object):
 	"""
@@ -30,14 +31,19 @@ class StoreStructure(object):
 		if type(value) is Undefined:
 
 			if required:
-				errmsg:str = f"could not find '{a}' in configs, but is marked as required"
+				errmsg:str = f"(Config) could not find '{a}' - but is marked as required"
 				self.Phaaze.Logger.error(errmsg)
 				raise AttributeError(errmsg)
 
-			warmsg:str = f"could not find '{a}' in configs, alernative '{str(b)}' is taken"
+			warmsg:str = f"(Config) can't find '{a}' - alernative '{str(b)}' is taken"
 			self.Phaaze.Logger.debug(warmsg, require="config")
 			return b
+			
 		else:
+			if CliArgs.get("show-configs", False):
+				sucmsg:str = f"(Config) found '{a}' = '{str(value)}'"
+				self.Phaaze.Logger.debug(sucmsg, require="config")
+
 			return value
 
 	def getBoolFromConfig(self, a:str, b:bool=UNDEFINED, required:bool=False) -> bool:
