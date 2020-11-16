@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import asyncio
 import twitch_irc
 import re
+import Platforms.Twitch.const as TwitchConst
 from Utils.regex import ContainsLink
 from Utils.Classes.twitchchannelsettings import TwitchChannelSettings
 from Utils.Classes.twitchuserstats import TwitchUserStats
@@ -193,7 +194,12 @@ async def checkUnicode(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channe
 
 # finals and utils
 async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, reason:str = None) -> None:
-	punish_time:int = max(ChannelSettings.punish_timeout, 10) # at least 10
+	punish_time:int = ChannelSettings.punish_timeout
+	# always have a minimum cooldown
+	punish_time = max(punish_time, cls.BASE.Limit.twitch_punish_time_min, TwitchConst.COOLDOWN_MIN)
+	# but also be to long
+	punish_time = min(punish_time, cls.BASE.Limit.twitch_punish_time_max, TwitchConst.COOLDOWN_MAX)
+
 	current_user_state:int = GTTRS.check(Message)
 
 	if current_user_state == 2: # user fucked up in grace_two, aka we ban now

@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
 	from main import Phaazebot
 
+import Platforms.Twitch.const as TwitchConst
 from Utils.Classes.undefined import UNDEFINED, Undefined
 from Utils.cli import CliArgs
 
@@ -38,7 +39,7 @@ class StoreStructure(object):
 			warmsg:str = f"(Config) can't find '{a}' - alernative '{str(b)}' is taken"
 			self.Phaaze.Logger.debug(warmsg, require="config")
 			return b
-			
+
 		else:
 			if CliArgs.get("show-configs", False):
 				sucmsg:str = f"(Config) found '{a}' = '{str(value)}'"
@@ -148,6 +149,8 @@ class LimitStore(StoreStructure):
 		self.discord_level_cooldown:int = self.getIntFromConfig("discord_level_cooldown", 3)
 		self.twitch_stats_cooldown:int = self.getIntFromConfig("twitch_stats_cooldown", 5)
 		self.twitch_timeout_message_cooldown:int = self.getIntFromConfig("twitch_timeout_message_cooldown", 20)
+		self.twitch_punish_time_max:int = self.getIntFromConfig("twitch_punish_time_max", TwitchConst.PUNISH_TIME_MAX)
+		self.twitch_punish_time_min:int = self.getIntFromConfig("twitch_punish_time_min", TwitchConst.PUNISH_TIME_MIN)
 
 		# other's
 		self.twitch_blacklist_remember_time:int = self.getIntFromConfig("twitch_blacklist_remember_time", 180)
