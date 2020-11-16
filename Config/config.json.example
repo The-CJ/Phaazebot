@@ -52,7 +52,6 @@
   "discord_redirect_link":"localhost",
   "discord_debug_user_id":[],
 
-  "twitch_blacklist_remember_time":180,
   "twitch_custom_command_amount":100,
   "twitch_quote_amount":100,
   "twitch_level_cooldown":3,

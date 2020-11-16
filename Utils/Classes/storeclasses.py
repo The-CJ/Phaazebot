@@ -140,20 +140,19 @@ class LimitStore(StoreStructure):
 		self.discord_level_medal_amount:int = self.getIntFromConfig("discord_level_medal_amount", 50)
 		self.discord_quotes_amount:int = self.getIntFromConfig("discord_quotes_amount", 100)
 		self.discord_regular_amount:int = self.getIntFromConfig("discord_regular_amount", 50)
-		self.twitch_custom_command_amount:int = self.getIntFromConfig("twitch_custom_command_amount", 100)
-		self.twitch_quote_amount:int = self.getIntFromConfig("twitch_quote_amount", 100)
+		self.twitch_custom_command_amount:int = self.getIntFromConfig("twitch_custom_command_amount", TwitchConst.COMMAND_AMOUNT)
+		self.twitch_quote_amount:int = self.getIntFromConfig("twitch_quote_amount", TwitchConst.QUOTE_AMOUNT)
 
 		# cooldown's
-		self.discord_commands_cooldown_max:int = self.getIntFromConfig("discord_custom_commands_cooldown_max", 600)
-		self.discord_commands_cooldown_min:int = self.getIntFromConfig("discord_custom_commands_cooldown_min", 3)
-		self.discord_level_cooldown:int = self.getIntFromConfig("discord_level_cooldown", 3)
-		self.twitch_stats_cooldown:int = self.getIntFromConfig("twitch_stats_cooldown", 5)
-		self.twitch_timeout_message_cooldown:int = self.getIntFromConfig("twitch_timeout_message_cooldown", 20)
+		self.discord_commands_cooldown_max:int = self.getIntFromConfig("discord_commands_cooldown_max", 300)
+		self.discord_commands_cooldown_min:int = self.getIntFromConfig("discord_commands_cooldown_min", 3)
+		self.twitch_commands_cooldown_max:int = self.getIntFromConfig("twitch_commands_cooldown_max", TwitchConst.COMMAND_COOLDOWN_MAX)
+		self.twitch_commands_cooldown_min:int = self.getIntFromConfig("twitch_commands_cooldown_min", TwitchConst.COMMAND_COOLDOWN_MIN)
+		self.discord_level_cooldown:int = self.getIntFromConfig("discord_level_cooldown", TwitchConst.LEVEL_COOLDOWN)
 		self.twitch_punish_time_max:int = self.getIntFromConfig("twitch_punish_time_max", TwitchConst.PUNISH_TIME_MAX)
 		self.twitch_punish_time_min:int = self.getIntFromConfig("twitch_punish_time_min", TwitchConst.PUNISH_TIME_MIN)
 
 		# other's
-		self.twitch_blacklist_remember_time:int = self.getIntFromConfig("twitch_blacklist_remember_time", 180)
 		self.web_client_max_size:int = self.getIntFromConfig("web_client_max_size", 5242880) #5MB
 
 class VarsStore(StoreStructure):
