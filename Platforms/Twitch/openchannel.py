@@ -9,8 +9,13 @@ from Platforms.Twitch.db import getTwitchChannelSettings, getTwitchChannelUsers
 from Platforms.Twitch.punish import checkPunish
 from Platforms.Twitch.commands import checkCommands
 from Platforms.Twitch.levels import checkLevel
+from Platforms.Twitch.ownchannel import clientNameChannel
 
 async def openChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -> None:
+
+	# special handling for messages in the bot channel
+	if Message.user_name.lower() == cls.nickname.lower():
+		return await clientNameChannel(cls, Message)
 
 	# Base: get channel settings
 	ChannelSettings:TwitchChannelSettings = await getTwitchChannelSettings(cls, Message)
