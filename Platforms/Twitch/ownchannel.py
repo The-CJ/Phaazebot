@@ -23,6 +23,9 @@ async def joinUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Con
 
 
 async def leaveUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Context:TwitchCommandContext) -> None:
+	"""
+	allowed each user to bring phaaze to leave there channel, also allowed global mods+ to remive phaaze as well
+	"""
 
 	alternative_target:str = ""
 
@@ -31,7 +34,6 @@ async def leaveUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Co
 		# admin or higher have the permission to remove phaaze from any channel without the owner consent
 		if len(Context.parts) >= 2:
 			alternative_target = Context.part(1)
-
 
 	if alternative_target:
 		alternative_sql:str = """
@@ -61,10 +63,10 @@ async def leaveUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Co
 	# at this point we do have a managed channel in twitch_channel table, so we update it
 	execute_id:str = res[0]["channel_id"]
 	cls.BASE.PhaazeDB.updateQuery(
-		"twitch_channel",
-		{"managed": 0},
-		"`twitch_channel`.`channel_id` = %s",
-		(execute_id,)
+		table = "twitch_channel",
+		content = {"managed": 0},
+		where = "`twitch_channel`.`channel_id` = %s",
+		where_values = (execute_id,)
 	)
 
 	return_content:str = f"@{Message.display_name} > Phaaze successful left your channel :c"
