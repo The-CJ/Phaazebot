@@ -89,7 +89,7 @@ async def checkCommands(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 
 		# always have a minimum cooldown
 		Command.cooldown = max(Command.cooldown, cls.BASE.Limit.twitch_commands_cooldown_min, TwitchConst.COOLDOWN_MIN)
-		# but also be to long
+		# but also not be to long
 		Command.cooldown = min(Command.cooldown, cls.BASE.Limit.twitch_commands_cooldown_max, TwitchConst.COOLDOWN_MAX)
 
 		# command requires a currency payment, check if user can affort it

@@ -13,10 +13,15 @@ async def clientNameChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -
 	cmd_str = str(Context.part(0)).lower()
 
 	if cmd_str.startswith("!join"):
-		return joinUserChannel(cls, Message, Context)
+		return await joinUserChannel(cls, Message, Context)
 
 	if cmd_str.startswith("!leave"):
-		return leaveUserChannel(cls, Message, Context)
+		return await leaveUserChannel(cls, Message, Context)
+
+async def joinUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Context:TwitchCommandContext) -> None:
+	pass
+
+
 async def leaveUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Context:TwitchCommandContext) -> None:
 
 	alternative_target:str = ""
@@ -37,7 +42,7 @@ async def leaveUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Co
 			WHERE `twitch_channel`.`managed` = 1
 				AND `twitch_user_name`.`user_name` = %s"""
 
-		res:List[dict] = cls.BASE.PhaazeDB.selectQuery(alternative_sql, alternative_target)
+		res:List[dict] = cls.BASE.PhaazeDB.selectQuery(alternative_sql, (alternative_target,))
 
 	else:
 		check_sql:str = """
@@ -46,10 +51,10 @@ async def leaveUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Co
 			WHERE `twitch_channel`.`managed` = 1
 				AND `twitch_channel`.`channel_id` = %s"""
 
-		res:List[dict] = cls.BASE.PhaazeDB.selectQuery(check_sql, Message.user_id)
+		res:List[dict] = cls.BASE.PhaazeDB.selectQuery(check_sql, (Message.user_id,))
 
 	if not res:
-		return_content:str = f"@{Message.display_name} > Phaaze can't leave your channel, if i never was in it LUL"
+		return_content:str = f"@{Message.display_name} > Phaaze can't leave your channel, if i currently aren't in it LUL"
 		if alternative_target: return_content = f"@{Message.display_name} > Not possible, your query did not yield a managed channel to leave"
 		return await Message.Channel.sendMessage(cls, return_content)
 
