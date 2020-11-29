@@ -14,7 +14,7 @@ from Platforms.Twitch.ownchannel import clientNameChannel
 async def openChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -> None:
 
 	# special handling for messages in the bot channel
-	if Message.user_name.lower() == cls.nickname.lower():
+	if Message.room_name.lower() == cls.nickname.lower():
 		return await clientNameChannel(cls, Message)
 
 	# Base: get channel settings
