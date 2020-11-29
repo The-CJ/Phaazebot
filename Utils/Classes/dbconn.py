@@ -32,6 +32,7 @@ class DBConn(object):
 		# if != None, called with last statement as arg, for logging etc.
 		self.statement_func:callable = None
 
+	# functions
 	def query(self, sql:str, values:tuple or dict = None, debug:dict={}) -> list:
 		"""
 		Querys a SQL command. Using a MySQLCursorDict.
@@ -156,7 +157,7 @@ class DBConn(object):
 
 		return int(Cursor.rowcount)
 
-	def insertQuery(self, table:str=None, content:dict=None, replace:bool=False, debug:dict={}) -> int:
+	def insertQuery(self, table:str=None, content:dict=None, replace:bool=False, update_on_duplicate:bool=False, debug:dict={}) -> int:
 		"""
 		dict bases, secured insert query,
 		all special chars will get replaced by byte safe sql counterpart
@@ -171,7 +172,8 @@ class DBConn(object):
 
 		Returns the id of the most resent row
 		"""
-		if not table or not content: raise AttributeError("'table', and 'content' must be given")
+		if not table or not content: raise AttributeError("`table` and `content` must be given")
+		if replace and update_on_duplicate: raise AttributeError("`replace` and `update_on_duplicate` can't bove the True")
 
 		# prework
 		keys:str = ", ".join(f"`{key}`" for key in content)
@@ -180,6 +182,11 @@ class DBConn(object):
 
 		operation:str = "REPLACE INTO" if replace else "INSERT INTO"
 		statement:str = f"""{operation} `{table}` ({keys}) VALUES ({value_holder})"""
+
+		if update_on_duplicate:
+			statement += " ON DUPLICATE KEY UPDATE "
+			statement += ", ".join(f"`{key}` = %s" for key in content)
+			values = values * 2
 
 		# setup
 		Conn:MySQLConnection = self.getConnection()
@@ -194,6 +201,7 @@ class DBConn(object):
 
 		return Cursor.lastrowid
 
+	# utils
 	def executeQuery(self, Cursor:MySQLCursorDict, sql:str, values:tuple or dict, debug:dict) -> None:
 		"""
 		Just wrappes the query in a try catch to get the statement and debug funtions
