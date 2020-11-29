@@ -109,8 +109,13 @@ async def joinUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Con
 			},
 		)
 
-	return_content:str = f"@{Message.display_name} > Phaaze successful joined your channel"
-	if alternative_target: return_content = f"@{Message.display_name} > Phaaze successful joined {alternative_target}'s channel"
+	if alternative_target:
+		await cls.joinChannel(alternative_target)
+		return_content:str = f"@{Message.display_name} > Phaaze successful joined {alternative_target}'s channel"
+	else:
+		await cls.joinChannel(Message.user_name)
+		return_content:str = f"@{Message.display_name} > Phaaze successful joined your channel"
+
 	return await Message.Channel.sendMessage(cls, return_content)
 
 async def leaveUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Context:TwitchCommandContext) -> None:
@@ -160,6 +165,11 @@ async def leaveUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Co
 		where_values = (execute_id,)
 	)
 
-	return_content:str = f"@{Message.display_name} > Phaaze successful left your channel :c"
-	if alternative_target: return_content = f"@{Message.display_name} > Phaaze successful left {alternative_target}'s channel"
+	if alternative_target:
+		await cls.partChannel(alternative_target)
+		return_content:str = f"@{Message.display_name} > Phaaze successful left {alternative_target}'s channel"
+	else:
+		await cls.partChannel(Message.user_name)
+		return_content:str = f"@{Message.display_name} > Phaaze successful left your channel :c"
+
 	return await Message.Channel.sendMessage(cls, return_content)
