@@ -1,4 +1,5 @@
 import twitch_irc
+import Platforms.Twitch.const as TwitchConst
 from Utils.Classes.twitchuserstats import TwitchUserStats
 
 class TwitchPermission(object):
@@ -16,23 +17,23 @@ class TwitchPermission(object):
 	7+  System (NOTE: don't know what it means... maybe developer debug only?)
 	"""
 	def __init__(self, Message:twitch_irc.Message, User:TwitchUserStats):
-		self.rank = 0
+		self.rank = TwitchConst.REQUIRE_EVERYONE
 
 		if Message.subscriber:
-			self.rank = 1
+			self.rank = TwitchConst.REQUIRE_SUB
 
 		if Message.vip:
-			self.rank = 2
+			self.rank = TwitchConst.REQUIRE_VIP
 
 		if User and User.regular:
-			self.rank = 3
+			self.rank = TwitchConst.REQUIRE_REGULAR
 
 		if Message.mod:
-			self.rank = 4
+			self.rank = TwitchConst.REQUIRE_MOD
 
 		if Message.hasBadge(Message.badges, "broadcaster"):
-			self.rank = 5
+			self.rank = TwitchConst.REQUIRE_OWNER
 
-		if Message.hasBadge(Message.badges, "admin"): self.rank = 6
-		if Message.hasBadge(Message.badges, "staff"): self.rank = 6
-		if Message.hasBadge(Message.badges, "global-mod"): self.rank = 6
+		if Message.hasBadge(Message.badges, "admin"): self.rank = TwitchConst.REQUIRE_ADMIN
+		if Message.hasBadge(Message.badges, "staff"): self.rank = TwitchConst.REQUIRE_ADMIN
+		if Message.hasBadge(Message.badges, "global-mod"): self.rank = TwitchConst.REQUIRE_ADMIN
