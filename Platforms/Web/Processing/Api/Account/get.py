@@ -6,7 +6,7 @@ import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
-from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 
 async def apiAccountGetPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
@@ -42,4 +42,14 @@ async def apiAccountGetTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/twitch/get
 	"""
-	return await apiNotAllowed(cls, WebRequest, msg="Under construction")
+	# TwitchUser:TwitchdWebUserInfo = await cls.getTwitchUserInfo(WebRequest)
+
+	# if not TwitchUser.found:
+	if 1:
+		return await apiMissingAuthorisation(cls, WebRequest)
+
+	# return cls.response(
+	# 	text=json.dumps( dict(user=TwitchUser.toJSON(), status=200) ),
+	# 	content_type="application/json",
+	# 	status=200
+	# )
