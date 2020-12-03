@@ -5,9 +5,11 @@ if TYPE_CHECKING:
 import twitch_irc
 import asyncio
 import traceback
+from Platforms.Twitch.openchannel import openChannel
+from Utils.cli import CliArgs
 
 class PhaazebotTwitch(twitch_irc.Client):
-	def __init__(self, BASE:"Phaazebot", *args:list, **kwargs:dict):
+	def __init__(self, BASE:"Phaazebot", *args:tuple, **kwargs:dict):
 		super().__init__(*args, **kwargs)
 		self.BASE:"Phaazebot" = BASE
 
@@ -35,6 +37,8 @@ class PhaazebotTwitch(twitch_irc.Client):
 		if str(Message.Author.id) in self.BASE.Vars.twitch_debug_user_id:
 			await self.debugCall(Message)
 
+		return await openChannel(self, Message)
+
 	async def onError(self, Ex:Exception):
 		"""
 		Default error funtion, called everytime someting went wrong
@@ -46,6 +50,10 @@ class PhaazebotTwitch(twitch_irc.Client):
 		"""
 		Join all channels we know in the database that have a menaged=true
 		"""
+
+		if CliArgs.get("no-twitch-join", False):
+			return self.BASE.Logger.warning(f"`no-twitch-join` active, skipping channel join.")
+
 		twitch_res:list = self.BASE.PhaazeDB.selectQuery("""
 			SELECT
 				`twitch_channel`.`channel_id` AS `channel_id`,
@@ -102,9 +110,9 @@ class PhaazebotTwitch(twitch_irc.Client):
 			return await self.sendMessage(Message.Channel, str(res))
 
 		except Exception as Fail:
-			tb = traceback.format_exc()
-			re:str = f"Exception: {str(Fail)} : {str(tb)}"
-			return await self.sendMessage(Message.Channel, re[:199])
+			tb = str(traceback.format_exc()).replace("\n",' ').replace("\r", '')
+			re:str = f"Exception: {str(Fail)} : {tb}"
+			return await self.sendMessage(Message.Channel, re[:499])
 
 	async def onUnknown(self, raw:str) -> None:
 		self.BASE.Logger.error(f"Twitch IRC Unknown Data: {raw}")

@@ -12,12 +12,12 @@ def forcable(f:Callable) -> Callable:
 
 class WebRequestContent(object):
 	"""
-		Takes a Request and acts as a central point for variable source,
-		same vars from different sources get overwritten.
-		Access via X.get(a, b) - if a not found and b is not given,
-		it returnes Undefined else b
+	Takes a Request and acts as a central point for variable source,
+	same vars from different sources get overwritten.
+	Access via X.get(a, b) - if a not found and b is not given,
+	it returnes Undefined else b
 
-		GET -> POST(multipart/json)
+	GET -> POST(multipart/json)
 	"""
 	def __init__(self, WebRequest:Request, force_method:str=None):
 		self.WebRequest:Request = WebRequest

@@ -49,6 +49,7 @@ class PhaazebotTwitchEvents(object):
 	async def check(self) -> None:
 		# to reduce twitch api requests and prevent double alerts, we only take channel id's
 		# of channel that are managed by phaaze, or have currently at least one entry in discord_twitch_alert
+		# also, if a twitch-channel got a alert it goes in a grace timeout (30min) where no checks are done for this channel
 		res:List[dict] = self.BASE.PhaazeDB.selectQuery("""
 			SELECT DISTINCT
 				`twitch_channel`.`channel_id`,
@@ -57,8 +58,11 @@ class PhaazebotTwitchEvents(object):
 			FROM `twitch_channel`
 			LEFT JOIN `discord_twitch_alert`
 				ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_channel`.`channel_id`
-			WHERE `twitch_channel`.`managed` = 1
-				OR `discord_twitch_alert`.`discord_channel_id` IS NOT NULL""")
+			WHERE (`twitch_channel`.`last_state_change_at` + INTERVAL 30 MINUTE) < NOW()
+				AND (
+					`twitch_channel`.`managed` = 1
+					OR `discord_twitch_alert`.`discord_channel_id` IS NOT NULL
+				)""")
 
 		if not res:
 			# no alerts at all, skip everything and try again much later
@@ -364,6 +368,19 @@ class PhaazebotTwitchEvents(object):
 		self.BASE.PhaazeDB.query(sql, sql_values)
 		self.BASE.Logger.debug(f"Updated DB - twitch_user_name {len(update_users)} Entrys(s)", require="twitchevents:db")
 
+	async def updateLastStateChangeAt(self, changed_states:List["StatusEntry"]) -> None:
+		"""
+		updates the last_state_change_at value in twitch_channel db
+		so we can timeout channel, that flap on- and offline
+		"""
+
+		update_state_chan_ids:str = ','.join( f"'{StateUpdate.channel_id}'" for StateUpdate in changed_states )
+		if not update_state_chan_ids: update_state_chan_ids = '0'
+		self.BASE.PhaazeDB.query(f"""
+			UPDATE `twitch_channel`
+			SET `last_state_change_at` = NOW()
+			WHERE `twitch_channel`.`channel_id` IN ({update_state_chan_ids})""")
+
 	# events
 	async def eventLive(self, status_list:List["StatusEntry"]) -> None:
 		"""
@@ -372,6 +389,7 @@ class PhaazebotTwitchEvents(object):
 		with the values from the twitch api
 		"""
 		if not status_list: return
+		asyncio.ensure_future( self.updateLastStateChangeAt(status_list) )
 
 		self.BASE.Logger.debug(f"Received LIVE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
 
@@ -388,6 +406,7 @@ class PhaazebotTwitchEvents(object):
 		with the values from the twitch api
 		"""
 		if not status_list: return
+		asyncio.ensure_future( self.updateLastStateChangeAt(status_list) )
 
 		self.BASE.Logger.debug(f"Received GAMECHANGE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
 
@@ -404,6 +423,7 @@ class PhaazebotTwitchEvents(object):
 		with the last known values from phaaze db
 		"""
 		if not status_list: return
+		asyncio.ensure_future( self.updateLastStateChangeAt(status_list) )
 
 		self.BASE.Logger.debug(f"Received OFFLINE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
 

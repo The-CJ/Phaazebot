@@ -4,15 +4,18 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordAssignRole(DBContentClass, APIClass):
 	"""
-		Contains and represents stuff for a discord assign role
+	Contains and represents stuff for a discord assign role
 	"""
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' role_id='{self.role_id}' trigger='{self.trigger}'>"
 
-	def __init__(self, data:dict, guild_id:str):
+	def __init__(self, data:dict):
 
-		self.guild_id:str = guild_id
+		# key
 		self.assignrole_id:int = data.get("id", UNDEFINED)
+		self.guild_id:str = data.get("guild_id", UNDEFINED)
+
+		# vars
 		self.role_id:str = data.get("role_id", UNDEFINED)
 		self.trigger:str = data.get("trigger", UNDEFINED)
 

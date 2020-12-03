@@ -48,6 +48,8 @@
 	# Cooldowns
 		[discord_custom_commands_cooldown] = 3
 		[discord_level_cooldown] = 3
+		[discord_custom_commands_cooldown_max] = 600
+		[discord_custom_commands_cooldown_min] = 3
 
 # Twitch:
 	# Access
@@ -55,6 +57,8 @@
 		# API Access
 			[twitch_client_id] = "secret!..?"
 			[twitch_client_secret] = "secret!..?"
+			[twitch_client_credential_token] = ""
+			# `twitch_client_credential_token` should be loaded via database, but can also be provided
 		# IRC Access
 			[twitch_irc_token] = "secret!..?"
 			[twitch_irc_nickname] = "secret!..?"
@@ -63,13 +67,11 @@
 		[default_twitch_currency] = "Twitch coin"
 		[default_twitch_currency_multi] = "Twitch coins"
 	# Cooldowns
-		[twitch_timeout_message_cooldown] = 20
-		[twitch_blacklist_remember_time] = 180
+		[twitch_level_cooldown] = 3
 		[default_twitch_currency] = "Twitch coin"
 	# Limits
 		[twitch_custom_command_amount] = 100
 		[twitch_quote_amount] = 100
-		[twitch_stats_cooldown] = 5
 
 # osu!
 	# API Access

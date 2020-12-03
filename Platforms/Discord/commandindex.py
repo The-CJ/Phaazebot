@@ -20,10 +20,11 @@ from .Processing.levelstatus import levelStatus
 from .Processing.levelleaderboard import levelLeaderboard
 
 REQUIRE_EVERYONE:int = 0
-REQUIRE_REGULAR:int = 1
-REQUIRE_MODERATOR:int = 2
-REQUIRE_OWNER:int = 3
-REQUIRE_SYSTEM:int = 4
+REQUIRE_BOOSTER:int = 1
+REQUIRE_REGULAR:int = 2
+REQUIRE_MODERATOR:int = 3
+REQUIRE_OWNER:int = 4
+REQUIRE_SYSTEM:int = 5
 
 command_register:list = [
 	dict(

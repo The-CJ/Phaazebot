@@ -4,8 +4,8 @@ import re
 
 class HTMLFormatter(object):
 	"""
-		Loades, contains and manipulates HTML files
-		if template == True, the content can only be loaded initially and won't be changed by replace
+	Loades, contains and manipulates HTML files
+	if template == True, the content can only be loaded initially and won't be changed by replace
 	"""
 	def __str__(self) -> str:
 		return self.content

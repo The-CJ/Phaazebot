@@ -21,3 +21,5 @@ class Osu(object):
 
 class Twitch(object):
 	ChannelLink:"re.Pattern" = re.compile(r"(?P<method>https?://)?twitch\.tv/(?P<name>\S+)")
+	CommandPosString:"re.Pattern" = re.compile(r"\$(?P<pos>\d+)")
+	CommandVariableString:"re.Pattern" = re.compile(r"\[(?P<name>.+?)\]")

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
@@ -9,26 +9,26 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
 from Utils.Classes.discordpermission import DiscordPermission
 
-async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, DiscordUser:DiscordUserStats) -> bool:
+async def checkPunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, DiscordUser:DiscordUserStats) -> bool:
 
 	PhaazePermissions:discord.Permissions = Message.channel.permissions_for(Message.guild.me)
 
 	# if the user has manage_messages or is a regular or higher, skip checks
 	if not PhaazePermissions.manage_messages: return False
-	if DiscordPermission(Message, DiscordUser).rank >= 1: return False
+	if DiscordPermission(Message, DiscordUser).rank >= 2: return False
 
 	# if this is True after all checks => punish
 	punish:bool = False
 	reason:str = None
 
-	# links are not allowed
+	# links
 	if ServerSettings.blacklist_ban_links:
-		punish = await checkBanLinks(cls, Message, ServerSettings)
-		reason = "ban-links"
+		punish = await checkLinks(cls, Message, ServerSettings)
+		reason = "links"
 
 	if ServerSettings.blacklist_blacklistwords and not punish:
-		punish = await checkWordBlacklist(cls, Message, ServerSettings)
-		reason = "word-blacklist"
+		punish = await checkBlacklist(cls, Message, ServerSettings)
+		reason = "blacklist"
 
 	if punish:
 		await executePunish(cls, Message, ServerSettings, reason=reason)
@@ -37,12 +37,13 @@ async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Server
 	else:
 		return False
 
-async def checkBanLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+# checks
+async def checkLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
 	# check if user has a role that is allowed to post links
 	if any( [True if role.id in ServerSettings.blacklist_whitelistroles else False for role in Message.author.roles] ): return False
 
-	found_links:iter = re.finditer(ContainsLink, Message.content)
+	found_links:Iterator = re.finditer(ContainsLink, Message.content)
 
 	if not found_links: return False
 
@@ -64,7 +65,7 @@ async def checkBanLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 	# all links could be found in the whitelist
 	return False
 
-async def checkWordBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 	message_text = Message.content.lower()
 
 	for re_pattern in ServerSettings.blacklist_blacklistwords:
@@ -76,8 +77,21 @@ async def checkWordBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Se
 
 	return False
 
+async def checkEmotes(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+	pass
+
+async def checkCaps(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+	pass
+
+async def checkCopyPast(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+	pass
+
+async def checkUnicode(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+	pass
+
+# finals and utils
 async def executePunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, reason:str = None) -> None:
-	ServerSettings.blacklist_punishment = checkBlacklistPunishmentString(ServerSettings.blacklist_punishment)
+	ServerSettings.blacklist_punishment = checkPunishmentString(ServerSettings.blacklist_punishment)
 	try:
 		if ServerSettings.blacklist_punishment == "delete":
 			await Message.delete()
@@ -98,7 +112,7 @@ async def executePunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 	except:
 		raise
 
-def checkBlacklistPunishmentString(p:str) -> str:
+def checkPunishmentString(p:str) -> str:
 	p = p.lower()
 	if p in ["delete","kick","ban"]:
 		return p

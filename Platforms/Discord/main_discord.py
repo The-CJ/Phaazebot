@@ -5,14 +5,14 @@ if TYPE_CHECKING:
 import discord
 import asyncio
 import traceback
-from .openchannel import openChannel
-from .events import (
+from Platforms.Discord.openchannel import openChannel
+from Platforms.Discord.events import (
 	eventOnMemberJoin,
 	eventOnMemberRemove
 )
 
 class PhaazebotDiscord(discord.Client):
-	def __init__(self, BASE:"Phaazebot", *args:list, **kwargs:dict):
+	def __init__(self, BASE:"Phaazebot", *args:tuple, **kwargs:dict):
 		PhaazeIntents:discord.Intents = discord.Intents()
 
 		# changes to recieve wanted events

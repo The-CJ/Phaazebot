@@ -4,12 +4,15 @@ from Utils.Classes.apiclass import APIClass
 
 class DiscordQuote(DBContentClass, APIClass):
 	"""
-		Contains and represents stuff for a discord quote
+	Contains and represents stuff for a discord quote
 	"""
-	def __init__(self, data:dict, guild_id:str):
+	def __init__(self, data:dict):
 
-		self.guild_id:str = guild_id
+		# key
 		self.quote_id:int = data.get("id", UNDEFINED)
+		self.guild_id:str = data.get("guild_id", UNDEFINED)
+
+		# vars
 		self.content:str = data.get("content", UNDEFINED)
 
 	def __repr__(self):

@@ -113,7 +113,7 @@ async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_in
 			content = user_info
 		)
 		cls.BASE.Logger.debug(f"(Discord) New entry into levels: S:{guild_id} M:{member_id}", require="discord:level")
-		return DiscordUserStats( user_info, guild_id )
+		return DiscordUserStats( user_info )
 	except:
 		cls.BASE.Logger.critical(f"(Discord) New entry into levels failed: S:{guild_id} M:{member_id}")
 		raise RuntimeError("New entry into levels failed")
