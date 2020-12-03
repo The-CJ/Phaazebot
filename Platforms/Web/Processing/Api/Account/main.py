@@ -12,7 +12,7 @@ from .edit import apiAccountEditPhaaze
 
 async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/phaaze
+	Default url: /api/account/phaaze
 	"""
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
@@ -36,7 +36,7 @@ async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 async def apiAccountDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/discord
+	Default url: /api/account/discord
 	"""
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
@@ -55,7 +55,7 @@ async def apiAccountDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 
 async def apiAccountTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/twitch
+	Default url: /api/account/twitch
 	"""
 	return await apiNotAllowed(cls, WebRequest, msg="Under construction")
 	return await apiAccountGetTwitch(cls, WebRequest)

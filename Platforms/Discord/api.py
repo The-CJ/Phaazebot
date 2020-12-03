@@ -7,6 +7,25 @@ from aiohttp.web import Request
 
 ROOT_URL = "https://discordapp.com/api/v6/"
 
+def generateDiscordAuthLink(cls:"Phaazebot") -> str:
+	"""
+	used to create a link, that leads the user to discord, where he authorizes our request.
+	and is then send back to us, where he should have a ?code=123123 in his query
+	"""
+
+	auth_url:str = f"{ROOT_URL}oauth2/authorize"
+	auth_params:dict = {
+		"client_id": cls.Vars.discord_bot_id,
+		"redirect_uri": cls.Vars.discord_redirect_link,
+		"response_type": "code",
+		"scope": "identify email connections guilds"
+	}
+	# https://discord.com/api/oauth2/authorize?client_id=227503088649371658&redirect_uri=http%3A%2F%2Flocalhost%3A9001%2Fapi%2Faccount%2Fdiscord%2Flogin&response_type=code&scope=identify%20email%20connections%20guilds
+
+	Target:requests.Request = requests.Request(url=auth_url, params=auth_params)
+	Prep:requests.PreparedRequest = Target.prepare()
+	return Prep.url
+
 async def translateDiscordToken(cls:"Phaazebot", WebRequest:Request) -> dict or None:
 	"""
 		Used to complete a oauth verification via a token the user provies in his GET query

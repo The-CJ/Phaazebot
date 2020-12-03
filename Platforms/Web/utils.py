@@ -1,8 +1,10 @@
 from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
+	from main import Phaazebot
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Request
+from Platforms.Discord.api import generateDiscordAuthLink
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
@@ -30,8 +32,9 @@ def getAccountModal() -> HTMLFormatter:
 	"""
 	get the global login form with all applied formated links etc...
 	"""
+	PhaazeMain:"Phaazebot" = GlobalStorage.get("Phaazebot")
 	try:
-		discord_login_link:str = GlobalStorage.get("Phaazebot").Vars.discord_login_link
+		discord_login_link:str = generateDiscordAuthLink(PhaazeMain)
 	except:
 		discord_login_link:str = "/discord?error"
 
