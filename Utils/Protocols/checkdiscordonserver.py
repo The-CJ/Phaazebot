@@ -5,6 +5,11 @@ discord_user table.
 To be exact the on_server field.
 Only guilds, phaaze currenty is on are checked.
 This protocol is suppost to try if a member is on server and update db.
+
+CLI Args:
+---------
+* `a` or `automated` [disable print]
+* `d` or `detailed` [additional information printed]
 """
 
 import os
@@ -15,6 +20,7 @@ sys.path.insert(0, base_dir)
 import discord
 from typing import List
 from main import Phaazebot
+from Platforms.Discord.main_discord import PhaazebotDiscord
 from Utils.Classes.dbconn import DBConn
 from Utils.config import ConfigParser
 from Utils.cli import CliArgs
@@ -36,9 +42,9 @@ DBC:DBConn = DBConn(
 	database = Phaaze.Config.get("phaazedb_database", "phaaze")
 )
 
-class CheckDiscordOnServer(discord.Client):
+class CheckDiscordOnServer(PhaazebotDiscord):
 	def __init__(self):
-		super().__init__()
+		super().__init__(Phaaze)
 		self.detailed:bool = False
 		self.log_func:callable = print
 		self.empty_entrys:List[dict] = []
@@ -60,7 +66,7 @@ class CheckDiscordOnServer(discord.Client):
 		self.log(f"Requesting memberlist of {len(self.guilds)} guilds")
 
 
-		guild_id_list:str = ", ".join([str(g.id) for g in self.guilds])
+		guild_id_list:str = ", ".join(f"'{g.id}'" for g in self.guilds)
 		if not guild_id_list: guild_id_list = "0"
 		check_entrys:List[dict] = DBC.selectQuery(f"""
 			SELECT `id`, `guild_id`, `member_id`
