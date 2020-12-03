@@ -9,7 +9,7 @@ This protocol is suppost to try if a member is on server and update db.
 
 import os
 import sys
-base_dir:str = f"{os.path.dirname(os.path.abspath(__file__))}/../../"
+base_dir:str = f"{os.path.dirname(os.path.abspath(__file__))}/../.."
 sys.path.insert(0, base_dir)
 
 import discord
@@ -19,7 +19,14 @@ from Utils.Classes.dbconn import DBConn
 from Utils.config import ConfigParser
 from Utils.cli import CliArgs
 
-Conf:ConfigParser = ConfigParser(f"{base_dir}/config.json")
+Conf:ConfigParser = None
+for config_source_path in [ (CliArgs.get("config") or ""), f"{base_dir}/Config/config.phzcf", f"{base_dir}/Config/config.json" ]:
+	if not config_source_path: continue
+	try:
+		Conf = ConfigParser(config_source_path)
+		break
+	except: pass
+
 Phaaze:Phaazebot = Phaazebot(PreConfig = Conf)
 DBC:DBConn = DBConn(
 	host = Phaaze.Config.get("phaazedb_host", "localhost"),
