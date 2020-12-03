@@ -20,7 +20,6 @@ def generateDiscordAuthLink(cls:"Phaazebot") -> str:
 		"response_type": "code",
 		"scope": "identify email connections guilds"
 	}
-	# https://discord.com/api/oauth2/authorize?client_id=227503088649371658&redirect_uri=http%3A%2F%2Flocalhost%3A9001%2Fapi%2Faccount%2Fdiscord%2Flogin&response_type=code&scope=identify%20email%20connections%20guilds
 
 	Target:requests.Request = requests.Request(url=auth_url, params=auth_params)
 	Prep:requests.PreparedRequest = Target.prepare()

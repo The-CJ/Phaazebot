@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import asyncio
 import requests
 from Platforms.Twitch.utils import emergencyTwitchClientCredentialTokenRefresh
+from Utils.stringutils import randomString
 from Utils.Classes.twitchstream import TwitchStream
 from Utils.Classes.twitchgame import TwitchGame
 from Utils.Classes.twitchuser import TwitchUser
@@ -25,6 +26,8 @@ def generateTwitchAuthLink(cls:"Phaazebot") -> str:
 		"client_id": cls.Access.twitch_client_id,
 		"redirect_uri": cls.Vars.twitch_redirect_link,
 		"response_type": "code",
+		"force_verify": True,
+		"state": randomString(32),
 		"scope": "user:read:email channel:read:subscriptions channel:read:redemptions bits:read"
 	}
 
