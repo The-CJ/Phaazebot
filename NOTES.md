@@ -7,6 +7,9 @@
 * -no-args
     * allows start without configuration
 
+* -no-start
+    * reads in all configurations, but doesn't actually start the bot
+
   -log-sql
     * prints all SQL Statements with inserted values to the console
 
@@ -17,6 +20,12 @@
     * TwitchIRC only joins Client.nickname and no other channels
 
 ### kwargs
+
+* --config_path=
+    * set Custom path to configs file
+
+* --config_type=
+    * what filetype is used in config_path, default is 'phzcf'
 
 * --debug=
     * all

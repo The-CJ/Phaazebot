@@ -32,7 +32,9 @@ class Phaazebot(object):
 		if PreConfig:
 			self.Config:ConfigParser = PreConfig
 		else:
-			self.Config:ConfigParser = ConfigParser()
+			cfg_path:str = CliArgs.get("config_path", "Config/config.phzcf")
+			cfg_type:str = CliArgs.get("config_type", "phzcf")
+			self.Config:ConfigParser = ConfigParser(file_path=cfg_path, file_type=cfg_type)
 
 		self.version:str = self.Config.get("version", "[N/A]")
 		self.start_time:int = time.time() # together with another time.time(), used to know how long phaaze is running
@@ -103,4 +105,5 @@ if __name__ == '__main__':
 	if CliArgs.get("log-sql", False):
 		Phaaze.PhaazeDB.statement_func = Phaaze.Logger.printSQL
 
-	Phaaze.start()
+	if not CliArgs.get("no-start"):
+		Phaaze.start()
