@@ -9,7 +9,7 @@ class DiscordLog(DBContentClass, APIClass):
 	"""
 	Contains and represents stuff for a discord log entry
 	"""
-	def __init__(self, data:dict, guild_id:str):
+	def __init__(self, data:dict):
 
 		# key
 		self.log_id:int = data.get("id", UNDEFINED)

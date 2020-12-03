@@ -10,6 +10,9 @@ from Utils.Classes.twitchpermission import TwitchPermission
 from Utils.Classes.twitchuser import TwitchUser
 
 async def clientNameChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -> None:
+	"""
+	special handling for messages in the bot's own twitch channel
+	"""
 
 	Context:TwitchCommandContext = TwitchCommandContext(cls, Message)
 	cmd_str = str(Context.part(0)).lower()
