@@ -86,12 +86,12 @@ class GenerateTwitchCredentials(object):
 		response["expires_at"] = str( Now + LifeTime )
 
 		DB.insertQuery(
+			update_on_duplicate = True,
 			table = "setting",
 			content = dict(
 				key = "twitch_client_credentials",
 				value = json.dumps(response)
-			),
-			replace = True
+			)
 		)
 
 		new_token:str = response.get("access_token", "ERROR")

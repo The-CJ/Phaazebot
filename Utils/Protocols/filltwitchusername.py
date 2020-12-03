@@ -125,13 +125,15 @@ class FillTwitchUserNames(object):
 
 		self.log(f"Inserting recived entrys for {len(twitch_users)} Twitch-Userinfos")
 
-		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in twitch_users if x)
+		sql:str = "INSERT INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES " + ", ".join("(%s, %s, %s)" for x in twitch_users if x)
 		sql_values:tuple = ()
 
 		for User in twitch_users:
 			sql_values += (User.user_id, User.name, User.display_name)
 			if self.detailed: self.log(f"    Update entry, ID={User.user_id} (display)name='{User.display_name}'")
 
+		sql += " ON DUPLICATE KEY UPDATE `user_name` = VALUES(`user_name`), `user_display_name` = VALUES(`user_display_name`)"
+		
 		DB.query(sql, sql_values)
 
 if __name__ == '__main__':

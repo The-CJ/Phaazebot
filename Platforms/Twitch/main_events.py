@@ -327,7 +327,7 @@ class PhaazebotTwitchEvents(object):
 		updates the twitch_game db with data we gathered before
 		"""
 
-		sql:str = "REPLACE INTO `twitch_game` (`game_id`,`name`) VALUES "
+		sql:str = "INSERT INTO `twitch_game` (`game_id`,`name`) VALUES "
 		sql_additions:list = list()
 		sql_values:tuple = tuple()
 
@@ -342,6 +342,8 @@ class PhaazebotTwitchEvents(object):
 		if (not sql_values) or (not sql_additions): return
 		sql += ','.join(sql_additions)
 
+		sql += " ON DUPLICATE KEY UPDATE `name` = VALUES(`name`)"
+
 		self.BASE.PhaazeDB.query(sql, sql_values)
 		self.BASE.Logger.debug(f"Updated DB - twitch_game {len(update_games)} Entry(s)", require="twitchevents:db")
 
@@ -350,7 +352,7 @@ class PhaazebotTwitchEvents(object):
 		updates the twitch_user_name db with data we gathered before
 		"""
 
-		sql:str = "REPLACE INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES "
+		sql:str = "INSERT INTO `twitch_user_name` (`user_id`, `user_name`, `user_display_name`) VALUES "
 		sql_additions:list = list()
 		sql_values:tuple = tuple()
 
@@ -364,6 +366,8 @@ class PhaazebotTwitchEvents(object):
 		# no requested users are found in API, SQL whould be invalid -> skip
 		if (not sql_values) or (not sql_additions): return
 		sql += ','.join(sql_additions)
+
+		sql += " ON DUPLICATE KEY UPDATE `user_name` = VALUES(`user_name`), `user_display_name` = VALUES(`user_display_name`)"
 
 		self.BASE.PhaazeDB.query(sql, sql_values)
 		self.BASE.Logger.debug(f"Updated DB - twitch_user_name {len(update_users)} Entrys(s)", require="twitchevents:db")

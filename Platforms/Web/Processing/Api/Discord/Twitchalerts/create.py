@@ -153,7 +153,7 @@ async def placeGatheredData(cls:"WebIndex", AlertUser:TwitchUser) -> None:
 
 	# first thing we do, adding the name to twitch_user_name, so we get the name to a id without asking twitch again
 	cls.Web.BASE.PhaazeDB.insertQuery(
-		replace = True,
+		update_on_duplicate = True,
 		table = "twitch_user_name",
 		content = {
 			"user_id": AlertUser.user_id,
