@@ -14,6 +14,24 @@ AUTH_URL:str = "https://id.twitch.tv/"
 TWITCH_REQUEST_LIMIT:int = 100
 TWITCH_REQUEST_WAIT:int = 2
 
+def generateTwitchAuthLink(cls:"Phaazebot") -> str:
+	"""
+	used to create a link, that leads the user to twitch, where he authorizes our request.
+	and is then send back to us, where he should have a ?code=123123 in his query
+	"""
+
+	auth_url:str = f"{AUTH_URL}oauth2/authorize"
+	auth_params:dict = {
+		"client_id": cls.Access.twitch_client_id,
+		"redirect_uri": cls.Vars.twitch_redirect_link,
+		"response_type": "code",
+		"scope": "user:read:email channel:read:subscriptions channel:read:redemptions bits:read"
+	}
+
+	Target:requests.Request = requests.Request(url=auth_url, params=auth_params)
+	Prep:requests.PreparedRequest = Target.prepare()
+	return Prep.url
+
 async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Response:
 	"""
 	all calles to twitch should been made via this.

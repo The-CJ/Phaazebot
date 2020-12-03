@@ -26,7 +26,6 @@
 	# targets links
 	[discord_login_link] = "https://discordapp.com"
 	[discord_redirect_link] = "localhost"
-	[twitch_login_link] = "https://id.twitch.tv"
 	[twitch_redirect_link] = "localhost"
 
 # Discord:

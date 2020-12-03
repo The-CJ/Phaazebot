@@ -176,9 +176,7 @@ class VarsStore(StoreStructure):
 		self.default_twitch_currency:str = self.getStrFromConfig("default_twitch_currency", "Credit")
 
 		# (redirect) links
-		self.discord_login_link:str = self.getStrFromConfig("discord_login_link", "/discord", required=True)
 		self.discord_redirect_link:str = self.getStrFromConfig("discord_redirect_link", "localhost", required=True)
-		self.twitch_login_link:str = self.getStrFromConfig("twitch_login_link", "/twitch", required=True)
 		self.twitch_redirect_link:str = self.getStrFromConfig("twitch_redirect_link", "localhost", required=True)
 
 		# other
