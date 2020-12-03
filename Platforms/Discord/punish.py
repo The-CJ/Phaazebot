@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 import discord
 import re
+import Platforms.Discord.const as DiscordConst
 from Utils.regex import ContainsLink
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
@@ -15,7 +16,7 @@ async def checkPunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSet
 
 	# if the user has manage_messages or is a regular or higher, skip checks
 	if not PhaazePermissions.manage_messages: return False
-	if DiscordPermission(Message, DiscordUser).rank >= 2: return False
+	if DiscordPermission(Message, DiscordUser).rank >= DiscordConst.REQUIRE_REGULAR: return False
 
 	# if this is True after all checks => punish
 	punish:bool = False

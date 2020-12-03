@@ -5,13 +5,14 @@ if TYPE_CHECKING:
 import discord
 import asyncio
 import re
+import Platforms.Discord.const as DiscordConst
+from Platforms.Discord.commandindex import getDiscordCommandFunction
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Utils.Classes.discorduserstats import DiscordUserStats
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordpermission import DiscordPermission
 from Utils.regex import Discord as ReDiscord
-from Platforms.Discord.commandindex import getDiscordCommandFunction
 
 class GDCCS():
 	"""
@@ -63,7 +64,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 	# direct call via @Phaazebot [command] (rest vars)
 	# server owner only (for now)
-	if AuthorPermission.rank >= 3 and str(Message.guild.me.mention) == clean_nickname:
+	if AuthorPermission.rank >= DiscordConst.REQUIRE_OWNER and str(Message.guild.me.mention) == clean_nickname:
 
 		CommandContext.parts.pop(0)
 		CommandContext.Message.mentions.pop(0)
@@ -97,19 +98,19 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 		if not AuthorPermission.rank >= Command.require: return False
 
 		# owner disables normal commands serverwide,
-		if ServerSettings.owner_disable_normal and Command.require == 0:
+		if ServerSettings.owner_disable_normal and Command.require == DiscordConst.REQUIRE_EVERYONE:
 			# noone except the owner can use them
-			if AuthorPermission.rank != 3: return False
+			if AuthorPermission.rank != DiscordConst.REQUIRE_OWNER: return False
 
 		# owner disables regular commands serverwide,
-		if ServerSettings.owner_disable_regular and Command.require == 1:
+		if ServerSettings.owner_disable_regular and Command.require == DiscordConst.REQUIRE_REGULAR:
 			# noone except the owner can use them
-			if AuthorPermission.rank != 3: return False
+			if AuthorPermission.rank != DiscordConst.REQUIRE_OWNER: return False
 
 		# owner disables mod commands serverwide,
-		if ServerSettings.owner_disable_mod and Command.require == 2:
+		if ServerSettings.owner_disable_mod and Command.require == DiscordConst.REQUIRE_MOD:
 			# noone except the owner can use them
-			if AuthorPermission.rank != 3: return False
+			if AuthorPermission.rank != DiscordConst.REQUIRE_OWNER: return False
 
 		# always have a minimum cooldown
 		if Command.cooldown < cls.BASE.Limit.discord_commands_cooldown_min:
@@ -122,7 +123,7 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 
 		# command requires a currency payment, check if user can affort it
 		# except mods
-		if Command.required_currency != 0 and AuthorPermission.rank < 2:
+		if Command.required_currency != 0 and AuthorPermission.rank < DiscordConst.REQUIRE_MOD:
 
 			# not enough
 			if not (DiscordUser.currency >= Command.required_currency):

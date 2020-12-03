@@ -3,6 +3,7 @@ if TYPE_CHECKING:
 	from main import Phaazebot
 
 import Platforms.Twitch.const as TwitchConst
+import Platforms.Discord.const as DiscordConst
 from Utils.Classes.undefined import UNDEFINED, Undefined
 from Utils.cli import CliArgs
 
@@ -135,17 +136,17 @@ class LimitStore(StoreStructure):
 	"""
 	def load(self):
 		# amount's
-		self.discord_assignrole_amount:int = self.getIntFromConfig("discord_assignrole_amount", 25)
-		self.discord_commands_amount:int = self.getIntFromConfig("discord_custom_commands_amount", 100)
-		self.discord_level_medal_amount:int = self.getIntFromConfig("discord_level_medal_amount", 50)
-		self.discord_quotes_amount:int = self.getIntFromConfig("discord_quotes_amount", 100)
-		self.discord_regular_amount:int = self.getIntFromConfig("discord_regular_amount", 50)
+		self.discord_assignrole_amount:int = self.getIntFromConfig("discord_assignrole_amount", DiscordConst.ASSIGNROLE_AMOUNT)
+		self.discord_commands_amount:int = self.getIntFromConfig("discord_commands_amount", DiscordConst.COMMAND_AMOUNT)
+		self.discord_level_medal_amount:int = self.getIntFromConfig("discord_level_medal_amount", DiscordConst.LEVEL_MEDAL_AMOUNT)
+		self.discord_quotes_amount:int = self.getIntFromConfig("discord_quotes_amount", DiscordConst.QUOTE_AMOUNT)
+		self.discord_regular_amount:int = self.getIntFromConfig("discord_regular_amount", DiscordConst.REGULAR_AMOUNT)
 		self.twitch_custom_command_amount:int = self.getIntFromConfig("twitch_custom_command_amount", TwitchConst.COMMAND_AMOUNT)
 		self.twitch_quote_amount:int = self.getIntFromConfig("twitch_quote_amount", TwitchConst.QUOTE_AMOUNT)
 
 		# cooldown's
-		self.discord_commands_cooldown_max:int = self.getIntFromConfig("discord_commands_cooldown_max", 300)
-		self.discord_commands_cooldown_min:int = self.getIntFromConfig("discord_commands_cooldown_min", 3)
+		self.discord_commands_cooldown_max:int = self.getIntFromConfig("discord_commands_cooldown_max", DiscordConst.COMMAND_COOLDOWN_MAX)
+		self.discord_commands_cooldown_min:int = self.getIntFromConfig("discord_commands_cooldown_min", DiscordConst.COMMAND_COOLDOWN_MIN)
 		self.twitch_commands_cooldown_max:int = self.getIntFromConfig("twitch_commands_cooldown_max", TwitchConst.COMMAND_COOLDOWN_MAX)
 		self.twitch_commands_cooldown_min:int = self.getIntFromConfig("twitch_commands_cooldown_min", TwitchConst.COMMAND_COOLDOWN_MIN)
 		self.discord_level_cooldown:int = self.getIntFromConfig("discord_level_cooldown", TwitchConst.LEVEL_COOLDOWN)

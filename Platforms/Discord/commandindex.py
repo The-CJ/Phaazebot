@@ -1,4 +1,5 @@
 from typing import Awaitable
+import Platforms.Discord.const as DiscordConst
 from Utils.Classes.storeclasses import GlobalStorage
 
 from .Processing.textonly import textOnly
@@ -19,13 +20,6 @@ from .Processing.assignrole import assignRole
 from .Processing.levelstatus import levelStatus
 from .Processing.levelleaderboard import levelLeaderboard
 
-REQUIRE_EVERYONE:int = 0
-REQUIRE_BOOSTER:int = 1
-REQUIRE_REGULAR:int = 2
-REQUIRE_MODERATOR:int = 3
-REQUIRE_OWNER:int = 4
-REQUIRE_SYSTEM:int = 5
-
 command_register:list = [
 	dict(
 		name = "Text dummy",
@@ -38,7 +32,7 @@ command_register:list = [
 		need_content = True,
 		allowes_content = True,
 		example_calls = ["!myCommand", ">do_Something", "-text-dummy"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 10,
 	),
 	dict(
@@ -52,7 +46,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!listcmd", ">cmd", "show_me_commands"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 20,
 	),
 	dict(
@@ -67,7 +61,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!quote", ">quote 8", "!quote 221"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -80,7 +74,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!newquote 'This is my new Quote'", ">AddQuote Something something -Strange Dude", "!remember \"Some funny quote i guess, or whatevery you wanna quote.\" -Dev"],
-		recommended_require = REQUIRE_REGULAR,
+		recommended_require = DiscordConst.REQUIRE_REGULAR,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -95,7 +89,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!removequote 6", ">delete 51", "!Quote-rem 81"],
-		recommended_require = REQUIRE_MODERATOR,
+		recommended_require = DiscordConst.REQUIRE_MOD,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -109,7 +103,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!rand option 1;option 2", ">num 1;2;3;4;5;6", "!random This is a long option;This one to, but is also just one option"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -122,7 +116,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!define Orange", ">what_is Sleeping", "!urban The goal of life"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -138,7 +132,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!whois", ">inspect SomeUser#5482", "!show 117746512380952582"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -155,7 +149,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!clean 200", ">prune BadUser#2314", "!trash 227503088649371658"],
-		recommended_require = REQUIRE_MODERATOR,
+		recommended_require = DiscordConst.REQUIRE_MOD,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -169,7 +163,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!wiki Carbon dioxide", ">wikipedia Earth", "-www internet"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 60,
 	),
 	dict(
@@ -187,7 +181,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!osu-stats playername", ">osu another --ctb", "-o 789752 --mania"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -203,7 +197,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!add-role csgo @Counterstrike", ">ar minecraft 58694231456489579", "-assign-add notify @stream alert role"],
-		recommended_require = REQUIRE_MODERATOR,
+		recommended_require = DiscordConst.REQUIRE_MOD,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -216,7 +210,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!listroles", ">assign_list", "-arl"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -231,7 +225,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!remove-assign csgo", ">assign_del minecraft", "-ard notify"],
-		recommended_require = REQUIRE_MODERATOR,
+		recommended_require = DiscordConst.REQUIRE_MOD,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -247,7 +241,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!assign csgo", ">give-role minecraft", "-a notify"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -262,7 +256,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!level", ">lvl @AnotherUser", "-stats 45748432469745648662"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 30,
 	),
 	dict(
@@ -277,7 +271,7 @@ command_register:list = [
 		need_content = False,
 		allowes_content = False,
 		example_calls = ["!leaderboard", ">board 3", "-b 13"],
-		recommended_require = REQUIRE_EVERYONE,
+		recommended_require = DiscordConst.REQUIRE_EVERYONE,
 		recommended_cooldown = 30,
 	),
 ]

@@ -1,4 +1,5 @@
 import discord
+import Platforms.Discord.const as DiscordConst
 from Utils.Classes.discorduserstats import DiscordUserStats
 
 class DiscordPermission(object):
@@ -17,19 +18,19 @@ class DiscordPermission(object):
 	5+  System (NOTE: don't know what it means... maybe developer debug only?)
 	"""
 	def __init__(self, Message:discord.Message, Member:DiscordUserStats):
-		self.rank = 0
+		self.rank = DiscordConst.REQUIRE_EVERYONE
 
 		if Message.author.premium_since != None: # should mean its a discord boost... right?
-			self.rank = 1
+			self.rank = DiscordConst.REQUIRE_BOOST
 
 		if Member and Member.regular:
-			self.rank = 2
+			self.rank = DiscordConst.REQUIRE_REGULAR
 
 		if self.checkRoles(Message.author.roles):
-			self.rank = 3
+			self.rank = DiscordConst.REQUIRE_MOD
 
 		if Message.author == Message.guild.owner:
-			self.rank = 4
+			self.rank = DiscordConst.REQUIRE_OWNER
 
 	def checkRoles(self, roles:list, to_check:list = ["admin" ,"mod" ,"bot commander"]) -> bool:
 		for Role in roles:
