@@ -35,7 +35,7 @@
 		[discord_secret] = "6969696969"
 		[discord_token] = "1234567890"
 	# Limits
-		[discord_custom_commands_amount] = 100
+		[discord_commands_amount] = 100
 		[discord_level_medal_amount] = 50
 		[discord_quotes_amount] = 100
 		[discord_assignrole_amount] = 25
@@ -46,10 +46,9 @@
 		[default_discord_currency] = "Discord coin"
 		[default_discord_currency_multi] = "Discord coins"
 	# Cooldowns
-		[discord_custom_commands_cooldown] = 3
+		[discord_commands_cooldown_min] = 3
+		[discord_commands_cooldown_max] = 600
 		[discord_level_cooldown] = 3
-		[discord_custom_commands_cooldown_max] = 600
-		[discord_custom_commands_cooldown_min] = 3
 
 # Twitch:
 	# Access
@@ -67,8 +66,10 @@
 		[default_twitch_currency] = "Twitch coin"
 		[default_twitch_currency_multi] = "Twitch coins"
 	# Cooldowns
-		[twitch_level_cooldown] = 3
-		[default_twitch_currency] = "Twitch coin"
+		[twitch_commands_cooldown_min] = 3
+		[twitch_commands_cooldown_max] = 600
+		[twitch_punish_time_min] = 3
+		[twitch_punish_time_max] = 600
 	# Limits
 		[twitch_custom_command_amount] = 100
 		[twitch_quote_amount] = 100
