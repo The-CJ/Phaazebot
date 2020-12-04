@@ -185,8 +185,7 @@ class DBConn(object):
 
 		if update_on_duplicate:
 			statement += " ON DUPLICATE KEY UPDATE "
-			statement += ", ".join(f"`{key}` = %s" for key in content)
-			values = values * 2
+			statement += ", ".join(f"`{key}` = VALUES(`{key}`)" for key in content)
 
 		# setup
 		Conn:MySQLConnection = self.getConnection()
