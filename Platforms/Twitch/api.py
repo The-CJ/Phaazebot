@@ -39,9 +39,9 @@ def generateTwitchAuthLink(cls:"Phaazebot") -> str:
 
 async def translateTwitchToken(cls:"Phaazebot", WebRequest:Request) -> dict or None:
 	"""
-		Used to complete a oauth verification via a token the user provies in his GET query
-		(It has to be there)
-		We then get all infos we want/need from twitch
+	Used to complete a oauth verification via a token the user provies in his GET query
+	(It has to be there)
+	We then get all infos we want/need from twitch
 	"""
 	code:str = WebRequest.query.get("code", None)
 	if not code:
@@ -69,12 +69,12 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 
 	Optional keywords:
 	------------------
-	method `str` : (Default: 'GET')
-	client_id `str` : (Default: Access.twitch_client_id)
-	client_secret `str`
-	auth_type `str` (Default: 'Bearer') ['Bearer' or 'OAuth']
-	access_token `str` (Default: Access.twitch_client_credential_token)
-	emergency_refesh_token `bool` (Default: True)
+	* method `str` : (Default: 'GET')
+	* client_id `str` : (Default: Access.twitch_client_id)
+	* client_secret `str`
+	* auth_type `str` (Default: 'Bearer') ['Bearer' or 'OAuth']
+	* access_token `str` (Default: Access.twitch_client_credential_token)
+	* emergency_refesh_token `bool` (Default: True)
 	"""
 	method:str = kwargs.get("method", "GET")
 	client_id:str = kwargs.get("client_id", cls.Access.twitch_client_id)
@@ -111,19 +111,20 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 
 	return Resp
 
-async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=-1) -> List[TwitchStream]:
+async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="user_id", limit:int=None) -> List[TwitchStream]:
 	"""
 	get all currently live streams based on 'item' and 'item_type'
 	Returns a list of TwitchStream()
 
-	item [required]
-	item_type : what are the contains of `item` (user_id, user_login, game_id, language)
-	limit : max result number
+	Optional keywords:
+	------------------
+	* item_type `str` : (Default: 'user_id') ['user_id', 'user_login', 'game_id', 'language']
+	* limit `int` : (Default: None)
 	"""
 
 	if type(item) is not list: item = [item]
 
-	if limit > 0:
+	if limit:
 		item = item[:limit]
 
 	total_results:List[TwitchStream] = []
@@ -140,10 +141,15 @@ async def getTwitchStreams(cls:"Phaazebot", item:str or list, item_type:str="use
 
 	return total_results
 
-async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id", limit:int=-1) -> List[TwitchGame]:
+async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id", limit:int=None) -> List[TwitchGame]:
 	"""
 	get all game data based on 'item' and 'item_type'
 	Returns a list of TwitchGame()
+
+	Optional keywords:
+	------------------
+	* item_type `str` : (Default: 'id') ['id', 'name']
+	* limit `int` : (Default: None)
 
 	item [required]
 	item_type : what are the contains of `item` (id, name) | name must be exact, not good for search
@@ -152,7 +158,7 @@ async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id", 
 
 	if type(item) is not list: item = [item]
 
-	if limit > 0:
+	if limit:
 		item = item[:limit]
 
 	total_results:List[TwitchGame] = []
@@ -169,19 +175,20 @@ async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id", 
 
 	return total_results
 
-async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id", limit:int=-1) -> List[TwitchUser]:
+async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id", limit:int=None) -> List[TwitchUser]:
 	"""
 	get all game data based on 'item' and 'item_type'
 	Returns a list of TwitchUser()
 
-	item [required]
-	item_type : what are the contains of `item` (id, login)
-	limit : max result number
+	Optional keywords:
+	------------------
+	* item_type `str` : (Default: 'id') ['id', 'login']
+	* limit `int` : (Default: None)
 	"""
 
 	if type(item) is not list: item = [item]
 
-	if limit > 0:
+	if limit:
 		item = item[:limit]
 
 	total_results:List[TwitchUser] = []
