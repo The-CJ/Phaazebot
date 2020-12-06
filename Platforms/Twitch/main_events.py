@@ -9,6 +9,8 @@ from Utils.Classes.twitchuser import TwitchUser
 from Platforms.Twitch.api import getTwitchStreams, getTwitchGames, getTwitchUsers
 from Platforms.Discord.twitchalerts import discordHandleLive, discordHandleOffline, discordHandleGameChange
 
+ALERT_GRACE:int = 30
+
 class PhaazebotTwitchEvents(object):
 	"""
 		This Module is to keep track of all events related to twitch
@@ -49,8 +51,8 @@ class PhaazebotTwitchEvents(object):
 	async def check(self) -> None:
 		# to reduce twitch api requests and prevent double alerts, we only take channel id's
 		# of channel that are managed by phaaze, or have currently at least one entry in discord_twitch_alert
-		# also, if a twitch-channel got a alert it goes in a grace timeout (30min) where no checks are done for this channel
-		res:List[dict] = self.BASE.PhaazeDB.selectQuery("""
+		# also, if a twitch-channel got a alert it goes in a grace timeout where no checks are done for this channel
+		res:List[dict] = self.BASE.PhaazeDB.selectQuery(f"""
 			SELECT DISTINCT
 				`twitch_channel`.`channel_id`,
 				`twitch_channel`.`game_id`,
@@ -58,7 +60,7 @@ class PhaazebotTwitchEvents(object):
 			FROM `twitch_channel`
 			LEFT JOIN `discord_twitch_alert`
 				ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_channel`.`channel_id`
-			WHERE (`twitch_channel`.`last_state_change_at` + INTERVAL 30 MINUTE) < NOW()
+			WHERE (`twitch_channel`.`last_state_change_at` + INTERVAL {ALERT_GRACE} MINUTE) < NOW()
 				AND (
 					`twitch_channel`.`managed` = 1
 					OR `discord_twitch_alert`.`discord_channel_id` IS NOT NULL
@@ -283,6 +285,7 @@ class PhaazebotTwitchEvents(object):
 	async def updateChannelLive(self, streams:List[TwitchStream]) -> None:
 		"""
 		Updates the `live` col in DB, according to all entrys in `streams`
+		but only when there are over the grace period
 		"""
 
 		channel_ids:str = ','.join( f"'{Stream.user_id}'" for Stream in streams )
@@ -290,7 +293,8 @@ class PhaazebotTwitchEvents(object):
 
 		self.BASE.PhaazeDB.query(f"""
 			UPDATE `twitch_channel`
-			SET `live` = CASE WHEN `twitch_channel`.`channel_id` IN ({channel_ids}) THEN 1 ELSE 0 END""",
+			SET `live` = CASE WHEN `twitch_channel`.`channel_id` IN ({channel_ids}) THEN 1 ELSE 0 END
+			WHERE (`twitch_channel`.`last_state_change_at` + INTERVAL {ALERT_GRACE} MINUTE) < NOW()""",
 		)
 		self.BASE.Logger.debug("Updated DB - twitch_channel (live)", require="twitchevents:db")
 
