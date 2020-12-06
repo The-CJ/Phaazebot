@@ -2,8 +2,9 @@ from typing import TYPE_CHECKING, List, Any
 if TYPE_CHECKING:
 	from main import Phaazebot
 
-import asyncio
 import requests
+import asyncio
+from aiohttp.web import Request
 from Platforms.Twitch.utils import emergencyTwitchClientCredentialTokenRefresh
 from Utils.stringutils import randomString
 from Utils.Classes.twitchstream import TwitchStream
@@ -15,6 +16,7 @@ AUTH_URL:str = "https://id.twitch.tv/"
 TWITCH_REQUEST_LIMIT:int = 100
 TWITCH_REQUEST_WAIT:int = 2
 
+# auth utils
 def generateTwitchAuthLink(cls:"Phaazebot") -> str:
 	"""
 	used to create a link, that leads the user to twitch, where he authorizes our request.
@@ -26,7 +28,7 @@ def generateTwitchAuthLink(cls:"Phaazebot") -> str:
 		"client_id": cls.Access.twitch_client_id,
 		"redirect_uri": cls.Vars.twitch_redirect_link,
 		"response_type": "code",
-		"force_verify": True,
+		"force_verify": "true",
 		"state": randomString(32),
 		"scope": "user:read:email channel:read:subscriptions channel:read:redemptions bits:read"
 	}
@@ -35,6 +37,30 @@ def generateTwitchAuthLink(cls:"Phaazebot") -> str:
 	Prep:requests.PreparedRequest = Target.prepare()
 	return Prep.url
 
+async def translateTwitchToken(cls:"Phaazebot", WebRequest:Request) -> dict or None:
+	"""
+		Used to complete a oauth verification via a token the user provies in his GET query
+		(It has to be there)
+		We then get all infos we want/need from twitch
+	"""
+	code:str = WebRequest.query.get("code", None)
+	if not code:
+		cls.Logger.debug("translateTwitchToken called without code", require="twitch:api")
+		return None
+
+	req:dict = dict(
+		client_id = cls.Access.twitch_client_id,
+		client_secret = cls.Access.twitch_client_secret,
+		grant_type = "authorization_code",
+		code = code,
+		redirect_uri = cls.Vars.twitch_redirect_link
+	)
+	headers:dict = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+	res = requests.post(AUTH_URL+"oauth2/token", req, headers)
+	return res.json()
+
+# getter utils
 async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Response:
 	"""
 	all calles to twitch should been made via this.
@@ -173,7 +199,6 @@ async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id", 
 	return total_results
 
 # part requests (because some request must been broken down into smaller one)
-
 async def partGetTwitchStreams(cls:"Phaazebot", item:List[Any], item_type:str) -> List[TwitchStream]:
 
 	query:str = f"?first={len(item)}"
