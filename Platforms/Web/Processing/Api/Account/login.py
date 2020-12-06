@@ -1,13 +1,14 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 import json
 import traceback
 from aiohttp.web import Response, Request
-from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Discord.api import translateDiscordToken, getDiscordUser
-from Platforms.Twitch.api import translateTwitchToken #, getTwitchUsers
+from Platforms.Twitch.api import translateTwitchToken, getTwitchUsers
+from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.twitchuser import TwitchUser
 from Utils.stringutils import randomString
 from Platforms.Web.Processing.Api.errors import apiUserNotFound, apiMissingData
 
@@ -148,22 +149,30 @@ async def completeTwitchTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict
 	refresh_token:str = data.get("refresh_token", "")
 	scope:str = ' '.join(data.get("scope", []))
 	token_type:str = data.get('token_type', None)
-	user_info:dict = await getDiscordUser(cls.Web.BASE, access_token)
+
+	user_res:List[TwitchUser] = await getTwitchUsers(cls.Web.BASE, access_token, item_type="token")
+	TwitchAuthUser:TwitchUser = user_res.pop(0) if len(user_res) > 0 else None
+
+	if not TwitchAuthUser:
+		return cls.response(
+			status=302,
+			headers = {"Location": "/twitch/login?error=user"}
+		)
 
 	try:
 		cls.Web.BASE.PhaazeDB.insertQuery(
-			table = "session_discord",
+			table = "session_twitch",
 			content = dict(
 				session = session_key,
 				access_token = access_token,
 				refresh_token = refresh_token,
 				scope = scope,
 				token_type = token_type,
-				user_info = json.dumps(user_info)
+				user_info = json.dumps(TwitchAuthUser.toJSON())
 			)
 		)
 
-		cls.Web.BASE.Logger.debug(f"(API) New Twitch Login - Session: {session_key} User: {str(user_info.get('username','[N/A]'))}", require="api:login")
+		cls.Web.BASE.Logger.debug(f"(API) New Twitch Login - Session: {session_key} User: {TwitchAuthUser.name}", require="api:login")
 		return cls.response(
 			status=302,
 			headers = {

@@ -16,11 +16,17 @@ class TwitchUser(APIClass):
 		self.profile_image_url:str = data.get("profile_image_url", UNDEFINED)
 		self.offline_image_url:str = data.get("offline_image_url", UNDEFINED)
 		self.view_count:int = int( data.get("view_count", UNDEFINED) )
+		self.email:str = data.get("email", UNDEFINED)
+
+		self.extended:bool = bool( self.email )
 
 	def __repr__(self):
+		if self.extended:
+			return f"<{self.__class__.__name__} extended user_id='{self.user_id}' name='{self.name}'>"
+
 		return f"<{self.__class__.__name__} user_id='{self.user_id}' name='{self.name}'>"
 
-	def toJSON(self, types:bool=True, images:bool=False) -> dict:
+	def toJSON(self, types:bool=True, images:bool=False, with_email:bool=True) -> dict:
 		""" Returns a json save dict representation of all values for API, storage, etc... """
 
 		j:dict = dict()
@@ -38,5 +44,8 @@ class TwitchUser(APIClass):
 		if images:
 			j["profile_image_url"] = self.toString(self.profile_image_url)
 			j["offline_image_url"] = self.toString(self.offline_image_url)
+
+		if with_email and self.email:
+			j["email"] = self.toString(self.email)
 
 		return j
