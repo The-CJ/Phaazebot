@@ -182,11 +182,14 @@ async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id", 
 
 	Optional keywords:
 	------------------
-	* item_type `str` : (Default: 'id') ['id', 'login']
-	* limit `int` : (Default: None)
+	* item_type `str` : (Default: 'id') ['id', 'login', 'token']
+	* limit `int` : (Default: None or 1 if item_type == 'token')
 	"""
 
 	if type(item) is not list: item = [item]
+
+	if item_type == "token":
+		limit = 1
 
 	if limit:
 		item = item[:limit]
@@ -232,12 +235,18 @@ async def partGetTwitchGames(cls:"Phaazebot", item:List[Any], item_type:str) -> 
 
 async def partGetTwitchUsers(cls:"Phaazebot", item:List[Any], item_type:str) -> List[TwitchUser]:
 
-	query:str = f"?{item_type}={item.pop(0)}"
+	link:str = f"{ROOT_URL}users"
 
-	for i in item:
-		query += f"&{item_type}={i}"
+	if item_type == "token":
+		token:str = item.pop(0)
+		resp:dict = (await twitchAPICall(cls, link, access_token=token)).json()
 
-	link:str = f"{ROOT_URL}users{query}"
+	else:
+		query:str = f"?{item_type}={item.pop(0)}"
 
-	resp:dict = (await twitchAPICall(cls, link)).json()
+		for i in item:
+			query += f"&{item_type}={i}"
+
+		resp:dict = (await twitchAPICall(cls, link+query)).json()
+
 	return [ TwitchUser(s) for s in resp.get("data", []) ]
