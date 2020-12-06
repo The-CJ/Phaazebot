@@ -7,8 +7,9 @@ import traceback
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Platforms.Discord.api import translateDiscordToken, getDiscordUser
+from Platforms.Twitch.api import translateTwitchToken #, getTwitchUsers
 from Utils.stringutils import randomString
-from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiUserNotFound, apiMissingData
+from Platforms.Web.Processing.Api.errors import apiUserNotFound, apiMissingData
 
 SESSION_EXPIRE:int = 60*60*24*7 # 1 week
 
@@ -77,11 +78,29 @@ async def apiAccountLoginTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 		Default url: /api/account/twitch/login
 		This sould only be called by twitch after a user successfull authorised
 	"""
-	return await apiNotAllowed(cls, WebRequest, msg="Under construction")
+	data:dict or None = await translateTwitchToken(cls.Web.BASE, WebRequest)
+	error:str = ""
+
+	if not data:
+		error = "missing"
+		cls.Web.BASE.Logger.debug(f"(API/Twitch) Failed login, never got called", require="twitch:api")
+	elif data.get("error", None):
+		error = "twitch"
+		cls.Web.BASE.Logger.debug(f"(API/Twitch) Failed login: {str(data)}", require="twitch:api")
+	else:
+		return await completeTwitchTokenLogin(cls, WebRequest, data)
+
+	return cls.response(
+		status=302,
+		headers = { "Location": f"/twitch/login?error={error}" }
+	)
 
 # # #
 
 async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict) -> Response:
+	"""
+	inserts all nessessary data into the session_discord database
+	"""
 
 	session_key:str = randomString(size=32)
 	access_token:str = data.get('access_token', "")
@@ -117,4 +136,45 @@ async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dic
 		return cls.response(
 			status=302,
 			headers = {"Location": "/discord/login?error=database"}
+		)
+
+async def completeTwitchTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict) -> Response:
+	"""
+	inserts all nessessary data into the session_twitch database
+	"""
+
+	session_key:str = randomString(size=32)
+	access_token:str = data.get("access_token", "")
+	refresh_token:str = data.get("refresh_token", "")
+	scope:str = ' '.join(data.get("scope", []))
+	token_type:str = data.get('token_type', None)
+	user_info:dict = await getDiscordUser(cls.Web.BASE, access_token)
+
+	try:
+		cls.Web.BASE.PhaazeDB.insertQuery(
+			table = "session_discord",
+			content = dict(
+				session = session_key,
+				access_token = access_token,
+				refresh_token = refresh_token,
+				scope = scope,
+				token_type = token_type,
+				user_info = json.dumps(user_info)
+			)
+		)
+
+		cls.Web.BASE.Logger.debug(f"(API) New Twitch Login - Session: {session_key} User: {str(user_info.get('username','[N/A]'))}", require="api:login")
+		return cls.response(
+			status=302,
+			headers = {
+				"Set-Cookie": f"phaaze_twitch_session={session_key}; Path=/; Max-Age={SESSION_EXPIRE};",
+				"Location": "/twitch"
+			}
+		)
+	except Exception as e:
+		tb:str = traceback.format_exc()
+		cls.Web.BASE.Logger.error(f"(API) Database error: {str(e)}\n{tb}")
+		return cls.response(
+			status=302,
+			headers = {"Location": "/twitch/login?error=database"}
 		)
