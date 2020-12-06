@@ -161,7 +161,7 @@ async def completeTwitchTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict
 	user_res:List[TwitchUser] = await getTwitchUsers(cls.Web.BASE, access_token, item_type="token")
 	TwitchAuthUser:TwitchUser = user_res.pop(0) if len(user_res) > 0 else None
 
-	if not TwitchAuthUser:
+	if not TwitchAuthUser or not TwitchAuthUser.extended:
 		cls.Web.BASE.Logger.warning("(API) Twitch user login failed")
 		return cls.response(
 			status=302,
