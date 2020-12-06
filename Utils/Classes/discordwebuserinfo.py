@@ -57,23 +57,23 @@ class DiscordWebUserInfo(DBContentClass, APIClass):
 
 		j:dict = dict()
 
-		j["user_id"] = str(self.user_id)
-		j["username"] = self.username
-		j["email"] = self.email
-		j["verified"] = self.verified
-		j["locale"] = self.locale
-		j["premium_type"] = self.premium_type
-		j["flags"] = self.flags
-		j["avatar"] = self.avatar
-		j["discriminator"] = self.discriminator
+		j["user_id"] = self.toString(self.user_id)
+		j["username"] = self.toString(self.username)
+		j["email"] = self.toString(self.email)
+		j["verified"] = self.toBoolean(self.verified)
+		j["locale"] = self.toString(self.locale)
+		j["premium_type"] = self.toInteger(self.premium_type)
+		j["flags"] = self.toInteger(self.flags)
+		j["avatar"] = self.toString(self.avatar)
+		j["discriminator"] = self.toString(self.discriminator)
 
 		if token:
-			j["access_token"] = self.access_token
-			j["refresh_token"] = self.refresh_token
+			j["access_token"] = self.toString(self.access_token)
+			j["refresh_token"] = self.toString(self.refresh_token)
 
 		if scope:
-			j["scope"] = self.scope
-
+			j["scope"] = self.toString(self.scope)
+			
 		return j
 
 	async def auth(self) -> None:
