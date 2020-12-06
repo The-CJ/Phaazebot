@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Request
 from Platforms.Discord.api import generateDiscordAuthLink
+from Platforms.Twitch.api import generateTwitchAuthLink
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
@@ -35,13 +36,17 @@ def getAccountModal() -> HTMLFormatter:
 	PhaazeMain:"Phaazebot" = GlobalStorage.get("Phaazebot")
 	try:
 		discord_login_link:str = generateDiscordAuthLink(PhaazeMain)
-	except:
+		twitch_login_link:str = generateTwitchAuthLink(PhaazeMain)
+	except Exception as E:
+		PhaazeMain.Logger.error(f"getAccountModal - {str(E)}")
 		discord_login_link:str = "/discord?error"
+		twitch_login_link:str = "/twitch?error"
 
 	AccountModal:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Modal/account.html")
 	AccountModal.replace(
 		replace_empty=True,
-		discord_login_link=discord_login_link
+		discord_login_link=discord_login_link,
+		twitch_login_link=twitch_login_link,
 	)
 	return AccountModal
 
