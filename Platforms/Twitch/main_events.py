@@ -78,7 +78,7 @@ class PhaazebotTwitchEvents(object):
 			current_live_streams:List[TwitchStream] = await getTwitchStreams(self.BASE, id_list)
 
 			if not current_live_streams:
-				self.BASE.PhaazeDB.updateQuery( table="twitch_channel", content=dict(live=0), where="(`twitch_channel`.`last_state_change_at` + INTERVAL 30 MINUTE) < NOW()" )
+				self.BASE.PhaazeDB.updateQuery( table="twitch_channel", content=dict(live=0), where=f"(`twitch_channel`.`last_state_change_at` + INTERVAL {ALERT_GRACE} MINUTE) < NOW()" )
 				self.BASE.Logger.debug(f"No channels live, delaying next check ({self.delay}s)", require="twitchevents:delay")
 				return
 
