@@ -76,8 +76,8 @@ async def apiAccountLoginDiscord(cls:"WebIndex", WebRequest:Request) -> Response
 
 async def apiAccountLoginTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/twitch/login
-		This sould only be called by twitch after a user successfull authorised
+	Default url: /api/account/twitch/login
+	This sould only be called by twitch after a user successfull authorised
 	"""
 	data:dict or None = await translateTwitchToken(cls.Web.BASE, WebRequest)
 	error:str = ""
@@ -109,6 +109,14 @@ async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dic
 	scope:str = data.get('scope', "")
 	token_type:str = data.get('token_type', None)
 	user_info:dict = await getDiscordUser(cls.Web.BASE, access_token)
+
+	# if the result has a message field, something went wrong
+	if user_info.get("message", "---") != "---":
+		cls.Web.BASE.Logger.warning("(API) Discord user login failed")
+		return cls.response(
+			status=302,
+			headers = {"Location": "/discord/login?error=user"}
+		)
 
 	try:
 		cls.Web.BASE.PhaazeDB.insertQuery(
@@ -154,6 +162,7 @@ async def completeTwitchTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict
 	TwitchAuthUser:TwitchUser = user_res.pop(0) if len(user_res) > 0 else None
 
 	if not TwitchAuthUser:
+		cls.Web.BASE.Logger.warning("(API) Twitch user login failed")
 		return cls.response(
 			status=302,
 			headers = {"Location": "/twitch/login?error=user"}
