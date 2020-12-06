@@ -9,6 +9,7 @@ from Platforms.Twitch.api import generateTwitchAuthLink
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.twitchwebuserinfo import TwitchWebUserInfo
 from Utils.Classes.storeclasses import GlobalStorage
 
 # templating and stuff
@@ -93,3 +94,23 @@ async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -
 	WebRequest.DiscordUser = DiscordUser
 
 	return WebRequest.DiscordUser
+
+async def getTwitchUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> TwitchWebUserInfo:
+	"""
+	Tryes to get a DiscordUser, takes get, post, and cookie in process
+	kwargs are given to TwitchWebUserInfo
+
+	TwitchWebUserInfo kwargs:
+		force_method
+		phaaze_twitch_session
+	"""
+
+	if hasattr(WebRequest, "TwitchUser"):
+		cls.Web.BASE.Logger.debug(f"(Web) Used stored twitch infos: {str(WebRequest.TwitchUser)}", require="web:debug")
+		return WebRequest.TwitchUser
+
+	TwitchUser:TwitchWebUserInfo = TwitchWebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
+	await TwitchUser.auth()
+	WebRequest.TwitchUser = TwitchUser
+
+	return WebRequest.TwitchUser

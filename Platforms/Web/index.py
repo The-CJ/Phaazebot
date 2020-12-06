@@ -214,4 +214,4 @@ class WebIndex(object):
 	from .Processing.errors import notFound, notAllowed, underDev
 
 	# utils
-	from .utils import getWebUserInfo, getDiscordUserInfo
+	from .utils import getWebUserInfo, getDiscordUserInfo, getTwitchUserInfo

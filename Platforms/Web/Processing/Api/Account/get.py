@@ -6,11 +6,12 @@ import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.twitchwebuserinfo import TwitchWebUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 
 async def apiAccountGetPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/phaaze/get
+	Default url: /api/account/phaaze/get
 	"""
 	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
 
@@ -25,7 +26,7 @@ async def apiAccountGetPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 async def apiAccountGetDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/discord/get
+	Default url: /api/account/discord/get
 	"""
 	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
 
@@ -40,16 +41,15 @@ async def apiAccountGetDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 
 async def apiAccountGetTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/twitch/get
+	Default url: /api/account/twitch/get
 	"""
-	# TwitchUser:TwitchdWebUserInfo = await cls.getTwitchUserInfo(WebRequest)
+	TwitchUser:TwitchWebUserInfo = await cls.getTwitchUserInfo(WebRequest)
 
-	# if not TwitchUser.found:
-	if 1:
+	if not TwitchUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 
-	# return cls.response(
-	# 	text=json.dumps( dict(user=TwitchUser.toJSON(), status=200) ),
-	# 	content_type="application/json",
-	# 	status=200
-	# )
+	return cls.response(
+		text=json.dumps( dict(user=TwitchUser.toJSON(), status=200) ),
+		content_type="application/json",
+		status=200
+	)

@@ -12,9 +12,11 @@ def forcable(f:Callable) -> Callable:
 	f.__forcable__ = True
 	return f
 
-class DiscordWebUserInfo(DBContentClass, APIClass):
+class TwitchWebUserInfo(DBContentClass, APIClass):
 	"""
-	Used for authorisation of a discord web user request
+	Used for authorisation of a twitch web user request
+	(Don't get confused with `TwitchUser` object, these objects are used for general twitch api results)
+	(TwitchWebUserInfo is only used for a info storage for the current request twitch user)
 	variable search way:
 		System -> header/cookies
 	"""
@@ -31,14 +33,11 @@ class DiscordWebUserInfo(DBContentClass, APIClass):
 		self.scope:str = None
 
 		self.user_id:str = None
-		self.username:str = None
-		self.email:str = None
-		self.verified:bool = False
-		self.locale:str = None
-		self.premium_type:int = None
-		self.flags:int = None
-		self.avatar:str = None
-		self.discriminator:str = None
+		self.name:str = None
+		self.display_name:str = None
+		self.description:str = None
+		self.view_count:int = None
+		self.email:str = False
 
 		self.found:bool = False
 		self.tried:bool = False
@@ -57,22 +56,19 @@ class DiscordWebUserInfo(DBContentClass, APIClass):
 
 		j:dict = dict()
 
-		j["user_id"] = str(self.user_id)
-		j["username"] = self.username
-		j["email"] = self.email
-		j["verified"] = self.verified
-		j["locale"] = self.locale
-		j["premium_type"] = self.premium_type
-		j["flags"] = self.flags
-		j["avatar"] = self.avatar
-		j["discriminator"] = self.discriminator
+		j["user_id"] = self.toString(self.user_id)
+		j["name"] = self.toString(self.name)
+		j["display_name"] = self.toString(self.display_name)
+		j["description"] = self.toString(self.description)
+		j["view_count"] = self.toInteger(self.view_count)
+		j["email"] = self.toString(self.email)
 
 		if token:
-			j["access_token"] = self.access_token
-			j["refresh_token"] = self.refresh_token
+			j["access_token"] = self.toString(self.access_token)
+			j["refresh_token"] = self.toString(self.refresh_token)
 
 		if scope:
-			j["scope"] = self.scope
+			j["scope"] = self.toString(self.scope)
 
 		return j
 
@@ -96,29 +92,29 @@ class DiscordWebUserInfo(DBContentClass, APIClass):
 	# getter
 	@forcable
 	async def getFromSystem(self) -> None:
-		self.__session = self.kwargs.get("phaaze_discord_session", None)
+		self.__session = self.kwargs.get("phaaze_twitch_session", None)
 		if self.__session: return await self.viaSession()
 
 	@forcable
 	async def getFromCookies(self) -> None:
-		self.__session = self.WebRequest.cookies.get("phaaze_discord_session", None)
+		self.__session = self.WebRequest.cookies.get("phaaze_twitch_session", None)
 		if self.__session: return await self.viaSession()
 
 	@forcable
 	async def getFromHeader(self) -> None:
-		self.__session = self.WebRequest.headers.get("phaaze_discord_session", None)
+		self.__session = self.WebRequest.headers.get("phaaze_twitch_session", None)
 		if self.__session: return await self.viaSession()
 
 	@forcable
 	async def getFromGet(self) -> None:
-		self.__session = self.WebRequest.query.get("phaaze_discord_session", None)
+		self.__session = self.WebRequest.query.get("phaaze_twitch_session", None)
 		if self.__session: return await self.viaSession()
 
 	async def viaSession(self) -> None:
 		dbr:str = """
-			SELECT * FROM `session_discord`
-			WHERE `session_discord`.`created_at` > (NOW() - INTERVAL 7 DAY)
-				AND `session_discord`.`session` = %s"""
+			SELECT * FROM `session_twitch`
+			WHERE `session_twitch`.`created_at` > (NOW() - INTERVAL 7 DAY)
+				AND `session_twitch`.`session` = %s"""
 
 		val:tuple = (self.__session,)
 		return await self.dbRequest(dbr, val)
@@ -141,12 +137,9 @@ class DiscordWebUserInfo(DBContentClass, APIClass):
 
 		user:dict = json.loads(data.get("user_info", "{}"))
 
-		self.username = user.get("username", UNDEFINED)
-		self.verified = user.get("verified", UNDEFINED)
-		self.locale = user.get("locale", UNDEFINED)
-		self.premium_type = user.get("premium_type", UNDEFINED)
-		self.user_id = user.get("id", UNDEFINED)
-		self.flags = user.get("flags", UNDEFINED)
-		self.avatar = user.get("avatar", UNDEFINED)
-		self.discriminator = user.get("discriminator", UNDEFINED)
-		self.email = user.get("email", UNDEFINED)
+		self.user_id:str = user.get("user_id", UNDEFINED)
+		self.name:str = user.get("name", UNDEFINED)
+		self.display_name:str = user.get("display_name", UNDEFINED)
+		self.description:str = user.get("description", UNDEFINED)
+		self.view_count:int = user.get("view_count", 0)
+		self.email:str = user.get("email", UNDEFINED)
