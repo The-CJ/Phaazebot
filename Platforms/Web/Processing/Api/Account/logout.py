@@ -6,11 +6,12 @@ import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
-from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiUserNotFound
+from Utils.Classes.twitchwebuserinfo import TwitchWebUserInfo
+from Platforms.Web.Processing.Api.errors import apiUserNotFound
 
 async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/phaaze/logout
+	Default url: /api/account/phaaze/logout
 	"""
 	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
 
@@ -32,7 +33,7 @@ async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 
 async def apiAccountLogoutDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/discord/logout
+	Default url: /api/account/discord/logout
 	"""
 
 	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
@@ -56,6 +57,23 @@ async def apiAccountLogoutDiscord(cls:"WebIndex", WebRequest:Request) -> Respons
 
 async def apiAccountLogoutTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/twitch/logout
+	Default url: /api/account/twitch/logout
 	"""
-	return await apiNotAllowed(cls, WebRequest, msg="Under construction")
+	TwitchUser:TwitchWebUserInfo = await cls.getTwitchUserInfo(WebRequest)
+
+	if not TwitchUser.found:
+		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
+
+	cls.Web.BASE.PhaazeDB.query("""
+		DELETE FROM `session_twitch`
+		WHERE `session_twitch`.`access_token` = %s
+			OR JSON_EXTRACT(`session_twitch`.`user_info`, "$.id") = %s""",
+		(TwitchUser.access_token, TwitchUser.user_id)
+	)
+
+	cls.Web.BASE.Logger.debug(f"(API/Twitch) Discord Logout - User: {TwitchUser.name}", require="api:logout")
+	return cls.response(
+		text=json.dumps( dict(status=200) ),
+		content_type="application/json",
+		status=200
+	)

@@ -350,6 +350,11 @@ var SessionManager = new (class {
 			$(`${this.modal_id} [show-mode=discord] [login=true] [name=current_discord_avatar]`).attr("src", avatar);
 		}
 
+		if (platform == "twitch") {
+			$(`${this.modal_id} [show-mode=twitch] [login=true] [name=current_twitch_username]`).val(data.display_name);
+			$(`${this.modal_id} [show-mode=twitch] [login=true] [name=current_twitch_avatar]`).attr("src", data.profile_image_url);
+		}
+
 		// hide the login attributes and show login = true
 		$(`${this.modal_id} [show-mode=${platform}] [login]`).hide();
 		$(`${this.modal_id} [show-mode=${platform}] [login=true]`).show();
