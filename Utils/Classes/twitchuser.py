@@ -26,7 +26,7 @@ class TwitchUser(APIClass):
 
 		return f"<{self.__class__.__name__} user_id='{self.user_id}' name='{self.name}'>"
 
-	def toJSON(self, types:bool=True, images:bool=False, with_email:bool=True) -> dict:
+	def toJSON(self, types:bool=True, images:bool=True, with_email:bool=True) -> dict:
 		""" Returns a json save dict representation of all values for API, storage, etc... """
 
 		j:dict = dict()
