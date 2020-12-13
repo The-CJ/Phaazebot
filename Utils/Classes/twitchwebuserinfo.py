@@ -35,7 +35,11 @@ class TwitchWebUserInfo(DBContentClass, APIClass):
 		self.user_id:str = None
 		self.name:str = None
 		self.display_name:str = None
+		self.user_type:str = None
+		self.broadcaster_type:str = None
 		self.description:str = None
+		self.profile_image_url:str = None
+		self.offline_image_url:str = None
 		self.view_count:int = None
 		self.email:str = False
 
@@ -51,7 +55,7 @@ class TwitchWebUserInfo(DBContentClass, APIClass):
 
 		return f"<{self.__class__.__name__} id='{self.user_id}' name='{self.username}'>"
 
-	def toJSON(self, token:bool=False, scope:bool=False) -> dict:
+	def toJSON(self, images:bool=True, types:bool=False, token:bool=False, scope:bool=False) -> dict:
 		""" Returns a json save dict representation of all values for API, storage, etc... """
 
 		j:dict = dict()
@@ -62,6 +66,14 @@ class TwitchWebUserInfo(DBContentClass, APIClass):
 		j["description"] = self.toString(self.description)
 		j["view_count"] = self.toInteger(self.view_count)
 		j["email"] = self.toString(self.email)
+
+		if images:
+			j["profile_image_url"] = self.toString(self.profile_image_url)
+			j["offline_image_url"] = self.toString(self.offline_image_url)
+
+		if types:
+			j["user_type"] = self.toString(self.user_type)
+			j["broadcaster_type"] = self.toString(self.broadcaster_type)
 
 		if token:
 			j["access_token"] = self.toString(self.access_token)
@@ -143,3 +155,7 @@ class TwitchWebUserInfo(DBContentClass, APIClass):
 		self.description:str = user.get("description", UNDEFINED)
 		self.view_count:int = user.get("view_count", 0)
 		self.email:str = user.get("email", UNDEFINED)
+		self.user_type:str = user.get("user_type", UNDEFINED)
+		self.broadcaster_type:str = user.get("broadcaster_type", UNDEFINED)
+		self.profile_image_url:str = user.get("profile_image_url", UNDEFINED)
+		self.offline_image_url:str = user.get("offline_image_url", UNDEFINED)

@@ -177,7 +177,7 @@ async def completeTwitchTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict
 				refresh_token = refresh_token,
 				scope = scope,
 				token_type = token_type,
-				user_info = json.dumps(TwitchAuthUser.toJSON())
+				user_info = json.dumps(TwitchAuthUser.toJSON(types=True,images=True,with_email=True))
 			)
 		)
 
