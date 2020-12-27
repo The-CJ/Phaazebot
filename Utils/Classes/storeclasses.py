@@ -203,10 +203,10 @@ class IsReadyStore(object):
 		self.web:bool = False
 		self.youtube:bool = False
 
-class GlobalStorage(object):
+class GlobalStorageClass(object):
 	"""
 	This Class is strange.
-	It suppost to be accessed from other modules via:
+	It suppose to be accessed from other modules via:
 
 	from Utils.Classes.storeclasses import GlobalStorage
 
@@ -225,4 +225,5 @@ class GlobalStorage(object):
 	def rem(self, key:str, alt:Any=UNDEFINED) -> Any:
 		return self.__store.pop(key, alt)
 
-GlobalStorage = GlobalStorage()
+
+GlobalStorage:GlobalStorageClass = GlobalStorageClass()

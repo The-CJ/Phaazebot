@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Dict
 if TYPE_CHECKING:
-	from .main_discord import PhaazebotDiscord
+	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import discord
 import traceback
@@ -40,7 +40,7 @@ def makeWebAccessLink(cls:"PhaazebotDiscord", guild_id:str or int, log_id:str or
 	return f"{cls.BASE.Vars.web_root}/discord/dashboard/{str(guild_id)}?view=logs&logs[log_id]={str(log_id)}"
 
 # Member.join : 1 : 1
-async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when a member is added (joins) a guild.
 	If track option `Member.join` is active, it will send a message to discord
@@ -81,7 +81,7 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 	)
 	Emb.set_thumbnail(url=NewMember.avatar_url or NewMember.default_avatar_url)
 	if link_in_name:
-		Emb.add_field(":warning: Blocked public announcements", "Link in name", inline=True)
+		Emb.add_field(name=":warning: Blocked public announcements", value="Link in name", inline=True)
 
 	try:
 		await TargetChannel.send(embed=Emb)
@@ -89,7 +89,7 @@ async def loggingOnMemberJoin(cls:"PhaazebotDiscord", Settings:DiscordServerSett
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Member.remove : 10 : 2
-async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when a member was removed from a guild.
 	If track option `Member.remove` is active, it will send a message to discord
@@ -130,7 +130,7 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 	)
 	Emb.set_thumbnail(url=OldMember.avatar_url or OldMember.default_avatar_url)
 	if link_in_name:
-		Emb.add_field(":warning: Blocked public announcements", "Link in name", inline=True)
+		Emb.add_field(name=":warning: Blocked public announcements", value="Link in name", inline=True)
 
 	try:
 		await TargetChannel.send(embed=Emb)
@@ -138,7 +138,7 @@ async def loggingOnMemberRemove(cls:"PhaazebotDiscord", Settings:DiscordServerSe
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Quote.create : 100 : 4
-async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone creates a new quote, doesn't matter if in discord or web.
 	If track option `Quote.create` is active, it will send a message to discord
@@ -185,7 +185,7 @@ async def loggingOnQuoteCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Quote.edit : 1000 : 8
-async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone edits a quote, doesn't matter if in discord or web. (You can only do this in web duh)
 	If track option `Quote.create` is active, it will send a message to discord
@@ -234,7 +234,7 @@ async def loggingOnQuoteEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Quote.delete : 10000 : 16
-async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone deletes a quote, doesn't matter if in discord or web.
 	If track option `Quote.create` is active, it will send a message to discord
@@ -281,7 +281,7 @@ async def loggingOnQuoteDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Command.create : 100000 : 32
-async def loggingOnCommandCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnCommandCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone creates a new command (mostly) via web.
 	If track option `Command.create` is active, it will send a message to discord
@@ -328,7 +328,7 @@ async def loggingOnCommandCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Command.edit : 1000000 : 64
-async def loggingOnCommandEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnCommandEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone edits a command (mostly) via web.
 	If track option `Command.edit` is active, it will send a message to discord
@@ -375,7 +375,7 @@ async def loggingOnCommandEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSet
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Command.delete : 10000000 : 128
-async def loggingOnCommandDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnCommandDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone deletes a command (mostly) via web.
 	If track option `Command.delete` is active, it will send a message to discord
@@ -420,7 +420,7 @@ async def loggingOnCommandDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Twitchalert.create : 100000000 : 256
-async def loggingOnTwitchalertCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnTwitchalertCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone creates a new twitch alert (mostly) via web.
 	If track option `Twitchalert.create` is active, it will send a message to discord
@@ -468,7 +468,7 @@ async def loggingOnTwitchalertCreate(cls:"PhaazebotDiscord", Settings:DiscordSer
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Twitchalert.edit : 1000000000 : 512
-async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone changes a twitch alert (mostly) via web.
 	If track option `Twitchalert.edit` is active, it will send a message to discord
@@ -520,7 +520,7 @@ async def loggingOnTwitchalertEdit(cls:"PhaazebotDiscord", Settings:DiscordServe
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Twitchalert.delete : 10000000000 : 1024
-async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone deletes a twitch alert (mostly) via web.
 	If track option `Twitchalert.delete` is active, it will send a message to discord
@@ -570,7 +570,7 @@ async def loggingOnTwitchalertDelete(cls:"PhaazebotDiscord", Settings:DiscordSer
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Regular.create : 100000000000 : 2048
-async def loggingOnRegularCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnRegularCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone adds a discord regular via web.
 	If track option `Regular.create` is active, it will send a message to discord
@@ -615,7 +615,7 @@ async def loggingOnRegularCreate(cls:"PhaazebotDiscord", Settings:DiscordServerS
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Regular.delete : 1000000000000 : 4096
-async def loggingOnRegularDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnRegularDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone removes a discord regular via web.
 	If track option `Regular.delete` is active, it will send a message to discord
@@ -663,7 +663,7 @@ async def loggingOnRegularDelete(cls:"PhaazebotDiscord", Settings:DiscordServerS
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Level.edit : 10000000000000 : 8192
-async def loggingOnLevelEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnLevelEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone edits a discordmember-level via web.
 	If track option `Level.edit` is active, it will send a message to discord
@@ -715,7 +715,7 @@ async def loggingOnLevelEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSetti
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Levelmedal.create : 100000000000000 : 16384
-async def loggingOnLevelmedalCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnLevelmedalCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone creates a discordmember medal via web.
 	If track option `Levelmedal.create` is active, it will send a message to discord
@@ -729,7 +729,7 @@ async def loggingOnLevelmedalCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 	logging_signature:str = "Levelmedal.create"
 	Creator:discord.Member = kwargs["Creator"]
 	medal_member_id:str = kwargs["medal_member_id"]
-	medal_name:dict = kwargs["medal_name"]
+	medal_name:str = kwargs["medal_name"]
 
 	MedalMember:discord.Member = getDiscordMemberFromString(cls, Creator.guild, medal_member_id)
 	medal_member_name:str = MedalMember.name if MedalMember else "(Unknown)"
@@ -766,7 +766,7 @@ async def loggingOnLevelmedalCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Levelmedal.delete : 1000000000000000 : 32768
-async def loggingOnLevelmedalDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnLevelmedalDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone deletes a discordmember medal via web.
 	If track option `Levelmedal.delete` is active, it will send a message to discord
@@ -780,7 +780,7 @@ async def loggingOnLevelmedalDelete(cls:"PhaazebotDiscord", Settings:DiscordServ
 	logging_signature:str = "Levelmedal.delete"
 	Deleter:discord.Member = kwargs["Deleter"]
 	medal_member_id:str = kwargs["medal_member_id"]
-	medal_name:dict = kwargs["medal_name"]
+	medal_name:str = kwargs["medal_name"]
 
 	MedalMember:discord.Member = getDiscordMemberFromString(cls, Deleter.guild, medal_member_id)
 	medal_member_name:str = MedalMember.name if MedalMember else "(Unknown)"
@@ -817,7 +817,7 @@ async def loggingOnLevelmedalDelete(cls:"PhaazebotDiscord", Settings:DiscordServ
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Assignrole.create : 10000000000000000 : 65536
-async def loggingOnAssignroleCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnAssignroleCreate(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone creates a new assignrole via web.
 	If track option `Assignrole.create` is active, it will send a message to discord
@@ -868,7 +868,7 @@ async def loggingOnAssignroleCreate(cls:"PhaazebotDiscord", Settings:DiscordServ
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Assignrole.edit : 100000000000000000 : 131072
-async def loggingOnAssignroleEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnAssignroleEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone edits assignrole via web.
 	If track option `Assignrole.edit` is active, it will send a message to discord
@@ -915,7 +915,7 @@ async def loggingOnAssignroleEdit(cls:"PhaazebotDiscord", Settings:DiscordServer
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Assignrole.delete : 1000000000000000000 : 262144
-async def loggingOnAssignroleDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnAssignroleDelete(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone deletes a assignrole via web.
 	If track option `Assignrole.delete` is active, it will send a message to discord
@@ -960,7 +960,7 @@ async def loggingOnAssignroleDelete(cls:"PhaazebotDiscord", Settings:DiscordServ
 		cls.BASE.Logger.warning(f"Can't log message: {E} {traceback.format_exc()}")
 
 # Config.edit : 10000000000000000000 : 524288
-async def loggingOnConfigEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs:dict) -> None:
+async def loggingOnConfigEdit(cls:"PhaazebotDiscord", Settings:DiscordServerSettings, **kwargs) -> None:
 	"""
 	Logs the event when someone makes any changes to configs via web.
 	If track option `Config.edit` is active, it will send a message to discord

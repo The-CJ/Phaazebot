@@ -467,7 +467,7 @@ async def getDiscordServerQuotesAmount(cls:"PhaazebotDiscord", guild_id:str, whe
 	return res[0]["I"]
 
 # discord_assignrole
-async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> List[DiscordAssignRole]:
+async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordAssignRole]:
 	"""
 	Get server assign roles.
 	Returns a list of DiscordAssignRole().
