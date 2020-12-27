@@ -24,7 +24,6 @@
 	# that 5MB
 	[web_client_max_size] = 5242880
 	# targets links
-	[discord_login_link] = "https://discordapp.com"
 	[discord_redirect_link] = "localhost"
 	[twitch_redirect_link] = "localhost"
 
