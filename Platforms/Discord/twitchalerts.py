@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 if TYPE_CHECKING:
-	from .main_discord import PhaazebotDiscord
+	from Platforms.Discord.main_discord import PhaazebotDiscord
 	from Platforms.Twitch.main_events import StatusEntry
 
 import discord
@@ -10,11 +10,11 @@ TWITCH_STREAM_URL:str = "https://twitch.tv/"
 
 async def discordHandleLive(cls:"PhaazebotDiscord", event_list:List["StatusEntry"]) -> None:
 	"""
-	With a list status entrys from twitch,
+	With a list status entry's from twitch,
 	we format and send all live announcements to all discord channels
 	"""
 
-	if not cls: return #Discord Client not ready or off
+	if not cls: return # Discord Client not ready or off
 
 	event_channel_list:str = ",".join(str(Event.channel_id) for Event in event_list)
 	if not event_channel_list: event_channel_list = "0"
@@ -31,7 +31,7 @@ async def discordHandleLive(cls:"PhaazebotDiscord", event_list:List["StatusEntry
 	for db_entry in res:
 
 		Event:"StatusEntry" = getStreamFromDBResult(event_list, db_entry["twitch_channel_id"])
-		if Event == None: continue # should never happen
+		if Event is None: continue # should never happen
 
 		# we only care about live alerts,
 		# there should be no other types, but we go save here
@@ -48,13 +48,13 @@ async def discordHandleLive(cls:"PhaazebotDiscord", event_list:List["StatusEntry
 
 		stream_status:str = Event.Stream.title or "[N/A]"
 		stream_url:str = TWITCH_STREAM_URL + (Event.User.name or "")
-		stream_description:str = f":game_die: Playing: **{(Event.Game.name)}**"
+		stream_description:str = f":game_die: Playing: **{Event.Game.name}**"
 
 		Emb:discord.Embed = discord.Embed(
-			title = stream_status,
-			url = stream_url,
-			description = stream_description,
-			color = TWITCH_COLOR
+			title=stream_status,
+			url=stream_url,
+			description=stream_description,
+			color=TWITCH_COLOR
 		)
 		Emb.set_author(
 			name=Event.User.display_name,
@@ -62,30 +62,30 @@ async def discordHandleLive(cls:"PhaazebotDiscord", event_list:List["StatusEntry
 			icon_url=Event.User.profile_image_url
 		)
 		Emb.set_footer(
-			text = "Provided by twitch.tv",
-			icon_url = cls.BASE.Vars.logo_twitch
+			text="Provided by twitch.tv",
+			icon_url=cls.BASE.Vars.logo_twitch
 		)
-		Emb.set_image(url = Event.User.profile_image_url)
+		Emb.set_image(url=Event.User.profile_image_url)
 
 		discord_chan_id:str = db_entry.get("discord_channel_id", "-1")
 		discord_custom_msg:str = db_entry.get("custom_msg", None) or None
 
 		try:
-			Chan:discord.TextChannel = cls.get_channel( int(discord_chan_id) )
+			Chan:discord.TextChannel = cls.get_channel(int(discord_chan_id))
 			if not Chan: continue
 
-			await Chan.send( content = discord_custom_msg, embed = Emb )
+			await Chan.send(content=discord_custom_msg, embed=Emb)
 
 		except:
 			cls.BASE.Logger.warning(f"Can't send Twitch Alert to Discord Channel ID: {discord_chan_id}")
 
 async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:List["StatusEntry"]) -> None:
 	"""
-	With a list status entrys from twitch,
+	With a list status entry's from twitch,
 	we format and send all gamechange announcements to all discord channels
 	"""
 
-	if not cls: return #Discord Client not ready or off
+	if not cls: return # Discord Client not ready or off
 
 	event_channel_list:str = ",".join(Event.channel_id for Event in event_list)
 	if not event_channel_list: event_channel_list = "0"
@@ -102,7 +102,7 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:List["Statu
 	for db_entry in res:
 
 		Event:"StatusEntry" = getStreamFromDBResult(event_list, db_entry["twitch_channel_id"])
-		if Event == None: continue # should never happen
+		if Event is None: continue # should never happen
 
 		# ignore gamechange events for alert
 		if db_entry.get("suppress_gamechange", 0): continue
@@ -122,13 +122,13 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:List["Statu
 
 		stream_status:str = Event.Stream.title or "[N/A]"
 		stream_url:str = TWITCH_STREAM_URL + (Event.User.name or "")
-		stream_description:str = f":game_die: Now Playing: **{(Event.Game.name)}**"
+		stream_description:str = f":game_die: Now Playing: **{Event.Game.name}**"
 
 		Emb:discord.Embed = discord.Embed(
-			title = stream_status,
-			url = stream_url,
-			description = stream_description,
-			color = TWITCH_COLOR
+			title=stream_status,
+			url=stream_url,
+			description=stream_description,
+			color=TWITCH_COLOR
 		)
 		Emb.set_author(
 			name=Event.User.display_name,
@@ -136,18 +136,18 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:List["Statu
 			icon_url=Event.User.profile_image_url
 		)
 		Emb.set_footer(
-			text = "Provided by twitch.tv",
-			icon_url = cls.BASE.Vars.logo_twitch
+			text="Provided by twitch.tv",
+			icon_url=cls.BASE.Vars.logo_twitch
 		)
-		Emb.set_thumbnail(url = Event.User.profile_image_url)
+		Emb.set_thumbnail(url=Event.User.profile_image_url)
 
 		discord_chan_id:str = db_entry.get("discord_channel_id", "-1")
 
 		try:
-			Chan:discord.TextChannel = cls.get_channel( int(discord_chan_id) )
+			Chan:discord.TextChannel = cls.get_channel(int(discord_chan_id))
 			if not Chan: continue
 
-			await Chan.send( embed = Emb )
+			await Chan.send(embed=Emb)
 
 		except:
 			cls.BASE.Logger.warning(f"Can't send Twitch Alert to Discord Channel ID: {discord_chan_id}")
@@ -155,7 +155,7 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:List["Statu
 async def discordHandleOffline(cls:"PhaazebotDiscord", status_list:list) -> None:
 	return # for now do nothing
 
-def getStreamFromDBResult(events:List["StatusEntry"], channel_id:str) -> "StatusEntry" or None:
+def getStreamFromDBResult(events:List["StatusEntry"], channel_id:str) -> Optional["StatusEntry"]:
 	for Ev in events:
 		if str(Ev.channel_id) == str(channel_id): return Ev
 	return None

@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Iterator, Optional
 if TYPE_CHECKING:
-	from .main_discord import PhaazebotDiscord
+	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import discord
 import re
@@ -20,7 +20,7 @@ async def checkPunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSet
 
 	# if this is True after all checks => punish
 	punish:bool = False
-	reason:str = None
+	reason:Optional[str] = None
 
 	# links
 	if ServerSettings.blacklist_ban_links:
@@ -42,7 +42,7 @@ async def checkPunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSet
 async def checkLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
 	# check if user has a role that is allowed to post links
-	if any( [True if role.id in ServerSettings.blacklist_whitelistroles else False for role in Message.author.roles] ): return False
+	if any([True if role.id in ServerSettings.blacklist_whitelistroles else False for role in Message.author.roles]): return False
 
 	found_links:Iterator = re.finditer(ContainsLink, Message.content)
 
@@ -94,19 +94,21 @@ async def checkUnicode(cls:"PhaazebotDiscord", Message:discord.Message, ServerSe
 async def executePunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, reason:str = None) -> None:
 	ServerSettings.blacklist_punishment = checkPunishmentString(ServerSettings.blacklist_punishment)
 	try:
+		reason_str:Optional[str] = None
+
 		if ServerSettings.blacklist_punishment == "delete":
 			await Message.delete()
 
 		elif ServerSettings.blacklist_punishment == "kick":
-			if reason: reason_str:str = f"Triggered by '{reason}' - Message: {Message.content}"
-			else: reason_str:str = None
+			if reason:
+				reason_str = f"Triggered by '{reason}' - Message: {Message.content}"
 
 			await Message.delete()
 			await Message.guild.kick(Message.author, reason=reason_str)
 
 		elif ServerSettings.blacklist_punishment == "ban":
-			if reason: reason_str:str = f"Triggered by '{reason}' - Message: {Message.content}"
-			else: reason_str:str = None
+			if reason:
+				reason_str = f"Triggered by '{reason}' - Message: {Message.content}"
 
 			await Message.guild.ban(Message.author, reason=reason_str, delete_message_days=1)
 

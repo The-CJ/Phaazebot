@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import requests
 from aiohttp.web import Request
