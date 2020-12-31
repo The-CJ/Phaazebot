@@ -6,7 +6,7 @@ import random
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 
-async def randomChoice(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
+async def randomChoice(_cls:"PhaazebotDiscord", _Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
 	if len(CommandContext.parts) == 1:
 		return {"content": ":warning: Missing arguments, at least 2 options separated by \";\" are needed"}

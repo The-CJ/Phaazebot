@@ -1,4 +1,5 @@
 from typing import Callable, List
+# noinspection PyPep8Naming
 import Platforms.Discord.const as DiscordConst
 from Utils.Classes.storeclasses import GlobalStorage
 

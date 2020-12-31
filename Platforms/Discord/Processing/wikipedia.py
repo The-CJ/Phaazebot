@@ -73,7 +73,7 @@ async def autocomplete(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCo
 
 	return await getSummary(cls, Command, CommandContext, search_title)
 
-async def getSummary(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext, title:str) -> dict:
+async def getSummary(_cls:"PhaazebotDiscord", _Command:DiscordCommand, _CommandContext:DiscordCommandContext, title:str) -> dict:
 
 	try:
 		res:dict = requests.get(PATH_SUMMARY+title).json()

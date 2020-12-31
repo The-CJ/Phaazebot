@@ -9,7 +9,7 @@ from Utils.regex import Discord as ReDiscord
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Platforms.Discord.utils import getDiscordChannelFromString
 
-async def responseFormater(cls:"PhaazebotDiscord", content:str, *x, **kwargs) -> str:
+async def responseFormater(cls:"PhaazebotDiscord", content:str, *_x, **kwargs) -> str:
 	"""
 	This new formatter is support to ensure all formatting with all known regex
 	means all [key] fields, if there are provided,

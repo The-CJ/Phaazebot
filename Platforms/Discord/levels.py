@@ -128,7 +128,7 @@ async def checkLevelProgress(cls:"PhaazebotDiscord", Message:discord.Message, Le
 	if next_level_exp == LevelUser.exp:
 		await announceLevelUp(cls, Message, LevelUser, ServerSettings, current_level + 1)
 
-async def announceLevelUp(cls:"PhaazebotDiscord", Message:discord.Message, LevelUser:DiscordUserStats, ServerSettings:DiscordServerSettings, level_to_announce:str or int) -> None:
+async def announceLevelUp(_cls:"PhaazebotDiscord", Message:discord.Message, LevelUser:DiscordUserStats, ServerSettings:DiscordServerSettings, level_to_announce:str or int) -> None:
 
 	LevelChannel:Optional[discord.TextChannel] = None
 

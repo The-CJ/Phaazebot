@@ -12,7 +12,7 @@ from Utils.regex import Osu as ReOsu
 from Platforms.Osu.api import getOsuUser
 from Utils.Classes.osuuser import OsuUser
 
-async def osuStats(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
+async def osuStats(cls:"PhaazebotDiscord", _Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
 	search_mode:str = "0"
 	if "--taiko" in CommandContext.parts:

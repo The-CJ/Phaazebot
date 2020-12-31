@@ -67,7 +67,7 @@ class PhaazebotDiscord(discord.Client):
 		else:
 			self.BASE.Logger.warning("Phaaze received message via a privat channel")
 
-	async def on_message_edit(self, Before:discord.Message, After:discord.Message) -> None:
+	async def on_message_edit(self, _Before:discord.Message, After:discord.Message) -> None:
 		"""
 		Called only when a message is edited, and this message is in the self.cached_messages buffer.
 		max len(self.cached_messages) == self.max_messages

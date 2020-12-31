@@ -77,7 +77,7 @@ class PruneCheck(object):
 		self.amount_deleted += 1
 		return True
 
-async def pruneMessagesByAmount(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext, amount:int) -> dict:
+async def pruneMessagesByAmount(cls:"PhaazebotDiscord", _Command:DiscordCommand, CommandContext:DiscordCommandContext, amount:int) -> dict:
 	# to much
 	if amount > MAX_PRUNE_AMOUNT:
 		return {"content": f":no_entry_sign: **{str(amount)}** messages are to much in one. Try making 2 small request, instead of one big."}
@@ -114,7 +114,7 @@ async def pruneMessagesByAmount(cls:"PhaazebotDiscord", Command:DiscordCommand, 
 
 	return {}
 
-async def pruneMessagesByMember(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext, Member:discord.Member) -> dict:
+async def pruneMessagesByMember(_cls:"PhaazebotDiscord", _Command:DiscordCommand, CommandContext:DiscordCommandContext, Member:discord.Member) -> dict:
 
 	PruneChecker:PruneCheck = PruneCheck(InitMsg=CommandContext.Message, Member=Member)
 	deleted_messages:list = await CommandContext.Message.channel.purge(limit=300, check=PruneChecker.check)

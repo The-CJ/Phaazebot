@@ -48,7 +48,7 @@ async def translateDiscordToken(cls:"Phaazebot", WebRequest:Request) -> Optional
 	res = requests.post(ROOT_URL+"oauth2/token", req, headers)
 	return res.json()
 
-async def getDiscordUser(cls:"Phaazebot", access_token:str) -> dict:
+async def getDiscordUser(_cls:"Phaazebot", access_token:str) -> dict:
 	"""
 	get all info's discord allows us to see for a user
 	"""
@@ -58,7 +58,7 @@ async def getDiscordUser(cls:"Phaazebot", access_token:str) -> dict:
 
 	return res.json()
 
-async def getDiscordUserServers(cls:"Phaazebot", access_token:str) -> list:
+async def getDiscordUserServers(_cls:"Phaazebot", access_token:str) -> list:
 	"""
 	get all base info' s of guilds/servers a user is on
 	(requires the access_token to have the right scope so we are allowed to see it)

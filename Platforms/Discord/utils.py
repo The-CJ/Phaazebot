@@ -25,7 +25,7 @@ def getDiscordGuildFromString(cls:"PhaazebotDiscord", search:Union[str, int], co
 
 	return None
 
-def getDiscordChannelFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:Union[str, int], Message:Optional[discord.Message]=None, required_type:Optional[str]=None, contains:bool=False) -> Optional[discord.abc.GuildChannel]:
+def getDiscordChannelFromString(_cls:"PhaazebotDiscord", Guild:discord.Guild, search:Union[str, int], Message:Optional[discord.Message]=None, required_type:Optional[str]=None, contains:bool=False) -> Union[discord.abc.GuildChannel, discord.TextChannel, discord.VoiceChannel, discord.CategoryChannel, None]:
 	"""
 	Tries to get a channel from a guild, the search input may be,
 	the channel name or the id
@@ -65,7 +65,7 @@ def getDiscordChannelFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, sea
 
 	return SearchChannel
 
-def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:Union[str, int], Message:Optional[discord.Message]=None) -> Optional[discord.Member]:
+def getDiscordMemberFromString(_cls:"PhaazebotDiscord", Guild:discord.Guild, search:Union[str, int], Message:Optional[discord.Message]=None) -> Optional[discord.Member]:
 	"""
 	Tries to get a member from a guild, the search input may be,
 	the user name or his id.
@@ -94,7 +94,7 @@ def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, sear
 
 	return Member
 
-def getDiscordRoleFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:Union[str, int], Message:Optional[discord.Message]=None, contains:bool=False) -> Optional[discord.Role]:
+def getDiscordRoleFromString(_cls:"PhaazebotDiscord", Guild:discord.Guild, search:Union[str, int], Message:Optional[discord.Message]=None, contains:bool=False) -> Optional[discord.Role]:
 	"""
 	Tries to get a role from a guild, the search input may be,
 	the role name or the id.

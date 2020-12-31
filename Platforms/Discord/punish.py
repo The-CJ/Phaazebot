@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 import discord
 import re
+# noinspection PyPep8Naming
 import Platforms.Discord.const as DiscordConst
 from Utils.regex import ContainsLink
 from Utils.Classes.discordserversettings import DiscordServerSettings
@@ -39,7 +40,7 @@ async def checkPunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSet
 		return False
 
 # checks
-async def checkLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+async def checkLinks(_cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 
 	# check if user has a role that is allowed to post links
 	if any([True if role.id in ServerSettings.blacklist_whitelistroles else False for role in Message.author.roles]): return False
@@ -66,7 +67,7 @@ async def checkLinks(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	# all links could be found in the whitelist
 	return False
 
-async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+async def checkBlacklist(_cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
 	message_text = Message.content.lower()
 
 	for re_pattern in ServerSettings.blacklist_blacklistwords:
@@ -78,20 +79,20 @@ async def checkBlacklist(cls:"PhaazebotDiscord", Message:discord.Message, Server
 
 	return False
 
-async def checkEmotes(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+async def checkEmotes(_cls:"PhaazebotDiscord", _Message:discord.Message, _ServerSettings:DiscordServerSettings) -> bool:
 	pass
 
-async def checkCaps(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+async def checkCaps(_cls:"PhaazebotDiscord", _Message:discord.Message, _ServerSettings:DiscordServerSettings) -> bool:
 	pass
 
-async def checkCopyPast(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+async def checkCopyPast(_cls:"PhaazebotDiscord", _Message:discord.Message, _ServerSettings:DiscordServerSettings) -> bool:
 	pass
 
-async def checkUnicode(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings) -> bool:
+async def checkUnicode(_cls:"PhaazebotDiscord", _Message:discord.Message, _ServerSettings:DiscordServerSettings) -> bool:
 	pass
 
 # finals and utils
-async def executePunish(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, reason:str = None) -> None:
+async def executePunish(_cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, reason:str = None) -> None:
 	ServerSettings.blacklist_punishment = checkPunishmentString(ServerSettings.blacklist_punishment)
 	try:
 		reason_str:Optional[str] = None

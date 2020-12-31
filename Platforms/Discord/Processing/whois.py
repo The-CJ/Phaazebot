@@ -9,7 +9,7 @@ from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 from Platforms.Discord.utils import getDiscordMemberFromString
 
-async def whois(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
+async def whois(cls:"PhaazebotDiscord", _Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
 	Member:Optional[discord.Member]
 	search_from:str = " ".join([x for x in CommandContext.parts[1:]])

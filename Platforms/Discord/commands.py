@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 import discord
 import asyncio
 import re
+# noinspection PyPep8Naming
 import Platforms.Discord.const as DiscordConst
 from Platforms.Discord.commandindex import getDiscordCommandFunction
 from Utils.Classes.discordserversettings import DiscordServerSettings
