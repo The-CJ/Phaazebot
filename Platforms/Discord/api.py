@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
 	from main import Phaazebot
 
@@ -25,23 +25,23 @@ def generateDiscordAuthLink(cls:"Phaazebot") -> str:
 	Prep:requests.PreparedRequest = Target.prepare()
 	return Prep.url
 
-async def translateDiscordToken(cls:"Phaazebot", WebRequest:Request) -> dict or None:
+async def translateDiscordToken(cls:"Phaazebot", WebRequest:Request) -> Optional[dict]:
 	"""
-	Used to complete a oauth verification via a token the user provies in his GET query
+	Used to complete a oauth verification via a token the user provides in his GET query
 	(It has to be there)
-	We then get all infos we want/need from discord
+	We then get all info's we want/need from discord
 	"""
-	code:str = WebRequest.query.get("code", None)
+	code:str = WebRequest.query.get("code", "")
 	if not code:
 		cls.Logger.debug("translateDiscordToken called without code", require="discord:api")
 		return None
 
 	req:dict = dict(
-		client_id = cls.Vars.discord_bot_id,
-		client_secret = cls.Access.discord_secret,
-		grant_type = "authorization_code",
-		code = code,
-		redirect_uri = cls.Vars.discord_redirect_link
+		client_id=cls.Vars.discord_bot_id,
+		client_secret=cls.Access.discord_secret,
+		grant_type="authorization_code",
+		code=code,
+		redirect_uri=cls.Vars.discord_redirect_link
 	)
 	headers:dict = {'Content-Type': 'application/x-www-form-urlencoded'}
 
@@ -50,7 +50,7 @@ async def translateDiscordToken(cls:"Phaazebot", WebRequest:Request) -> dict or 
 
 async def getDiscordUser(cls:"Phaazebot", access_token:str) -> dict:
 	"""
-	get all infos discord allowes us to see for a user
+	get all info's discord allows us to see for a user
 	"""
 	headers:dict = {"Authorization": f"Bearer {access_token}"}
 
@@ -60,7 +60,7 @@ async def getDiscordUser(cls:"Phaazebot", access_token:str) -> dict:
 
 async def getDiscordUserServers(cls:"Phaazebot", access_token:str) -> list:
 	"""
-	get all base infos of guilds/servers a user is on
+	get all base info' s of guilds/servers a user is on
 	(requires the access_token to have the right scope so we are allowed to see it)
 	"""
 	headers:dict = {"Authorization": f"Bearer {access_token}"}

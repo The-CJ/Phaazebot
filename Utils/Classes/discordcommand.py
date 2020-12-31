@@ -16,6 +16,7 @@ class DiscordCommand(DBContentClass, APIClass):
 		# key
 		self.command_id:int = data.get("id", UNDEFINED)
 		self.server_id:str = data.get("guild_id", UNDEFINED)
+		self.guild_id:str = data.get("guild_id", UNDEFINED)
 		self.trigger:str = data.get("trigger", UNDEFINED)
 
 		# vars

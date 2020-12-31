@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
-	from .main_discord import PhaazebotDiscord
+	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import asyncio
 import discord
@@ -14,8 +14,9 @@ from Utils.regex import ContainsLink
 
 async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> None:
 	"""
-	Get's triggered everytime a new member joins a guild
+	Get's triggered everytime a new member joins a guild,
 	the following action may be taken (in this order):
+
 	* Send logging message
 	* Send a welcome message to guild channel
 	* Send a private welcome message to the new member
@@ -24,7 +25,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 	"""
 
 	Settings:DiscordServerSettings = await getDiscordSeverSettings(cls, Member.guild.id)
-	link_in_name:bool = bool( ContainsLink.match(Member.name) )
+	link_in_name:bool = bool(ContainsLink.match(Member.name))
 
 	# logging message
 	log_coro:Coroutine = loggingOnMemberJoin(cls, Settings, NewMember=Member, link_in_name=link_in_name)
@@ -74,10 +75,10 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 
 	# set member active, if there was a known entry
 	cls.BASE.PhaazeDB.updateQuery(
-		table = "discord_user",
-		content = {"on_server":1},
-		where = "guild_id = %s AND member_id = %s",
-		where_values = ( str(Member.guild.id), str(Member.id) )
+		table="discord_user",
+		content={"on_server":1},
+		where="guild_id = %s AND member_id = %s",
+		where_values=(str(Member.guild.id), str(Member.id))
 	)
 
 async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> None:
@@ -90,7 +91,7 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 	"""
 
 	Settings:DiscordServerSettings = await getDiscordSeverSettings(cls, Member.guild.id)
-	link_in_name:bool = bool( ContainsLink.match(Member.name) )
+	link_in_name:bool = bool(ContainsLink.match(Member.name))
 
 	# logging message
 	log_coro:Coroutine = loggingOnMemberRemove(cls, Settings, OldMember=Member, link_in_name=link_in_name)
@@ -116,8 +117,8 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 
 	# set member inactive
 	cls.BASE.PhaazeDB.updateQuery(
-		table = "discord_user",
-		content = {"on_server":0},
-		where = "guild_id = %s AND member_id = %s",
-		where_values = ( str(Member.guild.id), str(Member.id) )
+		table="discord_user",
+		content={"on_server":0},
+		where="guild_id = %s AND member_id = %s",
+		where_values=(str(Member.guild.id), str(Member.id))
 	)
