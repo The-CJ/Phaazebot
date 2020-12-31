@@ -26,7 +26,7 @@ async def removeAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 		DELETE FROM `discord_assignrole`
 		WHERE `discord_assignrole`.`guild_id` = %s
 		AND `discord_assignrole`.`trigger` = %s""",
-		( str(Role.guild_id), str(Role.trigger) )
+		(str(Role.guild_id), str(Role.trigger))
 	)
 
 	# Log

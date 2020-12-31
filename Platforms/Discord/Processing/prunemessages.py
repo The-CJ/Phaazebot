@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
@@ -35,31 +35,31 @@ async def pruneMessages(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 
 class PruneCheck(object):
 	"""
-		Used to provide a lookup for prune messages,
-		all messages go through self.check and all messages that should be deleted return true.
-		Following messages should be deleted:
-			- Only delete messages that are in time range of 2 weeks
-			- Inital Message (the message that executed prune)
-			- If given a Member, only messages from this member
+	Used to provide a lookup for prune messages,
+	all messages go through self.check and all messages that should be deleted return true.
+	Following messages should be deleted:
+		- Only delete messages that are in time range of 2 weeks
+		- Initial Message (the message that executed prune)
+		- If given a Member, only messages from this member
 	"""
 	def __init__(self, InitMsg:discord.Message, Member:discord.Member=None):
-		self.InitalMessage:discord.Message = InitMsg
-
+		self.InitialMessage:discord.Message = InitMsg
 		self.Member:discord.Member = Member
 
+		# for aftermath
 		self.amount_deleted:int = 0
 		self.amount_to_old:int = 0
 
-		self.MaxAge:datetime.datetime = (datetime.datetime.now() - datetime.timedelta(weeks = 2))
+		self.MaxAge:datetime.datetime = (datetime.datetime.now() - datetime.timedelta(weeks=2))
 
 	def check(self, CheckMessage:discord.Message) -> bool:
 		"""
-			checks a message, if anything is wrong,
-			return False, and kee pthe message,
-			else True for delete
+		checks a message, if anything is wrong,
+		return False, and keep the message,
+		else True for delete
 		"""
-		# Inital Message
-		if CheckMessage.id == self.InitalMessage.id:
+		# Initial Message
+		if CheckMessage.id == self.InitialMessage.id:
 			self.amount_deleted += 1
 			return True
 
@@ -84,18 +84,20 @@ async def pruneMessagesByAmount(cls:"PhaazebotDiscord", Command:DiscordCommand, 
 
 	# secure ask
 	if amount > 100:
-		await CommandContext.Message.channel.send(content= f":question: **{str(amount)}** are a lot, are you sure you wanna delete all of them?\n\nType: yes")
+		await CommandContext.Message.channel.send(content=f":question: **{str(amount)}** are a lot, are you sure you wanna delete all of them?\n\nType: yes")
 
 		def check(Message:discord.Message):
+			# check for next message of initiator in same channel
 			if Message.channel.id == CommandContext.Message.channel.id:
 				if Message.author.id == CommandContext.Message.author.id:
 					return True
 			return False
 
+		Res:Optional[discord.Message]
 		try:
-			Res:discord.Message = await cls.wait_for("message", check=check, timeout=30)
+			Res = await cls.wait_for("message", check=check, timeout=30)
 		except:
-			Res:discord.Message = None
+			Res = None
 
 		if (not Res) or (Res.content.lower()) != "yes":
 			return {"content": ":warning: Prune canceled."}
@@ -107,7 +109,7 @@ async def pruneMessagesByAmount(cls:"PhaazebotDiscord", Command:DiscordCommand, 
 	if PruneChecker.amount_to_old:
 		return_msg += f"\n({PruneChecker.amount_to_old} could not be deleted, because there are older than 14 days)"
 
-	DeleteSuccessMsg:discord.Message = await CommandContext.Message.channel.send(content = return_msg)
+	DeleteSuccessMsg:discord.Message = await CommandContext.Message.channel.send(content=return_msg)
 	await DeleteSuccessMsg.delete(delay=10)
 
 	return {}
@@ -122,7 +124,7 @@ async def pruneMessagesByMember(cls:"PhaazebotDiscord", Command:DiscordCommand, 
 	if PruneChecker.amount_to_old:
 		return_msg += f"\n({PruneChecker.amount_to_old} could not be deleted, because there are older than 14 days)"
 
-	DeleteSuccessMsg:discord.Message = await CommandContext.Message.channel.send(content = return_msg)
+	DeleteSuccessMsg:discord.Message = await CommandContext.Message.channel.send(content=return_msg)
 	await DeleteSuccessMsg.delete(delay=10)
 
 	return {}

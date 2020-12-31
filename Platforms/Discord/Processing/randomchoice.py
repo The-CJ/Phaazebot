@@ -24,6 +24,7 @@ async def randomChoice(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCo
 	# remove all unwanted stuff
 	winner = winner.replace("`", "")
 	winner = winner.replace("@everyone", "")
+	winner = winner.replace("@here", "")
 	winner = winner.replace("**", "")
 
 	resp:str = f"And the winner is...\n\n:game_die:- **{winner}** -:8ball:"

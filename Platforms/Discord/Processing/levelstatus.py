@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
@@ -24,15 +24,13 @@ async def levelStatus(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 	if CommandContext.Message.channel.id in CommandContext.ServerSettings.disabled_levelchannels:
 		return {}
 
-	Member:discord.Member = None
-
 	search_from:str = " ".join([x for x in CommandContext.parts[1:]])
 	# no search use author
 	if not search_from:
-		Member = CommandContext.Message.author
+		Member:discord.Member = CommandContext.Message.author
 	# try a search
 	else:
-		Member:discord.Member = getDiscordMemberFromString(cls, Guild=CommandContext.Message.guild, search=search_from, Message=CommandContext.Message)
+		Member:Optional[discord.Member] = getDiscordMemberFromString(cls, Guild=CommandContext.Message.guild, search=search_from, Message=CommandContext.Message)
 		if not Member:
 			return {"content": ":warning: Could not find a user with your query"}
 

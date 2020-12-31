@@ -8,7 +8,7 @@ from Platforms.Discord.formater import responseFormater
 
 async def textOnly(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
-	replaceables:dict = {
+	replaceable:dict = {
 		"user-name": CommandContext.Message.author.name,
 		"user-mention": CommandContext.Message.author.mention,
 		"channel-name": CommandContext.Message.channel.name,
@@ -20,14 +20,14 @@ async def textOnly(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 	}
 
 	additional_kwargs:dict = dict(
-		DiscordGuild = CommandContext.Message.guild,
-		CommandContext = CommandContext,
+		DiscordGuild=CommandContext.Message.guild,
+		CommandContext=CommandContext,
 
-		var_dict = replaceables,
-		enable_positions = True,
-		enable_special = True
+		var_dict=replaceable,
+		enable_positions=True,
+		enable_special=True
 	)
 
-	formated_content:str = await responseFormater(cls, Command.content, **additional_kwargs)
+	formatted_content:str = await responseFormater(cls, Command.content, **additional_kwargs)
 
-	return {"content": formated_content}
+	return {"content": formatted_content}

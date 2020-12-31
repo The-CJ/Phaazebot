@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
@@ -30,31 +30,26 @@ async def osuStats(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 	if not content:
 		return {"content": ":warning: Please specify a query string to search a user"}
 
-	search_by:str = None
-	is_id:bool = False
 	search_by, is_id = extractUserInfo(content)
+	User:OsuUser = await getOsuUser(cls.BASE, search=search_by, mode=search_mode, is_id=is_id)
 
-	result:list = await getOsuUser(cls.BASE, search=search_by, mode=search_mode, is_id=is_id)
-
-	if not result:
+	if not User:
 		return {"content": ":warning: The given User could not found!"}
 
-	User:OsuUser = OsuUser(result[0], mode=search_mode)
-
-	emb_description:str = f":globe_with_meridians: #{prettifyNumbers(User.pp_rank, 0)}  |  :flag_{User.country.lower()}: #{prettifyNumbers(User.pp_country_rank, 0)}\n"\
-		f":part_alternation_mark: {prettifyNumbers(User.pp_raw, 2)} pp\n"\
-		f":dart: {prettifyNumbers(User.accuracy, 2)}% Accuracy\n"\
-		f":military_medal: Level: {prettifyNumbers(User.level, 2)}\n"\
-		f":timer: Playcount: {prettifyNumbers(User.playcount, 0)}\n"\
-		f":chart_with_upwards_trend: Ranked Score: {prettifyNumbers(User.ranked_score, 0)}\n"\
-		f":card_box: Total Score: {prettifyNumbers(User.total_score, 0)}\n"\
-		f":id: {User.user_id}"
+	emb_description:str = f":globe_with_meridians: #{prettifyNumbers(User.pp_rank, 0)}  |  :flag_{User.country.lower()}: #{prettifyNumbers(User.pp_country_rank, 0)}\n"
+	emb_description += f":part_alternation_mark: {prettifyNumbers(User.pp_raw, 2)} pp\n"
+	emb_description += f":dart: {prettifyNumbers(User.accuracy, 2)}% Accuracy\n"
+	emb_description += f":military_medal: Level: {prettifyNumbers(User.level, 2)}\n"
+	emb_description += f":timer: Playcount: {prettifyNumbers(User.playcount, 0)}\n"
+	emb_description += f":chart_with_upwards_trend: Ranked Score: {prettifyNumbers(User.ranked_score, 0)}\n"
+	emb_description += f":card_box: Total Score: {prettifyNumbers(User.total_score, 0)}\n"
+	emb_description += f":id: {User.user_id}"
 
 	Emb:discord.Embed = discord.Embed(
-		title = User.username,
-		color = 0xFF69B4,
-		description = emb_description,
-		url = f"https://osu.ppy.sh/users/{User.user_id}"
+		title=User.username,
+		color=0xFF69B4,
+		description=emb_description,
+		url=f"https://osu.ppy.sh/users/{User.user_id}"
 	)
 
 	rank_table:list = [
@@ -73,9 +68,9 @@ async def osuStats(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 
 	return {"embed": Emb}
 
-def extractUserInfo(search_str:str) -> tuple:
+def extractUserInfo(search_str:str) -> Tuple[str, bool]:
 	Hit:re.Match = re.match(ReOsu.Userlink, search_str)
-	if Hit:
+	if Hit: # it is a link, with a id
 		return Hit.group("id"), True
 
 	if search_str.isdigit():

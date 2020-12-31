@@ -85,6 +85,6 @@
 	[twitter_consumer_key] = "secret!..?"
 	[twitter_consumer_secret] = "secret!..?"
 
-# Access to other 3rd partys
+# Access to other 3rd party
 	[cleverbot_token] = "secret!..?"
 	[mashape_token] = "secret!..?"

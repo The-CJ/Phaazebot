@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
@@ -26,17 +26,17 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 	if CommandContext.Message.channel.id in CommandContext.ServerSettings.disabled_levelchannels:
 		return {}
 
-	specific_len:str = CommandContext.part(1)
+	specific_len:Union[int, str] = CommandContext.part(1)
 	if specific_len:
 		if not specific_len.isdigit():
-			specific_len:int = DEFAULT_LEADERBOARD_LEN
+			specific_len = DEFAULT_LEADERBOARD_LEN
 		else:
-			specific_len:int = int(specific_len)
+			specific_len = int(specific_len)
 
 	else:
-		specific_len:int = DEFAULT_LEADERBOARD_LEN
+		specific_len = DEFAULT_LEADERBOARD_LEN
 
-	if specific_len > MAX_LEADERBOARD_LEN or not specific_len:
+	if not specific_len or specific_len > MAX_LEADERBOARD_LEN:
 		return {"content": f":warning: `{specific_len}` is unsupported, length must be between 1 and 15"}
 
 	users:list = await getDiscordServerUsers(cls, Command.server_id, limit=specific_len, order_str="ORDER BY exp DESC")
@@ -48,19 +48,23 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 	if len(users) < specific_len:
 		specific_len = len(users)
 
-	return_table:list = [ ["#", "|", "LVL", "|", "EXP", "|", "Name"], ["---", "|", "---", "|", "---", "|", "---"] ]
+	return_table:list = [
+		["#", "|", "LVL", "|", "EXP", "|", "Name"],
+		["---", "|", "---", "|", "---", "|", "---"]
+	]
+
 	for LevelUser in users:
 
 		e:str = " [EDITED]" if LevelUser.edited else ""
-		lvl:str = prettifyNumbers( LevelCalc.getLevel(LevelUser.exp) )
-		exp:str = prettifyNumbers( LevelUser.exp )
-		Member:discord.Member = CommandContext.Message.guild.get_member( int(LevelUser.member_id) )
+		lvl:str = prettifyNumbers(LevelCalc.getLevel(LevelUser.exp))
+		exp:str = prettifyNumbers(LevelUser.exp)
+		Member:discord.Member = CommandContext.Message.guild.get_member(int(LevelUser.member_id))
 		if Member:
 			user_name:str = Member.name
 		else:
 			user_name:str = "[N/A]"
 
-		return_table.append( [f"#{LevelUser.rank}", "|", lvl, "|", f"{exp}{e}", "|", user_name] )
+		return_table.append([f"#{LevelUser.rank}", "|", lvl, "|", f"{exp}{e}", "|", user_name])
 
 	table:str = tabulate(return_table, tablefmt="plain")
 

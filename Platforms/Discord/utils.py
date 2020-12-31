@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
 	from .main_discord import PhaazebotDiscord
 
@@ -64,7 +64,7 @@ def getDiscordChannelFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, sea
 
 	return SearchChannel
 
-def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None) -> discord.Member or None:
+def getDiscordMemberFromString(cls:"PhaazebotDiscord", Guild:discord.Guild, search:str or int, Message:discord.Message=None) -> Optional[discord.Member]:
 	"""
 	Tryes to get a member from a guild, the search input may be,
 	the user name or his id.

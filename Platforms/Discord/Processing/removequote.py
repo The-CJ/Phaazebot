@@ -30,7 +30,7 @@ async def removeQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 		DELETE FROM `discord_quote`
 		WHERE `discord_quote`.`guild_id` = %s
 		AND `discord_quote`.`id` = %s""",
-		( str(DQuote.guild_id), str(DQuote.quote_id) )
+		(str(DQuote.guild_id), str(DQuote.quote_id))
 	)
 
 	log_coro:Coroutine = loggingOnQuoteDelete(cls, CommandContext.ServerSettings, Deleter=CommandContext.Message.author, quote_id=DQuote.quote_id, deleted_content=DQuote.content)

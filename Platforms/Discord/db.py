@@ -94,7 +94,7 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", guild_id:str) -> Disc
 		raise RuntimeError("Creating new DB entry failed")
 
 # discord_command
-async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> List[DiscordCommand]:
+async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordCommand]:
 	"""
 	Get server commands.
 	Returns a list of DiscordCommand()
@@ -121,18 +121,18 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, **searc
 		SELECT `discord_command`.*
 		FROM `discord_command`
 		WHERE `discord_command`.`guild_id` = %s"""
-	values:tuple = ( str(guild_id), )
+	values:tuple = (str(guild_id),)
 
 	if not show_nonactive:
 		sql += " AND `discord_command`.`active` = 1"
 
 	if command_id:
 		sql += " AND `discord_command`.`id` = %s"
-		values += ( int(command_id), )
+		values += (int(command_id),)
 
 	if trigger:
 		sql += " AND `discord_command`.`trigger` = %s"
-		values += ( str(trigger), )
+		values += (str(trigger),)
 
 	sql += f" {order_str}"
 
@@ -162,7 +162,7 @@ async def getDiscordServerCommandsAmount(cls:"PhaazebotDiscord", guild_id:str, w
 	return res[0]["I"]
 
 # discord_user
-async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> List[DiscordUserStats]:
+async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordUserStats]:
 	"""
 	Get server levels.
 	Returns a list of DiscordUserStats().
@@ -207,20 +207,20 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search:d
 		)
 		SELECT `discord_user`.* FROM `discord_user` WHERE 1=1"""
 
-	values:tuple = ( str(guild_id), )
+	values:tuple = (str(guild_id),)
 
 	if member_id:
 		sql += " AND `discord_user`.`member_id` = %s"
-		values += ( str(member_id), )
+		values += (str(member_id),)
 
 	if name:
 		sql += " AND (`discord_user`.`username` = %s OR `discord_user`.`nickname` = %s)"
-		values += ( str(name), str(name) )
+		values += (str(name), str(name))
 
 	if name_contains:
 		name_contains = f"%{name_contains}%"
 		sql += " AND (`discord_user`.`username` LIKE %s OR `discord_user`.`nickname` LIKE %s)"
-		values += ( str(name_contains), str(name_contains) )
+		values += (str(name_contains), str(name_contains))
 
 	if edited == 2:
 		sql += " AND `discord_user`.`edited` = 1"
@@ -394,7 +394,7 @@ async def getDiscordServerRegularAmount(cls:"PhaazebotDiscord", guild_id:str, wh
 	return res[0]["I"]
 
 # discord_quote
-async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search:dict) -> List[DiscordQuote]:
+async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordQuote]:
 	"""
 	Get server quotes.
 	Returns a list of DiscordQuote().
@@ -409,7 +409,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search:
 	* limit `int`: (Default: None)
 	* offset `int`: (Default: 0)
 	"""
-	#unpack
+	# unpack
 	quote_id:str or int = search.get("quote_id", None)
 	content:str = search.get("content", None)
 	content_contains:str = search.get("content_contains", None)
@@ -418,7 +418,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search:
 	limit:bool = search.get("limit", None)
 	offset:bool = search.get("offset", 0)
 
-	#process
+	# process
 	sql:str = """
 		SELECT `discord_quote`.* FROM `discord_quote`
 		WHERE `discord_quote`.`guild_id` = %s"""
