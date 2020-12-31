@@ -8,7 +8,7 @@ import traceback
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Discord.db import getDiscordSeverSettings
 from Platforms.Discord.utils import getDiscordChannelFromString, getDiscordRoleFromString
-from Platforms.Discord.formater import responseFormater
+from Platforms.Discord.formater import responseFormatter
 from Platforms.Discord.logging import loggingOnMemberJoin, loggingOnMemberRemove
 from Utils.regex import ContainsLink
 
@@ -42,7 +42,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 				"server-name": Member.guild.name,
 				"member-count": str(Member.guild.member_count)
 			}
-			finished_message:str = await responseFormater(cls, Settings.welcome_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
+			finished_message:str = await responseFormatter(cls, Settings.welcome_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
 			try:
 				finished_message = finished_message[:1997]
 				await WelcomeChan.send(finished_message)
@@ -57,7 +57,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 			"server-name": Member.guild.name,
 			"member-count": str(Member.guild.member_count)
 		}
-		finished_message:str = await responseFormater(cls, Settings.welcome_msg_priv, var_dict=welcome_msg_priv_vars, enable_special=True, DiscordGuild=Member.guild)
+		finished_message:str = await responseFormatter(cls, Settings.welcome_msg_priv, var_dict=welcome_msg_priv_vars, enable_special=True, DiscordGuild=Member.guild)
 		try:
 			finished_message = finished_message[:1997]
 			await Member.send(finished_message)
@@ -108,7 +108,7 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 				"server-name": Member.guild.name,
 				"member-count": str(Member.guild.member_count)
 			}
-			finished_message:str = await responseFormater(cls, Settings.leave_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
+			finished_message:str = await responseFormatter(cls, Settings.leave_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
 			try:
 				finished_message = finished_message[:1997]
 				await LeaveChan.send(finished_message)

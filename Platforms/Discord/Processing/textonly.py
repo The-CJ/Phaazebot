@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
-from Platforms.Discord.formater import responseFormater
+from Platforms.Discord.formater import responseFormatter
 
 async def textOnly(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
@@ -28,6 +28,6 @@ async def textOnly(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 		enable_special=True
 	)
 
-	formatted_content:str = await responseFormater(cls, Command.content, **additional_kwargs)
+	formatted_content:str = await responseFormatter(cls, Command.content, **additional_kwargs)
 
 	return {"content": formatted_content}

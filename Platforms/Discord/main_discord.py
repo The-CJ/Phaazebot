@@ -15,7 +15,7 @@ class PhaazebotDiscord(discord.Client):
 	def __init__(self, BASE:"Phaazebot", *args, **kwargs):
 		# changes to receive wanted events
 		PhaazeIntents:discord.Intents = discord.Intents(
-			guild=True,
+			guilds=True,
 			members=True,
 			messages=True,
 		)
