@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Union
 if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
@@ -9,7 +9,7 @@ from Utils.Classes.twitchcommand import TwitchCommand
 from Utils.Classes.twitchuserstats import TwitchUserStats
 
 # twitch_settings
-async def getTwitchChannelSettings(cls:"PhaazebotTwitch", origin:twitch_irc.Message or str or int, prevent_new:bool=False) -> TwitchChannelSettings:
+async def getTwitchChannelSettings(cls:"PhaazebotTwitch", origin:Union[twitch_irc.Message, str, int], prevent_new:bool=False) -> TwitchChannelSettings:
 	"""
 	Get channel settings for a twitch channel
 	create new one if not prevented.
@@ -38,7 +38,7 @@ async def getTwitchChannelSettings(cls:"PhaazebotTwitch", origin:twitch_irc.Mess
 	)
 
 	if res:
-		return TwitchChannelSettings( infos = res.pop(0) )
+		return TwitchChannelSettings(infos=res.pop(0))
 
 	else:
 		if prevent_new:
@@ -55,30 +55,30 @@ async def makeTwitchChannelSettings(cls:"PhaazebotTwitch", channel_id:str) -> Tw
 
 	try:
 		cls.BASE.PhaazeDB.insertQuery(
-			table = "twitch_setting",
-			content = dict(channel_id = channel_id)
+			table="twitch_setting",
+			content=dict(channel_id=channel_id)
 		)
 
 		cls.BASE.Logger.info(f"(Twitch) New channel settings DB entry: {channel_id=}")
-		return TwitchChannelSettings( infos = {"channel_id":channel_id} )
+		return TwitchChannelSettings(infos={"channel_id":channel_id})
 	except:
 		cls.BASE.Logger.critical(f"(Twitch) New channel settings failed: {channel_id=}")
 		raise RuntimeError("Creating new DB entry failed")
 
 # twitch_commands
-async def getTwitchChannelCommands(cls:"PhaazebotTwitch", channel_id:str, **search:dict) -> List[TwitchCommand]:
+async def getTwitchChannelCommands(cls:"PhaazebotTwitch", channel_id:str, **search) -> List[TwitchCommand]:
 	"""
 	Get channel commands.
 	Returns a list of TwitchCommand()
 
 	Optional keywords:
 	------------------
-	* trigger `str` : (Default: None)
-	* command_id `str` or `int` : (Default: None)
-	* show_nonactive `bool`: (Default: False)
-	* order_str `str`: (Default: "ORDER BY id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
+	* `trigger` - Optional[str] : (Default: None)
+	* `command_id` - Union[str, int, None] : (Default: None)
+	* `show_nonactive` - bool : (Default: False)
+	* `order_str` - str : (Default: "ORDER BY twitch_command.id")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
 	"""
 	# unpack
 	trigger:str = search.get("trigger", None)
@@ -93,18 +93,18 @@ async def getTwitchChannelCommands(cls:"PhaazebotTwitch", channel_id:str, **sear
 		SELECT `twitch_command`.*
 		FROM `twitch_command`
 		WHERE `twitch_command`.`channel_id` = %s"""
-	values:tuple = ( str(channel_id), )
+	values:tuple = (str(channel_id),)
 
 	if not show_nonactive:
 		sql += " AND `twitch_command`.`active` = 1"
 
 	if command_id:
 		sql += " AND `twitch_command`.`id` = %s"
-		values += ( int(command_id), )
+		values += (int(command_id),)
 
 	if trigger:
 		sql += " AND `twitch_command`.`trigger` = %s"
-		values += ( str(trigger), )
+		values += (str(trigger),)
 
 	sql += f" {order_str}"
 
@@ -135,7 +135,7 @@ async def getTwitchChannelCommandsAmount(cls:"PhaazebotTwitch", channel_id:str, 
 
 
 # twitch_user
-async def getTwitchChannelUsers(cls:"PhaazebotTwitch", channel_id:str, **search:dict) -> List[TwitchUserStats]:
+async def getTwitchChannelUsers(cls:"PhaazebotTwitch", channel_id:str, **search) -> List[TwitchUserStats]:
 	"""
 	Get channel levels and stats.
 	Returns a list of TwitchUserStats().
@@ -175,20 +175,20 @@ async def getTwitchChannelUsers(cls:"PhaazebotTwitch", channel_id:str, **search:
 		)
 		SELECT `twitch_user`.* FROM `twitch_user` WHERE 1=1"""
 
-	values:tuple = ( str(channel_id), )
+	values:tuple = (str(channel_id),)
 
 	if user_id:
 		sql += " AND `twitch_user`.`user_id` = %s"
-		values += ( str(user_id), )
+		values += (str(user_id),)
 
 	if name:
 		sql += " AND (`twitch_user`.`name` = %s OR `twitch_user`.`display_name` = %s)"
-		values += ( str(name), str(name) )
+		values += (str(name), str(name))
 
 	if name_contains:
 		name_contains = f"%{name_contains}%"
 		sql += " AND (`twitch_user`.`name` LIKE %s OR `twitch_user`.`display_name` LIKE %s)"
-		values += ( str(name_contains), str(name_contains) )
+		values += (str(name_contains), str(name_contains))
 
 	if edited == 2:
 		sql += " AND `twitch_user`.`edited` = 1"

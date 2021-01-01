@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import osu_irc
 
