@@ -26,7 +26,7 @@ class GlobalDiscordCommandCooldownStorage(object):
 		self.in_cooldown:Dict[str, bool] = dict()
 
 	def check(self, Command:DiscordCommand) -> bool:
-		key:str = f"{Command.server_id}-{Command.command_id}"
+		key:str = str(Command.command_id)
 		if self.in_cooldown.get(key, False): return True
 		else: return False
 
@@ -34,7 +34,7 @@ class GlobalDiscordCommandCooldownStorage(object):
 		asyncio.ensure_future(self.cooldownCoro(Command))
 
 	async def cooldownCoro(self, Command:DiscordCommand) -> None:
-		key:str = f"{Command.server_id}-{Command.command_id}"
+		key:str = str(Command.command_id)
 		if self.in_cooldown.get(key, None): return
 
 		# add
@@ -116,13 +116,10 @@ async def checkCommands(cls:"PhaazebotDiscord", Message:discord.Message, ServerS
 			if AuthorPermission.rank != DiscordConst.REQUIRE_OWNER: return False
 
 		# always have a minimum cooldown
-		if Command.cooldown < cls.BASE.Limit.discord_commands_cooldown_min:
-			cls.BASE.Logger.debug(f"(Discord) command cooldown < discord_commands_cooldown_min cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
-			Command.cooldown = cls.BASE.Limit.discord_commands_cooldown_min
+		Command.cooldown = max(Command.cooldown, cls.BASE.Limit.discord_commands_cooldown_min, DiscordConst.COMMAND_COOLDOWN_MIN)
 
-		if Command.cooldown > cls.BASE.Limit.discord_commands_cooldown_max:
-			cls.BASE.Logger.debug(f"(Discord) command cooldown > discord_commands_cooldown_max cooldown={Command.cooldown}, id={Command.command_id}", require="discord:commands")
-			Command.cooldown = cls.BASE.Limit.discord_commands_cooldown_max
+		# but also not be to long
+		Command.cooldown = min(Command.cooldown, cls.BASE.Limit.discord_commands_cooldown_max, DiscordConst.COMMAND_COOLDOWN_MAX)
 
 		# command requires a currency payment, check if user can afford it
 		# except mods

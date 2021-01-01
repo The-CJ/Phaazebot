@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Awaitable, Dict
+from typing import TYPE_CHECKING, Callable, Dict
 if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
@@ -12,7 +12,7 @@ from Utils.Classes.twitchpermission import TwitchPermission
 from Utils.Classes.twitchcommandcontext import TwitchCommandContext
 from Platforms.Twitch.commandindex import getTwitchCommandFunction
 
-class GTCCS():
+class GlobalTwitchCommandCooldownStorage(object):
 	"""
 	you know the point up now, "Global Twitch Command Cooldown Storage" it is
 	after command is used, ID is saved in here.
@@ -43,13 +43,14 @@ class GTCCS():
 		# remove
 		self.in_cooldown.pop(cmd_id, None)
 
-GTCCS = GTCCS()
+
+GTCCS:GlobalTwitchCommandCooldownStorage = GlobalTwitchCommandCooldownStorage()
 
 async def checkCommands(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, TwitchUser:TwitchUserStats) -> bool:
 	"""
 	This function is run on every message and checks if there is a command to execute
 	Returns True if a function is executed, else False
-	(Thats needed for level stats, because commands dont give exp)
+	(That's needed for level stats, because commands don't give exp)
 	"""
 
 	CommandContext:TwitchCommandContext = TwitchCommandContext(cls, Message, Settings=ChannelSettings)
@@ -74,25 +75,25 @@ async def checkCommands(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 
 		# owner disables normal commands in the channel
 		if ChannelSettings.owner_disable_normal and Command.require == TwitchConst.REQUIRE_EVERYONE:
-			# noone except the owner can use them
+			# no one except the owner can use them
 			if AuthorPermission.rank < TwitchConst.REQUIRE_OWNER: return False
 
 		# owner disables regular commands in the channel
 		if ChannelSettings.owner_disable_regular and Command.require == TwitchConst.REQUIRE_REGULAR:
-			# noone except the owner can use them
+			# no one except the owner can use them
 			if AuthorPermission.rank < TwitchConst.REQUIRE_OWNER: return False
 
 		# owner disables mod commands serverwide,
 		if ChannelSettings.owner_disable_mod and Command.require == TwitchConst.REQUIRE_MOD:
-			# noone except the owner can use them
+			# no one except the owner can use them
 			if AuthorPermission.rank < TwitchConst.REQUIRE_OWNER: return False
 
 		# always have a minimum cooldown
-		Command.cooldown = max(Command.cooldown, cls.BASE.Limit.twitch_commands_cooldown_min, TwitchConst.COOLDOWN_MIN)
+		Command.cooldown = max(Command.cooldown, cls.BASE.Limit.twitch_commands_cooldown_min, TwitchConst.COMMAND_COOLDOWN_MIN)
 		# but also not be to long
-		Command.cooldown = min(Command.cooldown, cls.BASE.Limit.twitch_commands_cooldown_max, TwitchConst.COOLDOWN_MAX)
+		Command.cooldown = min(Command.cooldown, cls.BASE.Limit.twitch_commands_cooldown_max, TwitchConst.COMMAND_COOLDOWN_MAX)
 
-		# command requires a currency payment, check if user can affort it
+		# command requires a currency payment, check if user can afford it
 		# except mods
 		if Command.required_currency != 0 and AuthorPermission.rank < TwitchConst.REQUIRE_MOD:
 
@@ -101,7 +102,7 @@ async def checkCommands(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 				cls.BASE.Logger.debug(f"(Twitch) Skipping command call because of insufficient currency: ({TwitchUser.amount_currency} < {Command.required_currency})", require="twitch:commands")
 				return False
 
-			await TwitchUser.editCurrency(cls, amount_by=-Command.required_currency )
+			await TwitchUser.editCurrency(cls, amount_by=-Command.required_currency)
 
 		# add command to cooldown
 		GTCCS.cooldown(Command)
@@ -113,7 +114,7 @@ async def checkCommands(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 		final_result:dict = await formatCommand(cls, Command, CommandContext)
 
 		# there a commands that not have a direct return value,
-		# but are still valid and successfull
+		# but are still valid and successful
 		if final_result:
 			return_content:str = final_result.get("content", None)
 			if not return_content: return False
@@ -126,7 +127,7 @@ async def checkCommands(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 
 async def formatCommand(cls:"PhaazebotTwitch", Command:TwitchCommand, CommandContext:TwitchCommandContext, direct_call:bool=False) -> dict:
 	"""
-	This function is suppost to do everything.
+	This function is suppose to do everything.
 	It takes the placeholder in Command.content and replaces them with the wanted data.
 	That also applies to module/function calls in Command.content.
 
@@ -141,8 +142,8 @@ async def formatCommand(cls:"PhaazebotTwitch", Command:TwitchCommand, CommandCon
 	if not Command.complex:
 		function_str:str = Command.function
 
-		# get function from fucntions index
-		func:Awaitable = getTwitchCommandFunction(function_str)
+		# get function from functions index
+		func:Callable = getTwitchCommandFunction(function_str)
 
 		# this happens if a user enters @phaazebot and then some garbage
 		if direct_call and func.__name__ == "textOnly":
@@ -155,4 +156,4 @@ async def formatCommand(cls:"PhaazebotTwitch", Command:TwitchCommand, CommandCon
 
 	else:
 		# TODO: to complex functions
-		return { "content": "Complex functions are under construction" }
+		return {"content": "Complex functions are under construction"}

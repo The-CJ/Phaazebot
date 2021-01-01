@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, List, Any
+from typing import TYPE_CHECKING, List, Any, Optional
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import requests
 import asyncio
@@ -37,23 +37,23 @@ def generateTwitchAuthLink(cls:"Phaazebot") -> str:
 	Prep:requests.PreparedRequest = Target.prepare()
 	return Prep.url
 
-async def translateTwitchToken(cls:"Phaazebot", WebRequest:Request) -> dict or None:
+async def translateTwitchToken(cls:"Phaazebot", WebRequest:Request) -> Optional[dict]:
 	"""
-	Used to complete a oauth verification via a token the user provies in his GET query
+	Used to complete a oauth verification via a token the user provides in his GET query
 	(It has to be there)
-	We then get all infos we want/need from twitch
+	We then get all info's we want/need from twitch
 	"""
-	code:str = WebRequest.query.get("code", None)
+	code:str = WebRequest.query.get("code", "")
 	if not code:
 		cls.Logger.debug("translateTwitchToken called without code", require="twitch:api")
 		return None
 
 	req:dict = dict(
-		client_id = cls.Access.twitch_client_id,
-		client_secret = cls.Access.twitch_client_secret,
-		grant_type = "authorization_code",
-		code = code,
-		redirect_uri = cls.Vars.twitch_redirect_link
+		client_id=cls.Access.twitch_client_id,
+		client_secret=cls.Access.twitch_client_secret,
+		grant_type="authorization_code",
+		code=code,
+		redirect_uri=cls.Vars.twitch_redirect_link
 	)
 	headers:dict = {'Content-Type': 'application/x-www-form-urlencoded'}
 
@@ -61,9 +61,9 @@ async def translateTwitchToken(cls:"Phaazebot", WebRequest:Request) -> dict or N
 	return res.json()
 
 # getter utils
-async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Response:
+async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs) -> requests.Response:
 	"""
-	all calles to twitch should been made via this.
+	all calls to twitch should been made via this.
 	the function applies header and other stuff for authorisation
 	so twitch knows its us.
 
@@ -74,14 +74,14 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 	* client_secret `str`
 	* auth_type `str` (Default: 'Bearer') ['Bearer' or 'OAuth']
 	* access_token `str` (Default: Access.twitch_client_credential_token)
-	* emergency_refesh_token `bool` (Default: True)
+	* emergency_refresh_token `bool` (Default: True)
 	"""
 	method:str = kwargs.get("method", "GET")
 	client_id:str = kwargs.get("client_id", cls.Access.twitch_client_id)
 	client_secret:str = kwargs.get("client_secret", "")
 	auth_type:str = kwargs.get("auth_type", "Bearer")
 	access_token:str = kwargs.get("access_token", cls.Access.twitch_client_credential_token)
-	emergency_refesh_token:bool = kwargs.get("emergency_refesh_token", True)
+	emergency_refresh_token:bool = kwargs.get("emergency_refresh_token", True)
 
 	headers:dict = dict()
 	if client_id:
@@ -100,14 +100,14 @@ async def twitchAPICall(cls:"Phaazebot", url:str, **kwargs:dict) -> requests.Res
 	if (Resp.status_code == 401) and (access_token == cls.Access.twitch_client_credential_token):
 		# this will happen if our twitch credentials are outdated, for normal that should not happen, but if it does
 		# we will start the Refresh protocol
-		cls.Logger.warning("Twitch API call responsed with invalid auth")
-		if emergency_refesh_token:
+		cls.Logger.warning("Twitch API call response with invalid auth")
+		if emergency_refresh_token:
 			emergencyTwitchClientCredentialTokenRefresh(cls)
-			# after we did this the token should be refreshed, sooooo we just retry once and throw it back
-			kwargs["emergency_refesh_token"] = False
+			# after we did this the token should be refreshed, so we just retry once and throw it back
+			kwargs["emergency_refresh_token"] = False
 			return await twitchAPICall(cls, url, **kwargs)
 		else:
-			cls.Logger.critical("Token retry runned once, but retry still failed")
+			cls.Logger.critical("Token retry run once, but retry still failed")
 
 	return Resp
 
@@ -219,7 +219,7 @@ async def partGetTwitchStreams(cls:"Phaazebot", item:List[Any], item_type:str) -
 	link:str = f"{ROOT_URL}streams{query}"
 
 	resp:dict = (await twitchAPICall(cls, link)).json()
-	return [ TwitchStream(s) for s in resp.get("data", []) ]
+	return [TwitchStream(s) for s in resp.get("data", [])]
 
 async def partGetTwitchGames(cls:"Phaazebot", item:List[Any], item_type:str) -> List[TwitchGame]:
 
@@ -231,7 +231,7 @@ async def partGetTwitchGames(cls:"Phaazebot", item:List[Any], item_type:str) -> 
 	link:str = f"{ROOT_URL}games{query}"
 
 	resp:dict = (await twitchAPICall(cls, link)).json()
-	return [ TwitchGame(s) for s in resp.get("data", []) ]
+	return [TwitchGame(s) for s in resp.get("data", [])]
 
 async def partGetTwitchUsers(cls:"Phaazebot", item:List[Any], item_type:str) -> List[TwitchUser]:
 
@@ -249,4 +249,4 @@ async def partGetTwitchUsers(cls:"Phaazebot", item:List[Any], item_type:str) -> 
 
 		resp:dict = (await twitchAPICall(cls, link+query)).json()
 
-	return [ TwitchUser(s) for s in resp.get("data", []) ]
+	return [TwitchUser(s) for s in resp.get("data", [])]
