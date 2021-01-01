@@ -8,7 +8,7 @@ import traceback
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Discord.db import getDiscordSeverSettings
 from Platforms.Discord.utils import getDiscordChannelFromString, getDiscordRoleFromString
-from Platforms.Discord.formater import responseFormatter
+from Platforms.Discord.formatter import responseFormatter
 from Platforms.Discord.logging import loggingOnMemberJoin, loggingOnMemberRemove
 from Utils.regex import ContainsLink
 
