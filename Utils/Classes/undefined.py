@@ -3,6 +3,7 @@ class Undefined():
 	This class is never (un)equal, bigger, smaller und else to everything, its nothing
 	"""
 	def __init__(self): pass
+	def __repr__(self): return f"<{self.__class__.__name__}>"
 
 	def __str__(self): return ""
 	def __int__(self): return 0
@@ -28,6 +29,7 @@ class Undefined():
 	# for, in
 	def __iter__(self): return self
 	def __next__(self): raise StopIteration
+
 
 # a constant class of undefined... so you dont need to generate new objects...
 # or so? is this saving resources... idk

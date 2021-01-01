@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
@@ -21,7 +21,7 @@ async def openChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -> None
 	ChannelSettings:TwitchChannelSettings = await getTwitchChannelSettings(cls, Message)
 
 	# Base: get user entry
-	TwitchUser:TwitchUserStats = None
+	TwitchUser:Optional[TwitchUserStats] = None
 	user_res:List[TwitchUserStats] = await getTwitchChannelUsers(cls, Message.room_id, user_id=Message.user_id)
 	if user_res: TwitchUser = user_res.pop(0)
 

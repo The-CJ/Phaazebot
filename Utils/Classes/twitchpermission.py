@@ -1,3 +1,4 @@
+from typing import Optional
 import twitch_irc
 import Platforms.Twitch.const as TwitchConst
 from Utils.Classes.twitchuserstats import TwitchUserStats
@@ -6,7 +7,7 @@ class TwitchPermission(object):
 	"""
 	Given a Twitch message and user data from the database, it gives out a requirement level for the message author.
 
-	The number represets a level:
+	The number represents a level:
 	0 - Everyone
 	1 - Subs
 	2 - VIP
@@ -16,7 +17,7 @@ class TwitchPermission(object):
 	6 - Global Mod, Admin, Staff
 	7+  System (NOTE: don't know what it means... maybe developer debug only?)
 	"""
-	def __init__(self, Message:twitch_irc.Message, User:TwitchUserStats):
+	def __init__(self, Message:twitch_irc.Message, User:Optional[TwitchUserStats]):
 		self.rank = TwitchConst.REQUIRE_EVERYONE
 
 		if Message.subscriber:
