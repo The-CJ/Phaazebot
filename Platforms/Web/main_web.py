@@ -1,23 +1,36 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Callable
 if TYPE_CHECKING:
 	from main import Phaazebot
 
 import ssl
+import json
+import traceback
 from aiohttp import web
 from Utils.cli import CliArgs
-from Platforms.Web.index import WebIndex
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Platforms.Web.index import PhaazeWebIndex
+
+# load in modules in tree down.
+# they are liked via decorators
+import Platforms.Web.Processing as WebProcessing
+__all__ = [WebProcessing]
 
 class PhaazebotWeb(web.Application):
 	def __init__(self, BASE:"Phaazebot"):
 		super().__init__()
 		self.BASE:"Phaazebot" = BASE
 		self._client_max_size = self.BASE.Limit.web_client_max_size
+		self.middlewares.append(self.middlewareHandler)
 		self.port:int = 9001
 		self.SSLContext:Optional[ssl.SSLContext] = None
-		self.Index:Optional[WebIndex] = None
 
 	def __bool__(self):
 		return self.BASE.IsReady.web
+
+	# setup
+	def setupRouter(self) -> None:
+		self.BASE.Logger.debug(f"Loaded {len(PhaazeWebIndex)} entry point's for webserver")
+		self.add_routes(PhaazeWebIndex)
 
 	def setupSSL(self) -> None:
 		if CliArgs.get("http", "test") == "live":
@@ -38,10 +51,45 @@ class PhaazebotWeb(web.Application):
 		else:
 			self.BASE.Logger.info(f"Configured webserver Port={self.port} (test)")
 
-	def setupRouter(self) -> None:
-		self.Index:WebIndex = WebIndex(self)
-		self.Index.addRoutes()
+	# response handling
+	def response(self, status:int=200, content_type:str="text/plain", **kwargs) -> web.Response:
+		already_set_header:dict = kwargs.get('headers', {})
+		kwargs['headers'] = already_set_header
+		kwargs['headers']['server'] = f"PhaazeOS v{self.BASE.version}"
 
+		return web.Response(status=status, content_type=content_type, **kwargs)
+
+	@web.middleware # middleware handler, aka logging and error handling
+	async def middlewareHandler(self, WebRequest:web.Request, handler:Callable) -> web.Response:
+		WebRequest.__class__ = ExtendedRequest # people told me to never do this... well fuck it i do it anyways
+		WebRequest:ExtendedRequest
+		try:
+			if not self.BASE.Active.web:
+				return await WebProcessing.Api.errors.apiNotAllowed(self, WebRequest, msg="Web is disabled and will be shutdown soon")
+
+			if not self.BASE.Active.api and WebRequest.path.startswith("/api"):
+				return await WebProcessing.Api.errors.apiNotAllowed(self, WebRequest, msg="API endpoint is not enabled")
+
+			response:web.Response = await handler(self, WebRequest)
+			return response
+
+		except web.HTTPException as HTTPEx:
+			return self.response(
+				body=json.dumps(dict(msg=HTTPEx.reason, status=HTTPEx.status)),
+				status=HTTPEx.status,
+				content_type='application/json'
+			)
+		except Exception as e:
+			tb:str = traceback.format_exc()
+			self.BASE.Logger.error(f"(Web) Error in request: {str(e)}\n{tb}")
+			error:str = str(e) if CliArgs.get("debug") == "all" else "Unknown error"
+			return self.response(
+				status=500,
+				body=json.dumps(dict(msg=error, status=500)),
+				content_type='application/json'
+			)
+
+	# runtime
 	def start(self) -> None:
 		self.setupRouter()
 		self.setupSSL()
