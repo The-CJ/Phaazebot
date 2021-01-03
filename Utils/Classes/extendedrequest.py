@@ -1,3 +1,4 @@
+from typing import Optional
 from aiohttp.web import Request
 
 class ExtendedRequest(Request):
@@ -8,7 +9,6 @@ class ExtendedRequest(Request):
 	"""
 	def __init__(self, *x, **xx):
 		super().__init__(*x, **xx)
-		self.WebUser = None
-		self.DiscordUser = None
-		self.TwitchUser = None
-
+		self.WebUser:Optional = None
+		self.DiscordUser:Optional = None
+		self.TwitchUser:Optional = None
