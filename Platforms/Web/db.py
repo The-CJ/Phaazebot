@@ -1,19 +1,19 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Union
 if TYPE_CHECKING:
 	from Platforms.Web.main_web import PhaazebotWeb
 
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.webuser import WebUser
 from Utils.Classes.webrole import WebRole
 
 # users
-async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUserInfo]:
+async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 	"""
 	Get web users
 	Returns a list of WebUserInfo()
 
-	Optional keywords:
-	------------------
-	* user_id `str` or `int` : (Default: None)
+	Optional search keywords:
+	-------------------------
+	* `user_id` - Union[int, str, None] : (Default: None) [sets LIMIT to 1]
 	* username `str`: (Default: None)
 	* username_contains `str`: (Default: None) [DB uses LIKE]
 	* email `str`: (Default: None)
@@ -25,7 +25,6 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUserInfo]:
 	* where `str`: (Default: None) [Overwrites everything]
 	* where_values `tuple` or `dict`: (Default: None) [Only needed if where != None]
 	"""
-	user_id:str or int = search.get("user_id", None)
 	username:str = search.get("username", None)
 	username_contains:str = search.get("username_contains", None)
 	email:str = search.get("email", None)
@@ -37,7 +36,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUserInfo]:
 	where:str = search.get("where", None)
 	where_values:tuple = search.get("where_values", ())
 
-	sql:str = f"""
+	ground_sql:str = f"""
 		SELECT
 			`user`.*,
 			GROUP_CONCAT(`role`.`name` SEPARATOR ';;;') AS `roles`
@@ -47,11 +46,16 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUserInfo]:
 		LEFT JOIN `role`
 			ON `role`.`id` = `user_has_role`.`role_id`
 		WHERE 1=1"""
+	ground_values:tuple = ()
+
+	sql:str = ""
 	values:tuple = ()
 
-	if user_id and not where:
+	user_id:Union[int, str, None] = search.get("user_id", None)
+	if user_id:
 		sql += " AND `user`.`id` = %s"
 		values += (int(user_id),)
+		search["limit"] = 1
 
 	if username and not where:
 		sql += " AND `user`.`username` = %s"
@@ -90,15 +94,8 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUserInfo]:
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return_list:List[WebUserInfo] = []
-	for user in res:
-		WebUser:WebUserInfo = WebUserInfo(cls.BASE, None)
-		await WebUser.finishUser(user)
-		return_list.append(WebUser)
-
-	return return_list
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, ground_values+values)
+	return [WebUser(x) for x in res]
 
 async def getWebUserAmount(cls:"PhaazebotWeb", where:str="1=1", values:tuple=()) -> int:
 	"""

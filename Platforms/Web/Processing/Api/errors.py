@@ -1,11 +1,12 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 
-async def apiUnknown(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiUnknown(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -17,14 +18,14 @@ async def apiUnknown(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respon
 	"""
 	res:dict = dict(status=404, error="unknown_api")
 
-	cls.Web.BASE.Logger.debug(f"(API) 404: {WebRequest.path}", require="api:404")
+	cls.BASE.Logger.debug(f"(API) 404: {WebRequest.path}", require="api:404")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=404
 	)
 
-async def apiNothing(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiNothing(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -37,19 +38,19 @@ async def apiNothing(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respon
 	res:dict = dict(status=400, error="no_path")
 
 	# build message
-	default_msg:str = f"Trying to find out the PhaazeAPI?. Try looking at {cls.Web.BASE.Vars.web_root}/wiki/api"
+	default_msg:str = f"Trying to find out the PhaazeAPI?. Try looking at {cls.BASE.Vars.web_root}/wiki/api"
 
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API) 400: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API) 400: {WebRequest.path}", require="api:400")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiNotAllowed(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiNotAllowed(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -67,14 +68,14 @@ async def apiNotAllowed(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Res
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API) 403: {WebRequest.path}", require="api:403")
+	cls.BASE.Logger.debug(f"(API) 403: {WebRequest.path}", require="api:403")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",
 		status=403
 	)
 
-async def apiMissingValidMethod(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiMissingValidMethod(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -92,14 +93,14 @@ async def apiMissingValidMethod(cls:"WebIndex", WebRequest:Request, **kwargs:Any
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API) 400: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API) 400: {WebRequest.path}", require="api:400")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiMissingAuthorisation(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiMissingAuthorisation(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -111,14 +112,14 @@ async def apiMissingAuthorisation(cls:"WebIndex", WebRequest:Request, **kwargs:A
 	"""
 	res:dict = dict(status=401, error="missing_authorisation")
 
-	cls.Web.BASE.Logger.debug(f"(Web/API) Missing Authorisation", require="api:400")
+	cls.BASE.Logger.debug(f"(Web/API) Missing Authorisation", require="api:400")
 	return cls.response(
 		status=401,
 		text=json.dumps( res ),
 		content_type="application/json"
 	)
 
-async def apiWrongData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiWrongData(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -142,7 +143,7 @@ async def apiWrongData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Resp
 		content_type="application/json"
 	)
 
-async def apiNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiNotFound(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -165,7 +166,7 @@ async def apiNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respo
 		content_type="application/json"
 	)
 
-async def apiUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiUserNotFound(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -205,14 +206,14 @@ async def apiUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> R
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(Web/API) User not found", require="api:400")
+	cls.BASE.Logger.debug(f"(Web/API) User not found", require="api:400")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",
 		status=404
 	)
 
-async def apiMissingData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiMissingData(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -230,14 +231,14 @@ async def apiMissingData(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Re
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(Web/API) Missing Data for api request", require="api:400")
+	cls.BASE.Logger.debug(f"(Web/API) Missing Data for api request", require="api:400")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiTimeout(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Response:
+async def apiTimeout(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -263,7 +264,7 @@ async def apiTimeout(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> Respon
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(Web/API) Timeout Request", require="api:400")
+	cls.BASE.Logger.debug(f"(Web/API) Timeout Request", require="api:400")
 	return cls.response(
 		text=json.dumps( res ),
 		content_type="application/json",

@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
@@ -35,14 +35,14 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'user_id'")
 
 	# get user that should be edited
-	check_user:List[WebUserInfo] = await getWebUsers(cls, user_id=user_id)
+	check_user:List[AuthWebUser] = await getWebUsers(cls, user_id=user_id)
 	if not check_user:
 		return await apiUserNotFound(cls, WebRequest, user_id=user_id)
 
 	# check if this is a (super)admin, if so, is the current user a superadmin?
 	# and not himself
-	UserToEdit:WebUserInfo = check_user.pop(0)
-	CurrentUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	UserToEdit:AuthWebUser = check_user.pop(0)
+	CurrentUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 	if UserToEdit.checkRoles(["superadmin", "admin"]):
 		if UserToEdit.user_id != CurrentUser.user_id:
 			if not CurrentUser.checkRoles(["superadmin"]):
@@ -100,7 +100,7 @@ async def apiAdminUsersEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		status=200
 	)
 
-async def apiAdminUsersOperationAddrole(cls:"WebIndex", WebRequest:Request, Data:WebRequestContent, EditUser:WebUserInfo, CurrentUser:WebUserInfo) -> Response:
+async def apiAdminUsersOperationAddrole(cls:"WebIndex", WebRequest:Request, Data:WebRequestContent, EditUser:AuthWebUser, CurrentUser:AuthWebUser) -> Response:
 	"""
 	Default url: /api/admin/users?operation=addrole
 	"""
@@ -135,7 +135,7 @@ async def apiAdminUsersOperationAddrole(cls:"WebIndex", WebRequest:Request, Data
 		status=200
 	)
 
-async def apiAdminUsersOperationRemoverole(cls:"WebIndex", WebRequest:Request, Data:WebRequestContent, EditUser:WebUserInfo, CurrentUser:WebUserInfo) -> Response:
+async def apiAdminUsersOperationRemoverole(cls:"WebIndex", WebRequest:Request, Data:WebRequestContent, EditUser:AuthWebUser, CurrentUser:AuthWebUser) -> Response:
 	"""
 	Default url: /api/admin/users?operation=removerole
 	"""

@@ -7,7 +7,7 @@ import traceback
 from aiohttp.web import Response, Request
 from Platforms.Discord.api import translateDiscordToken, getDiscordUser
 from Platforms.Twitch.api import translateTwitchToken, getTwitchUsers
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.twitchuser import TwitchUser
 from Utils.stringutils import randomString
 from Platforms.Web.Processing.Api.errors import apiUserNotFound, apiMissingData
@@ -20,7 +20,7 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		looks like all other WebUser pairs, except this time it should be a post request, leading new information to login,
 		create session and give this to the user
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest, force_method="getFromPost")
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest, force_method="getFromPost")
 
 	if not WebUser.tried:
 		return await apiMissingData(cls, WebRequest)

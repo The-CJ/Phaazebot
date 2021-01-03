@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.undefined import UNDEFINED
 from Utils.stringutils import password as password_function
@@ -30,10 +30,10 @@ async def apiAdminUsersCreate(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	password = password_function(password)
 
-	res_users:List[WebUserInfo] = await getWebUsers( cls,
-		where="LOWER(`user`.`username`) = LOWER(%s) OR LOWER(`user`.`email`) = LOWER(%s)",
-		where_values=(username, email)
-	)
+	res_users:List[AuthWebUser] = await getWebUsers(cls,
+	                                                where="LOWER(`user`.`username`) = LOWER(%s) OR LOWER(`user`.`email`) = LOWER(%s)",
+	                                                where_values=(username, email)
+	                                                )
 
 	if res_users:
 		return await apiAccountTaken(cls, WebRequest)

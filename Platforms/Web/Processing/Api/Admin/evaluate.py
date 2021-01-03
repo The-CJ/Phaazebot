@@ -6,7 +6,7 @@ import json
 import traceback
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.storeclasses import GlobalStorage
 from Platforms.Web.Processing.Api.errors import apiNotAllowed
 
@@ -14,7 +14,7 @@ async def apiAdminEvaluate(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 	Default url: /api/admin/evaluate
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.checkRoles(["superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Superadmin rights required")
 
 	Data:WebRequestContent = WebRequestContent(WebRequest)

@@ -1,16 +1,20 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod
-from .get import apiAccountGetPhaaze, apiAccountGetDiscord, apiAccountGetTwitch
-from .login import apiAccountLoginPhaaze, apiAccountLoginDiscord, apiAccountLoginTwitch
-from .logout import apiAccountLogoutPhaaze, apiAccountLogoutDiscord, apiAccountLogoutTwitch
-from .create import apiAccountCreatePhaaze
-from .edit import apiAccountEditPhaaze
+from Platforms.Web.index import PhaazeWebIndex
 
-async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
+from Platforms.Web.Processing.Api.Account.get import apiAccountGetPhaaze, apiAccountGetDiscord, apiAccountGetTwitch
+from Platforms.Web.Processing.Api.Account.login import apiAccountLoginPhaaze, apiAccountLoginDiscord, apiAccountLoginTwitch
+from Platforms.Web.Processing.Api.Account.logout import apiAccountLogoutPhaaze, apiAccountLogoutDiscord, apiAccountLogoutTwitch
+from Platforms.Web.Processing.Api.Account.create import apiAccountCreatePhaaze
+from Platforms.Web.Processing.Api.Account.edit import apiAccountEditPhaaze
+
+@PhaazeWebIndex.view("/api/account/phaaze{x:/?}{method:.*}")
+async def apiAccountPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/phaaze
 	"""
@@ -34,7 +38,8 @@ async def apiAccountPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
-async def apiAccountDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.view("/api/account/discord{x:/?}{method:.*}")
+async def apiAccountDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/discord
 	"""
@@ -52,7 +57,8 @@ async def apiAccountDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
-async def apiAccountTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.view("/api/account/twitch{x:/?}{method:.*}")
+async def apiAccountTwitch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/twitch
 	"""

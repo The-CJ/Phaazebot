@@ -4,7 +4,7 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response, Request
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.twitchwebuserinfo import TwitchWebUserInfo
 from Platforms.Web.Processing.Api.errors import apiUserNotFound
@@ -13,7 +13,7 @@ async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 	"""
 	Default url: /api/account/phaaze/logout
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 
 	if not WebUser.found:
 		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")

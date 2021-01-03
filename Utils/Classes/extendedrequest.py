@@ -9,6 +9,6 @@ class ExtendedRequest(Request):
 	"""
 	def __init__(self, *x, **xx):
 		super().__init__(*x, **xx)
-		self.WebUser:Optional = None
-		self.DiscordUser:Optional = None
-		self.TwitchUser:Optional = None
+		self.AuthWeb:Optional = None
+		self.AuthDiscord:Optional = None
+		self.AuthTwitch:Optional = None

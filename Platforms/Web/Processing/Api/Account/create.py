@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import json
 import re
 from aiohttp.web import Response, Request
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.db import getWebUsers
 from Utils.regex import IsEmail
@@ -23,7 +23,7 @@ async def apiAccountCreatePhaaze(cls:"WebIndex", WebRequest:Request) -> Response
 		Default url: /api/account/phaaze/create
 	"""
 
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 
 	if WebUser.found:
 		return await apiAccountAlreadyLoggedIn(cls, WebRequest, user_id=WebUser.user_id)

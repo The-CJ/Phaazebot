@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Web.db import getWebUsers, getWebUserAmount
 
 DEFAULT_LIMIT:int = 50
@@ -27,11 +27,11 @@ async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
 	offset:int = Data.getInt("offset", 0, min_x=0)
 
 	# get user
-	res_users:List[WebUserInfo] = await getWebUsers(cls, user_id=user_id,
-		username=username, username_contains=username_contains,
-		email=email, email_contains=email_contains,
-		limit=limit, offset=offset
-	)
+	res_users:List[AuthWebUser] = await getWebUsers(cls, user_id=user_id,
+	                                                username=username, username_contains=username_contains,
+	                                                email=email, email_contains=email_contains,
+	                                                limit=limit, offset=offset
+	                                                )
 
 	result:Dict[str, Any] = dict(
 		result=[ WebUser.toJSON() for WebUser in res_users ],

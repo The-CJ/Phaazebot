@@ -65,6 +65,10 @@ class PhaazebotWeb(web.Application):
 	async def middlewareHandler(self, WebRequest:web.Request, handler:Callable) -> web.Response:
 		WebRequest.__class__ = ExtendedRequest # people told me to never do this... well fuck it i do it anyways
 		WebRequest:ExtendedRequest
+		WebRequest.WebUser = None
+		WebRequest.DiscordUser = None
+		WebRequest.TwitchUser = None
+
 		try:
 			if str(handler.__name__) in ["_handle"]:
 				raise FileNotFoundError()

@@ -6,7 +6,7 @@ import json
 import re
 import datetime
 from aiohttp.web import Response, Request
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.stringutils import password as password_function
 from Utils.regex import IsEmail
@@ -23,7 +23,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/phaaze/edit
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 
 	if not WebUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)

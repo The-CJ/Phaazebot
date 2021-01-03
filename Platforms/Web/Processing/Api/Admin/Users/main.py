@@ -7,14 +7,14 @@ from .create import apiAdminUsersCreate
 from .delete import apiAdminUsersDelete
 from .edit import apiAdminUsersEdit
 from .get import apiAdminUsersGet
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
 async def apiAdminUsers(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/admin/users
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.checkRoles(["admin", "superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Admin rights required")
 
 	method:str = WebRequest.match_info.get("method", "")

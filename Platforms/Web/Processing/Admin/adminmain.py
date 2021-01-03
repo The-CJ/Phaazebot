@@ -4,14 +4,14 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Web.utils import getNavbar
 
 async def adminMain(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /admin
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.found: return await cls.accountLogin(WebRequest)
 	if not WebUser.checkRoles(["admin", "superadmin"]): return await cls.notAllowed(WebRequest, msg="Admin rights required")
 

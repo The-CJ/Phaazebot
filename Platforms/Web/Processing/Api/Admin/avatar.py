@@ -8,14 +8,14 @@ import asyncio
 from aiohttp.web_request import FileField
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingValidMethod, apiMissingData, apiTimeout
 
 async def apiAdminAvatar(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 	Default url: /api/admin/avatar
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.checkRoles(["admin", "superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Admin rights required")
 
 	Data:WebRequestContent = WebRequestContent(WebRequest, force_method="unpackPost")

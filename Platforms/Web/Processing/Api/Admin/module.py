@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.undefined import UNDEFINED
 from Utils.management import shutdownModule
 from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingValidMethod, apiWrongData
@@ -15,7 +15,7 @@ async def apiAdminModule(cls:"WebIndex", WebRequest:Request) -> Response:
 	Default url: /api/admin/module
 	"""
 
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.checkRoles(["admin", "superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Admin rights required")
 
 	Data:WebRequestContent = WebRequestContent(WebRequest)

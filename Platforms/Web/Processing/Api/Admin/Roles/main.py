@@ -3,7 +3,7 @@ if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
 from aiohttp.web import Response, Request
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Web.Processing.Api.errors import (
 	apiNotAllowed,
 	apiMissingValidMethod
@@ -17,7 +17,7 @@ async def apiAdminRoles(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/admin/roles
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.checkRoles(["admin", "superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Admin rights required")
 
 	method:str = WebRequest.match_info.get("method", "")

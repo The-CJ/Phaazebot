@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Web.db import getWebUsers
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,
@@ -28,10 +28,10 @@ async def apiAdminUsersDelete(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'user_id'")
 
 	# get user
-	res_users:List[WebUserInfo] = await getWebUsers(cls, user_id=user_id)
+	res_users:List[AuthWebUser] = await getWebUsers(cls, user_id=user_id)
 	if not res_users:
 		return await apiUserNotFound(cls, WebRequest, user_id=user_id)
-	UserToDelete:WebUserInfo = res_users.pop(0)
+	UserToDelete:AuthWebUser = res_users.pop(0)
 
 	# check for higher users
 	if UserToDelete.checkRoles(["superadmin", "admin"]):

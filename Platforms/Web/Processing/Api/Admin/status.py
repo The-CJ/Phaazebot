@@ -7,14 +7,14 @@ import json
 import time
 import discord
 from aiohttp.web import Response, Request
-from Utils.Classes.webuserinfo import WebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Web.Processing.Api.errors import apiNotAllowed
 
 async def apiAdminStatus(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 	Default url: /api/admin/status
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 	if not WebUser.checkRoles(["admin", "superadmin"]):
 		return await apiNotAllowed(cls, WebRequest, msg="Admin rights required")
 
