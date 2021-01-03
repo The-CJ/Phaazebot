@@ -1,16 +1,17 @@
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Optional, List, Union
 if TYPE_CHECKING:
 	from main import Phaazebot
 
 import datetime
 from aiohttp.web import Request
-from Utils.stringutils import password
+from multidict import MultiDictProxy
+from Utils.stringutils import password as passwordFunction
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.dbcontentclass import DBContentClass
 from Utils.Classes.apiclass import APIClass
 
-def forcable(f:Callable) -> Callable:
-	f.__forcable__ = True
+def forcible(f:Callable) -> Callable:
+	f.__forcible__ = True
 	return f
 
 class WebUserInfo(DBContentClass, APIClass):
@@ -20,7 +21,7 @@ class WebUserInfo(DBContentClass, APIClass):
 	variable search way:
 		System -> header/cookies -> GET -> POST/JSON
 	"""
-	def __init__(self, BASE:"Phaazebot", WebRequest:Request, force_method:str=None, **kwargs:Any):
+	def __init__(self, BASE:"Phaazebot", WebRequest:Optional[Request], force_method:Optional[str]=None, **kwargs):
 		self.BASE:"Phaazebot" = BASE
 		self.WebRequest:Request = WebRequest
 		self.kwargs:Any = kwargs
@@ -34,16 +35,16 @@ class WebUserInfo(DBContentClass, APIClass):
 		self.found:bool = False
 		self.tried:bool = False
 
-		self.username:str = None
+		self.username:Optional[str] = None
 		self.username_changed:int = 0
-		self.password:str = None
-		self.email:str = None
+		self.password:Optional[str] = None
+		self.email:Optional[str] = None
 		self.verified:bool = False
-		self.created_at:datetime.datetime = None
-		self.edited_at:datetime.datetime = None
-		self.last_login:datetime.datetime = None
+		self.created_at:Optional[datetime.datetime] = None
+		self.edited_at:Optional[datetime.datetime] = None
+		self.last_login:Optional[datetime.datetime] = None
 		self.user_id:int = -1
-		self.roles:list = []
+		self.roles:List[str] = []
 
 	def __repr__(self):
 		if not self.tried and not self.found:
@@ -76,11 +77,11 @@ class WebUserInfo(DBContentClass, APIClass):
 
 		return j
 
-	def checkRoles(self, roles:str or list) -> bool:
+	def checkRoles(self, roles:Union[List[str], str]) -> bool:
 		"""
-			Checks if a searched roles is assigned to this user
-			returns True on first match
-			else False
+		Checks if a searched roles is assigned to this user
+		returns True on first match
+		else False
 		"""
 		if not roles: return True
 		if not self.roles: return False
@@ -96,7 +97,7 @@ class WebUserInfo(DBContentClass, APIClass):
 	async def auth(self) -> None:
 		if self.force_method:
 			func:Callable = getattr(self, self.force_method)
-			if getattr(func, "__forcable__", False):
+			if getattr(func, "__forcible__", False):
 				return await func()
 
 		await self.getFromSystem()
@@ -112,7 +113,7 @@ class WebUserInfo(DBContentClass, APIClass):
 
 		# after here we need to read the body
 		if self.WebRequest.method in ["POST"]:
-			if self.WebRequest.headers.get("content-type", None) == "application/json":
+			if self.WebRequest.headers.get("content-type", "") == "application/json":
 				await self.getFromJson()
 				if self.tried: return
 
@@ -124,75 +125,63 @@ class WebUserInfo(DBContentClass, APIClass):
 			if self.tried: return
 
 	# getter
-	@forcable
+	@forcible
 	async def getFromSystem(self) -> None:
 		self.__session = self.kwargs.get("phaaze_session", None)
 		if self.__session: return await self.viaSession()
-		self.__token = self.kwargs.get("phaaze_token", None)
-		if self.__session: return await self.via__token()
 		self.__username = self.kwargs.get("username", None)
 		self.__password = self.kwargs.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
-	@forcable
+	@forcible
 	async def getFromCookies(self) -> None:
-		self.__session = self.WebRequest.cookies.get("phaaze_session", None)
+		self.__session = self.WebRequest.cookies.get("phaaze_session", "")
 		if self.__session: return await self.viaSession()
-		self.__token = self.WebRequest.cookies.get("phaaze_token", None)
-		if self.__session: return await self.via__token()
 		# this makes no sense, but ok
-		self.__username = self.WebRequest.cookies.get("username", None)
-		self.__password = self.WebRequest.cookies.get("password", None)
+		self.__username = self.WebRequest.cookies.get("username", "")
+		self.__password = self.WebRequest.cookies.get("password", "")
 		if self.__password and self.__username: return await self.viaLogin()
 
-	@forcable
+	@forcible
 	async def getFromHeader(self) -> None:
-		self.__session = self.WebRequest.headers.get("phaaze_session", None)
+		self.__session = self.WebRequest.headers.get("phaaze_session", "")
 		if self.__session: return await self.viaSession()
-		self.__token = self.WebRequest.headers.get("phaaze_token", None)
-		if self.__session: return await self.via__token()
 		# this makes no sense, but ok
-		self.__username = self.WebRequest.headers.get("username", None)
-		self.__password = self.WebRequest.headers.get("password", None)
+		self.__username = self.WebRequest.headers.get("username", "")
+		self.__password = self.WebRequest.headers.get("password", "")
 		if self.__password and self.__username: return await self.viaLogin()
 
-	@forcable
+	@forcible
 	async def getFromGet(self) -> None:
-		self.__session = self.WebRequest.query.get("phaaze_session", None)
+		self.__session = self.WebRequest.query.get("phaaze_session", "")
 		if self.__session: return await self.viaSession()
-		self.__token = self.WebRequest.query.get("phaaze_token", None)
-		if self.__session: return await self.via__token()
-		self.__username = self.WebRequest.query.get("username", None)
-		self.__password = self.WebRequest.query.get("password", None)
+		self.__username = self.WebRequest.query.get("username", "")
+		self.__password = self.WebRequest.query.get("password", "")
 		if self.__password and self.__username: return await self.viaLogin()
 
-	@forcable
+	@forcible
 	async def getFromJson(self) -> None:
 		try: Json:dict = await self.WebRequest.json()
 		except: return
 
 		self.__session = Json.get("phaaze_session", None)
 		if self.__session: return await self.viaSession()
-		self.__token = Json.get("phaaze_token", None)
-		if self.__session: return await self.via__token()
 		self.__username = Json.get("username", None)
 		self.__password = Json.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
 
-	@forcable
+	@forcible
 	async def getFromMultipart(self) -> None:
 		self.BASE.Logger.debug("Someone tried to auth with multipart content", require="web:debug")
 		return None
 
-	@forcable
+	@forcible
 	async def getFromPost(self) -> None:
-		try: Post:dict = await self.WebRequest.post()
+		try: Post:MultiDictProxy = await self.WebRequest.post()
 		except: return
 
 		self.__session = Post.get("phaaze_session", None)
 		if self.__session: return await self.viaSession()
-		self.__token = Post.get("phaaze_token", None)
-		if self.__session: return await self.via__token()
 		self.__username = Post.get("username", None)
 		self.__password = Post.get("password", None)
 		if self.__password and self.__username: return await self.viaLogin()
@@ -203,7 +192,7 @@ class WebUserInfo(DBContentClass, APIClass):
 		return None
 
 	async def viaLogin(self) -> None:
-		self.__password = password(self.__password)
+		self.__password = passwordFunction(self.__password)
 
 		dbr:str = """
 			SELECT
@@ -260,10 +249,10 @@ class WebUserInfo(DBContentClass, APIClass):
 		self.username_changed = data.get("username_changed", UNDEFINED)
 		self.password = data.get("password", UNDEFINED)
 		self.email = data.get("email", UNDEFINED)
-		self.verified = bool( data.get("verified", UNDEFINED) )
+		self.verified = bool(data.get("verified", UNDEFINED))
 
 		self.created_at = data.get("created_at", UNDEFINED)
 		self.edited_at = data.get("edited_at", UNDEFINED)
 		self.last_login = data.get("last_login", UNDEFINED)
 
-		self.roles = self.fromStringList( data.get("roles", ''), ";;;" )
+		self.roles = self.fromStringList(data.get("roles", ''), ";;;")

@@ -2,7 +2,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from Platforms.Web.index import WebIndex
 
-import os, json, mimetypes
+import os
+import json
+import mimetypes
 from aiohttp.web import Request, Response
 
 CONTENTFOLDER_CSS = "Platforms/Web/Content/Css"
@@ -12,10 +14,10 @@ CONTENTFOLDER_IMG = "Platforms/Web/Content/Img"
 # content serve functions
 async def serveCss(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /css/*
+	Default url: /css/*
 	"""
 	file_location:str = WebRequest.match_info.get("file", None)
-	if not file_location: return noFileDefined(cls)
+	if not file_location: return await noFileDefined(cls)
 
 	# remove all injection things
 	file_location = file_location.replace("..","").strip("/")
@@ -37,7 +39,7 @@ async def serveCss(cls:"WebIndex", WebRequest:Request) -> Response:
 
 async def serveJs(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /js/*
+	Default url: /js/*
 	"""
 	file_location:str = WebRequest.match_info.get("file", None)
 	if not file_location: return await noFileDefined(cls)
@@ -64,10 +66,10 @@ async def serveJs(cls:"WebIndex", WebRequest:Request) -> Response:
 
 async def serveImg(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
-		Default url: /img/*
+	Default url: /img/*
 	"""
 	file_location:str = WebRequest.match_info.get("file", None)
-	if not file_location: return noFileDefined(cls)
+	if not file_location: return await noFileDefined(cls)
 
 	# remove all injection things
 	file_location = file_location.replace("..","").strip("/")
@@ -96,12 +98,12 @@ async def noFileDefined(cls:"WebIndex") -> Response:
 	return cls.response(
 		status=400,
 		content_type='application/json',
-		body=json.dumps( dict( error="no_file_defined",status=400 ) )
+		body=json.dumps(dict(error="no_file_defined",status=400))
 	)
 
 async def fileNotFound(cls:"WebIndex", file_name:str) -> Response:
 	return cls.response(
 		status=404,
 		content_type='application/json',
-		body=json.dumps( dict( error="file_not_found", status=404, file=file_name ) )
+		body=json.dumps(dict(error="file_not_found", status=404, file=file_name))
 	)

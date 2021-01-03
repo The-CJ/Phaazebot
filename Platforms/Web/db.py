@@ -6,7 +6,7 @@ from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrole import WebRole
 
 # users
-async def getWebUsers(cls:"WebIndex", **search:dict) -> List[WebUserInfo]:
+async def getWebUsers(cls:"WebIndex", **search) -> List[WebUserInfo]:
 	"""
 	Get web users
 	Returns a list of WebUserInfo()
@@ -51,25 +51,25 @@ async def getWebUsers(cls:"WebIndex", **search:dict) -> List[WebUserInfo]:
 
 	if user_id and not where:
 		sql += " AND `user`.`id` = %s"
-		values += ( int(user_id), )
+		values += (int(user_id),)
 
 	if username and not where:
 		sql += " AND `user`.`username` = %s"
-		values += ( str(username), )
+		values += (str(username),)
 
 	if username_contains and not where:
 		username_contains = f"%{username_contains}%"
 		sql += " AND `user`.`username` LIKE %s"
-		values += ( str(username_contains), )
+		values += (str(username_contains),)
 
 	if email and not where:
 		sql += " AND `user`.`email` = %s"
-		values += ( str(email), )
+		values += (str(email),)
 
 	if email_contains and not where:
 		email_contains = f"%{email_contains}%"
 		sql += " AND `user`.`email` LIKE %s"
-		values += ( str(email_contains), )
+		values += (str(email_contains),)
 
 	if verified == 1 and not where:
 		sql += " AND `user`.`verified` = 1"
@@ -109,7 +109,7 @@ async def getWebUserAmount(cls:"WebIndex", where:str="1=1", values:tuple=()) -> 
 	return res[0]['I']
 
 # roles
-async def getWebRoles(cls:"WebIndex", **search:dict) -> List[WebRole]:
+async def getWebRoles(cls:"WebIndex", **search) -> List[WebRole]:
 	"""
 	Get roles the a web user can have
 	Returns a list of WebRole()
@@ -147,20 +147,20 @@ async def getWebRoles(cls:"WebIndex", **search:dict) -> List[WebRole]:
 			FROM `user_has_role`
 			LEFT JOIN `role` ON `role`.`id` = `user_has_role`.`role_id`
 			WHERE `user_has_role`.`user_id` = %s"""
-		values = ( int(user_id), )
+		values = (int(user_id),)
 
 	if role_id and not where:
 		sql += " AND `role`.`id` = %s"
-		values += ( int(role_id), )
+		values += (int(role_id),)
 
 	if name and not where:
 		sql += " AND `role`.`name` = %s"
-		values += ( str(name), )
+		values += (str(name),)
 
 	if name_contains and not where:
 		name_contains = f"%{name_contains}%"
 		sql += " AND `role`.`name` LIKE %s"
-		values += ( str(name_contains), )
+		values += (str(name_contains),)
 
 	if can_be_removed == 1 and not where:
 		sql += " AND `role`.`can_be_removed` = 1"

@@ -32,7 +32,7 @@ def getNavbar(active:str="") -> HTMLFormatter:
 
 def getAccountModal() -> HTMLFormatter:
 	"""
-	get the global login form with all applied formated links etc...
+	get the global login form with all applied formatted links etc...
 	"""
 	PhaazeMain:"Phaazebot" = GlobalStorage.get("Phaazebot")
 	try:
@@ -52,9 +52,9 @@ def getAccountModal() -> HTMLFormatter:
 	return AccountModal
 
 # web translator
-async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:
+async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs) -> WebUserInfo:
 	"""
-	Tryes to get a WebUser, takes get, post, and cookie in process
+	Tries to get a WebUser, takes get, post, and cookie in process
 	kwargs are given to WebUserInfo
 
 	WebUserInfo kwargs:
@@ -66,7 +66,7 @@ async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> We
 	"""
 
 	if hasattr(WebRequest, "WebUser"):
-		cls.Web.BASE.Logger.debug(f"(Web) Used stored infos: {str(WebRequest.WebUser)}", require="web:debug")
+		cls.Web.BASE.Logger.debug(f"(Web) Used stored info's: {str(WebRequest.WebUser)}", require="web:debug")
 		return WebRequest.WebUser
 
 	WebUser:WebUserInfo = WebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
@@ -75,9 +75,9 @@ async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> We
 
 	return WebRequest.WebUser
 
-async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> DiscordWebUserInfo:
+async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs) -> DiscordWebUserInfo:
 	"""
-	Tryes to get a DiscordUser, takes get, post, and cookie in process
+	Tries to get a DiscordUser, takes get, post, and cookie in process
 	kwargs are given to DiscordWebUserInfo
 
 	DiscordWebUserInfo kwargs:
@@ -86,7 +86,7 @@ async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -
 	"""
 
 	if hasattr(WebRequest, "DiscordUser"):
-		cls.Web.BASE.Logger.debug(f"(Web) Used stored discord infos: {str(WebRequest.DiscordUser)}", require="web:debug")
+		cls.Web.BASE.Logger.debug(f"(Web) Used stored discord info's: {str(WebRequest.DiscordUser)}", require="web:debug")
 		return WebRequest.DiscordUser
 
 	DiscordUser:DiscordWebUserInfo = DiscordWebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
@@ -95,9 +95,9 @@ async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -
 
 	return WebRequest.DiscordUser
 
-async def getTwitchUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> TwitchWebUserInfo:
+async def getTwitchUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs) -> TwitchWebUserInfo:
 	"""
-	Tryes to get a DiscordUser, takes get, post, and cookie in process
+	Tries to get a DiscordUser, takes get, post, and cookie in process
 	kwargs are given to TwitchWebUserInfo
 
 	TwitchWebUserInfo kwargs:
@@ -106,7 +106,7 @@ async def getTwitchUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) ->
 	"""
 
 	if hasattr(WebRequest, "TwitchUser"):
-		cls.Web.BASE.Logger.debug(f"(Web) Used stored twitch infos: {str(WebRequest.TwitchUser)}", require="web:debug")
+		cls.Web.BASE.Logger.debug(f"(Web) Used stored twitch info's: {str(WebRequest.TwitchUser)}", require="web:debug")
 		return WebRequest.TwitchUser
 
 	TwitchUser:TwitchWebUserInfo = TwitchWebUserInfo(cls.Web.BASE, WebRequest, **kwargs)

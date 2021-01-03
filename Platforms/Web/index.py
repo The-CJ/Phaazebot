@@ -1,13 +1,13 @@
-from typing import TYPE_CHECKING, Coroutine
+from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING:
-	from .main_web import PhaazebotWeb
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import traceback
 from Utils.cli import CliArgs
 from aiohttp.web import Response, middleware, HTTPException, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
-from .Processing.Api.errors import apiNotAllowed
+from Platforms.Web.Processing.Api.errors import apiNotAllowed
 
 class WebIndex(object):
 	""" Contains all functions for the web to call """
@@ -16,15 +16,15 @@ class WebIndex(object):
 		self.Web.middlewares.append(self.middlewareHandler)
 		self.HTMLRoot:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/root.html", template=True)
 
-	def response(self, status:int=200, content_type:str=None, **kwargs:dict) -> Response:
-		already_set_header:dict = kwargs.get('headers', dict())
+	def response(self, status:int=200, content_type:str="text/plain", **kwargs) -> Response:
+		already_set_header:dict = kwargs.get('headers', {})
 		kwargs['headers'] = already_set_header
-		kwargs['headers']['server'] =f"PhaazeOS v{self.Web.BASE.version}"
+		kwargs['headers']['server'] = f"PhaazeOS v{self.Web.BASE.version}"
 
 		return Response(status=status, content_type=content_type, **kwargs)
 
 	@middleware
-	async def middlewareHandler(self, WebRequest:Request, handler:Coroutine) -> Response:
+	async def middlewareHandler(self, WebRequest:Request, handler:Callable) -> Response:
 		try:
 			if not self.Web.BASE.Active.web:
 				return await apiNotAllowed(self, WebRequest, msg="Web is disabled and will be shutdown soon")
@@ -37,7 +37,7 @@ class WebIndex(object):
 
 		except HTTPException as HTTPEx:
 			return self.response(
-				body=json.dumps( dict(msg=HTTPEx.reason, status=HTTPEx.status) ),
+				body=json.dumps(dict(msg=HTTPEx.reason, status=HTTPEx.status)),
 				status=HTTPEx.status,
 				content_type='application/json'
 			)
@@ -47,7 +47,7 @@ class WebIndex(object):
 			error:str = str(e) if CliArgs.get("debug") == "all" else "Unknown error"
 			return self.response(
 				status=500,
-				body=json.dumps( dict(msg=error, status=500) ),
+				body=json.dumps(dict(msg=error, status=500)),
 				content_type='application/json'
 			)
 
@@ -76,7 +76,7 @@ class WebIndex(object):
 		# /discord*
 		self.addWebDiscordRoutes()
 
-		# temporal addded routs due to dev
+		# temporal added routs due to dev
 		self.Web.router.add_route('GET', '/twitch{x:.*}', self.underDev)
 		self.Web.router.add_route('GET', '/osu{x:.*}', self.underDev)
 		self.Web.router.add_route('GET', '/wiki{x:.*}', self.underDev)

@@ -31,10 +31,10 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	session_key:str = randomString(size=32)
 
 	cls.Web.BASE.PhaazeDB.insertQuery(
-		table = "session_phaaze",
-		content = dict(
-			session = session_key,
-			user_id = WebUser.user_id
+		table="session_phaaze",
+		content=dict(
+			session=session_key,
+			user_id=WebUser.user_id
 		)
 	)
 
@@ -47,7 +47,7 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	cls.Web.BASE.Logger.debug(f"(API) New Login - Session: {session_key} User: {str(WebUser.username)}", require="api:login")
 	return cls.response(
-		text=json.dumps( dict(phaaze_session=session_key, status=200, expires_in=str(SESSION_EXPIRE)) ),
+		text=json.dumps(dict(phaaze_session=session_key, status=200, expires_in=str(SESSION_EXPIRE))),
 		content_type="application/json",
 		status=200
 	)
@@ -55,10 +55,10 @@ async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 async def apiAccountLoginDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 		Default url: /api/account/discord/login
-		This sould only be called by Discord after a user successfull authorise
+		This should only be called by Discord after a user successful authorise
 	"""
 	data:dict or None = await translateDiscordToken(cls.Web.BASE, WebRequest)
-	error:str = ""
+	error:str
 
 	if not data:
 		error = "missing"
@@ -71,16 +71,16 @@ async def apiAccountLoginDiscord(cls:"WebIndex", WebRequest:Request) -> Response
 
 	return cls.response(
 		status=302,
-		headers = { "Location": f"/discord/login?error={error}" }
+		headers={"Location": f"/discord/login?error={error}"}
 	)
 
 async def apiAccountLoginTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 	"""
 	Default url: /api/account/twitch/login
-	This sould only be called by twitch after a user successfull authorised
+	This should only be called by twitch after a user successful authorised
 	"""
 	data:dict or None = await translateTwitchToken(cls.Web.BASE, WebRequest)
-	error:str = ""
+	error:str
 
 	if not data:
 		error = "missing"
@@ -93,21 +93,21 @@ async def apiAccountLoginTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 
 	return cls.response(
 		status=302,
-		headers = { "Location": f"/twitch/login?error={error}" }
+		headers={"Location": f"/twitch/login?error={error}"}
 	)
 
 # # #
 
-async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict) -> Response:
+async def completeDiscordTokenLogin(cls:"WebIndex", _WebRequest:Request, data:dict) -> Response:
 	"""
-	inserts all nessessary data into the session_discord database
+	inserts all necessary data into the session_discord database
 	"""
 
 	session_key:str = randomString(size=32)
 	access_token:str = data.get('access_token', "")
 	refresh_token:str = data.get('refresh_token', "")
 	scope:str = data.get('scope', "")
-	token_type:str = data.get('token_type', None)
+	token_type:str = data.get('token_type', "")
 	user_info:dict = await getDiscordUser(cls.Web.BASE, access_token)
 
 	# if the result has a message field, something went wrong
@@ -115,26 +115,26 @@ async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dic
 		cls.Web.BASE.Logger.warning("(API) Discord user login failed")
 		return cls.response(
 			status=302,
-			headers = {"Location": "/discord/login?error=user"}
+			headers={"Location": "/discord/login?error=user"}
 		)
 
 	try:
 		cls.Web.BASE.PhaazeDB.insertQuery(
-			table = "session_discord",
-			content = dict(
-				session = session_key,
-				access_token = access_token,
-				refresh_token = refresh_token,
-				scope = scope,
-				token_type = token_type,
-				user_info = json.dumps(user_info)
+			table="session_discord",
+			content=dict(
+				session=session_key,
+				access_token=access_token,
+				refresh_token=refresh_token,
+				scope=scope,
+				token_type=token_type,
+				user_info=json.dumps(user_info)
 			)
 		)
 
 		cls.Web.BASE.Logger.debug(f"(API) New Discord Login - Session: {session_key} User: {str(user_info.get('username','[N/A]'))}", require="api:login")
 		return cls.response(
 			status=302,
-			headers = {
+			headers={
 				"Set-Cookie": f"phaaze_discord_session={session_key}; Path=/; Max-Age={SESSION_EXPIRE};",
 				"Location": "/discord"
 			}
@@ -144,19 +144,19 @@ async def completeDiscordTokenLogin(cls:"WebIndex", WebRequest:Request, data:dic
 		cls.Web.BASE.Logger.error(f"(API) Database error: {str(e)}\n{tb}")
 		return cls.response(
 			status=302,
-			headers = {"Location": "/discord/login?error=database"}
+			headers={"Location": "/discord/login?error=database"}
 		)
 
-async def completeTwitchTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict) -> Response:
+async def completeTwitchTokenLogin(cls:"WebIndex", _WebRequest:Request, data:dict) -> Response:
 	"""
-	inserts all nessessary data into the session_twitch database
+	inserts all necessary data into the session_twitch database
 	"""
 
 	session_key:str = randomString(size=32)
 	access_token:str = data.get("access_token", "")
 	refresh_token:str = data.get("refresh_token", "")
 	scope:str = ' '.join(data.get("scope", []))
-	token_type:str = data.get('token_type', None)
+	token_type:str = data.get('token_type', "")
 
 	user_res:List[TwitchUser] = await getTwitchUsers(cls.Web.BASE, access_token, item_type="token")
 	TwitchAuthUser:TwitchUser = user_res.pop(0) if len(user_res) > 0 else None
@@ -165,26 +165,26 @@ async def completeTwitchTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict
 		cls.Web.BASE.Logger.warning("(API) Twitch user login failed")
 		return cls.response(
 			status=302,
-			headers = {"Location": "/twitch/login?error=user"}
+			headers={"Location": "/twitch/login?error=user"}
 		)
 
 	try:
 		cls.Web.BASE.PhaazeDB.insertQuery(
-			table = "session_twitch",
-			content = dict(
-				session = session_key,
-				access_token = access_token,
-				refresh_token = refresh_token,
-				scope = scope,
-				token_type = token_type,
-				user_info = json.dumps(TwitchAuthUser.toJSON(types=True,images=True,with_email=True))
+			table="session_twitch",
+			content=dict(
+				session=session_key,
+				access_token=access_token,
+				refresh_token=refresh_token,
+				scope=scope,
+				token_type=token_type,
+				user_info=json.dumps(TwitchAuthUser.toJSON(types=True,images=True,with_email=True))
 			)
 		)
 
 		cls.Web.BASE.Logger.debug(f"(API) New Twitch Login - Session: {session_key} User: {TwitchAuthUser.name}", require="api:login")
 		return cls.response(
 			status=302,
-			headers = {
+			headers={
 				"Set-Cookie": f"phaaze_twitch_session={session_key}; Path=/; Max-Age={SESSION_EXPIRE};",
 				"Location": "/twitch"
 			}
@@ -194,5 +194,5 @@ async def completeTwitchTokenLogin(cls:"WebIndex", WebRequest:Request, data:dict
 		cls.Web.BASE.Logger.error(f"(API) Database error: {str(e)}\n{tb}")
 		return cls.response(
 			status=302,
-			headers = {"Location": "/twitch/login?error=database"}
+			headers={"Location": "/twitch/login?error=database"}
 		)
