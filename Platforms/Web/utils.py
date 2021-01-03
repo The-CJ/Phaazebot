@@ -1,7 +1,7 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from main import Phaazebot
-	from Platforms.Web.index import WebIndex
+	from phaazebot import Phaazebot
+	from Platforms.Web.main_web import PhaazebotWeb
 
 from aiohttp.web import Request
 from Platforms.Discord.api import generateDiscordAuthLink
@@ -52,7 +52,7 @@ def getAccountModal() -> HTMLFormatter:
 	return AccountModal
 
 # web translator
-async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs) -> WebUserInfo:
+async def getWebUserInfo(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> WebUserInfo:
 	"""
 	Tries to get a WebUser, takes get, post, and cookie in process
 	kwargs are given to WebUserInfo
@@ -66,16 +66,16 @@ async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs) -> WebUse
 	"""
 
 	if hasattr(WebRequest, "WebUser"):
-		cls.Web.BASE.Logger.debug(f"(Web) Used stored info's: {str(WebRequest.WebUser)}", require="web:debug")
+		cls.BASE.Logger.debug(f"(Web) Used stored info's: {str(WebRequest.WebUser)}", require="web:debug")
 		return WebRequest.WebUser
 
-	WebUser:WebUserInfo = WebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
+	WebUser:WebUserInfo = WebUserInfo(cls.BASE, WebRequest, **kwargs)
 	await WebUser.auth()
 	WebRequest.WebUser = WebUser
 
 	return WebRequest.WebUser
 
-async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs) -> DiscordWebUserInfo:
+async def getDiscordUserInfo(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> DiscordWebUserInfo:
 	"""
 	Tries to get a DiscordUser, takes get, post, and cookie in process
 	kwargs are given to DiscordWebUserInfo
@@ -86,16 +86,16 @@ async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs) -> Di
 	"""
 
 	if hasattr(WebRequest, "DiscordUser"):
-		cls.Web.BASE.Logger.debug(f"(Web) Used stored discord info's: {str(WebRequest.DiscordUser)}", require="web:debug")
+		cls.BASE.Logger.debug(f"(Web) Used stored discord info's: {str(WebRequest.DiscordUser)}", require="web:debug")
 		return WebRequest.DiscordUser
 
-	DiscordUser:DiscordWebUserInfo = DiscordWebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
+	DiscordUser:DiscordWebUserInfo = DiscordWebUserInfo(cls.BASE, WebRequest, **kwargs)
 	await DiscordUser.auth()
 	WebRequest.DiscordUser = DiscordUser
 
 	return WebRequest.DiscordUser
 
-async def getTwitchUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs) -> TwitchWebUserInfo:
+async def getTwitchUserInfo(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> TwitchWebUserInfo:
 	"""
 	Tries to get a DiscordUser, takes get, post, and cookie in process
 	kwargs are given to TwitchWebUserInfo
@@ -106,10 +106,10 @@ async def getTwitchUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs) -> Twi
 	"""
 
 	if hasattr(WebRequest, "TwitchUser"):
-		cls.Web.BASE.Logger.debug(f"(Web) Used stored twitch info's: {str(WebRequest.TwitchUser)}", require="web:debug")
+		cls.BASE.Logger.debug(f"(Web) Used stored twitch info's: {str(WebRequest.TwitchUser)}", require="web:debug")
 		return WebRequest.TwitchUser
 
-	TwitchUser:TwitchWebUserInfo = TwitchWebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
+	TwitchUser:TwitchWebUserInfo = TwitchWebUserInfo(cls.BASE, WebRequest, **kwargs)
 	await TwitchUser.auth()
 	WebRequest.TwitchUser = TwitchUser
 

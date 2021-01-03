@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional, Callable
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import ssl
 import json

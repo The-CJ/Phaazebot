@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.webrole import WebRole
 
 # users
-async def getWebUsers(cls:"WebIndex", **search) -> List[WebUserInfo]:
+async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUserInfo]:
 	"""
 	Get web users
 	Returns a list of WebUserInfo()
@@ -90,26 +90,26 @@ async def getWebUsers(cls:"WebIndex", **search) -> List[WebUserInfo]:
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.Web.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	return_list:List[WebUserInfo] = []
 	for user in res:
-		WebUser:WebUserInfo = WebUserInfo(cls.Web.BASE, None)
+		WebUser:WebUserInfo = WebUserInfo(cls.BASE, None)
 		await WebUser.finishUser(user)
 		return_list.append(WebUser)
 
 	return return_list
 
-async def getWebUserAmount(cls:"WebIndex", where:str="1=1", values:tuple=()) -> int:
+async def getWebUserAmount(cls:"PhaazebotWeb", where:str="1=1", values:tuple=()) -> int:
 	"""
 	simply gives a number of all matched user
 	"""
-	res:List[dict] = cls.Web.BASE.PhaazeDB.selectQuery(f"SELECT COUNT(*) AS `I` FROM `user` WHERE {where}", values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(f"SELECT COUNT(*) AS `I` FROM `user` WHERE {where}", values)
 
 	return res[0]['I']
 
 # roles
-async def getWebRoles(cls:"WebIndex", **search) -> List[WebRole]:
+async def getWebRoles(cls:"PhaazebotWeb", **search) -> List[WebRole]:
 	"""
 	Get roles the a web user can have
 	Returns a list of WebRole()
@@ -179,13 +179,13 @@ async def getWebRoles(cls:"WebIndex", **search) -> List[WebRole]:
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.Web.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 	return [WebRole(x) for x in res]
 
-async def getWebRoleAmount(cls:"WebIndex", where:str="1=1", values:tuple=()) -> int:
+async def getWebRoleAmount(cls:"PhaazebotWeb", where:str="1=1", values:tuple=()) -> int:
 	"""
 	simply gives a number of all matched roles
 	"""
-	res:List[dict] = cls.Web.BASE.PhaazeDB.selectQuery(f"SELECT COUNT(*) AS `I` FROM `role` WHERE {where}", values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(f"SELECT COUNT(*) AS `I` FROM `role` WHERE {where}", values)
 
 	return res[0]['I']
