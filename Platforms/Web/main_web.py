@@ -8,6 +8,7 @@ import traceback
 from aiohttp import web
 from Utils.cli import CliArgs
 from Utils.Classes.extendedrequest import ExtendedRequest
+from Utils.Classes.htmlformatter import HTMLFormatter
 from Platforms.Web.index import PhaazeWebIndex
 
 # load in modules in tree down.
@@ -20,9 +21,10 @@ class PhaazebotWeb(web.Application):
 		super().__init__()
 		self.BASE:"Phaazebot" = BASE
 		self._client_max_size = self.BASE.Limit.web_client_max_size
-		self.middlewares.append(self.middlewareHandler)
 		self.port:int = 9001
 		self.SSLContext:Optional[ssl.SSLContext] = None
+		self.HTMLRoot:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/root.html", template=True)
+		self.middlewares.append(self.middlewareHandler)
 
 	def __bool__(self):
 		return self.BASE.IsReady.web
@@ -64,6 +66,9 @@ class PhaazebotWeb(web.Application):
 		WebRequest.__class__ = ExtendedRequest # people told me to never do this... well fuck it i do it anyways
 		WebRequest:ExtendedRequest
 		try:
+			if str(handler.__name__) in ["_handle"]:
+				raise FileNotFoundError()
+
 			if not self.BASE.Active.web:
 				return await WebProcessing.Api.errors.apiNotAllowed(self, WebRequest, msg="Web is disabled and will be shutdown soon")
 
@@ -79,6 +84,10 @@ class PhaazebotWeb(web.Application):
 				status=HTTPEx.status,
 				content_type='application/json'
 			)
+
+		except FileNotFoundError:
+			return await WebProcessing.errors.notFound(self, WebRequest)
+
 		except Exception as e:
 			tb:str = traceback.format_exc()
 			self.BASE.Logger.error(f"(Web) Error in request: {str(e)}\n{tb}")
