@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, List, Union, Optional
 if TYPE_CHECKING:
 	from Platforms.Web.main_web import PhaazebotWeb
 
@@ -9,33 +9,34 @@ from Utils.Classes.webrole import WebRole
 async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 	"""
 	Get web users
-	Returns a list of WebUserInfo()
+	Returns a list of WebUser()
 
-	Optional search keywords:
-	-------------------------
+	Optional 'search' keywords:
+	---------------------------
 	* `user_id` - Union[int, str, None] : (Default: None) [sets LIMIT to 1]
-	* username `str`: (Default: None)
-	* username_contains `str`: (Default: None) [DB uses LIKE]
-	* email `str`: (Default: None)
-	* email_contains `str`: (Default: None) [DB uses LIKE]
-	* verified `int`: (Default: 0) [0=all, 1=only verified, 2=only not verified]
-	* order_str `str`: (Default: "ORDER BY user.id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
-	* where `str`: (Default: None) [Overwrites everything]
-	* where_values `tuple` or `dict`: (Default: None) [Only needed if where != None]
-	"""
-	username:str = search.get("username", None)
-	username_contains:str = search.get("username_contains", None)
-	email:str = search.get("email", None)
-	email_contains:str = search.get("email_contains", None)
-	verified:int = search.get("verified", 0)
-	order_str:str = search.get("order_str", "ORDER BY `user`.`id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
-	where:str = search.get("where", None)
-	where_values:tuple = search.get("where_values", ())
+	* `username` - Optional[str] : (Default: None)
+	* `email` - Optional[str] : (Default: None)
+	* `verified` - Optional[int] : (Default: None) [0=only not verified, 1=only verified]
 
+	Optional 'contains' keywords:
+	-----------------------------
+	* `username_contains` - Optional[str] : (Default: None) [DB uses LIKE on `username`]
+	* `email_contains` - Optional[str] : (Default: None) [DB uses LIKE on `email`]
+
+	Other
+	-------
+	* `order_str` - str : (Default: "ORDER BY user.id")
+	* `asc_desc` - str : (Default: "ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: None)
+	"""
 	ground_sql:str = f"""
 		SELECT
 			`user`.*,
@@ -51,44 +52,59 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 	sql:str = ""
 	values:tuple = ()
 
+	# 'search' keywords
 	user_id:Union[int, str, None] = search.get("user_id", None)
 	if user_id:
 		sql += " AND `user`.`id` = %s"
 		values += (int(user_id),)
 		search["limit"] = 1
 
-	if username and not where:
+	username:Optional[str] = search.get("username", None)
+	if username:
 		sql += " AND `user`.`username` = %s"
 		values += (str(username),)
 
-	if username_contains and not where:
+	email:Optional[str] = search.get("email", None)
+	if email:
+		sql += " AND `user`.`email` = %s"
+		values += (str(email),)
+
+	verified:Optional[int] = search.get("email", None)
+	if email:
+		sql += " AND `user`.`verified` = %s"
+		values += (int(verified),)
+
+	# 'contains' keywords
+	username_contains:Optional[str] = search.get("username_contains", None)
+	if username_contains:
 		username_contains = f"%{username_contains}%"
 		sql += " AND `user`.`username` LIKE %s"
 		values += (str(username_contains),)
 
-	if email and not where:
-		sql += " AND `user`.`email` = %s"
-		values += (str(email),)
-
-	if email_contains and not where:
+	email_contains:Optional[str] = search.get("email_contains", None)
+	if email_contains:
 		email_contains = f"%{email_contains}%"
 		sql += " AND `user`.`email` LIKE %s"
 		values += (str(email_contains),)
 
-	if verified == 1 and not where:
-		sql += " AND `user`.`verified` = 1"
-	if verified == 2 and not where:
-		sql += " AND `user`.`verified` = 0"
+	# Special
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	if overwrite_where:
+		sql = overwrite_where
+		values = () # also reset values
 
-	if where:
-		sql += f" AND {where}"
-		values = where_values
+	overwrite_where_values:Union[tuple, dict, None] = search.get("overwrite_where_values", None)
+	if overwrite_where_values:
+		values = overwrite_where_values
 
 	sql += " GROUP BY `user`.`id`" # add group by for concat
 
-	if order_str:
-		sql += f" {order_str}"
+	order_str:str = search.get("order_str", "ORDER BY `user`.`id`")
+	sql += f" {order_str}"
 
+	# Other
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
