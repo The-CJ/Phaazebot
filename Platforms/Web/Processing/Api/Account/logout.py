@@ -1,37 +1,40 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazeWebIndex
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
 from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
 from Utils.Classes.twitchwebuserinfo import TwitchWebUserInfo
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Platforms.Web.Processing.Api.errors import apiUserNotFound
+from Platforms.Web.utils import authWebUser
 
-async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAccountLogoutPhaaze(cls:"PhaazeWebIndex", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/phaaze/logout
 	"""
-	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
+	AuthWeb:AuthWebUser = await authWebUser(cls, WebRequest)
 
-	if not WebUser.found:
+	if not AuthWeb.found:
 		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
 
 	cls.Web.BASE.PhaazeDB.deleteQuery("""
 		DELETE FROM `session_phaaze`
 		WHERE `session_phaaze`.`user_id` = %s""",
-		(WebUser.user_id,)
+		(AuthWeb.User.user_id,)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API) Logout - User: {WebUser.username}", require="api:logout")
+	cls.Web.BASE.Logger.debug(f"(API) Logout - User: {AuthWeb.User.username}", require="api:logout")
 	return cls.response(
-		text=json.dumps( dict(status=200) ),
+		text=json.dumps(dict(status=200)),
 		content_type="application/json",
 		status=200
 	)
 
-async def apiAccountLogoutDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
+# TODO: rework
+async def apiAccountLogoutDiscord(cls:"PhaazeWebIndex", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/discord/logout
 	"""
@@ -55,7 +58,8 @@ async def apiAccountLogoutDiscord(cls:"WebIndex", WebRequest:Request) -> Respons
 		status=200
 	)
 
-async def apiAccountLogoutTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
+# TODO: rework
+async def apiAccountLogoutTwitch(cls:"PhaazeWebIndex", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/twitch/logout
 	"""

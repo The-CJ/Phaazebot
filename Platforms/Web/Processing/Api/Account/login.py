@@ -1,58 +1,61 @@
 from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import traceback
-from aiohttp.web import Response, Request
-from Platforms.Discord.api import translateDiscordToken, getDiscordUser
-from Platforms.Twitch.api import translateTwitchToken, getTwitchUsers
+from aiohttp.web import Response
+from Utils.stringutils import randomString
 from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.twitchuser import TwitchUser
-from Utils.stringutils import randomString
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Platforms.Web.utils import authWebUser
+from Platforms.Discord.api import translateDiscordToken, getDiscordUser
+from Platforms.Twitch.api import translateTwitchToken, getTwitchUsers
 from Platforms.Web.Processing.Api.errors import apiUserNotFound, apiMissingData
 
 SESSION_EXPIRE:int = 60*60*24*7 # 1 week
 
-async def apiAccountLoginPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAccountLoginPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/account/phaaze/login
-		looks like all other WebUser pairs, except this time it should be a post request, leading new information to login,
-		create session and give this to the user
+	Default url: /api/account/phaaze/login
+	looks like all other WebUser pairs, except this time it should be a post request, leading new information to login,
+	create session and give this to the user
 	"""
-	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest, force_method="getFromPost")
+	AuthWeb:AuthWebUser = await authWebUser(cls, WebRequest, force_method="viaPost")
 
-	if not WebUser.tried:
+	if not AuthWeb.tried:
 		return await apiMissingData(cls, WebRequest)
 
-	if not WebUser.found:
+	if not AuthWeb.found:
 		return await apiUserNotFound(cls, WebRequest)
 
 	session_key:str = randomString(size=32)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(
+	cls.BASE.PhaazeDB.insertQuery(
 		table="session_phaaze",
 		content=dict(
 			session=session_key,
-			user_id=WebUser.user_id
+			user_id=AuthWeb.User.user_id
 		)
 	)
 
-	cls.Web.BASE.PhaazeDB.query("""
+	cls.BASE.PhaazeDB.query("""
 		UPDATE `user`
 		SET `last_login` = NOW()
 		WHERE `user`.`id` = %s""",
-		(WebUser.user_id,)
+		(AuthWeb.User.user_id,)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API) New Login - Session: {session_key} User: {str(WebUser.username)}", require="api:login")
+	cls.BASE.Logger.debug(f"(API) New Login - Session: {session_key} User: {str(AuthWeb.User.username)}", require="api:login")
 	return cls.response(
 		text=json.dumps(dict(phaaze_session=session_key, status=200, expires_in=str(SESSION_EXPIRE))),
 		content_type="application/json",
 		status=200
 	)
 
-async def apiAccountLoginDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
+# TODO: rework
+async def apiAccountLoginDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 		Default url: /api/account/discord/login
 		This should only be called by Discord after a user successful authorise
@@ -74,7 +77,8 @@ async def apiAccountLoginDiscord(cls:"WebIndex", WebRequest:Request) -> Response
 		headers={"Location": f"/discord/login?error={error}"}
 	)
 
-async def apiAccountLoginTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
+# TODO: rework
+async def apiAccountLoginTwitch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/twitch/login
 	This should only be called by twitch after a user successful authorised
@@ -98,7 +102,8 @@ async def apiAccountLoginTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
 
 # # #
 
-async def completeDiscordTokenLogin(cls:"WebIndex", _WebRequest:Request, data:dict) -> Response:
+# TODO: rework
+async def completeDiscordTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, data:dict) -> Response:
 	"""
 	inserts all necessary data into the session_discord database
 	"""
@@ -147,7 +152,8 @@ async def completeDiscordTokenLogin(cls:"WebIndex", _WebRequest:Request, data:di
 			headers={"Location": "/discord/login?error=database"}
 		)
 
-async def completeTwitchTokenLogin(cls:"WebIndex", _WebRequest:Request, data:dict) -> Response:
+# TODO: rework
+async def completeTwitchTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, data:dict) -> Response:
 	"""
 	inserts all necessary data into the session_twitch database
 	"""
