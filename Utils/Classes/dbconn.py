@@ -1,10 +1,10 @@
-from typing import List
+from typing import List, Union, Optional
 from mysql.connector.cursor import MySQLCursorDict
 from mysql.connector import MySQLConnection
 
 class DBConn(object):
 	"""
-	Should handle all incomming requests
+	Should handle all incoming requests
 	call .setMassRequest(True) to prevent closing connection
 	and reuse the last connection
 
@@ -13,13 +13,13 @@ class DBConn(object):
 	it is not returned, but gets filled with various data.
 	Just give a dict reference with the call to get the data.
 
-	For example, to get the formated query actully send to the server:
+	For example, to get the formatted query actually send to the server:
 	< d = dict()
 	< DBConn.query("SELECT * FROM table WHERE id = %s OR name LIKE = %s", (544, 'CJ'), debug=d)
 	< print(d.get("last_statement", ""))
 	> SELECT * FROM table WHERE id = 544 OR name LIKE = 'CJ'
 	"""
-	def __init__(self, host:str="localhost", port:str or int=3306, user:str="root", passwd:str="...", database:str=None):
+	def __init__(self, host:str="localhost", port:Union[int, str]=3306, user:str="root", passwd:str="...", database:str="..."):
 		self.host:str = str(host)
 		self.port:str = str(port)
 		self.user:str = str(user)
@@ -27,27 +27,27 @@ class DBConn(object):
 		self.database:str = str(database)
 
 		self.mass_request:bool = False
-		self.MassRequestConn:MySQLConnection = None
+		self.MassRequestConn:Optional[MySQLConnection] = None
 
 		# if != None, called with last statement as arg, for logging etc.
 		self.statement_func:callable = None
 
 	# functions
-	def query(self, sql:str, values:tuple or dict = None, debug:dict={}) -> list:
+	def query(self, sql:str, values:Union[tuple, dict, None]=None, debug:Optional[dict]=None) -> list:
 		"""
-		Querys a SQL command. Using a MySQLCursorDict.
-		query made via this function get auto commited
+		Query's a SQL command. Using a MySQLCursorDict.
+		query made via this function get auto committed
 
-		Tryes to return values based on the status the Cursor have after finish.
+		Tries to return values based on the status the Cursor have after finish.
 
 		Return cases
 			Does cursor has unread result?
-			If yes, its probly a SELECT query
+			If yes, its probably a SELECT query
 			> Fetch all and return list of dict
 			>> use .selectQuery() to ensure SELECT return
 
 			Does cursor have a lastrowid?
-			If yes, its probly a INSERT query
+			If yes, its probably a INSERT query
 			> Return list with one element, the new row id
 			>> use .insertQuery() to ensure INSERT new_row_id
 
@@ -57,7 +57,7 @@ class DBConn(object):
 			Then use connection.cursor to get a cursor,
 			then make all requests with cursor.execute()
 			If finished and everything worked without error,
-			use connection.commit() to actully save all changes
+			use connection.commit() to actually save all changes
 			or connection.rollback() if needed.
 		"""
 		# setup
@@ -67,7 +67,7 @@ class DBConn(object):
 		# do stuff
 		self.executeQuery(Cursor, sql, values, debug)
 
-		# read and quess result
+		# read and ques result
 		if Cursor._have_unread_result(): res:list = Cursor.fetchall()
 		elif Cursor.lastrowid: res:list = [Cursor.lastrowid]
 		else: res:list = []
@@ -78,7 +78,7 @@ class DBConn(object):
 
 		return res
 
-	def selectQuery(self, sql:str, values:tuple or dict = None, debug:dict={}) -> List[dict]:
+	def selectQuery(self, sql:str, values:Union[tuple, dict, None]=None, debug:Optional[dict]=None) -> List[dict]:
 		"""
 		Pretty much the same as a normal .query()
 		except it ensures a list with sets return
@@ -100,7 +100,7 @@ class DBConn(object):
 
 		return res
 
-	def deleteQuery(self, sql:str, values:tuple or dict = None, debug:dict={}) -> int:
+	def deleteQuery(self, sql:str, values:Union[tuple, dict, None]=None, debug:Optional[dict]=None) -> int:
 		"""
 		Pretty much the same as a normal .query()
 		except it ensures a int return
@@ -120,11 +120,11 @@ class DBConn(object):
 
 		return int(Cursor.rowcount)
 
-	def updateQuery(self, table:str=None, content:dict=None, where:str=None, where_values:tuple=(), debug:dict={}) -> int:
+	def updateQuery(self, table:Optional[str]=None, content:Optional[dict]=None, where:Optional[str]=None, where_values:tuple=(), debug:Optional[dict]=None) -> int:
 		"""
 		dict bases, secured update query,
 		all special chars will get replaced by byte safe sql counterpart
-		query made via this function get auto commited
+		query made via this function get auto committed
 
 		here a quick example:
 
@@ -140,7 +140,7 @@ class DBConn(object):
 		if not table or not content or not where: raise AttributeError("'table', 'content' and 'where' must be given")
 
 		# prework
-		setter:str = ", ".join([ f"`{key}` = %s" for key in content ])
+		setter:str = ", ".join([f"`{key}` = %s" for key in content])
 		statement:str = f"""UPDATE `{table}` SET {setter} WHERE {where}"""
 		values:tuple = tuple([content[key] for key in content]) + where_values
 
@@ -157,11 +157,11 @@ class DBConn(object):
 
 		return int(Cursor.rowcount)
 
-	def insertQuery(self, table:str=None, content:dict=None, replace:bool=False, update_on_duplicate:bool=False, debug:dict={}) -> int:
+	def insertQuery(self, table:Optional[str]=None, content:Optional[dict]=None, replace:bool=False, update_on_duplicate:bool=False, debug:Optional[dict]=None) -> int:
 		"""
 		dict bases, secured insert query,
 		all special chars will get replaced by byte safe sql counterpart
-		query made via this function get auto commited
+		query made via this function get auto committed
 
 		here a quick example:
 
@@ -173,11 +173,11 @@ class DBConn(object):
 		Returns the id of the most resent row
 		"""
 		if not table or not content: raise AttributeError("`table` and `content` must be given")
-		if replace and update_on_duplicate: raise AttributeError("`replace` and `update_on_duplicate` can't bove the True")
+		if replace and update_on_duplicate: raise AttributeError("`replace` and `update_on_duplicate` can't both the True")
 
 		# prework
 		keys:str = ", ".join(f"`{key}`" for key in content)
-		value_holder:str = ", ".join("%s" for key in content)
+		value_holder:str = ", ".join("%s" for _ in content)
 		values:tuple = tuple(content[key] for key in content)
 
 		operation:str = "REPLACE INTO" if replace else "INSERT INTO"
@@ -203,17 +203,17 @@ class DBConn(object):
 	# utils
 	def executeQuery(self, Cursor:MySQLCursorDict, sql:str, values:tuple or dict, debug:dict) -> None:
 		"""
-		Just wrappes the query in a try catch to get the statement and debug funtions
+		Just wraps the query in a try catch to get the statement and debug functions
 		"""
 		try:
 			Cursor.execute(sql, values)
 			debug["last_statement"] = Cursor.statement
-			if self.statement_func != None:
+			if self.statement_func is not None:
 				self.statement_func(debug["last_statement"])
 
 		except Exception as E:
 			debug["last_statement"] = Cursor.statement
-			if self.statement_func != None:
+			if self.statement_func is not None:
 				self.statement_func(debug["last_statement"])
 
 			raise E
@@ -228,7 +228,7 @@ class DBConn(object):
 		"""
 
 		if self.mass_request:
-			if self.MassRequestConn != None:
+			if self.MassRequestConn is not None:
 				return self.MassRequestConn
 			else:
 				self.MassRequestConn = self.createConnection()
@@ -238,15 +238,15 @@ class DBConn(object):
 
 	def createConnection(self) -> MySQLConnection:
 		"""
-		same as .getConnection execpt it's always a new connection
+		same as .getConnection except it's always a new connection
 		.getConnection could also be a already used one because .mass_request is True
 		"""
 		Conn:MySQLConnection = MySQLConnection(
-			host = self.host,
-			port = self.port,
-			user = self.user,
-			passwd = self.passwd,
-			database = self.database,
+			host=self.host,
+			port=self.port,
+			user=self.user,
+			passwd=self.passwd,
+			database=self.database,
 		)
 
 		# enable full char support
@@ -257,8 +257,8 @@ class DBConn(object):
 	def setMassRequest(self, state:bool) -> None:
 		"""
 		Mass requests will hold a connection open, after any other operation in this class.
-		It will still be commited but not closed.
-		This will increase the speed but making the entire class Threading unsave.
+		It will still be committed but not closed.
+		This will increase the speed but making the entire class Threading unsaved.
 		Its recommended to make a new DBConn() object and enable mass request in this.
 
 		a stored instance of a mass request connection can timeout if left unused.
