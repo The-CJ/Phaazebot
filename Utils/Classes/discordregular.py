@@ -1,19 +1,18 @@
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
-from Utils.Classes.apiclass import APIClass
+from Utils.Classes.contentclass import ContentClass
 
-class DiscordRegular(DBContentClass, APIClass):
+class DiscordRegular(ContentClass):
 	"""
 	Contains and represents stuff for a discord member that is a regular
 	"""
 	def __init__(self, data:dict):
 
 		# key
-		self.regular_id:str = data.get("id", UNDEFINED)
-		self.guild_id:str = data.get("guild_id", UNDEFINED)
+		self.regular_id:int = self.asInteger(data.get("id", UNDEFINED))
+		self.guild_id:str = self.asString(data.get("guild_id", UNDEFINED))
 
 		# vars
-		self.member_id:int =data.get("member_id", UNDEFINED)
+		self.member_id:str = self.asString(data.get("member_id", UNDEFINED))
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' member='{self.member_id}'>"
@@ -23,8 +22,8 @@ class DiscordRegular(DBContentClass, APIClass):
 
 		j:dict = dict()
 
-		j["regular_id"] = self.toString(self.regular_id)
-		j["guild_id"] = self.toString(self.guild_id)
-		j["member_id"] = self.toString(self.member_id)
+		j["regular_id"] = self.asString(self.regular_id)
+		j["guild_id"] = self.asString(self.guild_id)
+		j["member_id"] = self.asString(self.member_id)
 
 		return j
