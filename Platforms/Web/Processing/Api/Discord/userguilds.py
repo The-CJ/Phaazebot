@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Platforms.Discord.api import getDiscordUserServers
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUserInfo
 from ..errors import apiMissingAuthorisation, apiNotAllowed
 
 async def apiDiscordUserGuilds(cls:"WebIndex", WebRequest:Request) -> Response:

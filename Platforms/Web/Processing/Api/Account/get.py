@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response
 from Utils.Classes.authwebuser import AuthWebUser
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUserInfo
 from Utils.Classes.twitchwebuserinfo import TwitchWebUserInfo
 from Utils.Classes.extendedrequest import ExtendedRequest
 from Platforms.Web.utils import authWebUser, getTwitchUserInfo, getDiscordUserInfo

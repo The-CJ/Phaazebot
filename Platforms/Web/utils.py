@@ -7,7 +7,7 @@ from Platforms.Discord.api import generateDiscordAuthLink
 from Platforms.Twitch.api import generateTwitchAuthLink
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.authwebuser import AuthWebUser
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUserInfo
 from Utils.Classes.twitchwebuserinfo import TwitchWebUserInfo
 from Utils.Classes.storeclasses import GlobalStorage
 from Utils.Classes.extendedrequest import ExtendedRequest

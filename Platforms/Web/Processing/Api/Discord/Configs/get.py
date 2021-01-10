@@ -9,7 +9,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Discord.db import getDiscordSeverSettings
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUserInfo
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingAuthorisation,
 	apiMissingData

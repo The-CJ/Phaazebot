@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUserInfo
 from Platforms.Web.utils import getNavbar
 from Platforms.Discord.api import generateDiscordAuthLink
 from ..errors import notAllowed

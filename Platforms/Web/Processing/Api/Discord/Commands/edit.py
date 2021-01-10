@@ -9,7 +9,7 @@ import discord
 from aiohttp.web import Response, Request
 from Platforms.Discord.commandindex import command_register
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.discordcommand import DiscordCommand

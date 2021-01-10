@@ -8,7 +8,7 @@ import asyncio
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUserInfo
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordusermedal import DiscordUserMedal
 from Platforms.Discord.db import getDiscordUsersMedals, getDiscordSeverSettings
