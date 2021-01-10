@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 if TYPE_CHECKING:
 	from main import Phaazebot
 
@@ -16,8 +16,6 @@ class StoreStructure(object):
 		if not self.Phaaze.Config:
 			raise AttributeError("Missing or unloaded ConfigParser in main Phaaze object")
 
-		self.load()
-
 	def load(self) -> None:
 		"""
 		This func. must be overwritten
@@ -27,7 +25,7 @@ class StoreStructure(object):
 	def getFromConfig(self, a:str, b:Any, required:bool) -> Any:
 		"""
 		get `a` from configs else, return `b`
-		if `required` and `a` was not found: panic
+		if `required` and `a` was not found: -> panic
 		"""
 		value:Any = self.Phaaze.Config.get(a, UNDEFINED)
 		if type(value) is Undefined:
@@ -37,32 +35,32 @@ class StoreStructure(object):
 				self.Phaaze.Logger.error(errmsg)
 				raise AttributeError(errmsg)
 
-			warmsg:str = f"(Config) can't find '{a}' - alernative '{str(b)}' is taken"
-			self.Phaaze.Logger.debug(warmsg, require="config")
+			war_msg:str = f"(Config) can't find '{a}' - alternative '{str(b)}' is taken"
+			self.Phaaze.Logger.debug(war_msg, require="config")
 			return b
 
 		else:
 			if CliArgs.get("show-configs", False):
-				sucmsg:str = f"(Config) found '{a}' = '{str(value)}'"
-				self.Phaaze.Logger.debug(sucmsg, require="config")
+				suc_msg:str = f"(Config) found '{a}' = '{str(value)}'"
+				self.Phaaze.Logger.debug(suc_msg, require="config")
 
 			return value
 
-	def getBoolFromConfig(self, a:str, b:bool=UNDEFINED, required:bool=False) -> bool:
+	def getBoolFromConfig(self, a:str, b:Optional[bool]=UNDEFINED, required:bool=False) -> bool:
 		"""
 		get value from configs as a bool
 		"""
 		value:Any = self.getFromConfig(a, b, required)
 		return bool(value)
 
-	def getStrFromConfig(self, a:str, b:str=UNDEFINED, required:bool=False) -> str:
+	def getStrFromConfig(self, a:str, b:Optional[str]=UNDEFINED, required:bool=False) -> str:
 		"""
 		get value from configs as a str
 		"""
 		value:Any = self.getFromConfig(a, b, required)
 		return str(value)
 
-	def getIntFromConfig(self, a:str, b:str=UNDEFINED, required:bool=False) -> int:
+	def getIntFromConfig(self, a:str, b:Optional[int]=UNDEFINED, required:bool=False) -> int:
 		"""
 		get value from configs as a int
 		"""
@@ -77,13 +75,20 @@ class AccessStore(StoreStructure):
 	"""
 	Settings and Keys to all platforms or entry points that is not us
 	"""
-	def load(self):
+
+	def __init__(self, BASE: "Phaazebot"):
+		super().__init__(BASE)
+
 		# twitch
-		self.twitch_client_credential_token:str = self.getStrFromConfig("twitch_client_credential_token")
-		self.twitch_client_id:str = self.getStrFromConfig("twitch_client_id")
-		self.twitch_client_secret:str = self.getStrFromConfig("twitch_client_secret")
-		self.twitch_irc_nickname:str = self.getStrFromConfig("twitch_irc_nickname")
 		self.twitch_irc_token:str = self.getStrFromConfig("twitch_irc_token")
+		self.twitch_irc_nickname:str = self.getStrFromConfig("twitch_irc_nickname")
+		self.twitch_client_secret:str = self.getStrFromConfig("twitch_client_secret")
+		self.twitch_client_id:str = self.getStrFromConfig("twitch_client_id")
+		self.twitch_client_credential_token:str = self.getStrFromConfig("twitch_client_credential_token")
+
+		# discord
+		self.discord_secret:str = self.getStrFromConfig("discord_secret")
+		self.discord_token:str = self.getStrFromConfig("discord_token")
 
 		# discord
 		self.discord_secret:str = self.getStrFromConfig("discord_secret")
@@ -116,7 +121,10 @@ class ActiveStore(StoreStructure):
 	used to keep track of all modules, if they should run or not
 	gets configs from config file and provides alternative default
 	"""
-	def load(self):
+
+	def __init__(self, BASE: "Phaazebot"):
+		super().__init__(BASE)
+
 		# if this is not True, the program shuts down immediately
 		self.main:bool = self.getBoolFromConfig("active_main", True, required=True)
 
@@ -131,10 +139,13 @@ class ActiveStore(StoreStructure):
 
 class LimitStore(StoreStructure):
 	"""
-	contains user limits for all addeble things, like command amount and so on
+	contains user limits for all addable things, like command amount and so on
 	gets configs from config file and provides alternative default
 	"""
-	def load(self):
+
+	def __init__(self, BASE: "Phaazebot"):
+		super().__init__(BASE)
+
 		# amount's
 		self.discord_assignrole_amount:int = self.getIntFromConfig("discord_assignrole_amount", DiscordConst.ASSIGNROLE_AMOUNT)
 		self.discord_commands_amount:int = self.getIntFromConfig("discord_commands_amount", DiscordConst.COMMAND_AMOUNT)
@@ -154,13 +165,16 @@ class LimitStore(StoreStructure):
 		self.twitch_punish_time_min:int = self.getIntFromConfig("twitch_punish_time_min", TwitchConst.PUNISH_TIME_MIN)
 
 		# other's
-		self.web_client_max_size:int = self.getIntFromConfig("web_client_max_size", 5242880) #5MB
+		self.web_client_max_size:int = self.getIntFromConfig("web_client_max_size", 5242880) # 5MB
 
 class VarsStore(StoreStructure):
 	"""
 	filled with permanent vars/const, or functions to get values
 	"""
-	def load(self):
+
+	def __init__(self, BASE: "Phaazebot"):
+		super().__init__(BASE)
+
 		# debug
 		self.discord_debug_user_id:list = list(self.getFromConfig("discord_debug_user_id", [], False))
 		self.twitch_debug_user_id:list = list(self.getFromConfig("twitch_debug_user_id", [], False))
@@ -192,7 +206,7 @@ class VarsStore(StoreStructure):
 
 class IsReadyStore(object):
 	"""
-	Containes the state if something is ready or not
+	Contains the state if something is ready or not
 	all start False, turn True when connected
 	"""
 	def __init__(self):
