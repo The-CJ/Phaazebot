@@ -71,6 +71,19 @@ class ContentClass(object):
 			return datetime.strptime("2000-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
 
 	@staticmethod
+	def asList(data:Any) -> list:
+		"""
+		tries to ensures any input to be a api save list
+		except that's impossible, so we just check if its a list,
+		or return a empty one.... whopsi
+		"""
+
+		if type(data) is list:
+			return data
+
+		return []
+
+	@staticmethod
 	def fromJsonField(data:Union[str, bytes]) -> Union[dict, list]:
 		"""
 		converts json-string into a dict (or list)
