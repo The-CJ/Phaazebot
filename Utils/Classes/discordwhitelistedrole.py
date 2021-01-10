@@ -1,8 +1,8 @@
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.contentclass import ContentClass
 from Utils.Classes.apiclass import APIClass
 
-class DiscordWhitelistedRole(DBContentClass, APIClass):
+class DiscordWhitelistedRole(ContentClass, APIClass):
 	"""
 	Contains and represents a whitelisted role in discord
 	Whitelisted means there are a exception to the blacklist and spam filter

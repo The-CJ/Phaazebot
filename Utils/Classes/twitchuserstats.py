@@ -3,10 +3,10 @@ if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.contentclass import ContentClass
 from Utils.Classes.apiclass import APIClass
 
-class TwitchUserStats(DBContentClass, APIClass):
+class TwitchUserStats(ContentClass, APIClass):
 	"""
 	Contains and represents all phaaze values for a Twitch user
 	"""

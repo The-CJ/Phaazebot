@@ -3,11 +3,11 @@ if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.contentclass import ContentClass
 from Utils.Classes.apiclass import APIClass
 from Utils.Classes.storeclasses import GlobalStorage
 
-class TwitchCommand(DBContentClass, APIClass):
+class TwitchCommand(ContentClass, APIClass):
 	"""
 	Contains and represents a twitch command
 	"""

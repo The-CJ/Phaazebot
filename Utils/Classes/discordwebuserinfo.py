@@ -5,14 +5,14 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Request
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.contentclass import ContentClass
 from Utils.Classes.apiclass import APIClass
 
 def forcable(f:Callable) -> Callable:
 	f.__forcable__ = True
 	return f
 
-class DiscordWebUserInfo(DBContentClass, APIClass):
+class DiscordWebUserInfo(ContentClass, APIClass):
 	"""
 	Used for authorisation of a discord web user request
 	variable search way:

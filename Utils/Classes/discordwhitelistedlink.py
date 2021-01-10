@@ -1,8 +1,8 @@
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.contentclass import ContentClass
 from Utils.Classes.apiclass import APIClass
 
-class DiscordWhitelistedLink(DBContentClass, APIClass):
+class DiscordWhitelistedLink(ContentClass, APIClass):
 	"""
 	Contains and represents a whitelisted link in discord
 	Whitelisted means that even if links are banned, this link (regex)

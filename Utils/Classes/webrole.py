@@ -1,8 +1,8 @@
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.contentclass import ContentClass
 from Utils.Classes.apiclass import APIClass
 
-class WebRole(DBContentClass, APIClass):
+class WebRole(ContentClass, APIClass):
 	"""
 	Contains and represents a role for the web server
 	"""

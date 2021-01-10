@@ -3,9 +3,9 @@ from typing import List, Union
 from datetime import datetime
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.apiclass import APIClass
-from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.contentclass import ContentClass
 
-class WebUser(APIClass, DBContentClass):
+class WebUser(APIClass, ContentClass):
 	"""
 	Contains and represents a phaaze-web user
 	"""

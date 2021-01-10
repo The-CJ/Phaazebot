@@ -856,7 +856,7 @@ async def getDiscordServerLevelDisabledChannels(cls:"PhaazebotDiscord", guild_id
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
 
 	if res:
-		return [DiscordLevelDisabledChannel(x, guild_id) for x in res]
+		return [DiscordLevelDisabledChannel(x) for x in res]
 
 	else:
 		return []

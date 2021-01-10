@@ -1,9 +1,9 @@
 from typing import List
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
+from Utils.Classes.contentclass import ContentClass
 from Utils.Classes.apiclass import APIClass
 
-class TwitchChannelSettings(DBContentClass, APIClass):
+class TwitchChannelSettings(ContentClass, APIClass):
 	"""
 	Contains and represents all possible twitch channel settings
 	"""
