@@ -4,11 +4,18 @@ import json
 from datetime import datetime
 from Utils.Classes.undefined import Undefined
 
-class DBContentClass(object):
+class ContentClass(object):
 	"""
-	Ground object for all classes, that get feeded with raw data from the database
-	to create usable classes
+	Ground object for all classes,
+	that get fed with raw data from the database
+	or goes out to API responses.
+
+	Or a simple class for type conversion.
 	"""
+
+	def toJSON(self) -> None:
+		""" This function must be overwritten by the child class """
+		raise AttributeError(f"{self.__class__.__name__} missing a .toJSON()")
 
 	@staticmethod
 	def asString(data:Any) -> str:
