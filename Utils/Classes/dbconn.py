@@ -201,10 +201,11 @@ class DBConn(object):
 		return Cursor.lastrowid
 
 	# utils
-	def executeQuery(self, Cursor:MySQLCursorDict, sql:str, values:tuple or dict, debug:dict) -> None:
+	def executeQuery(self, Cursor:MySQLCursorDict, sql:str, values:Union[tuple, dict], debug:Optional[dict]) -> None:
 		"""
 		Just wraps the query in a try catch to get the statement and debug functions
 		"""
+		if debug is None: debug = {}
 		try:
 			Cursor.execute(sql, values)
 			debug["last_statement"] = Cursor.statement
