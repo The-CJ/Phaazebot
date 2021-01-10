@@ -1,15 +1,15 @@
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.apiclass import APIClass
+from Utils.Classes.contentclass import ContentClass
 
-class TwitchGame(APIClass):
+class TwitchGame(ContentClass):
 	"""
 	Contains and represents a twitch game
 	"""
 	def __init__(self, data:dict):
 
-		self.game_id:str = data.get("id", UNDEFINED)
-		self.name:str = data.get("name", UNDEFINED)
-		self._thumbnail:str = data.get("box_art_url", UNDEFINED)
+		self.game_id:str = self.asString(data.get("id", UNDEFINED))
+		self.name:str = self.asString(data.get("name", UNDEFINED))
+		self._thumbnail:str = self.asString(data.get("box_art_url", UNDEFINED))
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} game_id='{self.game_id}' name='{self.name}'>"
@@ -23,8 +23,8 @@ class TwitchGame(APIClass):
 
 		j:dict = dict()
 
-		j["game_id"] = self.toString(self.user_id)
-		j["name"] = self.toString(self.user_name)
-		j["thumbnail"] = self.toString( self.thumbnail(thumbnail_width) )
+		j["game_id"] = self.asString(self.game_id)
+		j["name"] = self.asBoolean(self.name)
+		j["thumbnail"] = self.asString(self.thumbnail(thumbnail_width))
 
 		return j

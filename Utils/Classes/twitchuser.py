@@ -1,5 +1,6 @@
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.apiclass import APIClass
+from Utils.Classes.contentclass import ContentClass
 
 class TwitchUser(APIClass):
 	"""

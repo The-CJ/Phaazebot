@@ -22,7 +22,7 @@ class DiscordCommandContext(object):
 		self.ServerSettings:DiscordServerSettings = Settings
 		self.parts:list = Message.content.split()
 
-	def part(self, pos:int) -> str or None:
+	def part(self, pos:int) -> Optional[str]:
 		try:
 			return self.parts[pos]
 		except:
