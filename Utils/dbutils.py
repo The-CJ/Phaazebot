@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, Union
 
-def validateDBInput(wanted_type:type, value:Any, alternative:Any=None, allow_null:bool=False) -> str:
+def validateDBInput(wanted_type:type, value:Any, alternative:Any=None, allow_null:bool=False) -> Union[str, int, None]:
 	"""
 		Transforms any input into the wanted input for a database.
-		Tryes to give back value in a wanted input, if not possible return alternative
-		Really usefull for bool operations
+		Tries to give back value in a wanted input, if not possible return alternative
+		Really useful for bool operations
 		Means:
 			validateDBInput( bool, "reee" ) -> "1"
 			validateDBInput( int, "58452" ) -> "58452"
@@ -14,7 +14,7 @@ def validateDBInput(wanted_type:type, value:Any, alternative:Any=None, allow_nul
 
 		If allow_null is true and None is passed as `value`, it returns None, since NULL is a valid DB type for all
 	"""
-	if allow_null and value == None: return None
+	if allow_null and value is None: return None
 
 	if wanted_type == bool:
 		if value in ["true", "True", "1", True]:

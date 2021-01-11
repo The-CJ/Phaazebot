@@ -7,7 +7,7 @@ from Utils.Classes.undefined import UNDEFINED
 
 class ConfigParser(object):
 	"""
-	This class is suppost to provide a raw accesspoint for configuration data.
+	This class is support to provide a raw access point for configuration data.
 	There are multiple ways to load config in this class, from there, all other Sub-Config classes that info from here
 	"""
 	def __init__(self, file_path:str="Config/config.phzcf", file_type:str="phzcf"):
@@ -51,7 +51,7 @@ class ConfigParser(object):
 			traceback.print_exc()
 
 	def loadPHZCF(self, content:bytes) -> None:
-		self.content = phzcf.load( content )
+		self.content = phzcf.load(content)
 
 	def loadJSON(self, content:bytes) -> None:
-		self.content = json.loads( content )
+		self.content = json.loads(content)

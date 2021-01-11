@@ -10,14 +10,14 @@ class PhaazeLoggerFormatter(logging.Formatter):
 		super().__init__(fmt)
 		self.default_color:str = "\033[00m"
 		self.colors:dict = dict(
-			DEBUG = "\033[90m",
-			INFO = "\033[36m",
-			WARNING = "\033[93m",
-			ERROR = "\033[33m",
-			CRITICAL = "\033[31m",
+			DEBUG="\033[90m",
+			INFO="\033[36m",
+			WARNING="\033[93m",
+			ERROR="\033[33m",
+			CRITICAL="\033[31m",
 		)
 
-	def formatMessage(self, Record:logging.LogRecord) -> None:
+	def formatMessage(self, Record:logging.LogRecord) -> str:
 		lvl:str = Record.levelname
 		wanted_color:str = self.colors.get(lvl, self.default_color)
 		Record.levelname = f"{wanted_color}{lvl}{self.default_color}"
@@ -31,7 +31,7 @@ class PhaazeLogger(object):
 
 		# we lock if there are already handlers applied, we do this because its not bound to the Logger object but to the module 'logging'
 		# when we call logging.getLogger("Phaazebot") we may get a object that already has handlers.
-		# most likly happens when the main programm calls in protocol executions that copy a clean Phaazebot() from main
+		# most likely happens when the main program calls in protocol executions that copy a clean Phaazebot() from .phaazebot
 		if not self.Log.handlers:
 			self.Formatter:PhaazeLoggerFormatter = PhaazeLoggerFormatter("[%(levelname)s]: %(message)s")
 			self.active_debugs:list = [a.lower() for a in CliArgs.get("debug", "").split(",")]
@@ -58,9 +58,15 @@ class PhaazeLogger(object):
 		if require == "": show = True
 
 		for ad in self.active_debugs:
-			if ad == "all": show = True; break
-			if require == ad: show = True; break
-			if require.split(":")[0] == ad: show = True; break
+			if ad == "all":
+				show = True
+				break
+			if require == ad:
+				show = True
+				break
+			if require.split(":")[0] == ad:
+				show = True
+				break
 
 		if show:
 			# Caller tracks back the command that called this function,
@@ -72,10 +78,10 @@ class PhaazeLogger(object):
 
 	def printSQL(self, statement:str) -> None:
 		"""
-			pretty prints a sql statement
-			(i like using tabs, so that should remove them before printing,
-			so you dont have to watch disorderd stairs)
+		pretty prints a sql statement
+		(i like using tabs, so that should remove them before printing,
+		so you don't have to watch disordered stairs)
 		"""
 		# just remove leading whitespaces and put back together
-		statement = '\n'.join([ l.lstrip("\t") for l in statement.splitlines() ])
+		statement = '\n'.join([lt.lstrip("\t") for lt in statement.splitlines()])
 		self.debug(f"{'+'*10}\n{statement}\n{'-'*10}", require="")

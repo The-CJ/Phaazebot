@@ -1,3 +1,4 @@
+from typing import Optional, List
 import hashlib
 import string
 import random
@@ -7,10 +8,10 @@ def password(passwd:str) -> str:
 		returns any string into a sha256 encoded password hash
 	"""
 	passwd = str(passwd)
-	password:str = hashlib.sha256(passwd.encode("UTF-8")).hexdigest()
-	return password
+	passwd = hashlib.sha256(passwd.encode("UTF-8")).hexdigest()
+	return passwd
 
-def randomString(size:int = 10, pool:list = [1,2,3], extra:str = "", remove:str=",`'") -> str:
+def randomString(size:int = 10, pool:Optional[List[int]] = None, extra:str = "", remove:str=",`'") -> str:
 	"""
 		returns a random generated string by size
 		based on the allowed char pool,
@@ -18,11 +19,15 @@ def randomString(size:int = 10, pool:list = [1,2,3], extra:str = "", remove:str=
 		(remove first, then add extra)
 
 		Pools:
-		1 - digits
-		2 - uppercase chars
-		3 - lowerchase chars
-		4 - punctuation
+		------
+		* 1 - digits
+		* 2 - uppercase chars
+		* 3 - lowercase chars
+		* 4 - punctuation
+
+		Default Pool is = [1,2,3]
 	"""
+	if not pool: pool = [1,2,3]
 	string_pool:str = ""
 	if 1 in pool: string_pool += string.digits
 	if 2 in pool: string_pool += string.ascii_uppercase
@@ -36,7 +41,7 @@ def randomString(size:int = 10, pool:list = [1,2,3], extra:str = "", remove:str=
 	# add extra
 	string_pool += extra
 
-	key = ''.join(random.choice(string_pool) for x in range(size))
+	key = ''.join(random.choice(string_pool) for _ in range(size))
 	return key
 
 def numberToHugeLetter(number:int) -> str:
@@ -56,9 +61,9 @@ def numberToHugeLetter(number:int) -> str:
 	number = str(number)
 	return "".join([numbers.get(x, "") for x in number])
 
-def prettifyNumbers(number:int or float, ndigits:int=2, sepperator:str="'") -> str:
+def prettifyNumbers(number:int or float, ndigits:int=2, separator:str= "'") -> str:
 	"""
-		Turns a number into a dottet format to make it easyer readable,
+		Turns a number into a dotted format to make it easier readable,
 		or make floats to a fix value
 	"""
 
@@ -74,6 +79,6 @@ def prettifyNumbers(number:int or float, ndigits:int=2, sepperator:str="'") -> s
 			return number
 
 	if not ndigits:
-		return ("{:,}".format( number, ndigits )).replace(",", sepperator)
+		return ("{:,}".format(number, ndigits)).replace(",", separator)
 	else:
-		return ("{:,}".format( round(number, ndigits) )).replace(",", sepperator)
+		return ("{:,}".format(round(number, ndigits))).replace(",", separator)

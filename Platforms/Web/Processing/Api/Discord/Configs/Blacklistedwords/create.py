@@ -26,7 +26,7 @@ async def apiDiscordConfigsBlacklistedWordsCreate(cls:"WebIndex", WebRequest:Req
 
 	# get required stuff
 	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	word:str = Data.getStr("word", "", len_max=512).replace(";;;", "") # ;;; is the sql sepperator
+	word:str = Data.getStr("word", "", len_max=512).replace(";;;", "") # ;;; is the sql separator
 
 	# checks
 	if not guild_id:

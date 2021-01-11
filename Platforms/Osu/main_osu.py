@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 import osu_irc
 
 class PhaazebotOsu(osu_irc.Client):
-	def __init__(self, BASE:"Phaazebot", *args:list, **kwargs:dict):
+	def __init__(self, BASE:"Phaazebot", *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.BASE:"Phaazebot" = BASE
 
