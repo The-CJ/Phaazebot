@@ -7,8 +7,8 @@ from Platforms.Discord.api import generateDiscordAuthLink
 from Platforms.Twitch.api import generateTwitchAuthLink
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.authwebuser import AuthWebUser
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
-from Utils.Classes.twitchwebuserinfo import TwitchWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
+from Utils.Classes.twitchwebuser import TwitchWebUser
 from Utils.Classes.storeclasses import GlobalStorage
 from Utils.Classes.extendedrequest import ExtendedRequest
 
@@ -77,12 +77,12 @@ async def authWebUser(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) 
 	return WebRequest.AuthWeb
 
 # TODO: rework
-async def getDiscordUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> DiscordWebUserInfo:
+async def getDiscordUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> DiscordWebUser:
 	"""
 	Tries to get a DiscordUser, takes get, post, and cookie in process
-	kwargs are given to DiscordWebUserInfo
+	kwargs are given to DiscordWebUser
 
-	DiscordWebUserInfo kwargs:
+	DiscordWebUser kwargs:
 		force_method
 		phaaze_discord_session
 	"""
@@ -91,19 +91,19 @@ async def getDiscordUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **k
 		cls.BASE.Logger.debug(f"(Web) Used stored discord info's: {str(WebRequest.DiscordUser)}", require="web:debug")
 		return WebRequest.DiscordUser
 
-	DiscordUser:DiscordWebUserInfo = DiscordWebUserInfo(cls.BASE, WebRequest, **kwargs)
+	DiscordUser:DiscordWebUser = DiscordWebUser(cls.BASE, WebRequest, **kwargs)
 	await DiscordUser.auth()
 	WebRequest.DiscordUser = DiscordUser
 
 	return WebRequest.DiscordUser
 
 # TODO: rework
-async def getTwitchUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> TwitchWebUserInfo:
+async def getTwitchUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> TwitchWebUser:
 	"""
 	Tries to get a DiscordUser, takes get, post, and cookie in process
-	kwargs are given to TwitchWebUserInfo
+	kwargs are given to TwitchWebUser
 
-	TwitchWebUserInfo kwargs:
+	TwitchWebUser kwargs:
 		force_method
 		phaaze_twitch_session
 	"""
@@ -112,7 +112,7 @@ async def getTwitchUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kw
 		cls.BASE.Logger.debug(f"(Web) Used stored twitch info's: {str(WebRequest.TwitchUser)}", require="web:debug")
 		return WebRequest.TwitchUser
 
-	TwitchUser:TwitchWebUserInfo = TwitchWebUserInfo(cls.BASE, WebRequest, **kwargs)
+	TwitchUser:TwitchWebUser = TwitchWebUser(cls.BASE, WebRequest, **kwargs)
 	await TwitchUser.auth()
 	WebRequest.TwitchUser = TwitchUser
 

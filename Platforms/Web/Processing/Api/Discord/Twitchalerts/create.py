@@ -9,7 +9,7 @@ import asyncio
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.twitchuser import TwitchUser
 from Platforms.Twitch.api import getTwitchUsers
@@ -111,7 +111,7 @@ async def apiDiscordTwitchalertsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		return await apiDiscordAlertExists(cls, WebRequest, twitch_name=FoundUser.name, discord_id=TargetDiscordChannel.id)
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 

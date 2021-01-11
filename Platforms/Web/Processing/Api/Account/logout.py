@@ -5,8 +5,8 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response
 from Utils.Classes.authwebuser import AuthWebUser
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
-from Utils.Classes.twitchwebuserinfo import TwitchWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
+from Utils.Classes.twitchwebuser import TwitchWebUser
 from Utils.Classes.extendedrequest import ExtendedRequest
 from Platforms.Web.Processing.Api.errors import apiUserNotFound
 from Platforms.Web.utils import authWebUser
@@ -39,7 +39,7 @@ async def apiAccountLogoutDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest
 	Default url: /api/account/discord/logout
 	"""
 
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
 
 	if not DiscordUser.found:
 		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
@@ -63,7 +63,7 @@ async def apiAccountLogoutTwitch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest)
 	"""
 	Default url: /api/account/twitch/logout
 	"""
-	TwitchUser:TwitchWebUserInfo = await cls.getTwitchUserInfo(WebRequest)
+	TwitchUser:TwitchWebUser = await cls.getTwitchUserInfo(WebRequest)
 
 	if not TwitchUser.found:
 		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")

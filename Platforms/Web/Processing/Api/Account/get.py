@@ -5,8 +5,8 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response
 from Utils.Classes.authwebuser import AuthWebUser
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
-from Utils.Classes.twitchwebuserinfo import TwitchWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
+from Utils.Classes.twitchwebuser import TwitchWebUser
 from Utils.Classes.extendedrequest import ExtendedRequest
 from Platforms.Web.utils import authWebUser, getTwitchUserInfo, getDiscordUserInfo
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
@@ -31,7 +31,7 @@ async def apiAccountGetDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -
 	"""
 	Default url: /api/account/discord/get
 	"""
-	DiscordUser:DiscordWebUserInfo = await getDiscordUserInfo(cls, WebRequest)
+	DiscordUser:DiscordWebUser = await getDiscordUserInfo(cls, WebRequest)
 
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
@@ -47,7 +47,7 @@ async def apiAccountGetTwitch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) ->
 	"""
 	Default url: /api/account/twitch/get
 	"""
-	TwitchUser:TwitchWebUserInfo = await getTwitchUserInfo(cls, WebRequest)
+	TwitchUser:TwitchWebUser = await getTwitchUserInfo(cls, WebRequest)
 
 	if not TwitchUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)

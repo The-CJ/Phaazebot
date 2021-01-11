@@ -8,7 +8,7 @@ import asyncio
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Discord.db import getDiscordServerCommands, getDiscordSeverSettings
@@ -51,7 +51,7 @@ async def apiDiscordCommandsDelete(cls:"WebIndex", WebRequest:Request) -> Respon
 	CommandToDelete:DiscordCommand = res_commands.pop(0)
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 

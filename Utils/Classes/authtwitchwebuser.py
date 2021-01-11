@@ -4,29 +4,29 @@ if TYPE_CHECKING:
 
 import json
 from datetime import datetime
+from aiohttp.web import Request
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.contentclass import ContentClass
-from Utils.Classes.extendedrequest import ExtendedRequest
-from Utils.Classes.discordwebuser import DiscordWebUser
+from Utils.Classes.twitchwebuser import TwitchWebUser
 
 def forcible(f:Callable) -> Callable:
 	f.__forcible__ = True
 	return f
 
-class AuthDiscordWebUser(ContentClass):
+class AuthTwitchWebUser(ContentClass):
 	"""
-	Used for authorisation of a discord web user request
+	Used for authorisation of a twitch web user request
 	variable search way:
 		System -> cookies -> header -> GET
 	"""
-	def __init__(self, BASE:"Phaazebot", WebRequest:ExtendedRequest, force_method:Optional[str]=None, **kwargs):
+	def __init__(self, BASE:"Phaazebot", WebRequest:Request, force_method:Optional[str]=None, **kwargs):
 		self.BASE:"Phaazebot" = BASE
-		self.WebRequest:ExtendedRequest = WebRequest
+		self.WebRequest:Request = WebRequest
 		self.force_method:str = force_method
-		self.User:Optional[DiscordWebUser] = None
+		self.User:Optional[TwitchWebUser] = None
 
 		# name holder
-		self.field_session:str = "phaaze_discord_session"
+		self.field_session:str = "phaaze_twitch_session"
 
 		# special session values
 		self.access_token:Optional[str] = None
@@ -49,7 +49,7 @@ class AuthDiscordWebUser(ContentClass):
 		if not self.found:
 			return f"<{self.__class__.__name__} - Not found/Unknown user>"
 
-		return f"<{self.__class__.__name__} id='{self.User.user_id}' name='{self.User.username}'>"
+		return f"<{self.__class__.__name__} id='{self.User.user_id}' name='{self.User.name}'>"
 
 	async def auth(self) -> None:
 		if self.force_method:
@@ -98,10 +98,10 @@ class AuthDiscordWebUser(ContentClass):
 		self.tried = True
 
 		sql:str = """
-			SELECT `session_discord`.*
-			FROM `session_discord`
-			WHERE `session_discord`.`session` = %s
-				AND `session_discord`.`created_at` > (NOW() - INTERVAL 7 DAY)
+			SELECT `session_twitch`.*
+			FROM `session_twitch`
+			WHERE `session_twitch`.`session` = %s
+				AND `session_twitch`.`created_at` > (NOW() - INTERVAL 7 DAY)
 			LIMIT 1"""
 		val:tuple = (self.__session,)
 
@@ -119,15 +119,15 @@ class AuthDiscordWebUser(ContentClass):
 			self.created_at = self.asDatetime(info.get("created_at", UNDEFINED))
 
 			user_info: dict = json.loads(info.get("user_info", "{}"))
-			self.User = DiscordWebUser(user_info)
+			self.User = TwitchWebUser(user_info)
 
-	def toJSON(self, token:bool=False, scope:bool=False) -> dict:
+	def toJSON(self, images:bool=True, types:bool=False, token:bool=False, scope:bool=False) -> dict:
 		""" Returns a json save dict representation of all values for API, storage, etc... """
 
 		j:dict = dict()
 
 		if self.User is not None:
-			j.update(self.User.toJSON())
+			j.update(self.User.toJSON(images=images, types=types))
 
 		if token:
 			j["access_token"] = self.asString(self.access_token)

@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
 from Platforms.Discord.db import getDiscordServerNsfwEnabledChannels, getDiscordServerNsfwEnabledChannelAmount
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingAuthorisation,
@@ -46,7 +46,7 @@ async def apiDiscordConfigsNsfwEnabledChannelsGet(cls:"WebIndex", WebRequest:Req
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 

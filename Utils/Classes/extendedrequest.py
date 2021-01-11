@@ -1,4 +1,9 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+	from Utils.Classes.authwebuser import AuthWebUser
+	from Utils.Classes.authtwitchwebuser import AuthTwitchWebUser
+	from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
+
 from aiohttp.web import Request
 
 class ExtendedRequest(Request):
@@ -9,6 +14,6 @@ class ExtendedRequest(Request):
 	"""
 	def __init__(self, *x, **xx):
 		super().__init__(*x, **xx)
-		self.AuthWeb:Optional = None
-		self.AuthDiscord:Optional = None
-		self.AuthTwitch:Optional = None
+		self.AuthWeb:Optional[AuthWebUser] = None
+		self.AuthDiscord:Optional[AuthTwitchWebUser] = None
+		self.AuthTwitch:Optional[AuthDiscordWebUser] = None

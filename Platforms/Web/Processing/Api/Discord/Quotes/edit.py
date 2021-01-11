@@ -8,7 +8,7 @@ import asyncio
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
 from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
@@ -48,7 +48,7 @@ async def apiDiscordQuotesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 

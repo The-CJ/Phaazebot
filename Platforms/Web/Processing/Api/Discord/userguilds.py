@@ -7,7 +7,7 @@ import json
 import discord
 from aiohttp.web import Response, Request
 from Platforms.Discord.api import getDiscordUserServers
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
 from ..errors import apiMissingAuthorisation, apiNotAllowed
 
 async def apiDiscordUserGuilds(cls:"WebIndex", WebRequest:Request) -> Response:
@@ -17,7 +17,7 @@ async def apiDiscordUserGuilds(cls:"WebIndex", WebRequest:Request) -> Response:
 	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
 	if not PhaazeDiscord: return await apiNotAllowed(cls, WebRequest, msg="Discord module is not active")
 
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
 
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)

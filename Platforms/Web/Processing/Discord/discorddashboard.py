@@ -7,7 +7,7 @@ import discord
 import html
 from aiohttp.web import Response, Request
 from Utils.Classes.htmlformatter import HTMLFormatter
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
 from Platforms.Web.utils import getNavbar
 from ..errors import notAllowed
 
@@ -24,7 +24,7 @@ async def discordDashboard(cls:"WebIndex", WebRequest:Request) -> Response:
 	if not Guild:
 		return await cls.discordInvite(WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
 
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found: return await cls.discordLogin(WebRequest)
 
 	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))

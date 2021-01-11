@@ -8,7 +8,7 @@ import asyncio
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Platforms.Discord.db import getDiscordSeverSettings
 from Platforms.Discord.utils import getDiscordMemberFromString
@@ -72,7 +72,7 @@ async def apiDiscordRegularsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 		return await apiDiscordRegularLimit(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 

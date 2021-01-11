@@ -8,7 +8,7 @@ import asyncio
 import discord
 from aiohttp.web import Response, Request
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuser import DiscordWebUserInfo
+from Utils.Classes.discordwebuser import DiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordtwitchalert import DiscordTwitchAlert
 from Platforms.Discord.db import getDiscordServerTwitchAlerts, getDiscordSeverSettings
@@ -40,7 +40,7 @@ async def apiDiscordTwitchalertsDelete(cls:"WebIndex", WebRequest:Request) -> Re
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
 	if not DiscordUser.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 
