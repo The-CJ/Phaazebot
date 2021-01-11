@@ -1,13 +1,12 @@
-from typing import TYPE_CHECKING, Any, Callable
-if TYPE_CHECKING:
-	pass
+from typing import Any, Callable
 
 import math
+from multidict import MultiDictProxy
 from aiohttp.web import Request
-from .undefined import Undefined, UNDEFINED
+from Utils.Classes.undefined import Undefined, UNDEFINED
 
-def forcable(f:Callable) -> Callable:
-	f.__forcable__ = True
+def forcible(f:Callable) -> Callable:
+	f.__forcible__ = True
 	return f
 
 class WebRequestContent(object):
@@ -15,7 +14,7 @@ class WebRequestContent(object):
 	Takes a Request and acts as a central point for variable source,
 	same vars from different sources get overwritten.
 	Access via X.get(a, b) - if a not found and b is not given,
-	it returnes Undefined else b
+	it returns Undefined else b
 
 	GET -> POST(multipart/json)
 	"""
@@ -29,12 +28,12 @@ class WebRequestContent(object):
 		self.loaded = True
 		if self.force_method:
 			func:Callable = getattr(self, self.force_method)
-			if getattr(func, "__forcable__", False):
+			if getattr(func, "__forcible__", False):
 				return await func()
 
 		await self.unpackGet()
 
-		if self.WebRequest.method in ["POST"]:
+		if self.WebRequest.method in ["POST", "PATCH", "DELETE"]:
 			content_type:str = self.WebRequest.headers.get("content-type", "")
 			if content_type == "application/json":
 				await self.unpackJson()
@@ -45,16 +44,16 @@ class WebRequestContent(object):
 			else:
 				await self.unpackPost()
 
-	@forcable
+	@forcible
 	async def unpackGet(self) -> None:
 		self.content = {**self.content, **self.WebRequest.query}
 
-	@forcable
+	@forcible
 	async def unpackPost(self) -> None:
-		post_content:dict = await self.WebRequest.post()
-		self.content = {**self.content, **post_content}
+		Post:MultiDictProxy = await self.WebRequest.post()
+		self.content = {**self.content, **Post}
 
-	@forcable
+	@forcible
 	async def unpackJson(self) -> None:
 		try:
 			json_content:dict = await self.WebRequest.json()
@@ -62,64 +61,64 @@ class WebRequestContent(object):
 		except:
 			pass
 
-	@forcable
+	@forcible
 	async def unpackMultipart(self) -> None:
-		self.BASE.Logger.debug("Someone send data via multipart content", require="web:debug")
 		return None
 
-	def get(self, a:str, b:Any = UNDEFINED) -> Any:
+	def get(self, a:str, b:Any=UNDEFINED) -> Any:
 		"""
 		get any value from the stored content
 		"""
 		if not self.loaded: raise RuntimeError("Content not loaded, call 'await X.load()' before")
 		return self.content.get(a, b)
 
-	def getBool(self, x:str, alternativ:bool) -> bool:
+	def getBool(self, x:str, alternative:bool) -> bool:
 		"""
 		get a value as bool.
-		Flase = "0", "false", "False", ""
+		False = "0", "false", "False", ""
 		True = Everything else
 		"""
-		value:str or Undefined = self.get(x)
-		if type(value) is Undefined: return alternativ
+		value:Any = self.get(x)
+		if type(value) is Undefined: return alternative
 
 		if value in ["0", "false", "False", ""]: return False
 		else: return True
 
-	def getStr(self, x:str, alternativ:str, len_min:int=-math.inf, len_max:int=math.inf, must_be_digit:bool=False, strip:bool=True) -> str:
+	def getStr(self, x:str, alternative:str, len_min:int=-math.inf, len_max:int=math.inf, must_be_digit:bool=False, strip:bool=True) -> str:
 		"""
 		get a value as string.
 		test it it only contains digits, it its to short or to long,
-		if one failes, return alternativ
+		if one files, return alternative
 
 		by default, strip's spaces + line breaks at start and end
 		"""
-		value:str or Undefined = self.get(x)
-		if type(value) is Undefined: return alternativ
+		value:Any = self.get(x)
+		if type(value) is Undefined: return alternative
+
+		value:str = str(value)
 
 		if strip: value = value.strip(' ').strip("\n")
 
-		if must_be_digit and not value.isdigit(): return alternativ
-		if not (len_min <= len(value) <= len_max): return alternativ
+		if must_be_digit and not value.isdigit(): return alternative
+		if not (len_min <= len(value) <= len_max): return alternative
 
 		return value
 
-	def getInt(self, x:str, alternativ:int, min_x:int=-math.inf, max_x:int=math.inf) -> int:
+	def getInt(self, x:str, alternative:int, min_x:int=-math.inf, max_x:int=math.inf) -> int:
 		"""
 		get a value as a int.
-		if convertion is not possible
+		if conversion is not possible
 		or the found value is not in min <= X <= max
-		return alternativ
+		return alternative
 		"""
-
-		value:str or Undefined = self.get(x)
-		if type(value) is Undefined: return alternativ
+		value:Any = self.get(x)
+		if type(value) is Undefined: return alternative
 
 		try:
 			value:int = int(value)
 			if min_x <= value <= max_x:
 				return value
 			else:
-				return alternativ
+				return alternative
 		except:
-			return alternativ
+			return alternative

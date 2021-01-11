@@ -2,10 +2,9 @@ from typing import List, Union
 
 from datetime import datetime
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.apiclass import APIClass
 from Utils.Classes.contentclass import ContentClass
 
-class WebUser(APIClass, ContentClass):
+class WebUser(ContentClass):
 	"""
 	Contains and represents a phaaze-web user
 	"""
@@ -19,8 +18,8 @@ class WebUser(APIClass, ContentClass):
 		self.verified:bool = self.asBoolean(data.get("verified", UNDEFINED))
 
 		self.created_at:datetime = self.asDatetime(data.get("created_at", UNDEFINED))
-		self.edited_at:datetime = data.get("edited_at", UNDEFINED)
-		self.last_login:datetime = data.get("last_login", UNDEFINED)
+		self.edited_at:datetime = self.asDatetime(data.get("edited_at", UNDEFINED))
+		self.last_login:datetime = self.asDatetime(data.get("last_login", UNDEFINED))
 
 		self.roles:List[str] = self.fromStringList(data.get("roles", ''), separator=";;;")
 
@@ -32,20 +31,20 @@ class WebUser(APIClass, ContentClass):
 
 		j:dict = dict()
 
-		j["user_id"] = self.toString(self.user_id)
-		j["username"] = self.toString(self.username)
-		j["username_changed"] = self.toInteger(self.username_changed)
-		j["email"] = self.toString(self.email)
-		j["verified"] = self.toBoolean(self.verified)
-		j["roles"] = self.toList(self.roles)
+		j["user_id"] = self.asString(self.user_id)
+		j["username"] = self.asString(self.username)
+		j["username_changed"] = self.asInteger(self.username_changed)
+		j["email"] = self.asString(self.email)
+		j["verified"] = self.asBoolean(self.verified)
+		j["roles"] = self.asList(self.roles)
 
 		if dates:
-			j["created_at"] = self.toString(self.created_at)
-			j["edited_at"] = self.toString(self.edited_at)
-			j["last_login"] = self.toString(self.last_login)
+			j["created_at"] = self.asString(self.created_at)
+			j["edited_at"] = self.asString(self.edited_at)
+			j["last_login"] = self.asString(self.last_login)
 
 		if password:
-			j["password"] = self.toString(self.password)
+			j["password"] = self.asString(self.password)
 
 		return j
 

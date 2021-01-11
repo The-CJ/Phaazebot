@@ -1,4 +1,4 @@
-class Undefined():
+class Undefined(object):
 	"""
 	This class is never (un)equal, bigger, smaller und else to everything, its nothing
 	"""
@@ -31,6 +31,6 @@ class Undefined():
 	def __next__(self): raise StopIteration
 
 
-# a constant class of undefined... so you dont need to generate new objects...
+# a constant class of undefined... so you don't need to generate new objects...
 # or so? is this saving resources... idk
 UNDEFINED:Undefined = Undefined()

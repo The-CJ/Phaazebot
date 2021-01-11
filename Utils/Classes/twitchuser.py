@@ -1,29 +1,29 @@
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.apiclass import APIClass
 from Utils.Classes.contentclass import ContentClass
 
-class TwitchUser(APIClass):
+class TwitchUser(ContentClass):
 	"""
-	Contains and represents a twitch user
+	Contains and represents a twitch user.
+	If extended is true, it's a authorised user entry.
 	"""
 	def __init__(self, data:dict):
 
-		self.user_id:str = data.get("id", UNDEFINED)
-		self.name:str = data.get("login", UNDEFINED)
-		self.display_name:str = data.get("display_name", UNDEFINED)
-		self.user_type:str = data.get("type", UNDEFINED)
-		self.broadcaster_type:str = data.get("broadcaster_type", UNDEFINED)
-		self.description:str = data.get("description", UNDEFINED)
-		self.profile_image_url:str = data.get("profile_image_url", UNDEFINED)
-		self.offline_image_url:str = data.get("offline_image_url", UNDEFINED)
-		self.view_count:int = int( data.get("view_count", UNDEFINED) )
-		self.email:str = data.get("email", UNDEFINED)
+		self.user_id:str = self.asString(data.get("id", UNDEFINED))
+		self.name:str = self.asString(data.get("login", UNDEFINED))
+		self.display_name:str = self.asString(data.get("display_name", UNDEFINED))
+		self.user_type:str = self.asString(data.get("type", UNDEFINED))
+		self.broadcaster_type:str = self.asString(data.get("broadcaster_type", UNDEFINED))
+		self.description:str = self.asString(data.get("description", UNDEFINED))
+		self.profile_image_url:str = self.asString(data.get("profile_image_url", UNDEFINED))
+		self.offline_image_url:str = self.asString(data.get("offline_image_url", UNDEFINED))
+		self.view_count:int = self.asInteger(data.get("view_count", UNDEFINED))
+		self.email:str = self.asString(data.get("email", UNDEFINED))
 
-		self.extended:bool = bool( self.email )
+		self.extended:bool = bool(self.email)
 
 	def __repr__(self):
 		if self.extended:
-			return f"<{self.__class__.__name__} extended user_id='{self.user_id}' name='{self.name}'>"
+			return f"<{self.__class__.__name__} [extended] user_id='{self.user_id}' name='{self.name}'>"
 
 		return f"<{self.__class__.__name__} user_id='{self.user_id}' name='{self.name}'>"
 
@@ -32,21 +32,21 @@ class TwitchUser(APIClass):
 
 		j:dict = dict()
 
-		j["user_id"] = self.toString(self.user_id)
-		j["name"] = self.toString(self.name)
-		j["display_name"] = self.toString(self.display_name)
-		j["description"] = self.toString(self.description)
-		j["view_count"] = self.toInteger(self.view_count)
+		j["user_id"] = self.asString(self.user_id)
+		j["name"] = self.asString(self.name)
+		j["display_name"] = self.asString(self.display_name)
+		j["description"] = self.asString(self.description)
+		j["view_count"] = self.asInteger(self.view_count)
 
 		if types:
-			j["user_type"] = self.toString(self.user_type)
-			j["broadcaster_type"] = self.toString(self.broadcaster_type)
+			j["user_type"] = self.asString(self.user_type)
+			j["broadcaster_type"] = self.asString(self.broadcaster_type)
 
 		if images:
-			j["profile_image_url"] = self.toString(self.profile_image_url)
-			j["offline_image_url"] = self.toString(self.offline_image_url)
+			j["profile_image_url"] = self.asString(self.profile_image_url)
+			j["offline_image_url"] = self.asString(self.offline_image_url)
 
 		if with_email and self.email:
-			j["email"] = self.toString(self.email)
+			j["email"] = self.asString(self.email)
 
 		return j
