@@ -9,7 +9,7 @@ from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.undefined import UNDEFINED
 from Utils.dbutils import validateDBInput
-from Utils.stringutils import password as password_function
+from Utils.stringutils import passwordToHash as password_function
 from Platforms.Web.db import getWebUsers, getWebRoles
 from Platforms.Web.Processing.Api.errors import (
 	apiMissingData,

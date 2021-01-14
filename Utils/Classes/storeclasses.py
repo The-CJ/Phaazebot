@@ -40,7 +40,7 @@ class StoreStructure(object):
 			return b
 
 		else:
-			if CliArgs.get("show-configs", False):
+			if CliArgs.get("show-configs", ''):
 				suc_msg:str = f"(Config) found '{a}' = '{str(value)}'"
 				self.Phaaze.Logger.debug(suc_msg, require="config")
 

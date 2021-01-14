@@ -7,7 +7,7 @@ from aiohttp.web import Response, Request
 from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.undefined import UNDEFINED
-from Utils.stringutils import password as password_function
+from Utils.stringutils import passwordToHash as password_function
 from Platforms.Web.db import getWebUsers
 from Platforms.Web.Processing.Api.errors import apiMissingData
 from Platforms.Web.Processing.Api.Account.errors import apiAccountTaken

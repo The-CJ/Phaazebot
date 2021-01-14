@@ -3,7 +3,7 @@ if TYPE_CHECKING:
 	from phaazebot import Phaazebot
 
 from multidict import MultiDictProxy
-from Utils.stringutils import password as passwordFunction
+from Utils.stringutils import passwordToHash as passwordFunction
 from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.webuser import WebUser
 from Platforms.Web.db import getWebUsers

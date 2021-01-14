@@ -8,7 +8,7 @@ import datetime
 from aiohttp.web import Response, Request
 from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.stringutils import password as password_function
+from Utils.stringutils import passwordToHash as password_function
 from Utils.regex import IsEmail
 from Platforms.Web.db import getWebUsers
 from Platforms.Web.Processing.Api.errors import apiWrongData, apiMissingAuthorisation

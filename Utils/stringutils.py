@@ -3,7 +3,7 @@ import hashlib
 import string
 import random
 
-def password(passwd:str) -> str:
+def passwordToHash(passwd:str) -> str:
 	"""
 		returns any string into a sha256 encoded password hash
 	"""
