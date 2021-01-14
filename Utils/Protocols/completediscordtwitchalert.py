@@ -1,10 +1,10 @@
 """
-This protocol will try to complete all entrys from the databases
+This protocol will try to complete all entry's from the databases
 discord_twitch_alert table.
 
 To be exact the discord_guild_id field.
 Because its not really needed for the alerts, but of stat listing etc.
-This protocol is suppost to try finding the GuildID based on the ChannelID
+This protocol is suppose to try finding the GuildID based on the ChannelID
 
 CLI Args:
 ---------
@@ -15,7 +15,7 @@ CLI KWArgs:
 ---------
 * `config` [alternate path to config file]
 """
-
+from typing import Optional
 import os
 import sys
 base_dir:str = f"{os.path.dirname(os.path.abspath(__file__))}/../.."
@@ -28,21 +28,21 @@ from main import Phaazebot
 from Utils.config import ConfigParser
 from Utils.cli import CliArgs
 
-Conf:ConfigParser = None
-for config_source_path in [ (CliArgs.get("config") or ""), f"{base_dir}/Config/config.phzcf", f"{base_dir}/Config/config.json" ]:
+Conf:Optional[ConfigParser] = None
+for config_source_path in [(CliArgs.get("config") or ""), f"{base_dir}/Config/config.phzcf", f"{base_dir}/Config/config.json"]:
 	if not config_source_path: continue
 	try:
 		Conf = ConfigParser(config_source_path)
 		break
 	except: pass
 
-Phaaze:Phaazebot = Phaazebot(PreConfig = Conf)
+Phaaze:Phaazebot = Phaazebot(PreConfig=Conf)
 DBC:DBConn = DBConn(
-	host = Phaaze.Config.get("phaazedb_host", "localhost"),
-	port = Phaaze.Config.get("phaazedb_port", "3306"),
-	user = Phaaze.Config.get("phaazedb_user", "phaaze"),
-	passwd = Phaaze.Config.get("phaazedb_password", ""),
-	database = Phaaze.Config.get("phaazedb_database", "phaaze")
+	host=Phaaze.Config.get("phaazedb_host", "localhost"),
+	port=Phaaze.Config.get("phaazedb_port", "3306"),
+	user=Phaaze.Config.get("phaazedb_user", "phaaze"),
+	passwd=Phaaze.Config.get("phaazedb_password", ""),
+	database=Phaaze.Config.get("phaazedb_database", "phaaze")
 )
 
 class CompleteDiscordTwitchAlert(discord.Client):
@@ -61,7 +61,7 @@ class CompleteDiscordTwitchAlert(discord.Client):
 
 		self.empty_entrys = self.getIncompleteEntrys()
 		if not self.empty_entrys:
-			self.log("Aborting discord connection, no entrys need to be completet")
+			self.log("Aborting discord connection, no entry's need to be completed")
 			return
 		else:
 			self.log("Starting discord connection...")
@@ -71,7 +71,7 @@ class CompleteDiscordTwitchAlert(discord.Client):
 
 	def getIncompleteEntrys(self) -> List[dict]:
 
-		self.log("Selecting emptys with missing guild_id field on table discord_twitch_alert...")
+		self.log("Selecting empty's with missing guild_id field on table discord_twitch_alert...")
 		empty_entrys:List[dict] = DBC.selectQuery("""
 			SELECT `discord_twitch_alert`.*
 			FROM `discord_twitch_alert`
@@ -80,14 +80,14 @@ class CompleteDiscordTwitchAlert(discord.Client):
 		)
 
 		if not empty_entrys:
-			self.log("No empty entrys found!")
+			self.log("No empty entry's found!")
 			return []
 
-		self.log(f"Found {len(empty_entrys)} entrys with missing guild_id")
+		self.log(f"Found {len(empty_entrys)} entry's with missing guild_id")
 		return empty_entrys
 
 	async def on_ready(self) -> None:
-		self.log("Discord Connectet, running checks, this may take a while...")
+		self.log("Discord Connected, running checks, this may take a while...")
 
 		for entry in self.empty_entrys:
 
@@ -107,18 +107,19 @@ class CompleteDiscordTwitchAlert(discord.Client):
 
 			if self.detailed: self.log(f"    Found {guild_id=} for {channel_id=}, updating DB...")
 			DBC.updateQuery(
-				table = "discord_twitch_alert",
-				content = {"discord_guild_id":guild_id},
-				where = "`discord_twitch_alert`.`discord_channel_id` = %s",
-				where_values = (channel_id,)
+				table="discord_twitch_alert",
+				content={"discord_guild_id":guild_id},
+				where="`discord_twitch_alert`.`discord_channel_id` = %s",
+				where_values=(channel_id,)
 			)
 
 		await self.logout() # logout after finished
 
+
 if __name__ == '__main__':
 	# get cli args
-	automated:bool = any( [CliArgs.get("a"), CliArgs.get("automated")] )
-	detailed:bool = any( [CliArgs.get("d"), CliArgs.get("detailed")] )
+	automated:bool = any([CliArgs.get("a"), CliArgs.get("automated")])
+	detailed:bool = any([CliArgs.get("d"), CliArgs.get("detailed")])
 
 	Protocol:CompleteDiscordTwitchAlert = CompleteDiscordTwitchAlert()
 
