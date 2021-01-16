@@ -66,12 +66,12 @@ async def getDiscordSeverSettings(cls:"PhaazebotDiscord", origin:Union[discord.M
 	)
 
 	if res:
-		return DiscordServerSettings(infos=res.pop(0))
+		return DiscordServerSettings(res.pop(0))
 
 	else:
 		if prevent_new:
 			# return a empty 'dummy'
-			return DiscordServerSettings()
+			return DiscordServerSettings({})
 		else:
 			return await makeDiscordSeverSettings(cls, guild_id)
 
@@ -88,7 +88,7 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", guild_id:str) -> Disc
 		)
 
 		cls.BASE.Logger.info(f"(Discord) New server settings DB entry: {guild_id=}")
-		return DiscordServerSettings(infos={"guild_id":guild_id})
+		return DiscordServerSettings({"guild_id":guild_id})
 	except:
 		cls.BASE.Logger.critical(f"(Discord) New server settings failed: {guild_id=}")
 		raise RuntimeError("Creating new DB entry failed")
