@@ -63,7 +63,7 @@ async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
 				msg = "'administrator' or 'manage_guild' permission required to show commands with hidden properties"
 			)
 
-	res_commands:List[DiscordCommand] = await getDiscordServerCommands(PhaazeDiscord, guild_id, command_id=command_id, trigger=trigger, show_nonactive=show_hidden, limit=limit, offset=offset)
+	res_commands:List[DiscordCommand] = await getDiscordServerCommands(PhaazeDiscord, guild_id=guild_id, command_id=command_id, trigger=trigger, show_nonactive=show_hidden, limit=limit, offset=offset)
 
 	# this point is only reached when command can be hidden or user requested hidden props has access
 	api_return:List[dict] = []

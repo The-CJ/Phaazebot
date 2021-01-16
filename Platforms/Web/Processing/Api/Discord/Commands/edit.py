@@ -50,7 +50,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id'")
 
 	# get command
-	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, show_nonactive=True)
+	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id=guild_id, command_id=command_id, show_nonactive=True)
 	if not res_commands:
 		return await apiDiscordCommandNotExists(cls, WebRequest, command_id=command_id)
 
@@ -73,7 +73,7 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 	value:str = Data.getStr("trigger", "").lower().split(" ")[0]
 	if value:
 		# try to get command with this trigger
-		check_double_trigger:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger=value)
+		check_double_trigger:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id=guild_id, trigger=value)
 		if check_double_trigger:
 			CommandToCheck:DiscordCommand = check_double_trigger.pop(0)
 			# tryed to set a trigger twice

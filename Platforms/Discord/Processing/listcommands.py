@@ -11,7 +11,7 @@ MAX_SHOW_COMMANDS:int = 20
 async def listCommands(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
 	command_link:str = f"{cls.BASE.Vars.web_root}/discord/commands/{Command.server_id}"
-	all_commands:List[DiscordCommand] = await getDiscordServerCommands(cls, Command.server_id)
+	all_commands:List[DiscordCommand] = await getDiscordServerCommands(cls, guild_id=Command.server_id)
 
 	finished_str:str = f":link: All commands for **{CommandContext.Message.guild.name}**\n"
 	finished_str += f"{command_link}\n"
