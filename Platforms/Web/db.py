@@ -25,8 +25,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 
 	Other
 	-------
-	* `order_str` - str : (Default: "ORDER BY user.id")
-	* `asc_desc` - str : (Default: "ASC")
+	* `order_str` - str : (Default: "ORDER BY user.id ASC")
 	* `limit` - Optional[int] : (Default: None)
 	* `offset` - int : (Default: 0)
 
@@ -35,7 +34,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 	* `overwrite_where` - Optional[str] : (Default: None)
 		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
 		* [Without `limit`, `offset`, `order` and `group by`]
-	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: None)
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
 	"""
 	ground_sql:str = f"""
 		SELECT
@@ -89,20 +88,18 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 
 	# Special
 	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values:Union[tuple, dict, None] = search.get("overwrite_where_values", None)
 	if overwrite_where:
 		sql = overwrite_where
-		values = () # also reset values
-
-	overwrite_where_values:Union[tuple, dict, None] = search.get("overwrite_where_values", None)
-	if overwrite_where_values:
 		values = overwrite_where_values
 
-	sql += " GROUP BY `user`.`id`" # add group by for concat
-
-	order_str:str = search.get("order_str", "ORDER BY `user`.`id`")
-	sql += f" {order_str}"
+	# add group by for GROUP_CONCAT
+	sql += " GROUP BY `user`.`id`"
 
 	# Other
+	order_str:str = search.get("order_str", "ORDER BY `user`.`id` ASC")
+	sql += f" {order_str}"
+
 	limit:Optional[int] = search.get("limit", None)
 	offset:int = search.get("offset", 0)
 	if limit:

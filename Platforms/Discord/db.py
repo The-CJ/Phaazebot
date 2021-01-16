@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, List, Union, Optional
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
@@ -94,72 +94,183 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", guild_id:str) -> Disc
 		raise RuntimeError("Creating new DB entry failed")
 
 # discord_command
-async def getDiscordServerCommands(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordCommand]:
+async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> List[DiscordCommand]:
 	"""
 	Get server commands.
 	Returns a list of DiscordCommand()
 
-	Optional keywords:
+	Optional 'search' keywords:
 	------------------
-	* trigger `str` : (Default: None)
-	* command_id `str` or `int` : (Default: None)
-	* show_nonactive `bool`: (Default: False)
-	* order_str `str`: (Default: "ORDER BY id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
-	"""
-	# unpack
-	trigger:str = search.get("trigger", None)
-	command_id:str or int = search.get("command_id", None)
-	show_nonactive:bool = search.get("show_nonactive", False)
-	order_str:str = search.get("order_str", "ORDER BY `discord_command`.`id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
+	* `command_id` - Union[int, str, None] : (Default: None) [sets LIMIT to 1]
+	* `guild_id` - Optional[str] : (Default: None)
+	* `trigger` - Optional[str] : (Default: None)
+	* `active` - Optional[int] : (Default: 1) [0 = only inactive, 1 = only active]
+	* `complex` - Optional[int] : (Default: None) [0 = only inactive, 1 = only active]
+	* `function` - Optional[str] : (Default: None)
+	* `hidden` - Optional[int] : (Default: 0) [0 = only visible, 1 = only hidden]
+	* `require` - Optional[int] : (Default: None)
 
+	Optional 'contains' keywords:
+	-----------------------------
+	* `content_contains` - Optional[str] : (Default: None) [DB uses LIKE]
+
+	Optional 'between' keywords:
+	----------------------------
+	* `cooldown_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+	* `required_currency_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+	* `uses_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+
+	Other
+	-----------------------------
+	* `order_str` - str : (Default: "ORDER BY discord_command.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
+	"""
 	# process
-	sql:str = """
+	ground_sql:str = """
 		SELECT `discord_command`.*
 		FROM `discord_command`
-		WHERE `discord_command`.`guild_id` = %s"""
-	values:tuple = (str(guild_id),)
+		WHERE 1 = 1"""
 
-	if not show_nonactive:
-		sql += " AND `discord_command`.`active` = 1"
+	sql:str = ""
+	values:tuple = ()
 
-	if command_id:
+	# Optional 'search' keywords
+	command_id:Union[str, int, None] = search.get("command_id", None)
+	if command_id is not None:
 		sql += " AND `discord_command`.`id` = %s"
 		values += (int(command_id),)
 
-	if trigger:
+	guild_id:Optional[str] = search.get("guild_id", None)
+	if guild_id is not None:
+		sql += " AND `discord_command`.`guild_id` = %s"
+		values += (str(guild_id),)
+
+	trigger:Optional[str] = search.get("trigger", None)
+	if trigger is not None:
 		sql += " AND `discord_command`.`trigger` = %s"
 		values += (str(trigger),)
 
+	active:Optional[int] = search.get("active", 1)
+	if active is not None:
+		sql += " AND `discord_command`.`active` = %s"
+		values += (int(trigger),)
+
+	complex_:Optional[int] = search.get("complex", None)
+	if complex_ is not None:
+		sql += " AND `discord_command`.`complex_` = %s"
+		values += (int(complex_),)
+
+	function:Optional[str] = search.get("function", None)
+	if function is not None:
+		sql += " AND `discord_command`.`function` = %s"
+		values += (str(function),)
+
+	hidden:Optional[int] = search.get("hidden", 0)
+	if hidden is not None:
+		sql += " AND `discord_command`.`hidden` = %s"
+		values += (int(hidden),)
+
+	require:Optional[int] = search.get("require", None)
+	if require is not None:
+		sql += " AND `discord_command`.`require` = %s"
+		values += (int(require),)
+
+	# Optional 'contains' keywords
+	content_contains:Optional[str] = search.get("content_contains", None)
+	if content_contains is not None:
+		content_contains = f"%{content_contains}%"
+		sql += " AND `discord_command`.`content` LIKE %s"
+		values += (str(content_contains),)
+
+	# Optional 'between' keywords
+	cooldown_between:Optional[tuple] = search.get("cooldown_between", None)
+	if cooldown_between is not None:
+		from_:Optional[int] = cooldown_between[0]
+		to_:Optional[int] = cooldown_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `discord_command`.`cooldown` BETWEEN %s AND %s"
+			values += (int(from_), int(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `discord_command`.`cooldown` >= %s"
+			values += (int(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `discord_command`.`cooldown` <= %s"
+			values += (int(to_),)
+
+	required_currency_between:Optional[tuple] = search.get("required_currency_between", None)
+	if required_currency_between is not None:
+		from_:Optional[int] = required_currency_between[0]
+		to_:Optional[int] = required_currency_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `discord_command`.`required_currency` BETWEEN %s AND %s"
+			values += (int(from_), int(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `discord_command`.`required_currency` >= %s"
+			values += (int(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `discord_command`.`required_currency` <= %s"
+			values += (int(to_),)
+
+	uses_between:Optional[tuple] = search.get("uses_between", None)
+	if uses_between is not None:
+		from_:Optional[int] = uses_between[0]
+		to_:Optional[int] = uses_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `discord_command`.`uses` BETWEEN %s AND %s"
+			values += (int(from_), int(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `discord_command`.`uses` >= %s"
+			values += (int(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `discord_command`.`uses` <= %s"
+			values += (int(to_),)
+
+	# Special
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values: Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `discord_command`.`id` ASC")
 	sql += f" {order_str}"
 
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
+	return [DiscordCommand(x) for x in res]
 
-	if res:
-		return [DiscordCommand(x) for x in res]
-
-	else:
-		return []
-
-async def getDiscordServerCommandsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_command`
-		WHERE `discord_command`.`guild_id` = %s AND {where}"""
-
-	values:tuple = (guild_id,) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
+async def getDiscordServerCommandsAmount(cls:"PhaazebotDiscord", **search) -> int:
+	"""
+	Nearly same as search counterpart, except, limit and offset are removed,
+	returns only the COUNT(*) result of this query
+	"""
+	# TODO: find better way to do this
+	return 0
 
 # discord_user
 async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordUserStats]:
