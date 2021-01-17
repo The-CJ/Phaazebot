@@ -843,75 +843,132 @@ async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", **search) -> Union
 		return [DiscordAssignRole(x) for x in res]
 
 # discord_twitch_alert
-async def getDiscordServerTwitchAlerts(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordTwitchAlert]:
+async def getDiscordServerTwitchAlerts(cls:"PhaazebotDiscord", **search) -> Union[List[DiscordTwitchAlert], int]:
 	"""
 	Get server twitch alerts.
 	Returns a list of DiscordTwitchAlert().
 
-	Optional keywords:
-	------------------
-	* alert_id `str` or `int`: (Default: None)
-	* twitch_name `str`: (Default: None)
-	* twitch_name_contains `str`: (Default: None) [DB uses LIKE]
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
-	"""
-	# unpack
-	alert_id:str or int = search.get("alert_id", None)
-	twitch_name:str = search.get("twitch_name", None)
-	twitch_name_contains:str = search.get("twitch_name_contains", None)
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
+	Optional 'search' keywords:
+	---------------------------
+	* `alert_id` - Union[int, str, None] : (Default: None)
+	* `discord_guild_id` - Optional[str] : (Default: None)
+	* `discord_channel_id` - Optional[str] : (Default: None)
+	* `twitch_channel_id` - Optional[str] : (Default: None)
+	* `twitch_channel_name` - Optional[str] : (Default: None)
+	* `suppress_gamechange` - Optional[int] : (Default: None) [0 = with gamechange, 1 = without gamechange]
 
+	Optional 'contains' keywords:
+	-----------------------------
+	* `custom_msg_contains` Optional[str]: (Default: None) [DB uses LIKE on `custom_msg`]
+	* `twitch_channel_name_contains` Optional[str]: (Default: None) [DB uses LIKE on `twitch_channel_name`]
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY discord_twitch_alert.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
+	"""
 	# process
-	sql:str = """
+	ground_sql:str = """
 		SELECT
 			`discord_twitch_alert`.*,
 			`twitch_user_name`.`user_name` AS `twitch_channel_name`
 		FROM `discord_twitch_alert`
 		LEFT JOIN `twitch_user_name`
 			ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_user_name`.`user_id`
-		WHERE `discord_twitch_alert`.`discord_guild_id` = %s"""
+		WHERE 1 = 1"""
 
-	values:tuple = (str(guild_id),)
+	sql:str = ""
+	values:tuple = ()
 
-	if alert_id:
+	# Optional 'search' keywords
+	alert_id:Union[int, str, None] = search.get("alert_id", None)
+	if alert_id is not None:
 		sql += " AND `discord_twitch_alert`.`id` = %s"
 		values += (int(alert_id),)
 
-	if twitch_name:
-		sql += " AND `twitch_user_name`.`user_name` = %s"
-		values += (str(twitch_name),)
+	discord_guild_id:Optional[str] = search.get("discord_guild_id", None)
+	if discord_guild_id is not None:
+		sql += " AND `discord_twitch_alert`.`discord_guild_id` = %s"
+		values += (str(discord_guild_id),)
 
-	if twitch_name_contains:
-		twitch_name_contains = f"%{twitch_name_contains}%"
+	discord_channel_id:Optional[str] = search.get("discord_channel_id", None)
+	if discord_channel_id is not None:
+		sql += " AND `discord_twitch_alert`.`discord_channel_id` = %s"
+		values += (str(discord_channel_id),)
+
+	twitch_channel_id:Optional[str] = search.get("twitch_channel_id", None)
+	if twitch_channel_id is not None:
+		sql += " AND `discord_twitch_alert`.`twitch_channel_id` = %s"
+		values += (str(twitch_channel_id),)
+
+	suppress_gamechange:Optional[int] = search.get("suppress_gamechange", None)
+	if suppress_gamechange is not None:
+		sql += " AND `discord_twitch_alert`.`suppress_gamechange` = %s"
+		values += (int(suppress_gamechange),)
+
+	twitch_channel_name:Optional[str] = search.get("twitch_channel_name", None)
+	if twitch_channel_name:
+		sql += " AND `twitch_user_name`.`twitch_channel_name` = %s"
+		values += (str(twitch_channel_name),)
+
+	# Optional 'contains' keywords
+	custom_msg_contains:Optional[str] = search.get("custom_msg_contains", None)
+	if custom_msg_contains:
+		custom_msg_contains = f"%{custom_msg_contains}%"
+		sql += " AND `discord_twitch_alert`.`custom_msg` LIKE %s"
+		values += (str(custom_msg_contains),)
+
+	twitch_channel_name_contains:Optional[str] = search.get("twitch_channel_name_contains", None)
+	if twitch_channel_name_contains:
+		twitch_channel_name_contains = f"%{twitch_channel_name_contains}%"
 		sql += " AND `twitch_user_name`.`user_name` LIKE %s"
-		values += (str(twitch_name_contains),)
+		values += (str(twitch_channel_name_contains),)
 
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) AS `I` 
+			FROM `discord_twitch_alert`
+			LEFT JOIN `twitch_user_name`
+				ON `discord_twitch_alert`.`twitch_channel_id` = `twitch_user_name`.`user_id`
+			WHERE 1 = 1"""
+
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values: Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `discord_twitch_alert`.`id` ASC")
+	sql += f" {order_str}"
+
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
-		return [DiscordTwitchAlert(x) for x in res]
-
+	if count_mode:
+		return res[0]['I']
 	else:
-		return []
-
-async def getDiscordServerTwitchAlertsAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_twitch_alert`
-		WHERE `discord_twitch_alert`.`discord_guild_id` = %s AND {where}"""
-
-	values:tuple = (guild_id,) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
+		return [DiscordTwitchAlert(x) for x in res]
 
 # discord_blacklist_blacklistword
 async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordBlacklistedWord]:
