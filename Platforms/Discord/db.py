@@ -971,67 +971,101 @@ async def getDiscordServerTwitchAlerts(cls:"PhaazebotDiscord", **search) -> Unio
 		return [DiscordTwitchAlert(x) for x in res]
 
 # discord_blacklist_blacklistword
-async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordBlacklistedWord]:
+async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", **search) -> Union[List[DiscordBlacklistedWord], int]:
 	"""
 	Get all words that are blacklisted on the guild.
 	Returns a list of DiscordBlacklistedWord().
 
-	Optional keywords:
-	------------------
-	* word_id `str` or `int`: (Default: None)
-	* word `str`: (Default: None)
-	* order_str `str`: (Default: "ORDER BY id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
+	Optional 'search' keywords:
+	---------------------------
+	* `word_id` - Union[int, str, None] : (Default: None)
+	* `guild_id` - Optional[str] : (Default: None)
+	* `word` - Optional[str] : (Default: None)
+
+	Optional 'contains' keywords:
+	-----------------------------
+	* `word_contains` Optional[str]: (Default: None) [DB uses LIKE on `word`]
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY discord_blacklist_blacklistword.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
 	"""
-	# unpack
-	word_id:str or int = search.get("word_id", None)
-	word:str = search.get("word", None)
-	order_str:str = search.get("order_str", "ORDER BY `id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
-
 	# process
-	sql:str = """
-		SELECT `discord_blacklist_blacklistword`.* FROM `discord_blacklist_blacklistword`
-		WHERE `discord_blacklist_blacklistword`.`guild_id` = %s"""
+	ground_sql:str = """
+		SELECT `discord_blacklist_blacklistword`.* 
+		FROM `discord_blacklist_blacklistword`
+		WHERE 1 = 1"""
 
-	values:tuple = (str(guild_id),)
+	sql:str = ""
+	values:tuple = ()
 
-	if word_id:
+	# Optional 'search' keywords
+	word_id:Union[int, str, None] = search.get("word_id", None)
+	if word_id is not None:
 		sql += " AND `discord_blacklist_blacklistword`.`id` = %s"
 		values += (int(word_id),)
 
-	if word:
+	guild_id:Optional[str] = search.get("guild_id", None)
+	if guild_id is not None:
+		sql += " AND `discord_blacklist_blacklistword`.`guild_id` = %s"
+		values += (str(guild_id),)
+
+	word:Optional[str] = search.get("word", None)
+	if word is not None:
 		sql += " AND `discord_blacklist_blacklistword`.`word` = %s"
 		values += (str(word),)
 
+	# Optional 'contains' keywords
+	word_contains:Optional[str] = search.get("word_contains", None)
+	if word_contains:
+		word_contains = f"%{word_contains}%"
+		sql += " AND `discord_blacklist_blacklistword`.`word` LIKE %s"
+		values += (str(word_contains),)
+
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) AS `I` 
+			FROM `discord_blacklist_blacklistword`
+			WHERE 1 = 1"""
+
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values: Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `discord_blacklist_blacklistword`.`id` ASC")
 	sql += f" {order_str}"
 
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
-		return [DiscordBlacklistedWord(x) for x in res]
-
+	if count_mode:
+		return res[0]['I']
 	else:
-		return []
-
-async def getDiscordServerBlacklistedWordAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_blacklist_blacklistword`
-		WHERE `discord_blacklist_blacklistword`.`guild_id` = %s AND {where}"""
-
-	values:tuple = (str(guild_id),) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
+		return [DiscordBlacklistedWord(x) for x in res]
 
 # discord_blacklist_whitelistrole
 async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordWhitelistedRole]:
