@@ -285,7 +285,7 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 	Returns a list of DiscordUserStats().
 
 	Optional 'search' keywords:
-	-------------------------
+	---------------------------
 	* `member_id` - Optional[str] : (Default: None)
 	* `guild_id` - Optional[str] : (Default: None)
 	* `edited` - Optional[int] : (Default: None) [0 = not edited, 1 = only edited]
@@ -479,7 +479,7 @@ async def getDiscordUsersMedals(cls:"PhaazebotDiscord", **search) -> Union[List[
 	Returns a list of DiscordUserMedal().
 
 	Optional 'search' keywords:
-	-------------------------
+	---------------------------
 	* `medal_id` - Union[int, str, None] : (Default: None)
 	* `member_id` - Optional[str] : (Default: None)
 	* `guild_id` - Optional[str] : (Default: None)
@@ -576,140 +576,180 @@ async def getDiscordUsersMedals(cls:"PhaazebotDiscord", **search) -> Union[List[
 		return [DiscordUserMedal(x) for x in res]
 
 # discord_regular
-async def getDiscordServerRegulars(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordRegular]:
+async def getDiscordServerRegulars(cls:"PhaazebotDiscord", **search) -> Union[List[DiscordRegular], int]:
 	"""
 	Get server regulars.
 	Returns a list of DiscordRegular().
 
-	Optional keywords:
-	------------------
-	* regular_id `str` : (Default: None)
-	* member_id `str` : (Default: None)
-	* order_str `str`: (Default: "ORDER BY id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
+	Optional 'search' keywords:
+	---------------------------
+	* `regular_id` - Union[int, str, None] : (Default: None)
+	* `member_id` - Optional[str] : (Default: None)
+	* `guild_id` - Optional[str] : (Default: None)
+	* `name` - Optional[str] : (Default: None)
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY discord_regular.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
 	"""
-	# unpack
-	regular_id:str = search.get("regular_id", 0)
-	member_id:str = search.get("member_id", 0)
-	order_str:str = search.get("order_str", "ORDER BY `id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
-
 	# process
-	sql:str = """
-		SELECT `discord_regular`.* FROM `discord_regular`
-		WHERE `discord_regular`.`guild_id` = %s"""
+	ground_sql:str = """
+		SELECT `discord_regular`.* 
+		FROM `discord_regular`
+		WHERE 1 = 1"""
 
-	values:tuple = (str(guild_id),)
+	sql:str = ""
+	values:tuple = ()
 
-	if regular_id:
+	regular_id:Union[int, str, None] = search.get("regular_id", None)
+	if regular_id is not None:
 		sql += " AND `discord_regular`.`id` = %s"
-		values += (str(regular_id),)
+		values += (int(regular_id),)
 
+	member_id:Optional[str] = search.get("member_id", None)
 	if member_id:
 		sql += " AND `discord_regular`.`member_id` = %s"
 		values += (str(member_id),)
 
+	guild_id:Optional[str] = search.get("guild_id", None)
+	if guild_id:
+		sql += " AND `discord_regular`.`guild_id` = %s"
+		values += (str(guild_id),)
+
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) AS `I` 
+			FROM `discord_regular`
+			WHERE 1 = 1"""
+
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values: Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `discord_regular`.`id` ASC")
 	sql += f" {order_str}"
 
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
+	if count_mode:
+		return res[0]['I']
+	else:
 		return [DiscordRegular(x) for x in res]
 
-	else:
-		return []
-
-async def getDiscordServerRegularAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_regular`
-		WHERE `discord_regular`.`guild_id` = %s AND {where}"""
-
-	values:tuple = (guild_id,) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
-
 # discord_quote
-async def getDiscordServerQuotes(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordQuote]:
+async def getDiscordServerQuotes(cls:"PhaazebotDiscord",**search) -> List[DiscordQuote]:
 	"""
 	Get server quotes.
 	Returns a list of DiscordQuote().
 
-	Optional keywords:
-	------------------
-	* quote_id `str` or `int`: (Default: None)
-	* content `str`: (Default: None)
-	* content_contains `str`: (Default: None) [DB uses LIKE]
-	* random `bool`: (Default: False) [sql add: ORDER BY RAND()]
-	* order_str `str`: (Default: "ORDER BY id") [used only if not random]
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
-	"""
-	# unpack
-	quote_id:str or int = search.get("quote_id", None)
-	content:str = search.get("content", None)
-	content_contains:str = search.get("content_contains", None)
-	random:bool = search.get("random", False)
-	order_str:str = search.get("order_str", "ORDER BY `id`")
-	limit:bool = search.get("limit", None)
-	offset:bool = search.get("offset", 0)
+	Optional 'search' keywords:
+	---------------------------
+	* `quote_id` - Union[int, str, None] : (Default: None)
+	* `guild_id` - Optional[str] : (Default: None)
 
+	Optional 'contains' keywords:
+	-----------------------------
+	* `content_contains` Optional[str]: (Default: None) [DB uses LIKE on `content`]
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY discord_quote.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
+	"""
 	# process
-	sql:str = """
+	ground_sql:str = """
 		SELECT `discord_quote`.* FROM `discord_quote`
 		WHERE `discord_quote`.`guild_id` = %s"""
 
-	values:tuple = (str(guild_id),)
+	sql:str = ""
+	values:tuple = ()
 
-	if quote_id:
+	# Optional 'search' keywords
+	quote_id:Union[int, str, None] = search.get("quote_id", None)
+	if quote_id is not None:
 		sql += " AND `discord_quote`.`id` = %s"
 		values += (int(quote_id),)
 
-	if content:
-		sql += " AND `discord_quote`.`content` = %s"
-		values += (str(content),)
+	guild_id:Optional[str] = search.get("guild_id", None)
+	if guild_id:
+		sql += " AND `discord_quote`.`guild_id` = %s"
+		values += (str(guild_id),)
 
+	# Optional 'contains' keywords
+	content_contains:Optional[str] = search.get("content_contains", None)
 	if content_contains:
 		content_contains = f"%{content_contains}%"
 		sql += " AND `discord_quote`.`content` LIKE %s"
 		values += (str(content_contains),)
 
-	if random: sql += " ORDER BY RAND()"
-	else: sql += f" {order_str}"
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) AS `I` 
+			FROM `discord_quote`
+			WHERE 1 = 1"""
 
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values: Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `discord_quote`.`id` ASC")
+	sql += f" {order_str}"
+
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
-		return [DiscordQuote(x) for x in res]
-
+	if count_mode:
+		return res[0]['I']
 	else:
-		return []
-
-async def getDiscordServerQuotesAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_quote`
-		WHERE `discord_quote`.`guild_id` = %s AND {where}"""
-
-	values:tuple = (guild_id,) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
+		return [DiscordQuote(x) for x in res]
 
 # discord_assignrole
 async def getDiscordServerAssignRoles(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordAssignRole]:
