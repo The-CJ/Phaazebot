@@ -1,9 +1,10 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, List
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.contentclass import ContentClass
+from Utils.Classes.discordusermedal import DiscordUserMedal
 
 class DiscordUserStats(ContentClass):
 	"""
@@ -70,6 +71,17 @@ class DiscordUserStats(ContentClass):
 		j["medals"] = self.asList(self.medals)
 
 		return j
+
+	async def getMedals(self, cls:"PhaazebotDiscord") -> List[DiscordUserMedal]:
+		"""
+		Get associated medals of this user
+		"""
+		from Platforms.Discord.db import getDiscordUsersMedals
+		search:dict = {
+			"member_id": self.member_id,
+			"guild_id": self.guild_id,
+		}
+		return await getDiscordUsersMedals(cls, **search)
 
 	@property
 	def server_id(self) -> str:
