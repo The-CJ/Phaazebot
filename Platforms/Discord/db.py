@@ -917,19 +917,19 @@ async def getDiscordServerTwitchAlerts(cls:"PhaazebotDiscord", **search) -> Unio
 		values += (int(suppress_gamechange),)
 
 	twitch_channel_name:Optional[str] = search.get("twitch_channel_name", None)
-	if twitch_channel_name:
+	if twitch_channel_name is not None:
 		sql += " AND `twitch_user_name`.`twitch_channel_name` = %s"
 		values += (str(twitch_channel_name),)
 
 	# Optional 'contains' keywords
 	custom_msg_contains:Optional[str] = search.get("custom_msg_contains", None)
-	if custom_msg_contains:
+	if custom_msg_contains is not None:
 		custom_msg_contains = f"%{custom_msg_contains}%"
 		sql += " AND `discord_twitch_alert`.`custom_msg` LIKE %s"
 		values += (str(custom_msg_contains),)
 
 	twitch_channel_name_contains:Optional[str] = search.get("twitch_channel_name_contains", None)
-	if twitch_channel_name_contains:
+	if twitch_channel_name_contains is not None:
 		twitch_channel_name_contains = f"%{twitch_channel_name_contains}%"
 		sql += " AND `twitch_user_name`.`user_name` LIKE %s"
 		values += (str(twitch_channel_name_contains),)
@@ -1028,7 +1028,7 @@ async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", **search) -> 
 
 	# Optional 'contains' keywords
 	word_contains:Optional[str] = search.get("word_contains", None)
-	if word_contains:
+	if word_contains is not None:
 		word_contains = f"%{word_contains}%"
 		sql += " AND `discord_blacklist_blacklistword`.`word` LIKE %s"
 		values += (str(word_contains),)
@@ -1068,67 +1068,90 @@ async def getDiscordServerBlacklistedWords(cls:"PhaazebotDiscord", **search) -> 
 		return [DiscordBlacklistedWord(x) for x in res]
 
 # discord_blacklist_whitelistrole
-async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordWhitelistedRole]:
+async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", **search) -> Union[List[DiscordWhitelistedRole], int]:
 	"""
 	Get exceptionroles for a guild.
 	Returns a list of DiscordWhitelistedRole().
 
-	Optional keywords:
-	------------------
-	* exceptionrole_id `str` or `int`: (Default: None)
-	* role_id `str`: (Default: None)
-	* order_str `str`: (Default: "ORDER BY id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
+	Optional 'search' keywords:
+	---------------------------
+	* `exceptionrole_id` - Union[int, str, None] : (Default: None)
+	* `guild_id` - Optional[str] : (Default: None)
+	* `role_id` - Optional[str] : (Default: None)
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY discord_blacklist_whitelistrole.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
 	"""
-	# unpack
-	exceptionrole_id:str or int = search.get("exceptionrole_id", None)
-	role_id:str = search.get("role_id", None)
-	order_str:str = search.get("order_str", "ORDER BY `id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
-
 	# process
-	sql:str = """
-		SELECT `discord_blacklist_whitelistrole`.* FROM `discord_blacklist_whitelistrole`
-		WHERE `discord_blacklist_whitelistrole`.`guild_id` = %s"""
+	ground_sql:str = """
+		SELECT `discord_blacklist_whitelistrole`.* 
+		FROM `discord_blacklist_whitelistrole`
+		WHERE 1 = 1"""
 
-	values:tuple = (str(guild_id),)
+	sql:str = ""
+	values:tuple = ()
 
-	if exceptionrole_id:
+	# Optional 'search' keywords
+	exceptionrole_id:Union[int, str, None] = search.get("exceptionrole_id", None)
+	if exceptionrole_id is not None:
 		sql += " AND `discord_blacklist_whitelistrole`.`id` = %s"
 		values += (int(exceptionrole_id),)
 
-	if role_id:
+	guild_id:Optional[str] = search.get("guild_id", None)
+	if guild_id is not None:
+		sql += " AND `discord_blacklist_whitelistrole`.`guild_id` = %s"
+		values += (str(guild_id),)
+
+	role_id:Optional[str] = search.get("role_id", None)
+	if role_id is not None:
 		sql += " AND `discord_blacklist_whitelistrole`.`role_id` = %s"
 		values += (str(role_id),)
 
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) 
+			FROM `discord_blacklist_whitelistrole`
+			WHERE 1 = 1"""
+
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values:Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `discord_blacklist_whitelistrole`.`id` ASC")
 	sql += f" {order_str}"
 
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
-		return [DiscordWhitelistedRole(x) for x in res]
-
+	if count_mode:
+		return res[0]['I']
 	else:
-		return []
-
-async def getDiscordServerExceptionRoleAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_blacklist_whitelistrole`
-		WHERE `discord_blacklist_whitelistrole`.`guild_id` = %s AND {where}"""
-
-	values:tuple = (str(guild_id),) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
+		return [DiscordWhitelistedRole(x) for x in res]
 
 # discord_blacklist_whitelistlink
 async def getDiscordServerWhitelistedLinks(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordWhitelistedLink]:
