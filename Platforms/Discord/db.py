@@ -284,7 +284,7 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 	Get server levels.
 	Returns a list of DiscordUserStats().
 
-	Optional search keywords:
+	Optional 'search' keywords:
 	-------------------------
 	* `member_id` - Optional[str] : (Default: None)
 	* `guild_id` - Optional[str] : (Default: None)
@@ -473,84 +473,107 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 		return [DiscordUserStats(x) for x in res]
 
 # discord_user_medal
-async def getDiscordUsersMedals(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordUserMedal]:
+async def getDiscordUsersMedals(cls:"PhaazebotDiscord", **search) -> Union[List[DiscordUserMedal], int]:
 	"""
 	Get server levels.
 	Returns a list of DiscordUserMedal().
 
-	Optional keywords:
-	------------------
-	* medal_id `str` or `int` : (Default: None)
-	* member_id `str` : (Default: None)
-	* name `str`: (Default: None)
-	* name_contains `str`: (Default: None) [DB uses LIKE]
-	* order_str `str`: (Default: "ORDER BY id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
+	Optional 'search' keywords:
+	-------------------------
+	* `medal_id` - Union[int, str, None] : (Default: None)
+	* `member_id` - Optional[str] : (Default: None)
+	* `guild_id` - Optional[str] : (Default: None)
+	* `name` - Optional[str] : (Default: None)
 
 	Optional 'contains' keywords:
 	-----------------------------
+	* `name_contains` Optional[str]: (Default: None) [DB uses LIKE on `name`]
 
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY discord_user_medal.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
 	"""
-	# unpack
-	medal_id:str or int = search.get("medal_id", 0)
-	member_id:str = search.get("member_id", 0)
-	name:str = search.get("name", None)
-	name_contains:str = search.get("name_contains", None)
-	order_str:str = search.get("order_str", "ORDER BY `id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
-
 	# process
-	sql:str = """
-		SELECT `discord_user_medal`.* FROM `discord_user_medal`
-		WHERE `discord_user_medal`.`guild_id` = %s"""
+	ground_sql:str = """
+		SELECT `discord_user_medal`.* 
+		FROM `discord_user_medal`
+		WHERE 1 = 1"""
 
-	values:tuple = (str(guild_id),)
+	sql:str = ""
+	values:tuple = ()
 
-	if medal_id:
+	# Optional search keywords
+	medal_id:Union[int, str, None] = search.get("medal_id", None)
+	if medal_id is not None:
 		sql += " AND `discord_user_medal`.`id` = %s"
-		values += (str(medal_id),)
+		values += (int(medal_id),)
 
+	member_id:Optional[str] = search.get("member_id", None)
 	if member_id:
 		sql += " AND `discord_user_medal`.`member_id` = %s"
 		values += (str(member_id),)
 
+	guild_id:Optional[str] = search.get("guild_id", None)
+	if guild_id:
+		sql += " AND `discord_user_medal`.`guild_id` = %s"
+		values += (str(guild_id),)
+
+	name:Optional[str] = search.get("name", None)
 	if name:
 		sql += " AND `discord_user_medal`.`name` = %s"
 		values += (str(name),)
 
+	# Optional 'contains' keywords
+	name_contains:Optional[str] = search.get("name_contains", None)
 	if name_contains:
 		name_contains = f"%{name_contains}%"
 		sql += " AND `discord_user_medal`.`name` LIKE %s"
 		values += (str(name_contains),)
 
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) AS `I` 
+			FROM `discord_user_medal`
+			WHERE 1 = 1"""
+
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values: Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `discord_user_medal`.`id` ASC")
 	sql += f" {order_str}"
 
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
-		return [DiscordUserMedal(x) for x in res]
-
+	if count_mode:
+		return res[0]['I']
 	else:
-		return []
-
-async def getDiscordUsersMedalAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_user_medal`
-		WHERE `discord_user_medal`.`guild_id` = %s AND {where}"""
-
-	values:tuple = (guild_id,) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
+		return [DiscordUserMedal(x) for x in res]
 
 # discord_regular
 async def getDiscordServerRegulars(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordRegular]:
