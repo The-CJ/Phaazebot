@@ -51,7 +51,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 	sql:str = ""
 	values:tuple = ()
 
-	# 'search' keywords
+	# Optional 'search' keywords
 	user_id:Union[int, str, None] = search.get("user_id", None)
 	if user_id:
 		sql += " AND `user`.`id` = %s"
@@ -73,7 +73,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 		sql += " AND `user`.`verified` = %s"
 		values += (int(verified),)
 
-	# 'contains' keywords
+	# Optional 'contains' keywords
 	username_contains:Optional[str] = search.get("username_contains", None)
 	if username_contains:
 		username_contains = f"%{username_contains}%"

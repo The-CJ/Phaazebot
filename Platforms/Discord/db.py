@@ -94,13 +94,13 @@ async def makeDiscordSeverSettings(cls:"PhaazebotDiscord", guild_id:str) -> Disc
 		raise RuntimeError("Creating new DB entry failed")
 
 # discord_command
-async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> List[DiscordCommand]:
+async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> Union[List[DiscordCommand], int]:
 	"""
 	Get server commands.
 	Returns a list of DiscordCommand()
 
 	Optional 'search' keywords:
-	------------------
+	---------------------------
 	* `command_id` - Union[int, str, None] : (Default: None) [sets LIMIT to 1]
 	* `guild_id` - Optional[str] : (Default: None)
 	* `trigger` - Optional[str] : (Default: None)
@@ -120,8 +120,8 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> List[Dis
 	* `required_currency_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
 	* `uses_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
 
-	Other
-	-----------------------------
+	Other:
+	------
 	* `order_str` - str : (Default: "ORDER BY discord_command.id ASC")
 	* `limit` - Optional[int] : (Default: None)
 	* `offset` - int : (Default: 0)
@@ -129,6 +129,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> List[Dis
 	Special:
 	--------
 	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int]
 	* `overwrite_where` - Optional[str] : (Default: None)
 		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
 		* [Without `limit`, `offset`, `order` and `group by`]
@@ -244,6 +245,15 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> List[Dis
 			values += (int(to_),)
 
 	# Special
+	count_mode:bool = search.get("overwrite_where", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) AS `I`
+			FROM `discord_command`
+			WHERE 1 = 1"""
+
 	overwrite_where:Optional[str] = search.get("overwrite_where", None)
 	overwrite_where_values: Union[tuple, dict, None] = search.get("overwrite_where_values", ())
 	if overwrite_where:
@@ -262,18 +272,14 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> List[Dis
 			sql += f" OFFSET {offset}"
 
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
-	return [DiscordCommand(x) for x in res]
 
-async def getDiscordServerCommandsAmount(cls:"PhaazebotDiscord", **search) -> int:
-	"""
-	Nearly same as search counterpart, except, limit and offset are removed,
-	returns only the COUNT(*) result of this query
-	"""
-	# TODO: find better way to do this
-	return 0
+	if count_mode:
+		return res[0]['I']
+	else:
+		return [DiscordCommand(x) for x in res]
 
 # discord_user
-async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordUserStats]:
+async def getDiscordServerUsers(cls:"PhaazebotDiscord", guild_id:str, **search) -> Union[List[DiscordUserStats], int]:
 	"""
 	Get server levels.
 	Returns a list of DiscordUserStats().
