@@ -1154,67 +1154,101 @@ async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", **search) -> Un
 		return [DiscordWhitelistedRole(x) for x in res]
 
 # discord_blacklist_whitelistlink
-async def getDiscordServerWhitelistedLinks(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordWhitelistedLink]:
+async def getDiscordServerWhitelistedLinks(cls:"PhaazebotDiscord", **search) -> Union[List[DiscordWhitelistedLink], int]:
 	"""
 	Get whitelisted links for a guild.
 	Returns a list of DiscordWhitelistedLink().
 
-	Optional keywords:
-	------------------
-	* link_id `str` or `int`: (Default: None)
-	* link `str`: (Default: None)
-	* order_str `str`: (Default: "ORDER BY id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
+	Optional 'search' keywords:
+	---------------------------
+	* `link_id` - Union[int, str, None] : (Default: None)
+	* `guild_id` - Optional[str] : (Default: None)
+	* `link` - Optional[str] : (Default: None)
+
+	Optional 'contains' keywords:
+	-----------------------------
+	* `link_contains` Optional[str]: (Default: None) [DB uses LIKE on `link`]
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY discord_blacklist_whitelistlink.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
 	"""
-	# unpack
-	link_id:str or int = search.get("link_id", None)
-	link:str = search.get("link", None)
-	order_str:str = search.get("order_str", "ORDER BY `id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
-
 	# process
-	sql:str = """
-		SELECT `discord_blacklist_whitelistlink`.* FROM `discord_blacklist_whitelistlink`
-		WHERE `discord_blacklist_whitelistlink`.`guild_id` = %s"""
+	ground_sql:str = """
+		SELECT `discord_blacklist_whitelistlink`.* 
+		FROM `discord_blacklist_whitelistlink`
+		WHERE 1 = 1"""
 
-	values:tuple = (str(guild_id),)
+	sql:str = ""
+	values:tuple = ()
 
-	if link_id:
+	# Optional 'search' keywords
+	link_id:Union[int, str, None] = search.get("link_id", None)
+	if link_id is not None:
 		sql += " AND `discord_blacklist_whitelistlink`.`id` = %s"
 		values += (int(link_id),)
 
-	if link:
+	guild_id:Optional[str] = search.get("guild_id", None)
+	if guild_id is not None:
+		sql += " AND `discord_blacklist_whitelistlink`.`guild_id` = %s"
+		values += (str(guild_id),)
+
+	link:Optional[str] = search.get("link", None)
+	if link is not None:
 		sql += " AND `discord_blacklist_whitelistlink`.`link` = %s"
 		values += (str(link),)
 
+	# Optional 'contains' keywords
+	link_contains:Optional[str] = search.get("link_contains", None)
+	if link_contains is not None:
+		link_contains = f"%{link_contains}%"
+		sql += " AND `discord_blacklist_whitelistlink`.`link` LIKE %s"
+		values += (str(link_contains),)
+
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) 
+			FROM `discord_blacklist_whitelistlink`
+			WHERE 1 = 1"""
+
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values:Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `discord_blacklist_whitelistlink`.`id` ASC")
 	sql += f" {order_str}"
 
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
-		return [DiscordWhitelistedLink(x) for x in res]
-
+	if count_mode:
+		return res[0]['I']
 	else:
-		return []
-
-async def getDiscordServerWhitelistedLinkAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_blacklist_whitelistlink`
-		WHERE `discord_blacklist_whitelistlink`.`guild_id` = %s AND {where}"""
-
-	values:tuple = (str(guild_id),) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
+		return [DiscordWhitelistedLink(x) for x in res]
 
 # discord_disabled_levelchannel
 async def getDiscordServerLevelDisabledChannels(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordLevelDisabledChannel]:
