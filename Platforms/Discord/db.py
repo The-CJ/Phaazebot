@@ -1337,7 +1337,7 @@ async def getDiscordServerLevelDisabledChannels(cls:"PhaazebotDiscord", **search
 		return [DiscordLevelDisabledChannel(x) for x in res]
 
 # discord_disabled_regularchannel
-async def getDiscordServerRegularDisabledChannels(cls:"PhaazebotDiscord", **search) -> List[DiscordRegularDisabledChannel]:
+async def getDiscordServerRegularDisabledChannels(cls:"PhaazebotDiscord", **search) -> Union[List[DiscordRegularDisabledChannel], int]:
 	"""
 	Get channels where regular commands (requirement = regular) are disabled for a guild.
 	Returns a list of DiscordRegularDisabledChannel().
@@ -1423,7 +1423,7 @@ async def getDiscordServerRegularDisabledChannels(cls:"PhaazebotDiscord", **sear
 		return [DiscordRegularDisabledChannel(x) for x in res]
 
 # discord_disabled_normalchannel
-async def getDiscordServerNormalDisabledChannels(cls:"PhaazebotDiscord", **search) -> List[DiscordNormalDisabledChannel]:
+async def getDiscordServerNormalDisabledChannels(cls:"PhaazebotDiscord", **search) -> Union[List[DiscordNormalDisabledChannel], int]:
 	"""
 	Get channels where normal commands (requirement = everyone) are disabled for a guild.
 	Returns a list of DiscordNormalDisabledChannel().
@@ -1509,67 +1509,90 @@ async def getDiscordServerNormalDisabledChannels(cls:"PhaazebotDiscord", **searc
 		return [DiscordNormalDisabledChannel(x) for x in res]
 
 # discord_disabled_quotechannel
-async def getDiscordServerQuoteDisabledChannels(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordQuoteDisabledChannel]:
+async def getDiscordServerQuoteDisabledChannels(cls:"PhaazebotDiscord", **search) -> Union[List[DiscordQuoteDisabledChannel], int]:
 	"""
 	Get channels where quotes are disabled for a guild.
 	Returns a list of DiscordQuoteDisabledChannel().
 
-	Optional keywords:
-	------------------
-	* entry_id `str` or `int`: (Default: None)
-	* channel_id `str`: (Default: None)
-	* order_str `str`: (Default: "ORDER BY id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
+	Optional 'search' keywords:
+	---------------------------
+	* `entry_id` - Union[int, str, None] : (Default: None)
+	* `guild_id` - Optional[str] : (Default: None)
+	* `channel_id` - Optional[str] : (Default: None)
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY discord_disabled_quotechannel.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
 	"""
-	# unpack
-	entry_id:str or int = search.get("entry_id", None)
-	channel_id:str = search.get("channel_id", None)
-	order_str:str = search.get("order_str", "ORDER BY `id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
-
 	# process
-	sql:str = """
-		SELECT `discord_disabled_quotechannel`.* FROM `discord_disabled_quotechannel`
-		WHERE `discord_disabled_quotechannel`.`guild_id` = %s"""
+	ground_sql:str = """
+		SELECT `discord_disabled_quotechannel`.* 
+		FROM `discord_disabled_quotechannel`
+		WHERE 1 = 1"""
 
-	values:tuple = (str(guild_id),)
+	sql:str = ""
+	values:tuple = ()
 
-	if entry_id:
+	# Optional 'search' keywords
+	entry_id:Union[int, str, None] = search.get("entry_id", None)
+	if entry_id is not None:
 		sql += " AND `discord_disabled_quotechannel`.`id` = %s"
 		values += (int(entry_id),)
 
-	if channel_id:
+	guild_id:Optional[str] = search.get("guild_id", None)
+	if guild_id is not None:
+		sql += " AND `discord_disabled_quotechannel`.`guild_id` = %s"
+		values += (str(guild_id),)
+
+	channel_id:Optional[str] = search.get("channel_id", None)
+	if channel_id is not None:
 		sql += " AND `discord_disabled_quotechannel`.`channel_id` = %s"
 		values += (str(channel_id),)
 
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) 
+			FROM `discord_disabled_quotechannel`
+			WHERE 1 = 1"""
+
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values:Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `discord_disabled_quotechannel`.`id` ASC")
 	sql += f" {order_str}"
 
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
-		return [DiscordQuoteDisabledChannel(x) for x in res]
-
+	if count_mode:
+		return res[0]['I']
 	else:
-		return []
-
-async def getDiscordServerQuoteDisabledChannelAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_disabled_quotechannel`
-		WHERE `discord_disabled_quotechannel`.`guild_id` = %s AND {where}"""
-
-	values:tuple = (str(guild_id),) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
+		return [DiscordQuoteDisabledChannel(x) for x in res]
 
 # discord_enabled_gamechannel
 async def getDiscordServerGameEnabledChannels(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordGameEnabledChannel]:
