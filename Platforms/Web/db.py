@@ -28,7 +28,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 	* `created_at_between` - Tuple[from:str, to:str] : (Default: None) [DB uses >= and <=]
 	* `edited_at_between` - Tuple[from:str, to:str] : (Default: None) [DB uses >= and <=]
 	* `last_login_between` - Tuple[from:str, to:str] : (Default: None) [DB uses >= and <=]
-	* `username_changed_between - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+	* `username_changed_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
 
 	Other:
 	------
