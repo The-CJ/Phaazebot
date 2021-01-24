@@ -19,9 +19,9 @@ async def apiAdminModule(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Resp
 	"""
 	WebAuth:AuthWebUser = await authWebUser(cls, WebRequest)
 	if not WebAuth.found:
-		return await cls.Tree.Account.accountlogin.accountLogin(WebRequest)
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(WebRequest)
 	if not WebAuth.User.checkRoles(["admin", "superadmin"]):
-		return await cls.Tree.errors.notAllowed(WebRequest, msg="Admin rights required")
+		return await cls.Tree.Api.errors.apiNotAllowed(WebRequest, msg="Admin rights required")
 
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()

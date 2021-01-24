@@ -19,9 +19,9 @@ async def apiAdminEvaluate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Re
 	"""
 	WebAuth:AuthWebUser = await authWebUser(cls, WebRequest)
 	if not WebAuth.found:
-		return await cls.Tree.Account.accountlogin.accountLogin(WebRequest)
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(WebRequest)
 	if not WebAuth.User.checkRoles(["superadmin"]):
-		return await cls.Tree.errors.notAllowed(WebRequest, msg="Superadmin rights required")
+		return await cls.Tree.Api.errors.apiNotAllowed(WebRequest, msg="Superadmin rights required")
 
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
