@@ -33,7 +33,7 @@ class TwitchCommandContext(object):
 		trigger:str = self.part(pos)
 		if not trigger: return False
 
-		result:list = await getTwitchChannelCommands(self.Twitch, self.Message.room_id, trigger=trigger)
+		result:list = await getTwitchChannelCommands(self.Twitch, channel_id=self.Message.room_id, trigger=trigger)
 
 		if result:
 			self.found = True
