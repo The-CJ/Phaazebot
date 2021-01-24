@@ -201,83 +201,106 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 		return [WebUser(x) for x in res]
 
 # roles
-async def getWebRoles(cls:"PhaazebotWeb", **search) -> List[WebRole]:
+async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]:
 	"""
 	Get roles the a web user can have
 	Returns a list of WebRole()
 
-	Optional keywords:
-	------------------
-	* role_id `str` or `int` : (Default: None)
-	* user_id `str` or `int` : (Default: None) [Get all roles a user has]
-	* name `str`: (Default: None)
-	* name_contains `str`: (Default: None) [DB uses LIKE]
-	* can_be_removed `int`: (Default: 0) [0=all, 1=only removable, 2=only not removable]
-	* order_str `str`: (Default: "ORDER BY role.id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
-	* where `str`: (Default: None) [Overwrites everything]
-	* where_values `tuple` or `dict`: (Default: None) [Only needed if where != None]
-	"""
-	role_id:str or int = search.get("role_id", None)
-	user_id:str or int = search.get("user_id", None)
-	name:str = search.get("name", None)
-	name_contains:str = search.get("name_contains", None)
-	can_be_removed:int = search.get("can_be_removed", 0)
-	order_str:str = search.get("order_str", "ORDER BY `role`.`id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
-	where:str = search.get("where", None)
-	where_values:tuple = search.get("where_values", ())
+	Optional 'search' keywords:
+	---------------------------
+	* `role_id` - Union[int, str, None] : (Default: None) [sets LIMIT to 1]
+	* `name` - Optional[str] : (Default: None)
+	* `can_be_removed` - Optional[int] : (Default: None) [0 = only not removable, 1 = only removable]
 
-	sql:str = f"""SELECT `role`.* FROM `role` WHERE 1=1"""
+	Optional 'contains' keywords:
+	-----------------------------
+	* `name_contains` - Optional[str] : (Default: None) [DB uses LIKE on `name`]
+	* `description_contains` - Optional[str] : (Default: None) [DB uses LIKE on `description`]
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY role.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
+	"""
+	ground_sql:str = f"""
+		SELECT `role`.*
+		FROM `role`
+		WHERE 1 = 1"""
+
+	sql:str = ""
 	values:tuple = ()
 
-	if user_id:
-		sql = """
-			SELECT `role`.*
-			FROM `user_has_role`
-			LEFT JOIN `role` ON `role`.`id` = `user_has_role`.`role_id`
-			WHERE `user_has_role`.`user_id` = %s"""
-		values = (int(user_id),)
-
-	if role_id and not where:
+	# Optional 'search' keywords
+	role_id:Union[int, str, None] = search.get("role_id", None)
+	if role_id is not None:
 		sql += " AND `role`.`id` = %s"
 		values += (int(role_id),)
+		search["limit"] = 1
 
-	if name and not where:
+	name:Optional[str] = search.get("name", None)
+	if name is not None:
 		sql += " AND `role`.`name` = %s"
 		values += (str(name),)
 
-	if name_contains and not where:
+	can_be_removed:Optional[int] = search.get("can_be_removed", None)
+	if can_be_removed is not None:
+		sql += " AND `role`.`can_be_removed` = %s"
+		values += (int(can_be_removed),)
+
+	# Optional 'contains' keywords
+	name_contains:Optional[str] = search.get("name_contains", None)
+	if name_contains:
 		name_contains = f"%{name_contains}%"
 		sql += " AND `role`.`name` LIKE %s"
 		values += (str(name_contains),)
 
-	if can_be_removed == 1 and not where:
-		sql += " AND `role`.`can_be_removed` = 1"
-	if can_be_removed == 2 and not where:
-		sql += " AND `role`.`can_be_removed` = 0"
+	description_contains:Optional[str] = search.get("description_contains", None)
+	if description_contains:
+		description_contains = f"%{description_contains}%"
+		sql += " AND `role`.`email` description %s"
+		values += (str(description_contains),)
 
-	if where:
-		sql += f" AND {where}"
-		values = where_values
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) AS `I`
+			FROM `role`
+			WHERE 1 = 1"""
 
-	if order_str:
-		sql += f" {order_str}"
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values:Union[tuple, dict, None] = search.get("overwrite_where_values", None)
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
 
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `role`.`id` ASC")
+	sql += f" {order_str}"
+
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-	return [WebRole(x) for x in res]
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-async def getWebRoleAmount(cls:"PhaazebotWeb", where:str="1=1", values:tuple=()) -> int:
-	"""
-	simply gives a number of all matched roles
-	"""
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(f"SELECT COUNT(*) AS `I` FROM `role` WHERE {where}", values)
+	if count_mode:
+		return res[0]['I']
+	else:
+		return [WebRole(x) for x in res]
 
-	return res[0]['I']
