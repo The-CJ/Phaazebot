@@ -191,7 +191,6 @@ class WebIndex(object):
 	def addAPIAdminRoutes(self) -> None:
 		self.Web.router.add_route('*', '/api/admin/module', self.apiAdminModule)
 		self.Web.router.add_route('*', '/api/admin/evaluate', self.apiAdminEvaluate)
-		self.Web.router.add_route('*', '/api/admin/status', self.apiAdminStatus)
 		self.Web.router.add_route('*', '/api/admin/avatar', self.apiAdminAvatar)
 		self.Web.router.add_route('*', '/api/admin/roles{x:/?}{method:.*}', self.apiAdminRoles)
 		self.Web.router.add_route('*', '/api/admin/users{x:/?}{method:.*}', self.apiAdminUsers)
