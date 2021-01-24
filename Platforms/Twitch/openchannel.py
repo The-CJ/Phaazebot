@@ -22,7 +22,7 @@ async def openChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -> None
 
 	# Base: get user entry
 	TwitchUser:Optional[TwitchUserStats] = None
-	user_res:List[TwitchUserStats] = await getTwitchChannelUsers(cls, Message.room_id, user_id=Message.user_id)
+	user_res:List[TwitchUserStats] = await getTwitchChannelUsers(cls, channel_id=Message.room_id, user_id=Message.user_id)
 	if user_res: TwitchUser = user_res.pop(0)
 
 	# Protection: runs word blacklist, links, caps, spam, emotes, etc

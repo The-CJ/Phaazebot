@@ -51,7 +51,7 @@ class PhaazebotTwitch(twitch_irc.Client):
 		Join all channels we know in the database that have a managed=true
 		"""
 
-		if CliArgs.get("no-twitch-join", False):
+		if CliArgs.get("no-twitch-join", ""):
 			return self.BASE.Logger.warning(f"`no-twitch-join` active, skipping channel join.")
 
 		twitch_res:list = self.BASE.PhaazeDB.selectQuery("""

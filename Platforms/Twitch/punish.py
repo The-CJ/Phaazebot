@@ -84,7 +84,7 @@ async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channel
 
 	# if this is True after all checks => punish
 	punish:bool = False
-	reason:str = None
+	reason:Optional[str] = None
 
 	# link option is active, check for links
 	if ChannelSettings.punish_option_links:
