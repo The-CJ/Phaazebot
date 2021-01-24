@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, List, Union, Optional
 if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
@@ -38,12 +38,12 @@ async def getTwitchChannelSettings(cls:"PhaazebotTwitch", origin:Union[twitch_ir
 	)
 
 	if res:
-		return TwitchChannelSettings(infos=res.pop(0))
+		return TwitchChannelSettings(res.pop(0))
 
 	else:
 		if prevent_new:
 			# return a empty 'dummy'
-			return TwitchChannelSettings()
+			return TwitchChannelSettings({})
 		else:
 			return await makeTwitchChannelSettings(cls, channel_id)
 
@@ -60,79 +60,195 @@ async def makeTwitchChannelSettings(cls:"PhaazebotTwitch", channel_id:str) -> Tw
 		)
 
 		cls.BASE.Logger.info(f"(Twitch) New channel settings DB entry: {channel_id=}")
-		return TwitchChannelSettings(infos={"channel_id":channel_id})
+		return TwitchChannelSettings({"channel_id":channel_id})
 	except:
 		cls.BASE.Logger.critical(f"(Twitch) New channel settings failed: {channel_id=}")
 		raise RuntimeError("Creating new DB entry failed")
 
 # twitch_commands
-async def getTwitchChannelCommands(cls:"PhaazebotTwitch", channel_id:str, **search) -> List[TwitchCommand]:
+async def getTwitchChannelCommands(cls:"PhaazebotTwitch", **search) -> Union[List[TwitchCommand], int]:
 	"""
 	Get channel commands.
 	Returns a list of TwitchCommand()
 
-	Optional keywords:
-	------------------
+	Optional 'search' keywords:
+	---------------------------
+	* `command_id` - Union[int, str, None] : (Default: None) [sets LIMIT to 1]
+	* `channel_id` - Optional[str] : (Default: None)
 	* `trigger` - Optional[str] : (Default: None)
-	* `command_id` - Union[str, int, None] : (Default: None)
-	* `show_nonactive` - bool : (Default: False)
-	* `order_str` - str : (Default: "ORDER BY twitch_command.id")
+	* `active` - Optional[int] : (Default: 1) [0 = only inactive, 1 = only active]
+	* `complex` - Optional[int] : (Default: None) [0 = only inactive, 1 = only active]
+	* `function` - Optional[str] : (Default: None)
+	* `hidden` - Optional[int] : (Default: 0) [0 = only visible, 1 = only hidden]
+	* `require` - Optional[int] : (Default: None)
+
+	Optional 'contains' keywords:
+	-----------------------------
+	* `content_contains` - Optional[str] : (Default: None) [DB uses LIKE on `content`]
+
+	Optional 'between' keywords:
+	----------------------------
+	* `cooldown_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+	* `required_currency_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+	* `uses_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY twitch_command.id ASC")
 	* `limit` - Optional[int] : (Default: None)
 	* `offset` - int : (Default: 0)
-	"""
-	# unpack
-	trigger:str = search.get("trigger", None)
-	command_id:str or int = search.get("command_id", None)
-	show_nonactive:bool = search.get("show_nonactive", False)
-	order_str:str = search.get("order_str", "ORDER BY `twitch_command`.`id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
 
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
+	"""
 	# process
-	sql:str = """
+	ground_sql:str = """
 		SELECT `twitch_command`.*
 		FROM `twitch_command`
-		WHERE `twitch_command`.`channel_id` = %s"""
-	values:tuple = (str(channel_id),)
+		WHERE 1 = 1"""
 
-	if not show_nonactive:
-		sql += " AND `twitch_command`.`active` = 1"
+	sql:str = ""
+	values:tuple = ()
 
-	if command_id:
+	# Optional 'search' keywords
+	command_id:Union[str, int, None] = search.get("command_id", None)
+	if command_id is not None:
 		sql += " AND `twitch_command`.`id` = %s"
 		values += (int(command_id),)
 
-	if trigger:
+	channel_id:Optional[str] = search.get("channel_id", None)
+	if channel_id is not None:
+		sql += " AND `twitch_command`.`channel_id` = %s"
+		values += (str(channel_id),)
+
+	trigger:Optional[str] = search.get("trigger", None)
+	if trigger is not None:
 		sql += " AND `twitch_command`.`trigger` = %s"
 		values += (str(trigger),)
 
+	active:Optional[int] = search.get("active", 1)
+	if active is not None:
+		sql += " AND `twitch_command`.`active` = %s"
+		values += (int(trigger),)
+
+	complex_:Optional[int] = search.get("complex", None)
+	if complex_ is not None:
+		sql += " AND `twitch_command`.`complex` = %s"
+		values += (int(complex_),)
+
+	function:Optional[str] = search.get("function", None)
+	if function is not None:
+		sql += " AND `twitch_command`.`function` = %s"
+		values += (str(function),)
+
+	hidden:Optional[int] = search.get("hidden", 0)
+	if hidden is not None:
+		sql += " AND `twitch_command`.`hidden` = %s"
+		values += (int(hidden),)
+
+	require:Optional[int] = search.get("require", None)
+	if require is not None:
+		sql += " AND `twitch_command`.`require` = %s"
+		values += (int(require),)
+
+	# Optional 'contains' keywords
+	content_contains:Optional[str] = search.get("content_contains", None)
+	if content_contains is not None:
+		content_contains = f"%{content_contains}%"
+		sql += " AND `twitch_command`.`content` LIKE %s"
+		values += (str(content_contains),)
+
+	# Optional 'between' keywords
+	cooldown_between:Optional[tuple] = search.get("cooldown_between", None)
+	if cooldown_between is not None:
+		from_:Optional[int] = cooldown_between[0]
+		to_:Optional[int] = cooldown_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `twitch_command`.`cooldown` BETWEEN %s AND %s"
+			values += (int(from_), int(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `twitch_command`.`cooldown` >= %s"
+			values += (int(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `twitch_command`.`cooldown` <= %s"
+			values += (int(to_),)
+
+	required_currency_between:Optional[tuple] = search.get("required_currency_between", None)
+	if required_currency_between is not None:
+		from_:Optional[int] = required_currency_between[0]
+		to_:Optional[int] = required_currency_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `twitch_command`.`required_currency` BETWEEN %s AND %s"
+			values += (int(from_), int(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `twitch_command`.`required_currency` >= %s"
+			values += (int(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `twitch_command`.`required_currency` <= %s"
+			values += (int(to_),)
+
+	uses_between:Optional[tuple] = search.get("uses_between", None)
+	if uses_between is not None:
+		from_:Optional[int] = uses_between[0]
+		to_:Optional[int] = uses_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `twitch_command`.`uses` BETWEEN %s AND %s"
+			values += (int(from_), int(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `twitch_command`.`uses` >= %s"
+			values += (int(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `twitch_command`.`uses` <= %s"
+			values += (int(to_),)
+
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) AS `I`
+			FROM `twitch_command`
+			WHERE 1 = 1"""
+
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values: Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `twitch_command`.`id` ASC")
 	sql += f" {order_str}"
 
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
-		return [TwitchCommand(x) for x in res]
-
+	if count_mode:
+		return res[0]['I']
 	else:
-		return []
-
-async def getTwitchChannelCommandsAmount(cls:"PhaazebotTwitch", channel_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `twitch_command`
-		WHERE `twitch_command`.`channel_id` = %s AND {where}"""
-
-	values:tuple = (channel_id,) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
-
+		return [TwitchCommand(x) for x in res]
 
 # twitch_user
 async def getTwitchChannelUsers(cls:"PhaazebotTwitch", channel_id:str, **search) -> List[TwitchUserStats]:

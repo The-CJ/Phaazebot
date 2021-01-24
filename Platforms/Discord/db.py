@@ -167,7 +167,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> Union[Li
 
 	complex_:Optional[int] = search.get("complex", None)
 	if complex_ is not None:
-		sql += " AND `discord_command`.`complex_` = %s"
+		sql += " AND `discord_command`.`complex` = %s"
 		values += (int(complex_),)
 
 	function:Optional[str] = search.get("function", None)
