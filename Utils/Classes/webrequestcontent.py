@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any, Callable, Union
 
 import math
 from multidict import MultiDictProxy
@@ -72,7 +72,7 @@ class WebRequestContent(object):
 		if not self.loaded: raise RuntimeError("Content not loaded, call 'await X.load()' before")
 		return self.content.get(a, b)
 
-	def getBool(self, x:str, alternative:bool) -> bool:
+	def getBool(self, x:str, alternative:Any) -> Union[bool, Any]:
 		"""
 		get a value as bool.
 		False = "0", "false", "False", ""
@@ -84,7 +84,7 @@ class WebRequestContent(object):
 		if value in ["0", "false", "False", ""]: return False
 		else: return True
 
-	def getStr(self, x:str, alternative:str, len_min:int=-math.inf, len_max:int=math.inf, must_be_digit:bool=False, strip:bool=True) -> str:
+	def getStr(self, x:str, alternative:Any, len_min:int=-math.inf, len_max:int=math.inf, must_be_digit:bool=False, strip:bool=True) -> Union[str, Any]:
 		"""
 		get a value as string.
 		test it it only contains digits, it its to short or to long,
@@ -104,7 +104,7 @@ class WebRequestContent(object):
 
 		return value
 
-	def getInt(self, x:str, alternative:int, min_x:int=-math.inf, max_x:int=math.inf) -> int:
+	def getInt(self, x:str, alternative:Any, min_x:int=-math.inf, max_x:int=math.inf) -> Union[int, Any]:
 		"""
 		get a value as a int.
 		if conversion is not possible
