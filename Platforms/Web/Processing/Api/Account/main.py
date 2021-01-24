@@ -7,12 +7,6 @@ from Utils.Classes.extendedrequest import ExtendedRequest
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod
 from Platforms.Web.index import PhaazeWebIndex
 
-from Platforms.Web.Processing.Api.Account.get import apiAccountGetPhaaze, apiAccountGetDiscord, apiAccountGetTwitch
-from Platforms.Web.Processing.Api.Account.login import apiAccountLoginPhaaze, apiAccountLoginDiscord, apiAccountLoginTwitch
-from Platforms.Web.Processing.Api.Account.logout import apiAccountLogoutPhaaze, apiAccountLogoutDiscord, apiAccountLogoutTwitch
-from Platforms.Web.Processing.Api.Account.create import apiAccountCreatePhaaze
-from Platforms.Web.Processing.Api.Account.edit import apiAccountEditPhaaze
-
 @PhaazeWebIndex.view("/api/account/phaaze{x:/?}{method:.*}")
 async def apiAccountPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
@@ -22,19 +16,19 @@ async def apiAccountPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Re
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
 	elif method == "get":
-		return await apiAccountGetPhaaze(cls, WebRequest)
+		return await cls.Tree.Api.Account.get.apiAccountGetPhaaze(cls, WebRequest)
 
 	elif method == "login":
-		return await apiAccountLoginPhaaze(cls, WebRequest)
+		return await cls.Tree.Api.Account.login.apiAccountLoginPhaaze(cls, WebRequest)
 
 	elif method == "logout":
-		return await apiAccountLogoutPhaaze(cls, WebRequest)
+		return await cls.Tree.Api.Account.logout.apiAccountLogoutPhaaze(cls, WebRequest)
 
 	elif method == "create":
-		return await apiAccountCreatePhaaze(cls, WebRequest)
+		return await cls.Tree.Api.Account.create.apiAccountCreatePhaaze(cls, WebRequest)
 
 	elif method == "edit":
-		return await apiAccountEditPhaaze(cls, WebRequest)
+		return await cls.Tree.Api.Account.edit.apiAccountEditPhaaze(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
@@ -47,13 +41,13 @@ async def apiAccountDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> R
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
 	elif method == "get":
-		return await apiAccountGetDiscord(cls, WebRequest)
+		return await cls.Tree.Api.Account.get.apiAccountGetDiscord(cls, WebRequest)
 
 	elif method == "login":
-		return await apiAccountLoginDiscord(cls, WebRequest)
+		return await cls.Tree.Api.Account.login.apiAccountLoginDiscord(cls, WebRequest)
 
 	elif method == "logout":
-		return await apiAccountLogoutDiscord(cls, WebRequest)
+		return await cls.Tree.Api.Account.logout.apiAccountLogoutDiscord(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
 
@@ -66,10 +60,10 @@ async def apiAccountTwitch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Re
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
 	elif method == "get":
-		return await apiAccountGetTwitch(cls, WebRequest)
+		return await cls.Tree.Api.Account.get.apiAccountGetTwitch(cls, WebRequest)
 
 	elif method == "login":
-		return await apiAccountLoginTwitch(cls, WebRequest)
+		return await cls.Tree.Api.Account.login.apiAccountLoginTwitch(cls, WebRequest)
 
 	elif method == "logout":
-		return await apiAccountLogoutTwitch(cls, WebRequest)
+		return await cls.Tree.Api.Account.logout.apiAccountLogoutTwitch(cls, WebRequest)

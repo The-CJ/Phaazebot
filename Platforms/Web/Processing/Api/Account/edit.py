@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import re
@@ -8,7 +8,7 @@ import datetime
 from aiohttp.web import Response, Request
 from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.stringutils import passwordToHash as password_function
+from Utils.stringutils import passwordToHash as passwordFunction
 from Utils.regex import IsEmail
 from Platforms.Web.db import getWebUsers
 from Platforms.Web.Processing.Api.errors import apiWrongData, apiMissingAuthorisation
@@ -19,9 +19,9 @@ from Platforms.Web.Processing.Api.Account.errors import (
 	apiAccountEmailWrong
 )
 
-async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAccountEditPhaaze(cls:"PhaazebotWeb", WebRequest:Request) -> Response:
 	"""
-		Default url: /api/account/phaaze/edit
+	Default url: /api/account/phaaze/edit
 	"""
 	WebUser:AuthWebUser = await cls.getWebUserInfo(WebRequest)
 
@@ -39,7 +39,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 	new_password2:str = Data.getStr("newpassword2", "", len_max=256)
 
 	# checks
-	if not current_password or WebUser.password != password_function(current_password):
+	if not current_password or WebUser.password != passwordFunction(current_password):
 		return await apiAccountPasswordsDontMatch(cls, WebRequest, msg="Current password is not correct")
 
 	changed_email:bool = False # if yes, reset valiated and send mail
@@ -54,7 +54,7 @@ async def apiAccountEditPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
 		if len(new_password) < 8:
 			return await apiAccountPasswordToShort(cls, WebRequest, min_length=8)
 
-		update["password"] = password_function(new_password)
+		update["password"] = passwordFunction(new_password)
 
 	if new_username:
 		# want a new username
