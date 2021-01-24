@@ -8,7 +8,6 @@ from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Web.index import PhaazeWebIndex
 from Platforms.Web.utils import getNavbar, authWebUser
-from Platforms.Web.Processing.Account.accountlogin import accountLogin
 
 @PhaazeWebIndex.get("/account/create")
 async def accountCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
@@ -17,7 +16,7 @@ async def accountCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Respo
 	"""
 	# already logged in
 	WebUser:AuthWebUser = await authWebUser(cls, WebRequest)
-	if WebUser.found: return await accountLogin(cls, WebRequest)
+	if WebUser.found: return await cls.Tree.Account.accountlogin.accountLogin(cls, WebRequest)
 
 	CreatePage:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Account/create.html")
 

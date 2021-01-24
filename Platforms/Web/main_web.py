@@ -12,14 +12,14 @@ from Utils.Classes.htmlformatter import HTMLFormatter
 from Platforms.Web.index import PhaazeWebIndex
 
 # load in modules in tree down.
-# they are liked via decorators
+# they are linked via decorators
 import Platforms.Web.Processing as WebProcessing
-__all__ = [WebProcessing]
 
 class PhaazebotWeb(web.Application):
 	def __init__(self, BASE:"Phaazebot"):
 		super().__init__()
 		self.BASE:"Phaazebot" = BASE
+		self.Tree = WebProcessing
 		self._client_max_size = self.BASE.Limit.web_client_max_size
 		self.port:int = 9001
 		self.SSLContext:Optional[ssl.SSLContext] = None
@@ -74,10 +74,10 @@ class PhaazebotWeb(web.Application):
 				raise FileNotFoundError()
 
 			if not self.BASE.Active.web:
-				return await WebProcessing.Api.errors.apiNotAllowed(self, WebRequest, msg="Web is disabled and will be shutdown soon")
+				return await self.Tree.Api.errors.apiNotAllowed(self, WebRequest, msg="Web is disabled and will be shutdown soon")
 
 			if not self.BASE.Active.api and WebRequest.path.startswith("/api"):
-				return await WebProcessing.Api.errors.apiNotAllowed(self, WebRequest, msg="API endpoint is not enabled")
+				return await self.Tree.Api.errors.apiNotAllowed(self, WebRequest, msg="API endpoint is not enabled")
 
 			response:web.Response = await handler(self, WebRequest)
 			return response
@@ -90,7 +90,7 @@ class PhaazebotWeb(web.Application):
 			)
 
 		except FileNotFoundError:
-			return await WebProcessing.errors.notFound(self, WebRequest)
+			return await self.Tree.errors.notFound(self, WebRequest)
 
 		except Exception as e:
 			tb:str = traceback.format_exc()

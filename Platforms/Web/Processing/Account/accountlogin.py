@@ -8,7 +8,6 @@ from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Web.index import PhaazeWebIndex
 from Platforms.Web.utils import getNavbar, authWebUser
-from Platforms.Web.Processing.Account.accountmain import accountMain
 
 @PhaazeWebIndex.get("/account/login")
 async def accountLogin(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
@@ -16,7 +15,7 @@ async def accountLogin(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Respon
 	Default url: /account/login
 	"""
 	WebUser:AuthWebUser = await authWebUser(cls, WebRequest)
-	if WebUser.found: return await accountMain(cls, WebRequest)
+	if WebUser.found: return await cls.Tree.Account.accountmain.accountMain(cls, WebRequest)
 
 	AccountLogin:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Account/login.html")
 
