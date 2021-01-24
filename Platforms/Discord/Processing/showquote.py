@@ -15,12 +15,15 @@ async def showQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandConte
 		if not specific_id.isdigit():
 			specific_id = ""
 
-	if specific_id:
-		random:bool = False
-	else:
-		random:bool = True
+	search:dict = dict()
+	search["guild_id"] = Command.server_id
+	search["quote_id"] = specific_id
+	search["limit"] = 1
 
-	quote:list = await getDiscordServerQuotes(cls, Command.server_id, quote_id=specific_id, random=random, limit=1)
+	if not specific_id:
+		search["order_str"] = "ORDER BY RAND()"
+
+	quote:list = await getDiscordServerQuotes(cls,**search)
 
 	if not quote and not specific_id:
 		return {"content": ":grey_exclamation: This server don't has any Quotes"}

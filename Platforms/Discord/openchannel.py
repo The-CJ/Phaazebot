@@ -17,7 +17,7 @@ async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 
 	# Base: get user entry
 	DiscordUser:Optional[DiscordUserStats] = None
-	user_res:List[DiscordUserStats] = await getDiscordServerUsers(cls, Message.guild.id, member_id=Message.author.id)
+	user_res:List[DiscordUserStats] = await getDiscordServerUsers(cls, guild_id=Message.guild.id, member_id=Message.author.id)
 	if user_res:
 		DiscordUser = user_res.pop(0)
 

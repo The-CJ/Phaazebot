@@ -18,7 +18,7 @@ async def assignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCont
 	if not role_trigger:
 		return {"content": ":warning: Missing a role-trigger"}
 
-	roles:list = await getDiscordServerAssignRoles(cls, Command.server_id, trigger=role_trigger)
+	roles:list = await getDiscordServerAssignRoles(cls, guild_id=Command.server_id, trigger=role_trigger)
 
 	if not roles:
 		return {"content": f":warning: Could not find any assign role associated with: `{role_trigger}`"}

@@ -19,7 +19,7 @@ async def removeQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 	if not specific_id:
 		return {"content": ":warning: You need to define a numeric quote ID to remove."}
 
-	quote:list = await getDiscordServerQuotes(cls, Command.server_id, quote_id=specific_id)
+	quote:list = await getDiscordServerQuotes(cls, guild_id=Command.server_id, quote_id=specific_id)
 
 	if not quote:
 		return {"content": f":warning: There is no Quote with ID #{specific_id}"}

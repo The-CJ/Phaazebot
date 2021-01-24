@@ -39,7 +39,7 @@ async def levelLeaderboard(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 	if not specific_len or specific_len > MAX_LEADERBOARD_LEN:
 		return {"content": f":warning: `{specific_len}` is unsupported, length must be between 1 and 15"}
 
-	users:list = await getDiscordServerUsers(cls, Command.server_id, limit=specific_len, order_str="ORDER BY exp DESC")
+	users:list = await getDiscordServerUsers(cls, guild_id=Command.server_id, limit=specific_len, order_str="ORDER BY exp DESC")
 
 	if not users:
 		return {"content": ":question: Seems like there are no member with level for a leaderboard :("}

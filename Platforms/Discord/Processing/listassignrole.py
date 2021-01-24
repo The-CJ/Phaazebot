@@ -10,7 +10,7 @@ from Platforms.Discord.db import getDiscordServerAssignRoles
 
 async def listAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
-	all_roles:list = await getDiscordServerAssignRoles(cls, Command.server_id)
+	all_roles:list = await getDiscordServerAssignRoles(cls, guild_id=Command.server_id)
 
 	if not all_roles:
 		return {"content": ":warning: This server does not have any assigned roles."}

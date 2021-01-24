@@ -34,7 +34,7 @@ async def levelStatus(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 		if not Member:
 			return {"content": ":warning: Could not find a user with your query"}
 
-	users:list = await getDiscordServerUsers(cls, Command.server_id, member_id=Member.id)
+	users:list = await getDiscordServerUsers(cls, guild_id=Command.server_id, member_id=Member.id)
 
 	if not users:
 		return {"content": f":warning: Seems like there are no statistics for `{Member.name}`\nMaybe the user never typed anything or got deleted."}
