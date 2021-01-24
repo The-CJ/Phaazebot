@@ -1767,89 +1767,131 @@ async def getDiscordServerNsfwEnabledChannels(cls:"PhaazebotDiscord", **search) 
 		return [DiscordNsfwEnabledChannel(x) for x in res]
 
 # discord_log
-async def getDiscordServerLogs(cls:"PhaazebotDiscord", guild_id:str, **search) -> List[DiscordLog]:
+async def getDiscordServerLogs(cls:"PhaazebotDiscord", **search) -> List[DiscordLog]:
 	"""
-	Get log entry's from a guild.
+	Get log entry's.
 	Returns a list of DiscordLog().
 
-	Optional keywords:
-	------------------
-	* log_id `str` or `int`: (Default: None)
-	* event_value `int`: (Default: None)
-	* content `str`: (Default: None)
-	* content_contains `str`: (Default: None) [DB uses LIKE]
-	* date_from `str`: (Default: None)
-	* date_to `str`: (Default: None)
-	* order_str `str`: (Default: "ORDER BY id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
+	Optional 'search' keywords:
+	---------------------------
+	* `log_id` - Union[int, str, None] : (Default: None)
+	* `guild_id` - Optional[str] : (Default: None)
+	* `content` - Optional[str] : (Default: None)
+	* `event_value` - Optional[int] : (Default: None)
+	* `initiator_id` - Optional[str] : (Default: None)
+
+	Optional 'contains' keywords:
+	-----------------------------
+	* `content_contains` Optional[str]: (Default: None) [DB uses LIKE on `content`]
+
+	Optional 'between' keywords:
+	----------------------------
+	* `created_at_between` - Tuple[from:str, to:str] : (Default: None) [DB uses >= and <=]
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY discord_log.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
 	"""
-	# unpack
-	log_id:str or int = search.get("log_id", None)
-	event_value:int = search.get("event_value", None)
-	content:str = search.get("content", None)
-	content_contains:str = search.get("content_contains", None)
-	date_from:str = search.get("date_from", None)
-	date_to:str = search.get("date_to", None)
-	order_str:str = search.get("order_str", "ORDER BY `id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
-
 	# process
-	sql:str = """
+	ground_sql:str = """
 		SELECT `discord_log`.* FROM `discord_log`
-		WHERE `discord_log`.`guild_id` = %s"""
+		WHERE 1 = 1"""
 
-	values:tuple = (str(guild_id),)
+	sql:str = ""
+	values:tuple = ()
 
-	if log_id:
+	# Optional 'search' keywords
+	log_id:Union[str, int, None] = search.get("log_id", None)
+	if log_id is not None:
 		sql += " AND `discord_log`.`id` = %s"
 		values += (int(log_id),)
 
-	if event_value:
-		sql += " AND `discord_log`.`event_value` = %s"
-		values += (int(event_value),)
+	guild_id:Optional[str] = search.get("guild_id", None)
+	if guild_id is not None:
+		sql += " AND `discord_log`.`guild_id` = %s"
+		values += (str(guild_id),)
 
-	if content:
+	content:Optional[str] = search.get("content", None)
+	if content is not None:
 		sql += " AND `discord_log`.`content` = %s"
 		values += (str(content),)
 
-	if content_contains:
+	event_value:Optional[int] = search.get("event_value", None)
+	if event_value is not None:
+		sql += " AND `discord_log`.`event_value` = %s"
+		values += (int(event_value),)
+
+	initiator_id:Optional[str] = search.get("initiator_id", None)
+	if initiator_id is not None:
+		sql += " AND `discord_log`.`initiator_id` = %s"
+		values += (str(initiator_id),)
+
+	# Optional 'contains' keywords
+	content_contains:Optional[str] = search.get("content_contains", None)
+	if content_contains is not None:
 		content_contains = f"%{content_contains}%"
 		sql += " AND `discord_log`.`content` LIKE %s"
 		values += (str(content_contains),)
 
-	if date_from:
-		sql += " AND `discord_log`.`created_at` > %s"
-		values += (str(date_from),)
+	# Optional 'between' keywords
+	created_at_between:Optional[tuple] = search.get("created_at_between", None)
+	if created_at_between is not None:
+		from_:Optional[int] = created_at_between[0]
+		to_:Optional[int] = created_at_between[1]
 
-	if date_to:
-		sql += " AND `discord_log`.`created_at` < %s"
-		values += (str(date_to),)
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `discord_log`.`created_at` BETWEEN %s AND %s"
+			values += (str(from_), str(to_))
 
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `discord_log`.`created_at` >= %s"
+			values += (str(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `discord_log`.`created_at` <= %s"
+			values += (str(to_),)
+
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) 
+			FROM `discord_log`
+			WHERE 1 = 1"""
+
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values:Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `discord_log`.`id` ASC")
 	sql += f" {order_str}"
 
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
-		return [DiscordLog(x) for x in res]
-
+	if count_mode:
+		return res[0]['I']
 	else:
-		return []
-
-async def getDiscordServerLogAmount(cls:"PhaazebotDiscord", guild_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `discord_log`
-		WHERE `discord_log`.`guild_id` = %s AND {where}"""
-
-	values:tuple = (str(guild_id),) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
+		return [DiscordLog(x) for x in res]
