@@ -5,8 +5,9 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response
 from Utils.Classes.extendedrequest import ExtendedRequest
+from Platforms.Web.index import PhaazeWebIndex
 
-async def apiUnknown(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
+async def apiUnknown(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **_kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -25,6 +26,7 @@ async def apiUnknown(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -
 		status=404
 	)
 
+@PhaazeWebIndex.view("/api")
 async def apiNothing(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
@@ -45,7 +47,7 @@ async def apiNothing(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -
 
 	cls.BASE.Logger.debug(f"(API) 400: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
@@ -70,7 +72,7 @@ async def apiNotAllowed(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs
 
 	cls.BASE.Logger.debug(f"(API) 403: {WebRequest.path}", require="api:403")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=403
 	)
@@ -95,12 +97,12 @@ async def apiMissingValidMethod(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, 
 
 	cls.BASE.Logger.debug(f"(API) 400: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiMissingAuthorisation(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
+async def apiMissingAuthorisation(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **_kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -115,11 +117,11 @@ async def apiMissingAuthorisation(cls:"PhaazebotWeb", WebRequest:ExtendedRequest
 	cls.BASE.Logger.debug(f"(Web/API) Missing Authorisation", require="api:400")
 	return cls.response(
 		status=401,
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json"
 	)
 
-async def apiWrongData(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
+async def apiWrongData(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -139,11 +141,11 @@ async def apiWrongData(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs)
 
 	return cls.response(
 		status=400,
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json"
 	)
 
-async def apiNotFound(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
+async def apiNotFound(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -162,11 +164,11 @@ async def apiNotFound(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) 
 
 	return cls.response(
 		status=400,
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json"
 	)
 
-async def apiUserNotFound(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
+async def apiUserNotFound(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -208,12 +210,12 @@ async def apiUserNotFound(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwar
 
 	cls.BASE.Logger.debug(f"(Web/API) User not found", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=404
 	)
 
-async def apiMissingData(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
+async def apiMissingData(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -233,12 +235,12 @@ async def apiMissingData(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwarg
 
 	cls.BASE.Logger.debug(f"(Web/API) Missing Data for api request", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiTimeout(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
+async def apiTimeout(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -266,7 +268,7 @@ async def apiTimeout(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -
 
 	cls.BASE.Logger.debug(f"(Web/API) Timeout Request", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)

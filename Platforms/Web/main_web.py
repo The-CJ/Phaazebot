@@ -90,7 +90,10 @@ class PhaazebotWeb(web.Application):
 			)
 
 		except FileNotFoundError:
-			return await self.Tree.errors.notFound(self, WebRequest)
+			if WebRequest.path.startswith("/api"):
+				return await self.Tree.Api.errors.apiUnknown(self, WebRequest)
+			else:
+				return await self.Tree.errors.notFound(self, WebRequest)
 
 		except Exception as e:
 			tb:str = traceback.format_exc()
