@@ -13,10 +13,11 @@ class HTMLFormatter(object):
 	def __repr__(self) -> str:
 		return f"<{self.__class__.__name__} from file: {self.path}>"
 
-	def __init__(self, path:str = None, template:bool=False):
+	def __init__(self, path:str = None, template:bool = False, decoding:str = "UTF-8"):
 		self.content:str = ""
 		self.path:str = path
 		self.template:bool = template
+		self.decoding:str = decoding
 		self.FormatHTMLRegex:"re.Pattern" = re.compile(r"\|<!--#\((.+?)\)#-->\|")
 		if self.path: self.loadHTML(self.path)
 
@@ -26,7 +27,7 @@ class HTMLFormatter(object):
 	def loadHTML(self, path:str) -> None:
 		try:
 			self.path = path
-			self.content = open(self.path, 'r').read()
+			self.content = open(self.path, 'rb').read().decode(self.decoding)
 		except FileNotFoundError:
 			raise FileNotFoundError(f"Could not find: {path}")
 		except Exception as e:
