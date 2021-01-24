@@ -251,89 +251,185 @@ async def getTwitchChannelCommands(cls:"PhaazebotTwitch", **search) -> Union[Lis
 		return [TwitchCommand(x) for x in res]
 
 # twitch_user
-async def getTwitchChannelUsers(cls:"PhaazebotTwitch", channel_id:str, **search) -> List[TwitchUserStats]:
+async def getTwitchChannelUsers(cls:"PhaazebotTwitch", **search) -> Union[List[TwitchUserStats], int]:
 	"""
 	Get channel levels and stats.
 	Returns a list of TwitchUserStats().
 
-	Optional keywords:
-	------------------
-	* user_id `str` : (Default: None)
-	* edited `int`: (Default: 0) [0=all, 1=not edited, 2=only edited]
-	* name `str`: (Default: None)
-	* name_contains `str`: (Default: None) [DB uses LIKE]
-	* order_str `str`: (Default: "ORDER BY id")
-	* limit `int`: (Default: None)
-	* offset `int`: (Default: 0)
-	"""
-	# unpack
-	user_id:str = search.get("user_id", None)
-	edited:int = search.get("edited", 0)
-	name:str = search.get("name", None)
-	name_contains:str = search.get("name_contains", None)
-	order_str:str = search.get("order_str", "ORDER BY `id`")
-	limit:int = search.get("limit", None)
-	offset:int = search.get("offset", 0)
+	Optional 'search' keywords:
+	---------------------------
+	* `user_id` - Optional[str] : (Default: None)
+	* `channel_id` - Optional[str] : (Default: None)
+	* `edited` - Optional[int] : (Default: None) [0 = not edited, 1 = only edited]
+	* `name` - Optional[str] : (Default: None)
+	* `display_name` - Optional[str] : (Default: None)
 
+	Optional 'contains' keywords:
+	-----------------------------
+	* `name_contains` Optional[str]: (Default: None) [DB uses LIKE on `name`, `display_name`]
+
+	Optional 'between' keywords:
+	----------------------------
+	* `rank_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+	* `amount_currency_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+	* `amount_time_between` - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+
+	Other:
+	------
+	* `order_str` - str : (Default: "ORDER BY twitch_user.id ASC")
+	* `limit` - Optional[int] : (Default: None)
+	* `offset` - int : (Default: 0)
+
+	Special:
+	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
+	* `overwrite_where` - Optional[str] : (Default: None)
+		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
+		* [Without `limit`, `offset`, `order` and `group by`]
+	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
+	"""
 	# process
-	sql:str = """
+	ground_sql:str = """
 		WITH `twitch_user` AS (
 			SELECT
 				`twitch_user`.*,
 				`twitch_user_name`.`user_display_name` AS `display_name`,
 				`twitch_user_name`.`user_name` AS `name`,
-				RANK() OVER (ORDER BY `amount_time` DESC) AS `rank`
+				RANK() OVER (PARTITION BY `twitch_user`.`channel_id` ORDER BY `twitch_user`.`amount_time` DESC) AS `rank`
 			FROM `twitch_user`
 			LEFT JOIN `twitch_user_name`
 				ON `twitch_user`.`user_id` = `twitch_user_name`.`user_id`
-			WHERE `twitch_user`.`channel_id` = %s
 			GROUP BY `twitch_user`.`channel_id`, `twitch_user`.`user_id`
 		)
 		SELECT `twitch_user`.* FROM `twitch_user` WHERE 1=1"""
 
-	values:tuple = (str(channel_id),)
+	sql:str = ""
+	values:tuple = ()
 
-	if user_id:
+	# Optional 'search' keywords
+	user_id:Optional[str] = search.get("user_id", None)
+	if user_id is not None:
 		sql += " AND `twitch_user`.`user_id` = %s"
 		values += (str(user_id),)
 
-	if name:
-		sql += " AND (`twitch_user`.`name` = %s OR `twitch_user`.`display_name` = %s)"
-		values += (str(name), str(name))
+	channel_id:Optional[str] = search.get("channel_id", None)
+	if channel_id is not None:
+		sql += " AND `twitch_user`.`channel_id` = %s"
+		values += (str(channel_id),)
 
-	if name_contains:
+	edited:Optional[int] = search.get("edited", None)
+	if edited is not None:
+		sql += " AND `twitch_user`.`edited` = %s"
+		values += (int(edited),)
+
+	# regular:Optional[int] = search.get("regular", None)
+	# if regular is not None:
+		# sql += " AND `twitch_user`.`regular` = %s"
+		# values += (int(regular),)
+
+	name:Optional[str] = search.get("name", None)
+	if name is not None:
+		sql += " AND `twitch_user`.`name` = %s"
+		values += (str(name),)
+
+	display_name:Optional[str] = search.get("display_name", None)
+	if display_name is not None:
+		sql += " AND `twitch_user`.`display_name` = %s"
+		values += (str(display_name),)
+
+	# Optional 'contains' keywords
+	name_contains:Optional[str] = search.get("name_contains", None)
+	if name_contains is not None:
 		name_contains = f"%{name_contains}%"
-		sql += " AND (`twitch_user`.`name` LIKE %s OR `twitch_user`.`display_name` LIKE %s)"
-		values += (str(name_contains), str(name_contains))
+		sql += " AND ( 1 = 2"
+		sql += " OR `twitch_user`.`name` LIKE %s"
+		sql += " OR `twitch_user`.`display_name` LIKE %s"
+		sql += " )"
+		values += (str(name_contains),) * 2
 
-	if edited == 2:
-		sql += " AND `twitch_user`.`edited` = 1"
-	if edited == 1:
-		sql += " AND `twitch_user`.`edited` = 0"
+	# Optional 'between' keywords
+	rank_between:Optional[tuple] = search.get("rank_between", None)
+	if rank_between is not None:
+		from_:Optional[int] = rank_between[0]
+		to_:Optional[int] = rank_between[1]
 
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `twitch_user`.`rank` BETWEEN %s AND %s"
+			values += (int(from_), int(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `twitch_user`.`rank` >= %s"
+			values += (int(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `twitch_user`.`rank` <= %s"
+			values += (int(to_),)
+
+	amount_time_between:Optional[tuple] = search.get("amount_time_between", None)
+	if amount_time_between is not None:
+		from_:Optional[int] = amount_time_between[0]
+		to_:Optional[int] = amount_time_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `twitch_user`.`amount_time` BETWEEN %s AND %s"
+			values += (int(from_), int(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `twitch_user`.`amount_time` >= %s"
+			values += (int(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `twitch_user`.`amount_time` <= %s"
+			values += (int(to_),)
+
+	amount_currency_between:Optional[tuple] = search.get("amount_currency_between", None)
+	if amount_currency_between is not None:
+		from_:Optional[int] = amount_currency_between[0]
+		to_:Optional[int] = amount_currency_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `twitch_user`.`amount_currency` BETWEEN %s AND %s"
+			values += (int(from_), int(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `twitch_user`.`amount_currency` >= %s"
+			values += (int(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `twitch_user`.`amount_currency` <= %s"
+			values += (int(to_),)
+
+	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) AS `I`
+			FROM `twitch_user`
+			WHERE 1 = 1"""
+
+	overwrite_where:Optional[str] = search.get("overwrite_where", None)
+	overwrite_where_values: Union[tuple, dict, None] = search.get("overwrite_where_values", ())
+	if overwrite_where:
+		sql = overwrite_where
+		values = overwrite_where_values
+
+	# Other
+	order_str:str = search.get("order_str", "ORDER BY `twitch_user`.`id` ASC")
 	sql += f" {order_str}"
 
+	limit:Optional[int] = search.get("limit", None)
+	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-	if res:
-		return [TwitchUserStats(x) for x in res]
-
+	if count_mode:
+		return res[0]['I']
 	else:
-		return []
-
-async def getTwitchChannelUserAmount(cls:"PhaazebotTwitch", channel_id:str, where:str="1=1", where_values:tuple=()) -> int:
-
-	sql:str = f"""
-		SELECT COUNT(*) AS `I` FROM `twitch_user`
-		WHERE `twitch_user`.`channel_id` = %s AND {where}"""
-
-	values:tuple = (channel_id,) + where_values
-
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(sql, values)
-
-	return res[0]["I"]
+		return [TwitchUserStats(x) for x in res]

@@ -17,12 +17,12 @@ class TwitchUserStats(ContentClass):
 
 		# vars
 		self.active:int = self.asInteger(data.get("active", UNDEFINED))
+		self.edited:bool = self.asBoolean(data.get("edited", False))
 		self.amount_currency:int = self.asInteger(data.get("exp", UNDEFINED))
 		self.amount_time:int = self.asInteger(data.get("currency", UNDEFINED))
 
 		# calc
 		self.rank:int = self.asInteger(data.get("rank", UNDEFINED))
-		self.edited:bool = self.asBoolean(data.get("edited", False))
 		self.regular:bool = self.asBoolean(data.get("regular", False))
 
 	def __repr__(self):

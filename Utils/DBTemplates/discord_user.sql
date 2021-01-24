@@ -11,8 +11,8 @@ DESCRIBE `discord_user`;
 | edited    | tinyint(1)   | YES  |     | 0       |                |
 | exp       | int(8)       | YES  |     | 0       |                |
 | nickname  | varchar(512) | YES  |     | NULL    |                |
-| on_server | tinyint(1)   | YES  |     | 1       |                |
 | username  | varchar(512) | YES  |     | NULL    |                |
+| on_server | tinyint(1)   | YES  |     | 1       |                |
 +-----------+--------------+------+-----+---------+----------------+
 */
 
@@ -26,8 +26,8 @@ CREATE TABLE `discord_user` (
   `edited` tinyint(1) DEFAULT 0,
   `exp` int(8) DEFAULT 0,
   `nickname` varchar(512) DEFAULT NULL,
-  `on_server` tinyint(1) DEFAULT 1,
   `username` varchar(512) DEFAULT NULL,
+  `on_server` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_key` (`guild_id`,`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -325,7 +325,7 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 			SELECT
 				`discord_user`.*,
 				GROUP_CONCAT(`discord_user_medal`.`name` SEPARATOR ';;;') AS `medals`,
-				RANK() OVER (PARTITION BY `guild_id` ORDER BY `exp` DESC) AS `rank`,
+				RANK() OVER (PARTITION BY `discord_user`.`guild_id` ORDER BY `discord_user`.`exp` DESC) AS `rank`,
 				(`discord_regular`.`id` IS NOT NULL) AS `regular`
 			FROM `discord_user`
 			LEFT JOIN `discord_user_medal`
