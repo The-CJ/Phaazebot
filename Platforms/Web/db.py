@@ -5,8 +5,8 @@ if TYPE_CHECKING:
 from Utils.Classes.webuser import WebUser
 from Utils.Classes.webrole import WebRole
 
-# users
-async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
+# user
+async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]:
 	"""
 	Get web users
 	Returns a list of WebUser()
@@ -23,14 +23,23 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 	* `username_contains` - Optional[str] : (Default: None) [DB uses LIKE on `username`]
 	* `email_contains` - Optional[str] : (Default: None) [DB uses LIKE on `email`]
 
-	Other
-	-------
+	Optional 'between' keywords:
+	----------------------------
+	* `created_at_between` - Tuple[from:str, to:str] : (Default: None) [DB uses >= and <=]
+	* `edited_at_between` - Tuple[from:str, to:str] : (Default: None) [DB uses >= and <=]
+	* `last_login_between` - Tuple[from:str, to:str] : (Default: None) [DB uses >= and <=]
+	* `username_changed_between - Tuple[from:int, to:int] : (Default: None) [DB uses >= and <=]
+
+	Other:
+	------
 	* `order_str` - str : (Default: "ORDER BY user.id ASC")
 	* `limit` - Optional[int] : (Default: None)
 	* `offset` - int : (Default: 0)
 
 	Special:
 	--------
+	* `count_mode` - bool : (Default: False)
+		* [returns COUNT(*) as int, disables: `limit`, `offset`]
 	* `overwrite_where` - Optional[str] : (Default: None)
 		* [Overwrites everything, appended after "1=1", so start with "AND field = %s"]
 		* [Without `limit`, `offset`, `order` and `group by`]
@@ -45,31 +54,30 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 			ON `user_has_role`.`user_id` = `user`.`id`
 		LEFT JOIN `role`
 			ON `role`.`id` = `user_has_role`.`role_id`
-		WHERE 1=1"""
-	ground_values:tuple = ()
+		WHERE 1 = 1"""
 
 	sql:str = ""
 	values:tuple = ()
 
 	# Optional 'search' keywords
 	user_id:Union[int, str, None] = search.get("user_id", None)
-	if user_id:
+	if user_id is not None:
 		sql += " AND `user`.`id` = %s"
 		values += (int(user_id),)
 		search["limit"] = 1
 
 	username:Optional[str] = search.get("username", None)
-	if username:
+	if username is not None:
 		sql += " AND `user`.`username` = %s"
 		values += (str(username),)
 
 	email:Optional[str] = search.get("email", None)
-	if email:
+	if email is not None:
 		sql += " AND `user`.`email` = %s"
 		values += (str(email),)
 
 	verified:Optional[int] = search.get("email", None)
-	if email:
+	if email is not None:
 		sql += " AND `user`.`verified` = %s"
 		values += (int(verified),)
 
@@ -86,7 +94,85 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 		sql += " AND `user`.`email` LIKE %s"
 		values += (str(email_contains),)
 
+	# Optional 'between' keywords
+	created_at_between:Optional[tuple] = search.get("created_at_between", None)
+	if created_at_between is not None:
+		from_:Optional[str] = created_at_between[0]
+		to_:Optional[str] = created_at_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `user`.`created_at` BETWEEN %s AND %s"
+			values += (str(from_), str(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `user`.`created_at` >= %s"
+			values += (str(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `user`.`created_at` <= %s"
+			values += (str(to_),)
+
+	edited_at_between:Optional[tuple] = search.get("edited_at_between", None)
+	if edited_at_between is not None:
+		from_:Optional[str] = edited_at_between[0]
+		to_:Optional[str] = edited_at_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `user`.`edited_at` BETWEEN %s AND %s"
+			values += (str(from_), str(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `user`.`edited_at` >= %s"
+			values += (str(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `user`.`edited_at` <= %s"
+			values += (str(to_),)
+
+	last_login_between:Optional[tuple] = search.get("last_login_between", None)
+	if last_login_between is not None:
+		from_:Optional[str] = last_login_between[0]
+		to_:Optional[str] = last_login_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `user`.`last_login` BETWEEN %s AND %s"
+			values += (str(from_), str(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `user`.`last_login` >= %s"
+			values += (str(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `user`.`last_login` <= %s"
+			values += (str(to_),)
+
+	username_changed_between:Optional[tuple] = search.get("username_changed_between", None)
+	if username_changed_between is not None:
+		from_:Optional[int] = username_changed_between[0]
+		to_:Optional[int] = username_changed_between[1]
+
+		if (from_ is not None) and (to_ is not None):
+			sql += " AND `user`.`username_changed` BETWEEN %s AND %s"
+			values += (int(from_), int(to_))
+
+		if (from_ is not None) and (to_ is None):
+			sql += " AND `user`.`username_changed` >= %s"
+			values += (int(from_),)
+
+		if (from_ is None) and (to_ is not None):
+			sql += " AND `user`.`username_changed` <= %s"
+			values += (int(to_),)
+
 	# Special
+	count_mode:bool = search.get("count_mode", False)
+	if count_mode:
+		search["limit"] = None
+		search["offset"] = None
+		ground_sql: str = """
+			SELECT COUNT(*) AS `I`
+			FROM `user`
+			WHERE 1 = 1"""
+
 	overwrite_where:Optional[str] = search.get("overwrite_where", None)
 	overwrite_where_values:Union[tuple, dict, None] = search.get("overwrite_where_values", None)
 	if overwrite_where:
@@ -107,16 +193,12 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> List[WebUser]:
 		if offset:
 			sql += f" OFFSET {offset}"
 
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, ground_values+values)
-	return [WebUser(x) for x in res]
+	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
-async def getWebUserAmount(cls:"PhaazebotWeb", where:str="1=1", values:tuple=()) -> int:
-	"""
-	simply gives a number of all matched user
-	"""
-	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(f"SELECT COUNT(*) AS `I` FROM `user` WHERE {where}", values)
-
-	return res[0]['I']
+	if count_mode:
+		return res[0]['I']
+	else:
+		return [WebUser(x) for x in res]
 
 # roles
 async def getWebRoles(cls:"PhaazebotWeb", **search) -> List[WebRole]:
