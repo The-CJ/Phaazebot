@@ -15,7 +15,7 @@ from Utils.stringutils import passwordToHash as passwordFunction
 
 async def apiAccountCreatePhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/account/phaaze/create
+	Default url: /api/account/phaaze/create
 	"""
 
 	WebAuth:AuthWebUser = await authWebUser(cls, WebRequest)

@@ -45,6 +45,7 @@ class StorageTransformer(object):
 		self.protected_keys:List[str] = []
 		self.wanted_types:Dict[str, type] = {}
 		self.storage:Dict[str, Any] = {}
+		self.raise_transform:bool = False
 
 	def __repr__(self):
 		items:int = len(self.storage)
@@ -137,7 +138,9 @@ class StorageTransformer(object):
 		try:
 			return wanted_type(value)
 		except Exception as E:
-			raise E.__class__(f"Key `{key}` with a value of type {type(value)} could not be transformed to {wanted_type}")
+			if self.raise_transform:
+				raise E.__class__(f"Key `{key}` with a value of type {type(value)} could not be transformed to {wanted_type}")
+			return alternative
 
 	def getAllTransform(self, include_protected:bool=False, include_undefined:bool=False) -> Any:
 		"""
