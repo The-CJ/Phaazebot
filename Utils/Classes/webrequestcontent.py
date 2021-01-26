@@ -17,8 +17,22 @@ class WebRequestContent(object):
 	it returns Undefined else b
 
 	GET -> POST(multipart/json)
+
+	Reminder:
+	---------
+	* WebRequestContent.get("aSetValue") -> "a user set value"
+	* WebRequestContent.get("aNullOrNoneValue") -> None
+	* WebRequestContent.get("aValueNotInRequest") -> UNDEFINED
+
+	Or in Strings:
+	--------------
+	* WebRequestContent.getStr("newContent", "Alt_Content") -> "Something"
+	* WebRequestContent.getStr("aNullField", "Its None") -> "None"
+	* WebRequestContent.getStr("aNullField", "Its None", allow_none=True) -> None
+	* WebRequestContent.getStr("neverSet", "Missing") -> "Missing"
+
 	"""
-	def __init__(self, WebRequest:Request, force_method:str=None):
+	def __init__(self, WebRequest:Request, force_method:str = None):
 		self.WebRequest:Request = WebRequest
 		self.loaded:bool = False
 		self.force_method = force_method
@@ -65,46 +79,61 @@ class WebRequestContent(object):
 	async def unpackMultipart(self) -> None:
 		return None
 
-	def get(self, a:str, b:Any=UNDEFINED) -> Any:
+	def get(self, a:str, b:Any = UNDEFINED) -> Any:
 		"""
 		get any value from the stored content
 		"""
 		if not self.loaded: raise RuntimeError("Content not loaded, call 'await X.load()' before")
 		return self.content.get(a, b)
 
-	def getBool(self, x:str, alternative:Any) -> Union[bool, Any]:
+	def getBool(self, x:str, alternative:Any, allow_none:bool = False) -> Union[bool, Any, None]:
 		"""
 		get a value as bool.
 		False = "0", "false", "False", ""
 		True = Everything else
 		"""
 		value:Any = self.get(x)
-		if type(value) is Undefined: return alternative
 
-		if value in ["0", "false", "False", ""]: return False
-		else: return True
+		if allow_none and value is None:
+			return None
 
-	def getStr(self, x:str, alternative:Any, len_min:int=-math.inf, len_max:int=math.inf, must_be_digit:bool=False, strip:bool=True) -> Union[str, Any]:
+		if type(value) is Undefined:
+			return alternative
+
+		if value in ["0", "false", "False", ""]:
+			return False
+		else:
+			return True
+
+	def getStr(self, x:str, alternative:Any, len_min:int = -math.inf, len_max:int = math.inf, must_be_digit:bool = False, strip:bool = True, allow_none:bool = False) -> Union[str, Any, None]:
 		"""
 		get a value as string.
-		test it it only contains digits, it its to short or to long,
-		if one files, return alternative
+		test: does it only contains digits, it its to short or to long,
+		if one fails, return alternative
 
 		by default, strip's spaces + line breaks at start and end
 		"""
 		value:Any = self.get(x)
-		if type(value) is Undefined: return alternative
+
+		if allow_none and value is None:
+			return None
+
+		if type(value) is Undefined:
+			return alternative
 
 		value:str = str(value)
 
 		if strip: value = value.strip(' ').strip("\n")
 
-		if must_be_digit and not value.isdigit(): return alternative
-		if not (len_min <= len(value) <= len_max): return alternative
+		if must_be_digit and not value.isdigit():
+			return alternative
+
+		if not (len_min <= len(value) <= len_max):
+			return alternative
 
 		return value
 
-	def getInt(self, x:str, alternative:Any, min_x:int=-math.inf, max_x:int=math.inf) -> Union[int, Any]:
+	def getInt(self, x:str, alternative:Any, min_x:int = -math.inf, max_x:int = math.inf, allow_none:bool = False) -> Union[int, Any]:
 		"""
 		get a value as a int.
 		if conversion is not possible
@@ -112,7 +141,12 @@ class WebRequestContent(object):
 		return alternative
 		"""
 		value:Any = self.get(x)
-		if type(value) is Undefined: return alternative
+
+		if allow_none and value is None:
+			return None
+
+		if type(value) is Undefined:
+			return alternative
 
 		try:
 			value:int = int(value)
