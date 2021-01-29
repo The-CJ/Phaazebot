@@ -51,6 +51,12 @@ class StorageTransformer(object):
 		items:int = len(self.storage)
 		return f"<{self.__class__.__name__} {items} entry's>"
 
+	def __getitem__(self, item:Any):
+		return self.getTransform(item, UNDEFINED)
+
+	def __setitem__(self, key:Any, value:Any):
+		return self.set(key, value)
+
 	# utils
 	def setType(self, key:str, wanted_type:type) -> None:
 		"""

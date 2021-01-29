@@ -22,12 +22,12 @@ async def apiAdminRolesGet(cls:"PhaazebotWeb", WebRequest:Request) -> Response:
 	Search:StorageTransformer = StorageTransformer()
 
 	# get required stuff
-	Search.set("role_id", Data.getInt("role_id", UNDEFINED, min_x=1), wanted_type=int)
-	Search.set("name", Data.getStr("name", UNDEFINED), wanted_type=str)
-	Search.set("name_contains", Data.getStr("name_contains", UNDEFINED), wanted_type=str)
-	Search.set("can_be_removed", Data.getInt("can_be_removed", UNDEFINED), wanted_type=int)
-	Search.set("limit", Data.getInt("limit", DEFAULT_LIMIT, min_x=1), wanted_type=int)
-	Search.set("offset", Data.getInt("offset", 0, min_x=1), wanted_type=int)
+	Search["role_id"] = Data.getInt("role_id", UNDEFINED, min_x=1)
+	Search["name"] = Data.getStr("name", UNDEFINED)
+	Search["name_contains"] = Data.getStr("name_contains", UNDEFINED)
+	Search["can_be_removed"] = Data.getInt("can_be_removed", UNDEFINED)
+	Search["limit"] = Data.getInt("limit", DEFAULT_LIMIT, min_x=1)
+	Search["offset"] = Data.getInt("offset", 0, min_x=1)
 
 	res_roles:List[WebRole] = await getWebRoles(cls, **Search.getAllTransform())
 
