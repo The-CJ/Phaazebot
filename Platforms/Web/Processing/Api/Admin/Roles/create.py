@@ -15,22 +15,21 @@ async def apiAdminRolesCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) ->
 
 	# get required stuff
 	Create:StorageTransformer = StorageTransformer()
-	Create.set("name", Data.getStr("name", UNDEFINED, len_max=64), wanted_type=str)
-	Create.set("description", Data.getStr("description", UNDEFINED, len_max=512), wanted_type=str)
-	Create.set("can_be_removed", Data.getBool("name", UNDEFINED), wanted_type=bool)
+	Create["name"] = Data.getStr("name", UNDEFINED, len_max=64)
+	Create["description"] = Data.getStr("description", UNDEFINED, len_max=512)
+	Create["can_be_removed"] = Data.getBool("name", UNDEFINED)
 
 	# checks
-	name:str = Create.getTransform("name", UNDEFINED)
-	if name == UNDEFINED:
+	if Create["name"] == UNDEFINED:
 		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'name'")
 
 	res:list = cls.BASE.PhaazeDB.selectQuery(
 		"SELECT COUNT(*) AS `i` FROM `role` WHERE LOWER(`role`.`name`) = %s",
-		(Create.getTransform("name", UNDEFINED),)
+		(Create["name"],)
 	)
 
 	if res[0]['i'] != 0:
-		return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"role '{name}' already exists")
+		return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"role '{Create['name']}' already exists")
 
 	cls.BASE.PhaazeDB.insertQuery(
 		table="role",
@@ -38,7 +37,7 @@ async def apiAdminRolesCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) ->
 	)
 
 	return cls.response(
-		text=json.dumps(dict(msg="role successful created", role=name, status=200)),
+		text=json.dumps(dict(msg="role successful created", role=Create["name"], status=200)),
 		content_type="application/json",
 		status=200
 	)
