@@ -29,8 +29,6 @@ async def apiAdminRolesGet(cls:"PhaazebotWeb", WebRequest:Request) -> Response:
 	Search["limit"] = Data.getInt("limit", DEFAULT_LIMIT, min_x=1)
 	Search["offset"] = Data.getInt("offset", 0, min_x=1)
 
-	print(Search.getAllTransform())
-
 	res_roles:List[WebRole] = await getWebRoles(cls, **Search.getAllTransform())
 
 	result:dict = dict(
