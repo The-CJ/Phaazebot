@@ -4,6 +4,7 @@ if TYPE_CHECKING:
 
 from Utils.Classes.webuser import WebUser
 from Utils.Classes.webrole import WebRole
+from Utils.Classes.undefined import UNDEFINED
 
 # user
 async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]:
@@ -13,15 +14,15 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 
 	Optional 'search' keywords:
 	---------------------------
-	* `user_id` - Union[int, str, None] : (Default: None) [sets LIMIT to 1]
-	* `username` - Optional[str] : (Default: None)
-	* `email` - Optional[str] : (Default: None)
-	* `verified` - Optional[int] : (Default: None) [0=only not verified, 1=only verified]
+	* `user_id` - Union[int, str, UNDEFINED] : (Default: UNDEFINED) [sets LIMIT to 1]
+	* `username` - Union[str, UNDEFINED] : (Default: UNDEFINED)
+	* `email` - Union[str, None, UNDEFINED] : (Default: UNDEFINED)
+	* `verified` - Union[int, UNDEFINED] : (Default: UNDEFINED) [0=only not verified, 1=only verified]
 
 	Optional 'contains' keywords:
 	-----------------------------
-	* `username_contains` - Optional[str] : (Default: None) [DB uses LIKE on `username`]
-	* `email_contains` - Optional[str] : (Default: None) [DB uses LIKE on `email`]
+	* `username_contains` - Union[str, UNDEFINED] : (Default: UNDEFINED) [DB uses LIKE on `username`]
+	* `email_contains` - Union[str, UNDEFINED] : (Default: UNDEFINED) [DB uses LIKE on `email`]
 
 	Optional 'between' keywords:
 	----------------------------
@@ -33,7 +34,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 	Other:
 	------
 	* `order_str` - str : (Default: "ORDER BY user.id ASC")
-	* `limit` - Optional[int] : (Default: None)
+	* `limit` - int : (Default: 0)
 	* `offset` - int : (Default: 0)
 
 	Special:
@@ -60,36 +61,36 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 	values:tuple = ()
 
 	# Optional 'search' keywords
-	user_id:Union[int, str, None] = search.get("user_id", None)
-	if user_id is not None:
+	user_id:Union[int, str, UNDEFINED] = search.get("user_id", UNDEFINED)
+	if user_id != UNDEFINED:
 		sql += " AND `user`.`id` = %s"
 		values += (int(user_id),)
 		search["limit"] = 1
 
-	username:Optional[str] = search.get("username", None)
-	if username is not None:
+	username:Union[str, UNDEFINED] = search.get("username", UNDEFINED)
+	if username != UNDEFINED:
 		sql += " AND `user`.`username` = %s"
 		values += (str(username),)
 
-	email:Optional[str] = search.get("email", None)
-	if email is not None:
+	email:Union[str, UNDEFINED] = search.get("email", UNDEFINED)
+	if email != UNDEFINED:
 		sql += " AND `user`.`email` = %s"
 		values += (str(email),)
 
-	verified:Optional[int] = search.get("email", None)
-	if email is not None:
+	verified:Union[int, UNDEFINED] = search.get("email", UNDEFINED)
+	if email != UNDEFINED:
 		sql += " AND `user`.`verified` = %s"
 		values += (int(verified),)
 
 	# Optional 'contains' keywords
-	username_contains:Optional[str] = search.get("username_contains", None)
-	if username_contains is not None:
+	username_contains:Union[str, UNDEFINED] = search.get("username_contains", UNDEFINED)
+	if username_contains != UNDEFINED:
 		username_contains = f"%{username_contains}%"
 		sql += " AND `user`.`username` LIKE %s"
 		values += (str(username_contains),)
 
-	email_contains:Optional[str] = search.get("email_contains", None)
-	if email_contains is not None:
+	email_contains:Union[str, UNDEFINED] = search.get("email_contains", UNDEFINED)
+	if email_contains != UNDEFINED:
 		email_contains = f"%{email_contains}%"
 		sql += " AND `user`.`email` LIKE %s"
 		values += (str(email_contains),)
@@ -166,8 +167,8 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 	# Special
 	count_mode:bool = search.get("count_mode", False)
 	if count_mode:
-		search["limit"] = None
-		search["offset"] = None
+		search["limit"] = 0
+		search["offset"] = 0
 		ground_sql: str = """
 			SELECT COUNT(*) AS `I`
 			FROM `user`
@@ -186,7 +187,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 	order_str:str = search.get("order_str", "ORDER BY `user`.`id` ASC")
 	sql += f" {order_str}"
 
-	limit:Optional[int] = search.get("limit", None)
+	limit:int = search.get("limit", 0)
 	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
@@ -208,19 +209,19 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 
 	Optional 'search' keywords:
 	---------------------------
-	* `role_id` - Union[int, str, None] : (Default: None) [sets LIMIT to 1]
-	* `name` - Optional[str] : (Default: None)
-	* `can_be_removed` - Optional[int] : (Default: None) [0 = only not removable, 1 = only removable]
+	* `role_id` - Union[int, str, UNDEFINED] : (Default: UNDEFINED) [sets LIMIT to 1]
+	* `name` - Union[str, UNDEFINED] : (Default: UNDEFINED)
+	* `can_be_removed` - Union[int, UNDEFINED] : (Default: UNDEFINED) [0 = only not removable, 1 = only removable]
 
 	Optional 'contains' keywords:
 	-----------------------------
-	* `name_contains` - Optional[str] : (Default: None) [DB uses LIKE on `name`]
-	* `description_contains` - Optional[str] : (Default: None) [DB uses LIKE on `description`]
+	* `name_contains` - Union[str, UNDEFINED] : (Default: UNDEFINED) [DB uses LIKE on `name`]
+	* `description_contains` - Union[str, UNDEFINED] : (Default: UNDEFINED) [DB uses LIKE on `description`]
 
 	Other:
 	------
 	* `order_str` - str : (Default: "ORDER BY role.id ASC")
-	* `limit` - Optional[int] : (Default: None)
+	* `limit` - Union[int, UNDEFINED] : (Default: UNDEFINED)
 	* `offset` - int : (Default: 0)
 
 	Special:
@@ -241,31 +242,31 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 	values:tuple = ()
 
 	# Optional 'search' keywords
-	role_id:Union[int, str, None] = search.get("role_id", None)
-	if role_id is not None:
+	role_id:Union[int, str, UNDEFINED] = search.get("role_id", UNDEFINED)
+	if role_id != UNDEFINED:
 		sql += " AND `role`.`id` = %s"
 		values += (int(role_id),)
 		search["limit"] = 1
 
-	name:Optional[str] = search.get("name", None)
-	if name is not None:
+	name:Union[str, UNDEFINED] = search.get("name", UNDEFINED)
+	if name != UNDEFINED:
 		sql += " AND `role`.`name` = %s"
 		values += (str(name),)
 
-	can_be_removed:Optional[int] = search.get("can_be_removed", None)
-	if can_be_removed is not None:
+	can_be_removed:Union[int, UNDEFINED] = search.get("can_be_removed", UNDEFINED)
+	if can_be_removed != UNDEFINED:
 		sql += " AND `role`.`can_be_removed` = %s"
 		values += (int(can_be_removed),)
 
 	# Optional 'contains' keywords
-	name_contains:Optional[str] = search.get("name_contains", None)
-	if name_contains is not None:
+	name_contains:Union[str, UNDEFINED] = search.get("name_contains", UNDEFINED)
+	if name_contains != UNDEFINED:
 		name_contains = f"%{name_contains}%"
 		sql += " AND `role`.`name` LIKE %s"
 		values += (str(name_contains),)
 
-	description_contains:Optional[str] = search.get("description_contains", None)
-	if description_contains is not None:
+	description_contains:Union[str, UNDEFINED] = search.get("description_contains", UNDEFINED)
+	if description_contains != UNDEFINED:
 		description_contains = f"%{description_contains}%"
 		sql += " AND `role`.`email` description %s"
 		values += (str(description_contains),)
@@ -273,8 +274,8 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 	# Special
 	count_mode:bool = search.get("count_mode", False)
 	if count_mode:
-		search["limit"] = None
-		search["offset"] = None
+		search["limit"] = 0
+		search["offset"] = 0
 		ground_sql: str = """
 			SELECT COUNT(*) AS `I`
 			FROM `role`
@@ -290,7 +291,7 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 	order_str:str = search.get("order_str", "ORDER BY `role`.`id` ASC")
 	sql += f" {order_str}"
 
-	limit:Optional[int] = search.get("limit", None)
+	limit:int = search.get("limit", 0)
 	offset:int = search.get("offset", 0)
 	if limit:
 		sql += f" LIMIT {limit}"
@@ -303,4 +304,3 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 		return res[0]['I']
 	else:
 		return [WebRole(x) for x in res]
-
