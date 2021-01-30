@@ -23,13 +23,13 @@ async def apiAdminUsersGet(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Re
 	Search:StorageTransformer = StorageTransformer()
 
 	# get required stuff
-	Search.set("user_id", Data.getInt("user_id", UNDEFINED, min_x=1), wanted_type=int)
-	Search.set("username", Data.getStr("username", UNDEFINED, len_max=64), wanted_type=str)
-	Search.set("username_contains", Data.getStr("username_contains", UNDEFINED, len_max=64), wanted_type=str)
-	Search.set("email", Data.getStr("email", UNDEFINED, len_max=128), wanted_type=str)
-	Search.set("email_contains", Data.getStr("email_contains", UNDEFINED, len_max=128), wanted_type=str)
-	Search.set("limit", Data.getInt("limit", DEFAULT_LIMIT, min_x=1), wanted_type=int)
-	Search.set("offset", Data.getInt("offset", 0, min_x=1), wanted_type=int)
+	Search["user_id"] = Data.getInt("user_id", UNDEFINED, min_x=1)
+	Search["username"] = Data.getStr("username", UNDEFINED, len_max=64)
+	Search["username_contains"] = Data.getStr("username_contains", UNDEFINED, len_max=64)
+	Search["email"] = Data.getStr("email", UNDEFINED, len_max=128)
+	Search["email_contains"] = Data.getStr("email_contains", UNDEFINED, len_max=128)
+	Search["limit"] = Data.getInt("limit", DEFAULT_LIMIT, min_x=1)
+	Search["offset"] = Data.getInt("offset", 0, min_x=1)
 
 	# get user
 	res_users:List[WebUser] = await getWebUsers(cls, **Search.getAllTransform())
