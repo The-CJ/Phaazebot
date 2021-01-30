@@ -83,13 +83,13 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 
 	# Optional 'contains' keywords
 	username_contains:Optional[str] = search.get("username_contains", None)
-	if username_contains:
+	if username_contains is not None:
 		username_contains = f"%{username_contains}%"
 		sql += " AND `user`.`username` LIKE %s"
 		values += (str(username_contains),)
 
 	email_contains:Optional[str] = search.get("email_contains", None)
-	if email_contains:
+	if email_contains is not None:
 		email_contains = f"%{email_contains}%"
 		sql += " AND `user`.`email` LIKE %s"
 		values += (str(email_contains),)
@@ -259,13 +259,13 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 
 	# Optional 'contains' keywords
 	name_contains:Optional[str] = search.get("name_contains", None)
-	if name_contains:
+	if name_contains is not None:
 		name_contains = f"%{name_contains}%"
 		sql += " AND `role`.`name` LIKE %s"
 		values += (str(name_contains),)
 
 	description_contains:Optional[str] = search.get("description_contains", None)
-	if description_contains:
+	if description_contains is not None:
 		description_contains = f"%{description_contains}%"
 		sql += " AND `role`.`email` description %s"
 		values += (str(description_contains),)
