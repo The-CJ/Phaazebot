@@ -7,8 +7,8 @@ from aiohttp.web import Response
 from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.htmlformatter import HTMLFormatter
-from Platforms.Web.index import PhaazeWebIndex
 from Platforms.Web.utils import getNavbar, authDiscordWebUser
+from Platforms.Web.index import PhaazeWebIndex
 
 @PhaazeWebIndex.get("/discord")
 async def discordMain(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
