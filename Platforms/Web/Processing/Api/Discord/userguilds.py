@@ -1,28 +1,32 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import discord
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Platforms.Discord.api import getDiscordUserServers
-from Utils.Classes.discordwebuser import DiscordWebUser
-from ..errors import apiMissingAuthorisation, apiNotAllowed
+from Platforms.Web.index import PhaazeWebIndex
+from Platforms.Web.utils import authDiscordWebUser
 
-async def apiDiscordUserGuilds(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.view("/api/discord/userguilds")
+async def apiDiscordUserGuilds(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/discord/userguilds
+	Default url: /api/discord/userguilds
 	"""
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	if not PhaazeDiscord: return await apiNotAllowed(cls, WebRequest, msg="Discord module is not active")
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
+	if not PhaazeDiscord:
+		return await cls.Tree.Api.errors.apiNotAllowed(cls, WebRequest, msg="Discord module is not active")
 
-	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
 
-	if not DiscordUser.found:
-		return await apiMissingAuthorisation(cls, WebRequest)
+	if not AuthDiscord.found:
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(cls, WebRequest)
 
-	guilds:dict = await getDiscordUserServers(cls.Web.BASE, DiscordUser.access_token)
+	guilds:List[dict] = await getDiscordUserServers(cls.BASE, AuthDiscord.access_token)
 
 	for guild in guilds:
 		Perm:discord.Permissions = discord.Permissions(permissions=guild.get("permissions", 0))

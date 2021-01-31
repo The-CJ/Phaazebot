@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, List
 if TYPE_CHECKING:
 	from phaazebot import Phaazebot
 
@@ -58,7 +58,7 @@ async def getDiscordUser(_cls:"Phaazebot", access_token:str) -> dict:
 
 	return res.json()
 
-async def getDiscordUserServers(_cls:"Phaazebot", access_token:str) -> list:
+async def getDiscordUserServers(_cls:"Phaazebot", access_token:str) -> List[dict]:
 	"""
 	get all base info' s of guilds/servers a user is on
 	(requires the access_token to have the right scope so we are allowed to see it)
