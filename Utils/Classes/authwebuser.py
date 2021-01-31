@@ -18,6 +18,7 @@ class AuthWebUser(object):
 	When `found` is True, `User` will contain a valid WebUser
 	It should if possible, avoid reading in POST content when not needed
 	variable search way:
+
 	* System -> cookies -> header -> GET -> JSON -> POST
 	"""
 	def __init__(self, BASE:"Phaazebot", WebRequest:ExtendedRequest, force_method:Optional[str]=None, **kwargs):

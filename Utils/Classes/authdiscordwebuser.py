@@ -17,7 +17,8 @@ class AuthDiscordWebUser(ContentClass):
 	"""
 	Used for authorisation of a discord web user request
 	variable search way:
-		System -> cookies -> header -> GET
+
+	* System -> cookies -> header -> GET -> JSON -> POST
 	"""
 	def __init__(self, BASE:"Phaazebot", WebRequest:ExtendedRequest, force_method:Optional[str]=None, **kwargs):
 		self.BASE:"Phaazebot" = BASE

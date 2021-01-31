@@ -5,11 +5,11 @@ if TYPE_CHECKING:
 import json
 from aiohttp.web import Response
 from Utils.Classes.authwebuser import AuthWebUser
-from Utils.Classes.discordwebuser import DiscordWebUser
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.twitchwebuser import TwitchWebUser
 from Utils.Classes.extendedrequest import ExtendedRequest
 from Platforms.Web.Processing.Api.errors import apiUserNotFound
-from Platforms.Web.utils import authWebUser
+from Platforms.Web.utils import authWebUser, authDiscordWebUser
 
 async def apiAccountLogoutPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
@@ -33,25 +33,24 @@ async def apiAccountLogoutPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest)
 		status=200
 	)
 
-# TODO: rework
 async def apiAccountLogoutDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/discord/logout
 	"""
 
-	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
 
-	if not DiscordUser.found:
+	if not AuthDiscord.found:
 		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
 
-	cls.Web.BASE.PhaazeDB.query("""
+	cls.BASE.PhaazeDB.query("""
 		DELETE FROM `session_discord`
 		WHERE `session_discord`.`access_token` = %s
 			OR JSON_EXTRACT(`session_discord`.`user_info`, "$.id") = %s""",
-		(DiscordUser.access_token, DiscordUser.user_id)
+		(AuthDiscord.access_token, AuthDiscord.User.user_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Discord Logout - User: {DiscordUser.username}", require="api:logout")
+	cls.BASE.Logger.debug(f"(API/Discord) Discord Logout - User: {AuthDiscord.User.username}", require="api:logout")
 	return cls.response(
 		text=json.dumps( dict(status=200) ),
 		content_type="application/json",

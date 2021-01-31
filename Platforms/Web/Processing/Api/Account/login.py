@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 if TYPE_CHECKING:
 	from Platforms.Web.main_web import PhaazebotWeb
 
@@ -54,21 +54,20 @@ async def apiAccountLoginPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) 
 		status=200
 	)
 
-# TODO: rework
 async def apiAccountLoginDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/account/discord/login
-		This should only be called by Discord after a user successful authorise
+	Default url: /api/account/discord/login
+	This should only be called by Discord after a user successful authorise
 	"""
-	data:dict or None = await translateDiscordToken(cls.Web.BASE, WebRequest)
+	data:Optional[dict] = await translateDiscordToken(cls.BASE, WebRequest)
 	error:str
 
 	if not data:
 		error = "missing"
-		cls.Web.BASE.Logger.debug(f"(API/Discord) Failed login, never got called", require="discord:api")
+		cls.BASE.Logger.debug(f"(API/Discord) Failed login, never got called", require="discord:api")
 	elif data.get("error", None):
 		error = "discord"
-		cls.Web.BASE.Logger.debug(f"(API/Discord) Failed login: {str(data)}", require="discord:api")
+		cls.BASE.Logger.debug(f"(API/Discord) Failed login: {str(data)}", require="discord:api")
 	else:
 		return await completeDiscordTokenLogin(cls, WebRequest, data)
 
@@ -102,7 +101,6 @@ async def apiAccountLoginTwitch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) 
 
 # # #
 
-# TODO: rework
 async def completeDiscordTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, data:dict) -> Response:
 	"""
 	inserts all necessary data into the session_discord database
@@ -113,18 +111,18 @@ async def completeDiscordTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedRequ
 	refresh_token:str = data.get('refresh_token', "")
 	scope:str = data.get('scope', "")
 	token_type:str = data.get('token_type', "")
-	user_info:dict = await getDiscordUser(cls.Web.BASE, access_token)
+	user_info:dict = await getDiscordUser(cls.BASE, access_token)
 
 	# if the result has a message field, something went wrong
 	if user_info.get("message", "---") != "---":
-		cls.Web.BASE.Logger.warning("(API) Discord user login failed")
+		cls.BASE.Logger.warning("(API) Discord user login failed")
 		return cls.response(
 			status=302,
 			headers={"Location": "/discord/login?error=user"}
 		)
 
 	try:
-		cls.Web.BASE.PhaazeDB.insertQuery(
+		cls.BASE.PhaazeDB.insertQuery(
 			table="session_discord",
 			content=dict(
 				session=session_key,
@@ -136,7 +134,7 @@ async def completeDiscordTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedRequ
 			)
 		)
 
-		cls.Web.BASE.Logger.debug(f"(API) New Discord Login - Session: {session_key} User: {str(user_info.get('username','[N/A]'))}", require="api:login")
+		cls.BASE.Logger.debug(f"(API) New Discord Login - Session: {session_key} User: {str(user_info.get('username','[N/A]'))}", require="api:login")
 		return cls.response(
 			status=302,
 			headers={
@@ -146,7 +144,7 @@ async def completeDiscordTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedRequ
 		)
 	except Exception as e:
 		tb:str = traceback.format_exc()
-		cls.Web.BASE.Logger.error(f"(API) Database error: {str(e)}\n{tb}")
+		cls.BASE.Logger.error(f"(API) Database error: {str(e)}\n{tb}")
 		return cls.response(
 			status=302,
 			headers={"Location": "/discord/login?error=database"}
