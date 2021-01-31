@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 from aiohttp.web import Response, Request
 
-async def apiDiscordAssignRoleLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordAssignRoleLimit(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -31,14 +31,14 @@ async def apiDiscordAssignRoleLimit(cls:"WebIndex", WebRequest:Request, **kwargs
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many assign roles: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Too many assign roles: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordAssignRoleExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordAssignRoleExists(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -80,14 +80,14 @@ async def apiDiscordAssignRoleExists(cls:"WebIndex", WebRequest:Request, **kwarg
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Assignrole exists: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Assignrole exists: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordAssignRoleNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordAssignRoleNotExists(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -121,9 +121,9 @@ async def apiDiscordAssignRoleNotExists(cls:"WebIndex", WebRequest:Request, **kw
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Assignrole not exists: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Assignrole not exists: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)

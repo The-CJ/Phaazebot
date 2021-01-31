@@ -36,8 +36,8 @@ async def apiAdminUsersGet(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Re
 
 	result:Dict[str, Any] = dict(
 		result=[Us.toJSON() for Us in res_users],
-		limit=Search.getTransform("limit", DEFAULT_LIMIT),
-		offset=Search.getTransform("offset", 0),
+		limit=Search["limit"],
+		offset=Search["offset"],
 		total=await getWebUsers(cls, count_mode=True, **Search.getAllTransform()),
 		status=200
 	)
