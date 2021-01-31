@@ -54,10 +54,10 @@ async def apiAccountEditPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -
 
 		update["password"] = passwordFunction(Edit["new_password"])
 
-	if Edit["new_password"]:
+	if Edit["new_username"]:
 		# want a new username
-		if Edit["new_password"].lower() != WebAuth.User.username.lower():
-			is_occupied:list = await getWebUsers(cls, overwrite_where=" AND LOWER(`user`.`username`) = LOWER(%s)", overwrite_where_values=(new_username,))
+		if Edit["new_username"].lower() != WebAuth.User.username.lower():
+			is_occupied:list = await getWebUsers(cls, overwrite_where=" AND LOWER(`user`.`username`) = LOWER(%s)", overwrite_where_values=(Edit["new_username"],))
 			if is_occupied:
 				# already taken
 				return await cls.Tree.Api.Account.errors.apiAccountTaken(cls, WebRequest)
