@@ -18,8 +18,8 @@ class WebUser(ContentClass):
 		self.verified:bool = self.asBoolean(data.get("verified", UNDEFINED))
 
 		self.created_at:datetime = self.asDatetime(data.get("created_at", UNDEFINED))
-		self.edited_at:datetime = self.asDatetime(data.get("edited_at", UNDEFINED))
-		self.last_login:datetime = self.asDatetime(data.get("last_login", UNDEFINED))
+		self.edited_at:datetime = self.asDatetime(data.get("edited_at", UNDEFINED), allow_null=True)
+		self.last_login:datetime = self.asDatetime(data.get("last_login", UNDEFINED), allow_null=True)
 
 		self.roles:List[str] = self.fromStringList(data.get("roles", ''), separator=";;;")
 

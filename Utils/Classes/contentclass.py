@@ -81,6 +81,8 @@ class ContentClass(object):
 		if allow_null and (data is None or type(data) is Undefined):
 			return None
 
+		if type(data) is datetime: return data
+
 		try:
 			return datetime.strptime(data, str_format)
 		except:
