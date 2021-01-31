@@ -7,6 +7,7 @@ from Platforms.Discord.api import generateDiscordAuthLink
 from Platforms.Twitch.api import generateTwitchAuthLink
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Utils.Classes.authwebuser import AuthWebUser
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.discordwebuser import DiscordWebUser
 from Utils.Classes.twitchwebuser import TwitchWebUser
 from Utils.Classes.storeclasses import GlobalStorage
@@ -54,7 +55,7 @@ def getAccountModal() -> HTMLFormatter:
 # web authorizer
 async def authWebUser(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> AuthWebUser:
 	"""
-	Tries to get a WebUser associated with a request, takes get, post, and cookie in process
+	Tries to get a  (Auth)WebUser associated with a request, takes get, post, and cookie in process
 
 	Optional 'system' keywords:
 	---------------------------
@@ -76,8 +77,7 @@ async def authWebUser(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) 
 
 	return WebRequest.AuthWeb
 
-# TODO: rework
-async def getDiscordUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> DiscordWebUser:
+async def authDiscordWebUser(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> AuthDiscordWebUser:
 	"""
 	Tries to get a DiscordUser, takes get, post, and cookie in process
 	kwargs are given to DiscordWebUser
@@ -87,15 +87,16 @@ async def getDiscordUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **k
 		phaaze_discord_session
 	"""
 
-	if hasattr(WebRequest, "DiscordUser"):
-		cls.BASE.Logger.debug(f"(Web) Used stored discord info's: {str(WebRequest.DiscordUser)}", require="web:debug")
-		return WebRequest.DiscordUser
+	if hasattr(WebRequest, "AuthDiscord"):
+		if WebRequest.AuthDiscord is not None:
+			cls.BASE.Logger.debug(f"(Web) Used stored discord info's: {str(WebRequest.AuthDiscord)}", require="web:debug")
+			return WebRequest.AuthDiscord
 
-	DiscordUser:DiscordWebUser = DiscordWebUser(cls.BASE, WebRequest, **kwargs)
-	await DiscordUser.auth()
-	WebRequest.DiscordUser = DiscordUser
+	AuthDiscord:AuthDiscordWebUser = AuthDiscordWebUser(cls.BASE, WebRequest, **kwargs)
+	await AuthDiscord.auth()
+	WebRequest.AuthDiscord = AuthDiscord
 
-	return WebRequest.DiscordUser
+	return WebRequest.AuthDiscord
 
 # TODO: rework
 async def getTwitchUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> TwitchWebUser:

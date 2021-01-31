@@ -15,5 +15,5 @@ class ExtendedRequest(Request):
 	def __init__(self, *x, **xx):
 		super().__init__(*x, **xx)
 		self.AuthWeb:Optional[AuthWebUser] = None
-		self.AuthDiscord:Optional[AuthTwitchWebUser] = None
-		self.AuthTwitch:Optional[AuthDiscordWebUser] = None
+		self.AuthDiscord:Optional[AuthDiscordWebUser] = None
+		self.AuthTwitch:Optional[AuthTwitchWebUser] = None
