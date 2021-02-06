@@ -59,7 +59,7 @@ async def apiDiscordAssignrolesDelete(cls:"PhaazebotWeb", WebRequest:ExtendedReq
 	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=guild_id, assignrole_id=assignrole_id, role_id=role_id)
 
 	if not res_assignroles:
-		return await cls.Tree.Api.Discord.errors.apiDiscordAssignRoleNotExists(cls, WebRequest, role_id=role_id, assignrole_id=assignrole_id)
+		return await cls.Tree.Api.Discord.Assignroles.errors.apiDiscordAssignRoleNotExists(cls, WebRequest, role_id=role_id, assignrole_id=assignrole_id)
 
 	AssignRoleToDelete:DiscordAssignRole = res_assignroles.pop(0)
 

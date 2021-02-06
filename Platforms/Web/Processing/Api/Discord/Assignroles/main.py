@@ -24,7 +24,7 @@ async def apiDiscordAssignroles(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) 
 		return await cls.Tree.Api.Discord.Assignroles.get.apiDiscordAssignrolesGet(cls, WebRequest)
 
 	elif method == "create":
-		return await cls.Tree.Api.Discord.Assignroles.create.DiscordAssignrolesCreate(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Assignroles.create.apiDiscordAssignrolesCreate(cls, WebRequest)
 
 	elif method == "edit":
 		return await cls.Tree.Api.Discord.Assignroles.edit.apiDiscordAssignrolesEdit(cls, WebRequest)

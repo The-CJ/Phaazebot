@@ -31,7 +31,6 @@ async def apiDiscordQuotesEdit(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -
 	Edit:StorageTransformer = StorageTransformer()
 	Edit["quote_id"] = Data.getStr("quote_id", UNDEFINED, must_be_digit=True)
 	Edit["guild_id"] = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
-	# content:str = Data.getStr("content", "")
 
 	# checks
 	if not Edit["quote_id"]:
