@@ -149,6 +149,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> Union[Li
 	if command_id is not None:
 		sql += " AND `discord_command`.`id` = %s"
 		values += (int(command_id),)
+		search["limit"] = 1
 
 	guild_id:Optional[str] = search.get("guild_id", None)
 	if guild_id is not None:
@@ -163,7 +164,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> Union[Li
 	active:Optional[int] = search.get("active", 1)
 	if active is not None:
 		sql += " AND `discord_command`.`active` = %s"
-		values += (int(trigger),)
+		values += (int(active),)
 
 	complex_:Optional[int] = search.get("complex", None)
 	if complex_ is not None:
@@ -694,7 +695,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord",**search) -> Union[List[
 	# process
 	ground_sql:str = """
 		SELECT `discord_quote`.* FROM `discord_quote`
-		WHERE `discord_quote`.`guild_id` = %s"""
+		WHERE 1 = 1"""
 
 	sql:str = ""
 	values:tuple = ()
@@ -704,6 +705,7 @@ async def getDiscordServerQuotes(cls:"PhaazebotDiscord",**search) -> Union[List[
 	if quote_id is not None:
 		sql += " AND `discord_quote`.`id` = %s"
 		values += (int(quote_id),)
+		search["limit"] = 1
 
 	guild_id:Optional[str] = search.get("guild_id", None)
 	if guild_id is not None:
