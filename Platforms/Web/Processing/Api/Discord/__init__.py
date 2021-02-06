@@ -7,7 +7,7 @@ import Platforms.Web.Processing.Api.Discord.Assignroles as Assignroles
 # import Platforms.Web.Processing.Api.Discord.Regulars as Regulars
 # import Platforms.Web.Processing.Api.Discord.Twitchalerts as Twitchalerts
 
-# import Platforms.Web.Processing.Api.Discord.errors as errors
-# import Platforms.Web.Processing.Api.Discord.guild as guild
+import Platforms.Web.Processing.Api.Discord.errors as errors
+import Platforms.Web.Processing.Api.Discord.guild as guild
 # import Platforms.Web.Processing.Api.Discord.search as search
 import Platforms.Web.Processing.Api.Discord.userguilds as userguilds
