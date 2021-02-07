@@ -16,7 +16,7 @@ async def adminMain(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	WebAuth:AuthWebUser = await authWebUser(cls, WebRequest)
 	if not WebAuth.found:
-		return await cls.Tree.Account.accountlogin.accountLogin(WebRequest)
+		return await cls.Tree.Account.accountlogin.accountLogin(cls, WebRequest)
 	if not WebAuth.User.checkRoles(["admin", "superadmin"]):
 		return await cls.Tree.errors.notAllowed(WebRequest, msg="Admin rights required")
 
