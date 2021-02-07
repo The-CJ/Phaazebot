@@ -38,6 +38,7 @@ async def apiDiscordAssignrolesEdit(cls:"PhaazebotWeb", WebRequest:ExtendedReque
 	if not Edit["guild_id"]:
 		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
+	# get/check discord
 	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(Edit["guild_id"]))
 	if not Guild:
