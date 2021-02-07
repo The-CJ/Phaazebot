@@ -12,6 +12,7 @@ from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordassignrole import DiscordAssignRole
 from Utils.Classes.extendedrequest import ExtendedRequest
+from Utils.Classes.undefined import UNDEFINED
 from Platforms.Web.utils import authDiscordWebUser
 from Platforms.Discord.db import getDiscordServerAssignRoles, getDiscordSeverSettings
 from Platforms.Discord.logging import loggingOnAssignroleDelete
@@ -25,9 +26,9 @@ async def apiDiscordAssignrolesDelete(cls:"PhaazebotWeb", WebRequest:ExtendedReq
 	await Data.load()
 
 	# get required vars
-	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	assignrole_id:str = Data.getStr("assignrole_id", "", must_be_digit=True)
-	role_id:str = Data.getStr("role_id", "", must_be_digit=True)
+	guild_id:str = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
+	assignrole_id:str = Data.getStr("assignrole_id", UNDEFINED, must_be_digit=True)
+	role_id:str = Data.getStr("role_id", UNDEFINED, must_be_digit=True)
 
 	# checks
 	if not guild_id:
