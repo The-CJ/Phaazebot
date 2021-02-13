@@ -9,5 +9,5 @@ import Platforms.Web.Processing.Api.Discord.Twitchalerts as Twitchalerts
 
 import Platforms.Web.Processing.Api.Discord.errors as errors
 import Platforms.Web.Processing.Api.Discord.guild as guild
-# import Platforms.Web.Processing.Api.Discord.search as search
+import Platforms.Web.Processing.Api.Discord.search as search
 import Platforms.Web.Processing.Api.Discord.userguilds as userguilds

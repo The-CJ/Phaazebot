@@ -1,30 +1,24 @@
 from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import asyncio
 import discord
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuser import DiscordWebUser
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
+from Utils.Classes.storagetransformer import StorageTransformer
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.db import getDiscordSeverSettings
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Utils.Classes.undefined import UNDEFINED
 from Platforms.Discord.utils import getDiscordMemberFromString
 from Platforms.Discord.logging import loggingOnRegularCreate
-from Platforms.Web.Processing.Api.errors import (
-	apiMissingData,
-	apiMissingAuthorisation
-)
-from Platforms.Web.Processing.Api.Discord.errors import (
-	apiDiscordGuildUnknown,
-	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission
-)
-from .errors import apiDiscordRegularLimit, apiDiscordRegularExists
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Web.utils import authDiscordWebUser
 
-async def apiDiscordRegularsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordRegularsCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/discord/regulars/create
 	"""
@@ -32,28 +26,29 @@ async def apiDiscordRegularsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	await Data.load()
 
 	# get required stuff
-	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
+	Create:StorageTransformer = StorageTransformer()
+	Create["guild_id"] = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
+	Create["member_id"] = Data.getStr("member_id", UNDEFINED, must_be_digit=True)
 
 	# checks
-	if not guild_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+	if not Create["guild_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	if not member_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'member_id'")
+	if not Create["member_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'member_id'")
 
 	# get/check discord
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
+	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(Create["guild_id"]))
 	if not Guild:
-		return await apiDiscordGuildUnknown(cls, WebRequest)
+		return await cls.Tree.Api.Discord.errors.apiDiscordGuildUnknown(cls, WebRequest)
 
-	ActionMember:discord.Member = getDiscordMemberFromString(PhaazeDiscord, Guild, member_id)
+	ActionMember:discord.Member = getDiscordMemberFromString(PhaazeDiscord, Guild, Create["member_id"])
 	if not ActionMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, user_id=member_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, user_id=Create["member_id"])
 
 	# check if already exists and limits
-	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
+	res:list = cls.BASE.PhaazeDB.selectQuery("""
 		SELECT
 			COUNT(*) AS `all`,
 			SUM(
@@ -62,30 +57,30 @@ async def apiDiscordRegularsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 			) AS `match`
 		FROM `discord_regular`
 		WHERE `discord_regular`.`guild_id` = %s""",
-		( str(ActionMember.id), str(ActionMember.guild.id) )
+		(str(ActionMember.id), str(ActionMember.guild.id))
 	)
 
 	if res[0]["match"]:
-		return await apiDiscordRegularExists(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Regulars.errors.apiDiscordRegularExists(cls, WebRequest)
 
-	if res[0]["all"] >= cls.Web.BASE.Limit.discord_regular_amount:
-		return await apiDiscordRegularLimit(cls, WebRequest)
+	if res[0]["all"] >= cls.BASE.Limit.discord_regular_amount:
+		return await cls.Tree.Api.Discord.Regulars.errors.apiDiscordRegularLimit(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordWebUser = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found:
-		return await apiMissingAuthorisation(cls, WebRequest)
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
+	if not AuthDiscord.found:
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(cls, WebRequest)
 
 	# get member
-	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	CheckMember:discord.Member = Guild.get_member(int(AuthDiscord.User.user_id))
 	if not CheckMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, guild_id=Create["guild_id"], user_id=AuthDiscord.User.user_id)
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Create["guild_id"], user_id=AuthDiscord.User.user_id)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(
+	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_regular",
 		content={
 			"guild_id": str(ActionMember.guild.id),
@@ -94,13 +89,13 @@ async def apiDiscordRegularsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	)
 
 	# logging
-	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, Create["guild_id"], prevent_new=True)
 	log_coro:Coroutine = loggingOnRegularCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, NewRegular=ActionMember)
-	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Regular: {guild_id=} added new entry {member_id=}", require="discord:regulars")
+	cls.BASE.Logger.debug(f"(API/Discord) Regular: {Create['guild_id']=} added new entry {Create['member_id']=}", require="discord:regulars")
 	return cls.response(
-		text=json.dumps( dict(msg="Regulars: Added new entry", entry=ActionMember.name, status=200) ),
+		text=json.dumps(dict(msg="Regulars: Added new entry", entry=ActionMember.name, status=200)),
 		content_type="application/json",
 		status=200
 	)
