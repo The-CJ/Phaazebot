@@ -12,6 +12,7 @@ from Platforms.Discord.api import getDiscordUserServers
 from Platforms.Web.index import PhaazeWebIndex
 from Platforms.Web.utils import authDiscordWebUser
 
+@PhaazeWebIndex.view("/api/discord/userguilds")
 async def apiDiscordUserGuilds(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/discord/userguilds
