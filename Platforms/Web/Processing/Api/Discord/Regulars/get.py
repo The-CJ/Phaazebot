@@ -31,7 +31,7 @@ async def apiDiscordRegularsGet(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) 
 	Search["regular_id"] = Data.getStr("regular_id", UNDEFINED, must_be_digit=True)
 	Search["member_id"] = Data.getStr("member_id", UNDEFINED, must_be_digit=True)
 	Search["nickname"] = Data.getBool("nickname", False) # usernames or nicknames?
-	Search["detailed"] = Data.getBool("nickname", False) # with names, avatar hash etc.
+	Search["detailed"] = Data.getBool("detailed", False) # with names, avatar hash etc.
 	Search["limit"] = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	Search["offset"] = Data.getInt("offset", 0, min_x=0)
 
