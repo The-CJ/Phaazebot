@@ -445,9 +445,22 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 		search["limit"] = None
 		search["offset"] = None
 		ground_sql: str = """
-			SELECT COUNT(*) AS `I`
+		WITH `discord_user` AS (
+			SELECT
+				`discord_user`.*,
+				GROUP_CONCAT(`discord_user_medal`.`name` SEPARATOR ';;;') AS `medals`,
+				RANK() OVER (PARTITION BY `discord_user`.`guild_id` ORDER BY `discord_user`.`exp` DESC) AS `rank`,
+				(`discord_regular`.`id` IS NOT NULL) AS `regular`
 			FROM `discord_user`
-			WHERE 1 = 1"""
+			LEFT JOIN `discord_user_medal`
+				ON `discord_user_medal`.`guild_id` = `discord_user`.`guild_id`
+					AND `discord_user_medal`.`member_id` = `discord_user`.`member_id`
+			LEFT JOIN `discord_regular`
+				ON `discord_regular`.`guild_id` = `discord_user`.`guild_id`
+					AND `discord_regular`.`member_id` = `discord_user`.`member_id`
+			GROUP BY `discord_user`.`guild_id`, `discord_user`.`member_id`
+		)
+		SELECT COUNT(*) AS `I` FROM `discord_user` WHERE 1 = 1"""
 
 	overwrite_where:Optional[str] = search.get("overwrite_where", None)
 	overwrite_where_values: Union[tuple, dict, None] = search.get("overwrite_where_values", ())
