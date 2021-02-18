@@ -23,7 +23,7 @@ async def apiDiscordLevels(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Re
 	elif method == "get":
 		return await cls.Tree.Api.Discord.Levels.get.apiDiscordLevelsGet(cls, WebRequest)
 
-	# elif method == "edit":
-		# return await cls.Tree.Api.Discord.Levels.edit.apiDiscordLevelsEdit(cls, WebRequest)
+	elif method == "edit":
+		return await cls.Tree.Api.Discord.Levels.edit.apiDiscordLevelsEdit(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")

@@ -38,6 +38,9 @@ async def apiDiscordLevelsGet(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) ->
 	Search["limit"] = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	Search["offset"] = Data.getInt("offset", 0, min_x=0)
 
+	Search.addProtected("detailed")
+	Search.addProtected("nickname")
+
 	# checks
 	if not Search["guild_id"]:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")

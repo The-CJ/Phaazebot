@@ -3,9 +3,10 @@ if TYPE_CHECKING:
 	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 
-async def apiDiscordAssignRoleLimit(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> Response:
+async def apiDiscordAssignRoleLimit(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -38,7 +39,7 @@ async def apiDiscordAssignRoleLimit(cls:"PhaazebotWeb", WebRequest:Request, **kw
 		status=400
 	)
 
-async def apiDiscordAssignRoleExists(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> Response:
+async def apiDiscordAssignRoleExists(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -87,7 +88,7 @@ async def apiDiscordAssignRoleExists(cls:"PhaazebotWeb", WebRequest:Request, **k
 		status=400
 	)
 
-async def apiDiscordAssignRoleNotExists(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> Response:
+async def apiDiscordAssignRoleNotExists(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
