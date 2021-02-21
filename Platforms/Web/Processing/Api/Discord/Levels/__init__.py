@@ -1,4 +1,4 @@
-# import Platforms.Web.Processing.Api.Discord.Levels.Medals as Medals
+import Platforms.Web.Processing.Api.Discord.Levels.Medals as Medals
 
 import Platforms.Web.Processing.Api.Discord.Levels.edit as edit
 # import Platforms.Web.Processing.Api.Discord.Levels.errors as errors
