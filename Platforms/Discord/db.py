@@ -176,7 +176,7 @@ async def getDiscordServerCommands(cls:"PhaazebotDiscord", **search) -> Union[Li
 		sql += " AND `discord_command`.`function` = %s"
 		values += (str(function),)
 
-	hidden:Optional[int] = search.get("hidden", 0)
+	hidden:Optional[int] = search.get("hidden", None)
 	if hidden is not None:
 		sql += " AND `discord_command`.`hidden` = %s"
 		values += (int(hidden),)
