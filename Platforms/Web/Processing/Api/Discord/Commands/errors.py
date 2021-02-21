@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 
-async def apiDiscordCommandExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordCommandExists(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -31,14 +32,14 @@ async def apiDiscordCommandExists(cls:"WebIndex", WebRequest:Request, **kwargs:d
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Command exits: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Command exits: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordCommandNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordCommandNotExists(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -72,14 +73,14 @@ async def apiDiscordCommandNotExists(cls:"WebIndex", WebRequest:Request, **kwarg
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Command not found: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Command not found: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordCommandLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordCommandLimit(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -105,9 +106,9 @@ async def apiDiscordCommandLimit(cls:"WebIndex", WebRequest:Request, **kwargs:di
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many commands: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Too many commands: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
