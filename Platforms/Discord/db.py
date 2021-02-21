@@ -335,57 +335,52 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 			LEFT JOIN `discord_regular`
 				ON `discord_regular`.`guild_id` = `discord_user`.`guild_id`
 					AND `discord_regular`.`member_id` = `discord_user`.`member_id`
+			{{on_server}}
 			GROUP BY `discord_user`.`guild_id`, `discord_user`.`member_id`
 		)
 		SELECT `discord_user`.* FROM `discord_user` WHERE 1 = 1"""
 	sql:str = ""
-	values:tuple = ()
+	values:dict = {}
 
 	# Optional 'search' keywords
 	member_id:Optional[str] = search.get("member_id", None)
 	if member_id is not None:
-		sql += " AND `discord_user`.`member_id` = %s"
-		values += (str(member_id),)
+		sql += " AND `discord_user`.`member_id` = %(member_id)s"
+		values["member_id"] = str(member_id)
 
 	guild_id:Optional[str] = search.get("guild_id", None)
 	if guild_id is not None:
-		sql += " AND `discord_user`.`guild_id` = %s"
-		values += (str(guild_id),)
+		sql += " AND `discord_user`.`guild_id` = %(guild_id)s"
+		values["guild_id"] = str(guild_id)
 
 	edited:Optional[int] = search.get("edited", None)
 	if edited is not None:
-		sql += " AND `discord_user`.`edited` = %s"
-		values += (int(edited),)
+		sql += " AND `discord_user`.`edited` = %(edited)s"
+		values["edited"] = int(edited)
 
-	on_server:int = search.get("on_server", 1)
-	if on_server is not None:
-		sql += " AND `discord_user`.`on_server` = %s"
-		values += (int(on_server),)
-
-	regular:int = search.get("regular", 1)
+	regular:int = search.get("regular", None)
 	if regular is not None:
-		sql += " AND `discord_user`.`regular` = %s"
-		values += (int(regular),)
+		sql += " AND `discord_user`.`regular` = %(regular)s"
+		values["regular"] = int(regular)
 
 	username:Optional[str] = search.get("username", None)
 	if username is not None:
-		sql += " AND `discord_user`.`username` = %s"
-		values += (str(username),)
+		sql += " AND `discord_user`.`username` = %(username)s"
+		values["username"] = str(username)
 
 	nickname:Optional[str] = search.get("nickname", None)
 	if nickname is not None:
-		sql += " AND `discord_user`.`nickname` = %s"
-		values += (str(nickname),)
+		sql += " AND `discord_user`.`nickname` = %(nickname)s"
+		values["nickname"] = str(nickname)
 
 	# Optional 'contains' keywords
 	name_contains:Optional[str] = search.get("name_contains", None)
-	if name_contains is not None:
-		name_contains = f"%{name_contains}%"
+	if name_contains:
 		sql += " AND ( 1 = 2"
-		sql += " OR `discord_user`.`username` LIKE %s"
-		sql += " OR `discord_user`.`nickname` LIKE %s"
+		sql += " OR `discord_user`.`username` LIKE %(name_contains)s"
+		sql += " OR `discord_user`.`nickname` LIKE %(name_contains)s"
 		sql += " )"
-		values += (str(name_contains),) * 2
+		values["name_contains"] = str(f"%{name_contains}%")
 
 	# Optional 'between' keywords
 	rank_between:Optional[tuple] = search.get("rank_between", None)
@@ -394,16 +389,17 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 		to_:Optional[int] = rank_between[1]
 
 		if (from_ is not None) and (to_ is not None):
-			sql += " AND `discord_user`.`rank` BETWEEN %s AND %s"
-			values += (int(from_), int(to_))
+			sql += " AND `discord_user`.`rank` BETWEEN %(rank_between_from)s AND %(rank_between_to)s"
+			values["rank_between_from"] = int(from_)
+			values["rank_between_to"] = int(to_)
 
 		if (from_ is not None) and (to_ is None):
-			sql += " AND `discord_user`.`rank` >= %s"
-			values += (int(from_),)
+			sql += " AND `discord_user`.`rank` >= %(rank_between_from)s"
+			values["rank_between_from"] = int(from_)
 
 		if (from_ is None) and (to_ is not None):
-			sql += " AND `discord_user`.`rank` <= %s"
-			values += (int(to_),)
+			sql += " AND `discord_user`.`rank` <= %(rank_between_to)s"
+			values["rank_between_to"] = int(to_)
 
 	exp_between:Optional[tuple] = search.get("exp_between", None)
 	if exp_between is not None:
@@ -411,16 +407,17 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 		to_:Optional[int] = exp_between[1]
 
 		if (from_ is not None) and (to_ is not None):
-			sql += " AND `discord_user`.`exp` BETWEEN %s AND %s"
-			values += (int(from_), int(to_))
+			sql += " AND `discord_user`.`exp` BETWEEN %(exp_between_from)s AND %(exp_between_to)s"
+			values["exp_between_from"] = int(from_)
+			values["exp_between_to"] = int(to_)
 
 		if (from_ is not None) and (to_ is None):
-			sql += " AND `discord_user`.`exp` >= %s"
-			values += (int(from_),)
+			sql += " AND `discord_user`.`exp` >= %(exp_between_from)s"
+			values["exp_between_from"] = int(from_)
 
 		if (from_ is None) and (to_ is not None):
-			sql += " AND `discord_user`.`exp` <= %s"
-			values += (int(to_),)
+			sql += " AND `discord_user`.`exp` <= %(exp_between_to)s"
+			values["exp_between_to"] = int(to_)
 
 	currency_between:Optional[tuple] = search.get("currency_between", None)
 	if currency_between is not None:
@@ -428,16 +425,17 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 		to_:Optional[int] = currency_between[1]
 
 		if (from_ is not None) and (to_ is not None):
-			sql += " AND `discord_user`.`currency` BETWEEN %s AND %s"
-			values += (int(from_), int(to_))
+			sql += " AND `discord_user`.`currency` BETWEEN %(currency_between_from)s AND %(currency_between_to)s"
+			values["currency_between_from"] = int(from_)
+			values["currency_between_to"] = int(to_)
 
 		if (from_ is not None) and (to_ is None):
-			sql += " AND `discord_user`.`currency` >= %s"
-			values += (int(from_),)
+			sql += " AND `discord_user`.`currency` >= %(currency_between_from)s"
+			values["currency_between_from"] = int(from_)
 
 		if (from_ is None) and (to_ is not None):
-			sql += " AND `discord_user`.`currency` <= %s"
-			values += (int(to_),)
+			sql += " AND `discord_user`.`currency` <= %(currency_between_to)s"
+			values["currency_between_to"] = int(to_)
 
 	# Special
 	count_mode:bool = search.get("count_mode", False)
@@ -458,6 +456,7 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 			LEFT JOIN `discord_regular`
 				ON `discord_regular`.`guild_id` = `discord_user`.`guild_id`
 					AND `discord_regular`.`member_id` = `discord_user`.`member_id`
+			{{on_server}}
 			GROUP BY `discord_user`.`guild_id`, `discord_user`.`member_id`
 		)
 		SELECT COUNT(*) AS `I` FROM `discord_user` WHERE 1 = 1"""
@@ -478,6 +477,14 @@ async def getDiscordServerUsers(cls:"PhaazebotDiscord", **search) -> Union[List[
 		sql += f" LIMIT {limit}"
 		if offset:
 			sql += f" OFFSET {offset}"
+
+	# on_server must be inserted in the WITH clause before standard sql
+	on_server:int = search.get("on_server", 1)
+	if on_server is None:
+		ground_sql = ground_sql.replace("{{on_server}}", '')
+	else:
+		ground_sql = ground_sql.replace("{{on_server}}", "WHERE `discord_user`.`on_server` = %(on_server)s")
+		values["on_server"] = int(on_server)
 
 	res:List[dict] = cls.BASE.PhaazeDB.selectQuery(ground_sql+sql, values)
 
