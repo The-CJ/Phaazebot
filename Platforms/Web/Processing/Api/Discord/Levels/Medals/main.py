@@ -20,8 +20,8 @@ async def apiDiscordLevelsMedals(cls:"PhaazebotWeb", WebRequest:ExtendedRequest)
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	# elif method == "create":
-		# return await apiDiscordLevelsMedalsCreate(cls, WebRequest)
+	elif method == "create":
+		return await cls.Tree.Api.Discord.Levels.Medals.create.apiDiscordLevelsMedalsCreate(cls, WebRequest)
 
 	# elif method == "delete":
 		# return await apiDiscordLevelsMedalsDelete(cls, WebRequest)
