@@ -32,7 +32,7 @@ async def apiDiscordCommands(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> 
 	elif method == "get":
 		return await cls.Tree.Api.Discord.Commands.get.apiDiscordCommandsGet(cls, WebRequest)
 
-	# elif method == "list":
-	# 	return await apiDiscordCommandsList(cls, WebRequest)
+	elif method == "list":
+		return await cls.Tree.Api.Discord.Commands.listcommands.apiDiscordCommandsListCommands(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")

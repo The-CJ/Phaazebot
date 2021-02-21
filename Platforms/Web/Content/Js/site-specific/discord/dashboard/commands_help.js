@@ -102,7 +102,7 @@ var CommandsHelp = new (class {
 			}
 
 			// endless
-			if (cmd.endless_arguemnts) {
+			if (cmd.endless_arguments) {
 				$("[location=commands_help] [endless-args]").show();
 			} else {
 				$("[location=commands_help] [endless-args]").hide();
@@ -111,7 +111,7 @@ var CommandsHelp = new (class {
 			$("[location=commands_help] [content-type]").hide();
 			if (cmd.need_content) {
 				$("[location=commands_help] [content-type=need]").show();
-			} else if (cmd.allowes_content) {
+			} else if (cmd.allows_content) {
 				$("[location=commands_help] [content-type=allows]").show();
 			} else {
 				$("[location=commands_help] [content-type=none]").show();

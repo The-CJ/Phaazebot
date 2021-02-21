@@ -29,9 +29,9 @@ command_register:List[dict] = [
 			"It requires a content, this content supports placeholder variables, like: [user-name], [channel-name] or [member-count], etc...",
 		required_arguments=[],
 		optional_arguments=[],
-		endless_arguemnts=True,
+		endless_arguments=True,
 		need_content=True,
-		allowes_content=True,
+		allows_content=True,
 		example_calls=[
 			"!myCommand",
 			">do_Something",
@@ -47,9 +47,9 @@ command_register:List[dict] = [
 			"* It only shows the first 20 commands, after that it only says there are more. Else it would be to spamy",
 		required_arguments=[],
 		optional_arguments=[],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!listcmd",
 			">cmd",
@@ -66,9 +66,9 @@ command_register:List[dict] = [
 		optional_arguments=[
 			"(1) ID of requested Quote"
 		],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!quote",
 			">quote 8",
@@ -83,9 +83,9 @@ command_register:List[dict] = [
 		description="Adds a new quote to the server quote list. Very useful if you don't wanna open your web browser and just add it in discord.",
 		required_arguments=[],
 		optional_arguments=[],
-		endless_arguemnts=True,
+		endless_arguments=True,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!newquote 'This is my new Quote'",
 			">AddQuote Something something -Strange Dude",
@@ -102,9 +102,9 @@ command_register:List[dict] = [
 			"[1] The Quote ID to delete."
 		],
 		optional_arguments=[],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!removequote 6",
 			">delete 51",
@@ -120,9 +120,9 @@ command_register:List[dict] = [
 			"Gives back one of the splatted content",
 		required_arguments=[],
 		optional_arguments=[],
-		endless_arguemnts=True,
+		endless_arguments=True,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!rand option 1;option 2",
 			">num 1;2;3;4;5;6",
@@ -137,9 +137,9 @@ command_register:List[dict] = [
 		description="Uses UrbanDictionary to get a definition for your input",
 		required_arguments=[],
 		optional_arguments=[],
-		endless_arguemnts=True,
+		endless_arguments=True,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!define Orange",
 			">what_is Sleeping",
@@ -157,9 +157,9 @@ command_register:List[dict] = [
 		optional_arguments=[
 			"(1) Query string to search a user: name, mention, ID or None for the command caller"
 		],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!whois",
 			">inspect SomeUser#5482",
@@ -178,9 +178,9 @@ command_register:List[dict] = [
 			"[1] Number of messages or query string to search a user: name, mention or ID"
 		],
 		optional_arguments=[],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!clean 200",
 			">prune BadUser#2314",
@@ -196,9 +196,9 @@ command_register:List[dict] = [
 			"Tries to autocomplete your input (if possible) and gives you a quick summary",
 		required_arguments=[],
 		optional_arguments=[],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!wiki Carbon dioxide",
 			">wikipedia Earth",
@@ -218,9 +218,9 @@ command_register:List[dict] = [
 		optional_arguments=[
 			"Change search mode: '--ctb', '--taiko', '--mania' (Anywhere in the command, will be filtered out)"
 		],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!osu-stats playername",
 			">osu another --ctb",
@@ -238,9 +238,9 @@ command_register:List[dict] = [
 			"[2] A query string for the role: name, mention or ID"
 		],
 		optional_arguments=[],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!add-role csgo @Counterstrike",
 			">ar minecraft 58694231456489579",
@@ -255,9 +255,9 @@ command_register:List[dict] = [
 		description="Lists all existing assign roles.",
 		required_arguments=[],
 		optional_arguments=[],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!listroles",
 			">assign_list",
@@ -274,9 +274,9 @@ command_register:List[dict] = [
 			"[1] The assign-role trigger"
 		],
 		optional_arguments=[],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!remove-assign csgo",
 			">assign_del minecraft",
@@ -294,9 +294,9 @@ command_register:List[dict] = [
 			"[1] The assign-role trigger"
 		],
 		optional_arguments=[],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!assign csgo",
 			">give-role minecraft",
@@ -313,9 +313,9 @@ command_register:List[dict] = [
 		optional_arguments=[
 			"(1) Query string to search a user: name, mention, ID or None for the command caller"
 		],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!level",
 			">lvl @AnotherUser",
@@ -332,9 +332,9 @@ command_register:List[dict] = [
 		optional_arguments=[
 			"(1) Number for the length for the list, max 15"
 		],
-		endless_arguemnts=False,
+		endless_arguments=False,
 		need_content=False,
-		allowes_content=False,
+		allows_content=False,
 		example_calls=[
 			"!leaderboard",
 			">board 3",
