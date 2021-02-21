@@ -31,8 +31,9 @@ async def apiDiscordCommandsGet(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) 
 	Search:StorageTransformer = StorageTransformer()
 	Search["guild_id"] = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
 	Search["command_id"] = Data.getStr("command_id", UNDEFINED, must_be_digit=True)
-	Search["trigger"] = Data.getStr("trigger", UNDEFINED)
+	Search["trigger"] = Data.getStr("trigger", UNDEFINED, len_min=1, len_max=128)
 	Search["show_hidden"] = Data.getBool("show_hidden", False)
+	Search["active"] = None if Search["show_hidden"] else 1
 	Search["limit"] = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
 	Search["offset"] = Data.getInt("offset", 0, min_x=0)
 

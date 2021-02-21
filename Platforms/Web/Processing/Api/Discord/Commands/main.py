@@ -20,14 +20,14 @@ async def apiDiscordCommands(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> 
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	# elif method == "delete":
-	# 	return await apiDiscordCommandsDelete(cls, WebRequest)
-
 	# elif method == "create":
 	# 	return await apiDiscordCommandsCreate(cls, WebRequest)
 
-	# elif method == "edit":
-	# 	return await apiDiscordCommandsEdit(cls, WebRequest)
+	elif method == "delete":
+		return await apiDiscordCommandsDelete(cls, WebRequest)
+
+	elif method == "edit":
+		return await cls.Tree.Api.Discord.Commands.edit.apiDiscordCommandsEdit(cls, WebRequest)
 
 	elif method == "get":
 		return await cls.Tree.Api.Discord.Commands.get.apiDiscordCommandsGet(cls, WebRequest)
