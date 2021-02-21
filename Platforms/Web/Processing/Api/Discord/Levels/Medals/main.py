@@ -23,8 +23,8 @@ async def apiDiscordLevelsMedals(cls:"PhaazebotWeb", WebRequest:ExtendedRequest)
 	elif method == "create":
 		return await cls.Tree.Api.Discord.Levels.Medals.create.apiDiscordLevelsMedalsCreate(cls, WebRequest)
 
-	# elif method == "delete":
-		# return await apiDiscordLevelsMedalsDelete(cls, WebRequest)
+	elif method == "delete":
+		return await cls.Tree.Api.Discord.Levels.Medals.delete.apiDiscordLevelsMedalsDelete(cls, WebRequest)
 
 	elif method == "get":
 		return await cls.Tree.Api.Discord.Levels.Medals.get.apiDiscordLevelsMedalsGet(cls, WebRequest)
