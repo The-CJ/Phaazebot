@@ -24,7 +24,7 @@ async def apiDiscordCommands(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> 
 	# 	return await apiDiscordCommandsCreate(cls, WebRequest)
 
 	elif method == "delete":
-		return await apiDiscordCommandsDelete(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Commands.delete.apiDiscordCommandsDelete(cls, WebRequest)
 
 	elif method == "edit":
 		return await cls.Tree.Api.Discord.Commands.edit.apiDiscordCommandsEdit(cls, WebRequest)
