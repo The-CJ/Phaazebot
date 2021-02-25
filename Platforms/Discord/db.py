@@ -1890,7 +1890,7 @@ async def getDiscordServerLogs(cls:"PhaazebotDiscord", **search) -> List[Discord
 		search["limit"] = None
 		search["offset"] = None
 		ground_sql: str = """
-			SELECT COUNT(*) 
+			SELECT COUNT(*) AS `I`
 			FROM `discord_log`
 			WHERE 1 = 1"""
 

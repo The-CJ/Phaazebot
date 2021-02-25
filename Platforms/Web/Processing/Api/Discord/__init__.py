@@ -1,6 +1,6 @@
 import Platforms.Web.Processing.Api.Discord.Assignroles as Assignroles
 import Platforms.Web.Processing.Api.Discord.Commands as Commands
-# import Platforms.Web.Processing.Api.Discord.Configs as Configs
+import Platforms.Web.Processing.Api.Discord.Configs as Configs
 import Platforms.Web.Processing.Api.Discord.Levels as Levels
 import Platforms.Web.Processing.Api.Discord.Logs as Logs
 import Platforms.Web.Processing.Api.Discord.Quotes as Quotes
