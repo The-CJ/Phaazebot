@@ -8,6 +8,6 @@
 # import Platforms.Web.Processing.Api.Discord.Configs.Regulardisabledchannels as Regulardisabledchannels
 # import Platforms.Web.Processing.Api.Discord.Configs.Whitelistedlinks as Whitelistedlinks
 
-# import Platforms.Web.Processing.Api.Discord.Configs.edit as edit
+import Platforms.Web.Processing.Api.Discord.Configs.edit as edit
 import Platforms.Web.Processing.Api.Discord.Configs.get as get
 import Platforms.Web.Processing.Api.Discord.Configs.main as main

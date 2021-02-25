@@ -23,7 +23,7 @@ async def apiDiscordConfigs(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> R
 	elif method == "get":
 		return await cls.Tree.Api.Discord.Configs.get.apiDiscordConfigsGet(cls, WebRequest)
 
-	# elif method == "edit":
-	# 	return await apiDiscordConfigsEdit(cls, WebRequest)
+	elif method == "edit":
+		return await cls.Tree.Api.Discord.Configs.edit.apiDiscordConfigsEdit(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
