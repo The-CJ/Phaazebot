@@ -23,8 +23,8 @@ async def apiDiscordConfigsLevelDisabledChannels(cls:"PhaazebotWeb", WebRequest:
 	elif method == "create":
 		return await cls.Tree.Api.Discord.Configs.Leveldisabledchannels.create.apiDiscordConfigsLevelDisabledChannelsCreate(cls, WebRequest)
 
-	# elif method == "delete":
-	# 	return await apiDiscordConfigsLevelDisabledChannelsDelete(cls, WebRequest)
+	elif method == "delete":
+		return await cls.Tree.Api.Discord.Configs.Leveldisabledchannels.delete.apiDiscordConfigsLevelDisabledChannelsDelete(cls, WebRequest)
 
 	elif method == "get":
 		return await cls.Tree.Api.Discord.Configs.Leveldisabledchannels.get.apiDiscordConfigsLevelDisabledChannelsGet(cls, WebRequest)
