@@ -1,7 +1,7 @@
 # import Platforms.Web.Processing.Api.Discord.Configs.Blacklistedwords as Blacklistedwords
 # import Platforms.Web.Processing.Api.Discord.Configs.Exceptionroles as Exceptionroles
 # import Platforms.Web.Processing.Api.Discord.Configs.Gameenabledchannels as Gameenabledchannels
-# import Platforms.Web.Processing.Api.Discord.Configs.Leveldisabledchannels as Leveldisabledchannels
+import Platforms.Web.Processing.Api.Discord.Configs.Leveldisabledchannels as Leveldisabledchannels
 # import Platforms.Web.Processing.Api.Discord.Configs.Normaldisabledchannels as Normaldisabledchannels
 # import Platforms.Web.Processing.Api.Discord.Configs.Nsfwenabledchannels as Nsfwenabledchannels
 # import Platforms.Web.Processing.Api.Discord.Configs.Quotedisabledchannels as Quotedisabledchannels
