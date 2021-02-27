@@ -28,14 +28,13 @@ async def apiDiscordAssignrolesDelete(cls:"PhaazebotWeb", WebRequest:ExtendedReq
 	# get required vars
 	guild_id:str = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
 	assignrole_id:str = Data.getStr("assignrole_id", UNDEFINED, must_be_digit=True)
-	role_id:str = Data.getStr("role_id", UNDEFINED, must_be_digit=True)
 
 	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	if (not assignrole_id) and (not role_id):
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'assignrole_id' or 'role_id'")
+	if not assignrole_id:
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'assignrole_id'")
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
@@ -57,10 +56,10 @@ async def apiDiscordAssignrolesDelete(cls:"PhaazebotWeb", WebRequest:ExtendedReq
 		return await cls.Tree.Api.Discord.errors. apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=AuthDiscord.User.user_id)
 
 	# get assign roles
-	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=guild_id, assignrole_id=assignrole_id, role_id=role_id)
+	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=guild_id, assignrole_id=assignrole_id)
 
 	if not res_assignroles:
-		return await cls.Tree.Api.Discord.Assignroles.errors.apiDiscordAssignRoleNotExists(cls, WebRequest, role_id=role_id, assignrole_id=assignrole_id)
+		return await cls.Tree.Api.Discord.Assignroles.errors.apiDiscordAssignRoleNotExists(cls, WebRequest, assignrole_id=assignrole_id)
 
 	AssignRoleToDelete:DiscordAssignRole = res_assignroles.pop(0)
 
@@ -77,7 +76,7 @@ async def apiDiscordAssignrolesDelete(cls:"PhaazebotWeb", WebRequest:ExtendedReq
 	)
 	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
-	cls.BASE.Logger.debug(f"(API/Discord) Assignroles: {guild_id=} deleted [{role_id}, {assignrole_id=}]", require="discord:role")
+	cls.BASE.Logger.debug(f"(API/Discord) Assignroles: {guild_id=} deleted {assignrole_id=}", require="discord:role")
 	return cls.response(
 		text=json.dumps(dict(msg="Assignroles: Deleted entry", deleted=AssignRoleToDelete.trigger, status=200)),
 		content_type="application/json",
