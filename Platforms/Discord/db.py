@@ -1147,7 +1147,7 @@ async def getDiscordServerExceptionRoles(cls:"PhaazebotDiscord", **search) -> Un
 		search["limit"] = None
 		search["offset"] = None
 		ground_sql: str = """
-			SELECT COUNT(*) 
+			SELECT COUNT(*) AS `I`
 			FROM `discord_blacklist_whitelistrole`
 			WHERE 1 = 1"""
 
@@ -1244,7 +1244,7 @@ async def getDiscordServerWhitelistedLinks(cls:"PhaazebotDiscord", **search) -> 
 		search["limit"] = None
 		search["offset"] = None
 		ground_sql: str = """
-			SELECT COUNT(*) 
+			SELECT COUNT(*) AS `I`
 			FROM `discord_blacklist_whitelistlink`
 			WHERE 1 = 1"""
 
@@ -1330,7 +1330,7 @@ async def getDiscordServerLevelDisabledChannels(cls:"PhaazebotDiscord", **search
 		search["limit"] = None
 		search["offset"] = None
 		ground_sql: str = """
-			SELECT COUNT(*) 
+			SELECT COUNT(*) AS `I`
 			FROM `discord_disabled_levelchannel`
 			WHERE 1 = 1"""
 
@@ -1416,7 +1416,7 @@ async def getDiscordServerRegularDisabledChannels(cls:"PhaazebotDiscord", **sear
 		search["limit"] = None
 		search["offset"] = None
 		ground_sql: str = """
-			SELECT COUNT(*) 
+			SELECT COUNT(*) AS `I`
 			FROM `discord_disabled_regularchannel`
 			WHERE 1 = 1"""
 
@@ -1502,7 +1502,7 @@ async def getDiscordServerNormalDisabledChannels(cls:"PhaazebotDiscord", **searc
 		search["limit"] = None
 		search["offset"] = None
 		ground_sql: str = """
-			SELECT COUNT(*) 
+			SELECT COUNT(*) AS `I`
 			FROM `discord_disabled_normalchannel`
 			WHERE 1 = 1"""
 
@@ -1588,7 +1588,7 @@ async def getDiscordServerQuoteDisabledChannels(cls:"PhaazebotDiscord", **search
 		search["limit"] = None
 		search["offset"] = None
 		ground_sql: str = """
-			SELECT COUNT(*) 
+			SELECT COUNT(*) AS `I`
 			FROM `discord_disabled_quotechannel`
 			WHERE 1 = 1"""
 
@@ -1674,7 +1674,7 @@ async def getDiscordServerGameEnabledChannels(cls:"PhaazebotDiscord", **search) 
 		search["limit"] = None
 		search["offset"] = None
 		ground_sql: str = """
-			SELECT COUNT(*) 
+			SELECT COUNT(*) AS `I`
 			FROM `discord_enabled_gamechannel`
 			WHERE 1 = 1"""
 
@@ -1760,7 +1760,7 @@ async def getDiscordServerNsfwEnabledChannels(cls:"PhaazebotDiscord", **search) 
 		search["limit"] = None
 		search["offset"] = None
 		ground_sql: str = """
-			SELECT COUNT(*) 
+			SELECT COUNT(*) AS `I`
 			FROM `discord_enabled_nsfwchannel`
 			WHERE 1 = 1"""
 
