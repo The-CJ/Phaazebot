@@ -56,4 +56,3 @@ async def apiDiscordAssignrolesGet(cls:"PhaazebotWeb", WebRequest:ExtendedReques
 		content_type="application/json",
 		status=200
 	)
-

@@ -5,11 +5,13 @@ if TYPE_CHECKING:
 
 from aiohttp.web import Response
 from Utils.Classes.extendedrequest import ExtendedRequest
+from Platforms.Web.index import PhaazeWebIndex
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
+@PhaazeWebIndex.view("/api/discord/configs/blacklistedwords{x:/?}{method:.*}")
 async def apiDiscordConfigsBlacklistedWords(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-	Default url: /api/discord/configs/blacklistedwords
+	Default url: /api/discord/configs/blacklistedwords{x:/?}{method:.*}
 	"""
 
 	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
@@ -18,13 +20,13 @@ async def apiDiscordConfigsBlacklistedWords(cls:"PhaazebotWeb", WebRequest:Exten
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	elif method == "create": # TODO
+	elif method == "create":
 		return await cls.Tree.Api.Discord.Configs.Blacklistedwords.create.apiDiscordConfigsBlacklistedWordsCreate(cls, WebRequest)
 
-	elif method == "delete": # TODO
+	elif method == "delete":
 		return await cls.Tree.Api.Discord.Configs.Blacklistedwords.delete.apiDiscordConfigsBlacklistedWordsDelete(cls, WebRequest)
 
-	elif method == "get": # TODO
+	elif method == "get":
 		return await cls.Tree.Api.Discord.Configs.Blacklistedwords.get.apiDiscordConfigsBlacklistedWordsGet(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")
