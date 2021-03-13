@@ -20,11 +20,11 @@ async def apiDiscordConfigsWhitelistedLink(cls:"PhaazebotWeb", WebRequest:Extend
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	# elif method == "create":
-	# 	return await apiDiscordConfigsWhitelistedLinkCreate(cls, WebRequest)
+	elif method == "create":
+		return await cls.Tree.Api.Discord.Configs.Whitelistedlinks.create.apiDiscordConfigsWhitelistedLinkCreate(cls, WebRequest)
 
-	# elif method == "delete":
-	# 	return await apiDiscordConfigsWhitelistedLinkDelete(cls, WebRequest)
+	elif method == "delete":
+		return await cls.Tree.Api.Discord.Configs.Whitelistedlinks.delete.apiDiscordConfigsWhitelistedLinkDelete(cls, WebRequest)
 
 	elif method == "get":
 		return await cls.Tree.Api.Discord.Configs.Whitelistedlinks.get.apiDiscordConfigsWhitelistedLinkGet(cls, WebRequest)

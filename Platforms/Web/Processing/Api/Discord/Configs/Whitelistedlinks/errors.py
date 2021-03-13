@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 
-async def apiDiscordWhitelistedLinkExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordWhitelistedLinkExists(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -31,14 +32,14 @@ async def apiDiscordWhitelistedLinkExists(cls:"WebIndex", WebRequest:Request, **
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Link exists: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Link exists: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordWhitelistedLinkNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordWhitelistedLinkNotExists(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -72,9 +73,9 @@ async def apiDiscordWhitelistedLinkNotExists(cls:"WebIndex", WebRequest:Request,
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Link does not exists: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Link does not exists: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
