@@ -23,8 +23,7 @@ async def apiDiscordConfigsWhitelistedLinkCreate(cls:"PhaazebotWeb", WebRequest:
 	# get required stuff
 	Create:StorageTransformer = StorageTransformer()
 	Create["guild_id"] = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
-	Create["link"] = Data.getStr("link", "", len_min=1, len_max=512).replace(";;;", "") # ;;; is the sql separator
-
+	Create["link"] = Data.getStr("link", UNDEFINED, len_min=1, len_max=512)
 	# checks
 	if not Create["guild_id"]:
 		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
