@@ -3,7 +3,7 @@ import Platforms.Web.Processing.Api.Discord.Configs.Exceptionroles as Exceptionr
 import Platforms.Web.Processing.Api.Discord.Configs.Gameenabledchannels as Gameenabledchannels
 import Platforms.Web.Processing.Api.Discord.Configs.Leveldisabledchannels as Leveldisabledchannels
 import Platforms.Web.Processing.Api.Discord.Configs.Normaldisabledchannels as Normaldisabledchannels
-# import Platforms.Web.Processing.Api.Discord.Configs.Nsfwenabledchannels as Nsfwenabledchannels
+import Platforms.Web.Processing.Api.Discord.Configs.Nsfwenabledchannels as Nsfwenabledchannels
 # import Platforms.Web.Processing.Api.Discord.Configs.Quotedisabledchannels as Quotedisabledchannels
 # import Platforms.Web.Processing.Api.Discord.Configs.Regulardisabledchannels as Regulardisabledchannels
 import Platforms.Web.Processing.Api.Discord.Configs.Whitelistedlinks as Whitelistedlinks
