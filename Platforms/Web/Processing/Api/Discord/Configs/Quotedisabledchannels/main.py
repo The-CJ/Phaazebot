@@ -23,8 +23,8 @@ async def apiDiscordConfigsQuoteDisabledChannels(cls:"PhaazebotWeb", WebRequest:
 	elif method == "create":
 		return await cls.Tree.Api.Discord.Configs.Quotedisabledchannels.create.apiDiscordConfigsQuoteDisabledChannelsCreate(cls, WebRequest)
 
-	# elif method == "delete":
-	# 	return await apiDiscordConfigsQuoteDisabledChannelsDelete(cls, WebRequest)
+	elif method == "delete":
+		return await cls.Tree.Api.Discord.Configs.Quotedisabledchannels.delete.apiDiscordConfigsQuoteDisabledChannelsDelete(cls, WebRequest)
 
 	elif method == "get":
 		return await cls.Tree.Api.Discord.Configs.Quotedisabledchannels.get.apiDiscordConfigsQuoteDisabledChannelsGet(cls, WebRequest)
