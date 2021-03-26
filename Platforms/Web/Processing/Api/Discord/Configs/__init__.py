@@ -5,7 +5,7 @@ import Platforms.Web.Processing.Api.Discord.Configs.Leveldisabledchannels as Lev
 import Platforms.Web.Processing.Api.Discord.Configs.Normaldisabledchannels as Normaldisabledchannels
 import Platforms.Web.Processing.Api.Discord.Configs.Nsfwenabledchannels as Nsfwenabledchannels
 import Platforms.Web.Processing.Api.Discord.Configs.Quotedisabledchannels as Quotedisabledchannels
-# import Platforms.Web.Processing.Api.Discord.Configs.Regulardisabledchannels as Regulardisabledchannels
+import Platforms.Web.Processing.Api.Discord.Configs.Regulardisabledchannels as Regulardisabledchannels
 import Platforms.Web.Processing.Api.Discord.Configs.Whitelistedlinks as Whitelistedlinks
 
 import Platforms.Web.Processing.Api.Discord.Configs.edit as edit
