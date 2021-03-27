@@ -1,5 +1,5 @@
 /*
-DESCRIBE `role`;
+DESCRIBE `web_role`;
 
 +----------------+--------------+------+-----+---------+----------------+
 | Field          | Type         | Null | Key | Default | Extra          |
@@ -11,9 +11,9 @@ DESCRIBE `role`;
 +----------------+--------------+------+-----+---------+----------------+
 */
 
--- SHOW CREATE TABLE `role`;
+-- SHOW CREATE TABLE `web_role`;
 
-CREATE TABLE `role` (
+CREATE TABLE `web_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `can_be_removed` tinyint(1) DEFAULT 0,
   `description` varchar(512) DEFAULT NULL,

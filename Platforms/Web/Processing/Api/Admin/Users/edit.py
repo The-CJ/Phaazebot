@@ -117,7 +117,7 @@ async def apiAdminUsersOperationAddrole(cls:"PhaazebotWeb", WebRequest:ExtendedR
 			return await cls.Tree.Api.errors.apiNotAllowed(cls, WebRequest, msg=f"Only Superadmin's can assign/remove {WantedRole.name} to user")
 
 	cls.BASE.PhaazeDB.insertQuery(
-		table="user_has_role",
+		table="web_user+web_role",
 		content={"user_id":EditUser.user_id, "role_id":WantedRole.role_id}
 	)
 
@@ -152,7 +152,7 @@ async def apiAdminUsersOperationRemoverole(cls:"PhaazebotWeb", WebRequest:Extend
 			return await cls.Tree.Api.errors.apiNotAllowed(cls, WebRequest, msg=f"Only Superadmin's can assign/remove {UnwantedRole.name} to user")
 
 	cls.BASE.PhaazeDB.deleteQuery("""
-		DELETE FROM `user_has_role`
+		DELETE FROM `web_user+web_role`
 		WHERE `user_id` = %s
 			AND `role_id` = %s""",
 		(EditUser.user_id, UnwantedRole.role_id)

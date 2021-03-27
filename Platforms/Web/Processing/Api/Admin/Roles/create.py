@@ -24,7 +24,7 @@ async def apiAdminRolesCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) ->
 		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'name'")
 
 	res:list = cls.BASE.PhaazeDB.selectQuery(
-		"SELECT COUNT(*) AS `i` FROM `role` WHERE LOWER(`role`.`name`) = %s",
+		"SELECT COUNT(*) AS `i` FROM `web_role` WHERE LOWER(`web_role`.`name`) = %s",
 		(Create["name"],)
 	)
 

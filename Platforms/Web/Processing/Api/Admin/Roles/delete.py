@@ -32,7 +32,7 @@ async def apiAdminRolesDelete(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) ->
 		return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"'{RoleToDelete.name}' cannot be removed")
 
 	cls.BASE.PhaazeDB.deleteQuery(
-		"DELETE FROM `role` WHERE `role`.`id` = %s",
+		"DELETE FROM `web_role` WHERE `web_role`.`id` = %s",
 		(RoleToDelete.role_id,)
 	)
 

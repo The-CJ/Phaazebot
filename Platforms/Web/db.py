@@ -6,7 +6,7 @@ from Utils.Classes.webuser import WebUser
 from Utils.Classes.webrole import WebRole
 from Utils.Classes.undefined import UNDEFINED
 
-# user
+# web_user
 async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]:
 	"""
 	Get web users
@@ -33,7 +33,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 
 	Other:
 	------
-	* `order_str` - str : (Default: "ORDER BY user.id ASC")
+	* `order_str` - str : (Default: "ORDER BY web_user.id ASC")
 	* `limit` - int : (Default: 0)
 	* `offset` - int : (Default: 0)
 
@@ -48,13 +48,13 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 	"""
 	ground_sql:str = f"""
 		SELECT
-			`user`.*,
-			GROUP_CONCAT(`role`.`name` SEPARATOR ';;;') AS `roles`
-		FROM `user`
-		LEFT JOIN `user_has_role`
-			ON `user_has_role`.`user_id` = `user`.`id`
-		LEFT JOIN `role`
-			ON `role`.`id` = `user_has_role`.`role_id`
+			`web_user`.*,
+			GROUP_CONCAT(`web_role`.`name` SEPARATOR ';;;') AS `roles`
+		FROM `web_user`
+		LEFT JOIN `web_user+web_role`
+			ON `web_user+web_role`.`user_id` = `web_user`.`id`
+		LEFT JOIN `web_role`
+			ON `web_role`.`id` = `web_user+web_role`.`role_id`
 		WHERE 1 = 1"""
 
 	sql:str = ""
@@ -63,36 +63,36 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 	# Optional 'search' keywords
 	user_id:Union[int, str, UNDEFINED] = search.get("user_id", UNDEFINED)
 	if user_id != UNDEFINED:
-		sql += " AND `user`.`id` = %s"
+		sql += " AND `web_user`.`id` = %s"
 		values += (int(user_id),)
 		search["limit"] = 1
 
 	username:Union[str, UNDEFINED] = search.get("username", UNDEFINED)
 	if username != UNDEFINED:
-		sql += " AND `user`.`username` = %s"
+		sql += " AND `web_user`.`username` = %s"
 		values += (str(username),)
 
 	email:Union[str, UNDEFINED] = search.get("email", UNDEFINED)
 	if email != UNDEFINED:
-		sql += " AND `user`.`email` = %s"
+		sql += " AND `web_user`.`email` = %s"
 		values += (str(email),)
 
 	verified:Union[int, UNDEFINED] = search.get("email", UNDEFINED)
 	if email != UNDEFINED:
-		sql += " AND `user`.`verified` = %s"
+		sql += " AND `web_user`.`verified` = %s"
 		values += (int(verified),)
 
 	# Optional 'contains' keywords
 	username_contains:Union[str, UNDEFINED] = search.get("username_contains", UNDEFINED)
 	if username_contains != UNDEFINED:
 		username_contains = f"%{username_contains}%"
-		sql += " AND `user`.`username` LIKE %s"
+		sql += " AND `web_user`.`username` LIKE %s"
 		values += (str(username_contains),)
 
 	email_contains:Union[str, UNDEFINED] = search.get("email_contains", UNDEFINED)
 	if email_contains != UNDEFINED:
 		email_contains = f"%{email_contains}%"
-		sql += " AND `user`.`email` LIKE %s"
+		sql += " AND `web_user`.`email` LIKE %s"
 		values += (str(email_contains),)
 
 	# Optional 'between' keywords
@@ -102,15 +102,15 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 		to_:Optional[str] = created_at_between[1]
 
 		if (from_ is not None) and (to_ is not None):
-			sql += " AND `user`.`created_at` BETWEEN %s AND %s"
+			sql += " AND `web_user`.`created_at` BETWEEN %s AND %s"
 			values += (str(from_), str(to_))
 
 		if (from_ is not None) and (to_ is None):
-			sql += " AND `user`.`created_at` >= %s"
+			sql += " AND `web_user`.`created_at` >= %s"
 			values += (str(from_),)
 
 		if (from_ is None) and (to_ is not None):
-			sql += " AND `user`.`created_at` <= %s"
+			sql += " AND `web_user`.`created_at` <= %s"
 			values += (str(to_),)
 
 	edited_at_between:Optional[tuple] = search.get("edited_at_between", None)
@@ -119,15 +119,15 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 		to_:Optional[str] = edited_at_between[1]
 
 		if (from_ is not None) and (to_ is not None):
-			sql += " AND `user`.`edited_at` BETWEEN %s AND %s"
+			sql += " AND `web_user`.`edited_at` BETWEEN %s AND %s"
 			values += (str(from_), str(to_))
 
 		if (from_ is not None) and (to_ is None):
-			sql += " AND `user`.`edited_at` >= %s"
+			sql += " AND `web_user`.`edited_at` >= %s"
 			values += (str(from_),)
 
 		if (from_ is None) and (to_ is not None):
-			sql += " AND `user`.`edited_at` <= %s"
+			sql += " AND `web_user`.`edited_at` <= %s"
 			values += (str(to_),)
 
 	last_login_between:Optional[tuple] = search.get("last_login_between", None)
@@ -136,15 +136,15 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 		to_:Optional[str] = last_login_between[1]
 
 		if (from_ is not None) and (to_ is not None):
-			sql += " AND `user`.`last_login` BETWEEN %s AND %s"
+			sql += " AND `web_user`.`last_login` BETWEEN %s AND %s"
 			values += (str(from_), str(to_))
 
 		if (from_ is not None) and (to_ is None):
-			sql += " AND `user`.`last_login` >= %s"
+			sql += " AND `web_user`.`last_login` >= %s"
 			values += (str(from_),)
 
 		if (from_ is None) and (to_ is not None):
-			sql += " AND `user`.`last_login` <= %s"
+			sql += " AND `web_user`.`last_login` <= %s"
 			values += (str(to_),)
 
 	username_changed_between:Optional[tuple] = search.get("username_changed_between", None)
@@ -153,15 +153,15 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 		to_:Optional[int] = username_changed_between[1]
 
 		if (from_ is not None) and (to_ is not None):
-			sql += " AND `user`.`username_changed` BETWEEN %s AND %s"
+			sql += " AND `web_user`.`username_changed` BETWEEN %s AND %s"
 			values += (int(from_), int(to_))
 
 		if (from_ is not None) and (to_ is None):
-			sql += " AND `user`.`username_changed` >= %s"
+			sql += " AND `web_user`.`username_changed` >= %s"
 			values += (int(from_),)
 
 		if (from_ is None) and (to_ is not None):
-			sql += " AND `user`.`username_changed` <= %s"
+			sql += " AND `web_user`.`username_changed` <= %s"
 			values += (int(to_),)
 
 	# Special
@@ -171,7 +171,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 		search["offset"] = 0
 		ground_sql: str = """
 			SELECT COUNT(*) AS `I`
-			FROM `user`
+			FROM `web_user`
 			WHERE 1 = 1"""
 
 	overwrite_where:Optional[str] = search.get("overwrite_where", None)
@@ -181,10 +181,10 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 		values = overwrite_where_values
 
 	# add group by for GROUP_CONCAT
-	sql += " GROUP BY `user`.`id`"
+	sql += " GROUP BY `web_user`.`id`"
 
 	# Other
-	order_str:str = search.get("order_str", "ORDER BY `user`.`id` ASC")
+	order_str:str = search.get("order_str", "ORDER BY `web_user`.`id` ASC")
 	sql += f" {order_str}"
 
 	limit:int = search.get("limit", 0)
@@ -204,7 +204,7 @@ async def getWebUsers(cls:"PhaazebotWeb", **search) -> Union[List[WebUser], int]
 # roles
 async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]:
 	"""
-	Get roles the a web user can have
+	Get roles the a web_user can have
 	Returns a list of WebRole()
 
 	Optional 'search' keywords:
@@ -220,7 +220,7 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 
 	Other:
 	------
-	* `order_str` - str : (Default: "ORDER BY role.id ASC")
+	* `order_str` - str : (Default: "ORDER BY web_role.id ASC")
 	* `limit` - Union[int, UNDEFINED] : (Default: UNDEFINED)
 	* `offset` - int : (Default: 0)
 
@@ -234,8 +234,8 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 	* `overwrite_where_values` - Union[tuple, dict, None] : (Default: ())
 	"""
 	ground_sql:str = f"""
-		SELECT `role`.*
-		FROM `role`
+		SELECT `web_role`.*
+		FROM `web_role`
 		WHERE 1 = 1"""
 
 	sql:str = ""
@@ -244,31 +244,31 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 	# Optional 'search' keywords
 	role_id:Union[int, str, UNDEFINED] = search.get("role_id", UNDEFINED)
 	if role_id != UNDEFINED:
-		sql += " AND `role`.`id` = %s"
+		sql += " AND `web_role`.`id` = %s"
 		values += (int(role_id),)
 		search["limit"] = 1
 
 	name:Union[str, UNDEFINED] = search.get("name", UNDEFINED)
 	if name != UNDEFINED:
-		sql += " AND `role`.`name` = %s"
+		sql += " AND `web_role`.`name` = %s"
 		values += (str(name),)
 
 	can_be_removed:Union[int, UNDEFINED] = search.get("can_be_removed", UNDEFINED)
 	if can_be_removed != UNDEFINED:
-		sql += " AND `role`.`can_be_removed` = %s"
+		sql += " AND `web_role`.`can_be_removed` = %s"
 		values += (int(can_be_removed),)
 
 	# Optional 'contains' keywords
 	name_contains:Union[str, UNDEFINED] = search.get("name_contains", UNDEFINED)
 	if name_contains != UNDEFINED:
 		name_contains = f"%{name_contains}%"
-		sql += " AND `role`.`name` LIKE %s"
+		sql += " AND `web_role`.`name` LIKE %s"
 		values += (str(name_contains),)
 
 	description_contains:Union[str, UNDEFINED] = search.get("description_contains", UNDEFINED)
 	if description_contains != UNDEFINED:
 		description_contains = f"%{description_contains}%"
-		sql += " AND `role`.`email` description %s"
+		sql += " AND `web_role`.`email` description %s"
 		values += (str(description_contains),)
 
 	# Special
@@ -278,7 +278,7 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 		search["offset"] = 0
 		ground_sql: str = """
 			SELECT COUNT(*) AS `I`
-			FROM `role`
+			FROM `web_role`
 			WHERE 1 = 1"""
 
 	overwrite_where:Optional[str] = search.get("overwrite_where", None)
@@ -288,7 +288,7 @@ async def getWebRoles(cls:"PhaazebotWeb", **search) -> Union[List[WebRole], int]
 		values = overwrite_where_values
 
 	# Other
-	order_str:str = search.get("order_str", "ORDER BY `role`.`id` ASC")
+	order_str:str = search.get("order_str", "ORDER BY `web_role`.`id` ASC")
 	sql += f" {order_str}"
 
 	limit:int = search.get("limit", 0)

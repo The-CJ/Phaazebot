@@ -56,9 +56,9 @@ async def apiAdminRolesEdit(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> R
 
 	cls.BASE.Logger.debug(f"(API) Role update: R:{Edit['role_id']} {str(update)}", require="api:admin")
 	cls.BASE.PhaazeDB.updateQuery(
-		table="role",
+		table="web_role",
 		content=update,
-		where="`role`.`id` = %s",
+		where="`web_role`.`id` = %s",
 		where_values=(Edit["role_id"],)
 	)
 

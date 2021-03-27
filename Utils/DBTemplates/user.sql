@@ -1,5 +1,5 @@
 /*
-DESCRIBE `user`;
+DESCRIBE `web_user`;
 
 +------------------+--------------+------+-----+---------------------+----------------+
 | Field            | Type         | Null | Key | Default             | Extra          |
@@ -16,9 +16,9 @@ DESCRIBE `user`;
 +------------------+--------------+------+-----+---------------------+----------------+
 */
 
--- SHOW CREATE TABLE `user`;
+-- SHOW CREATE TABLE `web_user`;
 
-CREATE TABLE `user` (
+CREATE TABLE `web_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(64) DEFAULT NULL,
   `email` varchar(128) DEFAULT NULL,

@@ -34,9 +34,9 @@ async def apiAdminRolesGet(cls:"PhaazebotWeb", WebRequest:Request) -> Response:
 	if Search["for_user_id"] != UNDEFINED:
 
 		res:List[dict] = cls.BASE.PhaazeDB.selectQuery("""
-			SELECT `user_has_role`.`role_id` AS `rid`
-			FROM `user_has_role`
-			WHERE `user_has_role`.`user_id` = %s""",
+			SELECT `web_user+web_role`.`role_id` AS `rid`
+			FROM `web_user+web_role`
+			WHERE `web_user+web_role`.`user_id` = %s""",
 			(int(Search["for_user_id"]),)
 		)
 
@@ -44,7 +44,7 @@ async def apiAdminRolesGet(cls:"PhaazebotWeb", WebRequest:Request) -> Response:
 		if not rid_list: rid_list = "0"
 
 		Search.storage.clear()
-		Search["overwrite_where"] = f" AND `role`.`id` IN ({rid_list})"
+		Search["overwrite_where"] = f" AND `web_role`.`id` IN ({rid_list})"
 
 	res_roles:List[WebRole] = await getWebRoles(cls, **Search.getAllTransform())
 

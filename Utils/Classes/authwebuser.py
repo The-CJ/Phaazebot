@@ -172,12 +172,12 @@ class AuthWebUser(object):
 		self.__password = passwordFunction(self.__password)
 
 		sql:str = """
-			SELECT `user`.`id` as `user_id`
-			FROM `user`
-			WHERE `user`.`password` = %s
+			SELECT `web_user`.`id` as `user_id`
+			FROM `web_user`
+			WHERE `web_user`.`password` = %s
 				AND ( 1=2
-					OR LOWER(`user`.`username`) = LOWER(%s)
-					OR LOWER(`user`.`email`) = LOWER(%s)
+					OR LOWER(`web_user`.`username`) = LOWER(%s)
+					OR LOWER(`web_user`.`email`) = LOWER(%s)
 				)
 			LIMIT 1"""
 		val:tuple = (self.__password, self.__username, self.__username)
