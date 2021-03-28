@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, Optional
 if TYPE_CHECKING:
-	from .main_discord import PhaazebotDiscord
+	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import math
 import asyncio
@@ -10,7 +10,7 @@ from Utils.Classes.discorduserstats import DiscordUserStats
 
 DEFAULT_LEVEL_MESSAGE:str = "[user-mention] is now Level **[lvl]** :tada:"
 
-class GDLMCS():
+class GlobalDiscordLevelMessageCooldownStorage(object):
 	"""
 	i present the GDLMCS, short for "Global Discord Level Message Cooldown Storage" (my short names get worse, right?)
 	after a user typed something, the unique key is saved.
@@ -41,7 +41,8 @@ class GDLMCS():
 		# remove
 		self.in_cooldown.pop(key, None)
 
-GDLMCS = GDLMCS()
+
+GDLMCS:GlobalDiscordLevelMessageCooldownStorage = GlobalDiscordLevelMessageCooldownStorage()
 
 async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSettings:DiscordServerSettings, DiscordUser:DiscordUserStats) -> None:
 	"""
@@ -71,7 +72,7 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 			`nickname` = %s
 		WHERE `discord_user`.`guild_id` = %s
 			AND `discord_user`.`member_id` = %s""",
-		( Message.author.name, Message.author.nick, str(DiscordUser.server_id), str(DiscordUser.member_id) )
+		(Message.author.name, Message.author.nick, str(DiscordUser.server_id), str(DiscordUser.member_id))
 	)
 
 	# add author to cooldown
@@ -80,40 +81,41 @@ async def checkLevel(cls:"PhaazebotDiscord", Message:discord.Message, ServerSett
 	# check level progress, send level up messages yes/no?
 	await checkLevelProgress(cls, Message, DiscordUser, ServerSettings)
 
-async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_infos:dict) -> DiscordUserStats:
+async def newUser(cls:"PhaazebotDiscord", guild_id:str, member_id:str, **more_info:dict) -> DiscordUserStats:
 	"""
-		Creates a new entry in discord_user table
-		more_infos can contain optional infos:
-			guild_id:str
-			member_id:str
-			exp:int
-			currency:int
+		Creates a new entry in discord_user table,
+		`more_info` can contain optional info's:
+
+		* `guild_id` : Optional[str]
+		* `member_id` : Optional[str]
+		* `exp` : Optional[int]
+		* `currency` : Optional[int]
 	"""
 
 	user_info:dict = dict(
-		guild_id = str(guild_id),
-		member_id = str(member_id)
+		guild_id=str(guild_id),
+		member_id=str(member_id)
 	)
 
-	if "username" in more_infos:
-		user_info["username"] = more_infos["username"]
+	if "username" in more_info:
+		user_info["username"] = more_info["username"]
 
-	if "nickname" in more_infos:
-		user_info["nickname"] = more_infos["nickname"]
+	if "nickname" in more_info:
+		user_info["nickname"] = more_info["nickname"]
 
-	if "exp" in more_infos:
-		user_info["exp"] = more_infos["exp"]
+	if "exp" in more_info:
+		user_info["exp"] = more_info["exp"]
 
-	if "currency" in more_infos:
-		user_info["currency"] = more_infos["currency"]
+	if "currency" in more_info:
+		user_info["currency"] = more_info["currency"]
 
 	try:
 		cls.BASE.PhaazeDB.insertQuery(
-			table = "discord_user",
-			content = user_info
+			table="discord_user",
+			content=user_info
 		)
 		cls.BASE.Logger.debug(f"(Discord) New entry into levels: S:{guild_id} M:{member_id}", require="discord:level")
-		return DiscordUserStats( user_info )
+		return DiscordUserStats(user_info)
 	except:
 		cls.BASE.Logger.critical(f"(Discord) New entry into levels failed: S:{guild_id} M:{member_id}")
 		raise RuntimeError("New entry into levels failed")
@@ -126,20 +128,18 @@ async def checkLevelProgress(cls:"PhaazebotDiscord", Message:discord.Message, Le
 	if next_level_exp == LevelUser.exp:
 		await announceLevelUp(cls, Message, LevelUser, ServerSettings, current_level + 1)
 
-async def announceLevelUp(cls:"PhaazebotDiscord", Message:discord.Message, LevelUser:DiscordUserStats, ServerSettings:DiscordServerSettings, level_to_announce:str or int) -> None:
+async def announceLevelUp(_cls:"PhaazebotDiscord", Message:discord.Message, LevelUser:DiscordUserStats, ServerSettings:DiscordServerSettings, level_to_announce:str or int) -> None:
 
-	LevelChannel:discord.TextChannel = None
+	LevelChannel:Optional[discord.TextChannel] = None
 
 	if ServerSettings.level_announce_chan:
 		LevelChannel = discord.utils.get(Message.guild.channels, id=int(ServerSettings.level_announce_chan))
 	if not LevelChannel:
 		LevelChannel = Message.channel
 
-	level_message:str = None
-	if ServerSettings.level_custom_msg != None:
+	level_message:str = DEFAULT_LEVEL_MESSAGE
+	if ServerSettings.level_custom_msg:
 		level_message = ServerSettings.level_custom_msg
-	else:
-		level_message = DEFAULT_LEVEL_MESSAGE
 
 	level_message = level_message.replace("[user-mention]", str(Message.author.mention))
 	level_message = level_message.replace("[user-name]", str(Message.author.name))
@@ -147,7 +147,7 @@ async def announceLevelUp(cls:"PhaazebotDiscord", Message:discord.Message, Level
 	level_message = level_message.replace("[exp]", str(LevelUser.exp))
 	level_message = level_message.replace("[lvl]", str(level_to_announce))
 
-	try: await LevelChannel.send( level_message )
+	try: await LevelChannel.send(level_message)
 	except: pass
 
 class Calc(object):
@@ -158,10 +158,12 @@ class Calc(object):
 	LEVEL_DEFAULT_EXP = 65
 	LEVEL_MULTIPLIER = 0.15
 
+	@staticmethod
 	def getLevel(xp:int) -> int:
 		l:float = (-Calc.LEVEL_DEFAULT_EXP + (Calc.LEVEL_DEFAULT_EXP ** 2 - 4 * (Calc.LEVEL_DEFAULT_EXP * Calc.LEVEL_MULTIPLIER) * (-xp)) ** 0.5) / (2 * (Calc.LEVEL_DEFAULT_EXP * Calc.LEVEL_MULTIPLIER))
 		return math.floor(l)
 
+	@staticmethod
 	def getExp(lvl:int) -> int:
-		l:float = (lvl * Calc.LEVEL_DEFAULT_EXP) + ( (Calc.LEVEL_MULTIPLIER * lvl) * (lvl * Calc.LEVEL_DEFAULT_EXP) )
+		l:float = (lvl * Calc.LEVEL_DEFAULT_EXP) + ((Calc.LEVEL_MULTIPLIER * lvl) * (lvl * Calc.LEVEL_DEFAULT_EXP))
 		return math.floor(l)

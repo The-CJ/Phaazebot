@@ -12,7 +12,7 @@ CLI KWArgs:
 * `config` [alternate path to config file]
 
 """
-
+from typing import Optional
 import os
 import sys
 base_dir:str = f"{os.path.dirname(os.path.abspath(__file__))}/../.."
@@ -28,28 +28,28 @@ from Utils.config import ConfigParser
 from Utils.Classes.dbconn import DBConn
 from Utils.cli import CliArgs
 
-Conf:ConfigParser = None
-for config_source_path in [ (CliArgs.get("config") or ""), f"{base_dir}/Config/config.phzcf", f"{base_dir}/Config/config.json" ]:
+Conf:Optional[ConfigParser] = None
+for config_source_path in [(CliArgs.get("config") or ""), f"{base_dir}/Config/config.phzcf", f"{base_dir}/Config/config.json"]:
 	if not config_source_path: continue
 	try:
 		Conf = ConfigParser(config_source_path)
 		break
 	except: pass
 
-Phaaze:Phaazebot = Phaazebot(PreConfig = Conf)
+Phaaze:Phaazebot = Phaazebot(PreConfig=Conf)
 DB:DBConn = DBConn(
-	host = Phaaze.Config.get("phaazedb_host", "localhost"),
-	port = Phaaze.Config.get("phaazedb_port", "3306"),
-	user = Phaaze.Config.get("phaazedb_user", "phaaze"),
-	passwd = Phaaze.Config.get("phaazedb_password", ""),
-	database = Phaaze.Config.get("phaazedb_database", "phaaze")
+	host=Phaaze.Config.get("phaazedb_host", "localhost"),
+	port=Phaaze.Config.get("phaazedb_port", "3306"),
+	user=Phaaze.Config.get("phaazedb_user", "phaaze"),
+	passwd=Phaaze.Config.get("phaazedb_password", ""),
+	database=Phaaze.Config.get("phaazedb_database", "phaaze")
 )
 
 MIN_LIFETIME:datetime.timedelta = datetime.timedelta(days=3) # renew token if only 3 days are left
 
 class GenerateTwitchCredentials(object):
 	def __init__(self):
-		self.force:str = False
+		self.force:bool = False
 		self.log_func:callable = print
 
 	def log(self, txt:str) -> None:
@@ -74,23 +74,23 @@ class GenerateTwitchCredentials(object):
 		req["grant_type"] = "client_credentials"
 
 		target_url:str = twitch_api.AUTH_URL + "oauth2/token?" + urllib.parse.urlencode(req)
-		response:dict = ( requests.request("POST", target_url) ).json()
+		response:dict = (requests.request("POST", target_url)).json()
 
-		# get more infos
+		# get more info's
 		lifeseconds:int = response.get("expires_in", 0)
 		Now:datetime.datetime = datetime.datetime.now()
 		LifeTime:datetime.timedelta = datetime.timedelta(seconds=lifeseconds)
 
 		# add some data to help us
-		response["created_at"] = str( Now )
-		response["expires_at"] = str( Now + LifeTime )
+		response["created_at"] = str(Now)
+		response["expires_at"] = str(Now + LifeTime)
 
 		DB.insertQuery(
-			update_on_duplicate = True,
-			table = "setting",
-			content = dict(
-				key = "twitch_client_credentials",
-				value = json.dumps(response)
+			update_on_duplicate=True,
+			table="setting",
+			content=dict(
+				key="twitch_client_credentials",
+				value=json.dumps(response)
 			)
 		)
 
@@ -100,10 +100,10 @@ class GenerateTwitchCredentials(object):
 
 	def checkToken(self, db_entry:dict) -> str:
 
-		token_info:dict = json.loads( db_entry["value"] )
+		token_info:dict = json.loads(db_entry["value"])
 
 		Now:datetime.datetime = datetime.datetime.now()
-		ExpiresAt:datetime.datetime = datetime.datetime.fromisoformat( token_info.get("expires_at", "2000-01-01") )
+		ExpiresAt:datetime.datetime = datetime.datetime.fromisoformat(token_info.get("expires_at", "2000-01-01"))
 
 		if (ExpiresAt - MIN_LIFETIME) < Now:
 			self.log("Current twitch_client_credentials are about to expire -> renewing...")
@@ -115,13 +115,14 @@ class GenerateTwitchCredentials(object):
 
 		self.log("Current token still valid")
 		self.log("Valid until: " + str(ExpiresAt))
-		self.log("Renew scheduled: " + str( ExpiresAt - MIN_LIFETIME ))
+		self.log("Renew scheduled: " + str(ExpiresAt - MIN_LIFETIME))
 		return token_info.get("access_token", "ERROR")
+
 
 if __name__ == '__main__':
 	# get cli args
-	force_renew:bool = any( [CliArgs.get("f"), CliArgs.get("force")] )
-	automated:bool = any( [CliArgs.get("a"), CliArgs.get("automated")] )
+	force_renew:bool = any([CliArgs.get("f"), CliArgs.get("force")])
+	automated:bool = any([CliArgs.get("a"), CliArgs.get("automated")])
 
 	Protocol:GenerateTwitchCredentials = GenerateTwitchCredentials()
 

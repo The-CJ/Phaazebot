@@ -6,7 +6,7 @@ import random
 from Utils.Classes.discordcommand import DiscordCommand
 from Utils.Classes.discordcommandcontext import DiscordCommandContext
 
-async def randomChoice(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
+async def randomChoice(_cls:"PhaazebotDiscord", _Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
 	if len(CommandContext.parts) == 1:
 		return {"content": ":warning: Missing arguments, at least 2 options separated by \";\" are needed"}
@@ -24,6 +24,7 @@ async def randomChoice(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCo
 	# remove all unwanted stuff
 	winner = winner.replace("`", "")
 	winner = winner.replace("@everyone", "")
+	winner = winner.replace("@here", "")
 	winner = winner.replace("**", "")
 
 	resp:str = f"And the winner is...\n\n:game_die:- **{winner}** -:8ball:"

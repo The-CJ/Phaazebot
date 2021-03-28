@@ -10,7 +10,7 @@ from Utils.Classes.discordcommandcontext import DiscordCommandContext
 
 async def addQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
-	new_quote = " ".join( CommandContext.parts[1:] )
+	new_quote = " ".join(CommandContext.parts[1:])
 
 	if not new_quote:
 		return {"content": ":warning: You need to define a quote content to add."}
@@ -29,10 +29,10 @@ async def addQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContex
 		return {"content": ":no_entry_sign: This server hit the quote limit, please remove some first."}
 
 	new_quote_id:int = cls.BASE.PhaazeDB.insertQuery(
-		table = "discord_quote",
-		content = dict(
-			guild_id = str(Command.server_id),
-			content = new_quote,
+		table="discord_quote",
+		content=dict(
+			guild_id=str(Command.server_id),
+			content=new_quote,
 		)
 	)
 

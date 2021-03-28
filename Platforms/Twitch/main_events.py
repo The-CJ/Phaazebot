@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, List, Dict
+from typing import TYPE_CHECKING, List, Dict, Optional
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import asyncio
 from Utils.Classes.twitchstream import TwitchStream
@@ -13,13 +13,13 @@ ALERT_GRACE:int = 30
 
 class PhaazebotTwitchEvents(object):
 	"""
-		This Module is to keep track of all events related to twitch
-		and is the part that keeps phaaze db updates
-		so we can reduce twitch api calls as much as possible.
-		Under events fall:
-			- a channel going live
-			- a channel changes his game
-			- a channel goes offline
+	This Module is to keep track of all events related to twitch
+	and is the part that keeps phaaze db updates
+	so we can reduce twitch api calls as much as possible.
+	Under events fall:
+		* a channel going live
+		* a channel changes his game
+		* a channel goes offline
 	"""
 	def __init__(self, BASE):
 		self.BASE:"Phaazebot" = BASE
@@ -42,7 +42,7 @@ class PhaazebotTwitchEvents(object):
 			self._refresh_time_multi = 1.0 # this can get changed in a check cycle, because of crashes or, null results
 			await self.check()
 
-			await asyncio.sleep( self.delay )
+			await asyncio.sleep(self.delay)
 
 	@property
 	def delay(self) -> int:
@@ -74,11 +74,11 @@ class PhaazebotTwitchEvents(object):
 			return
 
 		try:
-			id_list:List[str] = [ x["channel_id"] for x in res ]
+			id_list:List[str] = [x["channel_id"] for x in res]
 			current_live_streams:List[TwitchStream] = await getTwitchStreams(self.BASE, id_list)
 
 			if not current_live_streams:
-				self.BASE.PhaazeDB.updateQuery( table="twitch_channel", content=dict(live=0), where=f"(`twitch_channel`.`last_state_change_at` + INTERVAL {ALERT_GRACE} MINUTE) < NOW()" )
+				self.BASE.PhaazeDB.updateQuery(table="twitch_channel", content=dict(live=0), where=f"(`twitch_channel`.`last_state_change_at` + INTERVAL {ALERT_GRACE} MINUTE) < NOW()")
 				self.BASE.Logger.debug(f"No channels live, delaying next check ({self.delay}s)", require="twitchevents:delay")
 				return
 
@@ -124,7 +124,7 @@ class PhaazebotTwitchEvents(object):
 				# not found in api result, but was live in db
 				# -> channel gone offline
 				if EntryDB.live:
-					detected_events.append( [0, EntryDB] )
+					detected_events.append([0, EntryDB])
 					continue
 
 				# not found in api result and was not live in db
@@ -137,22 +137,22 @@ class PhaazebotTwitchEvents(object):
 				# we have a api result and it was not live in db
 				# -> channel gone live
 				if not EntryDB.live:
-					detected_events.append( [1, EntryAPI] )
+					detected_events.append([1, EntryAPI])
 					continue
 
-				 # diffrent game id's
-				 # -> game changed
+				# different game id's
+				# -> game changed
 				elif str(EntryAPI.game_id) != str(EntryDB.game_id):
-					detected_events.append( [2, EntryAPI] )
+					detected_events.append([2, EntryAPI])
 					continue
 
 		return await self.handleEvents(detected_events)
 
 	async def handleEvents(self, events:List[list]) -> None:
 		"""
-			Complets all events, which means, get game data, user data, etc...
+			Completes all events, which means, get game data, user data, etc...
 			and then call the individual events.
-			All entrys in 'events' are small lists, containing a int in pos 0
+			All entry's in 'events' are small lists, containing a int in pos 0
 			and a StatusEntry in pos 1
 
 			Pos 0 can be:
@@ -165,10 +165,10 @@ class PhaazebotTwitchEvents(object):
 		self.BASE.Logger.debug(f"Processing {len(events)} Twitch Events", require="twitchevents:processing")
 
 		# the following 2 dicts are key based with a simple None value
-		# every key must be searched in the twitch api for infos
-		# (actully just needed for games, because users are unique)
-		needed_games:Dict[str, TwitchGame] = {}
-		needed_users:Dict[str, TwitchUser] = {}
+		# every key must be searched in the twitch api for info's
+		# (actually just needed for games, because users are unique)
+		needed_games:Dict[str, Optional[TwitchGame]] = {}
+		needed_users:Dict[str, Optional[TwitchUser]] = {}
 
 		for event in events:
 			Status:StatusEntry = event[1]
@@ -200,19 +200,20 @@ class PhaazebotTwitchEvents(object):
 				self.BASE.Logger.warning(f"Unknown Status Event number: {event[0]}")
 
 		# update db
-		asyncio.ensure_future( self.updateTwitchGames(needed_games) )
-		asyncio.ensure_future( self.updateTwitchUserNames(needed_users) )
+		asyncio.ensure_future(self.updateTwitchGames(needed_games))
+		asyncio.ensure_future(self.updateTwitchUserNames(needed_users))
 
 		# launch events
-		asyncio.ensure_future( self.eventLive(alert_list_live) )
-		asyncio.ensure_future( self.eventOffline(alert_list_offline) )
-		asyncio.ensure_future( self.eventGamechange(alert_list_gamechange) )
+		asyncio.ensure_future(self.eventLive(alert_list_live))
+		asyncio.ensure_future(self.eventOffline(alert_list_offline))
+		asyncio.ensure_future(self.eventGamechange(alert_list_gamechange))
 
 	# dict generator
-	def generateStatusDB(self, db_result:List[dict]) -> Dict[str, "StatusEntry"]:
+	@classmethod
+	def generateStatusDB(cls, db_result:List[dict]) -> Dict[str, "StatusEntry"]:
 		"""
 		Generates a StatusEntry
-		filled with standard infos from DB
+		filled with standard info's from DB
 		Later, this object may get added with a Game and/or a Channel object
 		"""
 		status_dict:Dict[str, "StatusEntry"] = {}
@@ -221,18 +222,19 @@ class PhaazebotTwitchEvents(object):
 
 			Entry:StatusEntry = StatusEntry()
 
-			Entry.channel_id = str( res.get("channel_id", "") or "" )
-			Entry.game_id = str( res.get("game_id", "") or "" )
-			Entry.live = bool( res.get("live", 0) )
+			Entry.channel_id = str(res.get("channel_id", "") or "")
+			Entry.game_id = str(res.get("game_id", "") or "")
+			Entry.live = bool(res.get("live", 0))
 
 			status_dict[str(Entry.channel_id)] = Entry
 
 		return status_dict
 
-	def generateStatusAPI(self, api_result:List[TwitchStream]) -> Dict[str, "StatusEntry"]:
+	@classmethod
+	def generateStatusAPI(cls, api_result:List[TwitchStream]) -> Dict[str, "StatusEntry"]:
 		"""
 		Generates a StatusEntry
-		filled with all infos from API
+		filled with all info's from API
 		also adds the TwitchStream object as self.Stream
 		Later, this object may get added with a Game and/or a Channel object
 		"""
@@ -242,9 +244,9 @@ class PhaazebotTwitchEvents(object):
 
 			Entry:StatusEntry = StatusEntry()
 
-			Entry.channel_id = str( TStream.user_id or "" )
-			Entry.game_id = str( TStream.game_id or "" )
-			Entry.live = bool( TStream.stream_type == "live" )
+			Entry.channel_id = str(TStream.user_id or "")
+			Entry.game_id = str(TStream.game_id or "")
+			Entry.live = bool(TStream.stream_type == "live")
 			Entry.Stream = TStream
 
 			status_dict[str(Entry.channel_id)] = Entry
@@ -254,11 +256,11 @@ class PhaazebotTwitchEvents(object):
 	# api gatherer
 	async def fillGameData(self, requested_games:Dict[str, TwitchGame]) -> Dict[str, TwitchGame]:
 		"""
-		Tryes to get requested games by existing dict keys
+		Tries to get requested games by existing dict keys
 		value of these keys does not matter
 		"""
 
-		id_list:List[str] = [ g for g in requested_games ]
+		id_list:List[str] = [g for g in requested_games]
 		result_game:List[TwitchGame] = await getTwitchGames(self.BASE, id_list)
 
 		for Game in result_game:
@@ -268,11 +270,11 @@ class PhaazebotTwitchEvents(object):
 
 	async def fillUserData(self, requested_users:Dict[str, TwitchUser]) -> Dict[str, TwitchUser]:
 		"""
-		Tryes to get requested user by existing dict keys
+		Tries to get requested user by existing dict keys
 		value of these keys does not matter
 		"""
 
-		id_list:List[str] = [ u for u in requested_users ]
+		id_list:List[str] = [u for u in requested_users]
 		result_user:List[TwitchUser] = await getTwitchUsers(self.BASE, id_list)
 
 		User:TwitchUser
@@ -284,11 +286,11 @@ class PhaazebotTwitchEvents(object):
 	# updates
 	async def updateChannelLive(self, streams:List[TwitchStream]) -> None:
 		"""
-		Updates the `live` col in DB, according to all entrys in `streams`
+		Updates the `live` col in DB, according to all entry's in `streams`
 		but only when there are over the grace period
 		"""
 
-		channel_ids:str = ','.join( f"'{Stream.user_id}'" for Stream in streams )
+		channel_ids:str = ','.join(f"'{Stream.user_id}'" for Stream in streams)
 		if not channel_ids: channel_ids = "0"
 
 		self.BASE.PhaazeDB.query(f"""
@@ -300,7 +302,7 @@ class PhaazebotTwitchEvents(object):
 
 	async def updateChannelGame(self, streams:List[TwitchStream]) -> None:
 		"""
-		Updates the `game_id` col in DB, according to all entrys in `streams`
+		Updates the `game_id` col in DB, according to all entry's in `streams`
 		"""
 		# create a dict with `game_id` as keys
 		# and a list of channel_ids as that are playing this game as value
@@ -308,16 +310,16 @@ class PhaazebotTwitchEvents(object):
 
 		for Stream in streams:
 
-			if game_dict.get(str(Stream.game_id), None) == None: # not yet found game
+			if not game_dict.get(str(Stream.game_id), None): # not yet found game
 				game_dict[str(Stream.game_id)] = [] # create new game key entry
 
-			game_dict[str(Stream.game_id)].append( str(Stream.user_id) )
+			game_dict[str(Stream.game_id)].append(str(Stream.user_id))
 
 		# build update sql
 		game_sql:str = "UPDATE `twitch_channel` SET `game_id` = CASE"
 
 		for game_id in game_dict:
-			playing:str = ','.join( f"'{chan_id}'" for chan_id in game_dict[game_id] )
+			playing:str = ','.join(f"'{chan_id}'" for chan_id in game_dict[game_id])
 			if not playing: playing = "0" # should never happen
 			game_sql += f" WHEN `twitch_channel`.`channel_id` IN ({playing}) THEN '{game_id}'"
 
@@ -337,12 +339,12 @@ class PhaazebotTwitchEvents(object):
 
 		for game_id in update_games:
 			Game:TwitchGame = update_games[game_id]
-			if not Game: continue # could be unfound in api from .fillGameData and still be None
+			if not Game: continue # could be not found in api from .fillGameData and still be None
 
-			sql_additions.append( "(%s, %s)" )
+			sql_additions.append("(%s, %s)")
 			sql_values += (str(Game.game_id), Game.name)
 
-		# no requested games are found in API, SQL whould be invalid -> skip
+		# no requested games are found in API, SQL would be invalid -> skip
 		if (not sql_values) or (not sql_additions): return
 		sql += ','.join(sql_additions)
 
@@ -362,19 +364,19 @@ class PhaazebotTwitchEvents(object):
 
 		for user_id in update_users:
 			User:TwitchUser = update_users[user_id]
-			if not User: continue # could be unfound in api from .fillUserData and still be None
+			if not User: continue # could be not found in api from .fillUserData and still be None
 
-			sql_additions.append( "(%s, %s, %s)" )
+			sql_additions.append("(%s, %s, %s)")
 			sql_values += (str(User.user_id), User.name, User.display_name)
 
-		# no requested users are found in API, SQL whould be invalid -> skip
+		# no requested users are found in API, SQL would be invalid -> skip
 		if (not sql_values) or (not sql_additions): return
 		sql += ','.join(sql_additions)
 
 		sql += " ON DUPLICATE KEY UPDATE `user_name` = VALUES(`user_name`), `user_display_name` = VALUES(`user_display_name`)"
 
 		self.BASE.PhaazeDB.query(sql, sql_values)
-		self.BASE.Logger.debug(f"Updated DB - twitch_user_name {len(update_users)} Entrys(s)", require="twitchevents:db")
+		self.BASE.Logger.debug(f"Updated DB - twitch_user_name {len(update_users)} Entry(s)", require="twitchevents:db")
 
 	async def updateLastStateChangeAt(self, changed_states:List["StatusEntry"]) -> None:
 		"""
@@ -382,7 +384,7 @@ class PhaazebotTwitchEvents(object):
 		so we can timeout channel, that flap on- and offline
 		"""
 
-		update_state_chan_ids:str = ','.join( f"'{StateUpdate.channel_id}'" for StateUpdate in changed_states )
+		update_state_chan_ids:str = ','.join(f"'{StateUpdate.channel_id}'" for StateUpdate in changed_states)
 		if not update_state_chan_ids: update_state_chan_ids = '0'
 		self.BASE.PhaazeDB.query(f"""
 			UPDATE `twitch_channel`
@@ -392,52 +394,52 @@ class PhaazebotTwitchEvents(object):
 	# events
 	async def eventLive(self, status_list:List["StatusEntry"]) -> None:
 		"""
-		Event thats called for all twitch channels than gone live
+		Event that's called for all twitch channels than gone live
 		status_list is a list of StatusEntry()
 		with the values from the twitch api
 		"""
 		if not status_list: return
-		asyncio.ensure_future( self.updateLastStateChangeAt(status_list) )
+		asyncio.ensure_future(self.updateLastStateChangeAt(status_list))
 
 		self.BASE.Logger.debug(f"Received LIVE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
 
 		if self.BASE.Discord:
-			# give infos to discord loop and give out alerts
-			asyncio.ensure_future( discordHandleLive(self.BASE.Discord, status_list), loop=self.BASE.DiscordLoop )
+			# give info's to discord loop and give out alerts
+			asyncio.ensure_future(discordHandleLive(self.BASE.Discord, status_list), loop=self.BASE.DiscordLoop)
 		else:
 			self.BASE.Logger.debug(f"Skipping Twitch Alerts for Discord, it is not active", require="twitchevents:live")
 
 	async def eventGamechange(self, status_list:List["StatusEntry"]) -> None:
 		"""
-		Event thats called for all twitch channels than are still live but changed there game
+		Event that's called for all twitch channels than are still live but changed there game
 		status_list is a list of StatusEntry()
 		with the values from the twitch api
 		"""
 		if not status_list: return
-		asyncio.ensure_future( self.updateLastStateChangeAt(status_list) )
+		asyncio.ensure_future(self.updateLastStateChangeAt(status_list))
 
 		self.BASE.Logger.debug(f"Received GAMECHANGE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
 
 		if self.BASE.Discord:
-			# give infos to discord loop and give out alerts
-			asyncio.ensure_future( discordHandleGameChange(self.BASE.Discord, status_list), loop=self.BASE.DiscordLoop )
+			# give info's to discord loop and give out alerts
+			asyncio.ensure_future(discordHandleGameChange(self.BASE.Discord, status_list), loop=self.BASE.DiscordLoop)
 		else:
 			self.BASE.Logger.debug(f"Skipping Twitch Alerts for Discord, it is not active", require="twitchevents:live")
 
 	async def eventOffline(self, status_list:List["StatusEntry"]) -> None:
 		"""
-		Event thats called for all twitch channels than gone offline
+		Event that's called for all twitch channels than gone offline
 		status_list is a list of StatusEntry()
 		with the last known values from phaaze db
 		"""
 		if not status_list: return
-		asyncio.ensure_future( self.updateLastStateChangeAt(status_list) )
+		asyncio.ensure_future(self.updateLastStateChangeAt(status_list))
 
 		self.BASE.Logger.debug(f"Received OFFLINE alerts for {len(status_list)} Twitch channels", require="twitchevents:live")
 
 		if self.BASE.Discord:
-			# give infos to discord loop and give out alerts
-			asyncio.ensure_future( discordHandleOffline(self.BASE.Discord, status_list), loop=self.BASE.DiscordLoop )
+			# give info's to discord loop and give out alerts
+			asyncio.ensure_future(discordHandleOffline(self.BASE.Discord, status_list), loop=self.BASE.DiscordLoop)
 		else:
 			self.BASE.Logger.debug(f"Skipping Twitch Alerts for Discord, it is not active", require="twitchevents:live")
 
@@ -450,9 +452,9 @@ class StatusEntry(object):
 		self.game_id:str = ""
 		self.live:bool = False
 
-		self.Stream:TwitchStream = None
-		self.User:TwitchUser = None
-		self.Game:TwitchGame = None
+		self.Stream:Optional[TwitchStream] = None
+		self.User:Optional[TwitchUser] = None
+		self.Game:Optional[TwitchGame] = None
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} Stream={self.Stream} Game={self.Game} User={self.User} >"

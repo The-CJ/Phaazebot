@@ -1,33 +1,25 @@
 from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import asyncio
 import discord
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.storagetransformer import StorageTransformer
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.undefined import UNDEFINED
-from Utils.dbutils import validateDBInput
-from Platforms.Discord.db import getDiscordSeverSettings
-from Platforms.Discord.utils import getDiscordRoleFromString, getDiscordChannelFromString
 from Platforms.Discord.logging import loggingOnConfigEdit
 from Platforms.Discord.punish import checkPunishmentString
-from Platforms.Web.Processing.Api.errors import (
-	apiMissingData,
-	apiWrongData,
-	apiMissingAuthorisation
-)
-from Platforms.Web.Processing.Api.Discord.errors import (
-	apiDiscordGuildUnknown,
-	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission
-)
+from Platforms.Discord.utils import getDiscordRoleFromString, getDiscordChannelFromString
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Web.utils import authDiscordWebUser
 
-async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordConfigsEdit(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/discord/configs/edit
 	"""
@@ -35,249 +27,233 @@ async def apiDiscordConfigsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
 	await Data.load()
 
 	# get required stuff
-	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
+	Edit:StorageTransformer = StorageTransformer()
+	Edit["guild_id"] = Data.getStr("guild_id", "", must_be_digit=True)
 
 	# checks
-	if not guild_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+	if not Edit["guild_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
+	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(Edit["guild_id"]))
 	if not Guild:
-		return await apiDiscordGuildUnknown(cls, WebRequest)
+		return await cls.Tree.Api.Discord.errors.apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found:
-		return await apiMissingAuthorisation(cls, WebRequest)
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
+	if not AuthDiscord.found:
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(cls, WebRequest)
 
 	# get member
-	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	CheckMember:discord.Member = Guild.get_member(int(AuthDiscord.User.user_id))
 	if not CheckMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, guild_id=Edit["guild_id"], user_id=AuthDiscord.User.user_id)
 
 	# check permissions
 	# to edit configs, at least moderator rights are needed, (there can be options that require server only duh)
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Edit["guild_id"], user_id=AuthDiscord.User.user_id)
 
-	Configs:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, origin=guild_id, prevent_new=True)
+	Configs:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, origin=Edit["guild_id"], prevent_new=True)
 
 	if not Configs:
-		return await apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find configs for this guild")
+		return await cls.Tree.Api.Discord.errors.apiDiscordGuildUnknown(cls, WebRequest, msg="Could not find configs for this guild")
 
+	# check all update values
 	update:dict = dict()
-	db_update:dict = dict()
 
-	# get all changed stuff and add changes to list
-	# changes is for the user, so return with types, db_changes is with, well... db values
-	# e.g.:
-	# update["x"] = true
-	# db_update["x"] = "1"
-
-	value:str = Data.getStr("autorole_id", UNDEFINED, len_max=128)
-	if value != UNDEFINED:
+	Edit["autorole_id"] = Data.getStr("autorole_id", UNDEFINED, len_max=128, allow_none=True)
+	if Edit["autorole_id"] != UNDEFINED:
 		error:bool = False
-		if not value:
-			value = None
+		if not Edit["autorole_id"]:
+			update["autorole_id"] = None
 		else:
-			Role:discord.Role = getDiscordRoleFromString(PhaazeDiscord, Guild, value)
+			Role:discord.Role = getDiscordRoleFromString(PhaazeDiscord, Guild, Edit["autorole_id"])
 			if not Role:
 				error = True
 			elif Role >= Guild.me.top_role:
-				return await apiWrongData(cls, WebRequest, msg=f"The Role `{Role.name}` is to high")
+				return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"The Role `{Role.name}` is to high")
 			else:
-				value = str(Role.id)
+				update["autorole_id"] = str(Role.id)
 
 		if error:
-			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord role")
-
-		db_update["autorole_id"] = validateDBInput(str, value, allow_null=True)
-		update["autorole_id"] = value
+			return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"{Edit['autorole_id']} could not be resolved as a valid discord role")
 
 	# blacklist_ban_links
-	value:bool = Data.getBool("blacklist_ban_links", UNDEFINED)
-	if value != UNDEFINED:
-		db_update["blacklist_ban_links"] = validateDBInput(bool, value)
-		update["blacklist_ban_links"] = value
+	Edit["blacklist_ban_links"] = Data.getBool("blacklist_ban_links", UNDEFINED)
+	if Edit["blacklist_ban_links"] != UNDEFINED:
+		update["blacklist_ban_links"] = Edit["blacklist_ban_links"]
 
 	# blacklist_punishment
-	value:str = Data.getStr("blacklist_punishment", UNDEFINED, len_max=32)
-	if value != UNDEFINED:
-		value = checkPunishmentString(value)
-		db_update["blacklist_punishment"] = validateDBInput(str, value)
-		update["blacklist_punishment"] = value
+	Edit["blacklist_punishment"] = Data.getStr("blacklist_punishment", UNDEFINED, len_max=32)
+	if Edit["blacklist_punishment"] != UNDEFINED:
+		Edit["blacklist_punishment"] = checkPunishmentString(Edit["blacklist_punishment"])
+		update["blacklist_punishment"] = Edit["blacklist_punishment"]
 
 	# currency_name
-	value:str = Data.getStr("currency_name", UNDEFINED, len_max=256)
-	if value != UNDEFINED:
-		if not value: value = None
-		db_update["currency_name"] = validateDBInput(str, value, allow_null=True)
-		update["currency_name"] = value
+	Edit["currency_name"] = Data.getStr("currency_name", UNDEFINED, len_max=256, allow_none=True)
+	if Edit["currency_name"] != UNDEFINED:
+		if not Edit['currency_name']:
+			update["currency_name"] = None
+		else:
+			update["currency_name"] = Edit["currency_name"]
 
 	# currency_name_multi
-	value:str = Data.getStr("currency_name_multi", UNDEFINED, len_max=256)
-	if value != UNDEFINED:
-		if not value: value = None
-		db_update["currency_name_multi"] = validateDBInput(str, value, allow_null=True)
-		update["currency_name_multi"] = value
+	Edit["currency_name_multi"] = Data.getStr("currency_name_multi", UNDEFINED, len_max=256, allow_none=True)
+	if Edit["currency_name_multi"] != UNDEFINED:
+		if not Edit["currency_name_multi"]:
+			update["currency_name_multi"] = None
+		else:
+			update["currency_name_multi"] = Edit["currency_name_multi"]
 
 	# leave_chan
-	value:str = Data.getStr("leave_chan", UNDEFINED, len_max=128)
-	if value != UNDEFINED:
+	Edit["leave_chan"] = Data.getStr("leave_chan", UNDEFINED, len_max=128, allow_none=True)
+	if Edit["leave_chan"] != UNDEFINED:
 		error:bool = False
-		if not value:
-			value = None
+		if not Edit["leave_chan"]:
+			update["leave_chan"] = None
 		else:
-			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, value, required_type="text")
+			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, Edit["leave_chan"], required_type="text")
 			if not Chan:
 				error = True
 			else:
-				value = str(Chan.id)
+				update["leave_chan"] = str(Chan.id)
 
 		if error:
-			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel")
-
-		db_update["leave_chan"] = validateDBInput(str, value, allow_null=True)
-		update["leave_chan"] = value
+			return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"'{Edit['leave_chan']}' could not be resolved as a valid discord text channel")
 
 	# leave_msg
-	value:str = Data.getStr("leave_msg", UNDEFINED, len_max=1750)
-	if value != UNDEFINED:
-		if not value: value = None
-		db_update["leave_msg"] = validateDBInput(str, value, allow_null=True)
-		update["leave_msg"] = value
+	Edit["leave_msg"] = Data.getStr("leave_msg", UNDEFINED, len_max=1750, allow_none=True)
+	if Edit["leave_msg"] != UNDEFINED:
+		if not Edit["leave_msg"]:
+			update["leave_msg"] = None
+		else:
+			update["leave_msg"] = Edit["leave_msg"]
 
 	# level_custom_msg
-	value:str = Data.getStr("level_custom_msg", UNDEFINED, len_max=1750)
-	if value != UNDEFINED:
-		if not value: value = None
-		db_update["level_custom_msg"] = validateDBInput(str, value, allow_null=True)
-		update["level_custom_msg"] = value
+	Edit["level_custom_msg"] = Data.getStr("level_custom_msg", UNDEFINED, len_max=1750, allow_none=True)
+	if Edit["level_custom_msg"] != UNDEFINED:
+		if not Edit["level_custom_msg"]:
+			update["level_custom_msg"] = None
+		else:
+			update["level_custom_msg"] = Edit["level_custom_msg"]
 
 	# level_announce_chan
-	value:str = Data.getStr("level_announce_chan", UNDEFINED, len_max=128)
-	if value != UNDEFINED:
+	Edit["level_announce_chan"] = Data.getStr("level_announce_chan", UNDEFINED, len_max=128, allow_none=True)
+	if Edit["level_announce_chan"] != UNDEFINED:
 		error:bool = False
-		if not value: value = None
+		if not Edit["level_announce_chan"]:
+			update["level_announce_chan"] = None
 		else:
-			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, value, required_type="text")
+			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, Edit["level_announce_chan"], required_type="text")
 			if not Chan:
 				error = True
 			else:
-				value = str(Chan.id)
+				update["level_announce_chan"] = str(Chan.id)
 
 		if error:
-			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel")
+			return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"'{Edit['level_announce_chan']}' could not be resolved as a valid discord text channel")
 
-		db_update["level_announce_chan"] = validateDBInput(str, value, allow_null=True)
-		update["level_announce_chan"] = value
+		update["level_announce_chan"] = Edit["level_announce_chan"]
 
 	# owner_disable_level
-	value:bool = Data.getBool("owner_disable_level", UNDEFINED)
-	if value != UNDEFINED:
+	Edit["owner_disable_level"] = Data.getBool("owner_disable_level", UNDEFINED)
+	if Edit["owner_disable_level"] != UNDEFINED:
 		if not Guild.owner == CheckMember:
-			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_level' require server owner")
-		db_update["owner_disable_level"] = validateDBInput(bool, value)
-		update["owner_disable_level"] = value
+			return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Edit["guild_id"], user_id=AuthDiscord.User.user_id, msg="changing 'owner_disable_level' require server owner")
+		update["owner_disable_level"] = Edit["owner_disable_level"]
 
 	# owner_disable_normal
-	value:bool = Data.getBool("owner_disable_normal", UNDEFINED)
-	if value != UNDEFINED:
+	Edit["owner_disable_normal"] = Data.getBool("owner_disable_normal", UNDEFINED)
+	if Edit["owner_disable_normal"] != UNDEFINED:
 		if not Guild.owner == CheckMember:
-			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_normal' require server owner")
-		db_update["owner_disable_normal"] = validateDBInput(bool, value)
-		update["owner_disable_normal"] = value
+			return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Edit["guild_id"], user_id=AuthDiscord.User.user_id, msg="changing 'owner_disable_level' require server owner")
+		update["owner_disable_normal"] = Edit["owner_disable_normal"]
 
 	# owner_disable_regular
-	value:bool = Data.getBool("owner_disable_regular", UNDEFINED)
-	if value != UNDEFINED:
+	Edit["owner_disable_regular"] = Data.getBool("owner_disable_regular", UNDEFINED)
+	if Edit["owner_disable_regular"] != UNDEFINED:
 		if not Guild.owner == CheckMember:
-			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_regular' require server owner")
-		db_update["owner_disable_regular"] = validateDBInput(bool, value)
-		update["owner_disable_regular"] = value
+			return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Edit["guild_id"], user_id=AuthDiscord.User.user_id, msg="changing 'owner_disable_level' require server owner")
+		update["owner_disable_regular"] = Edit["owner_disable_regular"]
 
 	# owner_disable_mod
-	value:bool = Data.getBool("owner_disable_mod", UNDEFINED)
-	if value != UNDEFINED:
+	Edit["owner_disable_mod"] = Data.getBool("owner_disable_mod", UNDEFINED)
+	if Edit["owner_disable_mod"] != UNDEFINED:
 		if not Guild.owner == CheckMember:
-			return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id, msg="changing 'owner_disable_mod' require server owner")
-		db_update["owner_disable_mod"] = validateDBInput(bool, value)
-		update["owner_disable_mod"] = value
+			return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Edit["guild_id"], user_id=AuthDiscord.User.user_id, msg="changing 'owner_disable_level' require server owner")
+		update["owner_disable_mod"] = Edit["owner_disable_mod"]
 
 	# track_channel
-	value:str = Data.getStr("track_channel", UNDEFINED, len_max=128)
-	if value != UNDEFINED:
+	Edit["track_channel"] = Data.getStr("track_channel", UNDEFINED, len_max=128, allow_none=True)
+	if Edit["track_channel"] != UNDEFINED:
 		error:bool = False
-		if not value: value = None
+		if not Edit["track_channel"]:
+			update["track_channel"] = Edit["track_channel"]
 		else:
-			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, value, required_type="text")
+			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, Edit["track_channel"], required_type="text")
 			if not Chan:
 				error = True
 			else:
-				value = str(Chan.id)
+				update["track_channel"] = str(Chan.id)
 
 		if error:
-			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel")
-
-		db_update["track_channel"] = validateDBInput(str, value, allow_null=True)
-		update["track_channel"] = value
+			return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"'{Edit['track_channel']}' could not be resolved as a valid discord text channel")
 
 	# track_value
-	value:str = Data.getInt("track_value", UNDEFINED, min_x=0)
-	if value != UNDEFINED:
-		db_update["track_value"] = validateDBInput(int, value)
-		update["track_value"] = value
+	Edit["track_value"] = Data.getInt("track_value", UNDEFINED, min_x=0)
+	if Edit["track_value"] != UNDEFINED:
+		update["track_value"] = Edit["track_value"]
 
 	# welcome_chan
-	value:str = Data.getStr("welcome_chan", UNDEFINED, len_max=128)
-	if value != UNDEFINED:
+	Edit["welcome_chan"] = Data.getStr("welcome_chan", UNDEFINED, len_max=128, allow_none=True)
+	if Edit["welcome_chan"] != UNDEFINED:
 		error:bool = False
-		if not value: value = None
+		if not Edit["welcome_chan"]:
+			update["welcome_chan"] = None
 		else:
-			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, value, required_type="text")
+			Chan:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, Edit["welcome_chan"], required_type="text")
 			if not Chan:
 				error = True
 			else:
-				value = str(Chan.id)
+				update["welcome_chan"] = str(Chan.id)
 
 		if error:
-			return await apiWrongData(cls, WebRequest, msg=f"'{value}' could not be resolved as a valid discord text channel")
-
-		db_update["welcome_chan"] = validateDBInput(str, value, allow_null=True)
-		update["welcome_chan"] = value
+			return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"'{Edit['welcome_chan']}' could not be resolved as a valid discord text channel")
 
 	# welcome_msg
-	value:str = Data.getStr("welcome_msg", UNDEFINED, len_max=1750)
-	if value != UNDEFINED:
-		if not value: value = None
-		db_update["welcome_msg"] = validateDBInput(str, value, allow_null=True)
-		update["welcome_msg"] = value
+	Edit["welcome_msg"] = Data.getStr("welcome_msg", UNDEFINED, len_max=1750, allow_none=True)
+	if Edit["welcome_msg"] != UNDEFINED:
+		if not Edit["welcome_msg"]:
+			update["welcome_msg"] = None
+		else:
+			update["welcome_msg"] = Edit["welcome_msg"]
 
 	# welcome_msg_priv
-	value:str = Data.getStr("welcome_msg_priv", UNDEFINED, len_max=1750)
-	if value != UNDEFINED:
-		if not value: value = None
-		db_update["welcome_msg_priv"] = validateDBInput(str, value, allow_null=True)
-		update["welcome_msg_priv"] = value
+	Edit["welcome_msg_priv"] = Data.getStr("welcome_msg_priv", UNDEFINED, len_max=1750, allow_none=True)
+	if Edit["welcome_msg_priv"] != UNDEFINED:
+		if not Edit["welcome_msg_priv"]:
+			update["welcome_msg_priv"] = None
+		else:
+			update["welcome_msg_priv"] = Edit["welcome_msg_priv"]
 
-	if not db_update:
-		return await apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
+	if not update:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="No changes, please add at least one")
 
-	cls.Web.BASE.PhaazeDB.updateQuery(
-		table = "discord_setting",
-		content = db_update,
-		where = "`discord_setting`.`guild_id` = %s",
-		where_values = (guild_id,)
+	cls.BASE.PhaazeDB.updateQuery(
+		table="discord_setting",
+		content=update,
+		where="`discord_setting`.`guild_id` = %s",
+		where_values=(Edit["guild_id"],)
 	)
 
 	# logging
 	log_coro:Coroutine = loggingOnConfigEdit(PhaazeDiscord, Configs, Editor=CheckMember, changes=update)
-	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Configs: {guild_id=} updated", require="discord:configs")
+	cls.BASE.Logger.debug(f"(API/Discord) Configs: {Edit['guild_id']=} updated", require="discord:configs")
 	return cls.response(
-		text=json.dumps( dict(msg="Configs: Updated", changes=update, status=200) ),
+		text=json.dumps(dict(msg="Configs: Updated", changes=update, status=200)),
 		content_type="application/json",
 		status=200
 	)

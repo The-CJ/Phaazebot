@@ -1,5 +1,5 @@
 /*
-DESCRIBE `user_has_role`;
+DESCRIBE `web_user+web_role`;
 
 +---------+---------+------+-----+---------+----------------+
 | Field   | Type    | Null | Key | Default | Extra          |
@@ -10,9 +10,9 @@ DESCRIBE `user_has_role`;
 +---------+---------+------+-----+---------+----------------+
 */
 
--- SHOW CREATE TABLE `user_has_role`;
+-- SHOW CREATE TABLE `web_user+web_role`;
 
-CREATE TABLE `user_has_role` (
+CREATE TABLE `web_user+web_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `role_id` int(11) NOT NULL,

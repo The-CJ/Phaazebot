@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 
-async def apiDiscordGuildUnknown(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordGuildUnknown(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -39,14 +40,14 @@ async def apiDiscordGuildUnknown(cls:"WebIndex", WebRequest:Request, **kwargs:di
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400: {WebRequest.path} | {msg}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400: {WebRequest.path} | {msg}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordMissingPermission(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordMissingPermission(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -90,14 +91,14 @@ async def apiDiscordMissingPermission(cls:"WebIndex", WebRequest:Request, **kwar
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Missing Permission: {WebRequest.path} | {msg}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Missing Permission: {WebRequest.path} | {msg}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordMemberNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordMemberNotFound(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -141,14 +142,14 @@ async def apiDiscordMemberNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Member not Found: {WebRequest.path} | {msg}", require="api:404")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Member not Found: {WebRequest.path} | {msg}", require="api:404")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=404
 	)
 
-async def apiDiscordRoleNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordRoleNotFound(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -192,14 +193,14 @@ async def apiDiscordRoleNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:di
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Role not Found: {WebRequest.path} | {msg}", require="api:404")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Role not Found: {WebRequest.path} | {msg}", require="api:404")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=404
 	)
 
-async def apiDiscordChannelNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordChannelNotFound(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -243,9 +244,9 @@ async def apiDiscordChannelNotFound(cls:"WebIndex", WebRequest:Request, **kwargs
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Channel not Found: {WebRequest.path} | {msg}", require="api:404")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Channel not Found: {WebRequest.path} | {msg}", require="api:404")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=404
 	)

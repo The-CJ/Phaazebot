@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 
-async def apiTwitchUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiTwitchUserNotFound(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -38,9 +39,9 @@ async def apiTwitchUserNotFound(cls:"WebIndex", WebRequest:Request, **kwargs:dic
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Twitch) 400 User not Found: {WebRequest.path}", require="api:404")
+	cls.BASE.Logger.debug(f"(API/Twitch) 400 User not Found: {WebRequest.path}", require="api:404")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=404
 	)

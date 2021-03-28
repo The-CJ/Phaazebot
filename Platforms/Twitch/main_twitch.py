@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import twitch_irc
 import asyncio
@@ -9,7 +9,7 @@ from Platforms.Twitch.openchannel import openChannel
 from Utils.cli import CliArgs
 
 class PhaazebotTwitch(twitch_irc.Client):
-	def __init__(self, BASE:"Phaazebot", *args:tuple, **kwargs:dict):
+	def __init__(self, BASE:"Phaazebot", *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.BASE:"Phaazebot" = BASE
 
@@ -41,17 +41,17 @@ class PhaazebotTwitch(twitch_irc.Client):
 
 	async def onError(self, Ex:Exception):
 		"""
-		Default error funtion, called everytime someting went wrong
+		Default error function, called everytime something went wrong
 		"""
 		tb = traceback.format_exc()
 		self.BASE.Logger.error(f'(Twitch) Ignoring exception {Ex}\n{tb}')
 
 	async def joinAllChannels(self) -> None:
 		"""
-		Join all channels we know in the database that have a menaged=true
+		Join all channels we know in the database that have a managed=true
 		"""
 
-		if CliArgs.get("no-twitch-join", False):
+		if CliArgs.get("no-twitch-join", ""):
 			return self.BASE.Logger.warning(f"`no-twitch-join` active, skipping channel join.")
 
 		twitch_res:list = self.BASE.PhaazeDB.selectQuery("""
@@ -66,8 +66,8 @@ class PhaazebotTwitch(twitch_irc.Client):
 		if not twitch_res: return
 		self.BASE.Logger.info(f"Twitch Joining {len(twitch_res)} channels...")
 
-		# we could just spam all JOIN commands in one go, the twitch_irc lib would handle all ratelimits
-		# but we dont
+		# we could just spam all JOIN commands in one go, the twitch_irc lib would handle all ratelimit's
+		# but we don't
 
 		for entry in twitch_res:
 			channel_name:str = entry.get("channel_name", None)
@@ -82,31 +82,31 @@ class PhaazebotTwitch(twitch_irc.Client):
 	async def debugCall(self, Message:twitch_irc.Message):
 		"""
 		string evaluation on user input,
-		only for the user assosiated with self.BASE.Vars.twitch_debug_user_id
+		only for the user associated with self.BASE.Vars.twitch_debug_user_id
 		starting a message with ### or !!! will execute everything after this
 		### is a normal call
-		!!! a corotine
+		!!! a coroutine
 		"""
 		# we check again... just to be sure
 		if not str(Message.Author.id) in self.BASE.Vars.twitch_debug_user_id:
 			return
 
-		corotine:bool = False
-		command:str = None
+		coroutine:bool
+		command:str
 
 		if Message.content.startswith("###"):
 			command = Message.content.replace("###", '', 1)
-			corotine = False
+			coroutine = False
 
 		elif Message.content.startswith("!!!"):
 			command = Message.content.replace("!!!", '', 1)
-			corotine = True
+			coroutine = True
 		else:
 			return
 
 		try:
 			res:Any = eval(command)
-			if corotine: res = await res
+			if coroutine: res = await res
 			return await self.sendMessage(Message.Channel, str(res))
 
 		except Exception as Fail:

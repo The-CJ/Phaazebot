@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import threading
 import asyncio
@@ -17,15 +17,15 @@ class Mainframe(threading.Thread):
 		self.name:str = "Mainframe"
 		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
 
-		# a new idea, current is the thread that is actully running, after its crashed, use tpl, to generate a new one
+		# a new idea, current is the thread that is actually running, after its crashed, use tpl, to generate a new one
 		# making it so and can be looped from a dict
 		self.modules:dict = dict(
-			worker = dict(current=WorkerThread(BASE), tpl=WorkerThread),
-			web = dict(current=WebThread(BASE), tpl=WebThread),
-			discord = dict(current=DiscordThread(BASE), tpl=DiscordThread),
-			twitch_irc = dict(current=TwitchThread(BASE), tpl=TwitchThread),
-			twitch_events = dict(current=TwitchEventsThread(BASE), tpl=TwitchEventsThread),
-			osu_irc = dict(current=OsuThread(BASE), tpl=OsuThread),
+			worker=dict(current=WorkerThread(BASE), tpl=WorkerThread),
+			web=dict(current=WebThread(BASE), tpl=WebThread),
+			discord=dict(current=DiscordThread(BASE), tpl=DiscordThread),
+			twitch_irc=dict(current=TwitchThread(BASE), tpl=TwitchThread),
+			twitch_events=dict(current=TwitchEventsThread(BASE), tpl=TwitchEventsThread),
+			osu_irc=dict(current=OsuThread(BASE), tpl=OsuThread),
 		)
 
 	def run(self) -> None:
@@ -46,7 +46,7 @@ class Mainframe(threading.Thread):
 				PhaazeModule:threading.Thread = self.modules[module_name]["current"]
 
 				# get from Phaazebot.Active if the module should be started or not
-				start:bool = bool( getattr(self.BASE.Active, module_name.lower(), False) )
+				start:bool = bool(getattr(self.BASE.Active, module_name.lower(), False))
 				if module_name.lower() == "worker": start = True # exception for worker, that always run
 
 				if not PhaazeModule.is_alive() and start:
@@ -64,7 +64,8 @@ class WorkerThread(threading.Thread):
 		self.daemon:bool = True
 		self.loop:asyncio.AbstractEventLoop = asyncio.new_event_loop()
 
-	async def sleepy(self) -> None:
+	@staticmethod
+	async def sleepy() -> None:
 		while 1: await asyncio.sleep(0.005)
 
 	def run(self) -> None:
@@ -100,7 +101,7 @@ class DiscordThread(threading.Thread):
 			# generate discord object
 			self.BASE.Discord = PhaazebotDiscord(
 				self.BASE,
-				loop = self.Loop
+				loop=self.Loop
 			)
 
 			# reset ready state, if not already
@@ -113,9 +114,9 @@ class DiscordThread(threading.Thread):
 			)
 			# let's go
 			# sadly because of signal handler like SIGTERM etc, discord must be started via .start and not .run
-			self.Loop.run_until_complete( DiscordCoro )
+			self.Loop.run_until_complete(DiscordCoro)
 
-			# we only reach this point when discord is ended gracefull
+			# we only reach this point when discord is ended gracefully
 			# which means a wanted disconnect,
 			# else it will always call a exception
 			self.BASE.Logger.info("Discord disconnected")
@@ -146,7 +147,7 @@ class WebThread(threading.Thread):
 
 			self.BASE.Web.start() # blocking call, takes asyncio.loop
 
-			# we only reach this point when the webserver is ended gracefull
+			# we only reach this point when the webserver is ended gracefully
 			self.BASE.Logger.info("Web server shutdown")
 
 		except Exception as e:
@@ -172,9 +173,9 @@ class OsuThread(threading.Thread):
 			# generate osu! object
 			self.BASE.Osu = PhaazebotOsu(
 				self.BASE,
-				Loop = self.Loop,
-				token = self.BASE.Access.osu_irc_token,
-				nickname = self.BASE.Access.osu_irc_nickname
+				Loop=self.Loop,
+				token=self.BASE.Access.osu_irc_token,
+				nickname=self.BASE.Access.osu_irc_nickname
 			)
 
 			# reset ready state, if not already
@@ -183,7 +184,7 @@ class OsuThread(threading.Thread):
 			# let's go
 			self.BASE.Osu.run()
 
-			# we only should reach this point when osu is ended gracefull
+			# we only should reach this point when osu is ended gracefully
 			# which means a wanted disconnect,
 			# else it will always call a exception
 			self.BASE.Logger.info("Osu disconnected")
@@ -208,9 +209,9 @@ class TwitchEventsThread(threading.Thread):
 			self.BASE.TwitchEvents = PhaazebotTwitchEvents(self.BASE)
 			self.BASE.TwitchEventsLoop = self.loop
 
-			self.loop.run_until_complete( self.BASE.TwitchEvents.start() )
+			self.loop.run_until_complete(self.BASE.TwitchEvents.start())
 
-			# we only should reach this point when it's ended gracefull
+			# we only should reach this point when it's ended gracefully
 			# else it will always call a exception
 			self.BASE.Logger.info("Twitch Events stopped")
 
@@ -237,9 +238,9 @@ class TwitchThread(threading.Thread):
 			# generate Twitch object
 			self.BASE.Twitch = PhaazebotTwitch(
 				self.BASE,
-				Loop = self.Loop,
-				token = self.BASE.Access.twitch_irc_token,
-				nickname = self.BASE.Access.twitch_irc_nickname,
+				Loop=self.Loop,
+				token=self.BASE.Access.twitch_irc_token,
+				nickname=self.BASE.Access.twitch_irc_nickname,
 			)
 
 			# reset ready state, if not already
@@ -248,7 +249,7 @@ class TwitchThread(threading.Thread):
 			# let's go
 			self.BASE.Twitch.run()
 
-			# we only should reach this point when twitch is ended gracefull
+			# we only should reach this point when twitch is ended gracefully
 			# which means a wanted disconnect,
 			# else it will always call a exception
 			self.BASE.Logger.info("Twitch disconnected")

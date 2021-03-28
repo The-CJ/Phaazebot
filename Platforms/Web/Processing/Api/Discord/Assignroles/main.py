@@ -1,36 +1,35 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+	from Platforms.Web.main_web import PhaazebotWeb
 	from Platforms.Discord.main_discord import PhaazebotDiscord
-	from Platforms.Web.index import WebIndex
 
-from aiohttp.web import Response, Request
-from .get import apiDiscordAssignrolesGet
-from .create import apiDiscordAssignrolesCreate
-from .edit import apiDiscordAssignrolesEdit
-from .delete import apiDiscordAssignrolesDelete
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Platforms.Web.index import PhaazeWebIndex
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
-async def apiDiscordAssignroles(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.view("/api/discord/assignroles{x:/?}{method:.*}")
+async def apiDiscordAssignroles(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/discord/assignroles
+	Default url: /api/discord/assignroles{x:/?}{method:.*}
 	"""
 
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
 	if not PhaazeDiscord: return await apiNotAllowed(cls, WebRequest, msg="Discord module is not active")
 
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
 	elif method == "get":
-		return await apiDiscordAssignrolesGet(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Assignroles.get.apiDiscordAssignrolesGet(cls, WebRequest)
 
 	elif method == "create":
-		return await apiDiscordAssignrolesCreate(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Assignroles.create.apiDiscordAssignrolesCreate(cls, WebRequest)
 
 	elif method == "edit":
-		return await apiDiscordAssignrolesEdit(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Assignroles.edit.apiDiscordAssignrolesEdit(cls, WebRequest)
 
 	elif method == "delete":
-		return await apiDiscordAssignrolesDelete(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Assignroles.delete.apiDiscordAssignrolesDelete(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")

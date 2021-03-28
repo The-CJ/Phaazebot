@@ -1,40 +1,43 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import discord
 import html
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.htmlformatter import HTMLFormatter
+from Platforms.Web.index import PhaazeWebIndex
 from Platforms.Web.utils import getNavbar
-from ..errors import notAllowed
 
-async def discordQuotes(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.get("/discord/quotes/{guild_id:\d+}")
+async def discordQuotes(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /discord/quotes/{guild_id:\d+}
+	Default url: /discord/quotes/{guild_id:\d+}
 	"""
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	if not PhaazeDiscord: return await notAllowed(cls, WebRequest, msg="Discord module is not active")
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
+	if not PhaazeDiscord:
+		return await cls.Tree.errors.notAllowed(cls, WebRequest, msg="Discord module is not active")
 
 	guild_id:str = WebRequest.match_info.get("guild_id", "")
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id if guild_id.isdigit() else 0))
 
 	if not Guild:
-		return await cls.discordInvite(WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
+		return await cls.Tree.Discord.discordinvite.discordInvite(cls, WebRequest, msg=f"Phaaze is not on this Server", guild_id=guild_id)
 
 	DiscordQuote:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/quotes.html")
 	DiscordQuote.replace(
-		guild_name = html.escape(Guild.name),
-		guild_id = str(Guild.id),
+		guild_name=html.escape(Guild.name),
+		guild_id=str(Guild.id),
 	)
 
 	site:str = cls.HTMLRoot.replace(
-		replace_empty = True,
+		replace_empty=True,
 
-		title = f"Phaaze | Discord - Quotes: {Guild.name}",
-		header = getNavbar(active="discord"),
-		main = DiscordQuote
+		title=f"Phaaze | Discord - Quotes: {Guild.name}",
+		header=getNavbar(active="discord"),
+		main=DiscordQuote
 	)
 
 	return cls.response(

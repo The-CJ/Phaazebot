@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 
-async def apiDiscordUserMedalExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordUserMedalExists(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -31,14 +32,14 @@ async def apiDiscordUserMedalExists(cls:"WebIndex", WebRequest:Request, **kwargs
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Medal exits: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Medal exits: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordUserMedalNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordUserMedalNotExists(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -72,14 +73,14 @@ async def apiDiscordUserMedalNotExists(cls:"WebIndex", WebRequest:Request, **kwa
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Command not found: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Command not found: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordUserMedalLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordUserMedalLimit(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -105,9 +106,9 @@ async def apiDiscordUserMedalLimit(cls:"WebIndex", WebRequest:Request, **kwargs:
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many medals: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Too many medals: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)

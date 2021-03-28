@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Iterator, Optional, Dict
 if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
@@ -12,16 +12,16 @@ from Utils.Classes.twitchuserstats import TwitchUserStats
 from Utils.Classes.twitchpermission import TwitchPermission
 from Platforms.Twitch.logging import loggingOnModerationTimeout, loggingOnModerationBan
 
-class GTTRS():
+class GlobalTwitchTimeoutRememberStorage(object):
 	"""
-	and now the "Global Twitch Timout Remember Storage"
-	just like in discord we got some strage names classes, yeeeah
+	and now the "Global Twitch Timeout Remember Storage"
+	just like in discord we got some storage names classes, yeah
 	this one remembers what chatter is still in a "grace" period
 
-	K see this, when someone get a reason to be timeouted, phaaze first gives a
+	K see this, when someone get a reason to be timeout, phaaze first gives a
 	3s timeout (aka a purge) and the user is for 160sec in a grace period.
 
-	If the user gets timeouted again then:
+	If the user gets timeout again then:
 		Timeout = ChannelSettings.blacklist_punishment
 		Grace = ChannelSettings.blacklist_punishment * 2
 
@@ -32,25 +32,25 @@ class GTTRS():
 	after that... well lets just say a shotgun is pretty cool.
 	"""
 	def __init__(self):
-		self.in_warning:dict = dict()
-		self.in_grace_one:dict = dict()
-		self.in_grace_two:dict = dict()
+		self.in_warning:Dict[str, bool] = {}
+		self.in_grace_one:Dict[str, bool] = {}
+		self.in_grace_two:Dict[str, bool] = {}
 
-	def check(self, Message:twitch_irc.Message) -> int or None:
+	def check(self, Message:twitch_irc.Message) -> Optional[int]:
 		key:str = f"{Message.room_id}-{Message.user_id}"
 		if self.in_grace_two.get(key, None): return 2
 		if self.in_grace_one.get(key, None): return 1
 		if self.in_warning.get(key, None): return 0
 		else: return None
 
-	def grace(self, Message:twitch_irc.Message, level:int or None, time:int) -> None:
-		asyncio.ensure_future( self.graceCoro(Message, level, time) )
+	def grace(self, Message:twitch_irc.Message, level:Optional[int], time:int) -> None:
+		asyncio.ensure_future(self.graceCoro(Message, level, time))
 
 	async def graceCoro(self, Message:twitch_irc.Message, level:int or None, time:int) -> None:
 		key:str = f"{Message.room_id}-{Message.user_id}"
 
 		# if level is None we take the user out of everything
-		if level == None:
+		if level is None:
 			self.in_warning.pop(key, None)
 			self.in_grace_one.pop(key, None)
 			self.in_grace_two.pop(key, None)
@@ -71,7 +71,8 @@ class GTTRS():
 			await asyncio.sleep(time)
 			self.in_grace_two.pop(key, None)
 
-GTTRS = GTTRS()
+
+GTTRS:GlobalTwitchTimeoutRememberStorage = GlobalTwitchTimeoutRememberStorage()
 
 async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, TwitchUser:TwitchUserStats) -> bool:
 
@@ -83,7 +84,7 @@ async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channel
 
 	# if this is True after all checks => punish
 	punish:bool = False
-	reason:str = None
+	reason:Optional[str] = None
 
 	# link option is active, check for links
 	if ChannelSettings.punish_option_links:
@@ -113,7 +114,7 @@ async def checkPunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channel
 		return False
 
 # checks
-async def checkBlacklist(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+async def checkBlacklist(_cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
 	message_text:str = Message.content.lower()
 
 	for re_pattern in ChannelSettings.punish_wordblacklist:
@@ -125,7 +126,7 @@ async def checkBlacklist(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chan
 
 	return False
 
-async def checkLinks(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+async def checkLinks(_cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
 
 	found_links:Iterator = re.finditer(ContainsLink, Message.content)
 
@@ -149,7 +150,7 @@ async def checkLinks(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelS
 	# all links could be found in the whitelist
 	return False
 
-async def checkEmotes(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+async def checkEmotes(_cls:"PhaazebotTwitch", Message:twitch_irc.Message, _ChannelSettings:TwitchChannelSettings) -> bool:
 
 	# channel is in a emote only mode, user can't type normally... so we disable this check for now
 	if Message.Channel.emote_only: return False
@@ -166,7 +167,7 @@ async def checkEmotes(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Channel
 
 	return False
 
-async def checkCaps(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
+async def checkCaps(_cls:"PhaazebotTwitch", Message:twitch_irc.Message, _ChannelSettings:TwitchChannelSettings) -> bool:
 
 	total:int = 0
 	caps:int = 0
@@ -186,19 +187,19 @@ async def checkCaps(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSe
 
 	return False
 
-async def checkCopyPasta(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
-	pass # TODO: yeah good idea, i will makle this later
+async def checkCopyPasta(_cls:"PhaazebotTwitch", _Message:twitch_irc.Message, _ChannelSettings:TwitchChannelSettings) -> bool:
+	pass # TODO: yeah good idea, i will make this later
 
-async def checkUnicode(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings) -> bool:
-	pass # TODO: Unicode could be extra tricky... because there is Japanese and whatever, which by diffinition are all unicode... horaay
+async def checkUnicode(_cls:"PhaazebotTwitch", _Message:twitch_irc.Message, _ChannelSettings:TwitchChannelSettings) -> bool:
+	pass # TODO: Unicode could be extra tricky... because there is Japanese and whatever, which by definition are all unicode... hooray
 
 # finals and utils
 async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, reason:str = None) -> None:
 	punish_time:int = ChannelSettings.punish_timeout
 	# always have a minimum cooldown
-	punish_time = max(punish_time, cls.BASE.Limit.twitch_punish_time_min, TwitchConst.COOLDOWN_MIN)
+	punish_time = max(punish_time, cls.BASE.Limit.twitch_punish_time_min, TwitchConst.COMMAND_COOLDOWN_MIN)
 	# but also be to long
-	punish_time = min(punish_time, cls.BASE.Limit.twitch_punish_time_max, TwitchConst.COOLDOWN_MAX)
+	punish_time = min(punish_time, cls.BASE.Limit.twitch_punish_time_max, TwitchConst.COMMAND_COOLDOWN_MAX)
 
 	current_user_state:int = GTTRS.check(Message)
 
@@ -218,7 +219,7 @@ async def executePunish(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Chann
 		await loggingOnModerationTimeout(cls, ChannelSettings, user_name=Message.user_name, user_id=Message.user_id, reason=reason, timeout=punish_time, level=1)
 		await notifyMessage(cls, Message, ChannelSettings, reason, 1)
 
-	else: # someone did a casual oopsi, thats ok, give a warning
+	else: # someone did a casual oops, that's ok, give a warning
 		GTTRS.grace(Message, 0, 180)
 		await cls.sendMessage(Message.room_name, f"/timeout {Message.user_name} 3")
 		await loggingOnModerationTimeout(cls, ChannelSettings, user_name=Message.user_name, user_id=Message.user_id, reason=reason, timeout=3, level=0)

@@ -1,34 +1,23 @@
 from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
 import asyncio
 import discord
-from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from aiohttp.web import Response
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Platforms.Discord.db import getDiscordSeverSettings
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
+from Utils.Classes.storagetransformer import StorageTransformer
+from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Platforms.Discord.logging import loggingOnCommandCreate
 from Platforms.Discord.commandindex import command_register
-from Platforms.Web.Processing.Api.errors import (
-	apiMissingData,
-	apiWrongData,
-	apiMissingAuthorisation
-)
-from Platforms.Web.Processing.Api.Discord.errors import (
-	apiDiscordGuildUnknown,
-	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission
-)
-from .errors import (
-	apiDiscordCommandExists,
-	apiDiscordCommandLimit
-)
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Web.utils import authDiscordWebUser
 
-async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordCommandsCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/discord/commands/create
 	"""
@@ -36,42 +25,43 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 	await Data.load()
 
 	# get required stuff
-	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	trigger:str = Data.getStr("trigger", "").lower().split(" ")[0]
-	active:bool = Data.getBool("active", True)
-	complex_:bool = Data.getBool("complex", False)
-	function:str = Data.getStr("function", "", len_max=256)
-	content:str = Data.getStr("content", "", len_max=1750)
-	hidden:str = Data.getBool("hidden", False)
-	cooldown:int = Data.getInt("cooldown", cls.Web.BASE.Limit.discord_commands_cooldown_min)
-	require:int = Data.getInt("require", 0, min_x=0)
-	required_currency:int = Data.getInt("required_currency", 0, min_x=0)
+	Create:StorageTransformer = StorageTransformer()
+	Create["guild_id"] = Data.getStr("guild_id", "", must_be_digit=True)
+	Create["trigger"] = Data.getStr("trigger", "").lower().split(" ")[0]
+	Create["active"] = Data.getBool("active", True)
+	Create["complex"] = Data.getBool("complex", False)
+	Create["function"] = Data.getStr("function", "", len_max=256)
+	Create["content"] = Data.getStr("content", "", len_max=1750)
+	Create["hidden"] = Data.getBool("hidden", False)
+	Create["cooldown"] = Data.getInt("cooldown", cls.BASE.Limit.discord_commands_cooldown_min)
+	Create["require"] = Data.getInt("require", 0, min_x=0)
+	Create["required_currency"] = Data.getInt("required_currency", 0, min_x=0)
 
 	# checks
-	if not guild_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+	if not Create["guild_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	if not trigger:
-		return await apiMissingData(cls, WebRequest, msg="missing 'trigger'")
+	if not Create["trigger"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing 'trigger'")
 
-	if not (cls.Web.BASE.Limit.discord_commands_cooldown_min <= cooldown <= cls.Web.BASE.Limit.discord_commands_cooldown_max ):
-		return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
+	if not (cls.BASE.Limit.discord_commands_cooldown_min <= Create["cooldown"] <= cls.BASE.Limit.discord_commands_cooldown_max):
+		return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
+
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
+	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(Create["guild_id"]))
+	if not Guild:
+		return await cls.Tree.Api.Discord.errors.apiDiscordGuildUnknown(cls, WebRequest)
 
 	# if not complex
-	# check if the function actully exists
-	if not complex_:
-		if not function:
-			return await apiMissingData(cls, WebRequest, msg="missing 'function'")
-		if not function in [cmd["function"].__name__ for cmd in command_register]:
-			return await apiWrongData(cls, WebRequest, msg=f"'{function}' is not a valid value for field 'function'")
-
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
-	if not Guild:
-		return await apiDiscordGuildUnknown(cls, WebRequest)
+	# check if the function actually exists
+	if not Create["complex"]:
+		if not Create["function"]:
+			return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing 'function'")
+		if Create["function"] not in [cmd["function"].__name__ for cmd in command_register]:
+			return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"'{Create['function']}' is not a valid value for field 'function'")
 
 	# check if already exists and limits
-	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
+	res:list = cls.BASE.PhaazeDB.selectQuery("""
 		SELECT
 			COUNT(*) AS `all`,
 			SUM(
@@ -80,65 +70,45 @@ async def apiDiscordCommandsCreate(cls:"WebIndex", WebRequest:Request) -> Respon
 			) AS `match`
 		FROM `discord_command`
 		WHERE `discord_command`.`guild_id` = %s""",
-		( trigger, guild_id )
+		(Create["trigger"], Create["guild_id"])
 	)
 
 	if res[0]["match"]:
-		return await apiDiscordCommandExists(cls, WebRequest, trigger=trigger)
+		return await cls.Tree.Api.Discord.Commands.errors.apiDiscordCommandExists(cls, WebRequest, trigger=Create["trigger"])
 
-	if res[0]["all"] >= cls.Web.BASE.Limit.discord_commands_amount:
-		return await apiDiscordCommandLimit(cls, WebRequest, limit=cls.Web.BASE.Limit.discord_commands_amount)
+	if res[0]["all"] >= cls.BASE.Limit.discord_commands_amount:
+		return await cls.Tree.Api.Discord.Commands.errors.apiDiscordCommandLimit(cls, WebRequest, limit=cls.BASE.Limit.discord_commands_amount)
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found:
-		return await apiMissingAuthorisation(cls, WebRequest)
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
+	if not AuthDiscord.found:
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(cls, WebRequest)
 
 	# get member
-	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	CheckMember:discord.Member = Guild.get_member(int(AuthDiscord.User.user_id))
 	if not CheckMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, guild_id=Create["guild_id"], user_id=AuthDiscord.User.user_id)
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Create["guild_id"], user_id=AuthDiscord.User.user_id)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(
+	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_command",
-		content={
-			"guild_id": guild_id,
-			"trigger": trigger,
-			"active": active,
-			"content": content,
-			"function": function,
-			"complex": complex_,
-			"hidden": hidden,
-			"require": require,
-			"required_currency": required_currency,
-			"cooldown": cooldown
-		}
+		content=Create.getAllTransform()
 	)
 
 	# logging prep
-	log_dict:dict = {
-		"trigger": trigger,
-		"active": active,
-		"content": content,
-		"function": function,
-		"hidden": hidden,
-		"require": require,
-		"required_currency": required_currency,
-		"cooldown": cooldown
-	}
+	log_dict:dict = Create.getAllTransform()
 
 	# logging
-	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
-	log_coro:Coroutine = loggingOnCommandCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, command_trigger=trigger, command_info=log_dict)
-	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, Create["guild_id"], prevent_new=True)
+	log_coro:Coroutine = loggingOnCommandCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, command_trigger=Create["trigger"], command_info=log_dict)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Commands: {guild_id=} added: {trigger=}", require="discord:commands")
+	cls.BASE.Logger.debug(f"(API/Discord) Commands: {Create['guild_id']=} added: {Create['trigger']=}", require="discord:commands")
 	return cls.response(
-		text=json.dumps( dict(msg="Commands: Added new entry", entry=trigger, status=200) ),
+		text=json.dumps(dict(msg="Commands: Added new entry", entry=Create["trigger"], status=200)),
 		content_type="application/json",
 		status=200
 	)

@@ -16,7 +16,7 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 		return {"content": ":no_entry_sign: Phaaze don't has a role with the `Manage Roles` permission."}
 
 	trigger:str = CommandContext.part(1)
-	query_str:str = " ".join( CommandContext.parts[2:] )
+	query_str:str = " ".join(CommandContext.parts[2:])
 
 	if not trigger or not query_str:
 		return {"content": ":warning: You need to define a role-trigger and a role."}
@@ -34,7 +34,7 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 			) AS `match`
 		FROM `discord_assignrole`
 		WHERE `discord_assignrole`.`guild_id` = %s""",
-		( str(AssignRole.id), trigger, str(Command.server_id) )
+		(str(AssignRole.id), trigger, str(Command.server_id))
 	)
 
 	if res[0]["all"] >= cls.BASE.Limit.discord_assignrole_amount:
@@ -47,11 +47,11 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 		return {"content": f":no_entry_sign: The Role `{AssignRole.name}` is to high. Phaaze highest role has to be higher in hierarchy then `{AssignRole.name}`"}
 
 	cls.BASE.PhaazeDB.insertQuery(
-		table = "discord_assignrole",
-		content = dict(
-			guild_id = str(Command.server_id),
-			role_id = str(AssignRole.id),
-			trigger = trigger
+		table="discord_assignrole",
+		content=dict(
+			guild_id=str(Command.server_id),
+			role_id=str(AssignRole.id),
+			trigger=trigger
 		)
 	)
 
@@ -59,4 +59,4 @@ async def addAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandC
 	log_coro:Coroutine = loggingOnQuoteCreate(cls, CommandContext.ServerSettings, Creator=CommandContext.Message.author, assign_role_id=str(AssignRole.id), trigger=trigger)
 	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
-	return {"content": f":white_check_mark: Successfull added assign role `{str(AssignRole)}` with trigger `{trigger}`"}
+	return {"content": f":white_check_mark: Successful added assign role `{str(AssignRole)}` with trigger `{trigger}`"}

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import discord
 import asyncio
@@ -12,13 +12,13 @@ from Platforms.Discord.events import (
 )
 
 class PhaazebotDiscord(discord.Client):
-	def __init__(self, BASE:"Phaazebot", *args:tuple, **kwargs:dict):
-		PhaazeIntents:discord.Intents = discord.Intents()
-
-		# changes to recieve wanted events
-		PhaazeIntents.guilds = True
-		PhaazeIntents.members = True
-		PhaazeIntents.messages = True
+	def __init__(self, BASE:"Phaazebot", *args, **kwargs):
+		# changes to receive wanted events
+		PhaazeIntents:discord.Intents = discord.Intents(
+			guilds=True,
+			members=True,
+			messages=True,
+		)
 		kwargs["intents"] = PhaazeIntents
 
 		super().__init__(*args, **kwargs)
@@ -33,16 +33,16 @@ class PhaazebotDiscord(discord.Client):
 		"""
 		try:
 			await self.change_presence(
-				activity = discord.Game(name = self.BASE.Vars.discord_modt),
-				status = discord.Status.online,
-				afk = False
+				activity=discord.Game(name=self.BASE.Vars.discord_modt),
+				status=discord.Status.online,
+				afk=False
 			)
 
 			self.BASE.Logger.info("Discord connected")
 			self.BASE.IsReady.discord = True
 
 		except discord.errors.GatewayNotFound:
-			self.BASE.Logger.warning("Discord Gatway Error --> Changing.")
+			self.BASE.Logger.warning("Discord Gateway Error --> Changing.")
 			await asyncio.sleep(3)
 			await self.on_ready()
 
@@ -67,14 +67,14 @@ class PhaazebotDiscord(discord.Client):
 		else:
 			self.BASE.Logger.warning("Phaaze received message via a privat channel")
 
-	async def on_message_edit(self, Before:discord.Message, After:discord.Message) -> None:
+	async def on_message_edit(self, _Before:discord.Message, After:discord.Message) -> None:
 		"""
 		Called only when a message is edited, and this message is in the self.cached_messages buffer.
 		max len(self.cached_messages) == self.max_messages
 		"""
 		await self.on_message(After)
 
-	#member management
+	# member management
 	async def on_member_join(self, Member:discord.Member) -> None:
 		"""
 		Called when a new user joins a guild
@@ -90,7 +90,7 @@ class PhaazebotDiscord(discord.Client):
 	# errors
 	async def on_error(self, event_method, *args, **kwargs):
 		"""
-		Default error funtion, called everytime someting went wrong
+		Default error function, called everytime something went wrong
 		"""
 		tb = traceback.format_exc()
 		self.BASE.Logger.error(f'(Discord) Ignoring exception in {event_method}\n{tb}')
@@ -99,32 +99,32 @@ class PhaazebotDiscord(discord.Client):
 	async def debugCall(self, Message:discord.Message):
 		"""
 		string evaluation on user input,
-		only for the user assosiated with self.BASE.Vars.discord_debug_user_id
+		only for the user associated with self.BASE.Vars.discord_debug_user_id
 		starting a message with ### or !!! will execute everything after this
 		### is a normal call
-		!!! a corotine
+		!!! a coroutine
 		"""
 
 		# we check again... just to be sure
 		if not str(Message.author.id) in self.BASE.Vars.discord_debug_user_id:
 			return
 
-		corotine:bool = False
-		command:str = None
+		coroutine:bool
+		command:str
 
 		if Message.content.startswith("###"):
 			command = Message.content.replace("###", '', 1)
-			corotine = False
+			coroutine = False
 
 		elif Message.content.startswith("!!!"):
 			command = Message.content.replace("!!!", '', 1)
-			corotine = True
+			coroutine = True
 		else:
 			return
 
 		try:
 			res:Any = eval(command)
-			if corotine: res = await res
+			if coroutine: res = await res
 			return await Message.channel.send(f"```{str(res)}```")
 
 		except Exception as Fail:

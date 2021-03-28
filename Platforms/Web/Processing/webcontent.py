@@ -1,21 +1,26 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
-import os, json, mimetypes
-from aiohttp.web import Request, Response
+import os
+import json
+import mimetypes
+from aiohttp.web import Response
+from Platforms.Web.index import PhaazeWebIndex
+from Utils.Classes.extendedrequest import ExtendedRequest
 
 CONTENTFOLDER_CSS = "Platforms/Web/Content/Css"
 CONTENTFOLDER_JS = "Platforms/Web/Content/Js"
 CONTENTFOLDER_IMG = "Platforms/Web/Content/Img"
 
 # content serve functions
-async def serveCss(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.get("/css{file:.*}")
+async def serveCss(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /css/*
+	Default url: /css/*
 	"""
 	file_location:str = WebRequest.match_info.get("file", None)
-	if not file_location: return noFileDefined(cls)
+	if not file_location: return await noFileDefined(cls)
 
 	# remove all injection things
 	file_location = file_location.replace("..","").strip("/")
@@ -35,9 +40,10 @@ async def serveCss(cls:"WebIndex", WebRequest:Request) -> Response:
 		body=file_content
 	)
 
-async def serveJs(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.get("/js{file:.*}")
+async def serveJs(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /js/*
+	Default url: /js/*
 	"""
 	file_location:str = WebRequest.match_info.get("file", None)
 	if not file_location: return await noFileDefined(cls)
@@ -62,12 +68,13 @@ async def serveJs(cls:"WebIndex", WebRequest:Request) -> Response:
 		body=file_content
 	)
 
-async def serveImg(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.get("/img{file:.*}")
+async def serveImg(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /img/*
+	Default url: /img/*
 	"""
 	file_location:str = WebRequest.match_info.get("file", None)
-	if not file_location: return noFileDefined(cls)
+	if not file_location: return await noFileDefined(cls)
 
 	# remove all injection things
 	file_location = file_location.replace("..","").strip("/")
@@ -87,21 +94,25 @@ async def serveImg(cls:"WebIndex", WebRequest:Request) -> Response:
 		body=file_content
 	)
 
-async def serveFavicon(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.get("/favicon.ico")
+async def serveFavicon(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
+	"""
+	Default url: /favicon.ico
+	"""
 	WebRequest.match_info["file"] = "favicon.ico"
-	return await cls.serveImg(WebRequest)
+	return await serveImg(cls, WebRequest)
 
 # error handling
-async def noFileDefined(cls:"WebIndex") -> Response:
+async def noFileDefined(cls:"PhaazebotWeb") -> Response:
 	return cls.response(
 		status=400,
 		content_type='application/json',
-		body=json.dumps( dict( error="no_file_defined",status=400 ) )
+		body=json.dumps(dict(error="no_file_defined",status=400))
 	)
 
-async def fileNotFound(cls:"WebIndex", file_name:str) -> Response:
+async def fileNotFound(cls:"PhaazebotWeb", file_name:str) -> Response:
 	return cls.response(
 		status=404,
 		content_type='application/json',
-		body=json.dumps( dict( error="file_not_found", status=404, file=file_name ) )
+		body=json.dumps(dict(error="file_not_found", status=404, file=file_name))
 	)

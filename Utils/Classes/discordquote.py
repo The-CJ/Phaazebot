@@ -1,19 +1,18 @@
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
-from Utils.Classes.apiclass import APIClass
+from Utils.Classes.contentclass import ContentClass
 
-class DiscordQuote(DBContentClass, APIClass):
+class DiscordQuote(ContentClass):
 	"""
 	Contains and represents stuff for a discord quote
 	"""
 	def __init__(self, data:dict):
 
 		# key
-		self.quote_id:int = data.get("id", UNDEFINED)
-		self.guild_id:str = data.get("guild_id", UNDEFINED)
+		self.quote_id:int = self.asInteger(data.get("id", UNDEFINED))
+		self.guild_id:str = self.asString(data.get("guild_id", UNDEFINED))
 
 		# vars
-		self.content:str = data.get("content", UNDEFINED)
+		self.content:str = self.asString(data.get("content", UNDEFINED))
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' quote='{self.quote_id}'>"
@@ -23,8 +22,8 @@ class DiscordQuote(DBContentClass, APIClass):
 
 		j:dict = dict()
 
-		j["quote_id"] = self.toString(self.quote_id)
-		j["guild_id"] = self.toString(self.guild_id)
-		j["content"] = self.toString(self.content)
+		j["quote_id"] = self.asString(self.quote_id)
+		j["guild_id"] = self.asString(self.guild_id)
+		j["content"] = self.asString(self.content)
 
 		return j

@@ -1,9 +1,8 @@
 import sys
 import re
-from Utils.Classes.undefined import UNDEFINED
 
 class CliArgsClass(object):
-	"""Contains arguments added by programm start """
+	"""Contains arguments added by program start """
 	def __init__(self):
 		self.args:dict = dict()
 
@@ -13,22 +12,17 @@ class CliArgsClass(object):
 		for arg in sys.argv[1:]:
 
 			KWargRes:"re.Match" = KWargRE.match(arg)
-			if KWargRes != None:
+			if KWargRes is not None:
 				self.args[KWargRes.group(1)] = KWargRes.group(2)
 				continue
 
 			ArgRes:"re.Match" = ArgRE.match(arg)
-			if ArgRes != None:
+			if ArgRes is not None:
 				self.args[ArgRes.group(1)] = True
 				continue
 
 	def get(self, arg:str, alt:str=None) -> str:
 		return self.args.get(arg, alt)
 
-	def pos(self, i:int) -> str:
-		try:
-			return sys.argv[i]
-		except:
-			return UNDEFINED
 
-CliArgs = CliArgsClass()
+CliArgs:CliArgsClass = CliArgsClass()

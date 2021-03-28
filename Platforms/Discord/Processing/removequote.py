@@ -19,7 +19,7 @@ async def removeQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 	if not specific_id:
 		return {"content": ":warning: You need to define a numeric quote ID to remove."}
 
-	quote:list = await getDiscordServerQuotes(cls, Command.server_id, quote_id=specific_id)
+	quote:list = await getDiscordServerQuotes(cls, guild_id=Command.server_id, quote_id=specific_id)
 
 	if not quote:
 		return {"content": f":warning: There is no Quote with ID #{specific_id}"}
@@ -30,7 +30,7 @@ async def removeQuote(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCon
 		DELETE FROM `discord_quote`
 		WHERE `discord_quote`.`guild_id` = %s
 		AND `discord_quote`.`id` = %s""",
-		( str(DQuote.guild_id), str(DQuote.quote_id) )
+		(str(DQuote.guild_id), str(DQuote.quote_id))
 	)
 
 	log_coro:Coroutine = loggingOnQuoteDelete(cls, CommandContext.ServerSettings, Deleter=CommandContext.Message.author, quote_id=DQuote.quote_id, deleted_content=DQuote.content)

@@ -15,7 +15,7 @@ async def removeAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 	if not specific_trigger:
 		return {"content": ":warning: You need to define the role-trigger to remove."}
 
-	roles:list = await getDiscordServerAssignRoles(cls, Command.server_id, trigger=specific_trigger)
+	roles:list = await getDiscordServerAssignRoles(cls, guild_id=Command.server_id, trigger=specific_trigger)
 
 	if not roles:
 		return {"content": f":warning: There is no assign role with trigger `{specific_trigger}`"}
@@ -26,7 +26,7 @@ async def removeAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, Comma
 		DELETE FROM `discord_assignrole`
 		WHERE `discord_assignrole`.`guild_id` = %s
 		AND `discord_assignrole`.`trigger` = %s""",
-		( str(Role.guild_id), str(Role.trigger) )
+		(str(Role.guild_id), str(Role.trigger))
 	)
 
 	# Log

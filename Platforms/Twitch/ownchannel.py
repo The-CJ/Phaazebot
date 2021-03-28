@@ -11,7 +11,7 @@ from Utils.Classes.twitchuser import TwitchUser
 
 async def clientNameChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message) -> None:
 	"""
-	special handling for messages in the bot's own twitch channel
+	special handling for messages in the bots own twitch channel
 	"""
 
 	Context:TwitchCommandContext = TwitchCommandContext(cls, Message)
@@ -62,7 +62,7 @@ async def joinUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Con
 
 	# after this point, we have a user or a admin input how want to add phaaze
 	if alternative_target:
-		user_search:List[TwitchUser] = await getTwitchUsers(cls, alternative_target, item_type="login", limit=1)
+		user_search:List[TwitchUser] = await getTwitchUsers(cls.BASE, alternative_target, item_type="login", limit=1)
 		if not user_search:
 			return_content:str = f"@{Message.display_name} > Phaaze could not find a user named {alternative_target} in the Twitch-API"
 			return await Message.Channel.sendMessage(cls, return_content)
@@ -71,9 +71,9 @@ async def joinUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Con
 
 			# insert ot update managed status
 			cls.BASE.PhaazeDB.insertQuery(
-				update_on_duplicate = True,
-				table = "twitch_channel",
-				content = {
+				update_on_duplicate=True,
+				table="twitch_channel",
+				content={
 					"channel_id": NewEntry.user_id,
 					"managed": 1
 				},
@@ -81,9 +81,9 @@ async def joinUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Con
 
 			# insert ot update to name table
 			cls.BASE.PhaazeDB.insertQuery(
-				update_on_duplicate = True,
-				table = "twitch_user_name",
-				content = {
+				update_on_duplicate=True,
+				table="twitch_user_name",
+				content={
 					"user_id": NewEntry.user_id,
 					"user_name": NewEntry.name,
 					"user_display_name": NewEntry.display_name
@@ -93,9 +93,9 @@ async def joinUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Con
 	else:
 		# insert ot update managed status
 		cls.BASE.PhaazeDB.insertQuery(
-			update_on_duplicate = True,
-			table = "twitch_channel",
-			content = {
+			update_on_duplicate=True,
+			table="twitch_channel",
+			content={
 				"channel_id": Message.user_id,
 				"managed": 1
 			},
@@ -103,9 +103,9 @@ async def joinUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Con
 
 		# insert ot update to name table
 		cls.BASE.PhaazeDB.insertQuery(
-			update_on_duplicate = True,
-			table = "twitch_user_name",
-			content = {
+			update_on_duplicate=True,
+			table="twitch_user_name",
+			content={
 				"user_id": Message.user_id,
 				"user_name": Message.user_name,
 				"user_display_name": Message.display_name
@@ -123,7 +123,7 @@ async def joinUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Con
 
 async def leaveUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Context:TwitchCommandContext) -> None:
 	"""
-	allowed each user to bring phaaze to leave there channel, also allowed global mods+ to remive phaaze as well
+	allowed each user to bring phaaze to leave there channel, also allowed global mods+ to remove phaaze as well
 	"""
 
 	alternative_target:str = ""
@@ -162,10 +162,10 @@ async def leaveUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Co
 	# at this point we do have a managed channel in twitch_channel table, so we update it
 	execute_id:str = res[0]["channel_id"]
 	cls.BASE.PhaazeDB.updateQuery(
-		table = "twitch_channel",
-		content = {"managed": 0},
-		where = "`twitch_channel`.`channel_id` = %s",
-		where_values = (execute_id,)
+		table="twitch_channel",
+		content={"managed": 0},
+		where="`twitch_channel`.`channel_id` = %s",
+		where_values=(execute_id,)
 	)
 
 	if alternative_target:

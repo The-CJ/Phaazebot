@@ -125,7 +125,7 @@ var AdminUser = new (class {
 
 	loadRolesForUser(user_id) {
 		var AdminUserO = this;
-		var req = { "user_id": user_id };
+		var req = { "for_user_id": user_id };
 
 		$.get("/api/admin/roles/get", req)
 		.done(function (data) {

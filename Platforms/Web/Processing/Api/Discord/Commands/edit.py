@@ -1,37 +1,25 @@
 from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import asyncio
 import discord
-from aiohttp.web import Response, Request
-from Platforms.Discord.commandindex import command_register
+from aiohttp.web import Response
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.storagetransformer import StorageTransformer
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.undefined import UNDEFINED
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.discordcommand import DiscordCommand
+from Utils.Classes.undefined import UNDEFINED
+from Platforms.Web.utils import authDiscordWebUser
 from Platforms.Discord.db import getDiscordServerCommands, getDiscordSeverSettings
+from Platforms.Discord.commandindex import command_register
 from Platforms.Discord.logging import loggingOnCommandEdit
-from Utils.dbutils import validateDBInput
-from Platforms.Web.Processing.Api.errors import (
-	apiMissingData,
-	apiWrongData,
-	apiMissingAuthorisation
-)
-from Platforms.Web.Processing.Api.Discord.errors import (
-	apiDiscordGuildUnknown,
-	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission
-)
-from .errors import (
-	apiDiscordCommandExists,
-	apiDiscordCommandNotExists
-)
 
-async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordCommandsEdit(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/discord/commands/edit
 	"""
@@ -39,144 +27,132 @@ async def apiDiscordCommandsEdit(cls:"WebIndex", WebRequest:Request) -> Response
 	await Data.load()
 
 	# get required stuff
-	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
+	Edit:StorageTransformer = StorageTransformer()
+	Edit["command_id"] = Data.getInt("command_id", "", min_x=1)
+	Edit["guild_id"] = Data.getStr("guild_id", "", must_be_digit=True)
 
 	# checks
-	if not guild_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+	if not Edit["command_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id'")
 
-	if not command_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'command_id'")
+	if not Edit["guild_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	# get command
-	res_commands:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, command_id=command_id, show_nonactive=True)
+	# get/check discord
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
+	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(Edit["guild_id"]))
+	if not Guild:
+		return await cls.Tree.Api.Discord.errors.apiDiscordGuildUnknown(cls, WebRequest)
+
+	# check if exists
+	res_commands:list = await getDiscordServerCommands(PhaazeDiscord, guild_id=Edit["guild_id"], command_id=Edit["command_id"], active=None)
 	if not res_commands:
-		return await apiDiscordCommandNotExists(cls, WebRequest, command_id=command_id)
+		return await cls.Tree.Api.Discord.Commands.errors.apiDiscordCommandNotExists(cls, WebRequest, command_id=Edit["command_id"])
 
 	CurrentEditCommand:DiscordCommand = res_commands.pop(0)
 
 	# after this point we have a existing command
 	# check all possible values if it should be edited
-	# db_update is for the database
-	# update is the return for the user
-	db_update:dict = dict()
 	update:dict = dict()
 
 	# active
-	value:bool = Data.getBool("active", UNDEFINED)
-	if value != UNDEFINED:
-		db_update["active"] = validateDBInput(bool, value)
-		update["active"] = value
+	Edit["active"] = Data.getBool("active", UNDEFINED)
+	if Edit["active"] != UNDEFINED:
+		update["active"] = Edit["active"]
 
 	# trigger
-	value:str = Data.getStr("trigger", "").lower().split(" ")[0]
-	if value:
+	Edit["trigger"] = Data.getStr("trigger", "", len_max=128).lower().split(" ")[0]
+	if Edit["trigger"]:
 		# try to get command with this trigger
-		check_double_trigger:list = await getDiscordServerCommands(cls.Web.BASE.Discord, guild_id, trigger=value)
+		check_double_trigger:list = await getDiscordServerCommands(PhaazeDiscord, guild_id=Edit["guild_id"], trigger=Edit["trigger"])
 		if check_double_trigger:
 			CommandToCheck:DiscordCommand = check_double_trigger.pop(0)
-			# tryed to set a trigger twice
+			# tried to set a trigger twice
 			if str(CommandToCheck.command_id) != str(CurrentEditCommand.command_id):
-				return await apiDiscordCommandExists(cls, WebRequest, command=value)
+				return await cls.Tree.Api.Discord.Commands.errors.apiDiscordCommandExists(cls, WebRequest, trigger=Edit["trigger"])
 
-		db_update["trigger"] = validateDBInput(str, value)
-		update["trigger"] = value
+		update["trigger"] = Edit["trigger"]
 
 	# cooldown
-	value:int = Data.getInt("cooldown", UNDEFINED, min_x=0)
-	if value != UNDEFINED:
+	Edit["cooldown"] = Data.getInt("cooldown", UNDEFINED, min_x=0)
+	if Edit["cooldown"] != UNDEFINED:
 		# wants a invalid cooldown
-		if not (cls.Web.BASE.Limit.discord_commands_cooldown_min <= value <= cls.Web.BASE.Limit.discord_commands_cooldown_max ):
-			return await apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
+		if not (cls.BASE.Limit.discord_commands_cooldown_min <= Edit["cooldown"] <= cls.BASE.Limit.discord_commands_cooldown_max):
+			return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg="'cooldown' is wrong")
 
-		db_update["cooldown"] = validateDBInput(int, value)
-		update["cooldown"] = value
+		update["cooldown"] = Edit["cooldown"]
 
 	# currency
-	value:int = Data.getInt("required_currency", UNDEFINED, min_x=0)
-	if value != UNDEFINED:
-		db_update["required_currency"] = validateDBInput(int, value)
-		update["required_currency"] = value
+	Edit["required_currency"] = Data.getInt("required_currency", UNDEFINED, min_x=0)
+	if Edit["required_currency"] != UNDEFINED:
+		update["required_currency"] = Edit["required_currency"]
 
 	# require
-	value:int = Data.getInt("require", UNDEFINED, min_x=0)
-	if value != UNDEFINED :
-		db_update["require"] = validateDBInput(int, value)
-		update["require"] = value
+	Edit["require"] = Data.getInt("require", UNDEFINED, min_x=0)
+	if Edit["require"] != UNDEFINED:
+		update["require"] = Edit["require"]
 
 	# content
-	value:str = Data.getStr("content", UNDEFINED, len_max=1750)
-	if value != UNDEFINED:
-		db_update["content"] = validateDBInput(str, value)
-		update["content"] = value
+	Edit["content"] = Data.getStr("content", UNDEFINED, len_max=1750)
+	if Edit["content"] != UNDEFINED:
+		update["content"] = Edit["content"]
 
 	# hidden
-	value:bool = Data.getBool("hidden", UNDEFINED)
-	if value != UNDEFINED:
-		db_update["hidden"] = validateDBInput(bool, value)
-		update["hidden"] = value
+	Edit["hidden"] = Data.getBool("hidden", UNDEFINED)
+	if Edit["hidden"] != UNDEFINED:
+		update["hidden"] = Edit["hidden"]
 
 	# function (and type)
-	complex_:bool = Data.getBool("complex", False)
-	function:str = Data.getStr("function", UNDEFINED, len_max=256)
-	if (complex_ == False) and (function != UNDEFINED):
+	Edit["complex"] = Data.getBool("complex", False)
+	Edit["function"] = Data.getStr("function", UNDEFINED, len_max=256)
+	if not Edit["complex"] and Edit["function"] != UNDEFINED:
 		# it its not complex, we need a function
-		if not function in [cmd["function"].__name__ for cmd in command_register]:
-			return await apiWrongData(cls, WebRequest, msg=f"'{function}' is not a valid value for field 'function'")
+		if Edit["function"] not in [cmd["function"].__name__ for cmd in command_register]:
+			return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"'{Edit['function']}' is not a valid value for field 'function'")
 
-		db_update["complex"] = validateDBInput(bool, complex_)
-		db_update["function"] = validateDBInput(str, function)
-		update["complex"] = complex_
-		update["function"] = function
+		update["complex"] = Edit["complex"]
+		update["function"] = Edit["function"]
 
-	if (complex_ == True) and (not function):
+	if Edit["complex"] and not Edit["function"]:
 		# it is complex, we need a content
-		if not update.get("content", False):
-			return await apiWrongData(cls, WebRequest, msg=f"'complex' is true, but missing 'content'")
+		if not update.get("content", ""):
+			return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"'complex' is true, but missing 'content'")
 
-		db_update["complex"] = validateDBInput(bool, complex_)
-		db_update["function"] = ""
-		update["complex"] = complex_
-
-	# get/check discord
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
-	if not Guild:
-		return await apiDiscordGuildUnknown(cls, WebRequest)
+		update["complex"] = Edit["complex"]
+		update["function"] = ""
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found:
-		return await apiMissingAuthorisation(cls, WebRequest)
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
+	if not AuthDiscord.found:
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(cls, WebRequest)
 
 	# get member
-	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	CheckMember:discord.Member = Guild.get_member(int(AuthDiscord.User.user_id))
 	if not CheckMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, guild_id=Edit["guild_id"], user_id=AuthDiscord.User.user_id)
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Edit["guild_id"], user_id=AuthDiscord.User.user_id)
 
 	if not update:
-		return await apiWrongData(cls, WebRequest, msg=f"No changes, please add at least one")
+		return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"No changes, please add at least one")
 
-	cls.Web.BASE.PhaazeDB.updateQuery(
-		table = "discord_command",
-		content = db_update,
-		where = "`discord_command`.`guild_id` = %s AND `discord_command`.`id` = %s",
-		where_values = (CurrentEditCommand.server_id, CurrentEditCommand.command_id)
+	cls.BASE.PhaazeDB.updateQuery(
+		table="discord_command",
+		content=update,
+		where="`discord_command`.`guild_id` = %s AND `discord_command`.`id` = %s",
+		where_values=(CurrentEditCommand.server_id, CurrentEditCommand.command_id)
 	)
 
 	# logging
-	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, Edit["guild_id"], prevent_new=True)
 	log_coro:Coroutine = loggingOnCommandEdit(PhaazeDiscord, GuildSettings, Editor=CheckMember, command_trigger=CurrentEditCommand.trigger, command_info=update)
-	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Commands: {guild_id=} edited {command_id=}", require="discord:commands")
+	cls.BASE.Logger.debug(f"(API/Discord) Commands: {Edit['guild_id']=} edited {Edit['command_id']=}", require="discord:commands")
 	return cls.response(
-		text=json.dumps( dict(msg="Commands: Edited entry", changes=update, status=200) ),
+		text=json.dumps(dict(msg="Commands: Edited entry", changes=update, status=200)),
 		content_type="application/json",
 		status=200
 	)

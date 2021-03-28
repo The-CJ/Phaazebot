@@ -1,48 +1,49 @@
 from typing import TYPE_CHECKING, List, Dict, Any
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.storagetransformer import StorageTransformer
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.webuserinfo import WebUserInfo
-from Platforms.Web.db import getWebUsers, getWebUserAmount
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Utils.Classes.webuser import WebUser
+from Utils.Classes.undefined import UNDEFINED
+from Platforms.Web.db import getWebUsers
 
 DEFAULT_LIMIT:int = 50
 
-async def apiAdminUsersGet(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAdminUsersGet(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/admin/users/get
+	Default url: /api/admin/users/get
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
+	Search:StorageTransformer = StorageTransformer()
+
 	# get required stuff
-	user_id:str = Data.getStr("user_id", "", must_be_digit=True)
-	username:str = Data.getStr("username", "", len_max=64)
-	username_contains:str = Data.getStr("username_contains", "", len_max=64)
-	email:str = Data.getStr("email", "", len_max=128)
-	email_contains:str = Data.getStr("email_contains", "", len_max=128)
-	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1)
-	offset:int = Data.getInt("offset", 0, min_x=0)
+	Search["user_id"] = Data.getInt("user_id", UNDEFINED, min_x=1)
+	Search["username"] = Data.getStr("username", UNDEFINED, len_max=64)
+	Search["username_contains"] = Data.getStr("username_contains", UNDEFINED, len_max=64)
+	Search["email"] = Data.getStr("email", UNDEFINED, len_max=128)
+	Search["email_contains"] = Data.getStr("email_contains", UNDEFINED, len_max=128)
+	Search["limit"] = Data.getInt("limit", DEFAULT_LIMIT, min_x=1)
+	Search["offset"] = Data.getInt("offset", 0, min_x=1)
 
 	# get user
-	res_users:List[WebUserInfo] = await getWebUsers(cls, user_id=user_id,
-		username=username, username_contains=username_contains,
-		email=email, email_contains=email_contains,
-		limit=limit, offset=offset
-	)
+	res_users:List[WebUser] = await getWebUsers(cls, **Search.getAllTransform())
 
 	result:Dict[str, Any] = dict(
-		result=[ WebUser.toJSON() for WebUser in res_users ],
-		limit=limit,
-		offset=offset,
-		total=(await getWebUserAmount(cls)),
+		result=[Us.toJSON() for Us in res_users],
+		limit=Search["limit"],
+		offset=Search["offset"],
+		total=await getWebUsers(cls, count_mode=True, **Search.getAllTransform()),
 		status=200
 	)
 
 	return cls.response(
-		text=json.dumps( result ),
+		text=json.dumps(result),
 		content_type="application/json",
 		status=200
 	)

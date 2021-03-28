@@ -1,17 +1,17 @@
 """
-This protocol will try to check all entrys in the databases
+This protocol will try to check all entry's in the databases
 discord_user table.
 
 To be exact the on_server field.
-Only guilds, phaaze currenty is on are checked.
-This protocol is suppost to try if a member is on server and update db.
+Only guilds, phaaze currently is on are checked.
+This protocol is suppose to try if a member is on server and update db.
 
 CLI Args:
 ---------
 * `a` or `automated` [disable print]
 * `d` or `detailed` [additional information printed]
 """
-
+from typing import Optional
 import os
 import sys
 base_dir:str = f"{os.path.dirname(os.path.abspath(__file__))}/../.."
@@ -25,21 +25,21 @@ from Utils.Classes.dbconn import DBConn
 from Utils.config import ConfigParser
 from Utils.cli import CliArgs
 
-Conf:ConfigParser = None
-for config_source_path in [ (CliArgs.get("config") or ""), f"{base_dir}/Config/config.phzcf", f"{base_dir}/Config/config.json" ]:
+Conf:Optional[ConfigParser] = None
+for config_source_path in [(CliArgs.get("config") or ""), f"{base_dir}/Config/config.phzcf", f"{base_dir}/Config/config.json"]:
 	if not config_source_path: continue
 	try:
 		Conf = ConfigParser(config_source_path)
 		break
 	except: pass
 
-Phaaze:Phaazebot = Phaazebot(PreConfig = Conf)
+Phaaze:Phaazebot = Phaazebot(PreConfig=Conf)
 DBC:DBConn = DBConn(
-	host = Phaaze.Config.get("phaazedb_host", "localhost"),
-	port = Phaaze.Config.get("phaazedb_port", "3306"),
-	user = Phaaze.Config.get("phaazedb_user", "phaaze"),
-	passwd = Phaaze.Config.get("phaazedb_password", ""),
-	database = Phaaze.Config.get("phaazedb_database", "phaaze")
+	host=Phaaze.Config.get("phaazedb_host", "localhost"),
+	port=Phaaze.Config.get("phaazedb_port", "3306"),
+	user=Phaaze.Config.get("phaazedb_user", "phaaze"),
+	passwd=Phaaze.Config.get("phaazedb_password", ""),
+	database=Phaaze.Config.get("phaazedb_database", "phaaze")
 )
 
 class CheckDiscordOnServer(PhaazebotDiscord):
@@ -62,9 +62,8 @@ class CheckDiscordOnServer(PhaazebotDiscord):
 		self.log("Discord disconnected")
 
 	async def on_ready(self) -> None:
-		self.log("Discord Connectet, gathering DB entrys...")
+		self.log("Discord Connected, gathering DB entry's...")
 		self.log(f"Requesting memberlist of {len(self.guilds)} guilds")
-
 
 		guild_id_list:str = ", ".join(f"'{g.id}'" for g in self.guilds)
 		if not guild_id_list: guild_id_list = "0"
@@ -74,7 +73,7 @@ class CheckDiscordOnServer(PhaazebotDiscord):
 			WHERE `discord_user`.`guild_id` IN ({guild_id_list})"""
 		)
 
-		self.log(f"Found {len(check_entrys)} checkable entrys, running checks, this may take a while...")
+		self.log(f"Found {len(check_entrys)} check-able entry's, running checks, this may take a while...")
 		if self.detailed: self.log("    "+str(check_entrys))
 
 		on_server:List[int] = []
@@ -106,9 +105,9 @@ class CheckDiscordOnServer(PhaazebotDiscord):
 				not_on_server.append(entry_id)
 
 		self.log("Analytics complete")
-		self.log(f"{len(not_on_server)} entrys found that are not on server")
+		self.log(f"{len(not_on_server)} entry's found that are not on server")
 		if self.detailed: self.log("    "+str(not_on_server))
-		self.log(f"{len(on_server)} entrys found that are on server")
+		self.log(f"{len(on_server)} entry's found that are on server")
 		if self.detailed: self.log("    "+str(on_server))
 
 		# ensure no empty list
@@ -130,9 +129,10 @@ class CheckDiscordOnServer(PhaazebotDiscord):
 
 		await self.logout()
 
+
 if __name__ == '__main__':
-	automated:bool = any( [CliArgs.get("a"), CliArgs.get("automated")] )
-	detailed:bool = any( [CliArgs.get("d"), CliArgs.get("detailed")] )
+	automated:bool = any([CliArgs.get("a"), CliArgs.get("automated")])
+	detailed:bool = any([CliArgs.get("d"), CliArgs.get("detailed")])
 
 	Protocol:CheckDiscordOnServer = CheckDiscordOnServer()
 

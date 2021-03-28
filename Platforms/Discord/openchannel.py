@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 if TYPE_CHECKING:
-	from .main_discord import PhaazebotDiscord
+	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import discord
 from Utils.Classes.discordserversettings import DiscordServerSettings
@@ -16,9 +16,10 @@ async def openChannel(cls:"PhaazebotDiscord", Message:discord.Message) -> None:
 	ServerSettings:DiscordServerSettings = await getDiscordSeverSettings(cls, Message)
 
 	# Base: get user entry
-	DiscordUser:DiscordUserStats = None
-	user_res:List[DiscordUserStats] = await getDiscordServerUsers(cls, Message.guild.id, member_id=Message.author.id)
-	if user_res: DiscordUser = user_res.pop(0)
+	DiscordUser:Optional[DiscordUserStats] = None
+	user_res:List[DiscordUserStats] = await getDiscordServerUsers(cls, guild_id=Message.guild.id, member_id=Message.author.id)
+	if user_res:
+		DiscordUser = user_res.pop(0)
 
 	# Blacklist: only run blacklist module if links are banned or at least on entry on the blacklist
 	if ServerSettings.blacklist_ban_links or ServerSettings.blacklist_blacklistwords:

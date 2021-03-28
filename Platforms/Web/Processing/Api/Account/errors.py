@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 
-async def apiAccountAlreadyLoggedIn(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiAccountAlreadyLoggedIn(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -17,7 +18,7 @@ async def apiAccountAlreadyLoggedIn(cls:"WebIndex", WebRequest:Request, **kwargs
 	----------------------------------------------------
 	No registration needed, already logged in
 	"""
-	res:dict = dict(status=400, error="aleady_logged_in")
+	res:dict = dict(status=400, error="already_logged_in")
 
 	user_id:str = kwargs.get("user_id", "")
 	if user_id:
@@ -33,14 +34,14 @@ async def apiAccountAlreadyLoggedIn(cls:"WebIndex", WebRequest:Request, **kwargs
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API) Account create already exists - User ID: {user_id}", require="api:create")
+	cls.BASE.Logger.debug(f"(API) Account create already exists - User ID: {user_id}", require="api:create")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiAccountPasswordsDontMatch(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiAccountPasswordsDontMatch(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -58,14 +59,14 @@ async def apiAccountPasswordsDontMatch(cls:"WebIndex", WebRequest:Request, **kwa
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API) Account create failed, passwords don't match", require="api:create")
+	cls.BASE.Logger.debug(f"(API) Account create failed, passwords don't match", require="api:create")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiAccountPasswordToShort(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiAccountPasswordToShort(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -91,14 +92,14 @@ async def apiAccountPasswordToShort(cls:"WebIndex", WebRequest:Request, **kwargs
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API) Account create failed, password to short", require="api:create")
+	cls.BASE.Logger.debug(f"(API) Account create failed, password to short", require="api:create")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiAccountEmailWrong(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiAccountEmailWrong(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -121,14 +122,14 @@ async def apiAccountEmailWrong(cls:"WebIndex", WebRequest:Request, **kwargs:dict
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API) Account create failed, email looks false: {email}", require="api:create")
+	cls.BASE.Logger.debug(f"(API) Account create failed, email looks false: {email}", require="api:create")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiAccountTaken(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiAccountTaken(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -156,9 +157,9 @@ async def apiAccountTaken(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> 
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API) Account create failed, account already taken: {username} - {email}", require="api:create")
+	cls.BASE.Logger.debug(f"(API) Account create failed, account already taken: {username} - {email}", require="api:create")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)

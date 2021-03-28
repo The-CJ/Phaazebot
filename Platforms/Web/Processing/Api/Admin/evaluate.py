@@ -1,41 +1,47 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import traceback
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.authwebuser import AuthWebUser
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.webuserinfo import WebUserInfo
 from Utils.Classes.storeclasses import GlobalStorage
-from Platforms.Web.Processing.Api.errors import apiNotAllowed
+from Platforms.Web.index import PhaazeWebIndex
+from Platforms.Web.utils import authWebUser
 
-async def apiAdminEvaluate(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.view("/api/admin/evaluate")
+async def apiAdminEvaluate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/admin/evaluate
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
-	if not WebUser.checkRoles(["superadmin"]): return await apiNotAllowed(cls, WebRequest, msg="Superadmin rights required")
+	WebAuth:AuthWebUser = await authWebUser(cls, WebRequest)
+	if not WebAuth.found:
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(WebRequest)
+	if not WebAuth.User.checkRoles(["superadmin"]):
+		return await cls.Tree.Api.errors.apiNotAllowed(WebRequest, msg="Superadmin rights required")
 
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
 	# get required stuff
 	command:str = Data.getStr("command", "")
-	corotine:bool = Data.getBool("corotine", False)
+	coroutine:bool = Data.getBool("coroutine", False)
 
-	# this is for easyer access
-	locals()["BASE"] = cls.Web.BASE
+	# this is for easier access
+	locals()["BASE"] = cls.BASE
 	locals()["SUPERBASE"] = GlobalStorage
 
 	# return values
 	success:bool = False
-	result:str = None
-	trace:str = None
+	result:Optional[str] = None
+	trace:Optional[str] = None
 
 	try:
 		res:Any = eval(command)
-		if corotine: res = await res
+		if coroutine: res = await res
 
 		result = str(res)
 		trace = None

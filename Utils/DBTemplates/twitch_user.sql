@@ -8,6 +8,7 @@ DESCRIBE `twitch_user`;
 | channel_id        | varchar(128) | NO   | MUL | NULL    |                |
 | user_id           | varchar(128) | NO   |     | NULL    |                |
 | active            | tinyint(1)   | YES  |     | 0       |                |
+| active            | tinyint(1)   | YES  |     | 0       |                |
 | amount_currency   | int(32)      | YES  |     | 0       |                |
 | amount_time       | int(16)      | YES  |     | 0       |                |
 +-------------------+--------------+------+-----+---------+----------------+
@@ -20,6 +21,7 @@ CREATE TABLE `twitch_user` (
   `channel_id` varchar(128) NOT NULL,
   `user_id` varchar(128) NOT NULL,
   `active` tinyint(1) DEFAULT 0,
+  `edited` tinyint(1) DEFAULT 0,
   `amount_currency` int(32) DEFAULT 0,
   `amount_time` int(16) DEFAULT 0,
   PRIMARY KEY (`id`),

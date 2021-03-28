@@ -1,24 +1,29 @@
 from typing import TYPE_CHECKING, Dict, Any, List
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
-	from main import Phaazebot
+	from phaazebot import Phaazebot
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import time
 import discord
-from aiohttp.web import Response, Request
-from Utils.Classes.webuserinfo import WebUserInfo
-from Platforms.Web.Processing.Api.errors import apiNotAllowed
+from aiohttp.web import Response
+from Utils.Classes.authwebuser import AuthWebUser
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Platforms.Web.index import PhaazeWebIndex
+from Platforms.Web.utils import authWebUser
 
-async def apiAdminStatus(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.view("/api/admin/status")
+async def apiAdminStatus(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/admin/status
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
-	if not WebUser.checkRoles(["admin", "superadmin"]):
-		return await apiNotAllowed(cls, WebRequest, msg="Admin rights required")
+	WebAuth:AuthWebUser = await authWebUser(cls, WebRequest)
+	if not WebAuth.found:
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(WebRequest)
+	if not WebAuth.User.checkRoles(["admin", "superadmin"]):
+		return await cls.Tree.Api.errors.apiNotAllowed(WebRequest, msg="Admin rights required")
 
-	BASE:"Phaazebot" = cls.Web.BASE
+	BASE:"Phaazebot" = cls.BASE
 	status:Dict[str, Any] = dict()
 
 	status["version"] = BASE.version
@@ -41,15 +46,15 @@ async def apiAdminStatus(cls:"WebIndex", WebRequest:Request) -> Response:
 	)
 
 def getDiscordStatus(BASE:"Phaazebot") -> Dict[str, Any]:
-	discord:Dict[str, Any] = dict(
-		unique_guilds = len(BASE.Discord.guilds),
-		unique_users = getUniqueDiscordMember(BASE.Discord.guilds),
-		bot_id = str( BASE.Discord.user.id ),
-		bot_name = str( BASE.Discord.user.name ),
-		bot_discriminator = str( BASE.Discord.user.discriminator ),
-		bot_avatar_url = str( BASE.Discord.user.avatar_url )
+	discord_data:Dict[str, Any] = dict(
+		unique_guilds=len(BASE.Discord.guilds),
+		unique_users=getUniqueDiscordMember(BASE.Discord.guilds),
+		bot_id=str(BASE.Discord.user.id),
+		bot_name=str(BASE.Discord.user.name),
+		bot_discriminator=str(BASE.Discord.user.discriminator),
+		bot_avatar_url=str(BASE.Discord.user.avatar_url)
 	)
-	return discord
+	return discord_data
 
 def getUniqueDiscordMember(guilds:List[discord.Guild]) -> int:
 	unique_member:List[int] = []

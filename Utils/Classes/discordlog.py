@@ -1,11 +1,10 @@
 import datetime
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
-from Utils.Classes.apiclass import APIClass
+from Utils.Classes.contentclass import ContentClass
 
 from Platforms.Discord.logging import TRACK_OPTIONS
 
-class DiscordLog(DBContentClass, APIClass):
+class DiscordLog(ContentClass):
 	"""
 	Contains and represents stuff for a discord log entry
 	"""
@@ -29,12 +28,12 @@ class DiscordLog(DBContentClass, APIClass):
 
 		j:dict = dict()
 
-		j["log_id"] = self.toString(self.log_id)
-		j["content"] = self.toString(self.content)
-		j["created_at"] = self.toString(self.created_at)
-		j["event_name"] = self.toString(self.event_name)
-		j["event_value"] = self.toInteger(self.event_value)
-		j["initiator_id"] = self.toString(self.initiator_id)
+		j["log_id"] = self.asString(self.log_id)
+		j["content"] = self.asString(self.content)
+		j["created_at"] = self.asString(self.created_at)
+		j["event_name"] = self.asString(self.event_name)
+		j["event_value"] = self.asInteger(self.event_value)
+		j["initiator_id"] = self.asString(self.initiator_id)
 
 		return j
 

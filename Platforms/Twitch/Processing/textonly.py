@@ -4,11 +4,11 @@ if TYPE_CHECKING:
 
 from Utils.Classes.twitchcommand import TwitchCommand
 from Utils.Classes.twitchcommandcontext import TwitchCommandContext
-from Platforms.Twitch.formater import responseFormater
+from Platforms.Twitch.formatter import responseFormatter
 
 async def textOnly(cls:"PhaazebotTwitch", Command:TwitchCommand, CommandContext:TwitchCommandContext) -> dict:
 
-	replaceables:dict = {
+	replaceable:dict = {
 		"user-name": CommandContext.Message.user_name,
 		"user-display-name": CommandContext.Message.display_name,
 		"channel-name": CommandContext.Message.room_id,
@@ -17,16 +17,16 @@ async def textOnly(cls:"PhaazebotTwitch", Command:TwitchCommand, CommandContext:
 	}
 
 	additional_kwargs:dict = dict(
-		CommandContext = CommandContext,
+		CommandContext=CommandContext,
 
-		var_dict = replaceables,
-		enable_positions = True,
+		var_dict=replaceable,
+		enable_positions=True,
 	)
 
 	if not Command.content:
 		# should never happen?
 		return {}
 
-	formated_content:str = await responseFormater(cls, Command.content, **additional_kwargs)
+	formatted_content:str = await responseFormatter(cls, Command.content, **additional_kwargs)
 
-	return {"content": formated_content}
+	return {"content": formatted_content}

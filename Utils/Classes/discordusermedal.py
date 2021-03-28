@@ -1,17 +1,16 @@
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
-from Utils.Classes.apiclass import APIClass
+from Utils.Classes.contentclass import ContentClass
 
-class DiscordUserMedal(DBContentClass, APIClass):
+class DiscordUserMedal(ContentClass):
 	"""
 	Contains and represents stuff for a discord user medal
 	"""
 	def __init__(self, data:dict):
 
-		self.medal_id:int = data.get("id", UNDEFINED)
-		self.guild_id:str = data.get("guild_id", UNDEFINED)
-		self.member_id:int = data.get("member_id", UNDEFINED)
-		self.name:str = data.get("name", UNDEFINED)
+		self.medal_id:int = self.asInteger(data.get("id", UNDEFINED))
+		self.guild_id:str = self.asString(data.get("guild_id", UNDEFINED))
+		self.member_id:str = self.asString(data.get("member_id", UNDEFINED))
+		self.name:str = self.asString(data.get("name", UNDEFINED))
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' medal='{self.medal_id}'>"
@@ -21,9 +20,9 @@ class DiscordUserMedal(DBContentClass, APIClass):
 
 		j:dict = dict()
 
-		j["medal_id"] = self.toString(self.medal_id)
-		j["guild_id"] = self.toString(self.guild_id)
-		j["member_id"] = self.toString(self.member_id)
-		j["name"] = self.toString(self.name)
+		j["medal_id"] = self.asString(self.medal_id)
+		j["guild_id"] = self.asString(self.guild_id)
+		j["member_id"] = self.asString(self.member_id)
+		j["name"] = self.asString(self.name)
 
 		return j

@@ -10,14 +10,18 @@ from Platforms.Discord.db import getDiscordServerAssignRoles
 
 async def listAssignRole(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
-	all_roles:list = await getDiscordServerAssignRoles(cls, Command.server_id)
+	all_roles:list = await getDiscordServerAssignRoles(cls, guild_id=Command.server_id)
 
 	if not all_roles:
 		return {"content": ":warning: This server does not have any assigned roles."}
 
-	format_role_list:list = [ ["Trigger", "Role"], ["---", "---"]]
+	format_role_list:list = [
+		["Trigger", "Role"],
+		["---", "---"]
+	]
+
 	for Ro in all_roles:
-		DiscordRole:discord.Role = CommandContext.Message.guild.get_role( int(Ro.role_id) )
+		DiscordRole:discord.Role = CommandContext.Message.guild.get_role(int(Ro.role_id))
 		if not DiscordRole:
 			format_role_list.append([Ro.trigger, "DELETED ROLE"])
 

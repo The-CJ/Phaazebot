@@ -9,7 +9,7 @@ from Utils.Classes.discordcommandcontext import DiscordCommandContext
 
 URBANLINK:str = "https://api.urbandictionary.com/v0/define"
 
-async def urbanDictionary(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
+async def urbanDictionary(_cls:"PhaazebotDiscord", _Command:DiscordCommand, CommandContext:DiscordCommandContext) -> dict:
 
 	search_term:str = " ".join([x for x in CommandContext.parts[1:]])
 	if not search_term:

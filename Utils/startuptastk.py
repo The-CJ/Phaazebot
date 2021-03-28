@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import json
 
@@ -9,7 +9,7 @@ def initStartupTasks(cls:"Phaazebot") -> None:
 	This function is called on startup from phaaze,
 	its called before phaaze starts the mainframe
 
-	(its probly, mainly used to load in values from the db)
+	(its probably, mainly used to load in values from the db)
 	"""
 
 	loadInTwitchClientCredentials(cls)

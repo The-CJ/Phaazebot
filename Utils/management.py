@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import asyncio
 
@@ -8,10 +8,10 @@ import asyncio
 def shutdownModule(BASE:"Phaazebot", module_name:str) -> bool:
 	"""
 	just enter the module name, found in BASE.Active and it will run
-	the nessessery function to ensure a clean exit if needed.
+	the necessary function to ensure a clean exit if needed.
 
 	As far as i know, there should be no startModule function.
-	Since it will be startet by the Mainframe corotine in
+	Since it will be started by the Mainframe coroutine in
 	Utils.threads.Mainframe.secureModules
 	"""
 	if not hasattr(BASE.Active, module_name): raise AttributeError(f"BASE.Active has no attribute '{module_name}'")
@@ -71,7 +71,7 @@ def shutdownModuleWeb(BASE:"Phaazebot") -> bool:
 
 def shutdownModuleTwitchEvents(BASE:"Phaazebot") -> bool:
 	"""
-	this is actully just to be sure i guess
+	this is actually just to be sure i guess
 	"""
 	BASE.TwitchEvents.stop()
 	return True

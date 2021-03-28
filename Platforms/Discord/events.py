@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
-	from .main_discord import PhaazebotDiscord
+	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import asyncio
 import discord
@@ -8,14 +8,15 @@ import traceback
 from Utils.Classes.discordserversettings import DiscordServerSettings
 from Platforms.Discord.db import getDiscordSeverSettings
 from Platforms.Discord.utils import getDiscordChannelFromString, getDiscordRoleFromString
-from Platforms.Discord.formater import responseFormater
+from Platforms.Discord.formatter import responseFormatter
 from Platforms.Discord.logging import loggingOnMemberJoin, loggingOnMemberRemove
 from Utils.regex import ContainsLink
 
 async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> None:
 	"""
-	Get's triggered everytime a new member joins a guild
+	Get's triggered everytime a new member joins a guild,
 	the following action may be taken (in this order):
+
 	* Send logging message
 	* Send a welcome message to guild channel
 	* Send a private welcome message to the new member
@@ -24,7 +25,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 	"""
 
 	Settings:DiscordServerSettings = await getDiscordSeverSettings(cls, Member.guild.id)
-	link_in_name:bool = bool( ContainsLink.match(Member.name) )
+	link_in_name:bool = bool(ContainsLink.match(Member.name))
 
 	# logging message
 	log_coro:Coroutine = loggingOnMemberJoin(cls, Settings, NewMember=Member, link_in_name=link_in_name)
@@ -41,7 +42,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 				"server-name": Member.guild.name,
 				"member-count": str(Member.guild.member_count)
 			}
-			finished_message:str = await responseFormater(cls, Settings.welcome_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
+			finished_message:str = await responseFormatter(cls, Settings.welcome_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
 			try:
 				finished_message = finished_message[:1997]
 				await WelcomeChan.send(finished_message)
@@ -56,7 +57,7 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 			"server-name": Member.guild.name,
 			"member-count": str(Member.guild.member_count)
 		}
-		finished_message:str = await responseFormater(cls, Settings.welcome_msg_priv, var_dict=welcome_msg_priv_vars, enable_special=True, DiscordGuild=Member.guild)
+		finished_message:str = await responseFormatter(cls, Settings.welcome_msg_priv, var_dict=welcome_msg_priv_vars, enable_special=True, DiscordGuild=Member.guild)
 		try:
 			finished_message = finished_message[:1997]
 			await Member.send(finished_message)
@@ -74,10 +75,10 @@ async def eventOnMemberJoin(cls:"PhaazebotDiscord", Member:discord.Member) -> No
 
 	# set member active, if there was a known entry
 	cls.BASE.PhaazeDB.updateQuery(
-		table = "discord_user",
-		content = {"on_server":1},
-		where = "guild_id = %s AND member_id = %s",
-		where_values = ( str(Member.guild.id), str(Member.id) )
+		table="discord_user",
+		content={"on_server":1},
+		where="guild_id = %s AND member_id = %s",
+		where_values=(str(Member.guild.id), str(Member.id))
 	)
 
 async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> None:
@@ -90,7 +91,7 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 	"""
 
 	Settings:DiscordServerSettings = await getDiscordSeverSettings(cls, Member.guild.id)
-	link_in_name:bool = bool( ContainsLink.match(Member.name) )
+	link_in_name:bool = bool(ContainsLink.match(Member.name))
 
 	# logging message
 	log_coro:Coroutine = loggingOnMemberRemove(cls, Settings, OldMember=Member, link_in_name=link_in_name)
@@ -107,7 +108,7 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 				"server-name": Member.guild.name,
 				"member-count": str(Member.guild.member_count)
 			}
-			finished_message:str = await responseFormater(cls, Settings.leave_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
+			finished_message:str = await responseFormatter(cls, Settings.leave_msg, var_dict=welcome_msg_vars, enable_special=True, DiscordGuild=Member.guild)
 			try:
 				finished_message = finished_message[:1997]
 				await LeaveChan.send(finished_message)
@@ -116,8 +117,8 @@ async def eventOnMemberRemove(cls:"PhaazebotDiscord", Member:discord.Member) -> 
 
 	# set member inactive
 	cls.BASE.PhaazeDB.updateQuery(
-		table = "discord_user",
-		content = {"on_server":0},
-		where = "guild_id = %s AND member_id = %s",
-		where_values = ( str(Member.guild.id), str(Member.id) )
+		table="discord_user",
+		content={"on_server":0},
+		where="guild_id = %s AND member_id = %s",
+		where_values=(str(Member.guild.id), str(Member.id))
 	)

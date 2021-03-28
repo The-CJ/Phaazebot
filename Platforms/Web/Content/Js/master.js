@@ -63,13 +63,13 @@ function insertData(Obj, data, to_string=false) {
 	// every matching [name=key] element, it inserts data[key]
 
 	// if matching element is a [type=checkbox]:
-	// element gets prop 'checked' set based on boolish interpretion of data[key]
+	// element gets prop 'checked' set based on boolish interpretation of data[key]
 
 	// if matching element is a SPAN
 	// the value of data[key] gets inserted as text
 
 	// to_string ensures content input by all types, except 'null'
-	// which will be convertet to a empty string
+	// which will be converted to a empty string
 
 	if (typeof Obj != "object") { Obj = $(Obj); }
 	for (var key in data) {
@@ -172,7 +172,7 @@ function copyToClipboard(content) {
 
 // request handler
 function formUpdate(x={}) {
-	// this is like a extended version of JQuerys $.get or $post
+	// this is like a extended version of JQuery's $.get or $post
 	// if can be used like any other {key: value} request,
 	// but this one supports File object and some other classes in the value spot
 
@@ -212,14 +212,14 @@ function formUpdate(x={}) {
 }
 
 function generalAPIErrorHandler(x={}) {
-	// it does what you whould think it does,
+	// it does what you would think it does,
 	// give this function the data object from a $.get .post .etc...
 	// and it will give you a display message,
 	// with the message, or at least the error... mostly
 	// also sends stuff to debug log
 
 	// message content priority
-	// server message -> alternativ message -> server error code -> "Unknown"
+	// server message -> alternative message -> server error code -> "Unknown"
 
 	// x : data :: jquery response
 	// x : msg :: str
@@ -232,7 +232,7 @@ function generalAPIErrorHandler(x={}) {
 	var time = x["time"] ? x["time"] : Display.default_time;
 	var alt_msg = x["msg"] ? x["msg"] : null;
 
-	// most likely alwys is true, since this is a ERROR function
+	// most likely always is true, since this is a ERROR function
 	if (data.responseJSON) { data = data.responseJSON; }
 
 	var final_message = null;
@@ -255,10 +255,10 @@ function generalAPIErrorHandler(x={}) {
 
 function hrefLocation(x={}) {
 	// this function can be applied to pretty much all elements
-	// and make it so if has the same functionallity than a anchor <a> element
+	// and make it so if has the same functionality than a anchor <a> element
 	// its recommended to use it via: onmousedown
 	// the target value is only for left clicks and will be overwritten when middle mouse is pressed
-	// giving 'middle' or 'left' a false value will disable this clicktype for the the event
+	// giving 'middle' or 'left' a false value will disable this click type for the the event
 
 	// x : href :: str
 	// x : target :: str ::: "_self"
@@ -326,7 +326,7 @@ var SessionManager = new (class {
 			SessionManagerO.displayInfo(platform, data.user);
 		})
 		.fail(function (data) {
-			// only do additional handling if its not a 401, because getting a unauthorised is actully pretty normal for a login question
+			// only do additional handling if its not a 401, because getting a unauthorised is actually pretty normal for a login question
 			if (data.status != 401) { generalAPIErrorHandler( {data:data, msg:`Could not load info for platform: ${platform}`} ); }
 
 			// hide the login attributes and show login = false
@@ -350,6 +350,11 @@ var SessionManager = new (class {
 			$(`${this.modal_id} [show-mode=discord] [login=true] [name=current_discord_avatar]`).attr("src", avatar);
 		}
 
+		if (platform == "twitch") {
+			$(`${this.modal_id} [show-mode=twitch] [login=true] [name=current_twitch_username]`).val(data.display_name);
+			$(`${this.modal_id} [show-mode=twitch] [login=true] [name=current_twitch_avatar]`).attr("src", data.profile_image_url);
+		}
+
 		// hide the login attributes and show login = true
 		$(`${this.modal_id} [show-mode=${platform}] [login]`).hide();
 		$(`${this.modal_id} [show-mode=${platform}] [login=true]`).show();
@@ -361,7 +366,7 @@ var SessionManager = new (class {
 		$.post("/api/account/phaaze/login", login_data)
 		.done(function (data) {
 			CookieManager.set("phaaze_session", data.phaaze_session, data.expires_in);
-			Display.showMessage({'content': 'You successfull logged in!' ,'color':Display.color_success});
+			Display.showMessage({'content': 'You successful logged in!' ,'color':Display.color_success});
 			$(SessionManagerO.modal_id).modal('hide');
 		})
 		.fail(function (data) {
@@ -385,7 +390,7 @@ var SessionManager = new (class {
 
 		$.post(url)
 		.done(function (data) {
-			Display.showMessage({"content": `You successfull logged out from ${platform}`,'color':Display.color_success});
+			Display.showMessage({"content": `You successful logged out from ${platform}`,'color':Display.color_success});
 			if (platform == "phaaze") { CookieManager.remove("phaaze_session"); }
 			if (platform == "discord") { CookieManager.remove("phaaze_discord_session"); }
 			if (platform == "twitch") { CookieManager.remove("phaaze_twitch_session"); }
@@ -461,7 +466,7 @@ var Display = new (class {
 		if (m.color == null) { m.color = this.color_info; }
 		if (m.text_color == null) { m.text_color = "#fff"; }
 
-		// the main display field is located in the navbar, so its everywere.
+		// the main display field is located in the navbar, so its everywhere.
 		var messagebox = $('[messagebox]');
 
 		var mid = (Math.floor(Math.random()*1000000));
@@ -564,18 +569,18 @@ var DynamicURL = new (class {
 	}
 
 	update() {
-		let ucurl = window.location.pathname;
+		let curl = window.location.pathname;
 		let pre = "?";
 
 		for (var key in this.values) {
 			let value = this.values[key];
 			if (isEmpty(value)) { continue; }
 
-			ucurl = ucurl + pre + key + "=" + encodeURIComponent(value);
+			curl = curl + pre + key + "=" + encodeURIComponent(value);
 			pre = "&";
 
 		}
-		window.history.replaceState('obj', 'newtitle', ucurl);
+		window.history.replaceState('obj', 'newtitle', curl);
 	}
 
 	getFromLocation(name) {

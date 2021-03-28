@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
@@ -23,7 +23,7 @@ async def searchWikipedia(cls:"PhaazebotDiscord", Command:DiscordCommand, Comman
 	except:
 		return {"content": ":warning: Could not connect to Wikipedia, try later again."}
 
-	res:list = removeRefereTo(res)
+	res:list = removeReferTo(res)
 
 	# res = ['<search>', [<found titles>], [<found quick-desc>], [<found links>]]
 	if not res[1]:
@@ -41,8 +41,8 @@ async def autocomplete(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCo
 	title_number:int = 0
 	for title in titles:
 		title_number += 1
-		ask_text.append( f"{numberToHugeLetter(title_number)} {title}" )
-	ask_text.append( "Please type only the number you wanna search." )
+		ask_text.append(f"{numberToHugeLetter(title_number)} {title}")
+	ask_text.append("Please type only the number you wanna search.")
 
 	ask_text:str = "\n".join(ask_text)
 	Emb:discord.Embed = discord.Embed(title=":grey_exclamation: There are multiple results. Please choose", description=ask_text)
@@ -56,23 +56,24 @@ async def autocomplete(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCo
 				return True
 		return False
 
+	Res:Optional[discord.Message]
 	try:
-		Res:discord.Message = await cls.wait_for("message", check=check, timeout=30)
+		Res = await cls.wait_for("message", check=check, timeout=30)
 	except:
-		Res:discord.Message = None
+		Res = None
 
 	if (not Res) or (not Res.content.isdigit()):
 		return {"content": ":warning: Please only enter a number... Try later again"}
 
 	user_input:int = int(Res.content)
-	if not (0 < user_input <= len(title)):
-		return {"content": f":warning: Please only enter a number between 1 - {str(len(title))}... Try later again"}
+	if not (0 < user_input <= len(titles)):
+		return {"content": f":warning: Please only enter a number between 1 - {str(len(titles))}... Try later again"}
 
-	search_title:str = titles[ user_input-1 ]
+	search_title:str = titles[user_input-1]
 
 	return await getSummary(cls, Command, CommandContext, search_title)
 
-async def getSummary(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandContext:DiscordCommandContext, title:str) -> dict:
+async def getSummary(_cls:"PhaazebotDiscord", _Command:DiscordCommand, _CommandContext:DiscordCommandContext, title:str) -> dict:
 
 	try:
 		res:dict = requests.get(PATH_SUMMARY+title).json()
@@ -92,13 +93,13 @@ async def getSummary(cls:"PhaazebotDiscord", Command:DiscordCommand, CommandCont
 
 	return {"embed": Emb}
 
-def removeRefereTo(api_result:list) -> list:
+def removeReferTo(api_result:list) -> list:
 	try:
 		# res = ['<search>', [<found titles>], [<found quick-desc>], [<found links>]]
 		first_description:str = api_result[2][0].lower()
 		if not first_description or first_description.endswith(":"):
-			# a thing not having a description means its a "refere to:" page, ignore these and remove
+			# a thing not having a description means its a "refer to:" page, ignore these and remove
 			api_result[1].pop(0)
 			api_result[2].pop(0)
-	except:	pass
+	except: pass
 	finally: return api_result

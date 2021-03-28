@@ -1,38 +1,25 @@
 from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
 import asyncio
 import discord
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.storagetransformer import StorageTransformer
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.discordassignrole import DiscordAssignRole
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.undefined import UNDEFINED
-from Utils.dbutils import validateDBInput
+from Platforms.Web.utils import authDiscordWebUser
 from Platforms.Discord.db import getDiscordServerAssignRoles, getDiscordSeverSettings
 from Platforms.Discord.utils import getDiscordRoleFromString
 from Platforms.Discord.logging import loggingOnAssignroleEdit
-from Platforms.Web.Processing.Api.errors import (
-	apiMissingData,
-	apiMissingAuthorisation,
-	apiWrongData
-)
-from Platforms.Web.Processing.Api.Discord.errors import (
-	apiDiscordGuildUnknown,
-	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission,
-	apiDiscordRoleNotFound
-)
-from .errors import (
-	apiDiscordAssignRoleExists,
-	apiDiscordAssignRoleNotExists
-)
 
-async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordAssignrolesEdit(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/discord/assignroles/edit
 	"""
@@ -40,94 +27,93 @@ async def apiDiscordAssignrolesEdit(cls:"WebIndex", WebRequest:Request) -> Respo
 	await Data.load()
 
 	# get required stuff
-	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	assignrole_id:str = Data.getStr("assignrole_id", "", must_be_digit=True)
+	Edit:StorageTransformer = StorageTransformer()
+	Edit["assignrole_id"] = Data.getInt("assignrole_id", "", min_x=1)
+	Edit["guild_id"] = Data.getStr("guild_id", "", must_be_digit=True)
 
 	# checks
-	if not guild_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+	if not Edit["assignrole_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'assignrole_id'")
 
-	if not assignrole_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'assignrole_id'")
+	if not Edit["guild_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
+	# get/check discord
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
+	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(Edit["guild_id"]))
 	if not Guild:
-		return await apiDiscordGuildUnknown(cls, WebRequest)
+		return await cls.Tree.Api.Discord.errors.apiDiscordGuildUnknown(cls, WebRequest)
 
 	# check if exists
-	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id, assignrole_id=assignrole_id)
+	res_assignroles:list = await getDiscordServerAssignRoles(PhaazeDiscord, guild_id=Edit["guild_id"], assignrole_id=Edit["assignrole_id"])
 
 	if not res_assignroles:
-		return await apiDiscordAssignRoleNotExists(cls, WebRequest, assignrole_id=assignrole_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordAssignRoleNotExists(cls, WebRequest, assignrole_id=Edit["assignrole_id"])
 
 	AssignRoleToEdit:DiscordAssignRole = res_assignroles.pop(0)
 
 	# check all update values
-	db_update:dict = dict()
 	update:dict = dict()
 
-	value:str = Data.getStr("role_id", UNDEFINED, must_be_digit=True)
-	if value != UNDEFINED:
-		AssignRole:discord.Role = getDiscordRoleFromString(cls, Guild, value)
+	Edit["role_id"] = Data.getStr("role_id", UNDEFINED, must_be_digit=True)
+	if Edit["role_id"] != UNDEFINED:
+		AssignRole:discord.Role = getDiscordRoleFromString(PhaazeDiscord, Guild, Edit["role_id"])
 		if not AssignRole:
-			return await apiDiscordRoleNotFound(cls, WebRequest, guild_name=Guild.name, guild_id=Guild.id, role_name=value )
+			return await cls.Tree.Api.Discord.errors.apiDiscordRoleNotFound(cls, WebRequest, guild_name=Guild.name, guild_id=Guild.id, role_id=Edit["role_id"])
 
 		if AssignRole > Guild.me.top_role or AssignRole == Guild.default_role:
-			return await apiWrongData(cls, WebRequest, msg=f"The Role `{AssignRole.name}` is to high")
+			return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"The Role `{AssignRole.name}` is to high")
 
-		db_update["role_id"] = validateDBInput(str, value)
-		update["role_id"] = value
+		update["role_id"] = Edit["role_id"]
 
-	value:str = Data.getStr("trigger", "").lower().split(" ")[0]
-	if value:
+	Edit["trigger"] = Data.getStr("trigger", "").lower().split(" ")[0]
+	if Edit["trigger"]:
 		# try to get command with this trigger
-		check_double_trigger:list = await getDiscordServerAssignRoles(cls.Web.BASE.Discord, guild_id, trigger=value)
+		check_double_trigger:list = await getDiscordServerAssignRoles(cls.BASE.Discord, guild_id=Edit["guild_id"], trigger=Edit["trigger"])
 		if check_double_trigger:
 			AssignRoleToCheck:DiscordAssignRole = check_double_trigger.pop(0)
-			# tryed to set a trigger twice
+			# tried to set a trigger twice
 			if str(AssignRoleToEdit.assignrole_id) != str(AssignRoleToCheck.assignrole_id):
-				return await apiDiscordAssignRoleExists(cls, WebRequest, trigger=value)
+				return await cls.Tree.Api.Discord.Assignroles.errors.apiDiscordAssignRoleExists(cls, WebRequest, trigger=Edit["trigger"])
 
-		db_update["trigger"] = validateDBInput(str, value)
-		update["trigger"] = value
+		update["trigger"] = Edit["trigger"]
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found:
-		return await apiMissingAuthorisation(cls, WebRequest)
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
+	if not AuthDiscord.found:
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(cls, WebRequest)
 
 	# get member
-	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	CheckMember:discord.Member = Guild.get_member(int(AuthDiscord.User.user_id))
 	if not CheckMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, guild_id=Edit["guild_id"], user_id=AuthDiscord.User.user_id)
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Edit["guild_id"], user_id=AuthDiscord.User.user_id)
 
 	if not update:
-		return await apiWrongData(cls, WebRequest, msg=f"No changes, please add at least one")
+		return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"No changes, please add at least one")
 
-	cls.Web.BASE.PhaazeDB.updateQuery(
-		table = "discord_assignrole",
-		content = db_update,
-		where = "`discord_assignrole`.`guild_id` = %s AND `discord_assignrole`.`id` = %s",
-		where_values = (AssignRoleToEdit.guild_id, AssignRoleToEdit.assignrole_id)
+	cls.BASE.PhaazeDB.updateQuery(
+		table="discord_assignrole",
+		content=update,
+		where="`discord_assignrole`.`guild_id` = %s AND `discord_assignrole`.`id` = %s",
+		where_values=(AssignRoleToEdit.guild_id, AssignRoleToEdit.assignrole_id)
 	)
 
 	# logging
-	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, Edit["guild_id"], prevent_new=True)
 	log_coro:Coroutine = loggingOnAssignroleEdit(PhaazeDiscord, GuildSettings,
 		Editor=CheckMember,
 		assign_role_trigger=AssignRoleToEdit.trigger,
 		changes=update
 	)
-	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Assignrole: {guild_id=} edited {assignrole_id=}", require="discord:role")
+	cls.BASE.Logger.debug(f"(API/Discord) Assignrole: {Edit['guild_id']=} edited {Edit['assignrole_id']=}", require="discord:role")
 	return cls.response(
-		text=json.dumps( dict(msg="Assignrole: Edited entry", changes=update, status=200) ),
+		text=json.dumps(dict(msg="Assignrole: Edited entry", changes=update, status=200)),
 		content_type="application/json",
 		status=200
 	)

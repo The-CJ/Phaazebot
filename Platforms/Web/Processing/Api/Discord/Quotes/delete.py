@@ -1,23 +1,23 @@
 from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
 import asyncio
 import discord
-from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from aiohttp.web import Response
 from Utils.Classes.discordserversettings import DiscordServerSettings
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
+from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.discordquote import DiscordQuote
+from Platforms.Web.utils import authDiscordWebUser
 from Platforms.Discord.db import getDiscordServerQuotes, getDiscordSeverSettings
 from Platforms.Discord.logging import loggingOnQuoteDelete
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
-from .errors import apiDiscordQuotesNotExists
 
-async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordQuotesDelete(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/discord/quotes/delete
 	"""
@@ -35,33 +35,34 @@ async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response
 	if not quote_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'quote_id'")
 
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 	if not Guild:
-		return await apiDiscordGuildUnknown(cls, WebRequest)
+		return await cls.Tree.Api.Discord.errors.apiDiscordGuildUnknown(cls, WebRequest)
 
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found:
+	# get user info
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
+	if not AuthDiscord.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 
 	# get member
-	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	CheckMember:discord.Member = Guild.get_member(int(AuthDiscord.User.user_id))
 	if not CheckMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=AuthDiscord.User.user_id)
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors. apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=AuthDiscord.User.user_id)
 
 	# get quote
-	quote_res:list = await getDiscordServerQuotes(cls.Web.BASE.Discord, guild_id, quote_id=quote_id)
+	quote_res:list = await getDiscordServerQuotes(cls.BASE.Discord, guild_id=guild_id, quote_id=quote_id)
 
 	if not quote_res:
-		return await apiDiscordQuotesNotExists(cls, WebRequest, quote_id=quote_id)
+		return await cls.Tree.Api.Discord.Quotes.errors.apiDiscordQuotesNotExists(cls, WebRequest, quote_id=quote_id)
 
 	QuoteToDelete:DiscordQuote = quote_res.pop(0)
 
-	cls.Web.BASE.PhaazeDB.deleteQuery("""
+	cls.BASE.PhaazeDB.deleteQuery("""
 		DELETE FROM `discord_quote`	WHERE `guild_id` = %s AND `id` = %s""",
 		(QuoteToDelete.guild_id, QuoteToDelete.quote_id)
 	)
@@ -69,11 +70,11 @@ async def apiDiscordQuotesDelete(cls:"WebIndex", WebRequest:Request) -> Response
 	# logging
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
 	log_coro:Coroutine = loggingOnQuoteDelete(PhaazeDiscord, GuildSettings, Deleter=CheckMember, quote_id=QuoteToDelete.quote_id, deleted_content=QuoteToDelete.content)
-	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Quote: {guild_id=} deleted {quote_id=}", require="discord:quote")
+	cls.BASE.Logger.debug(f"(API/Discord) Quote: {guild_id=} deleted {quote_id=}", require="discord:quote")
 	return cls.response(
-		text=json.dumps( dict(msg="Quote: Deleted entry", deleted=QuoteToDelete.content, status=200) ),
+		text=json.dumps(dict(msg="Quote: Deleted entry", deleted=QuoteToDelete.content, status=200)),
 		content_type="application/json",
 		status=200
 	)

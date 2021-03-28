@@ -116,12 +116,12 @@
 
 							<div class="center-item-row md-form">
 								<i class="fas fa-user-circle grey-text prefix"></i>
-								<input type="text" class="form-control" name="username" placeholder="Username or E-mail">
+								<input type="text" class="form-control" name="phaaze_username" placeholder="Username or E-mail">
 							</div>
 
 							<div class="center-item-row md-form">
 								<i class="fas fa-lock grey-text prefix"></i>
-								<input type="password" class="form-control" name="password" placeholder="Password">
+								<input type="password" class="form-control" name="phaaze_password" placeholder="Password">
 							</div>
 
 							<hr>
@@ -145,7 +145,6 @@
 						<h3>Currently logged in as:</h3>
 
 						<div class="center-item-row md-form">
-							<i class="fas fa-user-circle grey-text icon"></i>
 							<input type="text" name="current_discord_username" class="form-control text-center" readonly>
 						</div>
 						<br>
@@ -175,11 +174,30 @@
 					<div login="loading"><span>Loading Twitch informations...</span></div>
 
 					<div login="true">
-						TWITCH LOGIN TRUE
+
+						<h3>Currently logged in as:</h3>
+
+						<div class="center-item-row md-form">
+							<input type="text" name="current_twitch_username" class="form-control text-center" readonly>
+						</div>
+						<br>
+						<div class="center-item-col forced">
+							<img src="" alt="twitch_avatar" name="current_twitch_avatar" height="256" width="256" style="border-radius: 50%; border: 2px solid black;">
+						</div>
+						<br>
+						<button class="btn btn-block btn-danger" type="button" onclick="SessionManager.logout('twitch')">Logout</button>
+
 					</div>
 
 					<div login="false">
-						TWITCH LOGIN FALSE
+
+						<div class="center-item-col forced">
+							<h5>Head over to Twitch and log in</h5>
+							<a class="color-twitch inner-part white-text col text-center" href="|<!--#(twitch_login_link)#-->|" style="font-size: 75px;">
+								<span><i class="fab fa-twitch"></i>Twitch</span>
+							</a>
+						</div>
+
 					</div>
 				</div>
 

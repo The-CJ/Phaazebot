@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
 
-async def apiDiscordConfigsQuoteDisabledChannelExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordConfigsQuoteDisabledChannelExists(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -39,14 +40,14 @@ async def apiDiscordConfigsQuoteDisabledChannelExists(cls:"WebIndex", WebRequest
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Channel exists: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Channel exists: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordConfigsQuoteDisabledChannelNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordConfigsQuoteDisabledChannelNotExists(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -80,9 +81,9 @@ async def apiDiscordConfigsQuoteDisabledChannelNotExists(cls:"WebIndex", WebRequ
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Channel does not exists: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Channel does not exists: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)

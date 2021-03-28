@@ -1,14 +1,17 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from main import Phaazebot
-	from Platforms.Web.index import WebIndex
+	from phaazebot import Phaazebot
+	from Platforms.Web.main_web import PhaazebotWeb
 
-from aiohttp.web import Request
 from Platforms.Discord.api import generateDiscordAuthLink
+from Platforms.Twitch.api import generateTwitchAuthLink
 from Utils.Classes.htmlformatter import HTMLFormatter
-from Utils.Classes.webuserinfo import WebUserInfo
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.authwebuser import AuthWebUser
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
+from Utils.Classes.discordwebuser import DiscordWebUser
+from Utils.Classes.twitchwebuser import TwitchWebUser
 from Utils.Classes.storeclasses import GlobalStorage
+from Utils.Classes.extendedrequest import ExtendedRequest
 
 # templating and stuff
 def getNavbar(active:str="") -> HTMLFormatter:
@@ -30,61 +33,88 @@ def getNavbar(active:str="") -> HTMLFormatter:
 
 def getAccountModal() -> HTMLFormatter:
 	"""
-	get the global login form with all applied formated links etc...
+	get the global login form with all applied formatted links etc...
 	"""
 	PhaazeMain:"Phaazebot" = GlobalStorage.get("Phaazebot")
 	try:
 		discord_login_link:str = generateDiscordAuthLink(PhaazeMain)
-	except:
+		twitch_login_link:str = generateTwitchAuthLink(PhaazeMain)
+	except Exception as E:
+		PhaazeMain.Logger.error(f"getAccountModal - {str(E)}")
 		discord_login_link:str = "/discord?error"
+		twitch_login_link:str = "/twitch?error"
 
 	AccountModal:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Modal/account.html")
 	AccountModal.replace(
 		replace_empty=True,
-		discord_login_link=discord_login_link
+		discord_login_link=discord_login_link,
+		twitch_login_link=twitch_login_link,
 	)
 	return AccountModal
 
-# web translator
-async def getWebUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> WebUserInfo:
+# web authorizer
+async def authWebUser(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> AuthWebUser:
 	"""
-	Tryes to get a WebUser, takes get, post, and cookie in process
-	kwargs are given to WebUserInfo
+	Tries to get a  (Auth)WebUser associated with a request, takes get, post, and cookie in process
 
-	WebUserInfo kwargs:
-		force_method
-		phaaze_session
-		phaaze_token
-		phaaze_username
-		phaaze_password
+	Optional 'system' keywords:
+	---------------------------
+	* `force_method` - str
+	* `phaaze_session` - str
+	* `phaaze_token` - str
+	* `phaaze_username` - str
+	* `phaaze_password` - str
 	"""
 
-	if hasattr(WebRequest, "WebUser"):
-		cls.Web.BASE.Logger.debug(f"(Web) Used stored infos: {str(WebRequest.WebUser)}", require="web:debug")
-		return WebRequest.WebUser
+	if hasattr(WebRequest, "AuthWeb"):
+		if WebRequest.AuthWeb is not None:
+			cls.BASE.Logger.debug(f"(Web) Used stored info's: {str(WebRequest.AuthWeb)}", require="web:debug")
+			return WebRequest.AuthWeb
 
-	WebUser:WebUserInfo = WebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
-	await WebUser.auth()
-	WebRequest.WebUser = WebUser
+	AuthUser:AuthWebUser = AuthWebUser(cls.BASE, WebRequest, **kwargs)
+	await AuthUser.auth()
+	WebRequest.AuthWeb = AuthUser
 
-	return WebRequest.WebUser
+	return WebRequest.AuthWeb
 
-async def getDiscordUserInfo(cls:"WebIndex", WebRequest:Request, **kwargs:Any) -> DiscordWebUserInfo:
+async def authDiscordWebUser(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> AuthDiscordWebUser:
 	"""
-	Tryes to get a DiscordUser, takes get, post, and cookie in process
-	kwargs are given to DiscordWebUserInfo
+	Tries to get a DiscordUser, takes get, post, and cookie in process
+	kwargs are given to DiscordWebUser
 
-	DiscordWebUserInfo kwargs:
+	DiscordWebUser kwargs:
 		force_method
 		phaaze_discord_session
 	"""
 
-	if hasattr(WebRequest, "DiscordUser"):
-		cls.Web.BASE.Logger.debug(f"(Web) Used stored discord infos: {str(WebRequest.DiscordUser)}", require="web:debug")
-		return WebRequest.DiscordUser
+	if hasattr(WebRequest, "AuthDiscord"):
+		if WebRequest.AuthDiscord is not None:
+			cls.BASE.Logger.debug(f"(Web) Used stored discord info's: {str(WebRequest.AuthDiscord)}", require="web:debug")
+			return WebRequest.AuthDiscord
 
-	DiscordUser:DiscordWebUserInfo = DiscordWebUserInfo(cls.Web.BASE, WebRequest, **kwargs)
-	await DiscordUser.auth()
-	WebRequest.DiscordUser = DiscordUser
+	AuthDiscord:AuthDiscordWebUser = AuthDiscordWebUser(cls.BASE, WebRequest, **kwargs)
+	await AuthDiscord.auth()
+	WebRequest.AuthDiscord = AuthDiscord
 
-	return WebRequest.DiscordUser
+	return WebRequest.AuthDiscord
+
+# TODO: rework
+async def getTwitchUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> TwitchWebUser:
+	"""
+	Tries to get a DiscordUser, takes get, post, and cookie in process
+	kwargs are given to TwitchWebUser
+
+	TwitchWebUser kwargs:
+		force_method
+		phaaze_twitch_session
+	"""
+
+	if hasattr(WebRequest, "TwitchUser"):
+		cls.BASE.Logger.debug(f"(Web) Used stored twitch info's: {str(WebRequest.TwitchUser)}", require="web:debug")
+		return WebRequest.TwitchUser
+
+	TwitchUser:TwitchWebUser = TwitchWebUser(cls.BASE, WebRequest, **kwargs)
+	await TwitchUser.auth()
+	WebRequest.TwitchUser = TwitchUser
+
+	return WebRequest.TwitchUser

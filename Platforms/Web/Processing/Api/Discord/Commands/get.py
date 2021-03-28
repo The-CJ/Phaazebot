@@ -1,84 +1,85 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Dict, Any
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import discord
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.storagetransformer import StorageTransformer
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.discordcommand import DiscordCommand
-from Platforms.Web.Processing.Api.errors import apiMissingData
-from Platforms.Discord.db import getDiscordServerCommands, getDiscordServerCommandsAmount
-from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
-from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown, apiDiscordMemberNotFound, apiDiscordMissingPermission
+from Utils.Classes.undefined import UNDEFINED
+from Platforms.Web.utils import authDiscordWebUser
+from Platforms.Discord.db import getDiscordServerCommands
+from Platforms.Web.Processing.Api.errors import apiMissingData, apiMissingAuthorisation
+from Platforms.Web.Processing.Api.Discord.errors import apiDiscordGuildUnknown
 
 DEFAULT_LIMIT:int = 50
 MAX_LIMIT:int = 100
 
-async def apiDiscordCommandsGet(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordCommandsGet(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/discord/commands/get
+	Default url: /api/discord/commands/get
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
 	# get required vars
-	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	command_id:str = Data.getStr("command_id", "", must_be_digit=True)
-	trigger:str = Data.getStr("trigger", "")
-	show_hidden:bool = Data.getBool("show_hidden", False)
-	limit:int = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
-	offset:int = Data.getInt("offset", 0, min_x=0)
+	Search:StorageTransformer = StorageTransformer()
+	Search["guild_id"] = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
+	Search["command_id"] = Data.getStr("command_id", UNDEFINED, must_be_digit=True)
+	Search["trigger"] = Data.getStr("trigger", UNDEFINED, len_min=1, len_max=128)
+	Search["show_hidden"] = Data.getBool("show_hidden", False)
+	Search["active"] = None if Search["show_hidden"] else 1
+	Search["limit"] = Data.getInt("limit", DEFAULT_LIMIT, min_x=1, max_x=MAX_LIMIT)
+	Search["offset"] = Data.getInt("offset", 0, min_x=0)
 
 	# checks
-	if not guild_id:
+	if not Search["guild_id"]:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
+	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(Search["guild_id"]))
 	if not Guild:
 		return await apiDiscordGuildUnknown(cls, WebRequest)
 
-	if show_hidden:
+	if Search["show_hidden"]:
 		# user requested to get full information about commands, requires authorisation
 
-		DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
-		if not DiscordUser.found:
+		AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
+		if not AuthDiscord.found:
 			return await apiMissingAuthorisation(cls, WebRequest)
 
 		# get member
-		CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+		CheckMember:discord.Member = Guild.get_member(int(AuthDiscord.User.user_id))
 		if not CheckMember:
-			return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+			return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, guild_id=Search["guild_id"], user_id=AuthDiscord.User.user_id)
 
 		# check permissions
 		if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-			return await apiDiscordMissingPermission(
+			return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(
 				cls,
 				WebRequest,
-				guild_id=guild_id,
-				user_id=DiscordUser.user_id,
-				msg = "'administrator' or 'manage_guild' permission required to show commands with hidden properties"
+				guild_id=Search["guild_id"],
+				user_id=AuthDiscord.User.user_id,
+				msg="'administrator' or 'manage_guild' permission required to show commands with hidden properties"
 			)
 
-	res_commands:List[DiscordCommand] = await getDiscordServerCommands(PhaazeDiscord, guild_id, command_id=command_id, trigger=trigger, show_nonactive=show_hidden, limit=limit, offset=offset)
+	res_commands:List[DiscordCommand] = await getDiscordServerCommands(PhaazeDiscord, **Search.getAllTransform())
 
-	# this point is only reached when command can be hidden or user requested hidden props has access
-	api_return:List[dict] = []
-	for Command in res_commands:
-		api_return.append(Command.toJSON(show_hidden=show_hidden))
+	result:Dict[str, Any] = dict(
+		result=[Command.toJSON(show_hidden=Search["show_hidden"]) for Command in res_commands],
+		limit=Search["limit"],
+		offset=Search["offset"],
+		total=await getDiscordServerCommands(PhaazeDiscord, count_mode=True, **Search.getAllTransform()),
+		status=200
+	)
 
 	return cls.response(
-		text=json.dumps( dict(
-			result=api_return,
-			show_hidden=show_hidden,
-			limit=limit,
-			offset=offset,
-			total=(await getDiscordServerCommandsAmount(PhaazeDiscord, guild_id)),
-			status=200)
-		),
+		text=json.dumps(result),
 		content_type="application/json",
 		status=200
 	)

@@ -1,51 +1,50 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
-from Utils.Classes.apiclass import APIClass
+from Utils.Classes.contentclass import ContentClass
 
-class TwitchUserStats(DBContentClass, APIClass):
+class TwitchUserStats(ContentClass):
 	"""
 	Contains and represents all phaaze values for a Twitch user
 	"""
 	def __init__(self, data:dict):
 
 		# key
-		self.channel_id:str = data.get("channel_id", UNDEFINED)
-		self.user_id:str = data.get("user_id", UNDEFINED)
+		self.channel_id:str = self.asString(data.get("channel_id", UNDEFINED))
+		self.user_id:str = self.asString(data.get("user_id", UNDEFINED))
 
 		# vars
-		self.active:int = data.get("active", UNDEFINED)
-		self.amount_currency:int = int( data.get("exp", 0) )
-		self.amount_time:int = int( data.get("currency", 0) )
+		self.active:int = self.asInteger(data.get("active", UNDEFINED))
+		self.edited:bool = self.asBoolean(data.get("edited", False))
+		self.amount_currency:int = self.asInteger(data.get("exp", UNDEFINED))
+		self.amount_time:int = self.asInteger(data.get("currency", UNDEFINED))
 
 		# calc
-		self.rank:int = data.get("rank", UNDEFINED)
-		self.edited:bool = bool( data.get("edited", False) )
-		self.regular:bool = bool( data.get("regular", False) )
+		self.rank:int = self.asInteger(data.get("rank", UNDEFINED))
+		self.regular:bool = self.asBoolean(data.get("regular", False))
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} channel='{self.channel_id}' user='{self.user_id}'>"
 
-	async def editCurrency(self, cls:"PhaazebotTwitch", amount_by:int=None, amount_to:int=None) -> None:
+	async def editCurrency(self, cls:"PhaazebotTwitch", amount_by:Optional[int]=None, amount_to:Optional[int]=None) -> None:
 
 		if amount_by and amount_to: raise AttributeError("'amount_by' and 'amount_to' can't both be given")
 
 		sql:str = "UPDATE `twitch_user`"
 		values:tuple = ()
 
-		if amount_by != None:
+		if amount_by is not None:
 			sql += " SET `amount_currency` = `amount_currency` + %s"
-			values += ( int(amount_by) )
+			values += (amount_by,)
 
-		if amount_to != None:
+		if amount_to is not None:
 			sql += " SET `amount_currency` = %s"
-			values += ( int(amount_to) )
+			values += (amount_to,)
 
 		sql += " WHERE `channel_id` = %s AND `user_id` = %s"
-		values += ( str(self.channel_id), str(self.user_id) )
+		values += (self.channel_id, self.user_id)
 
 		cls.BASE.PhaazeDB.query(sql, values)
 		cls.BASE.Logger.debug(f"(Twitch) Updated currency: {self.channel_id=} {self.user_id=}", require="twitch:level")
@@ -55,15 +54,15 @@ class TwitchUserStats(DBContentClass, APIClass):
 
 		j:dict = dict()
 
-		j["channel_id"] = self.toString(self.channel_id)
-		j["user_id"] = self.toString(self.user_id)
-		j["amount_currency"] = self.toInteger(self.amount_currency)
-		j["amount_time"] = self.toInteger(self.amount_time)
-		j["rank"] = self.toList(self.rank)
-		j["edited"] = self.toBoolean(self.edited)
-		j["regular"] = self.toBoolean(self.regular)
+		j["channel_id"] = self.asString(self.channel_id)
+		j["user_id"] = self.asString(self.user_id)
+		j["amount_currency"] = self.asInteger(self.amount_currency)
+		j["amount_time"] = self.asInteger(self.amount_time)
+		j["rank"] = self.asInteger(self.rank)
+		j["edited"] = self.asBoolean(self.edited)
+		j["regular"] = self.asBoolean(self.regular)
 
 		if include_active:
-			j["active"] = self.toInteger(self.active)
+			j["active"] = self.asInteger(self.active)
 
 		return j

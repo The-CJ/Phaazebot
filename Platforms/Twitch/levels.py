@@ -7,9 +7,9 @@ import twitch_irc
 from Utils.Classes.twitchchannelsettings import TwitchChannelSettings
 from Utils.Classes.twitchuserstats import TwitchUserStats
 
-class GTLMCS():
+class GlobalTwitchLevelMessageCooldownStorage(object):
 	"""
-	you know what this is, just look on the discord couterpart.
+	you know what this is, just look on the discord counterpart.
 	This here is the "Global Twitch Level Message Cooldown Storage"
 	"""
 	def __init__(self):
@@ -36,9 +36,10 @@ class GTLMCS():
 		# remove
 		self.in_cooldown.pop(user_key, None)
 
-GTLMCS = GTLMCS()
 
-async def checkLevel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, ChannelSettings:TwitchChannelSettings, TwitchUser:TwitchUserStats) -> None:
+GTLMCS:GlobalTwitchLevelMessageCooldownStorage = GlobalTwitchLevelMessageCooldownStorage()
+
+async def checkLevel(_cls:"PhaazebotTwitch", _Message:twitch_irc.Message, _ChannelSettings:TwitchChannelSettings, _TwitchUser:TwitchUserStats) -> None:
 	"""
 	Run every time a user writes a message and updates the exp.
 	"""

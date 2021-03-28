@@ -1,87 +1,84 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import discord
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
+from Utils.Classes.storagetransformer import StorageTransformer
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Utils.Classes.undefined import UNDEFINED
 from Platforms.Discord.utils import getDiscordChannelFromString
-from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
-from Platforms.Web.Processing.Api.Discord.errors import (
-	apiDiscordGuildUnknown,
-	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission,
-	apiDiscordChannelNotFound
-)
-from .errors import apiDiscordConfigsNsfwEnabledChannelExists
+from Platforms.Web.utils import authDiscordWebUser
 
-async def apiDiscordConfigsNsfwEnabledChannelsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordConfigsNsfwEnabledChannelsCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/discord/configs/nsfwenabledchannels/create
+	Default url: /api/discord/configs/nsfwenabledchannels/create
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
 	# get required stuff
-	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	channel_id:str = Data.getStr("channel_id", "", must_be_digit=True)
+	Create:StorageTransformer = StorageTransformer()
+	Create["guild_id"] = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
+	Create["channel_id"] = Data.getStr("channel_id", UNDEFINED, must_be_digit=True)
 
 	# checks
-	if not guild_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+	if not Create["guild_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	if not channel_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'channel_id'")
+	if not Create["channel_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'channel_id'")
 
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
+	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(Create["guild_id"]))
 	if not Guild:
-		return await apiDiscordGuildUnknown(cls, WebRequest)
+		return await cls.Tree.Api.Discord.errors.apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found:
-		return await apiMissingAuthorisation(cls, WebRequest)
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
+	if not AuthDiscord.found:
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(cls, WebRequest)
 
 	# get member
-	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	CheckMember:discord.Member = Guild.get_member(int(AuthDiscord.User.user_id))
 	if not CheckMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, guild_id=Create["guild_id"], user_id=AuthDiscord.User.user_id)
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Create["guild_id"], user_id=AuthDiscord.User.user_id)
 
-	ActionChannel:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, channel_id, required_type="text")
+	ActionChannel:discord.TextChannel = getDiscordChannelFromString(PhaazeDiscord, Guild, Create["channel_id"], required_type="text")
 	if not ActionChannel:
-		return await apiDiscordChannelNotFound(cls, WebRequest, channel_id=channel_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordChannelNotFound(cls, WebRequest, channel_id=Create["channel_id"])
 
 	# check if already exists
-	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
+	res:list = cls.BASE.PhaazeDB.selectQuery("""
 		SELECT COUNT(*) AS `match`
 		FROM `discord_enabled_nsfwchannel`
 		WHERE `discord_enabled_nsfwchannel`.`guild_id` = %s
 			AND `discord_enabled_nsfwchannel`.`channel_id` = %s""",
-		( guild_id, channel_id )
+		(Create["guild_id"], Create["channel_id"])
 	)
 
 	if res[0]["match"]:
-			return await apiDiscordConfigsNsfwEnabledChannelExists(cls, WebRequest, channel_id=channel_id, channel_name=ActionChannel.name)
+		return await cls.Tree.Api.Discord.Configs.Nsfwenabledchannels.errors.apiDiscordConfigsNsfwEnabledChannelExists(cls, WebRequest, channel_id=Create["channel_id"], channel_name=ActionChannel.name)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(
-		table = "discord_enabled_nsfwchannel",
-		content = {
-			"guild_id": guild_id,
-			"channel_id": channel_id
+	cls.BASE.PhaazeDB.insertQuery(
+		table="discord_enabled_nsfwchannel",
+		content={
+			"guild_id": Create["guild_id"],
+			"channel_id": Create["channel_id"]
 		}
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Nsfw enabled channel: {guild_id=} added: {channel_id=}", require="discord:configs")
+	cls.BASE.Logger.debug(f"(API/Discord) Nsfw enabled channel: {Create['guild_id']=} added: {Create['channel_id']=}", require="discord:configs")
 	return cls.response(
-		text=json.dumps( dict(msg="Nsfw enabled channel: Added new entry", entry=channel_id, status=200) ),
+		text=json.dumps(dict(msg="Nsfw enabled channel: Added new entry", entry=Create["channel_id"], status=200)),
 		content_type="application/json",
 		status=200
 	)

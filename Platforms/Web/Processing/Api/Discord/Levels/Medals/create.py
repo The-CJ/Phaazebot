@@ -1,29 +1,23 @@
 from typing import TYPE_CHECKING, Coroutine
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 import json
 import asyncio
 import discord
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
 from Utils.Classes.discordserversettings import DiscordServerSettings
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from Utils.Classes.storagetransformer import StorageTransformer
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.webrequestcontent import WebRequestContent
-from Platforms.Discord.db import getDiscordSeverSettings
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Utils.Classes.undefined import UNDEFINED
 from Platforms.Discord.logging import loggingOnLevelmedalCreate
-from Platforms.Web.Processing.Api.errors import (
-	apiMissingData,
-	apiMissingAuthorisation
-)
-from Platforms.Web.Processing.Api.Discord.errors import (
-	apiDiscordGuildUnknown,
-	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission
-)
-from .errors import apiDiscordUserMedalExists, apiDiscordUserMedalLimit
+from Platforms.Discord.db import getDiscordSeverSettings
+from Platforms.Web.utils import authDiscordWebUser
 
-async def apiDiscordLevelsMedalsCreate(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordLevelsMedalsCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/discord/levels/medals/create
 	"""
@@ -31,28 +25,29 @@ async def apiDiscordLevelsMedalsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 	await Data.load()
 
 	# get required stuff
-	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	member_id:str = Data.getStr("member_id", "", must_be_digit=True)
-	name:str = Data.getStr("name", "", len_max=512)
+	Create:StorageTransformer = StorageTransformer()
+	Create["guild_id"] = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
+	Create["member_id"] = Data.getStr("member_id", UNDEFINED, must_be_digit=True)
+	Create["name"] = Data.getStr("name", "", len_max=512)
 
 	# checks
-	if not guild_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
+	if not Create["guild_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	if not member_id:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'member_id'")
+	if not Create["member_id"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'member_id'")
 
-	if not name:
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'name'")
+	if not Create["name"]:
+		return await cls.Tree.Api.errors.apiMissingData(cls, WebRequest, msg="missing or invalid 'name'")
 
 	# get/check discord
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
-	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
+	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(Create["guild_id"]))
 	if not Guild:
-		return await apiDiscordGuildUnknown(cls, WebRequest)
+		return await cls.Tree.Api.Discord.errors.apiDiscordGuildUnknown(cls, WebRequest)
 
 	# check limit
-	res:list = cls.Web.BASE.PhaazeDB.selectQuery("""
+	res:list = cls.BASE.PhaazeDB.selectQuery("""
 		SELECT
 			COUNT(*) AS `all`,
 			SUM(
@@ -62,46 +57,46 @@ async def apiDiscordLevelsMedalsCreate(cls:"WebIndex", WebRequest:Request) -> Re
 		FROM `discord_user_medal`
 		WHERE `discord_user_medal`.`guild_id` = %s
 			AND `discord_user_medal`.`member_id` = %s""",
-		( name, guild_id, member_id )
+		(Create["name"], Create["guild_id"], Create["member_id"])
 	)
 
 	if res[0]['match']:
-		return await apiDiscordUserMedalExists(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Levels.Medals.errors.apiDiscordUserMedalExists(cls, WebRequest)
 
-	if res[0]['all'] >= cls.Web.BASE.Limit.discord_level_medal_amount:
-		return await apiDiscordUserMedalLimit(cls, WebRequest)
+	if res[0]['all'] >= cls.BASE.Limit.discord_level_medal_amount:
+		return await cls.Tree.Api.Discord.Levels.Medals.errors.apiDiscordUserMedalLimit(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found:
-		return await apiMissingAuthorisation(cls, WebRequest)
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
+	if not AuthDiscord.found:
+		return await cls.Tree.Api.errors.apiMissingAuthorisation(cls, WebRequest)
 
 	# get member
-	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	CheckMember:discord.Member = Guild.get_member(int(AuthDiscord.User.user_id))
 	if not CheckMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, guild_id=Create["guild_id"], user_id=AuthDiscord.User.user_id)
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=Create["guild_id"], user_id=AuthDiscord.User.user_id)
 
-	cls.Web.BASE.PhaazeDB.insertQuery(
+	cls.BASE.PhaazeDB.insertQuery(
 		table="discord_user_medal",
 		content={
-			"guild_id": guild_id,
-			"member_id": member_id,
-			"name": name
+			"guild_id": Create["guild_id"],
+			"member_id": Create["member_id"],
+			"name": Create["name"]
 		}
 	)
 
 	# logging
-	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, guild_id, prevent_new=True)
-	log_coro:Coroutine = loggingOnLevelmedalCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, medal_member_id=member_id, medal_name=name)
-	asyncio.ensure_future(log_coro, loop=cls.Web.BASE.DiscordLoop)
+	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, Create["guild_id"], prevent_new=True)
+	log_coro:Coroutine = loggingOnLevelmedalCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, medal_member_id=Create["member_id"], medal_name=Create["name"])
+	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) User medal: {guild_id=} {member_id=} added new entry", require="discord:medals")
+	cls.BASE.Logger.debug(f"(API/Discord) User medal: {Create['guild_id']=} {Create['member_id']=} added new entry", require="discord:medals")
 	return cls.response(
-		text=json.dumps( dict(msg="Medal: Added new entry", entry=name, status=200) ),
+		text=json.dumps(dict(msg="Medal: Added new entry", entry=Create["name"], status=200)),
 		content_type="application/json",
 		status=200
 	)

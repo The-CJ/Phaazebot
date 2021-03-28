@@ -1,81 +1,73 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
 	from Platforms.Discord.main_discord import PhaazebotDiscord
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 import discord
-from aiohttp.web import Response, Request
-from Utils.Classes.webrequestcontent import WebRequestContent
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
+from aiohttp.web import Response
 from Utils.Classes.discordblacklistedword import DiscordBlacklistedWord
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
+from Utils.Classes.webrequestcontent import WebRequestContent
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Utils.Classes.undefined import UNDEFINED
 from Platforms.Discord.db import getDiscordServerBlacklistedWords
-from Platforms.Web.Processing.Api.errors import (
-	apiMissingAuthorisation,
-	apiMissingData
-)
-from Platforms.Web.Processing.Api.Discord.errors import (
-	apiDiscordGuildUnknown,
-	apiDiscordMemberNotFound,
-	apiDiscordMissingPermission
-)
+from Platforms.Web.utils import authDiscordWebUser
+from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation, apiMissingData
 
-from .errors import apiDiscordBlacklistWordNotExists
-
-async def apiDiscordConfigsBlacklistedWordsDelete(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiDiscordConfigsBlacklistedWordsDelete(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/discord/configs/blacklistedwords/create
+	Default url: /api/discord/configs/blacklistedwords/create
 	"""
 	Data:WebRequestContent = WebRequestContent(WebRequest)
 	await Data.load()
 
 	# get required stuff
-	guild_id:str = Data.getStr("guild_id", "", must_be_digit=True)
-	word_id:str = Data.getStr("word_id", "", must_be_digit=True)
-	word:str = Data.getStr("word", "")
+	guild_id:str = Data.getStr("guild_id", UNDEFINED, must_be_digit=True)
+	word_id:str = Data.getStr("word_id", UNDEFINED, must_be_digit=True)
 
 	# checks
 	if not guild_id:
 		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'guild_id'")
 
-	if (not word_id) and (not word):
-		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'word' or 'word_id'")
+	if not word_id:
+		return await apiMissingData(cls, WebRequest, msg="missing or invalid 'word_id'")
 
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
 	Guild:discord.Guild = discord.utils.get(PhaazeDiscord.guilds, id=int(guild_id))
 	if not Guild:
-		return await apiDiscordGuildUnknown(cls, WebRequest)
+		return await cls.Tree.Api.Discord.errors.apiDiscordGuildUnknown(cls, WebRequest)
 
 	# get user info
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
-	if not DiscordUser.found:
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
+	if not AuthDiscord.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 
 	# get member
-	CheckMember:discord.Member = Guild.get_member(int(DiscordUser.user_id))
+	CheckMember:discord.Member = Guild.get_member(int(AuthDiscord.User.user_id))
 	if not CheckMember:
-		return await apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMemberNotFound(cls, WebRequest, guild_id=guild_id, user_id=AuthDiscord.User.user_id)
 
 	# check permissions
 	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return await apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=DiscordUser.user_id)
+		return await cls.Tree.Api.Discord.errors.apiDiscordMissingPermission(cls, WebRequest, guild_id=guild_id, user_id=AuthDiscord.User.user_id)
 
 	# get assign roles
-	res_words:list = await getDiscordServerBlacklistedWords(cls.Web.BASE.Discord, guild_id, word_id=word_id, word=word)
+	res_words:List[DiscordBlacklistedWord] = await getDiscordServerBlacklistedWords(PhaazeDiscord, guild_id=guild_id, word_id=word_id)
 
 	if not res_words:
-		return await apiDiscordBlacklistWordNotExists(cls, WebRequest, word_id=word_id, word=word)
+		return await cls.Tree.Api.Discord.Configs.Blacklistedwords.errors.apiDiscordBlacklistWordNotExists(cls, WebRequest, word_id=word_id)
 
 	WordToDelete:DiscordBlacklistedWord = res_words.pop(0)
 
-	cls.Web.BASE.PhaazeDB.deleteQuery("""
+	cls.BASE.PhaazeDB.deleteQuery("""
 		DELETE FROM `discord_blacklist_blacklistword` WHERE `guild_id` = %s AND `id` = %s""",
 		(WordToDelete.guild_id, WordToDelete.word_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Wordblacklist: {guild_id=} deleted [{word=}, {word_id=}]", require="discord:configs")
+	cls.BASE.Logger.debug(f"(API/Discord) Wordblacklist: {guild_id=} deleted {word_id=}", require="discord:configs")
 	return cls.response(
-		text=json.dumps( dict(msg=f"Wordblacklist: Deleted entry", deleted=WordToDelete.word, status=200) ),
+		text=json.dumps(dict(msg=f"Wordblacklist: Deleted entry", deleted=WordToDelete.word, status=200)),
 		content_type="application/json",
 		status=200
 	)

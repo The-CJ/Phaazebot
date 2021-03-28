@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
@@ -9,7 +9,7 @@ from Utils.Classes.discordserversettings import DiscordServerSettings
 
 class DiscordCommandContext(object):
 	"""
-	This Class acts as a holder for inital message and the ServerSettings.
+	This Class acts as a holder for initial message and the ServerSettings.
 	Also has a part function. (Because i know, if i don't have it here i will do it in 50 places and forgot i did it and do it again. LULW)
 	And this class is used to get the command class that should be executed.
 	"""
@@ -18,11 +18,11 @@ class DiscordCommandContext(object):
 		self.Message:discord.Message = Message
 
 		self.found:bool = False
-		self.Command:DiscordCommand = None
+		self.Command:Optional[DiscordCommand] = None
 		self.ServerSettings:DiscordServerSettings = Settings
 		self.parts:list = Message.content.split()
 
-	def part(self, pos:int) -> str or None:
+	def part(self, pos:int) -> Optional[str]:
 		try:
 			return self.parts[pos]
 		except:
@@ -33,7 +33,7 @@ class DiscordCommandContext(object):
 		trigger:str = self.part(pos)
 		if not trigger: return False
 
-		result:list = await getDiscordServerCommands(self.Discord, self.Message.guild.id, trigger=trigger)
+		result:list = await getDiscordServerCommands(self.Discord, guild_id=self.Message.guild.id, trigger=trigger)
 
 		if result:
 			self.found = True

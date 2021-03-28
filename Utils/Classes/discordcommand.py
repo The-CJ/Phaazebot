@@ -3,31 +3,31 @@ if TYPE_CHECKING:
 	from Platforms.Discord.main_discord import PhaazebotDiscord
 
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
-from Utils.Classes.apiclass import APIClass
+from Utils.Classes.contentclass import ContentClass
 from Utils.Classes.storeclasses import GlobalStorage
 
-class DiscordCommand(DBContentClass, APIClass):
+class DiscordCommand(ContentClass):
 	"""
 	Contains and represents a discord command
 	"""
 	def __init__(self, data:dict):
 
 		# key
-		self.command_id:int = data.get("id", UNDEFINED)
-		self.server_id:str = data.get("guild_id", UNDEFINED)
-		self.trigger:str = data.get("trigger", UNDEFINED)
+		self.command_id:int = self.asInteger(data.get("id", UNDEFINED))
+		self.server_id:str = self.asString(data.get("guild_id", UNDEFINED))
+		self.guild_id:str = self.asString(data.get("guild_id", UNDEFINED))
+		self.trigger:str = self.asString(data.get("trigger", UNDEFINED))
 
 		# vars
-		self.active:bool = bool( data.get("active", 1) )
-		self.complex:bool = bool( data.get("complex", False) )
-		self.content:str = data.get("content", UNDEFINED)
-		self.cooldown:int = data.get("cooldown", 0)
-		self.function:str = data.get("function", UNDEFINED)
-		self.hidden:bool = bool( data.get("hidden", False) )
-		self.require:int = data.get("require", 0)
-		self.required_currency:int = data.get("required_currency", 0)
-		self.uses:int = data.get("uses", 0)
+		self.active:bool = self.asBoolean(data.get("active", True))
+		self.complex:bool = self.asBoolean(data.get("complex", False))
+		self.content:str = self.asString(data.get("content", UNDEFINED))
+		self.cooldown:int = self.asInteger(data.get("cooldown", UNDEFINED))
+		self.function:str = self.asString(data.get("function", UNDEFINED))
+		self.hidden:bool = self.asBoolean(data.get("hidden", False))
+		self.require:int = self.asInteger(data.get("require", 0))
+		self.required_currency:int = self.asInteger(data.get("required_currency", 0))
+		self.uses:int = self.asInteger(data.get("uses", 0))
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.server_id}' trigger='{self.trigger}'>"
@@ -37,21 +37,21 @@ class DiscordCommand(DBContentClass, APIClass):
 
 		j:dict = dict()
 
-		j["active"] = self.toBoolean(self.active)
-		j["command_id"] = self.toString(self.command_id)
-		j["complex"] = self.toBoolean(self.complex)
-		j["cooldown"] = self.toInteger(self.cooldown)
-		j["cost"] = self.toInteger(self.required_currency)
-		j["hidden"] = self.toBoolean(self.hidden)
-		j["require"] = self.toInteger(self.require)
-		j["trigger"] = self.toString(self.trigger)
-		j["uses"] = self.toInteger(self.uses)
+		j["active"] = self.asBoolean(self.active)
+		j["command_id"] = self.asString(self.command_id)
+		j["complex"] = self.asBoolean(self.complex)
+		j["cooldown"] = self.asInteger(self.cooldown)
+		j["cost"] = self.asInteger(self.required_currency)
+		j["hidden"] = self.asBoolean(self.hidden)
+		j["require"] = self.asInteger(self.require)
+		j["trigger"] = self.asString(self.trigger)
+		j["uses"] = self.asInteger(self.uses)
 
 		if show_hidden or not self.hidden:
-			j["content"] = self.toString(self.content)
-			j["description"] = self.toString(self.description)
-			j["function"] = self.toString(self.function)
-			j["name"] = self.toString(self.name)
+			j["content"] = self.asString(self.content)
+			j["description"] = self.asString(self.description)
+			j["function"] = self.asString(self.function)
+			j["name"] = self.asString(self.name)
 
 		else:
 			j["content"] = None

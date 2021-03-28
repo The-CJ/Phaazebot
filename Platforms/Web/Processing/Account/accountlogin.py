@@ -1,27 +1,30 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
-from aiohttp.web import Response, Request
+from aiohttp.web import Response
 from Utils.Classes.htmlformatter import HTMLFormatter
-from Utils.Classes.webuserinfo import WebUserInfo
-from Platforms.Web.utils import getNavbar
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Utils.Classes.authwebuser import AuthWebUser
+from Platforms.Web.index import PhaazeWebIndex
+from Platforms.Web.utils import getNavbar, authWebUser
 
-async def accountLogin(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.get("/account/login")
+async def accountLogin(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /account/login
+	Default url: /account/login
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
-	if WebUser.found: return await cls.accountMain(WebRequest)
+	WebUser:AuthWebUser = await authWebUser(cls, WebRequest)
+	if WebUser.found: return await cls.Tree.Account.accountmain.accountMain(cls, WebRequest)
 
 	AccountLogin:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Account/login.html")
 
 	site:str = cls.HTMLRoot.replace(
-		replace_empty = True,
+		replace_empty=True,
 
-		title = "Phaaze | Account - Login",
-		header = getNavbar(),
-		main = AccountLogin
+		title="Phaaze | Account - Login",
+		header=getNavbar(),
+		main=AccountLogin
 	)
 
 	return cls.response(

@@ -1,40 +1,38 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+	from Platforms.Web.main_web import PhaazebotWeb
 	from Platforms.Discord.main_discord import PhaazebotDiscord
-	from Platforms.Web.index import WebIndex
 
-from aiohttp.web import Response, Request
-from .get import apiDiscordCommandsGet
-from .create import apiDiscordCommandsCreate
-from .list import apiDiscordCommandsList
-from .delete import apiDiscordCommandsDelete
-from .edit import apiDiscordCommandsEdit
+from aiohttp.web import Response
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Platforms.Web.index import PhaazeWebIndex
 from Platforms.Web.Processing.Api.errors import apiMissingValidMethod, apiNotAllowed
 
-async def apiDiscordCommands(cls:"WebIndex", WebRequest:Request) -> Response:
+@PhaazeWebIndex.view("/api/discord/commands{x:/?}{method:.*}")
+async def apiDiscordCommands(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/discord/commands
+	Default url: /api/discord/commands
 	"""
 
-	PhaazeDiscord:"PhaazebotDiscord" = cls.Web.BASE.Discord
+	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
 	if not PhaazeDiscord: return await apiNotAllowed(cls, WebRequest, msg="Discord module is not active")
 
 	method:str = WebRequest.match_info.get("method", "")
 	if not method: return await apiMissingValidMethod(cls, WebRequest)
 
-	elif method == "get":
-		return await apiDiscordCommandsGet(cls, WebRequest)
+	elif method == "create":
+		return await cls.Tree.Api.Discord.Commands.create.apiDiscordCommandsCreate(cls, WebRequest)
 
 	elif method == "delete":
-		return await apiDiscordCommandsDelete(cls, WebRequest)
-
-	elif method == "create":
-		return await apiDiscordCommandsCreate(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Commands.delete.apiDiscordCommandsDelete(cls, WebRequest)
 
 	elif method == "edit":
-		return await apiDiscordCommandsEdit(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Commands.edit.apiDiscordCommandsEdit(cls, WebRequest)
+
+	elif method == "get":
+		return await cls.Tree.Api.Discord.Commands.get.apiDiscordCommandsGet(cls, WebRequest)
 
 	elif method == "list":
-		return await apiDiscordCommandsList(cls, WebRequest)
+		return await cls.Tree.Api.Discord.Commands.listcommands.apiDiscordCommandsListCommands(cls, WebRequest)
 
 	else: return await apiMissingValidMethod(cls, WebRequest, msg=f"'{method}' is not a known method")

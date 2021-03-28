@@ -1,19 +1,18 @@
 from Utils.Classes.undefined import UNDEFINED
-from Utils.Classes.dbcontentclass import DBContentClass
-from Utils.Classes.apiclass import APIClass
+from Utils.Classes.contentclass import ContentClass
 
-class DiscordBlacklistedWord(DBContentClass, APIClass):
+class DiscordBlacklistedWord(ContentClass):
 	"""
 	Contains and represents a blacklisted word in discord
 	"""
 	def __init__(self, data:dict):
 
 		# key
-		self.word_id:int = data.get("id", UNDEFINED)
-		self.guild_id:str = data.get("guild_id", UNDEFINED)
+		self.word_id:int = self.asInteger(data.get("id", UNDEFINED))
+		self.guild_id:str = self.asString(data.get("guild_id", UNDEFINED))
 
 		# vars
-		self.word:str = data.get("word", UNDEFINED)
+		self.word:str = self.asString(data.get("word", UNDEFINED))
 
 	def __repr__(self):
 		return f"<{self.__class__.__name__} server='{self.guild_id}' word='{self.word_id}'>"
@@ -23,7 +22,7 @@ class DiscordBlacklistedWord(DBContentClass, APIClass):
 
 		j:dict = dict()
 
-		j["word_id"] = self.toString(self.word_id)
-		j["word"] = self.toString(self.word)
+		j["word_id"] = self.asString(self.word_id)
+		j["word"] = self.asString(self.word)
 
 		return j

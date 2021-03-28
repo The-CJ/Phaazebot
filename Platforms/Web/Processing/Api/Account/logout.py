@@ -1,61 +1,82 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
-from aiohttp.web import Response, Request
-from Utils.Classes.webuserinfo import WebUserInfo
-from Utils.Classes.discordwebuserinfo import DiscordWebUserInfo
-from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiUserNotFound
+from aiohttp.web import Response
+from Utils.Classes.authwebuser import AuthWebUser
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
+from Utils.Classes.twitchwebuser import TwitchWebUser
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Platforms.Web.Processing.Api.errors import apiUserNotFound
+from Platforms.Web.utils import authWebUser, authDiscordWebUser
 
-async def apiAccountLogoutPhaaze(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAccountLogoutPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/account/phaaze/logout
+	Default url: /api/account/phaaze/logout
 	"""
-	WebUser:WebUserInfo = await cls.getWebUserInfo(WebRequest)
+	AuthWeb:AuthWebUser = await authWebUser(cls, WebRequest)
 
-	if not WebUser.found:
+	if not AuthWeb.found:
 		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
 
-	cls.Web.BASE.PhaazeDB.deleteQuery("""
+	cls.BASE.PhaazeDB.deleteQuery("""
 		DELETE FROM `session_phaaze`
 		WHERE `session_phaaze`.`user_id` = %s""",
-		(WebUser.user_id,)
+		(AuthWeb.User.user_id,)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API) Logout - User: {WebUser.username}", require="api:logout")
+	cls.BASE.Logger.debug(f"(API) Logout - User: {AuthWeb.User.username}", require="api:logout")
 	return cls.response(
-		text=json.dumps( dict(status=200) ),
+		text=json.dumps(dict(status=200)),
 		content_type="application/json",
 		status=200
 	)
 
-async def apiAccountLogoutDiscord(cls:"WebIndex", WebRequest:Request) -> Response:
+async def apiAccountLogoutDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/account/discord/logout
+	Default url: /api/account/discord/logout
 	"""
 
-	DiscordUser:DiscordWebUserInfo = await cls.getDiscordUserInfo(WebRequest)
+	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
 
-	if not DiscordUser.found:
+	if not AuthDiscord.found:
 		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
 
-	cls.Web.BASE.PhaazeDB.query("""
+	cls.BASE.PhaazeDB.query("""
 		DELETE FROM `session_discord`
 		WHERE `session_discord`.`access_token` = %s
 			OR JSON_EXTRACT(`session_discord`.`user_info`, "$.id") = %s""",
-		(DiscordUser.access_token, DiscordUser.user_id)
+		(AuthDiscord.access_token, AuthDiscord.User.user_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) Discord Logout - User: {DiscordUser.username}", require="api:logout")
+	cls.BASE.Logger.debug(f"(API/Discord) Discord Logout - User: {AuthDiscord.User.username}", require="api:logout")
 	return cls.response(
 		text=json.dumps( dict(status=200) ),
 		content_type="application/json",
 		status=200
 	)
 
-async def apiAccountLogoutTwitch(cls:"WebIndex", WebRequest:Request) -> Response:
+# TODO: rework
+async def apiAccountLogoutTwitch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-		Default url: /api/account/twitch/logout
+	Default url: /api/account/twitch/logout
 	"""
-	return await apiNotAllowed(cls, WebRequest, msg="Under construction")
+	TwitchUser:TwitchWebUser = await cls.getTwitchUserInfo(WebRequest)
+
+	if not TwitchUser.found:
+		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
+
+	cls.Web.BASE.PhaazeDB.query("""
+		DELETE FROM `session_twitch`
+		WHERE `session_twitch`.`access_token` = %s
+			OR JSON_EXTRACT(`session_twitch`.`user_info`, "$.id") = %s""",
+		(TwitchUser.access_token, TwitchUser.user_id)
+	)
+
+	cls.Web.BASE.Logger.debug(f"(API/Twitch) Discord Logout - User: {TwitchUser.name}", require="api:logout")
+	return cls.response(
+		text=json.dumps( dict(status=200) ),
+		content_type="application/json",
+		status=200
+	)
