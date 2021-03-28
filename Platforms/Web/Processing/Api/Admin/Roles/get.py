@@ -43,7 +43,6 @@ async def apiAdminRolesGet(cls:"PhaazebotWeb", WebRequest:Request) -> Response:
 		rid_list:str = ','.join(str(x["rid"]) for x in res)
 		if not rid_list: rid_list = "0"
 
-		Search.storage.clear()
 		Search["overwrite_where"] = f" AND `web_role`.`id` IN ({rid_list})"
 
 	res_roles:List[WebRole] = await getWebRoles(cls, **Search.getAllTransform())

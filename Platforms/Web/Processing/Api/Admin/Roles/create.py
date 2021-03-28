@@ -32,7 +32,7 @@ async def apiAdminRolesCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) ->
 		return await cls.Tree.Api.errors.apiWrongData(cls, WebRequest, msg=f"role '{Create['name']}' already exists")
 
 	cls.BASE.PhaazeDB.insertQuery(
-		table="role",
+		table="web_role",
 		content=Create.getAllTransform()
 	)
 
