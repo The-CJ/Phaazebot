@@ -43,7 +43,7 @@ async def apiAccountLoginPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) 
 	cls.BASE.PhaazeDB.query("""
 		UPDATE `web_user`
 		SET `last_login` = NOW()
-		WHERE `user`.`id` = %s""",
+		WHERE `web_user`.`id` = %s""",
 		(AuthWeb.User.user_id,)
 	)
 
