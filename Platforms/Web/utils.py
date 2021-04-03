@@ -3,15 +3,14 @@ if TYPE_CHECKING:
 	from phaazebot import Phaazebot
 	from Platforms.Web.main_web import PhaazebotWeb
 
+from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
+from Utils.Classes.authtwitchwebuser import AuthTwitchWebUser
+from Utils.Classes.extendedrequest import ExtendedRequest
+from Utils.Classes.htmlformatter import HTMLFormatter
+from Utils.Classes.storeclasses import GlobalStorage
+from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Discord.api import generateDiscordAuthLink
 from Platforms.Twitch.api import generateTwitchAuthLink
-from Utils.Classes.htmlformatter import HTMLFormatter
-from Utils.Classes.authwebuser import AuthWebUser
-from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
-from Utils.Classes.discordwebuser import DiscordWebUser
-from Utils.Classes.twitchwebuser import TwitchWebUser
-from Utils.Classes.storeclasses import GlobalStorage
-from Utils.Classes.extendedrequest import ExtendedRequest
 
 # templating and stuff
 def getNavbar(active:str="") -> HTMLFormatter:
@@ -98,8 +97,7 @@ async def authDiscordWebUser(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **k
 
 	return WebRequest.AuthDiscord
 
-# TODO: rework
-async def getTwitchUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> TwitchWebUser:
+async def authTwitchWebUser(cls: "PhaazebotWeb", WebRequest:ExtendedRequest, **kwargs) -> AuthTwitchWebUser:
 	"""
 	Tries to get a DiscordUser, takes get, post, and cookie in process
 	kwargs are given to TwitchWebUser
@@ -109,12 +107,13 @@ async def getTwitchUserInfo(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, **kw
 		phaaze_twitch_session
 	"""
 
-	if hasattr(WebRequest, "TwitchUser"):
-		cls.BASE.Logger.debug(f"(Web) Used stored twitch info's: {str(WebRequest.TwitchUser)}", require="web:debug")
-		return WebRequest.TwitchUser
+	if hasattr(WebRequest, "AuthTwitch"):
+		if WebRequest.AuthTwitch is not None:
+			cls.BASE.Logger.debug(f"(Web) Used stored twitch info's: {str(WebRequest.AuthTwitch)}", require="web:debug")
+			return WebRequest.AuthTwitch
 
-	TwitchUser:TwitchWebUser = TwitchWebUser(cls.BASE, WebRequest, **kwargs)
-	await TwitchUser.auth()
-	WebRequest.TwitchUser = TwitchUser
+	AuthTwitch:AuthTwitchWebUser = AuthTwitchWebUser(cls.BASE, WebRequest, **kwargs)
+	await AuthTwitch.auth()
+	WebRequest.AuthTwitch = AuthTwitch
 
-	return WebRequest.TwitchUser
+	return WebRequest.AuthTwitch

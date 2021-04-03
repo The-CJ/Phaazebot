@@ -57,7 +57,7 @@ async def apiAccountLoginPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) 
 async def apiAccountLoginDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/discord/login
-	This should only be called by Discord after a user successful authorise
+	This should only be called by being redirected from Discord after a user successful authorise
 	"""
 	data:Optional[dict] = await translateDiscordToken(cls.BASE, WebRequest)
 	error:str
@@ -76,21 +76,20 @@ async def apiAccountLoginDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest)
 		headers={"Location": f"/discord/login?error={error}"}
 	)
 
-# TODO: rework
 async def apiAccountLoginTwitch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/twitch/login
-	This should only be called by twitch after a user successful authorised
+	This should only be called by being redirected from Twitch after a user successful authorise
 	"""
-	data:dict or None = await translateTwitchToken(cls.Web.BASE, WebRequest)
+	data:Optional[dict] = await translateTwitchToken(cls.BASE, WebRequest)
 	error:str
 
 	if not data:
 		error = "missing"
-		cls.Web.BASE.Logger.debug(f"(API/Twitch) Failed login, never got called", require="twitch:api")
+		cls.BASE.Logger.debug(f"(API/Twitch) Failed login, never got called", require="twitch:api")
 	elif data.get("error", None):
 		error = "twitch"
-		cls.Web.BASE.Logger.debug(f"(API/Twitch) Failed login: {str(data)}", require="twitch:api")
+		cls.BASE.Logger.debug(f"(API/Twitch) Failed login: {str(data)}", require="twitch:api")
 	else:
 		return await completeTwitchTokenLogin(cls, WebRequest, data)
 
@@ -150,7 +149,6 @@ async def completeDiscordTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedRequ
 			headers={"Location": "/discord/login?error=database"}
 		)
 
-# TODO: rework
 async def completeTwitchTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedRequest, data:dict) -> Response:
 	"""
 	inserts all necessary data into the session_twitch database
@@ -162,18 +160,18 @@ async def completeTwitchTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedReque
 	scope:str = ' '.join(data.get("scope", []))
 	token_type:str = data.get('token_type', "")
 
-	user_res:List[TwitchUser] = await getTwitchUsers(cls.Web.BASE, access_token, item_type="token")
+	user_res:List[TwitchUser] = await getTwitchUsers(cls.BASE, access_token, item_type="token")
 	TwitchAuthUser:TwitchUser = user_res.pop(0) if len(user_res) > 0 else None
 
 	if not TwitchAuthUser or not TwitchAuthUser.extended:
-		cls.Web.BASE.Logger.warning("(API) Twitch user login failed")
+		cls.BASE.Logger.warning("(API) Twitch user login failed")
 		return cls.response(
 			status=302,
 			headers={"Location": "/twitch/login?error=user"}
 		)
 
 	try:
-		cls.Web.BASE.PhaazeDB.insertQuery(
+		cls.BASE.PhaazeDB.insertQuery(
 			table="session_twitch",
 			content=dict(
 				session=session_key,
@@ -185,7 +183,7 @@ async def completeTwitchTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedReque
 			)
 		)
 
-		cls.Web.BASE.Logger.debug(f"(API) New Twitch Login - Session: {session_key} User: {TwitchAuthUser.name}", require="api:login")
+		cls.BASE.Logger.debug(f"(API) New Twitch Login - Session: {session_key} User: {TwitchAuthUser.name}", require="api:login")
 		return cls.response(
 			status=302,
 			headers={
@@ -195,7 +193,7 @@ async def completeTwitchTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedReque
 		)
 	except Exception as e:
 		tb:str = traceback.format_exc()
-		cls.Web.BASE.Logger.error(f"(API) Database error: {str(e)}\n{tb}")
+		cls.BASE.Logger.error(f"(API) Database error: {str(e)}\n{tb}")
 		return cls.response(
 			status=302,
 			headers={"Location": "/twitch/login?error=database"}

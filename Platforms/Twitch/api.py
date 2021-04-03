@@ -177,7 +177,7 @@ async def getTwitchGames(cls:"Phaazebot", item:str or list, item_type:str="id", 
 
 async def getTwitchUsers(cls:"Phaazebot", item:str or list, item_type:str="id", limit:int=None) -> List[TwitchUser]:
 	"""
-	get all game data based on 'item' and 'item_type'
+	get all user data based on 'item' and 'item_type'
 	Returns a list of TwitchUser()
 
 	Optional keywords:

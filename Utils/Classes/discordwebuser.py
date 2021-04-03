@@ -7,7 +7,7 @@ class DiscordWebUser(ContentClass):
 	this object is suppose to be appended to a `AuthDiscordWebUser` object.
 
 	It contains data similar to discord.User,
-	but its actually only filled with data we got from discord when the user authorised pha aze access.
+	but its actually only filled with data we got from discord when the user authorised phaaze access.
 	"""
 	def __init__(self, data:dict):
 		self.user_id:str = self.asString(data.get("id", UNDEFINED))
