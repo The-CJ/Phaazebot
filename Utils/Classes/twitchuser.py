@@ -7,9 +7,8 @@ class TwitchUser(ContentClass):
 	If extended is true, it's a authorised user entry.
 	"""
 	def __init__(self, data:dict):
-
 		self.user_id:str = self.asString(data.get("id", UNDEFINED))
-		self.name:str = self.asString(data.get("login", UNDEFINED))
+		self.login:str = self.asString(data.get("login", UNDEFINED))
 		self.display_name:str = self.asString(data.get("display_name", UNDEFINED))
 		self.user_type:str = self.asString(data.get("type", UNDEFINED))
 		self.broadcaster_type:str = self.asString(data.get("broadcaster_type", UNDEFINED))
@@ -21,11 +20,14 @@ class TwitchUser(ContentClass):
 
 		self.extended:bool = bool(self.email)
 
+		if not self.user_id:  # because i messed things up in the long game
+			self.user_id: str = self.asString(data.get("user_id", UNDEFINED))
+
 	def __repr__(self):
 		if self.extended:
-			return f"<{self.__class__.__name__} [extended] user_id='{self.user_id}' name='{self.name}'>"
+			return f"<{self.__class__.__name__} [extended] user_id='{self.user_id}' login='{self.login}'>"
 
-		return f"<{self.__class__.__name__} user_id='{self.user_id}' name='{self.name}'>"
+		return f"<{self.__class__.__name__} user_id='{self.user_id}' login='{self.login}'>"
 
 	def toJSON(self, types:bool=True, images:bool=True, with_email:bool=True) -> dict:
 		""" Returns a json save dict representation of all values for API, storage, etc... """
@@ -33,7 +35,7 @@ class TwitchUser(ContentClass):
 		j:dict = dict()
 
 		j["user_id"] = self.asString(self.user_id)
-		j["name"] = self.asString(self.name)
+		j["login"] = self.asString(self.login)
 		j["display_name"] = self.asString(self.display_name)
 		j["description"] = self.asString(self.description)
 		j["view_count"] = self.asInteger(self.view_count)

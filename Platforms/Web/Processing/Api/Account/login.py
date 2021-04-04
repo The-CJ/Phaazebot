@@ -183,7 +183,7 @@ async def completeTwitchTokenLogin(cls:"PhaazebotWeb", _WebRequest:ExtendedReque
 			)
 		)
 
-		cls.BASE.Logger.debug(f"(API) New Twitch Login - Session: {session_key} User: {TwitchAuthUser.name}", require="api:login")
+		cls.BASE.Logger.debug(f"(API) New Twitch Login - Session: {session_key} User: {TwitchAuthUser.login}", require="api:login")
 		return cls.response(
 			status=302,
 			headers={

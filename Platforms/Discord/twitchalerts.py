@@ -47,7 +47,7 @@ async def discordHandleLive(cls:"PhaazebotDiscord", event_list:List["StatusEntry
 			continue
 
 		stream_status:str = Event.Stream.title or "[N/A]"
-		stream_url:str = TWITCH_STREAM_URL + (Event.User.name or "")
+		stream_url:str = TWITCH_STREAM_URL + (Event.User.login or "")
 		stream_description:str = f":game_die: Playing: **{Event.Game.name}**"
 
 		Emb:discord.Embed = discord.Embed(
@@ -121,7 +121,7 @@ async def discordHandleGameChange(cls:"PhaazebotDiscord", event_list:List["Statu
 			continue
 
 		stream_status:str = Event.Stream.title or "[N/A]"
-		stream_url:str = TWITCH_STREAM_URL + (Event.User.name or "")
+		stream_url:str = TWITCH_STREAM_URL + (Event.User.login or "")
 		stream_description:str = f":game_die: Now Playing: **{Event.Game.name}**"
 
 		Emb:discord.Embed = discord.Embed(

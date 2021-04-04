@@ -4,12 +4,12 @@ if TYPE_CHECKING:
 
 import json
 from aiohttp.web import Response
-from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
-from Utils.Classes.twitchwebuser import TwitchWebUser
+from Utils.Classes.authtwitchwebuser import AuthTwitchWebUser
 from Utils.Classes.extendedrequest import ExtendedRequest
+from Utils.Classes.authwebuser import AuthWebUser
 from Platforms.Web.Processing.Api.errors import apiUserNotFound
-from Platforms.Web.utils import authWebUser, authDiscordWebUser
+from Platforms.Web.utils import authWebUser, authDiscordWebUser, authTwitchWebUser
 
 async def apiAccountLogoutPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
@@ -52,31 +52,30 @@ async def apiAccountLogoutDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest
 
 	cls.BASE.Logger.debug(f"(API/Discord) Discord Logout - User: {AuthDiscord.User.username}", require="api:logout")
 	return cls.response(
-		text=json.dumps( dict(status=200) ),
+		text=json.dumps(dict(status=200)),
 		content_type="application/json",
 		status=200
 	)
 
-# TODO: rework
 async def apiAccountLogoutTwitch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/twitch/logout
 	"""
-	TwitchUser:TwitchWebUser = await cls.getTwitchUserInfo(WebRequest)
+	AuthTwitch:AuthTwitchWebUser = await authTwitchWebUser(cls, WebRequest)
 
-	if not TwitchUser.found:
+	if not AuthTwitch.found:
 		return await apiUserNotFound(cls, WebRequest, msg="Not logged in")
 
-	cls.Web.BASE.PhaazeDB.query("""
+	cls.BASE.PhaazeDB.query("""
 		DELETE FROM `session_twitch`
 		WHERE `session_twitch`.`access_token` = %s
 			OR JSON_EXTRACT(`session_twitch`.`user_info`, "$.id") = %s""",
-		(TwitchUser.access_token, TwitchUser.user_id)
+		(AuthTwitch.access_token, AuthTwitch.User.user_id)
 	)
 
-	cls.Web.BASE.Logger.debug(f"(API/Twitch) Discord Logout - User: {TwitchUser.name}", require="api:logout")
+	cls.BASE.Logger.debug(f"(API/Twitch) Discord Logout - User: {AuthTwitch.User.login}", require="api:logout")
 	return cls.response(
-		text=json.dumps( dict(status=200) ),
+		text=json.dumps(dict(status=200)),
 		content_type="application/json",
 		status=200
 	)

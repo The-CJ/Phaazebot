@@ -367,7 +367,7 @@ class PhaazebotTwitchEvents(object):
 			if not User: continue # could be not found in api from .fillUserData and still be None
 
 			sql_additions.append("(%s, %s, %s)")
-			sql_values += (str(User.user_id), User.name, User.display_name)
+			sql_values += (str(User.user_id), User.login, User.display_name)
 
 		# no requested users are found in API, SQL would be invalid -> skip
 		if (not sql_values) or (not sql_additions): return
