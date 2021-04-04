@@ -105,7 +105,7 @@ if __name__ == '__main__':
 	Phaaze:Phaazebot = Phaazebot()
 	GlobalStorage.add("Phaazebot", Phaaze)
 
-	if CliArgs.get("log-sql", False):
+	if CliArgs.get("log-sql"):
 		Phaaze.PhaazeDB.statement_func = Phaaze.Logger.printSQL
 
 	if not CliArgs.get("no-start"):
