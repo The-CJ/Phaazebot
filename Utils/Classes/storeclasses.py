@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any, Optional
 if TYPE_CHECKING:
-	from main import Phaazebot
+	from phaazebot import Phaazebot
 
 import Platforms.Twitch.const as TwitchConst
 import Platforms.Discord.const as DiscordConst

@@ -19,7 +19,7 @@ sys.path.insert(0, base_dir)
 
 import discord
 from typing import List
-from main import Phaazebot
+from phaazebot import Phaazebot
 from Platforms.Discord.main_discord import PhaazebotDiscord
 from Utils.Classes.dbconn import DBConn
 from Utils.config import ConfigParser

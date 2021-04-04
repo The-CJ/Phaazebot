@@ -22,7 +22,7 @@ import json
 import requests
 import datetime
 import urllib.parse
-from main import Phaazebot
+from phaazebot import Phaazebot
 from Platforms.Twitch import api as twitch_api
 from Utils.config import ConfigParser
 from Utils.Classes.dbconn import DBConn

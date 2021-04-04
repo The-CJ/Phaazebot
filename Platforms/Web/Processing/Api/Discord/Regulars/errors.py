@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-	from Platforms.Web.index import WebIndex
+	from Platforms.Web.main_web import PhaazebotWeb
 
 import json
 from aiohttp.web import Response, Request
 
-async def apiDiscordRegularExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordRegularExists(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -30,14 +30,14 @@ async def apiDiscordRegularExists(cls:"WebIndex", WebRequest:Request, **kwargs:d
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Regular exists: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Regular exists: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordRegularNotExists(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordRegularNotExists(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -62,14 +62,14 @@ async def apiDiscordRegularNotExists(cls:"WebIndex", WebRequest:Request, **kwarg
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Regular does not exists: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Regular does not exists: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)
 
-async def apiDiscordRegularLimit(cls:"WebIndex", WebRequest:Request, **kwargs:dict) -> Response:
+async def apiDiscordRegularLimit(cls:"PhaazebotWeb", WebRequest:Request, **kwargs) -> Response:
 	"""
 	Optional keywords:
 	------------------
@@ -86,13 +86,13 @@ async def apiDiscordRegularLimit(cls:"WebIndex", WebRequest:Request, **kwargs:di
 	msg:str = kwargs.get("msg", default_msg)
 	res["msg"] = msg
 
-	limit:str = kwargs.get("limit", cls.Web.BASE.Limit.discord_regular_amount)
+	limit:str = kwargs.get("limit", cls.BASE.Limit.discord_regular_amount)
 	if limit:
 		res["limit"] = limit
 
-	cls.Web.BASE.Logger.debug(f"(API/Discord) 400 Too many regulars: {WebRequest.path}", require="api:400")
+	cls.BASE.Logger.debug(f"(API/Discord) 400 Too many regulars: {WebRequest.path}", require="api:400")
 	return cls.response(
-		text=json.dumps( res ),
+		text=json.dumps(res),
 		content_type="application/json",
 		status=400
 	)

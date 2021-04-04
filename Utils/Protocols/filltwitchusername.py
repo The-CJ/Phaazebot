@@ -25,7 +25,7 @@ import asyncio
 from typing import List
 from Utils.Classes.dbconn import DBConn
 from Utils.Classes.twitchuser import TwitchUser
-from main import Phaazebot
+from phaazebot import Phaazebot
 from Platforms.Twitch.api import getTwitchUsers
 from Utils.config import ConfigParser
 from Utils.cli import CliArgs
