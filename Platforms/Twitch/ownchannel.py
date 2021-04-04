@@ -85,7 +85,7 @@ async def joinUserChannel(cls:"PhaazebotTwitch", Message:twitch_irc.Message, Con
 				table="twitch_user_name",
 				content={
 					"user_id": NewEntry.user_id,
-					"user_name": NewEntry.name,
+					"user_name": NewEntry.login,
 					"user_display_name": NewEntry.display_name
 				},
 			)

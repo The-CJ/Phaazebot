@@ -5,9 +5,9 @@ if TYPE_CHECKING:
 import json
 from datetime import datetime
 from aiohttp.web import Request
-from Utils.Classes.undefined import UNDEFINED
 from Utils.Classes.contentclass import ContentClass
-from Utils.Classes.twitchwebuser import TwitchWebUser
+from Utils.Classes.twitchuser import TwitchUser
+from Utils.Classes.undefined import UNDEFINED
 
 def forcible(f:Callable) -> Callable:
 	f.__forcible__ = True
@@ -23,7 +23,7 @@ class AuthTwitchWebUser(ContentClass):
 		self.BASE:"Phaazebot" = BASE
 		self.WebRequest:Request = WebRequest
 		self.force_method:str = force_method
-		self.User:Optional[TwitchWebUser] = None
+		self.User:Optional[TwitchUser] = None
 
 		# name holder
 		self.field_session:str = "phaaze_twitch_session"
@@ -49,7 +49,7 @@ class AuthTwitchWebUser(ContentClass):
 		if not self.found:
 			return f"<{self.__class__.__name__} - Not found/Unknown user>"
 
-		return f"<{self.__class__.__name__} id='{self.User.user_id}' name='{self.User.name}'>"
+		return f"<{self.__class__.__name__} id='{self.User.user_id}' login='{self.User.login}'>"
 
 	async def auth(self) -> None:
 		if self.force_method:
@@ -119,7 +119,7 @@ class AuthTwitchWebUser(ContentClass):
 			self.created_at = self.asDatetime(info.get("created_at", UNDEFINED))
 
 			user_info: dict = json.loads(info.get("user_info", "{}"))
-			self.User = TwitchWebUser(user_info)
+			self.User = TwitchUser(user_info)
 
 	def toJSON(self, images:bool=True, types:bool=False, token:bool=False, scope:bool=False) -> dict:
 		""" Returns a json save dict representation of all values for API, storage, etc... """

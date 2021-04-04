@@ -6,9 +6,9 @@ import json
 from aiohttp.web import Response
 from Utils.Classes.authwebuser import AuthWebUser
 from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
-from Utils.Classes.twitchwebuser import TwitchWebUser
+from Utils.Classes.authtwitchwebuser import AuthTwitchWebUser
 from Utils.Classes.extendedrequest import ExtendedRequest
-from Platforms.Web.utils import authWebUser, getTwitchUserInfo, authDiscordWebUser
+from Platforms.Web.utils import authWebUser, authTwitchWebUser, authDiscordWebUser
 from Platforms.Web.Processing.Api.errors import apiMissingAuthorisation
 
 async def apiAccountGetPhaaze(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
@@ -41,18 +41,17 @@ async def apiAccountGetDiscord(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -
 		status=200
 	)
 
-# TODO: rework
 async def apiAccountGetTwitch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /api/account/twitch/get
 	"""
-	TwitchUser:TwitchWebUser = await getTwitchUserInfo(cls, WebRequest)
+	AuthTwitch:AuthTwitchWebUser = await authTwitchWebUser(cls, WebRequest)
 
-	if not TwitchUser.found:
+	if not AuthTwitch.found:
 		return await apiMissingAuthorisation(cls, WebRequest)
 
 	return cls.response(
-		text=json.dumps(dict(user=TwitchUser.toJSON(), status=200)),
+		text=json.dumps(dict(user=AuthTwitch.toJSON(), status=200)),
 		content_type="application/json",
 		status=200
 	)

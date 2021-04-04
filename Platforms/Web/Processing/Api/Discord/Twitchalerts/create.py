@@ -105,7 +105,7 @@ async def apiDiscordTwitchalertsCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRe
 		pass
 
 	if res[0]["both_match"] >= 1:
-		return await cls.Tree.Api.Discord.Twitchalerts.errors.apiDiscordAlertExists(cls, WebRequest, twitch_name=FoundUser.name, discord_id=TargetDiscordChannel.id)
+		return await cls.Tree.Api.Discord.Twitchalerts.errors.apiDiscordAlertExists(cls, WebRequest, twitch_name=FoundUser.login, discord_id=TargetDiscordChannel.id)
 
 	# get user info
 	AuthDiscord:AuthDiscordWebUser = await authDiscordWebUser(cls, WebRequest)
@@ -134,7 +134,7 @@ async def apiDiscordTwitchalertsCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRe
 
 	# logging
 	GuildSettings:DiscordServerSettings = await getDiscordSeverSettings(PhaazeDiscord, Create["guild_id"], prevent_new=True)
-	log_coro:Coroutine = loggingOnTwitchalertCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, discord_channel=TargetDiscordChannel.name, twitch_channel=FoundUser.name)
+	log_coro:Coroutine = loggingOnTwitchalertCreate(PhaazeDiscord, GuildSettings, Creator=CheckMember, discord_channel=TargetDiscordChannel.name, twitch_channel=FoundUser.login)
 	asyncio.ensure_future(log_coro, loop=cls.BASE.DiscordLoop)
 
 	# some after work, with the new data
@@ -154,7 +154,7 @@ async def placeGatheredData(cls:"PhaazebotWeb", AlertUser:TwitchUser) -> None:
 		table="twitch_user_name",
 		content={
 			"user_id": AlertUser.user_id,
-			"user_name": AlertUser.name,
+			"user_name": AlertUser.login,
 			"user_display_name": AlertUser.display_name,
 		}
 	)
