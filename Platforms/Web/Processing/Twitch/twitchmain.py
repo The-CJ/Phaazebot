@@ -4,7 +4,6 @@ if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 
 from aiohttp.web import Response
-from Utils.Classes.authdiscordwebuser import AuthDiscordWebUser
 from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.htmlformatter import HTMLFormatter
 from Platforms.Web.utils import getNavbar

@@ -10,10 +10,10 @@ from Utils.Classes.htmlformatter import HTMLFormatter
 from Platforms.Web.index import PhaazeWebIndex
 from Platforms.Web.utils import getNavbar
 
-@PhaazeWebIndex.get("/discord/view/{guild_id:\d}")
+@PhaazeWebIndex.get("/discord/view/{guild_id:\d+}")
 async def discordView(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
-	Default url: /discord/view/{guild_id:\d}
+	Default url: /discord/view/{guild_id:\d+}
 	"""
 	PhaazeDiscord:"PhaazebotDiscord" = cls.BASE.Discord
 	if not PhaazeDiscord:
