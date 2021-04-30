@@ -10,7 +10,7 @@ from Platforms.Web.utils import getNavbar, generateTwitchAuthLink
 from Platforms.Web.index import PhaazeWebIndex
 
 @PhaazeWebIndex.get("/twitch")
-async def discordMain(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
+async def twitchMain(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Response:
 	"""
 	Default url: /twitch
 	"""
