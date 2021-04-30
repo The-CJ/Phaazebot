@@ -10,21 +10,22 @@
 		<h2>Log in if you want</h2>
 		<p>After you logged in, we can send you directly to your dashboard.</p>
 		<div class="center-item-row">
-			<div class="col bg-primary">
-				<a class="color-twitch inner-part white-text col text-center" href="|<!--#(twitch_login_link)#-->|" style="font-size: 75px;">
+			<div class="col">
+				<a class="color-twitch inner-part white-text col text-center" href="|<!--#(twitch_login_link)#-->|">
 					<span><i class="fab fa-twitch"></i>Twitch</span>
 				</a>
 			</div>
 		</div>
+		<br/>
 
 		<h2>Alternatively, don't log in and just enter channel name/id</h2>
 		<p>That will bring you to a view only mode. Moderation, etc. requires a login. duh.</p>
 		<div class="center-item-row">
 			<div class="col">
-				<input name="channel" placeholder="Channel Name / Link / ID" class="form-control"/>
+				<input id="user_input_search" name="channel" placeholder="Channel Name / Link / ID" class="form-control"/>
 			</div>
 			<div class="col-3">
-				<button class="btn btn-block btn-primary">Go!</button>
+				<button type="button" class="btn btn-block btn-primary" onclick="checkUserInput()">Go!</button>
 			</div>
 		</div>
 
