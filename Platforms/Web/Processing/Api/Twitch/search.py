@@ -8,9 +8,10 @@ import discord
 from aiohttp.web import Response
 from Utils.Classes.webrequestcontent import WebRequestContent
 from Utils.Classes.extendedrequest import ExtendedRequest
-from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingData
+from Utils.Classes.twitchuser import TwitchUser
+from Platforms.Web.Processing.Api.errors import apiNotAllowed, apiMissingData, apiNotFound
 from Platforms.Web.index import PhaazeWebIndex
-# from Platforms.Twitch.utils import ()
+from Platforms.Twitch.api import getTwitchUsers
 
 
 SEARCH_OPTIONS:List[str] = ["channel", "user"]
@@ -42,7 +43,27 @@ async def apiDiscordSearch(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Re
 		return await searchUser(cls, WebRequest, Data)
 
 async def searchChannel(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, Data:WebRequestContent) -> Response:
-	...
+
+	search_term:str = Data.getStr("term", "", len_max=128)
+
+	res:List[TwitchUser] = await getTwitchUsers(cls.BASE, item=search_term, item_type="login")
+	if not res:
+		return await apiNotFound(cls, WebRequest)
+	else:
+		SearchUser:TwitchUser = res.pop(0)
+		data: dict = {
+			"id":str(SearchUser.user_id),
+			"display_name":str(SearchUser.display_name),
+			"login":str(SearchUser.login),
+		}
+
+		return cls.response(
+			text=json.dumps(
+				dict(result=data, status=200)
+			),
+			content_type="application/json",
+			status=200
+		)
 
 async def searchUser(cls:"PhaazebotWeb", WebRequest:ExtendedRequest, Data:WebRequestContent) -> Response:
 	...

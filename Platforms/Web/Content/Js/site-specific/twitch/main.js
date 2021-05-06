@@ -2,15 +2,15 @@
 function checkUserInput() {
 	var search_for = $("#user_input_search").val();
 	var req = {
-		"term":"channel",
-		"search":search_for,
+		"term": search_for,
+		"search":"channel",
 	};
 	$.get("/api/twitch/search", req)
 		.done(function(data) {
-
+			console.log(data);
 		})
 		.fail(function(data) {
-
+			console.log(data);
 		});
 
 
