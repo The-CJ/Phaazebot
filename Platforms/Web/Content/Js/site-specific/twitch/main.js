@@ -10,7 +10,11 @@ function checkUserInput() {
 			console.log(data);
 		})
 		.fail(function(data) {
-			console.log(data);
+			$("#search_result_failed").show();
+			setTimeout(
+				() => { $("#search_result_failed").hide(); },
+				20000
+			);
 		});
 
 

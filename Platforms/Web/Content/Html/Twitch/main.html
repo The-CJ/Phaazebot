@@ -9,12 +9,12 @@
 
 		<h2>Log in if you want</h2>
 		<p>After you logged in, we can send you directly to your dashboard.</p>
-		<div class="center-item-row">
-			<div class="col">
-				<a class="color-twitch inner-part white-text col text-center" href="|<!--#(twitch_login_link)#-->|">
-					<span><i class="fab fa-twitch"></i>Twitch</span>
-				</a>
-			</div>
+		<div class="row">
+			<div class="col"></div>
+			<a class="col-6 animated flipInY color-twitch inner-part white-text" href="|<!--#(twitch_login_link)#-->|">
+				<span><i class="fab fa-twitch"></i>Twitch</span>
+			</a>
+			<div class="col"></div>
 		</div>
 		<br/>
 
@@ -26,6 +26,25 @@
 			</div>
 			<div class="col-3">
 				<button type="button" class="btn btn-block btn-primary" onclick="checkUserInput()">Go!</button>
+			</div>
+		</div>
+		<div class="center-item-row">
+			<div class="col text-warning" id="search_result_failed" style="display: none;">
+				<h3>Could not find a valid channel using your query...</h3>
+
+				<span>This does not mean, this channel does not exist on twitch.</span>
+				<br/>
+				<span>However it could mean:</span>
+				<hr/>
+				<ul>
+					<li>Phaaze is currently not active in this channel.</li>
+					<li>The channel owner did disable public view.</li>
+					<li>You just did a typo.</li>
+				</ul>
+				<hr/>
+				<span>If you are the owner, trying to get Phaaze into your channel, please log in or</span>
+				<br/>
+				<span>Go to <a href="https://twitch.tv/phaazebot">Phaazebot's Twitch channel</a> and type "!join"</span>
 			</div>
 		</div>
 
