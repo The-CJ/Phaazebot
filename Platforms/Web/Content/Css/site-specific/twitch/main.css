@@ -5,3 +5,7 @@ main h1 {
 .inner-part {
 	font-size: 100px;
 }
+
+[data-hide=true] {
+	display:none;
+}

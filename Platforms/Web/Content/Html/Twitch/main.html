@@ -7,18 +7,26 @@
 
 		<h1>Alright, alright, alright... let's see where you wanna go.</h1>
 
-		<h2>Log in if you want</h2>
-		<p>After you logged in, we can send you directly to your dashboard.</p>
-		<div class="row">
-			<div class="col"></div>
-			<a class="col-6 animated flipInY color-twitch inner-part white-text" href="|<!--#(twitch_login_link)#-->|">
-				<span><i class="fab fa-twitch"></i>Twitch</span>
-			</a>
-			<div class="col"></div>
+		<div data-hide="|<!--#(hide_ask_login)#-->|">
+			<h2>Log in if you want</h2>
+			<p>After you logged in, we can send you directly to your dashboard.</p>
+			<div class="row">
+				<div class="col"></div>
+				<a class="col-6 animated flipInY color-twitch inner-part white-text" href="|<!--#(twitch_login_link)#-->|">
+					<span><i class="fab fa-twitch"></i>Twitch</span>
+				</a>
+				<div class="col"></div>
+			</div>
+		</div>
+
+		<div data-hide="|<!--#(hide_dash_href)#-->|">
+			<hr/>
+			<h2>Seems like you are already logged in you are clear to <a href="|<!--#(already_logged_in_dashboard_link)#-->|">go to your dashboard</a></h2>
+			<hr/>
 		</div>
 		<br/>
 
-		<h2>Alternatively, don't log in and just enter channel name/id</h2>
+		<h2>Or just enter channel name/id</h2>
 		<p>That will bring you to a view only mode. Moderation, etc. requires a login. duh.</p>
 		<div class="center-item-row">
 			<div class="col">
