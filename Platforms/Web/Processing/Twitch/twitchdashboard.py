@@ -26,11 +26,11 @@ async def twitchDashboard(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Res
 	Channel:Optional[twitch_irc.Channel] = PhaazeTwitch.getChannel(channel_id=channel_id)
 
 	if not Channel:
-		return await cls.Tree.errors.notFound(cls, WebRequest, msg=f"Twitch Channel not found...")
+		return await cls.Tree.Twitch.twitchinvite.twitchInvite(cls, WebRequest, msg=f"Twitch Channel not found...", channel_id=channel_id)
 
 	AuthTwitch:AuthTwitchWebUser = await authTwitchWebUser(cls, WebRequest)
 	if not AuthTwitch.found:
-		return await cls.Tree.Discord.twitchlogin.twitchLogin(cls, WebRequest)
+		return await cls.Tree.Twitch.twitchlogin.twitchLogin(cls, WebRequest)
 
 	# TODO
 
