@@ -1,9 +1,8 @@
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from Platforms.Twitch.main_twitch import PhaazebotTwitch
 	from Platforms.Web.main_web import PhaazebotWeb
 
-import twitch_irc
 from aiohttp.web import Response
 from Utils.Classes.extendedrequest import ExtendedRequest
 from Utils.Classes.htmlformatter import HTMLFormatter
