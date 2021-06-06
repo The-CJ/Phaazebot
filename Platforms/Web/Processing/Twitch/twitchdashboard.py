@@ -32,45 +32,24 @@ async def twitchDashboard(cls:"PhaazebotWeb", WebRequest:ExtendedRequest) -> Res
 	if not AuthTwitch.found:
 		return await cls.Tree.Twitch.twitchlogin.twitchLogin(cls, WebRequest)
 
-	# TODO
-
-	CheckMember:discord.Member = Channel.get_member(int(AuthTwitch.User.user_id))
-	if not CheckMember:
-		return cls.response(status=302, headers={"Location": f"/discord/view/{guild_id}?error=no_user"})
-
-	if not (CheckMember.guild_permissions.administrator or CheckMember.guild_permissions.manage_guild):
-		return cls.response(status=302, headers={"Location": f"/discord/view/{guild_id}?error=missing_permissions"})
-
-	DiscordDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/main.html")
-	DiscordDash.replace(
-		location_home=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_home.html"),
-		location_quotes=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_quotes.html"),
-		location_twitch_alerts=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_twitch_alerts.html"),
-		location_regulars=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_regulars.html"),
-		location_levels=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_levels.html"),
-		location_configs_chat=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_chat.html"),
-		location_configs_event=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_event.html"),
-		location_configs_level=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_level.html"),
-		location_configs_channel=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_channel.html"),
-		location_configs_master=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_configs_master.html"),
-		location_commands_command=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_command.html"),
-		location_commands_help=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_help.html"),
-		location_commands_assign=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_commands_assign.html"),
-		location_logs=HTMLFormatter("Platforms/Web/Content/Html/Discord/Dashboard/location_logs.html"),
+	TwitchDash:HTMLFormatter = HTMLFormatter("Platforms/Web/Content/Html/Twitch/Dashboard/main.html")
+	TwitchDash.replace(
+		replace_empty=False
 	)
+
 	# make it twice, since some included locations also have replaceable items
-	DiscordDash.replace(
-		guild_name=html.escape(Channel.name),
-		guild_id=Channel.id,
+	TwitchDash.replace(
+		channel_name=html.escape(Channel.name),
+		channel_id=Channel.channel_id,
 		web_root=cls.BASE.Vars.web_root
 	)
 
 	site:str = cls.HTMLRoot.replace(
 		replace_empty=True,
 
-		title=f"Phaaze | Discord - Dashboard: {Channel.name}",
-		header=getNavbar(active="discord"),
-		main=DiscordDash
+		title=f"Phaaze | Twitch - Dashboard: {Channel.name}",
+		header=getNavbar(active="twitch"),
+		main=TwitchDash
 	)
 
 	return cls.response(

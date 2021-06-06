@@ -1,0 +1,102 @@
+/* overall styles */
+.guild-icon {border-radius: 50%;}
+.generic-list > *, .generic-sub-list > * { margin: 2px; padding: 2px; }
+.clickable { padding: 2px; cursor: pointer; background-color: #7289DA1A; color: #7289DA; transition-duration: 250ms; border-radius: 2px; }
+.clickable:hover { background-color: #7289DA; color: #FFFFFF; }
+.tokenlist [token] > * { background-color: #69696969; margin: 3px; padding: 2px; }
+[location] { padding-top: 1.5em; }
+[mode] [show-mode] { display: none; } /* see file bottom */
+
+/* frame styles */
+.main-panel {
+	max-height: calc(100vh - 5em);
+	overflow-y: auto;
+}
+
+.site-panel {
+	height: calc(100vh - 5em);
+	overflow-y: auto;
+	padding-top: 1.5em;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.site-panel [onclick] { cursor: pointer; margin: 5px; }
+
+.site-panel [expand] > * { margin-left: 1.5em; }
+
+.site-panel [sidebar-location] { padding: 0 1em; }
+
+.site-panel [sidebar-location].active { background-color: var(--color-modal-background); }
+
+.site-panel i { width: 1ch; margin-right: 1em; }
+
+.site-panel-btn {
+	display: none;
+	position: fixed;
+	left: 2px;
+	bottom: 2px;
+	border-radius: 7.5em;
+	line-height: 0;
+	background-color: lightgreen;
+	color: black;
+	z-index: 2;
+}
+
+/* location specific styles */
+[location] .content-box span { white-space: pre-line; }
+[location=home] .guild-name { margin-left: 1em; font-size: 3ch; }
+[location=levels] .level .avatar, [location=regulars] .regular .avatar { border-radius: 50%; margin-top: 2px; margin-left: 5px; margin-right: 5px; }
+[location=commands_command] .command.hidden { font-style: italic; }
+[location=commands_command] .command.non-active { box-shadow: -5px 0px 0px red; }
+[location=commands_help] [arg-list]:empty:after { content:"(None)"; font-style: italic; color: lightgrey;}
+button.option-status { background-color: var(--color-unknown); }
+button.option-status:after { content: "UNKNOWN"; }
+button.option-status[value=true] { background-color: var(--color-boolish-green); }
+button.option-status[value=true]:after { content: "ENABLED"; }
+button.option-status[value=false] { background-color: var(--color-boolish-red); }
+button.option-status[value=false]:after { content: "DISABLED"; }
+
+/* modal styles */
+.modal-itemlist { padding: 1em; max-height: 40vh; overflow-y: auto; }
+.modal-itemlist > * { padding: 2px; margin: 2px 0; background-color: #525252; }
+.modal-itemlist > *.deleted { background-color: #734343; }
+.modal-itemlist:empty::after { content: "(None)"; }
+.modal-body .center-item-row, .modal-body .row { min-height: 40px; }
+
+/* changes for responsiv */
+@media (max-width: 1100px) {
+	.site-panel {
+	left: 0;
+	top: 5em;
+	position: fixed;
+	visibility: collapse;
+	height: 100vh;
+	width: 0vw;
+	max-width: 75vw;
+	z-index: 1;
+	border-right: 2px solid black;
+	transition-duration: 0.25s;
+	transition-timing-function: linear;
+	}
+
+	.site-panel.show {
+	width: 75vw;
+	visibility: visible;
+	}
+
+	.site-panel-btn {
+	display: block;
+	}
+
+	.site-panel-btn.show {
+	background-color: darkred;
+	color: white;
+	}
+}
+
+/* show mode attributes (please say me there is a better method... but i don't know)*/
+[mode=view] [show-mode=view] { display: block; }
+[mode=configs] [show-mode=configs] { display: block; }
+[mode=create] [show-mode=create] { display: block; }
+[mode=edit] [show-mode=edit] { display: block; }
