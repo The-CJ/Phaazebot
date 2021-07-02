@@ -97,6 +97,11 @@ async def apiDiscordTwitchalertsCreate(cls:"PhaazebotWeb", WebRequest:ExtendedRe
 		)
 	)
 
+	if res[0]["all"] == 0:
+		res[0]["twitch_channel_match"] = 0
+		res[0]["discord_channel_match"] = 0
+		res[0]["both_match"] = 0
+
 	if res[0]["twitch_channel_match"] >= MAX_SAME_TWITCH_ALERTS_PER_GUILD:
 		return await cls.Tree.Api.Discord.Twitchalerts.errors.apiDiscordAlertSameTwitchChannelLimit(cls, WebRequest, limit=MAX_SAME_TWITCH_ALERTS_PER_GUILD, twitch_name=FoundUser.display_name)
 
